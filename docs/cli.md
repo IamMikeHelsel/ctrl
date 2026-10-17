@@ -37,9 +37,16 @@ Every command ends with `next`: the exact commands that move things forward.
 | `ctrl spark check NNN` | `sync`, then `tools/spark/check.sh NNN` remotely | as `check` |
 | `ctrl spark prove NNN [--minutes M] [--model leanstral] [--attempts K]` | `sync`, then `tools/spark/prove.sh` in tmux: a scratch copy, a headless agent on the local model with lean-lsp-mcp, a budget. Returns a job id. | `job` |
 | `ctrl spark solve NNN SCRIPT [-- args]` | Runs `work/NNN/SCRIPT` in `~/venvs/solve` with the solvers on PATH, in tmux. Returns a job id. | `job` |
-| `ctrl spark jobs` / `ctrl spark log JOB [-f]` / `ctrl spark fetch JOB` | List jobs, tail a log, or pull results into `work/NNN/` (candidate proofs land as `work/NNN/candidates/JOB.lean`, never directly in `lean/`) | |
+| `ctrl spark jobs` / `ctrl spark log JOB [-f]` / `ctrl spark fetch JOB` | List jobs, tail a log, or pull results into `work/NNN/` (candidates land in `work/NNN/candidates/JOB/`, never directly in `lean/`) | |
 
 ## Error codes (stable)
 `TOOL_MISSING`, `LEAN_BUILD_FAILED`, `FORBIDDEN_TOKEN`, `NONSTANDARD_AXIOM`, `BINDING_MISMATCH`,
-`CHALLENGE_DRIFT`, `NOT_APPROVED`, `NO_FC_STATEMENT`, `EXISTS`, `SPARK_UNREACHABLE`, `JOB_NOT_FOUND`,
-`BAD_USAGE`.
+`CHALLENGE_DRIFT`, `NOT_APPROVED`, `NO_FC_STATEMENT`, `NEEDS_ANSWER`, `EXISTS`, `SPARK_UNREACHABLE`,
+`JOB_NOT_FOUND`, `REMOTE_FAILED`, `BAD_USAGE`, `INTERNAL`.
+
+- `NEEDS_ANSWER` (exit 3): the FC statement leaves the answer open (`answer(sorry)`, or a
+  `def …answer := sorry` it refers to). A challenge must state the actual answer, so a human fills it in.
+  `ctrl approve` also refuses a challenge that still contains `sorry`.
+- `REMOTE_FAILED` (exit 1): the Spark was reachable but a remote step failed (`lake exe cache get`,
+  a `tools/spark/*.sh` that printed no job id, an unreadable `meta.json`).
+- `INTERNAL` (exit 1): a bug in ctrl.

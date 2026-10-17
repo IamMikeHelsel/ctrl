@@ -20,3 +20,48 @@
   free, so it gets volume work. Claude on the Mac gets judgement work.
 - **D7. Lean toolchain lag.** FC is on v4.33.1. `lake check`/`lake comparator` arrive in v4.35, so
   until FC bumps, binding is checked by our own elaborated script (architecture.md, check 4).
+
+## CLI decisions (v0.1)
+- **D8. `ctrl new` copies statements with a scanner, not a Lean parser.** It strips comments, finds
+  the depth-0 `:=` that ends the signature, turns binders into `∀ binders, type`, and keeps the text
+  verbatim apart from indentation. The `open` lines in scope (and `open ErdosNNN`) are emitted *before*
+  `namespace Challenge.ErdosNNN`, because inside it `open ErdosNNN` resolves to the challenge namespace.
+  `open X in` right above the FC theorem is kept on the `def`. `variable`s and `local notation` in the
+  FC file become review warnings. The shape is pinned byte-for-byte against the build-verified
+  `lean/Challenge/Erdos834.lean` (tests/fixtures/golden).
+- **D9. Which FC theorem.** Candidates are the theorems named `erdos_NNN…` (helper/test theorems are
+  ignored unless there are no others). With more than one, `ctrl new` exits 2 (`BAD_USAGE`) listing
+  them in `data.fc_theorems`; `--part` takes the full name or a unique suffix (`parts.ii`, `eighteen`).
+  It never guesses, even when a plain `erdos_NNN` exists.
+- **D10. Unknown answers.** The pinned FC no longer writes `answer(sorry)`; it writes
+  `def erdos_NNN.answer : T := sorry` and uses it in the statement. Both forms (and a bare `sorry` in
+  the statement) give `NEEDS_ANSWER`, exit 3.
+- **D11. Approval.** `--by` missing → `NOT_APPROVED`, exit 3 (approval is a human act, not a usage
+  slip). The hash is taken after the `-- approved-by:` line is written. Re-approving an unchanged
+  approved challenge is a no-op; approving after drift re-records line and hash and clears old check
+  results. `ctrl new --force` refuses an approved challenge (`EXISTS`, exit 3); for drafts it rewrites
+  the challenge, the solution skeleton and status.json but keeps an existing plan.md/log.md.
+- **D12. Check aggregation.** A failed check 1–4 or hash drift → exit 4 with the first failing code in
+  CHECKS order (build, tokens, axioms, binding, hash); only-unapproved → exit 3 `NOT_APPROVED`. A field
+  missing from check.sh's report counts as failed. Output that isn't JSON counts as a failed build.
+  check.sh exit 1 → `TOOL_MISSING`, exit 2 → `BAD_USAGE`. The result goes to status.json `last_check`
+  (with the solution's sha256, so `ctrl status` can tell when a pass is stale). Phase: a full pass on an
+  approved challenge → `checked`, anything else (including `--fast`) → `proving`; `draft` is never
+  moved. `ctrl spark check` records `last_spark_check` and does not move the phase.
+- **D13. Spark plumbing.** Scripts go to the Spark as `ssh … bash -s` on stdin, so the remote login
+  shell (zsh) doesn't matter. rsync targets `lean-work/ctrl/` relative to the remote home and creates it
+  with `--rsync-path`. `lake exe cache get` runs when `lean/lake-manifest.json` is in rsync's itemized
+  changes *or* the remote has no `.lake/packages/mathlib` yet. ssh exit 255 or any rsync failure →
+  `SPARK_UNREACHABLE`, exit 5.
+- **D14. Jobs.** `spark prove` refuses an unapproved (exit 3) or drifted (exit 4) challenge before
+  anything is sent; `spark solve` does not, since searches can be exploratory. Only `--model` (default
+  `leanstral`) is always passed; `--minutes`/`--attempts` are passed only when given, so the script's
+  defaults apply. Job ids are appended to status.json `jobs`. `spark fetch JOB` rsyncs `outputs/` into
+  `work/NNN/candidates/JOB/` (a directory, not cli.md's `candidates/JOB.lean`, since a job can produce
+  several files), with NNN from the job's `meta.json`. `spark log -f` streams raw text, so it refuses
+  `--json`.
+- **D15. Defaults.** `ctrl doctor` checks the Spark by default (`--no-remote` skips it), as the README's
+  quick start implies. `ctrl targets` defaults to `--tab open`; `--max-difficulty` filters on
+  `difficulty_1to5` (open) or `formalization_effort_1to5` (formalize); `--min-fit` on `ai_lean_fit_1to5`
+  (open) or `priority_1to5` (formalize). The envelope has exactly the six documented keys (no
+  `exit_code`); `next` is a list of command strings.

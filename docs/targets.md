@@ -8,7 +8,7 @@ catalog. Ratings are quick model judgements, so re-check before investing. The c
 in the Drive workbook's README tab. erdosproblems.com text is deliberately not stored here.
 
 Start with:
-- **formalize.csv, effort ≤ 2**, for example 834, 895, 1213, 1216, 915, 473. A Lean solution of a
+- **formalize.csv, effort ≤ 2**, for example 834, 895, 1213, 915, 473 (1216 has no FC statement yet). A Lean solution of a
   solved problem is publishable on Palomar, and the Justin Sun Prize has paid formalizer-only awards.
 - **open.csv, possibly_resolved = yes** (48 rows). A claimed proof exists, so verify it and formalize it.
 - **open.csv, prize with route = finite computation / construction.** These are 647, 99, 132 and 708.

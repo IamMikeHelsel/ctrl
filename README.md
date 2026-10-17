@@ -21,9 +21,9 @@ proved against that exact `Prop`, an axiom audit, and a build on both machines. 
 uv sync                        # Python CLI + dev tools (ruff, pytest)
 uv run ctrl doctor             # check toolchains on this Mac and on the Spark
 uv run ctrl targets --top 15   # best-ranked Erdős targets from data/erdos/
-uv run ctrl new 1216           # scaffold challenge + solution + work/1216/plan.md
-uv run ctrl check 1216         # build, audit, check the statement binding (local)
-uv run ctrl spark check 1216   # same on the Spark (clean Linux build + kernel replay)
+uv run ctrl new 895            # scaffold challenge + solution + work/895/plan.md
+uv run ctrl check 895          # build, audit, check the statement binding (local)
+uv run ctrl spark check 895    # same on the Spark (clean Linux build + kernel replay)
 uv run ctrl status             # where every problem stands and what to run next
 ```
 

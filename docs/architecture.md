@@ -17,15 +17,15 @@ authoritative until it has been pulled back and has passed `ctrl check` on the M
 ## The challenge / solution contract
 
 ```
-lean/Challenge/Erdos1216.lean      -- frozen; human-approved
-  namespace Challenge.Erdos1216
-  /-- statement copied from FormalConjectures.ErdosProblems.«1216» (Apache-2.0) -/
+lean/Challenge/Erdos834.lean       -- frozen; human-approved
+  namespace Challenge.Erdos834
+  /-- statement copied from FormalConjectures.ErdosProblems.«834» (Apache-2.0) -/
   def statement : Prop := …
-  -- approved-by: mike 2026-10-17 (matches erdosproblems.com/1216 and FC erdos_1216)
+  -- approved-by: mike 2026-10-17
 
-lean/ErdosLab/Erdos1216.lean       -- the work
-  import Challenge.Erdos1216
-  theorem Challenge.Erdos1216.solution : Challenge.Erdos1216.statement := …
+lean/ErdosLab/Erdos834.lean        -- the work
+  import Challenge.Erdos834
+  theorem Challenge.Erdos834.solution : Challenge.Erdos834.statement := …
 ```
 
 `ctrl check NNN` passes only if all of the following hold:

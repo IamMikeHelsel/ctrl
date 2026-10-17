@@ -37,6 +37,6 @@ command that ends it, and an artifact on disk.
 
 ## Running it
 From a Claude Code session in this repo, either:
-- ask for a stage ("run the loop on 1216", "verify 834"); the main session delegates to the matching
+- ask for a stage ("run the loop on 895", "verify 834"); the main session delegates to the matching
   subagent and reports back after each stage, or
 - run stages yourself through the CLI. Every `ctrl` command prints the next one.
