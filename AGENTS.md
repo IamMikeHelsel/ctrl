@@ -38,6 +38,19 @@ lake exe cache get      # downloads prebuilt Mathlib, ~2 min
 6. Update the results table in `README.md` and move the item to *Done* in `ROADMAP.md`.
 7. Commit, push, open a PR. CI must be green before merge.
 
+## Erdős lab (`erdos/`, `work/`, `src/ctrl/`, `tools/spark/`)
+
+Bounty formalizations of Erdős problems live in the separate Lake project `erdos/`, pinned to
+Formal Conjectures' toolchain, not in `ControlsLean/`. Its rules are in
+[docs/erdos-lab/rules.md](docs/erdos-lab/rules.md). The key ones:
+- Never edit an approved `erdos/Challenge/ErdosNNN.lean`.
+- Solutions prove `Challenge.ErdosNNN.statement` itself.
+- Gate with `uv run ctrl check NNN`.
+- Spark output stays untrusted until `ctrl promote`.
+
+Its dev → test → improve loop and subagents are described in
+[docs/erdos-lab/loop.md](docs/erdos-lab/loop.md).
+
 ## Style
 
 * File header: copyright block, imports, then a `/-! # Title ... -/` module docstring
