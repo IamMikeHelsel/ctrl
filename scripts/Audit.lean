@@ -48,3 +48,10 @@ import ControlsLean
 #print axioms ControlsLean.Controls.deadbeat_nilpotent
 #print axioms ControlsLean.Controls.deadbeat_trajectory_zero
 #print axioms ControlsLean.Controls.hurwitz_stabilization
+
+-- Issue #8, part 1: Controls (Companion matrix & pole placement in canonical form)
+#print axioms ControlsLean.Controls.charpoly_companion
+#print axioms ControlsLean.Controls.companion_add_vecMulVec
+#print axioms ControlsLean.Controls.charpoly_companion_feedback
+#print axioms ControlsLean.Controls.exists_feedback_charpoly_eq
+#print axioms ControlsLean.Controls.controllable_companion
