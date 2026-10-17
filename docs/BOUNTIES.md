@@ -81,3 +81,33 @@ upstream Formal Conjectures update.
    statement (copy it verbatim and pin the formal-conjectures commit). Full `check.sh`.
 5. Push to a **public** repo immediately (`ctrl` is private for now, per Mike; decide on a public home before submitting anything) to fix priority. Then run JSP `lean-verify`, open the
    PR, and add a Palomar submission if the result clears the research-interest floor.
+
+## Watching for new targets (`scripts/bounty_watch.sh`)
+
+Every current entry has been screened, so the job now is to catch entries the moment they
+become claimable. `scripts/bounty_watch.sh` fetches three sources with `curl` (no git), diffs
+them against JSON snapshots in `data/snapshots/`, prints what changed, and updates the snapshots.
+
+| Source | Fetched from | Reports |
+| --- | --- | --- |
+| JSP catalog | `TheJustinSunPrize/awards` `problems/catalog-*.md` + `mathdb-pilot.json` | new or removed entries, newly Solved, newly Eligible, eligibility changes, Lean proof added or removed, Lean links removed, newly unclaimed (Solved with Lean proof "No") |
+| erdosproblems.com | `teorth/erdosproblems` `data/problems.yaml` | newly proved, disproved, or solved; status, formal-status, and prize changes; Lean removed; newly unclaimed (resolved, not `Lean`) |
+| formal-conjectures | `google-deepmind/formal-conjectures` main tarball, `ErdosProblems/*.lean` | per declaration: newly `research solved`, new statements, `formal_proof` links added or removed, newly unclaimed (solved, `sorry`, no `formal_proof`) |
+
+```bash
+scripts/bounty_watch.sh                 # full report
+scripts/bounty_watch.sh -q              # silent unless something changed or failed (cron)
+scripts/bounty_watch.sh --jsp-from F    # diff a local concatenated JSP catalog instead of fetching
+SNAPSHOT_DIR=/tmp/x scripts/bounty_watch.sh   # use a scratch snapshot directory
+```
+
+* The first run for each source records a baseline and reports nothing for it.
+* Each change is also appended to `data/snapshots/changes.log`.
+* Exit status is 0 on success, whether or not anything changed, and 2 if any source failed.
+  A failed source keeps its old snapshot. So does a fetch that returns under half of the
+  snapshot's entry count, so a truncated download can't look like mass removals.
+* A lock directory stops overlapping runs, and snapshots are written atomically. Cron example
+  (cron mails any output):
+  `17 * * * * $HOME/lean-work/ctrl-claude/scripts/bounty_watch.sh -q`
+* "Newly unclaimed" in formal-conjectures is counted per declaration. `bounty_triage.sh` works
+  per file, so the watcher's set is wider.
