@@ -29,11 +29,12 @@ ctrl/
 │   │   └── PolePlacement.lean       # Canonical state-feedback pole placement & deadbeat control
 │   └── Estimation/
 │       ├── ScalarKalman.lean        # Scalar minimum-variance Kalman filter & Riccati contraction
-│       └── InformationFilter.lean   # Multi-dimensional Sherman–Morrison–Woodbury & precision update
+│       ├── InformationFilter.lean   # Multi-dimensional Sherman–Morrison–Woodbury & precision update
+│       └── AlphaBeta.lean           # Steady-state α–β filter: 2×2 Riccati equation & Kalata relation
 ├── ControlsLean.lean                 # Consolidated root library imports
 ├── scripts/
 │   ├── check.sh                     # Full build, sorry/axiom scanner & automated axiom auditor
-│   ├── Audit.lean                   # Programmatic #print axioms check on 29 headline theorems
+│   ├── Audit.lean                   # Programmatic #print axioms check on 36 headline theorems
 │   ├── sync.sh                      # Google Drive backup synchronization
 │   └── bounty_triage.sh             # Formal mathematics bounty triage utility
 └── docs/
@@ -64,6 +65,7 @@ All 29 headline theorems are registered in `scripts/Audit.lean` and checked by `
 | **Control Theory** | `Controls/PolePlacement.lean` | State-feedback synthesis in controllable canonical companion systems; deadbeat nilpotent control $(A - B K_{db})^2 = 0$; exact 2-step trajectory extinction; Hurwitz eigenvalue stabilization. | `closedLoop_eq`<br>`deadbeat_gain`<br>`deadbeat_nilpotent`<br>`deadbeat_trajectory_zero`<br>`hurwitz_stabilization` |
 | **State Estimation** | `Estimation/ScalarKalman.lean` | Optimal scalar Kalman gain minimizing posterior variance; harmonic precision additivity; discrete Riccati contraction mapping; fixed-point uniqueness. | `postVar_eq_opt_iff`<br>`inv_postVarOpt`<br>`riccati_fixed_unique` |
 | **State Estimation** | `Estimation/InformationFilter.lean` | Ring-general Sherman–Morrison–Woodbury matrix inversion identity; mutual two-sided inverse equivalence between Kalman covariance update and Information matrix update $Y^+ = Y + C^\top R^{-1} C$. | `woodbury_right_inv`<br>`woodbury_left_inv`<br>`woodbury_isInverse`<br>`kalman_information_equivalence` |
+| **State Estimation** | `Estimation/AlphaBeta.lean` | Steady-state α–β filter for the constant-velocity model with discrete white-noise-acceleration $Q = q\,g g^\top$, $g = (T^2/2, T)$: matrix Riccati equation written entrywise; gain quadratic $\alpha^2 = (2-\alpha)\beta - \beta^2/4$; tracking index $\beta^2/(1-\alpha) = \lambda^2$, $\lambda = \sigma_a T^2/\sigma_r$; Kalata relation $\beta = 2(2-\alpha) - 4\sqrt{1-\alpha}$; closed-form existence for every $\lambda > 0$ (Kalata 1984). | `riccatiMap_eq_iff`<br>`gain_quadratic`<br>`beta_sq_div`<br>`kalata`<br>`exists_gains`<br>`exists_steadyState` |
 
 ---
 

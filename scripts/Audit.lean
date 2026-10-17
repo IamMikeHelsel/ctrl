@@ -48,3 +48,12 @@ import ControlsLean
 #print axioms ControlsLean.Controls.deadbeat_nilpotent
 #print axioms ControlsLean.Controls.deadbeat_trajectory_zero
 #print axioms ControlsLean.Controls.hurwitz_stabilization
+
+-- Estimation (Steady-state alpha-beta filter & Kalata relation)
+#print axioms ControlsLean.Estimation.AlphaBeta.riccatiMap_eq_iff
+#print axioms ControlsLean.Estimation.AlphaBeta.gain_quadratic
+#print axioms ControlsLean.Estimation.AlphaBeta.beta_sq_div
+#print axioms ControlsLean.Estimation.AlphaBeta.kalata
+#print axioms ControlsLean.Estimation.AlphaBeta.isSteadyState_of_gains
+#print axioms ControlsLean.Estimation.AlphaBeta.exists_gains
+#print axioms ControlsLean.Estimation.AlphaBeta.exists_steadyState
