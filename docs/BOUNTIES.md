@@ -65,16 +65,17 @@ often, so re-check the organiser's own page before investing effort.
 
 ## Our pipeline for bounty targets
 
-The formal-conjectures snapshot (2026-10-17) has 1,137 Erdős problems: **680 tagged
-`research solved` with the proof still `sorry`**, and 457 tagged open. Solved-but-unformalized
-problems are the realistic money lane: JSP formalizer share, plus a Palomar entry and an
+The formal-conjectures snapshot (2026-10-17) has about 1,140 Erdős problems. About 680 are tagged
+`research solved` with the proof still `sorry`, but **447 of those already link an external
+Lean proof** via `formal_proof using lean4 at ...`, which leaves **about 235 with no known
+formalization**. Those 235 are the realistic money lane: JSP formalizer share, plus a Palomar entry and an
 upstream Formal Conjectures update.
 
-1. `scripts/bounty_triage.sh` lists solved Erdős statements, shortest first. Short statements
+1. `scripts/bounty_triage.sh` lists those 235, shortest statement first. Short statements
    with elementary solutions are the best first targets.
 2. For a candidate, find the published solution (erdosproblems.com page, then the paper)
    and confirm the JSP problem bank lists it (`problems/` in the JSP repo).
-3. Check JSP PRs and issues for existing formalizations of that problem ID. Skip any that
+3. Check JSP PRs and issues (and the erdosproblems.com page) for formalizations not yet linked upstream of that problem ID. Skip any that
    are already recorded.
 4. Formalize the problem in `ControlsLean/Bounty/ErdosNNN.lean` against the *exact* upstream
    statement (copy it verbatim and pin the formal-conjectures commit). Full `check.sh`.
