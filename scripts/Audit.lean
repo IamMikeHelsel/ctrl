@@ -55,3 +55,10 @@ import ControlsLean
 #print axioms ControlsLean.Controls.charpoly_companion_feedback
 #print axioms ControlsLean.Controls.exists_feedback_charpoly_eq
 #print axioms ControlsLean.Controls.controllable_companion
+
+-- Issue #8, part 2: Controls (Pole placement for controllable single-input systems)
+#print axioms ControlsLean.Controls.top_le_span_canonVec
+#print axioms ControlsLean.Controls.toMatrix_canonBasis
+#print axioms ControlsLean.Controls.repr_canonBasis_b
+#print axioms ControlsLean.Controls.charpoly_add_vecMulVec_eq
+#print axioms ControlsLean.Controls.pole_placement

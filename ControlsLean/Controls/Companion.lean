@@ -33,9 +33,8 @@ The companion input vector is `companionB n = e_n = Pi.single (Fin.last n) 1`.
 * `controllable_companion`: over a field, the companion pair `(companion a, e_n)` is
   controllable in the sense of `ControlsLean.Controls.Controllable`.
 
-The remaining steps of #8 (Krylov change of basis bringing an arbitrary controllable
-`(A, b)` into this form, and transport of the characteristic polynomial by similarity)
-are left to follow-up work.
+The change of basis bringing an arbitrary controllable `(A, b)` into this form, and the
+general pole placement theorem, are in `ControlsLean.Controls.PolePlacementGeneral`.
 -/
 
 open Matrix Polynomial

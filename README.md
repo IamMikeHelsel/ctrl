@@ -26,7 +26,8 @@ ctrl/
 │   │   ├── Reachability.lean        # Subspace reachability & invariance without Cayley–Hamilton
 │   │   ├── DiscreteLyapunov.lean    # Discrete-time Lyapunov stability without matrix symmetry
 │   │   ├── Gramian.lean             # Controllability Gramian & minimum-energy steering
-│   │   └── PolePlacement.lean       # Canonical state-feedback pole placement & deadbeat control
+│   │   ├── PolePlacement.lean       # Canonical state-feedback pole placement & deadbeat control
+│   │   └── PolePlacementGeneral.lean # General-n single-input pole placement theorem
 │   └── Estimation/
 │       ├── ScalarKalman.lean        # Scalar minimum-variance Kalman filter & Riccati contraction
 │       └── InformationFilter.lean   # Multi-dimensional Sherman–Morrison–Woodbury & precision update
@@ -63,6 +64,7 @@ All 29 headline theorems are registered in `scripts/Audit.lean` and checked by `
 | **Control Theory** | `Controls/Gramian.lean` | Discrete-time finite-horizon Controllability Gramian $W_k = \sum_{i=0}^{k-1} A^i B B^\top (A^i)^\top$; unconditional symmetry; positive semidefiniteness; Kalman–Ho–Narendra exact minimum-energy steering. | `term_transpose`<br>`gramian_transpose`<br>`quad_gramian_term`<br>`gramian_steer` |
 | **Control Theory** | `Controls/PolePlacement.lean` | State-feedback synthesis in controllable canonical companion systems; deadbeat nilpotent control $(A - B K_{db})^2 = 0$; exact 2-step trajectory extinction; Hurwitz eigenvalue stabilization. | `closedLoop_eq`<br>`deadbeat_gain`<br>`deadbeat_nilpotent`<br>`deadbeat_trajectory_zero`<br>`hurwitz_stabilization` |
 | **Control Theory** | `Controls/Companion.lean` | General-$n$ companion matrix in controllable canonical form over a commutative ring; $\chi(C_a) = X^n + \sum_i a_i X^i$; feedback $C_a + e_n k^\top = C_{a-k}$ assigns any monic closed-loop characteristic polynomial; companion pairs are controllable (part 1 of #8). | `charpoly_companion`<br>`companion_add_vecMulVec`<br>`exists_feedback_charpoly_eq`<br>`controllable_companion` |
+| **Control Theory** | `Controls/PolePlacementGeneral.lean` | **Pole placement theorem** (single input, any field, general $n$): if $(A, b)$ is controllable, every monic $p$ of degree $n$ equals $\chi(A + b k^\top)$ for some gain $k$. Proof via the controllable-canonical-form basis $w_j = (\operatorname{divX}^{j+1}\chi_A)(A)\,b$, in which $A \mapsto C_c$, $b \mapsto e_n$, plus basis-independence of the characteristic polynomial (closes #8). | `pole_placement`<br>`toMatrix_canonBasis`<br>`charpoly_add_vecMulVec_eq`<br>`top_le_span_canonVec` |
 | **State Estimation** | `Estimation/ScalarKalman.lean` | Optimal scalar Kalman gain minimizing posterior variance; harmonic precision additivity; discrete Riccati contraction mapping; fixed-point uniqueness. | `postVar_eq_opt_iff`<br>`inv_postVarOpt`<br>`riccati_fixed_unique` |
 | **State Estimation** | `Estimation/InformationFilter.lean` | Ring-general Sherman–Morrison–Woodbury matrix inversion identity; mutual two-sided inverse equivalence between Kalman covariance update and Information matrix update $Y^+ = Y + C^\top R^{-1} C$. | `woodbury_right_inv`<br>`woodbury_left_inv`<br>`woodbury_isInverse`<br>`kalman_information_equivalence` |
 

@@ -6,5 +6,6 @@ import ControlsLean.Controls.DiscreteLyapunov
 import ControlsLean.Controls.Gramian
 import ControlsLean.Controls.PolePlacement
 import ControlsLean.Controls.Companion
+import ControlsLean.Controls.PolePlacementGeneral
 import ControlsLean.Estimation.ScalarKalman
 import ControlsLean.Estimation.InformationFilter
