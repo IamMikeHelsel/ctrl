@@ -7,3 +7,4 @@ import ControlsLean.Controls.Gramian
 import ControlsLean.Controls.PolePlacement
 import ControlsLean.Estimation.ScalarKalman
 import ControlsLean.Estimation.InformationFilter
+import ControlsLean.Estimation.RiccatiConvergence

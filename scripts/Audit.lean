@@ -48,3 +48,8 @@ import ControlsLean
 #print axioms ControlsLean.Controls.deadbeat_nilpotent
 #print axioms ControlsLean.Controls.deadbeat_trajectory_zero
 #print axioms ControlsLean.Controls.hurwitz_stabilization
+
+-- Issue #6: Estimation (Scalar Riccati iteration convergence)
+#print axioms ControlsLean.Estimation.abs_riccati_iterate_sub_le
+#print axioms ControlsLean.Estimation.tendsto_riccati_iterate
+#print axioms ControlsLean.Estimation.tendsto_gain_riccati_iterate

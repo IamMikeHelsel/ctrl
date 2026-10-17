@@ -29,6 +29,7 @@ ctrl/
 │   │   └── PolePlacement.lean       # Canonical state-feedback pole placement & deadbeat control
 │   └── Estimation/
 │       ├── ScalarKalman.lean        # Scalar minimum-variance Kalman filter & Riccati contraction
+│       ├── RiccatiConvergence.lean  # Scalar Riccati iterates converge geometrically to steady state
 │       └── InformationFilter.lean   # Multi-dimensional Sherman–Morrison–Woodbury & precision update
 ├── ControlsLean.lean                 # Consolidated root library imports
 ├── scripts/
@@ -63,6 +64,7 @@ All 29 headline theorems are registered in `scripts/Audit.lean` and checked by `
 | **Control Theory** | `Controls/Gramian.lean` | Discrete-time finite-horizon Controllability Gramian $W_k = \sum_{i=0}^{k-1} A^i B B^\top (A^i)^\top$; unconditional symmetry; positive semidefiniteness; Kalman–Ho–Narendra exact minimum-energy steering. | `term_transpose`<br>`gramian_transpose`<br>`quad_gramian_term`<br>`gramian_steer` |
 | **Control Theory** | `Controls/PolePlacement.lean` | State-feedback synthesis in controllable canonical companion systems; deadbeat nilpotent control $(A - B K_{db})^2 = 0$; exact 2-step trajectory extinction; Hurwitz eigenvalue stabilization. | `closedLoop_eq`<br>`deadbeat_gain`<br>`deadbeat_nilpotent`<br>`deadbeat_trajectory_zero`<br>`hurwitz_stabilization` |
 | **State Estimation** | `Estimation/ScalarKalman.lean` | Optimal scalar Kalman gain minimizing posterior variance; harmonic precision additivity; discrete Riccati contraction mapping; fixed-point uniqueness. | `postVar_eq_opt_iff`<br>`inv_postVarOpt`<br>`riccati_fixed_unique` |
+| **State Estimation** | `Estimation/RiccatiConvergence.lean` | From any $P_0 \ge 0$ the scalar Riccati iterates converge to the steady state at geometric rate $(R/(Q+R))^2$; the Kalman gain converges to the steady-state gain. | `abs_riccati_iterate_sub_le`<br>`tendsto_riccati_iterate`<br>`tendsto_gain_riccati_iterate` |
 | **State Estimation** | `Estimation/InformationFilter.lean` | Ring-general Sherman–Morrison–Woodbury matrix inversion identity; mutual two-sided inverse equivalence between Kalman covariance update and Information matrix update $Y^+ = Y + C^\top R^{-1} C$. | `woodbury_right_inv`<br>`woodbury_left_inv`<br>`woodbury_isInverse`<br>`kalman_information_equivalence` |
 
 ---
