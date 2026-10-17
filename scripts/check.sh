@@ -20,8 +20,13 @@ if grep -nE '\b(sorry|admit)\b|^axiom ' "${files[@]}"; then
   exit 1
 fi
 if [[ $# -eq 0 ]]; then
-  audit=$(lake env lean scripts/Audit.lean)
-  if echo "$audit" | grep -vE "^'.*' depends on axioms: \[((propext|Classical\.choice|Quot\.sound)(, (propext|Classical\.choice|Quot\.sound))*)?\]$" | grep .; then
+  # Lean wraps long `#print axioms` lines; join continuation lines first.
+  audit=$(lake env lean scripts/Audit.lean | awk '
+    /^'\''/ { if (l != "") print l; l = $0; next }
+    { sub(/^[ \t]+/, " "); l = l $0 }
+    END { if (l != "") print l }')
+  ax='(propext|Classical\.choice|Quot\.sound)'
+  if echo "$audit" | grep -vE "^'.*' (depends on axioms: \[ ?($ax(, ?$ax)*)? ?\]|does not depend on any axioms)$" | grep .; then
     echo "FAIL: nonstandard axioms" >&2
     exit 1
   fi
