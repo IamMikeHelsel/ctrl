@@ -15,6 +15,14 @@ import ControlsLean
 #print axioms ControlsLean.Controls.Controllable.exists_steer
 #print axioms ControlsLean.Controls.controllable_feedback
 
+-- Controls (Observability as the dual of controllability, without Cayley-Hamilton)
+#print axioms ControlsLean.Controls.unobs_eq_dualCoannihilator_reach
+#print axioms ControlsLean.Controls.observable_iff_controllable_dual
+#print axioms ControlsLean.Controls.unobs_eq_unobs_finrank
+#print axioms ControlsLean.Controls.observable_iff_forall
+#print axioms ControlsLean.Controls.Observable.eq_of_output_eq
+#print axioms ControlsLean.Controls.observable_outputInjection
+
 -- Seed: Controls (Discrete Lyapunov asymptotic stability)
 #print axioms ControlsLean.Controls.tendsto_pow_mulVec_zero
 #print axioms ControlsLean.Controls.PosDef.tendsto_pow_mulVec_zero

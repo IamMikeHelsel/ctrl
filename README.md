@@ -24,6 +24,7 @@ ctrl/
 │   ├── Controls/
 │   │   ├── Hurwitz2.lean            # Second-order continuous-time Hurwitz polynomial stability
 │   │   ├── Reachability.lean        # Subspace reachability & invariance without Cayley–Hamilton
+│   │   ├── Observability.lean       # Observability as the dual of controllability, coordinate-free
 │   │   ├── DiscreteLyapunov.lean    # Discrete-time Lyapunov stability without matrix symmetry
 │   │   ├── Gramian.lean             # Controllability Gramian & minimum-energy steering
 │   │   └── PolePlacement.lean       # Canonical state-feedback pole placement & deadbeat control
@@ -59,6 +60,7 @@ All 29 headline theorems are registered in `scripts/Audit.lean` and checked by `
 | **Computer Vision** | `Vision/Homography.lean` | Projective collineations $H \in \mathrm{GL}(3, K)$; contragredient line transformations; collinearity invariance via determinant scaling; planar scene two-view correspondence. | `lineTransform_dotProduct`<br>`det_homography_three_points`<br>`collinear_homography`<br>`plane_homography_constraint` |
 | **Control Theory** | `Controls/Hurwitz2.lean` | Routh–Hurwitz stability criterion for monic degree-2 real polynomials; physical mass-spring-damper stability. | `isHurwitz2_iff` |
 | **Control Theory** | `Controls/Reachability.lean` | Finite-dimensional subspace stabilization at $k = \mathrm{dim}(V)$ without Cayley–Hamilton; explicit state steering; state-feedback reachability invariance. | `reach_eq_reach_finrank`<br>`controllable_iff_finrank`<br>`Controllable.exists_steer`<br>`controllable_feedback` |
+| **Control Theory** | `Controls/Observability.lean` | Unobservable subspace $\bigcap_{i<k} \ker(C A^i)$ as the coannihilator of the dual system's reachable subspace; observability of $(A, C)$ iff controllability of $(A^\top, C^\top)$, coordinate-free and without Cayley–Hamilton; stabilization at $k = \mathrm{dim}(V)$; output-injection invariance; recovery of the initial state from $\mathrm{dim}(V)$ outputs. | `unobs_eq_dualCoannihilator_reach`<br>`observable_iff_controllable_dual`<br>`unobs_eq_unobs_finrank`<br>`Observable.eq_of_output_eq`<br>`observable_outputInjection` |
 | **Control Theory** | `Controls/DiscreteLyapunov.lean` | Discrete-time Lyapunov asymptotic stability without requiring matrix symmetry on $P$; geometric rate of trajectory contraction. | `tendsto_pow_mulVec_zero`<br>`PosDef.tendsto_pow_mulVec_zero` |
 | **Control Theory** | `Controls/Gramian.lean` | Discrete-time finite-horizon Controllability Gramian $W_k = \sum_{i=0}^{k-1} A^i B B^\top (A^i)^\top$; unconditional symmetry; positive semidefiniteness; Kalman–Ho–Narendra exact minimum-energy steering. | `term_transpose`<br>`gramian_transpose`<br>`quad_gramian_term`<br>`gramian_steer` |
 | **Control Theory** | `Controls/PolePlacement.lean` | State-feedback synthesis in controllable canonical companion systems; deadbeat nilpotent control $(A - B K_{db})^2 = 0$; exact 2-step trajectory extinction; Hurwitz eigenvalue stabilization. | `closedLoop_eq`<br>`deadbeat_gain`<br>`deadbeat_nilpotent`<br>`deadbeat_trajectory_zero`<br>`hurwitz_stabilization` |
