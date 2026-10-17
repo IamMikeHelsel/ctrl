@@ -48,3 +48,9 @@ import ControlsLean
 #print axioms ControlsLean.Controls.deadbeat_nilpotent
 #print axioms ControlsLean.Controls.deadbeat_trajectory_zero
 #print axioms ControlsLean.Controls.hurwitz_stabilization
+
+-- Addition 5: Controls (Discrete-time small-gain theorem)
+#print axioms ControlsLean.Controls.small_gain
+#print axioms ControlsLean.Controls.small_gain_bounded
+#print axioms ControlsLean.Controls.HasGain.linear_zero_bias
+#print axioms ControlsLean.Controls.small_gain_linear

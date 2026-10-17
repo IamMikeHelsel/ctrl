@@ -13,7 +13,7 @@ Every declaration in `ctrl` is 100% `sorry`-free, contains zero custom axioms or
 
 ## Library Architecture & Modules
 
-The library is organized under the top-level namespace `ControlsLean` and root file `ControlsLean.lean`, comprising **9 verified modules** spanning three core disciplines:
+The library is organized under the top-level namespace `ControlsLean` and root file `ControlsLean.lean`, comprising **10 verified modules** spanning three core disciplines:
 
 ```text
 ctrl/
@@ -26,14 +26,15 @@ ctrl/
 │   │   ├── Reachability.lean        # Subspace reachability & invariance without Cayley–Hamilton
 │   │   ├── DiscreteLyapunov.lean    # Discrete-time Lyapunov stability without matrix symmetry
 │   │   ├── Gramian.lean             # Controllability Gramian & minimum-energy steering
-│   │   └── PolePlacement.lean       # Canonical state-feedback pole placement & deadbeat control
+│   │   ├── PolePlacement.lean       # Canonical state-feedback pole placement & deadbeat control
+│   │   └── SmallGain.lean           # Discrete-time small-gain theorem on truncated sup norms
 │   └── Estimation/
 │       ├── ScalarKalman.lean        # Scalar minimum-variance Kalman filter & Riccati contraction
 │       └── InformationFilter.lean   # Multi-dimensional Sherman–Morrison–Woodbury & precision update
 ├── ControlsLean.lean                 # Consolidated root library imports
 ├── scripts/
 │   ├── check.sh                     # Full build, sorry/axiom scanner & automated axiom auditor
-│   ├── Audit.lean                   # Programmatic #print axioms check on 29 headline theorems
+│   ├── Audit.lean                   # Programmatic #print axioms check on 33 headline theorems
 │   ├── sync.sh                      # Google Drive backup synchronization
 │   └── bounty_triage.sh             # Formal mathematics bounty triage utility
 └── docs/
@@ -49,9 +50,9 @@ ctrl/
 
 ---
 
-## Audited Headline Theorems (29 Total)
+## Audited Headline Theorems (33 Total)
 
-All 29 headline theorems are registered in `scripts/Audit.lean` and checked by `scripts/check.sh`:
+All 33 headline theorems are registered in `scripts/Audit.lean` and checked by `scripts/check.sh`:
 
 | Discipline | Module | Core Mathematical Content | Key Audited Theorems |
 |---|---|---|---|
@@ -62,6 +63,7 @@ All 29 headline theorems are registered in `scripts/Audit.lean` and checked by `
 | **Control Theory** | `Controls/DiscreteLyapunov.lean` | Discrete-time Lyapunov asymptotic stability without requiring matrix symmetry on $P$; geometric rate of trajectory contraction. | `tendsto_pow_mulVec_zero`<br>`PosDef.tendsto_pow_mulVec_zero` |
 | **Control Theory** | `Controls/Gramian.lean` | Discrete-time finite-horizon Controllability Gramian $W_k = \sum_{i=0}^{k-1} A^i B B^\top (A^i)^\top$; unconditional symmetry; positive semidefiniteness; Kalman–Ho–Narendra exact minimum-energy steering. | `term_transpose`<br>`gramian_transpose`<br>`quad_gramian_term`<br>`gramian_steer` |
 | **Control Theory** | `Controls/PolePlacement.lean` | State-feedback synthesis in controllable canonical companion systems; deadbeat nilpotent control $(A - B K_{db})^2 = 0$; exact 2-step trajectory extinction; Hurwitz eigenvalue stabilization. | `closedLoop_eq`<br>`deadbeat_gain`<br>`deadbeat_nilpotent`<br>`deadbeat_trajectory_zero`<br>`hurwitz_stabilization` |
+| **Control Theory** | `Controls/SmallGain.lean` | Discrete-time small-gain theorem for feedback interconnections $e_1 = u_1 + G_2 e_2$, $e_2 = u_2 + G_1 e_1$ with finite truncated-sup gains (with bias) and $\gamma_1\gamma_2 < 1$; explicit closed-loop bounds; bias elimination for linear operators; bounded-input bounded-signal corollary. | `small_gain`<br>`small_gain_bounded`<br>`HasGain.linear_zero_bias`<br>`small_gain_linear` |
 | **State Estimation** | `Estimation/ScalarKalman.lean` | Optimal scalar Kalman gain minimizing posterior variance; harmonic precision additivity; discrete Riccati contraction mapping; fixed-point uniqueness. | `postVar_eq_opt_iff`<br>`inv_postVarOpt`<br>`riccati_fixed_unique` |
 | **State Estimation** | `Estimation/InformationFilter.lean` | Ring-general Sherman–Morrison–Woodbury matrix inversion identity; mutual two-sided inverse equivalence between Kalman covariance update and Information matrix update $Y^+ = Y + C^\top R^{-1} C$. | `woodbury_right_inv`<br>`woodbury_left_inv`<br>`woodbury_isInverse`<br>`kalman_information_equivalence` |
 
@@ -109,7 +111,7 @@ Detailed mathematical write-ups and novelty assessments are available in `docs/`
 # Add elan to PATH if not already loaded
 export PATH="$HOME/.elan/bin:$PATH"
 
-# Run the complete verification suite (builds all 9 modules, checks sorry/admit/axioms, audits 29 theorems)
+# Run the complete verification suite (builds all 10 modules, checks sorry/admit/axioms, audits 33 theorems)
 bash scripts/check.sh
 
 # Verify a single module in rapid mode (~1.5s - 2.5s)
@@ -122,8 +124,8 @@ bash scripts/check.sh ControlsLean/Controls/PolePlacement.lean
 ### Expected Output
 ```text
 Build completed successfully (4918 jobs).
-Axiom audit passed for headline theorems: 29
-OK: 9 file(s) checked, no sorry/admit/axiom
+Axiom audit passed for headline theorems: 33
+OK: 10 file(s) checked, no sorry/admit/axiom
 ```
 
 ---
