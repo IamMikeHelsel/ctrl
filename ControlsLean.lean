@@ -1,6 +1,7 @@
 import ControlsLean.Vision.Epipolar
 import ControlsLean.Vision.Homography
 import ControlsLean.Controls.Hurwitz2
+import ControlsLean.Controls.Jury2
 import ControlsLean.Controls.Reachability
 import ControlsLean.Controls.DiscreteLyapunov
 import ControlsLean.Controls.Gramian

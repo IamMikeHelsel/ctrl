@@ -9,6 +9,10 @@ import ControlsLean
 -- Seed: Controls (Hurwitz-2 stability)
 #print axioms ControlsLean.Controls.isHurwitz2_iff
 
+-- Issue #5: Controls (Jury stability test, degree 2)
+#print axioms ControlsLean.Controls.isSchur2_iff
+#print axioms ControlsLean.Controls.isSchur2_iff_jury
+
 -- Seed: Controls (Reachability & Controllability without Cayley-Hamilton)
 #print axioms ControlsLean.Controls.reach_eq_reach_finrank
 #print axioms ControlsLean.Controls.controllable_iff_finrank

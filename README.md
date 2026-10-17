@@ -23,6 +23,7 @@ ctrl/
 │   │   └── Homography.lean          # Planar projective collineations, duality & plane motion
 │   ├── Controls/
 │   │   ├── Hurwitz2.lean            # Second-order continuous-time Hurwitz polynomial stability
+│   │   ├── Jury2.lean               # Second-order discrete-time Schur stability (Jury test)
 │   │   ├── Reachability.lean        # Subspace reachability & invariance without Cayley–Hamilton
 │   │   ├── DiscreteLyapunov.lean    # Discrete-time Lyapunov stability without matrix symmetry
 │   │   ├── Gramian.lean             # Controllability Gramian & minimum-energy steering
@@ -58,6 +59,7 @@ All 29 headline theorems are registered in `scripts/Audit.lean` and checked by `
 | **Computer Vision** | `Vision/Epipolar.lean` | Calibrated two-view geometry; essential matrix $E = [t]_\times R$; coplanar incidence over general fields. | `epipolar_constraint`<br>`det_essential` |
 | **Computer Vision** | `Vision/Homography.lean` | Projective collineations $H \in \mathrm{GL}(3, K)$; contragredient line transformations; collinearity invariance via determinant scaling; planar scene two-view correspondence. | `lineTransform_dotProduct`<br>`det_homography_three_points`<br>`collinear_homography`<br>`plane_homography_constraint` |
 | **Control Theory** | `Controls/Hurwitz2.lean` | Routh–Hurwitz stability criterion for monic degree-2 real polynomials; physical mass-spring-damper stability. | `isHurwitz2_iff` |
+| **Control Theory** | `Controls/Jury2.lean` | Jury stability test for monic degree-2 real polynomials: all complex roots of $z^2 + az + b$ lie in the open unit disk iff $\lvert b\rvert < 1$ and $\lvert a\rvert < 1 + b$; textbook form $p(1) > 0$, $p(-1) > 0$, $\lvert p(0)\rvert < 1$. | `isSchur2_iff`<br>`isSchur2_iff_jury` |
 | **Control Theory** | `Controls/Reachability.lean` | Finite-dimensional subspace stabilization at $k = \mathrm{dim}(V)$ without Cayley–Hamilton; explicit state steering; state-feedback reachability invariance. | `reach_eq_reach_finrank`<br>`controllable_iff_finrank`<br>`Controllable.exists_steer`<br>`controllable_feedback` |
 | **Control Theory** | `Controls/DiscreteLyapunov.lean` | Discrete-time Lyapunov asymptotic stability without requiring matrix symmetry on $P$; geometric rate of trajectory contraction. | `tendsto_pow_mulVec_zero`<br>`PosDef.tendsto_pow_mulVec_zero` |
 | **Control Theory** | `Controls/Gramian.lean` | Discrete-time finite-horizon Controllability Gramian $W_k = \sum_{i=0}^{k-1} A^i B B^\top (A^i)^\top$; unconditional symmetry; positive semidefiniteness; Kalman–Ho–Narendra exact minimum-energy steering. | `term_transpose`<br>`gramian_transpose`<br>`quad_gramian_term`<br>`gramian_steer` |
