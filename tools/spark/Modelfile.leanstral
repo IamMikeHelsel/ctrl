@@ -1,0 +1,16 @@
+# Leanstral 1.5 (119B-A6B, Q4_K_M) for the Spark's Ollama (0.34.x, llama-server backend).
+# Build with tools/spark/build-leanstral.sh, which patches the chat template into a GGUF copy and runs
+#   ollama create leanstral -f ~/lean-work/ctrl/tools/spark/Modelfile.leanstral
+#
+# Source GGUF: GZGavinZhao/Leanstral-1.5-119B-A6B-GGUF (arch mistral4),
+#   sha256 8d7bdbfa733c3fcde4c9ce527ba3d4aa3a49af77e7767b3ed5ae649e6c92b902.
+# There is deliberately no TEMPLATE line. Ollama 0.34 treats TEMPLATE as a Go template, but
+# without one it renders the GGUF's embedded jinja template through llama.cpp, which also parses
+# Mistral's `[TOOL_CALLS]name[ARGS]{...}` tool calls. Our jinja template is tools/spark/leanstral.jinja.
+# Mistral recommends temperature 1.0 and reasoning "high" for Leanstral.
+FROM /home/mike/models/leanstral/Leanstral-1.5-119B-A6B-Q4_K_M.ctrl.gguf
+
+# 65536 fits easily: 73 GB resident on the 121 GB GB10. MLA keeps the KV cache small.
+PARAMETER num_ctx 65536
+PARAMETER temperature 1.0
+PARAMETER num_predict 16384
