@@ -48,3 +48,11 @@ import ControlsLean
 #print axioms ControlsLean.Controls.deadbeat_nilpotent
 #print axioms ControlsLean.Controls.deadbeat_trajectory_zero
 #print axioms ControlsLean.Controls.hurwitz_stabilization
+
+-- Addition 5: Vision (Two-view triangulation)
+#print axioms ControlsLean.Vision.depth₁_eq
+#print axioms ControlsLean.Vision.depth₂_eq
+#print axioms ControlsLean.Vision.depths_unique
+#print axioms ControlsLean.Vision.scene_closedForm
+#print axioms ControlsLean.Vision.exists_depths_iff
+#print axioms ControlsLean.Vision.cheirality
