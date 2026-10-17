@@ -20,6 +20,7 @@ ctrl/
 ├── ControlsLean/
 │   ├── Vision/
 │   │   ├── Epipolar.lean            # Two-view calibrated epipolar geometry & essential matrix
+│   │   ├── EightPoint.lean          # Eight-point algorithm: E determined up to scale (rank 8)
 │   │   └── Homography.lean          # Planar projective collineations, duality & plane motion
 │   ├── Controls/
 │   │   ├── Hurwitz2.lean            # Second-order continuous-time Hurwitz polynomial stability
@@ -56,6 +57,7 @@ All 29 headline theorems are registered in `scripts/Audit.lean` and checked by `
 | Discipline | Module | Core Mathematical Content | Key Audited Theorems |
 |---|---|---|---|
 | **Computer Vision** | `Vision/Epipolar.lean` | Calibrated two-view geometry; essential matrix $E = [t]_\times R$; coplanar incidence over general fields. | `epipolar_constraint`<br>`det_essential` |
+| **Computer Vision** | `Vision/EightPoint.lean` | Eight-point algorithm, exact linear-algebra core: the constraint matrix $M_{i,(a,b)} = x_{2i,a}\, x_{1i,b}$ of rank 8 has a one-dimensional kernel (rank–nullity), so any nonzero solution is a scalar multiple of $E = [t]_\times R$. | `finrank_ker_constraintMatrix`<br>`eq_smul_of_rank_eq_eight`<br>`essential_satisfies_constraints`<br>`eq_smul_essential` |
 | **Computer Vision** | `Vision/Homography.lean` | Projective collineations $H \in \mathrm{GL}(3, K)$; contragredient line transformations; collinearity invariance via determinant scaling; planar scene two-view correspondence. | `lineTransform_dotProduct`<br>`det_homography_three_points`<br>`collinear_homography`<br>`plane_homography_constraint` |
 | **Control Theory** | `Controls/Hurwitz2.lean` | Routh–Hurwitz stability criterion for monic degree-2 real polynomials; physical mass-spring-damper stability. | `isHurwitz2_iff` |
 | **Control Theory** | `Controls/Reachability.lean` | Finite-dimensional subspace stabilization at $k = \mathrm{dim}(V)$ without Cayley–Hamilton; explicit state steering; state-feedback reachability invariance. | `reach_eq_reach_finrank`<br>`controllable_iff_finrank`<br>`Controllable.exists_steer`<br>`controllable_feedback` |

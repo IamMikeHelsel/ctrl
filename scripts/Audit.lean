@@ -6,6 +6,12 @@ import ControlsLean
 #print axioms ControlsLean.Vision.epipolar_constraint
 #print axioms ControlsLean.Vision.det_essential
 
+-- Vision (Eight-point algorithm: E determined up to scale)
+#print axioms ControlsLean.Vision.finrank_ker_constraintMatrix
+#print axioms ControlsLean.Vision.eq_smul_of_rank_eq_eight
+#print axioms ControlsLean.Vision.essential_satisfies_constraints
+#print axioms ControlsLean.Vision.eq_smul_essential
+
 -- Seed: Controls (Hurwitz-2 stability)
 #print axioms ControlsLean.Controls.isHurwitz2_iff
 

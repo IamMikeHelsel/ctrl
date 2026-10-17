@@ -1,4 +1,5 @@
 import ControlsLean.Vision.Epipolar
+import ControlsLean.Vision.EightPoint
 import ControlsLean.Vision.Homography
 import ControlsLean.Controls.Hurwitz2
 import ControlsLean.Controls.Reachability
