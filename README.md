@@ -2,19 +2,19 @@
 
 [![Lean 4](https://img.shields.io/badge/Lean%204-v4.36.0--rc1-blue)](https://github.com/leanprover/lean4)
 [![Mathlib](https://img.shields.io/badge/Mathlib-4.36.0--rc1-brightgreen)](https://github.com/leanprover-community/mathlib4)
-[![Modules](https://img.shields.io/badge/Modules-25%20Verified-success)](ControlsLean.lean)
-[![Axiom Audit](https://img.shields.io/badge/Axioms-139%20Theorems%20Standard%20Only-success)](scripts/Audit.lean)
+[![Modules](https://img.shields.io/badge/Modules-26%20Verified-success)](ControlsLean.lean)
+[![Axiom Audit](https://img.shields.io/badge/Axioms-151%20Theorems%20Standard%20Only-success)](scripts/Audit.lean)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 **`ctrl`** (`https://github.com/IamMikeHelsel/ctrl`) is a verified library of formal, machine-checked mathematics in modern control theory, robotic state estimation, projective computer vision, and formal mathematics bounties, built on Lean 4 and Mathlib.
 
-Every declaration in `ctrl` is 100% `sorry`-free, contains zero custom axioms or unverified escape hatches, and every public headline theorem (**139 audited theorems** across **25 modules**) is programmatically audited to depend solely on Lean's standard foundational axioms (`propext`, `Classical.choice`, `Quot.sound`).
+Every declaration in `ctrl` is 100% `sorry`-free, contains zero custom axioms or unverified escape hatches, and every public headline theorem (**151 audited theorems** across **26 modules**) is programmatically audited to depend solely on Lean's standard foundational axioms (`propext`, `Classical.choice`, `Quot.sound`).
 
 ---
 
-## Library Architecture & Modules (25 Verified Modules)
+## Library Architecture & Modules (26 Verified Modules)
 
-The library is organized under the top-level namespace `ControlsLean` and root file `ControlsLean.lean`, comprising **25 verified modules** spanning control engineering, estimation, vision, proof automation, and formal math bounties:
+The library is organized under the top-level namespace `ControlsLean` and root file `ControlsLean.lean`, comprising **26 verified modules** spanning control engineering, estimation, vision, proof automation, and formal math bounties:
 
 ```text
 ctrl/
@@ -39,7 +39,8 @@ ctrl/
 │   │   ├── PolePlacement.lean           # Second-order canonical pole placement & deadbeat control
 │   │   ├── PolePlacementGeneral.lean    # General-n single-input pole placement (Ackermann / canonical)
 │   │   ├── Observer.lean                # Luenberger state observers & Separation Principle decoupling
-│   │   └── MPCFeasibility.lean          # Constrained MPC recursive feasibility & CLF value descent
+│   │   ├── MPCFeasibility.lean          # Constrained MPC recursive feasibility & CLF value descent
+│   │   └── DARE.lean                    # Discrete Algebraic Riccati Equation & LQR completion of squares
 │   ├── Estimation/
 │   │   ├── ScalarKalman.lean            # Scalar minimum-variance Kalman filter & Riccati contraction
 │   │   ├── InformationFilter.lean       # Multi-dimensional Sherman–Morrison–Woodbury & precision update
@@ -79,14 +80,15 @@ ctrl/
         ├── 06_homography_uniqueness.md
         ├── 07_mpc_recursive_feasibility.md
         ├── 08_multivariate_kalman_optimality.md
-        └── 09_uncontested_erdos_bounties.md
+        ├── 09_uncontested_erdos_bounties.md
+        └── 10_dare_lqr.md
 ```
 
 ---
 
-## Audited Headline Theorems (139 Total Across 25 Modules)
+## Audited Headline Theorems (151 Total Across 26 Modules)
 
-All 139 headline theorems are registered in [`scripts/Audit.lean`](scripts/Audit.lean) and verified by [`scripts/check.sh`](scripts/check.sh):
+All 151 headline theorems are registered in [`scripts/Audit.lean`](scripts/Audit.lean) and verified by [`scripts/check.sh`](scripts/check.sh):
 
 | Discipline | Module | Core Mathematical Content | Key Audited Theorems |
 |---|---|---|---|
@@ -108,6 +110,7 @@ All 139 headline theorems are registered in [`scripts/Audit.lean`](scripts/Audit
 | **Control Theory** | `Controls/PolePlacementGeneral.lean` | General-$n$ single-input Ackermann / canonical-basis pole placement for any controllable pair $(A, b)$ and target monic degree-$n$ polynomial. | `top_le_span_canonVec`<br>`toMatrix_canonBasis`<br>`charpoly_add_vecMulVec_eq`<br>`pole_placement` |
 | **Control Theory** | `Controls/Observer.lean` | Luenberger state observers; input-invariant error dynamics $e_{k+1} = (A - LC) e_k$; Separation Principle characteristic polynomial decoupling. | `observer_error_step`<br>`observer_error_pow`<br>`closed_loop_separation_det`<br>`closed_loop_separation_charpoly` |
 | **Control Theory** | `Controls/MPCFeasibility.lean` | Constrained receding-horizon Model Predictive Control; warm-start shift recursive feasibility; eternal closed-loop constraint satisfaction; CLF value descent. | `mpc_recursive_feasibility_step`<br>`mpc_closed_loop_feasible`<br>`mpc_value_descent`<br>`mpc_optimal_value_descent`<br>`mpc_closed_loop_cost_bound` |
+| **Control Theory** | `Controls/DARE.lean` | Discrete Algebraic Riccati Equation (DARE) and infinite-horizon LQR; input Gramian $S = R + B^\top P B$; matrix Bellman completion of squares; closed-loop cost decrease and asymptotic stability. | `bellman_completion_of_squares`<br>`bellmanResidual_eq_zero_of_dare`<br>`quad_bellman_le`<br>`dare_closed_loop_lyapunov`<br>`dare_closed_loop_tendsto_zero` |
 | **State Estimation** | `Estimation/ScalarKalman.lean` | Optimal scalar Kalman gain minimizing posterior variance; harmonic precision additivity; discrete Riccati contraction mapping; fixed-point uniqueness. | `postVar_eq_opt_iff`<br>`inv_postVarOpt`<br>`riccati_fixed_unique` |
 | **State Estimation** | `Estimation/InformationFilter.lean` | Ring-general Sherman–Morrison–Woodbury matrix inversion identity; two-sided inverse equivalence between Kalman covariance and Information filter update. | `woodbury_right_inv`<br>`woodbury_left_inv`<br>`woodbury_isInverse`<br>`kalman_information_equivalence` |
 | **State Estimation** | `Estimation/RiccatiConvergence.lean` | Geometric convergence of discrete scalar Riccati iterates $|P_{k+1} - S| \le (R/(Q+R))^{2k} |P_1 - S|$ from any $P_0 \ge 0$; steady-state gain limit. | `abs_riccati_iterate_sub_le`<br>`tendsto_riccati_iterate`<br>`tendsto_gain_riccati_iterate` |
@@ -123,7 +126,7 @@ All 139 headline theorems are registered in [`scripts/Audit.lean`](scripts/Audit
 ```bash
 export PATH="$HOME/.elan/bin:$PATH"
 
-# Full build, escape-hatch ban, and 139-theorem axiom audit
+# Full build, escape-hatch ban, and 151-theorem axiom audit
 bash scripts/check.sh
 
 # Fast single-file verification (~1.5s - 2.5s)

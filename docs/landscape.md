@@ -112,7 +112,8 @@ The following matrix compares formalization coverage across all three libraries:
 | **Hurwitz Stability (Matrix Spectrum)** | ❌ None | **Full** | ❌ None | $\mathrm{Re}(\lambda) < 0$, spectral shift, exponential envelopes |
 | **Discrete Lyapunov Stability** | ❌ None | Lyapunov Series | **Unit Sphere** | Geometric decay $A^k x_0 \to 0$ without matrix symmetry |
 | **Continuous Lyapunov Equation** | ❌ None | **Full** | ❌ None | Unique $P \succ 0$ solving $PA + A^\top P = -Q$ for Hurwitz $A$ |
-| **Discrete Lyapunov Equation** | ❌ None | **Full** | ❌ None | Unique $P \succ 0$ solving $A^\top P A - P = -Q$ for Schur $A$ |
+| **Discrete Lyapunov Equation** | ❌ None | **Full** | Partial | Converse Stein series in `ConverseLyapunov`; DARE/LQR Bellman identity in `DARE` |
+| **Discrete Algebraic Riccati (DARE / LQR)** | ❌ None | ❌ None | **Full (algebraic)** | Inverse-free completion of squares `M(K)=𝒯(P)−P+(K−K*)ᵀS(K−K*)`; closed-loop stability |
 | **PBH (Hautus) Rank Tests** | ❌ None | **Full** | ❌ None | Rank tests for controllability and observability over $\mathbb{C}$ |
 | **Kalman 4-Sector Canonical Decomposition**| ❌ None | **Full** | ❌ None | Coordinate transformation isolating $x_{co}, x_{cuo}, x_{uo}, x_{uuo}$ |
 | **Continuous Peano–Baker Series** | ❌ None | **Full** | ❌ None | State transition matrix $\Phi(t, t_0)$ solving $\dot{\Phi} = A(t)\Phi$ |

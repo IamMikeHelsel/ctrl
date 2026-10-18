@@ -27,11 +27,11 @@ Our development trajectory progresses through three deliberate horizons:
                                        │
 ┌──────────────────────────────────────┴──────────────────────────────────────┐
 │                 Phase 2: Medium-Term Additions (In Progress)                │
-│  • Luenberger State Observer & Separation Principle                         │
-│  • Discrete-Time Algebraic Riccati Equation (DARE)                          │
+│  • Luenberger State Observer & Separation Principle           [DONE]        │
+│  • Discrete-Time Algebraic Riccati Equation (DARE)            [DONE]        │
 │  • Continuous-Time Kalman–Bucy Differential Riccati Filter                  │
-│  • Multi-View Essential Matrix SVD & 8-Point Algorithm                      │
-│  • Discrete-Time Polynomial Jury Stability Criterion                        │
+│  • Multi-View Essential Matrix SVD & 8-Point Algorithm        [DONE]        │
+│  • Discrete-Time Polynomial Jury Stability Criterion          [DONE]        │
 └──────────────────────────────────────┬──────────────────────────────────────┘
                                        │
 ┌──────────────────────────────────────┴──────────────────────────────────────┐
@@ -127,14 +127,16 @@ The next phase of `ctrl` targets the central pillars of modern linear systems an
 - **Target File**: `ControlsLean/Controls/ObserverSeparation.lean`
 - **Primary Reference**: Luenberger (1971), *An Introduction to Observers*; Hespanha (2018), Chapter 14.
 
-### 3.2 Discrete-Time Algebraic Riccati Equation (DARE)
-- **Objective**: Formalize the steady-state solution of discrete-time linear quadratic optimal control (LQR) and Kalman filtering.
-- **Mathematical Content**:
-  - The matrix DARE operator:
-    $$\mathcal{T}(P) = A^\top P A - A^\top P B (R + B^\top P B)^{-1} B^\top P A + Q.$$
-  - Prove that for controllable and observable pairs $(A, B)$ and $(A, Q^{1/2})$, $\mathcal{T}$ is a monotonic and contractive operator on the cone of positive semidefinite matrices.
-  - Prove existence and uniqueness of the stabilizing solution $P_\infty \succ 0$ such that $A - B K$ is Schur stable, where $K = (R + B^\top P_\infty B)^{-1} B^\top P_\infty A$.
-- **Target File**: `ControlsLean/Controls/DARE.lean`
+### 3.2 Discrete-Time Algebraic Riccati Equation (DARE) — DELIVERED
+- **Module**: `ControlsLean/Controls/DARE.lean`
+- **Proposal**: `docs/proposals/10_dare_lqr.md`
+- **Delivered Content**:
+  - Input Gramian $S = R + B^\top P B$ and optimal gain equation $S K^* = B^\top P A$ (inverse-free, dual to Joseph-form Kalman).
+  - DARE operator at an optimal gain $\mathcal{T}(P) = A^\top P A - (K^*)^\top S K^* + Q$.
+  - Matrix Bellman completion of squares:
+    $M(K) = \mathcal{T}(P) - P + (K - K^*)^\top S (K - K^*)$.
+  - Closed-loop Lyapunov identity $V((A - B K^*)x) = V(x) - \ell(x, -K^* x)$ on DARE solutions, and asymptotic stability via discrete Lyapunov.
+- **Remaining (future)**: existence/uniqueness of the stabilizing PSD fixed point under controllability/detectability; monotonicity and contraction of $\mathcal{T}$ on the PSD cone; duality with the filtering Riccati.
 - **Primary Reference**: Anderson & Moore (1979); Lancaster & Rodman (1995), *Algebraic Riccati Equations*.
 
 ### 3.3 Continuous-Time Kalman–Bucy Filter & Differential Riccati Equations

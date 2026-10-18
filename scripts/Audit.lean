@@ -172,6 +172,20 @@ import ControlsLean
 #print axioms ControlsLean.Estimation.trace_josephCov_le
 #print axioms ControlsLean.Estimation.trace_josephCov_le_of_psd
 
+-- Addition 13: Controls (Discrete Algebraic Riccati Equation & LQR Completion of Squares)
+#print axioms ControlsLean.Controls.inputGram_transpose
+#print axioms ControlsLean.Controls.quad_inputGram_nonneg
+#print axioms ControlsLean.Controls.bellmanResidual_opt_eq
+#print axioms ControlsLean.Controls.bellman_completion_of_squares
+#print axioms ControlsLean.Controls.bellmanResidual_eq_zero_of_dare
+#print axioms ControlsLean.Controls.bellmanResidual_eq_of_dare
+#print axioms ControlsLean.Controls.quad_bellman_le
+#print axioms ControlsLean.Controls.quad_bellman_nonneg_of_dare
+#print axioms ControlsLean.Controls.dare_closed_loop_lyapunov
+#print axioms ControlsLean.Controls.dare_closed_loop_dissipation
+#print axioms ControlsLean.Controls.dare_closed_loop_tendsto_zero
+#print axioms ControlsLean.Controls.dare_closed_loop_tendsto_zero_of_posDef_Q
+
 -- Addition 12: Bounty (Uncontested Erdős Problem Solutions, Variants & Counterexamples)
 #print axioms ControlsLean.Bounty.sum_range_shifted_div_two_pow
 #print axioms ControlsLean.Bounty.sum_Ioc_div_two_pow

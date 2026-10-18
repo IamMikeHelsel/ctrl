@@ -16,6 +16,7 @@ import ControlsLean.Controls.PolePlacement
 import ControlsLean.Controls.PolePlacementGeneral
 import ControlsLean.Controls.Observer
 import ControlsLean.Controls.MPCFeasibility
+import ControlsLean.Controls.DARE
 import ControlsLean.Estimation.ScalarKalman
 import ControlsLean.Estimation.InformationFilter
 import ControlsLean.Estimation.RiccatiConvergence
