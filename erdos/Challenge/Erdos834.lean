@@ -22,6 +22,6 @@ def statement : Prop :=
       (∀ v : Fin n, (H.filter (fun e ↦ v ∉ e)).HypergraphColorable 2) ∧
       ∀ v : Fin n, 7 ≤ H.hypergraphDegree v
 
--- approved-by: (pending)
+-- approved-by: mike 2026-10-17
 
 end Challenge.Erdos834

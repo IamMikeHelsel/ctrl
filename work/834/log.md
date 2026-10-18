@@ -29,3 +29,4 @@ Checklist:
 7 env: pass. It builds on mac (lake, about 47 s) and on sparky.local. Note: `ctrl spark sync` also pushed another agent's in-progress src/ctrl/tests files, but the 834 result does not depend on them.
 Verdict: VERIFIED (proof is sound and binds to the draft statement; the statement still needs human approval, `ctrl approve 834 --by <name>`)
 Failure: none. The only open item is NOT_APPROVED, which is a human step: the statement review in plan.md has to be accepted, including the part-ii-only interpretation caveat.
+- 2026-10-17 `ctrl approve 834 --by mike`: sha256 c592750fcefebffb946e78c1ea032438b2ab39c02fc4258c31f000df4e24afe2
