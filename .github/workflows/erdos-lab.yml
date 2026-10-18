@@ -1,0 +1,44 @@
+name: Erdős lab checks
+
+# Check-only (lint, tests, Lean audit). Never pushes, merges or writes anywhere.
+# Runs on the self-hosted runner on sparky (DGX Spark, ARM64): no GitHub-hosted runners for
+# private repos.
+on:
+  pull_request:
+    paths: ["erdos/**", "src/**", "tests/**", "work/**", "pyproject.toml", "uv.lock", ".github/workflows/erdos-lab.yml"]
+  push:
+    branches: [main]
+    paths: ["erdos/**", "src/**", "tests/**", "work/**", "pyproject.toml", "uv.lock", ".github/workflows/erdos-lab.yml"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: erdos-lab-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: [self-hosted, ARM64, ctrl-local]
+    timeout-minutes: 90
+    steps:
+      # clean: false keeps the gitignored erdos/.lake between runs (Mathlib is ~5 GB).
+      - uses: actions/checkout@v7
+        with:
+          clean: false
+      - name: Toolchain on PATH
+        run: |
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+      - name: Python gates
+        run: |
+          uv sync --frozen
+          uv run ruff check .
+          uv run ruff format --check .
+          uv run pytest -q
+      - name: Lean dependencies (cached Mathlib)
+        working-directory: erdos
+        run: lake exe cache get
+      - name: Audit every solution (build, tokens, axioms, binding, approval hash)
+        run: uv run erdos check --all --plain

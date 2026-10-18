@@ -93,3 +93,20 @@ times per attempt). (2) Ollama runs one slot, so concurrent prove jobs or other 
 evict each other's prefix cache. Run one prove job at a time. (3) lean-lsp-mcp's `lean_loogle`
 and `lean_leansearch` are remote and rate-limited (about 3 per 30 s), so the prompt steers the model to
 `lean_local_search`.
+
+## CI (local runner) and the clean-room container
+- **CI runs on sparky only.** There are no GitHub-hosted runners for private repos. Both workflows
+  target `[self-hosted, ARM64, ctrl-local]`, which is the `ctrl-local-sparky-arm64` runner in
+  `~/actions-runners/` on the Spark: a user systemd service that comes up with the machine. Manage
+  it with `~/actions-runners/add-runner.sh ctrl [count]`.
+- **`.github/workflows/erdos-lab.yml` is check-only.** It runs ruff, pytest, `lake exe cache get` and
+  `erdos check --all`. Checkout uses `clean: false`, so the gitignored `erdos/.lake` (Mathlib) stays
+  in the runner's work dir between runs.
+- **`.github/workflows/lean_action_ci.yml`** builds ControlsLean on the same runner. It is
+  check-only now; the Pages deploy was removed.
+- **`docker/erdos-lab.Dockerfile`** is a clean environment: Ubuntu 24.04, elan pinned by
+  `erdos/lean-toolchain`, uv, and the Mathlib cache baked into a layer. Use it to test a change
+  without trusting either machine's state:
+  ```sh
+  docker build -f docker/erdos-lab.Dockerfile -t erdos-lab . && docker run --rm erdos-lab
+  ```

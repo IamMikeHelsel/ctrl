@@ -5,17 +5,17 @@ on:
   pull_request:
   workflow_dispatch:
 
-# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+# Check-only: no Pages deploy or other writes (workflows only check).
 permissions:
-  contents: read # Read access to repository contents
-  pages: write # Write access to GitHub Pages
-  id-token: write # Write access to ID tokens
+  contents: read
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    # Self-hosted runner on sparky (ARM64); no GitHub-hosted runners for private repos.
+    runs-on: [self-hosted, ARM64, ctrl-local]
 
     steps:
       - uses: actions/checkout@v7
+        with:
+          clean: false  # keep the gitignored .lake (Mathlib) between runs
       - uses: leanprover/lean-action@v1
-      - uses: leanprover-community/docgen-action@v1
