@@ -1,0 +1,37 @@
+LATENCY-NOISE-05 — INDEPENDENT REVIEW SCOPE
+
+Review source: the final builder artifact manifest supplied by the coordinator.
+The reviewer must verify all hashes before and after replay. Do not change the
+builder, its dependencies, its inputs, its tolerance limits, or comparison-04.
+
+A. Reconstruct the frozen inputs, packet selection, exact jerk guards and each
+   accepted prefix. Distinguish zero target deltas from accepted native replans.
+   Verify every native export from its retained input state. Verify all raw/FIR
+   polynomial pieces from exact event histories. Retain every positive phase.
+B. Rebuild each physical trajectory with an independent solution method: exact
+   rational polynomial particular solution plus an 80-digit, 3-by-3 homogeneous
+   matrix exponential. Start x,v,a at zero and carry state across every event.
+   Compare all saved rows, one-sided event jumps, metrics and task decisions.
+C. Replay both Ruckig methods on the native double clock. Check all frozen
+   streams at the finer sample grid and around canonical phase boundaries.
+   Keep q/v/a limits at 1e-8 m, 1e-8 m/s and 1e-10 m/s^2. Record failures.
+D. For each failed native stream, re-export a worst acceleration witness from
+   both native and canonical retained states. Record local clock differences,
+   selected phases, and tiny phase lengths. Do not infer a plant effect without
+   a separate native-clock physical replay.
+
+Two verdicts are required. The canonical polynomial numerical replay can pass
+while the native-clock equivalence gate fails. A failed fixed gate remains
+failed. High precision is not an interval enclosure or a Lean proof. Sampled
+passes are not continuous-time guarantees. Publication value is a separate
+question from numerical correctness.
+
+Input qualification verified before final output review: irregular_alternation
+has equal counts of positive and negative targets but unequal dwell time.
+Its episode time-weighted target mean is -1/2600 m, about -0.385 mm. This is not
+unbiased irregular noise. The seeded random episode mean is -0.01095 mm.
+
+Fairness: .8 s is a native minimum duration, not an assertion of equal actual
+latency. FIR has an .8 s full impulse tail. Raw position steps have impulsive
+reference derivatives. If every prefix guard accepts, the run measures no
+benefit of the guard. Retain all negative task cases and the explicit bias case.

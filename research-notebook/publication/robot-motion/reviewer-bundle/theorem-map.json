@@ -1,0 +1,46 @@
+{
+  "kernel": {
+    "actual_four_box_formula": ["RobotMotion.P", "RobotMotion.F0", "RobotMotion.F1", "RobotMotion.F2", "RobotMotion.F3"],
+    "all_point_derivatives": ["RobotMotionPreflight.positive_part_pow_derivative", "RobotMotion.P_deriv", "RobotMotion.F0_deriv", "RobotMotion.F1_deriv", "RobotMotion.F2_deriv"],
+    "all_point_continuity": ["RobotMotion.F0_continuous", "RobotMotion.F1_continuous", "RobotMotion.F2_continuous", "RobotMotion.F3_continuous"],
+    "exact_branches_and_tails": ["RobotMotion.K_left", "RobotMotion.K_piece0", "RobotMotion.K_piece1", "RobotMotion.K_piece2", "RobotMotion.K_piece3", "RobotMotion.K_right", "RobotMotion.left_tail", "RobotMotion.right_tail"]
+  },
+  "finite_knot_equivalence": {
+    "theorem": "RobotMotion.future_knot_iff",
+    "domain": "Every finite real event list; real h>0 and J>=0; arbitrary real current time c.",
+    "constructed_set": "RobotMotion.guardPoints: c plus every actual event root at or after c.",
+    "coverage": "Finite-set maximum below t and minimum above t are constructed in the proof. The no-later-root case proves actual zero jerk.",
+    "signed_sums": true,
+    "duplicates_empty_old_and_future_events": true,
+    "partition_assumption": false
+  },
+  "executable_guard": {
+    "authority": "RobotMotion.check",
+    "type": "Rat -> Rat -> Rat -> List (Rat x Rat) -> Bool",
+    "real_bridge": "RobotMotion.check_real_iff",
+    "membership_and_order_bridge": "RobotMotion.cast_guardPoints",
+    "arithmetic_bridge": "RobotMotion.cast_qJerk",
+    "python_authority": false
+  },
+  "actual_reference": ["RobotMotion.eventJerk_eq", "RobotMotion.jerk_eq_response", "RobotMotion.position_deriv", "RobotMotion.velocity_deriv", "RobotMotion.acceleration_deriv", "RobotMotion.position_continuous", "RobotMotion.velocity_continuous", "RobotMotion.acceleration_continuous", "RobotMotion.jerk_continuous"],
+  "finite_admission": {
+    "executable_kernel": "RobotMotion.admit",
+    "causal_contract": "RobotMotion.causal: lastAdmission<=c, 0<=c<=tau, lastExecution<=tau.",
+    "induction": ["RobotMotion.admit_invariant", "RobotMotion.run_invariant", "RobotMotion.finite_admission_safe"],
+    "preserved_prefix": ["RobotMotion.prefix_preservation", "RobotMotion.run_prefix_jet"],
+    "retained_commitments": ["RobotMotion.admit_extends", "RobotMotion.run_extends", "RobotMotion.rejection_retains", "RobotMotion.no_change_retains"],
+    "target_and_rest": ["RobotMotion.target_telescoping", "RobotMotion.run_final_rest", "RobotMotion.run_last_execution_is_max", "RobotMotion.empty_rest"],
+    "ready_sequence_boundary": ["RobotMotion.submit_before_ready", "RobotMotion.submit_stale_retains", "RobotMotion.submit_new_watermark", "RobotMotion.submit_rejection_retains", "RobotMotion.submit_invariant"],
+    "upstream_precondition": "The boundary receives one winner after ready-packet batching. Conflicting duplicate sequences are rejected by that producer. This package does not formalize the packet producer."
+  },
+  "tracking": {
+    "composition": ["RobotMotion.checked_tracking", "RobotMotion.admitted_tracking"],
+    "inherited_theorem": "LeanControls.ScaledTracking.tracking_cube_scaled",
+    "reference_derivative_and_jerk_bound_assumptions": false,
+    "physical_hypotheses": "Classical plant trajectory, rate and disturbance bounds, positive scale, initial transformed-cube membership, and original budget.",
+    "fixed_parameters": {"h": "1/5", "J": "15/2", "sigma": "10", "W": "1/100", "R": "1/5000"},
+    "budget": "41/1600 <= 1/25",
+    "actual_jerk_expression": "5799/40",
+    "physical_jerk_equals_reference_jerk": false
+  }
+}

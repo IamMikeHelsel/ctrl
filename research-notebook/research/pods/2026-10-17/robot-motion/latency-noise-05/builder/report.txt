@@ -1,0 +1,177 @@
+LATENCY AND NOISE 05 — STOPPED GATE, COMPLETE CANONICAL RESULTS
+
+Status: NOT ACCEPTED. All 144 fixed canonical plant cases finished at 1 ms and
+0.5 ms. A later native-clock replay failed the fixed acceleration comparison
+tolerance. Work stopped without changing inputs, code, limits or tolerances.
+Independent review must classify that failure before this gate is accepted.
+
+The canonical results challenge a broad FIR claim. FIR passes the original
+periodic control and the 60 ms sign flips. It fails the hold band on the irregular
+and seeded streams. Duration-limited Ruckig passes those four streams in the
+canonical model. Every method fails the deliberate bias stream. These are fixed
+synthetic inputs and sampled numerical results, not learned-arm evidence.
+
+The irregular stream is also a dwell-weight bias test. Its target values have
+zero arithmetic mean, but positive targets last .32 s and negative targets last
+.72 s. Its time-weighted mean is -1/2600 m (-.384615 mm) during the 1.04 s noise
+episode. Do not call it zero-time-mean jitter. The seeded stream's realized mean
+is -10.95 micrometres. The deliberate bias stream has mean +.4 mm. The original
+hold stream and 60 ms sign stream have zero time-weighted episode means.
+
+Fixed experiment
+
+Six streams, four methods, rates 80/100/120 per second, disturbances 0/.01 m/s^2:
+144 parameter cases, each at two sample steps. The four methods are raw accepted
+targets, time-optimal Ruckig, Ruckig with minimum_duration=.8 s at every accepted
+replan, and guarded four-box FIR with h=.2 s. All use the same accepted packets,
+direct controller, actuator model, reference limits and actual initial rest.
+
+The original hold_jitter and persistent_goal inputs are byte-preserved. New
+stream deadlines are 3.5 s and horizons are 4 s. Every packet is ready .02 s after
+observation and is committed on the .02 s tick. All 246 packets are accepted.
+There are no stale, coalesced or jerk-rejected packets. Age at commit is .02 s.
+The final-target ages at the horizon are recorded in scheduler-audit.json.
+
+The input contract was frozen at 2026-10-18T03:44:35.390617Z. Its nine-file
+pre-run-input-manifest.json hash is:
+580396e6b03a5ab6ee526f0777e4b29f961dfb53626dab17740c85a78918363e
+The implementation and references were frozen before all plant runs at
+2026-10-18T03:50:39.834514Z. Their manifest hash is:
+6d1702cdeb9c2c89f3cc1144ff0f662b1cd45bd56e75ffbdb1d403dcc78a0da8
+Both manifests and every file they cover remain unchanged.
+
+Canonical numerical results, pending review
+
+All 144 cases pass the position/velocity/acceleration endpoint test at their
+fixed deadline: .2 mm, .001 m/s and .02 m/s^2. Only 66/144 pass the full task,
+which also requires every sampled true-zero hold error to stay within .2 mm.
+No actual x/v/a reset occurs. The measured actual-state jump is zero.
+
+Peak absolute hold position in mm, range across six plant settings, 0.5 ms:
+
+Stream                  Raw           Ruckig fast   Ruckig min .8  FIR h=.2
+hold_jitter             .123-.136     .986-1.014    .034-.048      .033-.046
+sign_60ms               .515-.544     1.000-1.020   .075-.090      .103-.115
+irregular_alternation   .796-.817     .960-.997     .178-.192      .423-.435
+seeded_random           .432-.445     .891-.923     .089-.102      .234-.248
+biased_alternation      .411-.427     .986-1.017    .329-.342      .400-.413
+
+The original hold stream has a .04 s period. h=.2 s is exactly five periods.
+That commensurate input is a favorable cancellation control. It cannot establish
+general noise rejection. The irregular stream adds unequal dwell bias; the
+seeded stream tests one fixed nonperiodic realization. Neither supports a
+distribution-wide statement. All streams and failures remain visible.
+
+Speed and effort tradeoff
+
+For the isolated 20 mm step, observation is .2 s and commit is .22 s. Reference
+duration and actual settling are distinct. Settling below is measured from
+commit and means first sampled entry into all three endpoint tolerances that
+lasts THROUGH THE FIXED 2 s HORIZON. It does not mean exact physical arrival.
+
+Method          Reference duration   Actual settling   Jerk energy   Command TV
+Raw             0 (position step)    .2835-.2840 s     7688-11087     36.52-37.70
+Ruckig fast     .4721841687 s        .4695-.4700 s     15.00-15.08    2.47-2.60
+Ruckig min .8   .8 s                 .7975-.7980 s     14.13-14.40    2.44-2.68
+FIR h=.2        .8 s                 .7435-.7440 s     3.31-3.36      1.34-1.37
+
+Jerk energy units are m^2/s^5; command total variation units are m/s^2.
+For the irregular stream, min-duration Ruckig's jerk energy is 38.83-51.52,
+while FIR's is .01513-.01947. Yet FIR fails the hold band and that Ruckig baseline
+passes it. Smoothness and true-task error measure different things. No method
+is declared superior from these cases. A declared .8 s minimum is not equal
+actual settling, equal effort, or a guarantee that every native plan lasts .8 s.
+
+For these specific canonical inputs, all 246 minimum-duration plans returned
+exactly .8 s. No additional blocked-interval duration adjustment occurred.
+native-duration-audit.json preserves requested, time-optimal and actual durations
+for all 492 native plans. The source permits a duration above the requested
+minimum; this batch did not observe that outcome.
+
+Fixed native-clock audit failure
+
+Pre-run checks passed: four original smoke fixtures, two fresh .8 s smoke
+fixtures with a separate exact-rational reconstruction path, and all 492 native
+plans reconstructed from the same recorded input. The fixed q/v/a limits are
+1e-8 m, 1e-8 m/s and 1e-10 m/s^2. This is builder evidence, not independent review.
+
+The later replay carries state natively across absolute double commit times.
+It completed five of twelve stream/method pairs. Four passed. The fifth failed:
+sign_60ms with time-optimal Ruckig. Seven later pairs were not run. The .8 s
+pre-run smoke did not fail. No tolerance was changed after this failure.
+
+At absolute t=.38219205429988534 s, native acceleration is
+4.5635893224094115e-9 m/s^2 and canonical acceleration is
+8.134458933523047e-9 m/s^2. Their difference is 3.5708696111136355e-9 m/s^2,
+above 1e-10. Maximum position and velocity differences over this saved replay
+are 1.7815901850807482e-16 m and 1.361139476707837e-16 m/s.
+
+The query is 4.5241588253475126e-17 s from a canonical profile switch. It is
+2.380580246819086e-10 s after the nearest native switch, inside the final positive
+phase. Both jerks are -7.5 m/s^3 at the witness. This is not only opposite-side
+selection at one common jerk jump. At the .34 s replan, native minus canonical
+input acceleration is -1.6653345369377348e-16 m/s^2. The native plan duration is
+.042192054908363905 s; the canonical-input plan duration is .04219205538447987 s.
+The evidence shows sensitivity of a very short terminal phase to tiny retained
+input differences. It does not establish a general source-level error bound.
+
+native-clock-failure.json gives the witness, exact binary time, both inputs,
+the canonical phase and nearest native boundary. failed-native-clock-plan.json
+exports the native-input plan with exact binary metadata. Its at_time query
+reproduces the saved native q/v/a exactly. No plant was rerun for that diagnostic.
+
+Primary metrics use frozen reference-schedules.json. They do not consume the
+later native replay output. Thus this failure changes no saved primary number.
+However, the strict equivalence check between the two execution clocks failed.
+The physical effect of replaying the alternative native clock is untested here.
+Do not declare the difference harmless or silently accept the gate.
+
+Proof, numerical method and limits
+
+The FIR ablation is a finite exact input/history identity. All six histories
+and all 246 prefixes agree with unguarded FIR, from the same initial history
+and h. Their deterministic reference sums are therefore identical. This does
+not count as another physical method and shows no benefit from the guard on
+these accepted streams. Exact rational guard and enclosure transcripts are
+retained. This batch supplies no new Lean theorem or general implementation proof.
+
+Actual state is propagated with the event-polynomial augmented matrix
+exponential. All reference switches, commits, truth events, deadlines and
+horizons are included. Energy and continuous command variation use composite
+trapezoidal quadrature. Analytic one-sided command jumps are added to command
+variation. Both sides of reference/command/actual-jerk jumps are saved. Raw
+position steps have impulsive reference derivatives; their between-step zero
+derivative fields are not bounded impulse claims. No finite snap peak is assigned
+to a jerk jump.
+
+At .5 ms versus 1 ms, all pass/fail decisions stay the same. The maximum hold
+peak change is 7.7404e-8 m. The maximum event-state changes in x/v/a are
+5.10e-16 m, 6.95e-15 m/s and 5.62e-14 m/s^2. The largest jerk-energy relative
+change is .7467%, largely relevant to the raw discontinuous forcing. These
+checks are within one builder. Continuous-time peak certification and independent
+high-precision physical validation remain open. The 72 rows for the original
+two streams and three original methods match comparison-04 exactly.
+
+The plant is one scalar axis with a constant first-order actuator rate, constant
+disturbance, retained actual state and the stated unsaturated controller. It has
+no joint map, torque model, singularity, contact, sensor noise, learned policy or
+hardware. A later full-arm gate would need those definitions and a recorded or
+actual learned target stream. This gate makes no general safety, human steadiness
+or VLA benchmark claim.
+
+Preservation and next action
+
+379 prior files in lead-01, ultra-preflight-02 and comparison-04 builder/grader
+match their frozen manifests. Source pin, source hashes, compiler flags, MIT
+license, local library/executable hashes and no-cloud configuration are recorded.
+Build caches are excluded. No Git operation was used. The root agent owns the
+notebook sync/check and commit handoff.
+
+Recommended next action: independently classify the native-clock failure using
+the fixed limits and saved witness, then assess the complete canonical data.
+Do not retune h, change streams or rerun a wider benchmark in this gate.
+
+Mike Helsel supplied the problem framing, timing/architecture design direction
+and proposed public title, "Treating the Tremors We Built into Robots."
+This scalar experiment does not establish a stale-frame bug or a neuroscience
+mechanism. The earlier aligned-timestamp actuator-filter example is separate.

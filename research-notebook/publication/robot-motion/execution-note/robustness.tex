@@ -1,0 +1,33 @@
+\section{A harder, predeclared comparison}
+Gate 05 fixes six request streams and four methods before physical runs. It adds Ruckig with minimum duration $.8$ s at each replan. All 246 such plans return $.8$ s. This matches the FIR support, but does not ensure equal physical settling time.
+
+The streams are the original periodic hold and step, 60 ms sign dwell (120 ms period), irregular alternation, seeded random targets, and biased targets. The four new streams have zero goal, a $3.5$ s deadline, and a $4$ s horizon. Requests, feedback, limits, three rates, and two disturbances are shared. Inputs and implementation were frozen before physical runs. Every FIR guard accepts; removing it leaves the same reference.
+
+Independent 80-digit replay checked 144 cases at both output resolutions: 1,502,784 trace rows and 21,288 event rows. All 144 endpoint tests pass; only 66 full-task tests pass. All 108 smooth-method cases pass the sampled position band $|x-q|\leq.2$ mm, not a test of the full transformed cube. These are numerical results for the declared polynomial references, not additional Lean proofs.
+
+\begin{center}\small
+\begin{tabular}{lrrrr}
+\toprule
+Peak physical hold error (mm) & Raw & Fast Ruckig & Min. $.8$ s & FIR\\
+\midrule
+Periodic, 40 ms & .123--.136 & .986--1.014 & .034--.048 & .033--.046\\
+60 ms sign dwell & .515--.544 & 1.000--1.020 & .075--.090 & .103--.115\\
+Irregular & .796--.817 & .960--.997 & .178--.192 & .423--.435\\
+Seeded random & .432--.445 & .891--.923 & .089--.102 & .234--.248\\
+Biased & .411--.427 & .986--1.017 & .329--.342 & .400--.413\\
+\bottomrule
+\end{tabular}
+\end{center}
+Ranges use the $.5$ ms traces and event samples across six plant settings. The hold limit is $.2$ mm. The irregular stream has zero arithmetic mean but a time-weighted mean of $-.384615$ mm; unequal dwell times create bias. The random stream is one fixed realization, not a distribution-wide result. Every method fails the deliberately biased stream.
+
+\textbf{A concrete filter failure.} With random targets, $r=80\ \mathrm{s}^{-1}$, $w=.01\ \mathrm{m/s^2}$ and $t=.896$ s, $x=.247558$ mm and $q=.234756$ mm. Tracking error is only $.012802$ mm, yet the hold band fails. The minimum-duration baseline passes. For the 20 mm step, settling after commitment is $.7975$--$.7980$ s for that baseline and $.7435$--$.7440$ s for FIR. FIR uses less jerk energy. No method wins every measure.
+
+\textbf{The original execution check failed.} Two of 12 native checks have acceleration errors of $3.57\times10^{-9}$ and $7.42\times10^{-8}\ \mathrm{m/s^2}$, above the unchanged $10^{-10}$ limit. The second occurs on an ordinary grid point after repeated replans. The canonical path carries polynomial state at rational times; native execution carries its own state after double clock subtraction.
+
+\textbf{A separate repair.} Gate 06 uses native retained state and binary execution origins, with unchanged inputs and limits. Independent preflight matches all 492 plans and 12 exported schedules. Independent 80-digit replay of 1,514,064 trace rows and 26,928 event rows reproduces unchanged task decisions. The finite native checks pass the original tolerances; they do not prove firmware fidelity. The old failed gate remains preserved.
+
+\textbf{A metric can change while motion barely changes.} Total variation counts absolute changes, including jumps. For $\sigma=10\ \mathrm{s}^{-1}$ and SI units, a change at fixed physical state gives
+\[
+\Delta u=800\Delta q+60\Delta\dot q+1.5\Delta\ddot q+\Delta j/96.
+\]
+Two opposite $15\ \mathrm{m/s^3}$ jerk jumps add $5/16\ \mathrm{m/s^2}$ of command variation, even around a sub-picosecond phase. In biased fast Ruckig, ten such phases become five: jump variation changes by $-25/16\ \mathrm{m/s^2}$, with a state-join correction near $-1.65\times10^{-16}\ \mathrm{m/s^2}$. Continuous variation is separate. This exact audit does not establish a comparable motion change or sampled-actuator behavior.

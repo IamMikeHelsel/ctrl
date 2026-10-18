@@ -1,0 +1,108 @@
+--- frozen05/make_references.py
++++ native06/make_references.py
+@@ -2,8 +2,8 @@
+ from pathlib import Path
+ from fractions import Fraction as Q
+ from math import factorial,comb
+-import hashlib,json,shutil
+-from ruckig_checks import export,validate,queried_state
++import hashlib,json,shutil,subprocess
++from ruckig_checks import validate
+ from knot_check import remaining_check
+ 
+ HERE=Path(__file__).resolve().parent
+@@ -40,25 +40,41 @@
+     if start<end:pieces.append(ordinary_piece(start,end,[value,0,0,0,0],'accepted_position_step'))
+     return pieces
+ 
+-def ruckig(events,end,minimum_duration=0.):
+-    pieces=[];plans=[];results=[];state=[0.,0.,0.];target=Q(0)
+-    if events[0][0]>0:pieces.append(ordinary_piece(0,events[0][0],[0,0,0,0,0],'initial_rest'))
+-    for index,(tau,delta) in enumerate(events):
+-        target+=delta; stop=events[index+1][0] if index+1<len(events) else end
+-        duration=float(stop-tau)
+-        plan=export(state,float(target),[duration],minimum_duration=minimum_duration)
+-        check=validate(plan);check.update({'commit':str(tau),'index':index})
++def ruckig(events,end,minimum_duration=0.,identity='native'):
++    # Only native_execution.cpp computes state carried into another native plan.
++    target=Q(0);commits=[]
++    for tau,delta in events:
++        target+=delta;commits.append((tau,float(tau),float(target)))
++    text=str(len(commits))+'\n'+''.join(f'{t:.17g} {g:.17g}\n' for _,t,g in commits)
++    folder=HERE/'native-plans';folder.mkdir(exist_ok=True)
++    (folder/(identity+'-input.txt')).write_text(text)
++    run=subprocess.run([str(HERE/'.cache/native_execution'),str(minimum_duration),format(float(end),'.17g')],input=text,text=True,capture_output=True,check=True)
++    (folder/(identity+'-output.json')).write_text(run.stdout)
++    native=json.loads(run.stdout);assert len(native['plans'])==len(commits)
++    pieces=[];plans=[];results=[]
++    if commits[0][1]>0:pieces.append(ordinary_piece(0,Q(commits[0][1]),[0,0,0,0,0],'initial_rest'))
++    for index,(record,(scheduler_tau,native_tau,target)) in enumerate(zip(native['plans'],commits)):
++        assert record['native_commit']==native_tau and record['target']==target
++        tau=Q(native_tau);stop=Q(commits[index+1][1]) if index+1<len(commits) else end
++        duration=float(stop-tau);plan=record['plan']
++        plan['input']={'state':record['current_state'],'target':target,'queries':[record['native_elapsed_to_next_commit_or_horizon']],'minimum_duration':minimum_duration}
++        plan['time_representation']='Native C++ state carry with absolute double subtraction. Physical origin is exact binary native commit plus exact exported cumulative phase boundary. Not bit-identical at_time for arbitrary queries.'
++        for phase in plan['phases']:
++            phase['binary_time_metadata']={k:{'hex':float(phase[k]).hex(),'ratio':str(Q(phase[k]))} for k in ['start','end','duration','native_t_sum'] if k in phase}
++        check=validate(plan);check.update({'commit':str(scheduler_tau),'native_commit_exact':str(tau),'index':index})
+         results.append(check)
+-        plans.append({'commit_rational':str(tau),'executed_until_rational':str(stop),'plan':plan})
++        plans.append({'commit_rational':str(scheduler_tau),'native_commit_float':native_tau,'native_commit_exact':str(tau),'native_commit_hex':native_tau.hex(),
++                      'native_minus_scheduler_time_exact':str(tau-scheduler_tau),'executed_until_rational':str(stop),
++                      'native_elapsed_to_next_commit_or_horizon':record['native_elapsed_to_next_commit_or_horizon'],'plan':plan})
+         for phase in plan['phases']:
+-            if phase['duration']<=0 or phase['start']>=duration:continue
++            if phase['duration']<=0:continue
+             start=tau+Q(phase['start']);finish=min(stop,tau+Q(phase['end']))
+-            assert finish>start,('positive source phase has no exact interval',phase)
++            assert Q(phase['end'])>=Q(phase['start']),('decreasing cumulative phase',phase)
++            if finish<=start:continue # All phase metadata remains exported, including zero-measure positive t.
+             pieces.append(ordinary_piece(start,finish,[phase[k] for k in ['p','v','a','jerk']]+[0.],f'plan_{index}_{phase["kind"]}_{phase["index"]}'))
+-        if plan['duration']<duration:
+-            tail=plan['tail']; start=tau+Q(tail['start'])
++        tail=plan['tail'];start=tau+Q(tail['start'])
++        if start<stop:
+             pieces.append(ordinary_piece(start,stop,[tail[k] for k in ['p','v','a','jerk']]+[0.],f'plan_{index}_extrapolated_tail'))
+-        state=queried_state(plan,duration)
+     return pieces,plans,results
+ 
+ def schedule_case(case,h,tick):
+@@ -107,8 +123,8 @@
+     return {'passed':True,'rational_Bernstein_sufficient_bounds':{str(k):str(v) for k,v in bounds.items()}}
+ 
+ def main():
+-    assert json.loads((HERE/'ruckig-smoke-results.json').read_text())['passed']
+-    assert json.loads((HERE/'duration-smoke-results.json').read_text())['passed']
++    assert json.loads((HERE/'previous05-ruckig-smoke-results.json').read_text())['passed']
++    assert json.loads((HERE/'previous05-duration-smoke-results.json').read_text())['passed']
+     frozen=json.loads((HERE/'pre-run-input-manifest.json').read_text())
+     for name,digest in frozen['files'].items():assert sha(HERE/name)==digest
+     spec=json.loads((HERE/'packets.json').read_text())
+@@ -122,7 +138,7 @@
+         enclosures[case['id']]=exact_bounds(refs['fir'])
+         for method,minimum in [('ruckig',0.),('ruckig_min_08',.8)]:
+             key=case['id']+'__'+method
+-            refs[method],exports[key],validation[key]=ruckig(replans,end,minimum)
++            refs[method],exports[key],validation[key]=ruckig(replans,end,minimum,key)
+         common={Q(0):['start'],end:['horizon'],Q(case['deadline_s']):['deadline']}
+         def add(t,label):common.setdefault(Q(t),[]).append(label)
+         for item in case['truth']:add(Q(item['time_s']),'truth_change')
+@@ -137,7 +153,7 @@
+             schedules.append({'method':method,'case':case['id'],'hold_required':case['id']!='persistent_goal','horizon':float(end),'horizon_exact':str(end),'deadline':float(Q(case['deadline_s'])),'deadline_exact':case['deadline_s'],'truth':[{'time':float(Q(x['time_s'])),'time_exact':x['time_s'],'position':float(Q(x['position_m']))} for x in case['truth']],
+                               'common_events':[{'time':float(time),'time_exact':str(time),'labels':labels} for time,labels in sorted(common.items())],
+                               'admissions':row['outcomes'],'final_accepted_goal':float(row['final_accepted_goal']),'pieces':pieces})
+-    write('reference-schedules.json',{'status':'floating polynomial schedules; exact FIR coefficients retained separately; synthetic streams','schedules':schedules})
++    write('reference-schedules.json',{'status':'native retained Ruckig plans with exact-binary execution origins; floating polynomial interpretation; raw/FIR unchanged; synthetic streams','schedules':schedules})
+     write('ruckig-primary-exports.json',exports)
+     write('ruckig-primary-validation.json',{'passed':True,'status':'builder check only','cases':validation})
+     write('admission-transcripts.json',{'cases':transcripts})
+--- frozen05/run_comparison.py
++++ native06/run_comparison.py
+@@ -118,6 +118,7 @@
+ 
+ def main():
+     assert json.loads((HERE/'ruckig-primary-validation.json').read_text())['passed']
++    assert json.loads((HERE/'native-pre-run-gate.json').read_text())['passed']
+     schedules=json.loads((HERE/'reference-schedules.json').read_text())['schedules']
+     assert len(schedules)==24
+     frozen=json.loads((HERE/'pre-run-implementation-manifest.json').read_text())

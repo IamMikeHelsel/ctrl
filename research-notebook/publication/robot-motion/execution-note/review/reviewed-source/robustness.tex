@@ -1,0 +1,12 @@
+\section{A harder, predeclared comparison}
+The first review identified a favorable periodic input and unequal response times. The next gate therefore fixes six request streams and four methods before any physical runs. It adds a Ruckig baseline with native minimum duration $0.8$ s on every accepted replan. This matches the FIR support as a planning budget; it does not guarantee equal settling time under changing requests.
+
+The six streams are the original periodic hold and persistent step, a 60 ms alternating hold, an irregular alternating hold, seeded random targets, and deliberately biased targets. The four new streams have a zero task goal. All methods receive the same admitted requests. The physical controller, limits, $h$, three actuator rates, and two disturbances remain fixed. This gives 144 cases, each at 1 ms and 0.5 ms output resolution.
+
+The input manifest was frozen before reference generation. The implementation manifest was frozen after native reconstruction smoke checks and before physical runs. Every primary FIR proposal again passes; exact prefix checks establish identity with the ungated FIR reference. No extra simulation method is needed for that ablation.
+
+\textbf{Current review boundary.} The builder completed the fixed runs, then stopped at a strict native-clock reconstruction failure. In one 60 ms alternating case, native execution and the canonical polynomial schedule differ in acceleration by about $3.57\times10^{-9}\ \mathrm{m/s^2}$, above the fixed $10^{-10}$ threshold. The threshold has not been relaxed. The native-equivalence gate therefore fails.
+
+The builder's canonical results include FIR hold failures under irregular and seeded random requests. These results remain under independent review at this draft checkpoint. They are not included as accepted measurements here. The final report must distinguish numerical replay of the declared polynomial reference from fidelity to native floating-clock execution. A small discrepancy does not erase a failed predeclared check.
+
+This gate can falsify a broad smoothing claim even if the formal reference checker remains correct. A jerk bound does not constrain the reference's distance from the task goal. Delay can reduce motion, preserve an unwanted bias, or miss a deadline. The useful design question is which task contract makes that trade acceptable.

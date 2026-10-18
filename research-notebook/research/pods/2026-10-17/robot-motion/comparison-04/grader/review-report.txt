@@ -1,0 +1,142 @@
+ROBOT MOTION COMPARISON 04 — INDEPENDENT REVIEW
+
+Decision: ACCEPT the fixed numerical gate. Grade B for its research scope.
+All numerical and schedule checks passed. The grade reflects the narrow synthetic
+comparison and its fairness limits, not a detected numerical defect. This is not
+a publication grade or evidence of general superiority.
+
+Required qualification: this noise is especially favorable to the FIR
+The target alternates every 20 ms. Its full period is 40 ms. The fixed box width
+is 200 ms, exactly five periods. One box average therefore cancels the sustained
+alternating target after its start transient. An exact rational check of this
+fixture confirms that one-box output is zero throughout [0.42,1.02] seconds.
+The four-box filter inherits this frequency zero. Its good hold result cannot
+establish general rejection of irregular or off-grid jitter.
+
+The FIR also has an 800 ms tail after a persistent accepted step and a 400 ms
+mean delay. Its 20 mm step uses less reference speed, acceleration, and jerk than
+the comparator's available limits. The reported lower energy buys a slower
+response. Equal limit ceilings do not make response times equal. Raw target
+steps provide a useful diagnostic baseline, but their impulsive reference
+derivatives and large command peaks exclude them from the smooth-reference
+contract. All primary packets that reach the jerk guard pass; removing that
+guard would leave these primary FIR trajectories unchanged. The primary runs
+therefore do not measure the guard's benefit. The rejected negative case remains
+useful evidence of the admission rule's cost and limited scope.
+
+What the independent replay checked
+The parameter set is exactly three methods, four frozen streams, three rates,
+and two disturbances: 72 cases. Each has a 1 ms and 0.5 ms trace. The reviewer
+checked all 476,928 saved trace rows and all 3,636 event rows, not a subset.
+The expected event/grid sequence was regenerated and matched every trace.
+
+The physical replay starts each case at zero. It never imports a primary
+physical state as an initial condition. It uses exact rational polynomial
+particular-solution coefficients and an 80-digit, three-state homogeneous Pade
+matrix exponential. This differs from the primary nine-state augmented SciPy
+exponential. The frozen binary reference coefficients are treated as exact
+inputs. The stated disturbance .01 is represented by the rational 1/100; this
+also exposes the negligible binary representation difference in the primary.
+All output fields, one-sided jump formulas, signed endpoint tests, hold-band and
+internal-tube decisions, settling times through the horizon, peaks, trapezoidal
+jerk energy, and command variation were checked. The quadrature definition is
+reproduced, not promoted to a continuous integral enclosure.
+
+Largest absolute replay differences:
+  position x:              4.736e-16 m
+  velocity:                6.335e-15 m/s
+  acceleration:            7.052e-14 m/s^2
+  command:                 7.538e-14 m/s^2
+  actual jerk:             3.680e-12 m/s^3
+  jerk-energy metric:      7.276e-11 m^2/s^5
+  command total variation: 4.591e-12 m/s^2
+No task decision changed at either resolution. All 72 endpoint tests pass.
+The additional hold band fails for the six Ruckig hold cases, so required-task
+passes remain 66/72. All 48 smooth-reference cases pass the sampled internal
+position tube; all 24 raw cases fail it. Samples remain samples.
+
+Why the surprising Ruckig trace survives review
+The reviewer rebuilt all packet batches from the frozen inputs. Commit times,
+sequence watermarks, target signs, stale discards, coalescing, accepted increments,
+and exact jerk-admission decisions match. All seven primary/negative/semantic
+fixtures match their recorded outcomes. The raw and FIR coefficients were then
+rebuilt directly from accepted increments, without using the builder's functions.
+
+All 49 primary native Ruckig exports were regenerated from rest with retained
+native at_time state at each replan. Each fresh plan matches its frozen export.
+The executed polynomial pieces match those native exports exactly. All four
+smoke exports, including active braking, were also reproduced and checked.
+A further native at_time replay covers all four primary streams, 49 commits,
+and 17,690 queries. It uses native absolute clocks and subtraction, with no
+polynomial schedule as a state source. Maximum reference-state disagreements
+are 1.278e-17 m, 4.337e-17 m/s, and 9.299e-16 m/s^2. Native source and executable
+hashes match the recorded local pin. Cloud support is disabled.
+
+The first six executed 20 ms intervals of the hold case alternate reference
+jerk +7.5 and -7.5. The first positive interval reaches acceleration +.15 m/s^2.
+The next interval returns it to zero. The next pair repeats that pattern.
+Velocity therefore accumulates during this prefix. At .34 s, exact integration
+of those six intervals gives q=.00054 m, v=.009 m/s, a=0. The fresh native
+current state agrees within 1e-14 in each component. Later replans change the
+pattern and produce the slower excursions seen in the plot. This is a verified
+feature of this finite input trace. It is not a claim that Ruckig is defective,
+that it ignores time, or that every replanning policy has this behavior.
+
+Concrete numerical counterexample to the sampled hold requirement:
+  case: hold_jitter, Ruckig, r=80/s, w=.01 m/s^2, t=821/2000 s
+  actual position x:  .00101376773942103413362889940345689853625 m
+  reference q:        .00099351303987413458259476961575984432784 m
+  internal error x-q: .00002025469954689955103412978769705420841 m
+The true goal is zero. The external hold error exceeds .0002 m even though the
+internal tracking error at this point is only about .0203 mm. These are
+independent high-precision numerical values, not rigorous interval enclosures.
+
+Clock and phase limits
+The native cumulative t_sum clock is preserved. The reviewer did not replace
+it by a sum of exact binary durations. Two executed positive hold phases last
+3/144115188075855872 and 3/576460752303423488 seconds. Both collapse under a
+rounded double absolute clock; both remain distinct in the rational schedule
+and the physical replay. The third sub-picosecond exported phase belongs to
+the active-braking smoke fixture and is covered by its native reconstruction.
+
+Native absolute-double execution and the canonical rational-commit replay are
+not bit-identical. Across all four streams, 22 pointwise jerk-branch differences
+occur within 1.288e-16 s of a canonical switch. State agreement does not erase
+these branch differences. The review retains each discrepancy. The benchmark
+therefore specifies a polynomial interpretation of native profiles, not exact
+floating-runtime equivalence. Both sides of every reference event are retained;
+small exported state mismatches enter the full command-jump formula. The actual
+physical state is carried continuously and is never reset to the reference.
+
+Retained failures and next test
+The 50 mm proposal still has future reference jerk peak 12.5 > 7.5 and is
+rejected, leaving its external goal unmet. At the short deadline, 400 ms after
+acceptance, the 20 mm FIR change still reaches only 10 mm. These are reference
+negative cases, not extra plant successes.
+
+A duration-matched irregular-noise gate has higher priority than an 81-cell
+exact hold proof for this periodic fixture. The latter would certify a case
+whose cancellation is already special. Freeze irregular/off-grid packet times
+and noise values before running them. Match step-response duration or report a
+predeclared response-time/effort tradeoff. Include a simple target-smoothing
+baseline and a same-FIR guard ablation. Keep the unchanged controller, external
+goal error, actual jerk, command effort, and endpoint requirements visible.
+No new parameter case, controller setting, width, or tolerance was introduced
+in this review.
+
+Evidence and preservation
+physical_replay.py / physical-review.json: all-row physical replay, metrics,
+event checks, 55-digit result digests, and exact coverage counts.
+schedule_review.py / schedule-review.json: independent scheduler reconstruction,
+exact reference coefficients, native exports, smoke tests, and clock differences.
+native-*-input.txt / output.json: fresh native replay inputs and complete outputs.
+trace_diagnosis.py / trace-diagnosis.json: exact prefix and periodic-cancellation
+checks of this same frozen fixture.
+
+One review-harness attempt supplied nextafter(0) to the native text parser. That
+subnormal query was rejected. The redundant zero-adjacent query was removed;
+zero itself and all positive native switch queries remain. This changed no
+builder artifact, plan, parameter, or physical result. The attempt log is kept.
+All 325 manifest-listed builder artifacts and the frozen manifest remain
+unchanged. The reviewer made no Git change, commit, push, merge, or new simulation
+case. Root owns repository preservation.

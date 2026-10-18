@@ -1,0 +1,190 @@
+ROBOT-MOTION CERTIFICATE 03: INDEPENDENT REVIEW
+18 October 2026 UTC
+
+Decision: ACCEPT the declared general finite scalar certificate.
+Grade: A- for this certificate and its evidence. No blocking proof defect found.
+This is not a grade for research novelty, a deployed scheduler, a physical robot,
+or the separate numerical comparison. No confidence percentage is implied.
+
+Reviewed builder manifest SHA-256:
+740ebc266891b3f98b9ee567d19cced3c3ff187cbc091c08edfa52b276cd90fa
+
+The package closes preflight02's main proof obligations: actual filter
+derivatives, the complete future-knot iff theorem, an authoritative rational
+Boolean guard with real cast equivalence, immutable finite admissions, the
+executed prefix and rest tail, and composition into the actual ScaledTracking
+theorem. The scheduler boundary remains narrow and is described honestly.
+
+INDEPENDENT VERIFICATION
+
+I copied the complete 44-module local dependency closure into grader/fresh-src
+and rebuilt it from source. Dependency order was independently reconstructed
+from imports. The source set and hashes match the frozen builder inventory.
+The search path excluded the original local LeanControls build cache. It reused
+only the pinned external package cache and the Lean toolchain. Lean4.35.0 and
+the builder's Lean/leanchecker binaries and lake manifest match by hash.
+
+The independent declaration audit confirmed 660 named public theorem statements:
+106 in the eight package modules and 554 inherited. The package's 106 include
+one helper copied from preflight02 and the concrete fixtures. They are not 106
+independent research results. Another 332 named definitions, abbreviations and
+structures were audited. A separate Lean environment walk checked all 2,996
+local constants, including generated and private constants, across all 44
+modules. It found no unsafe local declaration, local axiom, or axiom outside
+propext, Classical.choice and Quot.sound.
+
+Separate leanchecker processes replayed ScaledTracking and each of the eight
+package modules. All succeeded. The four frozen negative controls failed for
+the intended false propositions, not missing modules or names. Their logs show
+the omitted-current-time, omitted-interior-root, erased-future-commitment and
+false-unit-constant failures.
+
+I independently parsed the literal Lean fixtures and rebuilt their rational
+jerk values directly from the truncated-power derivative. All seven history
+literals and all 52 admission literals match the frozen trace, including each
+admission's own peak and outcome. Seven final-history checks are kernel-proved;
+the 52 transcript checks are executable evaluations. A passing final empty
+history after rejection does not mean that the rejected external goal succeeded.
+
+The grader added 112 separately compiled and kernel-replayed theorem fixtures.
+They include 96 guard cases from an independent rational derivative oracle:
+48 arbitrary finite histories at the exact peak limit and just below it. The
+other 16 cases test invalid widths/limits, unsorted duplicate cancellations,
+the exact tail boundary, a current time just before the tail, an arbitrary-real
+future bound, queued execution order, time reversal, no-change and rejection
+retention, stale sequence handling, readiness, and prefix equality.
+
+Two local cast-normalization errors in the grader's real-valued wrapper were
+fixed before its final successful run. They did not require any builder change.
+Both grader repair logs remain available. No plant run was performed here.
+
+MATHEMATICAL REVIEW
+
+The primitive proves d/dx (max(x,0))^n = n(max(x,0))^(n-1) for every n>=2 and
+every real x. At zero it uses the derivative-extension theorem with continuity
+of the function and proposed derivative; away from zero it uses local equality
+to the zero or polynomial branch. Thus the joining point is actually covered.
+
+Kernel.lean applies that primitive to the exact five signed truncated powers.
+It proves F0'=F1, F1'=F2 and F2'=F3 at every point, and all four functions are
+continuous. This explicit derivative chain establishes the stated C3 property;
+the package does not need to assume a regular unspecified spline. It derives
+the six F3 branches and the left/right tails from the same F functions.
+
+The unit conversion is also proved. Knots.eventJerk uses physical-time hinges
+with delta/h^4. Reference.eventJerk_eq proves equality to delta F3((t-tau)/h)/h^3
+when h>0. Reference then proves the actual position/velocity/acceleration chain
+and continuous jerk for the finite summed history. No normalization factor is
+missing and no unrelated jerk function is substituted into the controller.
+
+future_knot_iff constructs its own finite set: c plus all five roots of every
+event at or after c. For a non-knot t, it constructs the maximum eligible root
+below t and minimum eligible root above t. Roots before c are handled directly;
+every later root must belong to the constructed set. The hinge identity gives
+affine interpolation on the resulting interval, followed by the absolute-value
+bound. If no later root exists, all event tails have passed and jerk is zero.
+The proof has no supplied partition or desired global-bound hypothesis. It
+covers c between roots, repeated roots, empty histories, old active events,
+future events, unsorted lists and the infinite tail.
+
+check is executable over Rat. It validates h>0 and J>=0, then checks c and its
+filtered rational roots. cast_qJerk proves the arithmetic bridge; cast_guardPoints
+proves membership and order correspondence. check_real_iff establishes both
+directions of the real all-future bound, for arbitrary real time. It does not
+certify Python, floating-point input parsing, or an unrelated runtime checker.
+The implementation retains signed sums and therefore preserves cancellation.
+
+The induction is not circular. Invariant contains Safe, but initial_invariant
+derives it from the empty list and J>=0. accepted_safe obtains the old-prefix
+bound from zero new contribution before execution and the future bound from
+check_real_iff. admit_invariant and run_invariant then propagate it. The final
+finite_admission_safe has no assumed global jerk bound.
+
+Admission time c and execution time tau are distinct. The executable causal
+test rejects decreasing admission times, negative c, tau<c, or tau before the
+last committed execution. Accepted events append to the complete committed
+list, and their increment is relative to its final target. run_extends prevents
+deleting queued events. Rejection, invalid timing and no-change retain history.
+The analytic prefix lemma covers position and derivatives through jerk up to c;
+run_prefix_jet preserves the prior executed prefix through later finite runs.
+
+The target identity is proved by telescoping deltas. The invariant bounds every
+accepted execution by lastExecution and proves that a nonempty history attains
+that time. run_final_rest includes all queued commitments and gives the final
+target with zero reference velocity, acceleration and jerk after lastExecution
+plus 4h. empty_rest handles the empty history separately. These do not assert
+physical rest or completion of a rejected request.
+
+checked_tracking and admitted_tracking use the exact referenceState and jerk
+in ScaledTracking.physicalInput. They discharge reference continuity, derivatives
+and jerk from the new package. The physical ODE, uncertainty bounds, initial
+transformed-cube condition, positive scale and budget remain explicit. Neither
+composition theorem inserts a command filter or assumes a filter mismatch bound.
+The actual initial state is not reset at reference events.
+
+BOUNDARIES THAT REMAIN
+
+submit verifies readiness, stale retention, watermark advancement on a new ready
+sequence, and preservation of the motion invariant. It receives one winner from
+an upstream ready-packet batch. It does not prove maximum-sequence selection or
+conflicting-duplicate rejection. The producer must satisfy that interface.
+The code cannot establish that caller-supplied current timestamps equal a real
+clock. No sampled actuator implementation or measured deadline is certified.
+
+The history is a finite list. There is no theorem about bounded online memory,
+expired-event pruning, infinite event streams, or infinite switching in finite
+time. Exactness of the history guard does not imply that every useful target
+stream is admissible or that sequential admission can realize every bounded
+final history. Rejection can prevent task progress.
+
+The tracking conclusion concerns x-q under the classical plant assumptions. It
+does not provide a true-goal tube for arbitrary inputs, a physical stopping time,
+or the fixed endpoint speed/acceleration tolerances. The 144.975 m/s^3 item in
+Composition is an arithmetic evaluation of a conservative expression, not a new
+theorem that physical jerk equals or stays below the reference limit 7.5.
+Continuous physical jerk still needs the extra regularity assumptions described
+in preflight02. No plant identification or solution existence is proved here.
+
+The four-box filter and retained-state architecture have prior art. Mike Helsel
+receives credit for the problem framing and architecture direction. Acceptance
+of this proof artifact does not establish general research novelty.
+
+NEXT USEFUL GATE: FIXED TRUE-POSITION HOLD PROOF
+
+I checked coordinator/hold-bound-candidate.json as a direction, without building
+its theorem. Its input hash matches the frozen reference trace. The reference
+position interval +/-401/12000000 m agrees with the 81 closed-cell enclosure
+record. The proposed budget arithmetic is correct.
+
+Use the unchanged jerk gate J=15/2 first. The same controller and disturbance
+budget permit certificate radius R=41/320000 m. Adding the fixed reference
+position bound gives
+  |x| <= 3877/24000000 m = approximately 0.161542 mm < 0.2 mm.
+The margin is 923/24000000 m. This is currently a proposed conditional proof
+target, not a theorem accepted by this review. A derived smaller invariant radius
+changes the certificate, not the controller gains or frozen comparison cases.
+
+The next builder should prove the actual fixed-reference position envelope over
+every closed cell and both tails, bind it to the exact frozen event list, prove
+the budget at that radius, and combine it with the actual tracking cube and the
+triangle inequality. Keep the physical trajectory and initial-cube assumptions
+visible. Do not assume the desired position envelope or rely on numerical samples.
+The tighter prefix-jerk option is also arithmetically consistent but adds a
+separate exact bound obligation and is unnecessary for the first 0.2 mm result.
+
+This fixed-stream hold result must not be generalized to arbitrary targets.
+The separate frozen numerical comparison should continue on its own evidence.
+
+PRESERVATION
+
+All 85 builder manifest files, all 44 source-closure files, and the 28 files in
+the two frozen input manifests were checked. End-of-review hashes match the
+starting hashes. Proof source copies remain byte-for-byte. No builder source,
+toolchain pin, or dependency source was edited. The grader wrote only this
+grader directory. Root owns notebook sync/check and the research-branch commit.
+This review performed no Git operation, push, merge, hardware action or paid use.
+
+Evidence: replay-results.json, environment-audit-results.json,
+binding-results.json, challenge-results.json, hold-direction-check.json,
+the fresh source closure, and logs/. artifact-sha256.json binds the final report
+and evidence; compiled build caches are excluded.

@@ -1,0 +1,15 @@
+All positive native phase durations remain in the native export. If a positive
+duration has equal native cumulative start and end, it has zero elapsed measure
+under the declared cumulative-clock interpretation. Retain that metadata and
+omit a zero-measure physical interval. Do not create an interval by summing phase
+durations on a different clock. A decreasing cumulative boundary is a failed
+source assumption and stops reference generation. Boundary jumps between the
+remaining positive physical intervals remain explicit.
+
+This clarifies "keep every positive phase" in contract.txt without changing its
+input, state-carry, clock or fixed-tolerance requirements. The clarification is
+recorded before native generation and before any physical run.
+
+"Continuous polynomial model" means a model in continuous time with piecewise
+polynomial forcing. It does not assert global C2 continuity. Tiny exported joins
+are retained as explicit reference jumps, as the main contract requires.

@@ -1,0 +1,27 @@
+Native execution source review
+
+The frozen native_execution.cpp carries q/v/a by calling the previous native
+trajectory's at_time with current double commit minus previous double commit.
+It uses that result as the next current_position/current_velocity/current_acceleration.
+The direct controller, actuator model and physical actual state are not involved
+in this reference-state carry. Native histories begin at reference rest.
+
+It exports the stored trajectories in the same process. The header uses native
+cumulative phase boundaries, omits inactive brake arrays, rejects active accel
+profiles, and exports the residual final acceleration and extrapolation tail.
+All local duration metadata remains present, including zero-duration phases.
+A positive local duration can have equal native cumulative endpoints; this has
+no interval in the declared cumulative-clock polynomial model.
+
+make_references.py maps each rational scheduler commit once to binary double.
+It sets the polynomial origin to that exact binary value, clips at the next
+exact binary execution commit, and uses exported cumulative boundaries. It does
+not insert polynomial-replay state into a native replan. Actual plant state is
+retained by the unchanged physical runner. The only physical runner change from
+05 is an added assertion that native-pre-run-gate.json passed.
+
+Raw and FIR schedules are unchanged. The common rational scheduler event labels
+remain available beside binary native execution events. The finite comparison
+checks q/v/a, not bit-identical jerk branch selection at all real times. Neither
+the native numerical state check nor this source inspection establishes global
+C2 smoothness or a continuous-runtime theorem.

@@ -1,0 +1,155 @@
+LATENCY-NOISE-05 — INDEPENDENT REVIEW
+
+Decision: ACCEPT the frozen canonical polynomial numerical results only.
+REJECT acceptance of the full native-clock comparison gate. Its fixed acceleration
+limit fails on two stream/method pairs. Do not describe this as a repaired gate.
+
+Grade: B for this research milestone. The review gives reproducible negative
+results and a useful comparison. This grade is not publication readiness or a
+probability. The batch adds no Lean theorem and no learned-arm or hardware result.
+
+What was independently checked
+
+The reviewer reconstructed all six inputs, packet decisions, exact jerk guards,
+accepted histories, truth signals and required event times. All 246 packets and
+all 246 prefix guards accept. Guarded and unguarded FIR histories are identical.
+The review rebuilt all 24 schedules. It used the pinned native executable to
+reproduce 492 plans from their recorded input states, plus six smoke fixtures.
+All 246 minimum-duration plans return exactly .8 s in these frozen histories.
+This does not make .8 s a universal returned duration or equal physical latency.
+
+The physical replay covers all 144 parameter cases at both resolutions: 288
+traces, 1,502,784 saved rows and 21,288 one-sided event rows. It uses an independent
+solution method: an exact rational polynomial particular solution plus an
+80-digit 3-by-3 homogeneous matrix exponential. The primary solver uses a
+larger augmented matrix exponential. No primary simulated state was imported.
+Actual x,v,a start at zero and carry through all events without a reset.
+
+The reviewer treats each frozen binary reference coefficient as an exact rational
+number. It treats disturbance .01 as exactly 1/100; this differs negligibly from
+the primary binary representation. The polynomial differential-equation residual
+is checked exactly before numerical propagation. This is high-precision numerical
+evidence, not an interval enclosure or a kernel-checked plant proof.
+
+Every task decision agrees. Largest row discrepancies are 4.01e-16 m in x,
+5.32e-15 m/s in v, 5.20e-14 m/s^2 in a, 6.41e-14 m/s^2 in command, and
+3.60e-12 m/s^3 in actual jerk. Largest jerk-energy metric difference is 4.92e-11
+m^2/s^5. Settling times agree exactly on both sampled grids. Both implementations
+use trapezoidal quadrature, so agreement does not remove quadrature error.
+Command and actual-jerk jump formulas agree; physical state jumps remain zero.
+
+Canonical task results
+
+All 144 cases pass the fixed deadline endpoint test at both resolutions. Only
+66/144 pass the full sampled task. The other 78 violate a required hold band.
+All 108 smooth-method cases pass the internal x-q tracking test. Good tracking of
+the shaped reference therefore does not imply good tracking of the true task.
+
+Peak absolute physical hold position, mm, across six plant settings at .5 ms:
+
+Stream                 Raw        Time-optimal   Minimum .8 s   FIR h=.2
+hold_jitter            .123-.136  .986-1.014      .034-.048      .033-.046
+sign_60ms              .515-.544  1.000-1.020     .075-.090      .103-.115
+irregular_alternation  .796-.817  .960-.997       .178-.192      .423-.435
+seeded_random          .432-.445  .891-.923       .089-.102      .234-.248
+biased_alternation     .411-.427  .986-1.017      .329-.342      .400-.413
+
+These are results for the canonical schedules. Native-clock physical effects
+were not replayed, including the two failed reference-equivalence pairs below.
+
+The FIR random-input counterexample is concrete: r=80/s, w=.01 m/s^2,
+t=.896 s, true goal zero. The independent replay gives x=.2475579571 mm,
+q=.2347557961 mm, and x-q=.0128021610 mm. Thus the .2 mm true-task band fails
+while internal tracking is good. All 13 failing stream/method groups have saved
+high-precision witnesses in hold-counterexamples.json.
+
+The original periodic input favors FIR: h=.2 s is exactly five .04 s periods.
+The irregular input has zero arithmetic mean but time-weighted mean -1/2600 m
+(-.384615 mm). Positive targets last .32 s and negative targets .72 s. It is a
+dwell-weight bias example, not unbiased irregular noise. The seeded realization
+has mean -.01095 mm; it is one realization, not a distribution-wide result.
+The explicit biased input has mean +.4 mm. No input was changed during review.
+
+For the isolated 20 mm step, settling after commit is .2835-.2840 s for raw,
+.4695-.4700 s for time-optimal Ruckig, .7975-.7980 s for minimum-duration Ruckig,
+and .7435-.7440 s for FIR. Settling lasts only through the fixed 2 s horizon.
+FIR uses far less jerk energy here and on the noise cases, but fails some hold
+requirements that the duration-limited baseline passes. Delay, physical effort,
+and task error need separate comparison. Raw steps have impulsive reference
+derivatives. The all-accepted guard shows no measured benefit in this batch.
+
+Native-clock failures
+
+The independent native review covers all 12 stream/method pairs, including the
+seven pairs not run by the stopped builder: 84,120 queries and 492 retained-state
+commits. Ten pairs pass the fixed q/v/a limits. Two fail acceleration 1e-10 m/s^2.
+No limit changed. All observed q and v differences remain below their 1e-8 limits.
+
+1. sign_60ms / time-optimal Ruckig reproduces the builder failure. At
+   t=.38219205429988534 s, acceleration differs by 3.5708696111e-9 m/s^2.
+   A -1.6653e-16 m/s^2 retained acceleration difference at commit .34 s changes
+   a very short terminal phase. The canonical phase lasts 1.0846 ns; the native
+   phase lasts .8465 ns. Both jerks are -7.5 at the witness. This is not just
+   selecting opposite sides of one common jerk jump. More than 1 microsecond
+   from canonical boundaries, maximum sampled acceleration difference is
+   2.53e-15 m/s^2 in this stream.
+
+2. biased_alternation / minimum-duration Ruckig is a new failed witness. At the
+   ordinary grid time 1.824 s, native acceleration is -.09838079044986006 and
+   canonical acceleration is -.09838086461314689 m/s^2. Their difference is
+   7.4163286831e-8 m/s^2, 136 microseconds from the nearest canonical boundary.
+   Both jerks are +7.5. At the final 1.82 s commit, the retained acceleration
+   already differs by -7.28236e-8 after 80 replans. The saved per-commit series
+   records growth and contraction of these small execution differences. This
+   finite trace does not prove general numerical instability or unsafe motion.
+
+The canonical clock uses rational commit intervals and exported native cumulative
+phase boundaries. The native replay subtracts absolute double commit times and
+carries its own at_time state. Both paths use the same targets and source pin.
+The fresh per-plan exports reproduce both witnesses. The physical significance
+of the alternative native clock remains untested; it is not declared harmless.
+
+The review retains 14 executed positive phases shorter than 1 ps; 12 collapse
+when converted to absolute double time. It also records 324 jerk-side differences
+at queries within 6.04e-16 s of canonical boundaries. These remain visible and
+are separate from the two failed acceleration checks.
+
+Formal proof boundary
+
+Every frozen Ruckig history has nonzero q/v/a join gaps from binary rounding.
+Global maximum gaps are 1.86e-18 m, 3.89e-18 m/s and 3.85e-16 m/s^2. They are
+numerically small but do not satisfy exact C2 smoothness. The exact binary cubic
+for irregular/time-optimal also exceeds acceleration .5 by 1/72057594037927936,
+about 1.39e-17 m/s^2. This is a formal-bridge qualification, not evidence of a
+material physical limit violation. Do not apply a smooth-reference Lean theorem
+to these exported pieces without accounting for joins and rounding.
+
+Next bounded test
+
+First make native execution time and retained state the explicit primary contract
+in a new sibling gate. Use the unchanged 144 inputs and physical settings. Export
+plans from native retained states, then independently replay physical motion from
+those pieces. Keep both failures in this gate. Compare task classifications and
+effort with the current canonical data before adding another benchmark or claim.
+
+After that check, a new noise experiment can separately freeze a time-balanced
+irregular stream. The current irregular data must remain labeled and preserved.
+A proof for the favorable periodic example is lower priority than resolving the
+execution contract and the performance tradeoff already visible here.
+
+Preservation and reproduction
+
+Builder manifest: 8266eb7bd4da50d20f8fce651100126df1c9876b223c94a28d67c610fa3f4f78.
+All 646 builder files, both pre-run manifests and their files remain unchanged.
+All 379 prior files and four prior manifests also remain unchanged. Source pin,
+source tree and local executable hashes were checked. No dependencies were
+changed, no external runners were used, and no Git operation was performed.
+The coordinator owns repository preservation and publication decisions.
+
+Review files: physical_replay.py, schedule_review.py, clock_witness.py,
+reference_bounds.py and summarize_review.py; their outputs and run logs are saved.
+The first two take the builder manifest hash as their command-line argument.
+Use .tools/research-python/bin/python for physical_replay.py (mpmath required).
+Run the other scripts with python3 after the first two complete. Do not overwrite
+the frozen review to reproduce it; copy the scripts to a new sibling location
+with the same builder relation, or update their input/output paths in that copy.

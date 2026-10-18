@@ -1,0 +1,31 @@
+Command variation qualification
+
+For the declared controller, actual x,v,a are continuous at a reference event.
+Thus the exact command jump is
+  delta_u = 800 delta_q + 60 delta_qv + (3/2) delta_qa + delta_j/96.
+Each term has units m/s^2. Command jump total variation adds abs(delta_u).
+
+An opposite-jerk microphase has jerk +7.5 between two -7.5 phases, or the reverse.
+Each edge changes reference jerk by magnitude 15 m/s^3. The jerk-feedforward
+command variation of the pair is 2*(15/96)=5/16 m/s^2. Its positive duration does
+not appear in that jump contribution. The exact q/v/a join corrections in these
+frozen schedules are tiny and are preserved in jump-variation.json.
+
+The time-optimal biased stream has 10 such executed phases in 05 and 5 in 06.
+Its jerk-only command jump variation therefore decreases by 25/16=1.5625 m/s^2.
+The full exact reference-join formula changes this delta by only -1.65e-16 m/s^2.
+Hold gains two phases, sign_60ms loses two, and irregular gains one. Their exact
+jerk-only jump-variation changes are +.625, -.625, and +.3125 m/s^2 respectively.
+
+These phases are shorter than a picosecond. They are not new target packets and
+not a new control design. Their appearance depends on the floating-point retained
+history and its exported near-zero native phases. The review preserves them;
+it does not suppress them with an arbitrary duration threshold.
+
+Finite q/v/a agreement does not bound jerk-branch disagreement, nor does it make
+command total variation insensitive to tiny phases. The physical forcing here
+is an explicitly declared piecewise polynomial interpretation. This audit is not
+an estimate of command variation from a sampled firmware controller or a robot.
+Do not claim every effort metric is unchanged when the clock model is repaired.
+For comparisons, show the jump part separately from continuous variation and
+retain position/energy measures alongside it. No new parameter test is implied.

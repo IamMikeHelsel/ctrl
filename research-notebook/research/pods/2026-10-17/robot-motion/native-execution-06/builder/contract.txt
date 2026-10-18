@@ -1,0 +1,78 @@
+NATIVE EXECUTION 06 — FIXED FIDELITY REPAIR
+
+This is one bounded repair of the reference execution model. It does not change
+the failed latency-noise-05 gate or claim that its tolerance passed. All previous
+artifacts stay unchanged. No tuning, extra streams or new performance hypothesis.
+
+Use the identical six packet streams, four methods, three actuator rates
+80/100/120 per second, disturbances 0/.01 m/s^2, h=.2 s, V=.1, A=.5, J=7.5,
+minimum_duration=.8 s for that baseline, sigma=10, deadlines and horizons.
+Run exactly 144 cases at 1 ms and .5 ms only after the pre-run gate below passes.
+The unchanged plant, unsaturated direct controller, initial actual rest, physical
+state retention, metrics, endpoint/hold tolerances and settling-through-horizon
+definition are in previous05-contract.txt and the copied physical runner.
+
+Changed native execution contract
+
+Keep rational packet, ready and commit records unchanged. Convert each accepted
+commit once to its nearest binary double, as the C++ execution time. Record both
+the rational scheduler value and the exact binary execution value. For each
+Ruckig method, one native C++ history owns its previous trajectory and calls
+previous_trajectory.at_time(current_binary_commit-previous_binary_commit).
+The subtraction and retained q/v/a are native double operations. Pass that actual
+native state into the next native calculation. Export each resulting trajectory
+inside that same process. No polynomial replay state enters a native replan.
+
+For the physical polynomial interpretation, the absolute origin of a native
+plan is the exact rational value of its binary execution commit. A phase begins
+at that origin plus the exact binary value of the exported native cumulative
+boundary. Do not sum exact binary durations to invent alternative boundaries.
+Cut execution at the next exact binary commit, or the fixed rational horizon.
+Keep original native t/t_sum, durations, q/v/a/j and their binary ratios. Keep
+zero-duration metadata and every positive phase. Omit inactive brake arrays;
+assert accel.duration=0. After a completed plan, retain native final acceleration
+and its polynomial extrapolation; do not snap to the requested target.
+
+This interpretation is a continuous polynomial model of the exported plans.
+It is not bit-identical at_time execution for every real time. Native query
+subtraction and rounding can select different jerk branches close to a boundary.
+Record those differences separately from q/v/a agreement. Small reference-state
+mismatches at profile boundaries and replans remain explicit jumps. Preserve
+both sides and their command/actual-jerk effects. Never reset actual x/v/a.
+
+Raw and FIR retain their prior exact-rational commit convention. The common
+accepted timestamp stream and packet identities do not change. The native
+execution clock maps those tick labels to binary values, which can lie on either
+side by floating-point rounding. Record the maximum offset and do not interpret
+it as a new transport delay or claim a timing guarantee below that resolution.
+
+Pre-run gate and stop rule
+
+Inspect and validate all 492 exported native plans using the unchanged absolute
+q/v/a tolerances [1e-8 m,1e-8 m/s,1e-10 m/s^2]. Then compare all twelve complete
+native stream/method histories against the primary polynomial reference at the
+fixed .5 ms grid, every reference event with adjacent binary query values, and
+the plan-local boundary/interior probes. Native carried input states must agree
+exactly between the primary exporter and the separate native replay driver.
+Record native jerk branch disagreements; no bit-identical jerk claim is required.
+These finite checks are not a continuous-runtime theorem.
+
+Before any plant run, freeze this contract, input hashes, implementation,
+reference exports and all twelve passing native q/v/a check results. Send the
+contract to the independent reviewer before plant. If any fixed q/v/a check or
+source assumption fails, stop and freeze the failed witness. Do not repair the
+gate further without reporting. Do not relax limits or skip a failed pair.
+
+If the native gate passes, use the same physical solver and metrics for all 144
+cases. Report every decision change from 05, especially FIR irregular/seeded
+hold failures and minimum-duration Ruckig hold passes. Preserve energy, command
+variation including jumps, all three errors, endpoint/hold decisions, counts,
+ages, rejections and both sampling resolutions. No hardware, learned-arm,
+general safety or firmware bit-equivalence claim is permitted.
+
+The irregular stream has zero arithmetic mean but dwell-weighted mean -1/2600 m.
+The seeded stream has realized mean -10.95 micrometres. The explicit bias stream
+has mean +.4 mm. Preserve these labels and every negative result.
+
+Mike Helsel supplied the problem framing and timing/architecture direction.
+The root agent owns notebook sync/check and Git. This builder writes only here.

@@ -1,0 +1,172 @@
+NATIVE EXECUTION 06 — FIDELITY REPAIR, FIXED144 RESULTS
+
+The native-state fidelity gate passed before plant execution. The fixed 144
+physical cases then finished at 1 ms and .5 ms. All task decisions match 05:
+144 endpoint passes and 66 full-task passes. Independent physical review of 06
+is pending. The failed native-clock gate in 05 remains failed and unchanged.
+
+This repair changes how Ruckig history is executed. It does not change inputs,
+controller, actuator, reference limits, h, minimum_duration, methods, deadlines,
+horizons or performance hypotheses. It does change some command-variation
+numbers. Tiny native phases can add finite command jumps without a comparable
+change in position. Do not describe every metric as unchanged.
+
+Exact change in execution contract
+
+Before: 05 sampled each separately exported plan at a rational scheduler interval
+and supplied that result as the next native plan's input. Its physical plan
+origin was the rational scheduler commit. An extra native absolute-clock audit
+failed an acceleration tolerance on sign_60ms/time-optimal Ruckig.
+
+Now: native_execution.cpp retains the previous actual C++ trajectory. At each
+commit it calls at_time using native subtraction of two binary absolute commit
+times. That native q/v/a becomes the next native input. The same process exports
+the resulting trajectory. No physical or polynomial replay state enters replans.
+
+The physical reference is piecewise polynomial. Each plan's origin is the exact
+rational value of its binary execution commit. Each phase boundary adds the
+exact binary value of the exported native cumulative boundary. The original
+rational scheduler record remains visible. The largest execution/scheduler
+rounding offset is 3/28147497671065600 s, about 1.066e-16 s. This is a representation
+offset, not an added transport delay or a timing guarantee at that resolution.
+
+Raw and FIR schedules remain exactly equal to 05. Every native positive phase
+and zero-duration record remains exported. A positive local duration can have
+coincident native cumulative endpoints. One such phase occurs in a plan that
+is superseded before that phase executes: biased_alternation, fast Ruckig,
+commit 31/50, main phase 6, local duration 2^-58 s. It remains metadata; no artificial
+physical interval is made by summing durations on another clock.
+
+Small exported reference joins and all jerk/command jumps remain explicit.
+Actual x/v/a are retained across every event. No actual-state reset occurs.
+The piecewise reference is not claimed globally C2 at its small joins. Native
+q/v/a agreement is separate from exact jerk-side selection or firmware fidelity.
+
+Pre-run evidence
+
+All 492 same-input native plan reconstructions passed the unchanged q/v/a limits:
+1e-8 m, 1e-8 m/s, 1e-10 m/s^2. All 12 native histories also passed, with 84,316 query
+times. Their maximum q/v/a residuals were 3.46945e-18 m, 1.38778e-17 m/s and
+4.47233e-16 m/s^2. Carried native input states and durations matched the separate
+native replay exactly. Six jerk-side differences near boundaries are recorded.
+These finite tests are not a continuous-runtime theorem.
+
+The independent reviewer froze its oracle before reading the primary schedules.
+It then matched all 492 primary plans and all 12 complete piece schedules exactly.
+It also checked 14,505 primary local at_time samples under the original limits.
+Its preflight passed at 2026-10-18T04:20:25.813905Z. The report is in
+../grader/preflight-review.json; its recorded SHA256 is
+9728267e158d1d3fab32d086d2e71ea74352f743947034c42ad1ab84d3f70b6a.
+This is independent preflight evidence, not completed physical review.
+
+The input manifest was frozen before native generation:
+dcef2b024ee1bb7d34543d85924aa879ea96fee4909d95fc1e3775a695b96d03
+The implementation, exports and passing native gate were frozen at
+2026-10-18T04:19:05.889715Z, before plant:
+1265a245321b006be7ca60c30b7c5cff697dc48b70ff799e0b7c59f857d04dd1
+Neither pre-run manifest nor its covered files changed during the plant batch.
+
+05 to 06 numerical delta
+
+All 288 metric rows are present. No endpoint, hold, internal-tube or full-task
+classification changes. The 144 raw/FIR rows are exactly identical to 05. Physical
+state jumps remain zero. Settling times do not change at either sample step.
+
+Maximum absolute changes over all 288 rows:
+  Hold/true-goal peak error       8.41357e-12 m
+  Internal tracking-error peak   3.60931e-16 m
+  Actual jerk peak               1.00364e-13 m/s^3
+  Actual jerk energy             4.68461e-7 m^2/s^5
+  Command total variation        1.5625000000000284 m/s^2
+  Endpoint position error        3.33692e-16 m
+
+Command variation is sensitive to finite jerk jumps around very short phases.
+At fixed actual state, delta_u=800*delta_q+60*delta_qv+1.5*delta_qa+delta_j/96.
+The following saved-data examples use rate 100, w=0, .5 ms. No phase was filtered out.
+
+Fast Ruckig stream         Command TV delta 06-05    Jerk-jump count 05 -> 06
+hold_jitter                +.6250000000             31 ->35
+sign_60ms                  -.6250000035              29 ->25
+irregular_alternation      +.3125000000              27 ->29
+seeded_random              about-1.78e-14            52 ->52
+biased_alternation         -1.5625000000              83 ->73
+persistent_goal            about+5.33e-15             6 ->6
+
+jump-sensitive-delta.json retains the affected short pieces and the separate
+continuous and jump contributions. metric-delta-summary.csv covers all 24
+stream/method groups. decision-comparison-05.json retains all 288 numeric deltas.
+The variation change is part of the result, not grounds to remove tiny phases.
+
+Negative results remain
+
+Peak absolute hold position in mm, range across six plant settings, .5 ms:
+
+Stream                  Raw           Ruckig fast   Ruckig min .8  FIR h=.2
+hold_jitter             .123-.136     .986-1.014    .034-.048      .033-.046
+sign_60ms               .515-.544     1.000-1.020   .075-.090      .103-.115
+irregular_alternation   .796-.817     .960-.997     .178-.192      .423-.435
+seeded_random           .432-.445     .891-.923     .089-.102      .234-.248
+biased_alternation      .411-.427     .986-1.017    .329-.342      .400-.413
+
+The hold band is .2 mm. FIR still fails all six irregular and all six seeded
+hold cases. Minimum-duration Ruckig still passes those twelve hold cases. Every
+method fails all six deliberate-bias cases. All methods pass their fixed endpoint
+tests; a later endpoint does not undo an earlier hold failure.
+
+The original hold stream is a commensurate periodic positive control: its .04 s
+period divides h=.2 s exactly. The irregular stream has zero arithmetic mean
+but dwell-weighted mean -1/2600 m: positive targets last .32 s, negative targets
+last .72 s. It is also a dwell-bias test. The seeded realization has mean
+-10.95 micrometres. The deliberate bias stream has mean +.4 mm. No stream was
+changed, relabeled as unbiased, hidden or added after results.
+
+Duration remains a declared baseline budget, not equal physical settling.
+All 246 minimum-duration native plans in this fixed batch returned exactly .8 s;
+none required an additional blocked-interval duration adjustment. For the 20 mm
+isolated step, actual settling after commit is .4695-.4700 s for fast Ruckig,
+.7975-.7980 s for min-duration Ruckig, and .7435-.7440 s for FIR. Their reference
+durations are .4721841687,.8 and .8 s. Settling means sampled entry into the
+position/velocity/acceleration tolerances through the fixed horizon only.
+
+Sampling and scope
+
+All decisions agree between 1 ms and .5 ms. Maximum event-state refinement changes
+in x/v/a are 5.10e-16 m, 6.95e-15 m/s and 5.66e-14 m/s^2. Maximum hold-peak change is
+7.7404e-8 m. The largest jerk-energy relative change is .7467%, from the raw
+discontinuous case. These are same-builder refinement results, not independent
+physical validation or continuous-time peak bounds.
+
+The plant solver and metric definitions are unchanged. It uses event-polynomial
+matrix exponentials, composite-trapezoidal energy and continuous command
+variation, plus analytic one-sided jumps. All three errors are retained: x-q,
+q-true_goal and x-true_goal. Raw reference steps have impulsive derivatives; their
+between-step derivative fields are not bounded impulse norms. No finite snap
+peak is assigned to a jerk jump.
+
+The guarded and unguarded FIR histories remain identical on all 246 accepted
+prefixes. This proves a finite input/history identity for these cases and shows
+no guard benefit here. It adds no fifth plant method or new formal theorem.
+
+The result concerns one scalar actuator with constant rate/disturbance and an
+unsaturated direct controller. It does not include joint mapping, torque limits,
+singularities, contact, a learned target stream or hardware. No general safety,
+human steadiness, VLA benchmark or bit-perfect firmware claim follows.
+
+Completion and preservation
+
+The one plant batch exited 0 with empty stderr. It reported 51.461650133132935 s
+elapsed. Last stdout write was 2026-10-18T04:21:34.718527Z; completion was observed
+at 2026-10-18T04:21:46.067759Z. execution-record.json distinguishes these timestamps
+from the manifest freeze time. Full stdout and stderr are retained.
+
+All 646 files covered by the 05 final manifest match their frozen hashes. Both 06
+pre-run manifests also match. The local pinned Ruckig source/static library was
+verified and reused without patches; only local frontends were compiled. There
+were no new installs, cloud calls, physical resets, Git operations or extra cases.
+The root agent owns notebook sync/check and Git preservation.
+
+Next action: independent physical review of this frozen06 package. Do not tune,
+extend the benchmark or retroactively mark the 05 native-clock audit passed.
+
+Mike Helsel supplied the problem framing, timing/architecture direction and
+proposed title, "Treating the Tremors We Built into Robots."

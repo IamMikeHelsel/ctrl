@@ -70,7 +70,7 @@ def main():
                      fontsize=17, weight='bold')
         fig.text(.5, -.025,
                  'Synthetic scalar model: r = 80/s, w = 0.01 m/s². Sample interval 0.5 ms. '
-                 'Display: 0–1.5 s; observation horizon: 2.5 s. Review scope in linked report.',
+                 'Display: 0–1.5 s; horizons: hold 2.5 s, step 2.0 s. Review scope in linked report.',
                  ha='center', fontsize=9)
         fig.savefig(HERE / 'comparison.png', dpi=180, bbox_inches='tight')
         return
@@ -116,7 +116,7 @@ def main():
         table += (f'<tr><td>{label}</td><td>{1000*float(hold["hold_peak_m"]):.3f}</td>'
                   f'<td>{float(hold["actual_jerk_peak_m_s3"]):.3f}</td>'
                   f'<td>{float(step["settling_through_horizon_s"]):.4f}</td></tr>')
-    review = HERE.parent/'grader/report.txt'
+    review = HERE.parent/'grader/review-report.txt'
     status = ('An independent review is available. Read its scope and findings below.'
               if review.exists() else 'Independent numerical review is in progress.')
     html = '''<!doctype html><html lang="en"><meta charset="utf-8">
@@ -137,7 +137,7 @@ They are not a full-arm or learned-policy test. The graphs show sampled results.
 disturbance 0.01 m/s². The four-box width is 0.2 s, with a total tail of 0.8 s.
 The green band marks ±0.2 mm about the stationary goal. Click a legend entry to
 hide a curve; this helps reveal small jerk values beside the raw controller.</p>
-<p><small>The display starts with 0–1.5 s; the saved data run through 2.5 s.
+<p><small>The display starts with 0–1.5 s; the hold data run through 2.5 s and the step data through 2.0 s.
 Reset the plot axes to see the complete recorded horizon.</small></p>
 <table><thead><tr><th>Method</th><th>Hold excursion (mm)</th><th>Hold jerk peak (m/s³)</th>
 <th>20 mm move settles at (s)</th></tr></thead><tbody>''' + table + '''</tbody></table>
@@ -152,9 +152,14 @@ that the requested task will finish.</p>
 <p>Ruckig is doing the motion-planning job specified by the changing input. The
 hold failure here does not show a defect in Ruckig. It shows why an execution
 contract must distinguish target estimates from the task that must be achieved.</p>
+<p><strong>This noise is especially favorable to the FIR.</strong> It repeats
+every 40 ms. The 200 ms averaging window contains exactly five periods. That
+gives exact cancellation after the start transient for one box average, and the
+four-box cascade inherits it. Irregular noise and equal delay budgets need a
+separate comparison before we make a broader claim.</p>
 <p><a href="../builder/report.txt">Full experiment report</a> ·
 <a href="../builder/metrics.csv">All 72 cases at both resolutions</a> ·
-<a href="../grader/report.txt">Independent review</a> ·
+<a href="../grader/review-report.txt">Independent review</a> ·
 <a href="../../coordinator/publication-thesis.txt">Claims still to earn</a></p></main></html>'''
     (HERE/'index.html').write_text(html)
     paths = [p for rows,p in data.values()]+[SOURCE/'metrics.csv',SOURCE/'artifact-sha256.json',Path(__file__)]

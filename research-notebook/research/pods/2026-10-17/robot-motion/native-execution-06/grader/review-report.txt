@@ -1,0 +1,132 @@
+NATIVE-EXECUTION-06 — INDEPENDENT REVIEW
+
+Decision: ACCEPT this bounded fidelity-repair gate. The finite native q/v/a
+checks pass, and the declared piecewise polynomial physical model independently
+replays. The two failed native-clock checks in 05 remain failed and unchanged.
+This does not establish exact firmware behavior or a continuous-runtime theorem.
+
+Milestone grade: A-. This rates the bounded repair and its evidence, not
+publication readiness. No new Lean theorem, new control method, learned-arm
+benchmark or hardware result is claimed.
+
+Pre-run and source review
+
+The six streams, four methods, three actuator rates, two disturbances, gains,
+limits, h, minimum duration, deadlines and two sampling steps are unchanged.
+The raw/FIR schedules and all input/guard files are exactly preserved from 05.
+
+The new native process owns the previous C++ trajectory. It calls at_time with
+the difference of binary absolute commit times and carries that returned q/v/a
+into the next native plan. It exports those trajectories in the same process.
+No polynomial-replay or actual-plant state enters a native reference replan.
+The physical polynomial origin is the exact binary native commit value plus the
+exact binary exported cumulative phase boundary. Rational scheduler records
+remain visible. Maximum scheduler/native rounding offset is 1.066e-16 s.
+
+The independent oracle was frozen before reading the builder schedules. All
+492 primary plans, retained inputs and twelve executed schedules match it exactly.
+The independent preflight checked 14,505 local native at_time samples and passed
+at 04:20:25 UTC, before plant execution. Maximum local q/v/a discrepancies were
+3.25e-19 m,6.94e-18 m/s and 5.47e-16 m/s^2, below the unchanged limits
+1e-8 m,1e-8 m/s and 1e-10 m/s^2.
+
+After final freeze, the reviewer independently reran all 84,316 saved native
+queries with the earlier frozen native executable. All outputs match the saved
+native outputs exactly. Independent polynomial reconstruction of those queries
+passes all twelve state checks. Maximum acceleration discrepancy is 4.48e-16
+m/s^2. Six jerk-side differences remain, within 1.12e-16 s of a phase boundary.
+The independent oracle's separate query selection contained 84,119 queries;
+these overlapping counts are not added into a larger coverage claim.
+
+The source pin,101 source hashes, static library and executables were checked.
+The physical runner differs from 05 only by a required passing-native-gate check.
+Both pre-run manifests and all their covered files remain unchanged.
+
+Independent physical replay
+
+All 144 parameter cases were checked at 1 ms and 0.5 ms:288 traces,1,514,064 saved
+rows and 26,928 one-sided event rows. The reviewer uses exact rational polynomial
+particular solutions plus 80-digit,3-by-3 homogeneous matrix exponentials.
+This is separate from the primary augmented-matrix solver. It starts actual
+x/v/a at zero and carries them continuously through every event, without reading
+primary simulated states. All task decisions agree. Largest row discrepancies
+are 4.01e-16 m in x,5.32e-15 m/s in v,5.21e-14 m/s^2 in a and 3.59e-12 m/s^3 in
+actual jerk. Command-jump identities and zero actual-state jumps also agree.
+
+Every decision is unchanged from 05 at both resolutions:144 endpoint passes,
+66 full-task passes and 78 hold failures. Raw/FIR metrics and all 55-digit replay
+row digests match the accepted 05 numerical results exactly. FIR still fails the
+six irregular and six seeded-random hold cases. The minimum-duration baseline
+still passes those twelve. Every method still fails the deliberate-bias cases.
+All 246 prefix guards accept, so this batch demonstrates no guard benefit.
+
+The irregular stream remains a dwell-bias example with mean -1/2600 m. The seeded
+realization has mean -.01095 mm. The original periodic input is favorable to FIR
+because .2 s is exactly five .04 s periods. No input or failure was hidden.
+
+In the independently replayed metrics, maximum hold-peak change is 8.414e-12 m
+and jerk-energy change is 4.685e-7 m^2/s^5. Settling times do not change. Across
+492,072 common 0.5 ms times in the 72 native-method cases, largest saved physical
+state differences are 1.736e-11 m,1.036e-9 m/s and 1.134e-7 m/s^2. These are sampled
+comparisons, not all-time bounds. Energy and continuous command variation still
+use trapezoidal quadrature. High precision does not remove quadrature error.
+
+Why command total variation changes
+
+Command total variation changes by as much as 1.5625 m/s^2. This is a real change
+in the declared piecewise polynomial metric, despite the tiny position change.
+At a reference event, continuous actual state gives the exact identity
+  delta_u = 800 delta_q+60 delta_qv+(3/2) delta_qa+delta_j/96.
+An opposite-jerk microphase has two jerk jumps of magnitude 15 m/s^3. Its jerk
+feedforward contributes 2*(15/96)=5/16=.3125 m/s^2 of command jump variation,
+regardless of its positive duration.
+
+The fast biased stream has ten such sub-picosecond phases in 05 and five in 06.
+Its jerk-only jump variation therefore decreases by 25/16=1.5625 m/s^2. Exact
+reference-join corrections change this delta by only -1.65e-16 m/s^2. Hold gains
+two phases, sign_60ms loses two and irregular gains one. Their jump-variation
+deltas are +.625,-.625 and+.3125 m/s^2. No phase was discarded to improve a metric.
+
+The exact jump algebra matches all 144 independently replayed native-method
+metric rows: largest jump-delta residual 9.99e-16 m/s^2; largest full decomposition
+residual 3.39e-15 m/s^2. Maximum continuous-variation change is 6.88e-8 m/s^2.
+Thus the large total-variation changes come from the jump part.
+
+Finite q/v/a agreement does not imply exact jerk branching or invariant command
+variation. These numbers are not sampled firmware effort or physical robot effort.
+Show jump variation separately from continuous variation, position error and
+energy. Do not claim that every effort measure is unchanged by the repair.
+
+Exact-proof boundary
+
+The exported histories are still not globally C2. Maximum q/v/a join gaps are
+1.87e-18 m,5.30e-18 m/s and 3.86e-16 m/s^2. The exact binary irregular/fast cubic
+exceeds acceleration .5 by 1/144115188075855872, about 6.94e-18 m/s^2. Configured
+input limits are therefore distinct from exact bounds on exported polynomials.
+A rounding-aware contract is needed before applying an exact smooth-reference
+Lean theorem to these pieces.
+
+One positive local phase has coincident cumulative endpoints. It is superseded
+before execution and remains metadata. Other positive executed microphases and
+all zero-duration metadata remain preserved. No new interval was invented by
+summing durations on an alternate clock. Native final acceleration and tails
+remain unsnapped. No finite snap bound is assigned to a jerk jump.
+
+Preservation and next step
+
+Builder manifest:
+aaae586029babf2e9381d09ff34fb7b488495630c48abde27ab9b4d8ece1a803
+All 692 builder files remain unchanged. The 646 builder files and 104 review files
+from 05, plus 379 older files, retain their frozen hashes. Both 05 failed witnesses
+remain preserved. No parameter run was added, no dependencies were changed,
+and no Git or external runner was used. The root agent owns repository storage.
+
+This closes the defined reference-clock repair. Stop this batch and preserve it.
+For publication, keep finite native fidelity, polynomial-model numerical results,
+exact proofs and implementation limits separate. The rounding and control-output
+contract remain the next proof bridge; this review makes no broader success claim.
+
+Manuscript integration: the current A separate repair paragraph in
+publication/robot-motion/execution-note/robustness.tex is approved within this
+review scope. Its exact bytes and source/paragraph hashes are recorded in
+manuscript-paragraph-review.json. The rest of the manuscript was not re-reviewed.

@@ -10,13 +10,13 @@ th,td{padding:12px;text-align:left;border-bottom:1px solid #cfdbdf}small{font-si
 <p>One task is simple: hold still. But the target
 estimates keep changing. A fast motion planner follows them. A slower reference
 suppresses them. That same slower response costs time when the goal really moves.</p>
-<aside>Independent numerical review is in progress. These are synthetic inputs and a scalar actuator model.
+<aside>An independent review is available. Read its scope and findings below. These are synthetic inputs and a scalar actuator model.
 They are not a full-arm or learned-policy test. The graphs show sampled results.</aside>
 <p>All curves use the same physical controller, an actuator rate of 80/s, and
 disturbance 0.01 m/s². The four-box width is 0.2 s, with a total tail of 0.8 s.
 The green band marks ±0.2 mm about the stationary goal. Click a legend entry to
 hide a curve; this helps reveal small jerk values beside the raw controller.</p>
-<p><small>The display starts with 0–1.5 s; the saved data run through 2.5 s.
+<p><small>The display starts with 0–1.5 s; the hold data run through 2.5 s and the step data through 2.0 s.
 Reset the plot axes to see the complete recorded horizon.</small></p>
 <table><thead><tr><th>Method</th><th>Hold excursion (mm)</th><th>Hold jerk peak (m/s³)</th>
 <th>20 mm move settles at (s)</th></tr></thead><tbody><tr><td>Raw target</td><td>0.135</td><td>136.050</td><td>0.5040</td></tr><tr><td>Ruckig</td><td>1.014</td><td>8.066</td><td>0.6895</td></tr><tr><td>Four-box reference</td><td>0.046</td><td>0.800</td><td>0.9635</td></tr></tbody></table>
@@ -3913,7 +3913,12 @@ that the requested task will finish.</p>
 <p>Ruckig is doing the motion-planning job specified by the changing input. The
 hold failure here does not show a defect in Ruckig. It shows why an execution
 contract must distinguish target estimates from the task that must be achieved.</p>
+<p><strong>This noise is especially favorable to the FIR.</strong> It repeats
+every 40 ms. The 200 ms averaging window contains exactly five periods. That
+gives exact cancellation after the start transient for one box average, and the
+four-box cascade inherits it. Irregular noise and equal delay budgets need a
+separate comparison before we make a broader claim.</p>
 <p><a href="../builder/report.txt">Full experiment report</a> ·
 <a href="../builder/metrics.csv">All 72 cases at both resolutions</a> ·
-<a href="../grader/report.txt">Independent review</a> ·
+<a href="../grader/review-report.txt">Independent review</a> ·
 <a href="../../coordinator/publication-thesis.txt">Claims still to earn</a></p></main></html>

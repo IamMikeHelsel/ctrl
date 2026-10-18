@@ -1,0 +1,72 @@
+LATENCY AND NOISE 05 — FIXED CONTRACT BEFORE PLANT RUNS
+
+This gate addresses the favorable periodic cancellation and unequal response time
+in comparison-04. It does not change the plant, direct controller, gains or limits.
+It uses exactly 144 parameter cases at 1 ms and .5 ms: six streams, four methods,
+rates 80/100/120 per second and constant disturbances 0/.01 m/s^2. Sigma=10/s.
+Actual initial x,v,a are zero and are retained at every event. All signals use SI.
+
+Plant: x'=v, v'=a, a'=r*(u+w-a).
+Control: u=q''-800*(x-q)-60*(v-q')-(a-q'')/2+j_q/96.
+Reference limits: velocity .1, acceleration .5, jerk 7.5.
+
+Methods: raw accepted position targets; native time-optimal Ruckig; native Ruckig
+with minimum_duration=.8 s on every accepted target replan; four-box FIR with
+h=.2 s and the exact rational history jerk guard. Both Ruckigs retain their own
+executed q,v,a. Target v=a=0. No command filter, saturation, physical-state reset,
+waypoint cloud service, controller change, adaptive width or tuning is permitted.
+The .8 s minimum is a declared reference budget. It does not assert equal actual
+reference duration or physical settling on all streams. Record both explicitly.
+
+Inputs: copy hold_jitter and persistent_goal unchanged, including original
+deadlines/horizons. Add the following true-zero streams. For each, readiness is
+observation+.02 s. Commit ticks are .02 s. Deadline=3.5 s; horizon=4 s.
+1. sign_60ms: 20 alternating +1/-1 mm updates, first observation .2 s, spacing
+   .06 s; zero one .06 s interval after the last noise update.
+2. irregular_alternation: 20 alternating +1/-1 mm updates, then zero. The 20 gaps
+   from first update to zero are [.02,.06,.04,.08,.02,.10,.06,.04,.02,.08] twice.
+   Observation times are explicitly written in observation-times.json before runs.
+   Thus the twentieth/final gap .08 s leads to the zero packet.
+3. seeded_random: 80 updates at .02 s gaps from .2 s, each target produced by
+   Python Random(20261017).randint(-1000,1000)/1e6 m; zero one .02 s interval later.
+4. biased_alternation: 80 targets .0004 + alternating (+.0006,-.0006) m at .02 s
+   gaps from .2 s, then zero one .02 s interval later. This is a deliberate bias
+   limit, not unbiased noise. The true goal remains zero.
+
+Packets have unique sequences. At a commit tick, batch all ready packets and
+keep the largest sequence. Stale packets do not replace a newer target. A jerk
+rejection advances the watermark but retains FIR history. The other methods
+receive the same accepted trace for the controlled comparison. Report every
+proposal/rejection, age and accepted goal. If no proposal is rejected, prove the
+guarded/unguarded FIR history equality on every finite prefix. The unguarded
+identical trace is an ablation result, not a fifth plant method or extra case.
+
+Use pinned Ruckig 99751e6ebc7c963bb80e99fbbe66f2c279d1db57. Inspect its optional
+minimum_duration support. Before any plant run, reconstruct at least one fresh
+minimum-duration native at_time smoke independently of the primary schedule
+builder. Fixed q/v/a absolute residual limits: 1e-8 m, 1e-8 m/s, 1e-10 m/s^2.
+Smoke failure or an unmet source assumption stops the batch without tuning.
+
+Retain comparison-04's native cumulative-time metadata and canonical rational
+absolute clock. Preserve all positive phases and zero-duration metadata. Do not
+read inactive brake arrays; assert accel.duration=0. Retain endpoint residual
+acceleration and native post-duration extrapolation. No silent target snapping.
+Keep both sides of switches and any small exported q,v,a mismatch. Raw position
+jumps do not have bounded impulsive reference derivatives.
+
+Use event-polynomial augmented matrix exponentials. Include packet and truth
+events, every reference switch, deadline, tail and horizon. Save all three errors:
+x-q, q-g_true and x-g_true. Preserve command/physical jerk jumps, command TV and
+physical jerk energy. Endpoint tolerances remain .2 mm, .001 m/s, .02 m/s^2.
+Every true-zero noise stream also has the all-horizon .2 mm hold requirement.
+Settling means enter and remain THROUGH THE FIXED OBSERVATION HORIZON. Report
+sample/refinement status; do not infer an all-time theorem or finite snap at jumps.
+
+The persistent_goal case is the isolated-step latency check. Report reference
+duration and actual settling for both Ruckigs and FIR, plus their effort metrics.
+Do not replace requested deadlines, make a duration-equality claim from a minimum
+setting, hide the bias stream, or claim general superiority or learned-arm success.
+
+Freeze this contract, generator, packets, source hashes and a UTC timestamp before
+plant execution. Any later implementation repair must leave these inputs and
+parameters unchanged and be recorded. Preserve every prior artifact. No Git.

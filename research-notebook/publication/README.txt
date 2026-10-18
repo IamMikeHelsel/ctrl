@@ -1,3 +1,16 @@
+NEW WORKING NOTE — 17 October 2026
+
+robot-motion/execution-note/main.pdf: Treating the Tremors We Built into Robots
+Eight-page illustrated draft. The finite scalar history checker and physical
+tracking connection have passed independent computational review. The first
+comparison passed numerical review but has a favorable periodic input. The
+harder comparison has accepted polynomial results and two native-clock failures.
+A separate native-state repair passed finite fidelity checks and independent
+physical replay at unchanged tolerances; all task decisions remain unchanged.
+The draft keeps the known methods, delay costs, and negative cases visible.
+No full-arm/VLA result or publication-readiness claim. Editable main.tex and
+the Manim still are in the same project folder.
+
 NEW FINISHED FOLLOW-UP — 17 October 2026
 
 tracking-note/main.pdf: When Plans Change, How Far Can a Robot Stray?

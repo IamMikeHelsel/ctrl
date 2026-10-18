@@ -1,0 +1,88 @@
+--- reviewed-source/main.tex
++++ revised-source/main.tex
+@@ -43,7 +43,7 @@
+ \[
+ F(z)=\frac{z_+^4-4(z-1)_+^4+6(z-2)_+^4-4(z-3)_+^4+(z-4)_+^4}{24}.
+ \]
+-This is the step response of four cascaded box averages. For a finite event list $E=((\tau_i,\delta_i))$, use
++This is the step response of four cascaded box averages. For a finite event list $E=((\tau_i,\delta_i))_{i=1}^n$, use
+ \[
+ q_E(t)=g_0+\sum_i\delta_i F\left(\frac{t-\tau_i}{h}\right),\qquad
+ j_E(t)=h^{-3}\sum_i\delta_i K\left(\frac{t-\tau_i}{h}\right).
+@@ -52,7 +52,7 @@
+ 
+ At admission time $c$, form
+ \[
+-S(E,c)=\{c\}\cup\{\tau_i+kh:\ i\in E,\ k=0,\ldots,4,\ \tau_i+kh\geq c\}.
++S(E,c)=\{c\}\cup\{\tau_i+kh:\ 1\leq i\leq n,\ k=0,\ldots,4,\ \tau_i+kh\geq c\}.
+ \]
+ \begin{theorem}[Finite check and future jerk]\label{guard}
+ For any finite list, $h>0$ and $J\geq0$,
+@@ -67,9 +67,9 @@
+ 
+ \textbf{Admission rule.} For admission time $c$ and execution time $\tau$, require $0\leq c\leq\tau$, nondecreasing admission times, and $\tau$ no earlier than the last committed execution. Express the new increment relative to the final committed target. Append it only if the future check passes. Invalid timing, rejection, and a no-change request retain history.
+ 
+-Finite induction proves safety from the empty history. New events contribute zero through their execution time. Thus later admissions preserve the executed position, velocity, acceleration, and jerk. After the last execution time plus $4h$, the reference reaches the final committed target at rest. This does not assert physical rest or completion of a rejected goal.
+-
+-\textbf{Boundary.} The wrapper receives one selected packet. Upstream batch selection and duplicate-conflict handling are not proved. Caller timestamps are not a proof of a real clock. The history is finite; bounded storage, pruning, infinite streams, and measured execution deadlines remain open.
++Finite induction proves the reference-jerk bound from the empty history. New events contribute zero through their execution time. Thus later admissions preserve the executed position, velocity, acceleration, and jerk. After the last execution time plus $4h$, the reference reaches the final committed target at rest. This does not assert physical rest or completion of a rejected goal.
++
++\textbf{Boundary.} The wrapper receives one selected packet. Upstream batch selection and duplicate-conflict handling are not proved. Caller timestamps are not a proof of a real clock. The history is finite; bounded storage, pruning, infinite streams, and measured execution deadlines remain open. Exactness certifies the Lean rational check, not the Python scripts, input parser, upstream scheduler, or native solver. For $n$ events, the direct check visits at most $5n+1$ points and sums $n$ contributions at each. No real-time execution cost is established.
+ 
+ \newpage
+ \section{What the physical tracking proof says}
+@@ -89,7 +89,7 @@
+ z_3=e_x+\frac{e_v}{2\sigma}+\frac{e_a}{16\sigma^2}.
+ \]
+ \begin{theorem}[Conditional tracking bound]\label{tracking}
+-Fix $H\geq0$ and $R\geq0$. Suppose the physical state is a classical trajectory of \eqref{plant}--\eqref{feedback}, continuous on $[0,H]$, with the stated rate and disturbance bounds. Suppose $|z_i(0)|\leq R$, $|j|\leq J$, and
++Fix $H\geq0$ and $R\geq0$. Let $q=q_E$ be the admitted reference above and $j=q_E'''$. Suppose the physical state is a classical trajectory of \eqref{plant}--\eqref{feedback}, continuous on $[0,H]$, with the stated rate and disturbance bounds. Suppose $|z_i(0)|\leq R$, $|j|\leq J$, and
+ \begin{equation}\label{budget}
+ W+\frac{J}{48\sigma}\leq2\sigma^2R.
+ \end{equation}
+@@ -120,19 +120,19 @@
+ \midrule
+ Hold: peak $|x|$ (mm) & .123--.136 & .986--1.014 & .0334--.0460\\
+ Hold: actual jerk ($\mathrm{m/s^3}$) & 136--209 & 8.07--11.81 & .0364--1.20\\
+-20 mm step: settling time (s) & .5035--.504 & .6895--.690 & .9635--.964\\
++Step: absolute settling time (s) & .5035--.504 & .6895--.690 & .9635--.964\\
+ \bottomrule
+ \end{tabular}
+ \end{center}
+-The step commits at $.22$ s. Settling means no later sampled endpoint-tolerance violation through the finite horizon; it is not an infinite-time proof.
++Times in the table start at simulation time zero. The step commits at $.22$ s. Settling means no later sampled violation of $|x-g|\leq.2$ mm, $|v|\leq.001$ m/s and $|a|\leq.02$ m/s$^2$. The step deadline is $1.5$ s and its horizon is $2$ s; hold uses $1.9$ s and $2.5$ s. The revised-goal stream uses $1.75$ s and $2.25$ s; late/stale uses $1.5$ s and $2$ s. There is no infinite-time claim.
+ 
+ \begin{center}
+-\includegraphics[width=\linewidth,height=3.8in,keepaspectratio]{images/comparison.png}
++\includegraphics[width=\linewidth,height=3.45in,keepaspectratio]{images/comparison.png}
+ \end{center}
+ \vspace{-.8em}
+ {\small\textbf{Figure 1.} Fixed examples with $r=80\ \mathrm{s}^{-1}$ and $w=.01\ \mathrm{m/s^2}$. These curves and their peak metrics are numerical evidence.}
+ 
+-An independent 80-digit replay checked all 476,928 trace rows and 3,636 event rows. All 72 endpoint tests passed. Six Ruckig hold cases failed the added $.2$ mm hold band. All 48 smooth-reference cases passed the sampled internal tracking tube. Raw target steps fall outside the smooth-reference proof contract.
++An independent 80-digit replay checked all 476,928 trace rows and 3,636 event rows. All 72 endpoint tests passed. Six Ruckig hold cases failed the added $.2$ mm hold band. All 24 FIR and 24 Ruckig cases passed the sampled internal tracking tube. The Lean history and composition certificate applies to FIR only. Ruckig has jerk switches and exported state roundoff; its passes are numerical. Raw steps also lie outside that proof contract.
+ 
+ \newpage
+ \section{The motion in the first hold example}
+@@ -171,14 +171,19 @@
+ 
+ \textbf{Next publication gate.} Resolve the fixed irregular-noise evidence, including failed requirements. Then choose a real action-stream test only if the result warrants it. That test must report delay, task error, actual motion, and failures together. A scalar position request is not a full robot action chunk. Joint coupling, contact, sampled actuation, and task progress need further work.
+ 
+-\textbf{Reproducibility.} Artifacts are under \texttt{research/pods/2026-10-17/robot-motion/}: \texttt{certificate-03/}, \texttt{comparison-04/}, \texttt{latency-noise-05/}, and \texttt{jerk-prefix-animation/}. Each retains sources and evidence. Lean is version 4.35.0, with mathlib commit \texttt{56a005855ea17e0b0958f73ec801ae140b0a1679}. Ruckig is pinned at \texttt{99751e6ebc7c963bb80e99fbbe66f2c279d1db57}, with cloud support disabled.
++\textbf{Reproducibility.} Artifacts are under \path{research/pods/2026-10-17/robot-motion/}. The folders are \path{certificate-03/}, \path{comparison-04/}, \path{latency-noise-05/}, and \path{jerk-prefix-animation/}. Each retains sources and evidence. Lean is version 4.35.0. The mathlib and Ruckig pins are:
++\begin{center}\small\ttfamily
++56a005855ea17e0b0958f73ec801ae140b0a1679\\
++99751e6ebc7c963bb80e99fbbe66f2c279d1db57
++\end{center}
++Ruckig cloud support is disabled.
+ 
+ The numerical replay interprets native floating coefficients as exact polynomial inputs. It preserves native cumulative switch offsets and tiny positive phases. It is not bit-for-bit native execution. In the first comparison, 22 jerk-branch differences occur within about $1.288\times10^{-16}$ s of a switch under native double clocks. These remain in the evidence. Physical states are propagated continuously from rest. Sampled maxima and quadrature remain numerical metrics.
+ 
+ \textbf{Contributions and assistance.} Mike Helsel set the question, proposed the execution-layer direction, identified the timing interpretation to test, and required fair comparisons and independent challenge. Codex agents assisted with sources, derivations, Lean proofs, numerical code, reviews, figures, and writing. Agent reviews are computational checks, not external human peer review. Author details, license, venue policy, and final claims remain to be settled before submission.
+ 
+ \newpage
+-\begin{thebibliography}{9}\small
++\begin{thebibliography}{9}\small\raggedright
+ \bibitem{ruckig} L. Berscheid and T. Kr\"oger.
+ \emph{Jerk-limited Real-time Trajectory Generation with Arbitrary Target States}.
+ RSS, 2021. \url{https://arxiv.org/abs/2105.04830v2}.
