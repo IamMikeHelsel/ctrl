@@ -82,3 +82,6 @@
   package is `erdos-lab` (`src/erdos_lab`) and its console script is `erdos`; env vars are
   `ERDOS_JSON`, `ERDOS_AGENT`, `ERDOS_ROOT`, `ERDOS_FC_DIR`. Spark-side internals keep their names
   (`~/lean-work/ctrl` is the repo copy; `CTRL_REPO`/`CTRL_JOBS` in tools/spark/env.sh; tmux `ctrl-JOB`).
+- **D20. Generated data stays out of git (2026-10-18).** The target CSVs are output of
+  `tools/erdos-assess/`, so they live in Drive (`lean/erdos-data/`). `erdos targets` looks in
+  `$ERDOS_DATA_DIR`, then `data/erdos/` (gitignored), then the Drive folder. Tests use 40-row fixtures.

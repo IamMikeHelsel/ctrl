@@ -44,19 +44,17 @@ def repo(tmp_path, monkeypatch):
     (root / "erdos" / "ErdosLab").mkdir(parents=True)
     (root / "erdos" / "scripts").mkdir(parents=True)
     (root / "work").mkdir()
-    (root / "data" / "erdos").mkdir(parents=True)
     for name in ("lakefile.toml", "lean-toolchain", "Challenge.lean", "ErdosLab.lean"):
         shutil.copy(REAL / "erdos" / name, root / "erdos" / name)
     (root / "erdos" / "lake-manifest.json").write_text(
         json.dumps({"packages": [{"name": "formal_conjectures", "rev": PIN}]})
     )
     (root / "erdos" / "scripts" / "check.sh").write_text("#!/usr/bin/env bash\n")
-    for name in ("open.csv", "formalize.csv"):
-        shutil.copy(REAL / "data" / "erdos" / name, root / "data" / "erdos" / name)
     for k in ("CLAUDECODE", "CLAUDE_CODE", "ERDOS_AGENT", "ERDOS_JSON", "SPARK_SSH_HOST"):
         monkeypatch.delenv(k, raising=False)
     monkeypatch.setenv("ERDOS_ROOT", str(root))
     monkeypatch.setenv("ERDOS_FC_DIR", str(FIXTURES))
+    monkeypatch.setenv("ERDOS_DATA_DIR", str(FIXTURES / "data"))
     monkeypatch.setenv("HOME", str(tmp_path / "home"))
     monkeypatch.chdir(root)
     return root

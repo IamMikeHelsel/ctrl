@@ -170,7 +170,7 @@ def targets(
         None, "--min-fit", help="open: ai_lean_fit_1to5 ≥ F; formalize: priority ≥ F."
     ),
 ) -> None:
-    """Ranked rows from data/erdos/*.csv."""
+    """Ranked rows from the target CSVs (ERDOS_DATA_DIR, data/erdos, or Drive lean/erdos-data)."""
     repo = Repo.find()
     rows = targets_mod.load(repo, tab)
     picked = targets_mod.select(

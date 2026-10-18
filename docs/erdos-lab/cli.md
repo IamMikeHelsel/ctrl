@@ -28,7 +28,7 @@ Every command ends with `next`: the exact commands that move things forward.
 | Command | What it does | Key data fields |
 |---|---|---|
 | `erdos doctor [--remote/--no-remote]` | Checks elan/lake/toolchain, uv and the Lean cache locally. With remote, also checks the same plus kissat, cadical, `~/venvs/solve`, ollama + the leanstral model and lean-lsp-mcp on the Spark | `checks: [{name, where, ok, detail}]` |
-| `erdos targets [--tab open\|formalize] [--top N] [--prize] [--max-difficulty D] [--min-fit F]` | Ranked rows from `data/erdos/*.csv` | `rows` |
+| `erdos targets [--tab open\|formalize] [--top N] [--prize] [--max-difficulty D] [--min-fit F]` | Ranked rows from open.csv / formalize.csv (`$ERDOS_DATA_DIR`, `data/erdos/`, or Drive `lean/erdos-data`) | `rows` |
 | `erdos new NNN [--force]` | Writes `erdos/Challenge/ErdosNNN.lean` (statement `def` copied from the pinned Formal Conjectures file, with attribution), the solution skeleton `erdos/ErdosLab/ErdosNNN.lean` with `sorry`, `work/NNN/{plan.md,log.md,status.json}`, and registers both modules. If FC has several theorems for NNN, `--part NAME` picks one. | `files`, `fc_theorems` |
 | `erdos approve NNN --by NAME` | Records `-- approved-by:` and the challenge hash in status.json. Refuses without `--by`. | `hash` |
 | `erdos check [NNN \| --all] [--fast]` | Runs the five checks in architecture.md and writes the result to status.json. `--fast` uses `lake env lean` on the solution only. | `results: [{nnn, build, tokens, axioms, binding, hash}]` |
