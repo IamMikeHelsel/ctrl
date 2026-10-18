@@ -1,0 +1,137 @@
+INDEPENDENT FINAL REVIEW — DIGITAL HOLD 01
+18 October 2026. Critic: digital_hold_critic_01.
+
+Verdict
+ACCEPT the bounded milestone: a noncircular, real-valued, fresh-start digital
+holding theorem for every supplied execution of the stated contract, on any
+finite horizon H>=0. No proof repair is required for this scope.
+Do not label this a complete braking operation, general Lean existence theorem,
+implemented controller, hardware result, precision stop, or publication result.
+
+Frozen input reviewed
+Builder manifest: 79f0478d50e4bbe346f964e3c2b737c2729b8287ff0734d476e9789ce449787c.
+DigitalHold.lean: aa91b649affc0906c79dd7a017b34d6f729d1c16f50117ab87daaa1ed2fadc03.
+DispatchWitness.lean: 8b53271de0a32e2c29021d5b61e6b7151dc79a7ba081d2bb3d4a11dd86eac23e.
+All 46 files listed in the builder manifest matched before and after replay.
+The preflight files remain unchanged. I did not edit builder inputs or Git.
+
+Exact accepted statement and assumptions
+sampled_hold takes H>=0, one physical state f(t), an IsSampledExecution, and
+initial membership of the transformed state in [-R,R]^3, R=2221/40000 m.
+Its result includes the first fresh reading, cube containment at every real
+time in [0,H], and the physical and command bounds below. The predicate has:
+- A continuous state f=(x,v,a), with x'=v, v'=a and
+  a'=r*(clip(k(read))+d-a). Clipping to [-2,2] precedes d.
+- Right derivatives on [0,H) and left derivatives on (0,H]. The rate and
+  physical error have left/right channels. All rate values lie in [8,12]/s;
+  every physical error has magnitude at most .01 m/s^2.
+- Causal samples: 0<=sample<=current time and total age<=.001 s. Reading errors
+  from the physical state at that timestamp are at most .001 m, .01 m/s and
+  .05 m/s^2. These are past-state errors, not errors from the current state.
+- Strictly increasing, locally finite dispatches. First sample and dispatch
+  are zero. Both initial indices are zero. Each sample precedes its dispatch.
+  The right reading is held on [dispatch_n,dispatch_(n+1)); the left reading
+  is held on (dispatch_n,dispatch_(n+1)]. Unique cell selection is proved.
+- A single fixed reference c and the unchanged k=-8(x-c)-6v-a/2.
+
+The proof derives |x-c|<=.055525 m, |v|<=.4442 m/s and |a|<=3.5536 m/s^2.
+It derives raw measured-command magnitude <=1.4256 m/s^2, proves clipping
+inactive, and derives effective target magnitude <=1.4356 m/s^2. The velocity
+and acceleration bands are coarse containment bounds, not precision standstill.
+
+Noncircularity and boundary review
+There is no ongoing cube, aggregate mismatch or feedback-slope bound in the
+exported Execution/IsSampledExecution premises. Only the initial cube is assumed.
+On a strict first-contact prefix, causal samples lie in the already bounded
+past. The proof first obtains finite mismatch <=48K+.103. It then applies the
+right-derivative age estimate twice. The final prefix mismatch is
+  .103621708+.098304K.
+At K=R this is exactly .1090800376 m/s^2. Its slack below2R is exactly
+.0019699624 m/s^2. Independent Lean arithmetic checked both numbers.
+The prefix premise is discharged by finite_prefix_barrier. That lemma uses the
+left derivative at first contact. Expanding cubes are restricted to K<=1/16,
+which makes clipping inactive before invariance has been proved. Their expansion
+then tends to zero. No continuity of mismatch is used.
+
+The proof uses right derivatives only on sample-to-current intervals contained
+in the causal prefix. It uses the left channel at a possible contact, including
+contacts at dispatches. No future state or reset is hidden in the argument.
+Age equality and sample=dispatch are permitted. H=0 reduces to the initial state.
+The right channel at H and left channel at0 are endpoint algebraic data; no ODE
+is required there. This is explicit in the model note. It does not prove an
+extension beyond H or consistency of separately supplied finite-horizon runs.
+
+Nonvacuity review
+The checked two-cell witness starts from zero state, uses r=8 and d=0, and runs
+for1 ms. At.5 ms a legal position-reading error changes the command from0 to
+.001 m/s^2. The exact exponential trajectory is continuous and has positive
+terminal acceleration. At the update, acceleration derivative is0 from the
+left and.008 m/s^3 from the right. The source proves that no classical derivative
+exists there. Thus this execution class includes a real dispatch jump that the
+old global classical trajectory model excludes.
+I independently applied sampled_hold to this witness in CriticChecks.lean.
+This witness does not prove existence for arbitrary initial states/signals.
+
+Independent replay evidence
+replay.py copied the frozen source bytes into critic/fresh. Both complete local
+modules were rebuilt. LEAN_PATH excluded cached local project proofs and reused
+only the pinned Mathlib/dependency artifacts. The inherited coordinate/face
+fragments were checked against the original byte-for-byte and by hash.
+The toolchain and dependency records match the builder: Lean4.35.0, Mathlib
+56a005855ea17e0b0958f73ec801ae140b0a1679, and no tracked Mathlib patch.
+Compiler/checker binary hashes and pin-file hashes are in replay-results.json.
+
+All39 declared source theorems were audited. Each depends only on propext,
+Classical.choice and Quot.sound. Separate leanchecker runs passed for
+DigitalHold and DispatchWitness. Independent semantic/arithmetic checks compiled
+and passed a third separate kernel check. No sorry, admit, new axiom,
+native_decide or unsafe route was found in the two frozen proof sources.
+This is fresh local proof evidence with reused pinned dependency artifacts,
+not a rebuild of all Mathlib sources or an independent Lean implementation.
+
+All12 recorded replay steps passed their expected outcomes:
+- Two fresh source builds, the complete axiom audit and printed statement audit.
+- Separate kernel checks for both builder modules and the critic check module.
+- Independent checks of exact margin, sensor budget, causal exclusion, initial
+  timestamp, dispatch nondifferentiability, and application to the witness.
+- Four expected rejections. The builder's5 ms age mutation fails the age-bound
+  goal. Its .05 m radius mutation fails prefix_budget; it also has a later
+  exact-term type mismatch, which is not the basis of this negative verdict.
+  Independent false .002-slack and .092-sensor-budget claims both reduce to
+  unsolved False goals. Their negations are also checked in CriticChecks.lean.
+The age/radius mutations reject this proof route. They do not prove those
+modified controllers unsafe. The separate scalar counterexamples in PREFLIGHT
+show why causal ordering, initial commands and jump semantics cannot be omitted.
+
+Required scope qualifications
+1. General existence remains outside Lean. The analytic cell construction in
+   MODEL-AND-EXISTENCE.txt is sound as an informal argument for fixed causal
+   clock sequences, a fixed bounded additive error sequence, and bounded
+   piecewise-continuous rate/physical-error signals with the stated one-sided
+   limits. Measurements must be generated from the constructed past state.
+   Since formal Schedule also contains measurement values, 'fix a schedule'
+   must not mean fixing arbitrary measurements independently of that relation.
+   I do not count this text as checked existence or uniqueness evidence.
+2. The first sample and first dispatch are both exactly at hold time zero.
+   The prior delayed capture reading cannot initialize this theorem directly.
+   Composition needs a fresh initial command at the same physical state or a
+   new certified-history bridge. No whole-operation claim is accepted here.
+3. Real arithmetic, sensor limits, physical error, response range and total age
+   are assumptions. No finite-precision or scheduling implementation was bound
+   to this predicate. No calibrated hardware data was supplied.
+4. No matched baseline, conservatism study, novel controller, independent
+   reuse result or publication merit follows from this verification. The
+   progress reviewer should decide the next usefulness gate separately.
+
+Next decision
+Accept this conditional holding tail as a proof artifact. Before claiming a
+complete stop-and-hold operation, choose and prove the handoff initialization
+contract on the same state and clock model. Preserve the explicit existence
+and implementation gaps in every summary of this result.
+
+Evidence paths (relative to this critic folder)
+replay-results.json; replay-logs/; fresh/DigitalHold.lean;
+fresh/DispatchWitness.lean; fresh/Statements.lean; fresh/Audit.lean;
+fresh/CriticChecks.lean; fresh/RejectFalseSlack.lean;
+fresh/RejectSensorBudget.lean; PREFLIGHT.txt; preflight-results.json.
+artifact-sha256.json binds the final critic records, excluding build caches.

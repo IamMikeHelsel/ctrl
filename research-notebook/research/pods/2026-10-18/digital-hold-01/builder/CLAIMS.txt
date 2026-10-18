@@ -1,0 +1,48 @@
+BUILDER CLAIMS — FIXED 1 MS DIGITAL HOLD
+18 October 2026. Independent acceptance is reserved to the critic and root.
+
+C1. Noncircular sampled safety theorem
+DigitalHold.sampled_hold proves coordinate-cube containment at every real time
+in [0,H], for arbitrary H>=0 and every supplied IsSampledExecution satisfying
+its explicit assumptions. R=2221/40000 m. The initial cube is assumed; ongoing
+cube containment and aggregate feedback mismatch are NOT assumed.
+
+C2. Timing and state semantics
+The execution has one continuous physical state. Causal timestamps obey
+0<=sample<=current time and total age<=.001 s. The schedule includes sample and
+dispatch order, a fresh first command at time zero, locally finite dispatches,
+held readings, and both sides of every dispatch. Right and left ODEs allow
+actual derivative jumps. right_held_reading and left_held_reading verify the
+held-cell semantics. first_command_fresh verifies the initial history rule.
+
+C3. Sensor, physical error and saturation placement
+Sensor errors are (.001 m,.01 m/s,.05 m/s^2). The hold law is unchanged.
+Rate is in [8,12]/s. Clipping to +/-2 precedes physical target error |d|<=.01.
+The theorem derives |raw measured command|<=1.4256 m/s^2, proves clipping
+inactive, and derives |effective target|<=1.4356 m/s^2. It derives residual
+bands |v|<=.4442 m/s and |a|<=3.5536 m/s^2. It does not prove exact rest.
+
+C4. Proof mechanism
+On a cube-limited strict first-contact prefix of radius K, first derive
+|w|<=48K+.103, then |k'|<=384K+.618. A first age estimate bounds w without any
+mismatch premise. Applying |k'|<=96K+6|w| once more gives
+|w|<=.103621708+.098304K. At K=R this equals .1090800376 m/s^2, with
+.0019699624 m/s^2 slack below2R. This suffices for all K>=R used in the proof.
+Small expanding cubes also obey K<=1/16 m, which proves clipping inactive on
+the prefix. The expansion tends to zero. No continuity of w is used.
+
+C5. Existence boundary
+The formal theorem is conditional on a supplied execution. General existence
+and uniqueness are not formalized. MODEL-AND-EXISTENCE.txt states a precise
+piecewise-continuous signal class and gives the causal segment construction.
+The checked equilibrium and two-cell witness have a narrower existence scope.
+
+C6. Not claimed
+No completed brake-to-hold operation, eventual detector acceptance, tighter
+optimal age limit, hardware safety, measured practical budget, novel control
+law, publication novelty, or 5ms plant counterexample is claimed.
+
+Evidence status
+The final verification.json and artifact-sha256.json bind the final files.
+A passing fresh-source build, allowed-axiom audit, separate leanchecker replay,
+and expected negative rejections are required before this packet is frozen.

@@ -1,0 +1,113 @@
+DIGITAL HOLD — ENGINEERING AND SCOPE GRADE
+18 October 2026. Final progress review after independent critic acceptance.
+All A1-A6 pass within the supplied-execution, fresh-start scope below.
+
+Recommendation
+ACCEPT the bounded conditional sampled-hold milestone. The independent critic
+accepted the frozen evidence without a proof repair. This changes a model-level
+decision: the fixed 1 ms holding contract now has a noncircular proof path,
+instead of only a conditional arithmetic screen. No local repair is requested
+by this scope review. Do not call it a complete stop-and-hold operation.
+
+The final derived mismatch is 0.1090800376 m/s^2. Its margin below the
+0.11105 allowance is 0.0019699624 m/s^2. This replaces the screen's
+0.0022754 margin as the margin for this proof route. Both are sufficient
+bounds; neither is a measured robustness margin or optimal age threshold.
+
+Preflight gates against the actual source
+A1 — MET FOR CONDITIONAL SAFETY. sampled_hold quantifies over every supplied
+sampled execution and arbitrary finite H>=0. It concludes cube membership
+at every real time, with physical and command bounds. It is not a standalone
+one-step lemma whose recurrence remains assumed. Existence is not concluded.
+Source: builder/DigitalHold.lean:340, 426, 522.
+
+A2 — MET FOR FRESH START. Execution ties each reading to f(sample time),
+with all three error bounds and whole age <=1 ms. IsSchedule specifies
+strictly ordered, locally finite dispatches, a shared continuous f, and left
+and right held cells. The first sample and first dispatch are both zero.
+right_held_reading, left_held_reading and first_command_fresh establish the
+index/reading consequences. No unknown pending command is admitted.
+Source: builder/DigitalHold.lean:82, 456, 474, 491, 511.
+
+A3 — MET AT STATEMENT/ARGUMENT LEVEL. The public predicate assumes neither
+ongoing cube membership nor bounded aggregate mismatch. The proof bounds
+only the first-contact prefix. It derives a coarse mismatch, refines it twice,
+and closes an inward-face argument before removing the small expansion.
+Source: builder/DigitalHold.lean:170, 256, 271, 308, 330, 340.
+
+A4 — MET WITH AN EXPLICIT EXISTENCE LIMIT. The model uses one-sided
+derivatives and one continuous state. The witness checks a genuine dispatch
+jump. The general initial-value construction is prose, not a Lean theorem.
+This meets the preflight's conditional-safety allowance. It does not meet
+the gate for a verified controller that produces an execution for every
+allowed initial state, clock schedule and signal sequence.
+For that future theorem, fix the sample/dispatch clocks and error sequence,
+then construct the measurements. An arbitrary pre-fixed Schedule.measurement
+is not automatically consistent with the resulting physical state.
+Source: builder/DigitalHold.lean:82; builder/DispatchWitness.lean:176-206;
+builder/MODEL-AND-EXISTENCE.txt.
+
+A5 — MET FOR REAL-VALUED MODEL. Clipping to +/-2 m/s^2 precedes the physical
+target error. The derived measured command bound is 1.4256 m/s^2; clipping
+is inactive. The effective target is bounded by 1.4356 m/s^2. The source
+retains real arithmetic, without a controller rounding or timestamp parser
+claim. Command authority is not a bound of 2 on the actual acceleration.
+Source: builder/DigitalHold.lean:71, 77, 82, 426, 522.
+
+A6 — MET. The independent critic accepts the exact frozen sources and its
+copied-source replay. All 12 recorded steps pass their expected outcomes,
+including fresh builds, all 39 source-theorem axiom audits, separate kernel
+checks and four expected rejections. This progress reviewer checked the
+source/packet identities and the critic's final records; the formal replay
+was performed by the separate critic. See critic/REPORT.txt,
+critic/review-results.json and critic/replay-results.json.
+Builder artifact manifest SHA256:
+79f0478d50e4bbe346f964e3c2b737c2729b8287ff0734d476e9789ce449787c.
+Critic artifact manifest SHA256:
+9c52bb05810054f73134494d67bf304085ed11b846cab6221c8d06d20db6c479.
+
+What the dispatch witness adds
+It materially reduces a specific vacuity concern. A legal sensor error at
+0.5 ms changes the held command from zero to 0.001 m/s^2. One continuous
+physical state then follows a nonconstant exact exponential flow. The
+acceleration derivative is zero on the left and 0.008 m/s^3 on the right;
+the source proves that no classical derivative exists there. Thus the
+predicate admits a behavior that the old classical trajectory class excludes.
+
+It is still only a two-cell, 1 ms witness from the zero state, with r=8/s,
+zero physical target error and one small measurement error. It does not
+show existence for every cube state, repeated long operation, delayed first
+dispatch, changing-rate signals, or operation near the error/authority limits.
+Those omissions limit the existence evidence, not the quantified safety claim
+for any supplied execution that meets the predicate.
+
+The handoff gap matters
+The theorem requires a fresh measurement AND its applied holding command at
+the new time zero. Its model has no first-command measurement/dispatch delay.
+The earlier noisy capture theorem permits a reading up to 5 ms before the
+actual switch. That reading cannot directly initialize this fresh-start tail.
+A complete operation needs either a fresh-read/dispatch bridge whose whole
+path is safe, or a proved initial-history extension. It must preserve x,v,a
+and the actual pending command through that bridge.
+
+Separate grades
+Conditional proof: ACCEPTED within A1-A6 and the stated supplied-execution
+scope. General existence is openly outside the checked proof.
+Engineering progress: useful implementation bridge on the declared model.
+Practical controller: HOLD. No measured timing/sensor/response evidence or
+complete braking/detector/handoff contract exists in this packet.
+Novelty/comparative value: OPEN. No matched comparison was run. The preflight
+primary-source overlap limits still apply; more theorem closures do not
+supply novelty. See SOURCES.txt and COMPARISON.txt in this grader folder.
+
+Next decisions, in order
+1. Select terminal motion requirements and the first-command/handoff contract.
+   The existing cube permits |v|<=0.4442 m/s and |a|<=3.5536 m/s^2 and a
+   position width of 0.11105 m. Keep the word stopped tied to explicit limits.
+2. Run the predeclared same-controller
+   comparison before extending the paper's value claim. On the same model,
+   report certified timing/clearance, manual proof work and trust boundaries.
+   Do not broaden the robot or add more similar proofs to replace that test.
+
+No manuscript, frozen input, builder source, critic file, Git state or external
+account was changed by this reviewer. Preflight files are preserved.

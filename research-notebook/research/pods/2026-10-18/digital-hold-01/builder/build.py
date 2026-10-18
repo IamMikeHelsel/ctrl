@@ -11,7 +11,7 @@ dep=':'.join(str((BASE/p).resolve()) if not Path(p).is_absolute() else p for p i
 root=HERE/'build';root.mkdir(exist_ok=True)
 env['LEAN_PATH']=str(root)+':'+dep
 env['PATH']=str(Path(lean).parent)+os.pathsep+env.get('PATH','')
-for m,p in [('DigitalHold',HERE/'DigitalHold.lean')]:
+for m,p in [('DigitalHold',HERE/'DigitalHold.lean'),('DispatchWitness',HERE/'DispatchWitness.lean')]:
     dst=root/p.name
     if m!='DigitalHold' and dst.exists() and dst.read_bytes()==p.read_bytes() and (root/(m+'.olean')).exists():continue
     shutil.copy2(p,dst)

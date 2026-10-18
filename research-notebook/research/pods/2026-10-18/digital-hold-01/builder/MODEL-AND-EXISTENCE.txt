@@ -1,0 +1,69 @@
+DIGITAL HOLD MODEL AND EXISTENCE BOUNDARY
+18 October 2026. SI units. Builder statement for independent review.
+
+Checked execution contract
+DigitalHold.Execution has one physical state f(t)=(x,v,a), continuous on [0,H].
+The right derivative is required on [0,H); the left derivative on (0,H].
+Both derivatives satisfy x'=v, v'=a, a'=r*(clip(k(read))+d-a).
+The clip range is [-2,2]. Physical target error d is added AFTER clipping.
+The rates and disturbances have separate left and right channels. Each rate is
+in [8,12]/s. Each physical target error has magnitude at most .01 m/s^2.
+The safety theorem needs no continuity of the command, r, d, or mismatch.
+It does need all the stated one-sided derivatives. Arbitrary nonmeasurable
+signals are not promised to admit an execution.
+
+Every reading uses a timestamp s with 0<=s<=t and t-s<=.001 s. The three errors
+from f(s) are at most .001 m, .01 m/s and .05 m/s^2. They are not errors from
+the current state. The reference c is fixed. Initial state is in the declared
+cube. No state coordinate is reset anywhere.
+
+The sampled predicate adds a schedule. Dispatch times are strictly increasing,
+locally finite, and start at zero. Sample n obeys 0<=sample_n<=dispatch_n.
+The first sample is zero. The first index is zero on both sides. The right
+channel holds reading n on [dispatch_n,dispatch_(n+1)); the left channel holds
+it on (dispatch_n,dispatch_(n+1)]. The source proves these consequences from
+index selection, so an index cannot select another reading inside a cell.
+The total-age bound applies on both sides, including dispatch boundaries.
+The right channel at H and left channel at 0 are algebraic endpoint data; their
+ODEs are not required. Those data must still meet the stated age/error bounds.
+There is no negative-time history or unknown pending first command.
+
+General existence result: precise statement, NOT a Lean theorem here
+Fix a finite horizon H, an initial physical state, a schedule as above, and
+bounded additive measurement errors e_n. Let rate r and physical target error
+d be piecewise continuous with finitely many pieces on [0,H], with finite
+left and right limits at every interior boundary and the corresponding
+one-sided endpoint limits. Interpret the two signal channels as these limits.
+Then a unique continuous physical state is obtained by causal segment
+construction. On dispatch cell n, set
+  m_n=f(sample_n)+e_n,
+  u_n=clip(-8*(m_n.x-c)-6*m_n.v-m_n.a/2).
+At sample_n=dispatch_n, this reads the already determined continuous state;
+the command changes acceleration derivative, not the state. At earlier sample
+times the constructed history supplies the reading.
+
+Construction on a cell beginning at tau
+  A(t)=integral_tau^t r(s) ds,
+  a(t)=exp(-A(t))*(a(tau)+integral_tau^t exp(A(s))*r(s)*(u_n+d(s)) ds),
+  v(t)=v(tau)+integral_tau^t a(s) ds,
+  x(t)=x(tau)+integral_tau^t v(s) ds.
+The formulas match the initial state and solve the one-sided ODE, including
+rate/error discontinuities. The standard fundamental theorem for one-sided
+limits supplies the boundary derivatives. The linear scalar acceleration
+formula is unique; integrating it uniquely determines v and x. Local
+finiteness leaves only finitely many cells before H. Clipping and bounded r,d
+keep each finite-horizon segment finite. This is an analytic construction and
+argument in this text. It has not received a separate Lean existence proof.
+
+Checked existence evidence is narrower
+DigitalHold.sampled_nonempty checks an equilibrium one-cell execution.
+DispatchWitness checks the explicit nonconstant two-cell example described
+in REPORT.txt. These witnesses show that the contract admits the intended
+one-sided execution class. They do not replace general initial-value existence.
+
+No complete operation or implementation claim
+There is no braking prefix, detector liveness theorem, full capture bridge,
+finite-precision implementation, scheduling implementation, calibrated plant,
+measured sensor budget, hardware qualification, exact-rest or convergence
+claim. The conditional invariant is valid for arbitrary finite H. The theorem
+does not itself create an execution or prove that a deployed clock meets age.

@@ -22,12 +22,14 @@ def main():
         if p.is_file():p.unlink()
     env['LEAN_PATH']=str(root)+':'+':'.join(paths)
     env['PATH']=str(Path(lean).parent)+os.pathsep+env.get('PATH','')
-    source=HERE/'DigitalHold.lean';original=sha(source);text=source.read_text()
-    assert not re.search(r'\b(sorry|admit|axiom|native_decide|unsafe)\b',text)
+    sources={m:HERE/(m+'.lean') for m in ['DigitalHold','DispatchWitness']}
+    originals={m:sha(p) for m,p in sources.items()}
+    source=sources['DigitalHold'];text=source.read_text()
+    assert all(not re.search(r'\b(sorry|admit|axiom|native_decide|unsafe)\b',p.read_text()) for p in sources.values())
     assert all(x.startswith('Mathlib.') for x in re.findall(r'^public import (\S+)',text,re.M))
     logs=HERE/'verification-logs';logs.mkdir(exist_ok=True)
     report={'passed':False,'scope':'Self-contained local DigitalHold source compiled fresh; all imported Mathlib artifacts use the frozen local pin. No cached local proof module appears in LEAN_PATH.',
-      'source_sha256':original,'verifier_sha256':sha(Path(__file__)),
+      'source_sha256':originals,'verifier_sha256':sha(Path(__file__)),
       'toolchain':query('lean','--version'),'lean_sha256':sha(Path(lean)),'leanchecker_sha256':sha(Path(checker)),
       'lean_toolchain_sha256':sha(BASE/'lean-toolchain'),'lake_manifest_sha256':sha(BASE/'lake-manifest.json'),
       'mathlib_commit':subprocess.check_output(['git','-C',str(BASE/'.lake/packages/mathlib'),'rev-parse','HEAD'],text=True).strip(),
@@ -46,16 +48,19 @@ def main():
           'seconds':round(time.monotonic()-start,4),'log_sha256':sha(logs/(label+'.log'))})
         save();print(label,p.returncode,ok,flush=True)
         if not ok:raise RuntimeError(label)
-    shutil.copy2(source,root/'DigitalHold.lean')
-    run('fresh-build',[lean,'--root='+str(root),'-o',str(root/'DigitalHold.olean'),str(root/'DigitalHold.lean')])
-    names=['LeanControls.DigitalHold.'+n for n in re.findall(r'^theorem (\w+)',text,re.M)]
-    (root/'Audit.lean').write_text('import DigitalHold\n'+'\n'.join('#print axioms '+n for n in names)+'\n')
+    names=[]
+    for m,p in sources.items():
+        shutil.copy2(p,root/p.name)
+        run('fresh-build-'+m,[lean,'--root='+str(root),'-o',str(root/(m+'.olean')),str(root/p.name)])
+        raw=p.read_text();ns=re.search(r'^namespace (\S+)',raw,re.M).group(1)
+        names.extend(ns+'.'+n for n in re.findall(r'^theorem (\w+)',raw,re.M))
+    (root/'Audit.lean').write_text('import DispatchWitness\n'+'\n'.join('#print axioms '+n for n in names)+'\n')
     run('axiom-audit',[lean,str(root/'Audit.lean')])
     for name,raw in re.findall(r"'([^']+)' depends on axioms: \[([^]]*)\]",(logs/'axiom-audit.log').read_text()):
         axioms={x.strip() for x in raw.split(',') if x.strip()};assert axioms<=ALLOWED,(name,axioms)
         report['axioms'][name]=sorted(axioms)
     assert set(report['axioms'])==set(names),set(names)-set(report['axioms'])
-    run('kernel-DigitalHold',[checker,'DigitalHold','-v'])
+    for m in sources:run('kernel-'+m,[checker,m,'-v'])
     negatives=HERE/'negative-controls';negatives.mkdir(exist_ok=True)
     for label,old,new in [
         ('reject-5ms-age','t-stamp b t ≤ 1/1000','t-stamp b t ≤ 1/200'),
@@ -63,7 +68,7 @@ def main():
         assert text.count(old)==1
         p=negatives/(label+'.lean');p.write_text(text.replace(old,new))
         run(label,[lean,'--root='+str(negatives),str(p)],negative=True)
-    report['source_unchanged']=sha(source)==original
+    report['source_unchanged']=all(sha(p)==originals[m] for m,p in sources.items())
     report['theorem_count']=len(names)
     report['passed']=report['source_unchanged'] and all(x['passed'] for x in report['steps'])
     save();print(json.dumps({'passed':report['passed'],'theorems':len(names)}))

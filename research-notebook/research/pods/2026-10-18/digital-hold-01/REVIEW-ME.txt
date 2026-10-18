@@ -1,22 +1,137 @@
-DIGITAL HOLD POD — WORK IN PROGRESS
-18 October 2026; checkpoint01
+KEEPING AN AXIS INSIDE A LIMIT WITH OLD READINGS
+Digital hold review packet — 18 October 2026
+STATUS: Accepted bounded proof milestone. Ready for team review.
+The builder, independent critic and progress reviewer have finished.
 
-The independent preflights support the 1 ms arithmetic. They expose two
-necessary contract details: the first command must be certified, and updates
-need one-sided dynamics because acceleration derivatives can jump.
+The result in plain language
+The controller uses a measurement that is already old. The proof accounts for
+how far the actual state can move while that measurement stays in use. Under
+the exact conditions below, the axis stays within 55.525 mm of its target at
+every instant. The proof covers the times between command updates as well.
 
-The builder reports a compiled conditional sampled-hold theorem. Root inspected
-its execution and public statement. Fresh evidence and independent acceptance
-are still pending. A nonconstant two-cell witness has been requested to test
-the dispatch semantics; one equilibrium cell does not exercise those dynamics.
-No complete braking operation, general existence, precision stop or novelty
-claim is accepted at this checkpoint.
+This closes the fixed 1 ms conditional holding test. It does not yet close the
+brake-to-hold operation. It does not show that the axis becomes still. The
+allowed speed is up to 0.4442 m/s and acceleration up to 3.5536 m/s^2. Those
+bands are too broad to call this a precision stop without a task requirement.
 
-Read critic/PREFLIGHT.txt for the independent objections and grader/PREFLIGHT.txt
-for acceptance and usefulness criteria. grader/COMPARISON.txt fixes a prospective
-comparison against direct reachable-set certification on the same contract.
+What changed
+The earlier 1 ms calculation assumed a motion bound while checking that bound.
+The new proof removes that loop. It considers a possible first boundary
+crossing, derives the error bound from the preceding motion, and proves the
+crossing cannot occur. The initial safe set remains an explicit condition.
 
-Expected review packet by14:30 UTC /07:30 Pacific; hard stop14:40 UTC.
-CHARTER.txt fixes assumptions and ownership; state.json records current status.
-Root will replace this note with the final claim map, independent verdict,
-failed attempts and the decisions needed from Mike.
+One checked example also changes the command at 0.5 ms. The physical state
+stays continuous, but the acceleration derivative jumps. This shows that the
+formal execution model admits a real digital update. The example uses an
+exact exponential trajectory, not a numerical simulation.
+
+The exact contract, in SI units
+State: position x, velocity v, acceleration a. Fixed target: c.
+Plant: x'=v, v'=a, a'=r*(clip(k(measurement))+d-a).
+Controller: k=-8(x-c)-6v-a/2. Clip range: [-2,2] m/s^2.
+Response rate: 8 <= r <= 12 per second; it can change with time.
+Physical target error: |d| <= 0.01 m/s^2, added AFTER clipping.
+Sensor errors: <=0.001 m, <=0.01 m/s, <=0.05 m/s^2, relative to the actual
+state at the measurement timestamp.
+
+The initial values of all three transformed coordinates must lie in [-R,R]:
+  (x-c, x-c+v/4, x-c+v/2+a/16), where R=2221/40000 m.
+Position alone does not establish this initial condition.
+
+There is one continuous physical state through all updates. Dispatches are
+strictly ordered and only finitely many occur in each finite time interval.
+Each command stays fixed between dispatches. The left and right derivatives
+obey the plant equations, including at updates. These derivative assumptions
+are explicit; arbitrary irregular signals are not promised an execution.
+
+The first measurement and its command dispatch are both at time zero.
+Every later reading is causal and its TOTAL age stays at or below 1 ms on
+both sides of each update. A 1 ms sample period alone does not establish this.
+
+Illustration of total age during a later hold; these are example clock times:
+  sample at 10.0 ms -> dispatch at 10.2 ms -> replace at 10.9 ms
+  age just before replacement: 0.9 ms; this meets the age condition.
+  replace instead at 11.3 ms -> age 1.3 ms; the theorem no longer applies.
+Failure of that condition does not by itself prove unsafe motion.
+
+What Lean proves under those conditions
+For any supplied execution and any finite horizon H>=0, at every real time:
+  |x-c| <= 0.055525 m; |v| <= 0.4442 m/s; |a| <= 3.5536 m/s^2.
+  The whole transformed cube is preserved, not just these separate bands.
+  |raw measured command| <= 1.4256 m/s^2, so clipping is inactive.
+  |effective acceleration target| <= 1.4356 m/s^2.
+The last bound is on the target in the lag equation, not actual acceleration.
+
+The derived feedback mismatch bound is 0.1090800376 m/s^2. The available
+inward-pointing budget is 0.11105 m/s^2. Their difference is
+0.0019699624 m/s^2. This is proof slack, not a measured robustness margin or
+an optimal timing limit. The first, coarser age bound was too large; one
+further refinement closed the fixed test without changing its parameters.
+
+Evidence and independent verdict
+The independent critic ACCEPTED the conditional fresh-start result, with no
+proof repair. The progress reviewer accepted all six declared milestone gates.
+Both complete proof sources were rebuilt from copied source bytes. The critic
+audited all 39 named theorem axiom closures and ran the separate Lean kernel
+checker on both sources plus its own checks. All 12 replay steps passed,
+including four expected rejections. Pinned Mathlib build artifacts were reused;
+this is not an independent implementation of Lean or a full Mathlib rebuild.
+
+Root verified 46 builder, 32 critic and 9 grader manifest entries, plus both
+sets of 14 input bindings. Earlier frozen research also passed preservation
+checks. verify_packet.py checks these identities and review bindings; it does
+not rerun Lean. See critic/replay.py for the independent proof replay.
+
+Root accepts the same limited milestone. Practical controller and publication
+readiness remain open for the reasons below.
+
+Source map
+  builder/DigitalHold.lean:82     Execution conditions.
+  builder/DigitalHold.lean:308    Derived prefix mismatch.
+  builder/DigitalHold.lean:340    All-time cube preservation.
+  builder/DigitalHold.lean:456    Sample and dispatch schedule.
+  builder/DigitalHold.lean:522    Full sampled holding theorem.
+  builder/DispatchWitness.lean   Nonconstant command-switch witness.
+  builder/MODEL-AND-EXISTENCE.txt General existence boundary.
+  critic/REPORT.txt              Independent accepted scope and replay.
+  critic/PREFLIGHT.txt           Early objections and corrected bounds.
+  grader/FINAL-GRADE.txt         Scope and engineering value assessment.
+  grader/COMPARISON.txt          Matched comparison to run next.
+
+What remains open
+General existence is not kernel checked. The theorem assumes a supplied
+execution. A written construction derives measurements from fixed clocks,
+errors and the evolving state; it does not allow arbitrary measurements to
+be fixed independently of that state. The checked witness has narrower scope.
+
+The previous delayed capture reading cannot directly start this theorem.
+A real handoff must prove safety during the fresh read and dispatch delay,
+or extend the theorem to cover the existing command and measurement history.
+Position, velocity, acceleration and the pending command must carry through.
+
+No matched comparison or hardware test was run. These are illustrative
+parameters, not measured axis limits. Controller rounding and real clock
+implementation are outside this result. Novelty and practical value remain
+open. The packet is for team review; it is not ready for paper submission.
+
+Failures are preserved
+The first coarse bound was insufficient. Source changes to a 5 ms age or a
+50 mm radius fail this proof route; these are not plant counterexamples.
+Compiler failures and an earlier replay during a source change are retained
+in builder/attempts/. The final frozen source is the acceptance target.
+
+Next decisions for Mike and the team
+1. Define what counts as stopped: allowed position width, speed, acceleration
+   and deadline. Choose whether the first-command bridge uses a fresh read
+   or retains the previous measurement and command history.
+2. Test value on the same controller and assumptions against an independent
+   reachable-set certificate. Compare certified timing/clearance, manual work
+   and trust limits. Do this before expanding the paper's contribution claim.
+
+We should expand toward one complete braking, handoff and holding operation.
+Adding similar isolated theorems would not resolve the usefulness concern.
+
+Work status
+All three workers finished. This bounded pod ends at the reviewed milestone.
+Its heartbeat is paused. The older overnight heartbeat remains paused. No
+paper was submitted, no public release was made, and no PR was merged.

@@ -1,0 +1,94 @@
+DIGITAL HOLD — BUILDER REPORT
+18 October 2026. Await independent acceptance; this is not a self-acceptance.
+
+Result
+The fixed 1 ms age contract now has a noncircular Lean sampled cube-invariance
+proof. It covers arbitrary finite horizons for supplied sampled executions.
+It retains the original gains, cube, rate range, sensor errors, physical target
+error and +/-2 command clipping. It does not complete a braking-to-hold maneuver.
+General initial-value existence and uniqueness remain outside the formal proof.
+
+Engineering decision changed
+The 1 ms candidate is no longer supported only by a circular screening bound.
+It is supported by a conditional trajectory theorem whose clock, history,
+saturation and derivative assumptions are explicit. The next operation work
+can use this as the holding tail once the actual handoff supplies the same
+state and a valid fresh first command. Practical sensing/timing and a matched
+baseline still decide whether that operation is useful.
+
+Exact proof path
+1. On a strict first-contact prefix, all physical samples are within the
+   current expanded cube K because their timestamps are causal and nonnegative.
+2. Measured command magnitude is at most24K+.093. Restrict the vanishing
+   expansion to K<=1/16 m. This proves clip(k(read))=k(read) on that prefix.
+3. A coarse mismatch bound is48K+.103. Physical ODE algebra gives
+   |k'|<=96K+6|w|, hence the finite slope bound384K+.618.
+4. The one-sided mean-value theorem gives first-age mismatch
+   .103+.001*(384K+.618). Apply the slope bound and age estimate once again:
+   |w|<=.103621708+.098304K.
+5. At K=R=.055525 m, this is .1090800376 m/s^2. It is below the2R=.11105
+   m/s^2 inward-face budget by .0019699624 m/s^2. The inequality persists for
+   every larger K used in the expanding-barrier proof.
+6. The strict first-contact proof uses a left derivative and the whole bounded
+   prefix. It rules out each positive expanding barrier. Letting the expansion
+   tend to zero gives the original cube at every real time in [0,H].
+
+There is no continuity premise on w and no assumed mismatch budget. The first
+coarse age estimate alone is .1249396, too large for the cube. The one justified
+refinement is needed. No gains, cube size or age were retuned after that failure.
+
+Statement map
+DigitalHold.Execution: one-sided clipped physical ODE, continuous shared state,
+causal total age, per-channel errors and rate bounds.
+DigitalHold.IsSchedule / IsSampledExecution: ordered, locally finite dispatches,
+causal sampled readings, first command, and half-open held intervals.
+right_held_reading / left_held_reading / first_command_fresh: actual schedule
+semantics derived from the predicate.
+prefix_mismatch / prefix_budget: finite noncircular mismatch derivation.
+finite_prefix_barrier / digital_invariant: one-sided first-contact closure.
+sampled_hold / digital_bounds: full conditional safety and authority result.
+MODEL-AND-EXISTENCE.txt: exact existence boundary and analytic construction.
+
+Dispatch witness
+DispatchWitness constructs an exact two-cell trajectory on [0,.001] s.
+The first command and state are zero. At.0005 s the new reading is
+(-.000125 m,0 m/s,0 m/s^2), sampled from the still-zero physical state.
+Its legal position error makes the command jump from0 to.001 m/s^2.
+Rate is8/s and physical target error is zero. The later state is the exact
+exponential lag flow. The source proves the sampled predicate, initial cube,
+continuous state, positive terminal acceleration, and the command jump.
+At dispatch, acceleration derivative is0 from the left and.008 m/s^3 from the
+right. It also proves that acceleration is NOT classically differentiable at
+that dispatch. Thus the witness exercises the boundary the old global
+classical trajectory predicate would exclude. It is not a simulation.
+
+Verification and negative controls
+verify.py rebuilds both local sources in builder/fresh-replay. LEAN_PATH excludes
+cached local project proofs and reuses only the pinned Mathlib/dependency
+artifacts. It prints the axioms of every declared public theorem, allows only
+propext/Classical.choice/Quot.sound, and runs leanchecker on both modules.
+The full proof source imports Mathlib directly. The frozen RobustHold coordinate
+geometry and face proofs are copied without mathematical changes; the old
+classical invariance theorem is not imported. Provenance is recorded separately.
+Two altered sources must fail: changing the age premise to5ms, and shrinking
+R to.05m. These are failures of this sufficient certificate, not counterexamples
+to plant safety. The proved dispatch nondifferentiability is a third negative
+semantic check. See verification.json and verification-logs for actual outcomes.
+
+Failures retained
+attempts/ contains the initial missing-section-variable failure, the earlier
+working inherited-import source, two dispatch-witness elaboration failures and
+a redundant-tactic failure log. The earlier replay passed all proof checks but
+correctly reported source_unchanged=false because schedule lemmas were being
+added during it. That run is retained in attempts/pre-witness-verification.
+These are development failures, not hidden rejected control designs.
+
+Remaining limits and next decisions
+The theorem assumes a supplied execution. A precise general existence claim
+for finite piecewise-continuous signals is stated with a segment construction,
+but only the equilibrium and nonconstant two-cell witnesses are kernel checked.
+The next one or two decisions are: accept this conditional digital-hold tail,
+and define the finite-time braking/detector/handoff contract on the same model.
+Do not broaden the robot model or make novelty claims before a matched value
+comparison. No Git mutation, remote push, merge, external message, paid API or hardware
+operation was performed by this builder. Repository preservation belongs to root.

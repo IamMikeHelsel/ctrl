@@ -468,6 +468,42 @@ structure IsSchedule (H : ℝ) (q : Schedule) (stamp : Bool → ℝ → ℝ)
   timestamp : ∀ b t, t ∈ Icc 0 H → stamp b t = q.sample (q.index b t)
   held_reading : ∀ b t, t ∈ Icc 0 H → read b t = q.measurement (q.index b t)
 
+
+/-- The schedule conditions imply that each reading and its timestamp really
+are held on the half-open dispatch cell. -/
+theorem right_held_reading {H t : ℝ} {q : Schedule}
+    {stamp : Bool → ℝ → ℝ} {read : Bool → ℝ → State}
+    (hs : IsSchedule H q stamp read) (ht : t ∈ Ico 0 H) (n : ℕ)
+    (hn : q.dispatch n ≤ t ∧ t < q.dispatch (n+1)) :
+    stamp true t = q.sample n ∧ read true t = q.measurement n := by
+  have hi := hs.right_cell t ht
+  have heq : q.index true t = n := by
+    rcases lt_trichotomy (q.index true t) n with hlt | heq | hgt
+    · have hh := hs.dispatch_order.monotone (show q.index true t+1 ≤ n by omega)
+      linarith [hi.2,hn.1]
+    · exact heq
+    · have hh := hs.dispatch_order.monotone (show n+1 ≤ q.index true t by omega)
+      linarith [hi.1,hn.2]
+  have htc : t ∈ Icc 0 H := ⟨ht.1,ht.2.le⟩
+  exact ⟨by rw [hs.timestamp true t htc,heq], by rw [hs.held_reading true t htc,heq]⟩
+
+/-- The left derivative at dispatch n+1 uses command n. -/
+theorem left_held_reading {H t : ℝ} {q : Schedule}
+    {stamp : Bool → ℝ → ℝ} {read : Bool → ℝ → State}
+    (hs : IsSchedule H q stamp read) (ht : t ∈ Ioc 0 H) (n : ℕ)
+    (hn : q.dispatch n < t ∧ t ≤ q.dispatch (n+1)) :
+    stamp false t = q.sample n ∧ read false t = q.measurement n := by
+  have hi := hs.left_cell t ht
+  have heq : q.index false t = n := by
+    rcases lt_trichotomy (q.index false t) n with hlt | heq | hgt
+    · have hh := hs.dispatch_order.monotone (show q.index false t+1 ≤ n by omega)
+      linarith [hi.2,hn.1]
+    · exact heq
+    · have hh := hs.dispatch_order.monotone (show n+1 ≤ q.index false t by omega)
+      linarith [hi.1,hn.2]
+  have htc : t ∈ Icc 0 H := ⟨ht.1.le,ht.2⟩
+  exact ⟨by rw [hs.timestamp false t htc,heq], by rw [hs.held_reading false t htc,heq]⟩
+
 def IsSampledExecution (H c : ℝ) (f : ℝ → State)
     (r d stamp : Bool → ℝ → ℝ) (read : Bool → ℝ → State) (q : Schedule) : Prop :=
   Execution H c f r d stamp read ∧ IsSchedule H q stamp read

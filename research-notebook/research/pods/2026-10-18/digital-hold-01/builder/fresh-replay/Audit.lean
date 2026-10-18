@@ -1,4 +1,4 @@
-import DigitalHold
+import DispatchWitness
 #print axioms LeanControls.DigitalHold.cube_face
 #print axioms LeanControls.DigitalHold.cube_physical_bounds
 #print axioms LeanControls.DigitalHold.clip_eq
@@ -16,8 +16,25 @@ import DigitalHold
 #print axioms LeanControls.DigitalHold.prefix_budget
 #print axioms LeanControls.DigitalHold.digital_invariant
 #print axioms LeanControls.DigitalHold.digital_bounds
+#print axioms LeanControls.DigitalHold.right_held_reading
+#print axioms LeanControls.DigitalHold.left_held_reading
 #print axioms LeanControls.DigitalHold.first_command_fresh
 #print axioms LeanControls.DigitalHold.sampled_hold
 #print axioms LeanControls.DigitalHold.equilibrium_execution
 #print axioms LeanControls.DigitalHold.single_cell_schedule
 #print axioms LeanControls.DigitalHold.sampled_nonempty
+#print axioms LeanControls.DigitalHold.DispatchWitness.flow_initial
+#print axioms LeanControls.DigitalHold.DispatchWitness.flow_ode
+#print axioms LeanControls.DigitalHold.DispatchWitness.right_join
+#print axioms LeanControls.DigitalHold.DispatchWitness.left_join
+#print axioms LeanControls.DigitalHold.DispatchWitness.state_initial
+#print axioms LeanControls.DigitalHold.DispatchWitness.state_switch
+#print axioms LeanControls.DigitalHold.DispatchWitness.state_eq_flow
+#print axioms LeanControls.DigitalHold.DispatchWitness.state_continuous
+#print axioms LeanControls.DigitalHold.DispatchWitness.witness_execution
+#print axioms LeanControls.DigitalHold.DispatchWitness.witness_schedule
+#print axioms LeanControls.DigitalHold.DispatchWitness.two_cell_sampled_execution
+#print axioms LeanControls.DigitalHold.DispatchWitness.command_jump
+#print axioms LeanControls.DigitalHold.DispatchWitness.nonconstant_state
+#print axioms LeanControls.DigitalHold.DispatchWitness.acceleration_derivative_jump
+#print axioms LeanControls.DigitalHold.DispatchWitness.not_classical_at_dispatch

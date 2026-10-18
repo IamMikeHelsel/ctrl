@@ -6,7 +6,8 @@ and final animations. Start with the reports below.
 
 | Area | Start here |
 |---|---|
-| Current overnight round | [Runbook](research/overnight/2026-10-18/README.txt), [live state](research/overnight/2026-10-18/state.json), [current checkpoint](research/overnight/2026-10-18/checkpoint-02.txt), [claim map](research/overnight/2026-10-18/claim-map.txt), [submission requirements](research/overnight/2026-10-18/submission-readiness.txt) |
+| Digital hold: accepted conditional 1 ms theorem | [Team review packet](research/pods/2026-10-18/digital-hold-01/REVIEW-ME.txt), [independent proof review](research/pods/2026-10-18/digital-hold-01/critic/REPORT.txt), [scope and value grade](research/pods/2026-10-18/digital-hold-01/grader/FINAL-GRADE.txt), [next matched comparison](research/pods/2026-10-18/digital-hold-01/grader/COMPARISON.txt) |
+| Completed overnight round | [Runbook](research/overnight/2026-10-18/README.txt), [live state](research/overnight/2026-10-18/state.json), [current checkpoint](research/overnight/2026-10-18/checkpoint-02.txt), [claim map](research/overnight/2026-10-18/claim-map.txt), [submission requirements](research/overnight/2026-10-18/submission-readiness.txt) |
 | Previous five-hour session | [Checkpoint](research/pods/2026-10-17/five-hour-checkpoint-06.txt), [session limits](research/pods/2026-10-17/five-hour-session.json) |
 | Overnight acceleration admission | [Accepted independent review](research/overnight/2026-10-18/robot-motion/critic-01/report.txt), [proved delayed return](research/overnight/2026-10-18/robot-motion/builder-01/report.txt), [checker cost](research/overnight/2026-10-18/robot-motion/checker-cost-02/report.txt) |
 | Overnight actual-state settling | [Accepted independent review](research/overnight/2026-10-18/controls/critic-01/review.txt), [proof report](research/overnight/2026-10-18/controls/builder-01/report.txt) |
@@ -45,6 +46,16 @@ The papers and animations also have direct file links. Nothing in this import su
 claims a prize, or establishes publication novelty.
 
 ## Evidence and toolchains
+
+The accepted digital-hold follow-up proves all-time containment for supplied sampled
+executions with total measurement age at most 1 ms, changing response, bounded sensor
+errors and explicit command clipping. It derives the feedback mismatch instead of
+assuming it. A checked nonconstant dispatch witness exercises derivative jumps.
+Independent copied-source builds, axiom audits, separate kernel checks and negative
+controls passed. The first sample and dispatch must both occur at hold time zero.
+General existence, delayed braking-to-hold composition, precision standstill, hardware
+and comparative value remain open. This is a team-review artifact, not submission
+readiness. See the new review packet before using any result from that pod.
 
 This notebook is separate from the root `ControlsLean` library. Its main project uses Lean 4.35.0;
 the root library currently uses a different pin. Keep the notebook's `lake-manifest.json` and
