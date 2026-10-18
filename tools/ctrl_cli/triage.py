@@ -89,7 +89,7 @@ def run_bounty_filter(args, repo_root, data_dir):
         for fid in set(found):
             candidates.append({"id": fid})
     else:
-        candidates = list(jsp_catalog.values())
+        candidates = [{"id": k, **v} for k, v in jsp_catalog.items()]
 
     survivors = []
     rejected = []
@@ -99,7 +99,10 @@ def run_bounty_filter(args, repo_root, data_dir):
             jid = item.get("id") or item.get("problem_id")
             title = item.get("title", "")
             cat_status = item.get("status", "")
-            has_lean_proof = item.get("has_lean_proof", False)
+            has_lean_proof = bool(
+                item.get("has_lean_proof", False)
+                or str(item.get("lean", "")).lower() == "yes"
+            )
         elif isinstance(item, str):
             jid = item
             title = ""
@@ -117,7 +120,10 @@ def run_bounty_filter(args, repo_root, data_dir):
         if not cat_status:
             cat_status = cat_entry.get("status", "")
         if not has_lean_proof:
-            has_lean_proof = cat_entry.get("has_lean_proof", False)
+            has_lean_proof = bool(
+                cat_entry.get("has_lean_proof", False)
+                or str(cat_entry.get("lean", "")).lower() == "yes"
+            )
 
         if args.status != "all" and cat_status:
             if cat_status.lower() != args.status.lower():
