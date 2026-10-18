@@ -1,0 +1,47 @@
+/-- A loss-only position bound needs only the supplied prefix, not a future
+first zero or a continuation through the recovery phase. -/
+theorem loss_prefix_position_upper {P : ℝ} (hP : P ∈ Icc (0:ℝ) (1/20))
+    {f : ℝ → State} {r q : ℝ → ℝ} (hf : IsTrajectory P r q f)
+    (hrc : ContinuousOn r (Icc 0 P)) (hr : ∀ t ∈ Icc 0 P, 0 ≤ r t)
+    (hq : ∀ t ∈ Icc 0 P, q t ≤ 1/10)
+    (hx : f 0 0 ≤ 1/1000) (hv : f 0 1 ≤ 41/100) (ha : f 0 2 ≤ 1/10) :
+    ∀ t ∈ Icc 0 P, f t 0 ≤ 71/500 := by
+  have hb := Recovery.loss_acceleration_upper hP.1 hrc hr hq hf ha
+  have hd : ActualStop.IsDelayTrajectory P f :=
+    ⟨hf.continuous,(fun t ht => hf.ode t ht 0),(fun t ht => hf.ode t ht 1)⟩
+  intro t ht
+  have hh := (ActualStop.delay_coordinate_upper hP.1 hd hx hv hb t ht).1
+  have hsq : t^2 ≤ (1/20:ℝ)^2 := by nlinarith [ht.1,ht.2,hP.2]
+  nlinarith [ht.2,hP.2]
+
+/-- This upper comparison requires braking only through the chosen endpoint S.
+It does not assume a future zero or a future braking continuation. -/
+theorem recovered_prefix_position_upper {S : ℝ} (hS : 0 ≤ S)
+    {f : ℝ → State} {rL qL rB qB : ℝ → ℝ}
+    (hL : IsTrajectory (1/20) rL qL f)
+    (hrLc : ContinuousOn rL (Icc 0 (1/20))) (hrL : ∀ t ∈ Icc 0 (1/20), 0 ≤ rL t)
+    (hqL : ∀ t ∈ Icc 0 (1/20), qL t ≤ 1/10)
+    (hx : f 0 0 ≤ 1/1000) (hv : f 0 1 ≤ 41/100) (ha0 : f 0 2 ≤ 1/10)
+    (hB : IsTrajectory S rB qB (fun s => f (1/20+s)))
+    (hrBc : ContinuousOn rB (Icc 0 S)) (hrB : ∀ s ∈ Icc 0 S, 8 ≤ rB s)
+    (hqB : ∀ s ∈ Icc 0 S, qB s ≤ -6/5) :
+    ∀ t ∈ Icc 0 (1/20+S), f t 0 ≤ 71/500 := by
+  have ha := Recovery.loss_acceleration_upper (by norm_num : (0:ℝ) ≤ 1/20) hrLc hrL hqL hL ha0
+  have hd : ActualStop.IsDelayTrajectory (1/20) f :=
+    ⟨hL.continuous,(fun t ht => hL.ode t ht 0),(fun t ht => hL.ode t ht 1)⟩
+  have he := ActualStop.delay_coordinate_upper (by norm_num : (0:ℝ) ≤ 1/20)
+    hd hx hv ha (1/20) ⟨by norm_num,le_rfl⟩
+  have hi : ∀ i : Fin 3, f (1/20) i ≤ StoppingCertificate.engagementUpper i := by
+    intro i
+    fin_cases i <;> norm_num [StoppingCertificate.engagementUpper] <;>
+      linarith [ha (1/20) ⟨by norm_num,le_rfl⟩]
+  have hu := Recovery.recovered_upper_flow (b := 6/5) hS (by norm_num : (0:ℝ)<8)
+    hrBc hrB (fun s hs => by simpa only [neg_div] using hqB s hs) hB
+    (by norm_num [StoppingCertificate.engagementUpper]) (by simpa using hi)
+  intro t ht
+  by_cases hp : t ≤ 1/20
+  · exact loss_prefix_position_upper ⟨by norm_num,le_rfl⟩ hL hrLc hrL hqL hx hv ha0 t ⟨ht.1,hp⟩
+  · have hs : t-1/20 ∈ Icc (0:ℝ) S := ⟨by linarith,by linarith [ht.2]⟩
+    have hh := (hu (t-1/20) hs 0).trans (by simpa only [neg_div] using RecoveryPeak.old_upper_position_le hs.1)
+    simpa only [add_sub_cancel] using hh
+

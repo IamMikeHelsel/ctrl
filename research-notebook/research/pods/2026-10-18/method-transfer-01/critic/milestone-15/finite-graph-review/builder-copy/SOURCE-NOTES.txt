@@ -1,0 +1,45 @@
+E9 SOURCE ATTRIBUTION AND EXTRACTION
+
+Upstream repository: https://github.com/aimir/erdos-128-sparse-halves
+Revision: ba85f319ebb33ec2194ef4c2929a12916329e1e7, as pinned by root and E3.
+Seven upstream modules are copied without change: GraphBasics, GraphRational,
+ExternalInputs, LowDensityGraph, WeightedGraph, CubicNeighborhood and
+OneStepSaving. Their imports and hashes are recorded in INPUTS.json and the
+fresh verification record. E8's accepted WeightedProfiles.lean is copied
+without change and bound to its frozen manifest.
+
+The original LowDensityConstruction.lean is also preserved in full. Its
+needed zero-extension helpers are extracted into CutHelpers.lean. Exact
+inclusive source ranges, exported private helpers and the compatibility
+repair are listed in extraction.json. CutHelpers.patch is the complete
+diff from the original file to the extracted module. Namespaces remain
+Erdos128 and Erdos128.OrientedBCLCut. The new module imports only
+LowDensityGraph and WeightedGraph. It omits low-density calculus, the
+small-side-one construction, cross-potential optimization and the unrelated
+global-density theorem. No hypothesis was weakened in a selected helper.
+Because it retains those names, later integration must select this helper
+module or the original full LowDensityConstruction module, not import both.
+
+One selected cardinality proof needed an explicit congruence step for finite
+subtype instances under Lean 4.35. Its statement is unchanged. This helper
+module is an attributed extraction and compatibility port, not an unchanged
+replay of the full LowDensityConstruction module. All failed attempts remain.
+
+The upstream pin declares Lean 4.30.0 and mathlib
+c5ea00351c28e24afc9f0f84379aa41082b1188f. The executed existing pin is
+Lean 4.35.0 and mathlib 56a005855ea17e0b0958f73ec801ae140b0a1679.
+Both pin sets are preserved. No package or toolchain is installed or changed.
+The final replay rebuilds every local module in its closure from a fresh
+source copy. Existing cached mathlib dependency products are the recorded
+library boundary; their complete source tree is not rebuilt here.
+
+ExternalInputs defines explicit propositions for BCL and C4. It introduces
+no axiom. The C4 and global-density inputs are not premises of E9. The
+existing cut structure carries a BCL budget, but the E9 construction uses
+its finite side and orientation, not that numerical bound. It does not
+prove that every graph has such a cut.
+
+The neighborhood construction and graph-to-weighted API are attributed
+existing work. E9 adds the stated exact square transport and finite-graph
+wrapper for the accepted E8 criterion. This packet makes no claim of a new
+construction, new numerical constant or best-known graph bound.

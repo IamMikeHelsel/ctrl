@@ -1,0 +1,60 @@
+compile 0
+kernel 0
+reject-stopped-guard 1
+{
+  "scope": "Reviewer mathematical controls; no full hybrid theorem",
+  "runs": [
+    {
+      "label": "compile",
+      "argv": [
+        "/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/.tools/elan/toolchains/leanprover--lean4---v4.35.0/bin/lean",
+        "-o",
+        "ReviewControls.olean",
+        "ReviewControls.lean"
+      ],
+      "exit": 0,
+      "passed": true,
+      "seconds": 16.57364808296552
+    },
+    {
+      "label": "kernel",
+      "argv": [
+        "/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/.tools/elan/toolchains/leanprover--lean4---v4.35.0/bin/leanchecker",
+        "ReviewControls",
+        "-v"
+      ],
+      "exit": 0,
+      "passed": true,
+      "seconds": 22.352783374954015
+    },
+    {
+      "label": "reject-stopped-guard",
+      "argv": [
+        "/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/.tools/elan/toolchains/leanprover--lean4---v4.35.0/bin/lean",
+        "FalseStoppedGuard.lean"
+      ],
+      "exit": 1,
+      "passed": true,
+      "seconds": 8.437848457950167
+    }
+  ],
+  "source_sha256": "70ec1e59d63292d00cd8807b61a1655126a746ff56d5e21cc4af9bb6fd9738a0",
+  "axioms": {
+    "DetectorReview.early_execution": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "DetectorReview.guard_before_zero": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "DetectorReview.guard_time_lower": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  },
+  "passed": true
+}

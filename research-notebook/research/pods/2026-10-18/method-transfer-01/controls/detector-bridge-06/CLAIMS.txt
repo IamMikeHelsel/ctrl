@@ -1,0 +1,95 @@
+C6 CLAIMS AND LIMITS — CONTINUED-BRAKING DETECTOR BRIDGE
+18 October 2026. Builder evidence only. Independent acceptance is required.
+
+Physical contract
+BrakingExecution supplies one physical state f=(x,v,a) through .530 s.
+It is continuous on that interval. Inside each phase, x'=v, v'=a and
+ a'=r(q-a). Each phase rate is continuous. The effective target q is
+physical acceleration authority, not merely an actuator command.
+
+Initial state: x<=.001, v in [.39,.41], a in [-1.22,.1].
+Loss phase, t in [0,.05]: r>=0, q in [-1.22,.1].
+Recovered phase, local s=t-.05 in [0,.48]: r in [8,12],
+q in [-1.22,-1.2]. These bounds persist through the stated horizon.
+The same state f supplies both phases, including their common boundary.
+
+Compared with C1, positive initial speed, lower initial acceleration,
+lower targets, the recovered rate ceiling, and extension through .530
+are new premises. The rate ceiling is retained for later C5 compatibility;
+the scalar comparison itself does not need that ceiling. This is not a
+consequence for every trajectory allowed by C1.
+
+Physical results: DetectorBridge
+all_acceleration_lower: a(t)>=-1.22 on [0,.530].
+all_velocity_lower: v(t)>=.39-1.22t on [0,.530].
+recovered_upper: the exact x/v/a exponential upper flow, derived from
+the loss-phase ODE and the actual shared recovery state.
+all_position_upper: x(t)<=.142 on [0,.530].
+late_acceleration_upper: a(t)<=-19/70 for t in [.1,.530].
+first_zero: a first physical zero tau exists in [39/122,.529], with
+strictly positive velocity before tau. No maintained-rest claim follows.
+
+The acceleration lower bound is an ODE comparison. The upper acceleration
+bound uses exp(.4)>=1+.4, hence exp(-.4)<=5/7. Neither terminal velocity,
+terminal acceleration, a guard hit, nor an invariant is a premise.
+
+Prefix interface — no future-zero assumption
+loss_prefix_position_upper needs only a supplied loss prefix ending at
+P in [0,.05], its rate/target upper assumptions, and initial upper bounds.
+It proves x<=.142 through that prefix.
+recovered_prefix_position_upper needs the loss phase through .05 and a
+supplied recovered phase only through a chosen S>=0. It proves x<=.142
+on [0,.05+S]. It uses no future first zero, no future braking continuation,
+no lower acceleration, no positive initial speed, and no rate ceiling.
+This can bound an actual supplied braking prefix. It does not establish
+that an actual switched path agrees with any counterfactual braking path.
+
+Sensor and finite-grid results: DetectorSampling
+SensorBox retains errors (.001,.01,.05) for x,v,a, respectively.
+Readings assumes this box only on the finite grid sample(n)=n/2000,
+0<=n<=1060, through .530 s. No favorable noise or assumed guard hit.
+
+post_zero_velocity: if sigma is in [tau,tau+.001] and sigma<=.530,
+then v(sigma) is in [-.00122,0].
+guard_after_zero: every allowed reading at such sigma meets exactly C5's
+Guard: mx<=.143, |mv|<=.01122, ma in [-1.27,-.2]. In fact ma<=-31/140.
+
+finite_guard_hit: choose N=ceil(2000*tau). Then N<=1058 and
+ tau<=sample(N)<=tau+.0005, and the reading at N meets Guard.
+finite_first_guard: a first qualifying index k<=1058 exists, with no
+qualifying j<k. For every common latency D in [0,.0005], sample(k)+D<=.530.
+The first qualifying index may precede tau. This is finite sample existence,
+not a proof that a detector runs, chooses that index, or actuates a switch.
+
+Clock results
+common_latency_clocks and held_cell_age use absolute samples
+sigma+n/2000 and dispatches sigma+D+n/2000, with ONE common D in [0,.0005].
+Dispatch order is strict. Subtracting sigma gives local samples n/2000
+and local dispatches D+n/2000. At every held-cell time, including its
+incoming endpoint, reading age is at most D+.0005<=.001. Outgoing age is D.
+old_queued_stamp_stays_negative: a queued physical stamp p<sigma remains
+negative after subtracting sigma. No old reading is renewed or relabeled.
+These are clock algebra. They do not construct a C5 Execution or prove
+post-switch prefix agreement, pending input agreement, or state uniqueness.
+
+Nonvacuity and true counterexamples: DetectorWitness / DetectorSampling
+The witness changes effective target from +.1 to -1.2 at .05, with rate8,
+initial (.001,.41,.1), and one continuous physical state. Its exact readings
+satisfy the stronger contract and finite-first-guard conclusion. It is a
+continued-braking execution, not a hold execution or a simulated contact event.
+
+The exact q=a=-100, rate8, v0=.4 flow satisfies C1's upper physical premises.
+Its first zero is .004 and its exact acceleration reading fails Guard.
+The positive-acceleration initial-zero example is formalized as a LOSS PREFIX
+only; a later recovered continuation is not claimed by that example.
+The Zeno sequence (1/2000)*(1-1/(n+1)) has positive gaps <=1/4000, yet all
+samples stay below .0005. A gap bound alone does not imply window coverage.
+A 1 ms period plus .5 ms latency has 1.5 ms incoming age and fails C5's age cap.
+Independently variable bounded latencies can tie neighboring dispatches.
+
+Open scope
+No actual switched execution, actual/counterfactual prefix agreement,
+post-switch existence, controller implementation, or detector/actuator liveness.
+No result that C1's original floor-only rate family reaches this guard.
+No impact-like acceleration jumps, friction/contact mapping, hardware claim,
+precision standstill, lower-travel safety, general existence, or novelty claim.

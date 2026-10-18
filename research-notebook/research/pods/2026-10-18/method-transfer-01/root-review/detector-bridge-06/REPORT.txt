@@ -1,0 +1,65 @@
+C6 INDEPENDENT REVIEW — ACCEPTED WITH EXPLICIT SCOPE
+18 October 2026
+
+Verdict
+Accept the continued-braking detector bridge under its stated physical and
+sensor bounds. This is not an actual switched execution or detector program.
+Root read the three new source modules and ran a copied-source replay. The
+builder's files and prior frozen inputs were checked before and after replay.
+
+Physical contract
+One continuous scalar state satisfies x'=v, v'=a, a'=r(q-a) on each open
+phase. Rate functions are continuous on each phase. Initial x<=.001 m,
+v in [.39,.41] m/s, a in [-1.22,.1] m/s^2. Loss lasts .05 s, with r>=0
+and effective acceleration target q in [-1.22,.1]. Recovered response has
+r in [8,12] and q in [-1.22,-1.2] through absolute time .530 s.
+The positive speed, lower acceleration and target bounds, rate ceiling and
+extended horizon strengthen C1. This is not an implication from C1 alone.
+
+Accepted result
+Position stays <=.142 m through .530 s. A first velocity zero occurs by
+.529 s and no earlier than 39/122 s. In the following .001 s, velocity lies
+in [-.00122,0]. All sensor errors within (.001 m,.01 m/s,.05 m/s^2) then
+produce C5's guard: mx<=.143, |mv|<=.01122, ma in [-1.27,-.2].
+On the finite .0005 s grid, some guard reading has index <=1058. The first
+such index exists. With a common delay <=.0005 s, arrival is <=.5295 s,
+leaving .0005 s before the braking horizon. The source proves the weaker
+.530 s deadline; the sharper number also follows by exact arithmetic.
+Original-clock translation and a whole-cell age budget <=.001 s are proved.
+Prefix position lemmas do not assume a later zero or a future braking phase.
+They do not themselves prove agreement of independently supplied paths.
+
+Independent checks
+The main replay rebuilt 31 local LeanControls dependencies and 12 research
+modules. All 97 process checks passed: 43 fresh builds, an axiom audit,
+43 separate kernel checks, and ten negative controls. The audit inspected
+118 theorem closures. Only propext, Classical.choice and Quot.sound occur.
+Pinned external package artifacts were reused. Local proof products were not.
+The replay records toolchain, package revisions, source hashes and commands.
+
+Root added an exact arithmetic check and three further process checks:
+fresh compilation, a separate kernel replay, and one rejected false claim.
+The three added theorem closures use only the same allowed axioms. The main
+97 checks plus these three checks all passed. Rejection of a weakened proof
+is not by itself a counterexample to every possible weaker theorem.
+
+The added nonvacuous constant-acceleration trajectory meets the guard at
+.320 s with speed .006 m/s, before its first velocity zero at .325 s. Thus a
+guard is not a stopped-state test. Another added theorem proves that any
+guard time on a C6 path is at least 18439/61000 s. The arithmetic replay also
+checks the sensor corners and the strict dispatch horizon reserve.
+
+Preserved failures and limits
+C1 alone permits a=-100 and a zero at .004 s; its sensor acceleration does
+not meet the guard. Bounded positive sample gaps can still be Zeno and fail
+to cover the detector window. A 1 ms sample period plus .5 ms delay exceeds
+the 1 ms age budget. Independent variable delays can tie dispatch times.
+The nonconstant braking witness establishes contract consistency. It does
+not construct holding motion. No controller switch, generated post-switch
+readings, finite-precision program, hardware, Franka, two-sided travel,
+precision standstill or novelty claim is accepted here.
+
+Next test
+Construct finite sampled holding motion from an actual admitted prefix.
+Keep all of that prefix, including acceleration and its pending command.
+Use new readings from the new path. Then review before composing a handoff.

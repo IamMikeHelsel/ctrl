@@ -1,0 +1,37 @@
+E9 PRESERVED FAILURES
+
+Every development invocation records its source bytes, compiler log and exit
+status in an attempt directory. development-attempts.json indexes them.
+These attempts are not the final fresh-source evidence.
+
+CutHelpers: the first extracted build failed at the induced edge cardinality
+identity. Printed terms looked identical, but their synthesized finite-type
+instances differed under Lean 4.35. Attempts using a narrower simp set and an
+explicit set-to-finset equality did not resolve it. The final proof uses
+convert, simplification and congruence, with the same statement. One later
+attempt only failed because an extra tactic ran after the goal was closed.
+The exact extraction/compatibility patch is preserved.
+
+SquareCertificate: the first build used an unavailable multiplication lemma
+name and had an extra ring after field_simp had closed a goal. A repair then
+let default simp rewrite a rational inverse inside one inequality; linarith
+treated the two forms as different atoms. Restricting simplification to
+mul_zero and applying sub_nonpos resolves this without changing the statement.
+The added threshold identity also initially had a redundant final ring.
+
+FiniteGraphBridge: the main endpoint compiled before the explicit degree
+normalization lemma was added. That new lemma exposed another finite-set
+instance mismatch after clearing denominators. The final proof uses two
+congruence steps and membership extensionality. Its statement is unchanged.
+
+FiniteControls: initial failures concerned the Std.Symm/Std.Irrefl constructor
+wrappers, absence of a direct decidability instance for CliqueFree, an exact
+finite intersection simplification and rewriting a function-valued profile.
+The repairs give the explicit triangle-free proof, exact finite counts,
+an arithmetic looplessness proof and an extensional profile equality.
+No numerical claim or theorem premise was weakened.
+
+Four expected false mathematical controls are separate from these compiler
+development failures. They test wrong cost scaling, wrong mass, wrong slope
+scaling and the excluded balanced alpha endpoint. They must fail for their
+stated mathematical reason; see CONTROLS.txt and the fresh rejection logs.

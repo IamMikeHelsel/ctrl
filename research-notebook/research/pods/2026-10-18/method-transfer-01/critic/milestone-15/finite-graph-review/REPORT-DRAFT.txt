@@ -1,0 +1,107 @@
+E9 FINITE-GRAPH BRIDGE — INDEPENDENT REVIEW
+Draft pending final replay; no acceptance from this draft.
+
+The exact claim
+For a finite nonempty type V, a simple triangle-free graph G, decidable graph
+adjacency, a supplied C : OrientedBCLCut G, and rationals R,L, the theorem
+half_from_squared_certificates takes only:
+  1/2 < sideMass C, 0 <= R,
+  lowCertificate (sideMass C) (sideEdges C) R L <= 0,
+  highCertificate (sideMass C) (sideEdges C) R L <= 0.
+It concludes HasNormalizedFractionalHalfBoundQ G R: an actual rational
+vertex profile in [0,1], with total mass |V|/2 and edge cost / |V|^2 <= R.
+Edges are unordered and counted once. The conclusion is existential.
+
+OrientedBCLCut is not a free arbitrary-cut type. It carries a smaller-side
+orientation and the explicit budget e(X)+e(Y)<=(2/47)|V|^2. That budget is
+part of the supplied input even though the construction does not use its
+numerical value. No theorem that every graph has this cut is proved here.
+There is no additional global-density, maximum-cut, degree-regularity, C4,
+feasible-profile, objective-bound or moment premise. No even-order premise
+is needed for this fractional endpoint. Empty V and balanced side y=1/2
+are outside this theorem's domain. Integral floor halves remain a later step.
+
+Why the construction has the claimed meaning
+Let n=|V|, k=|Y|, y=k/n and j=e(Y)/n^2. Uniform weights 1/k on the actual
+induced side graph are strictly positive and total one. The source derives
+ edgeMass=j/y^2, weightedDegree(v)=sideDegree(v)/y,
+ alpha=1/(2y)=C.c, local target=R/y^2, local slope=L/y.
+The completed-square identities imply both local affine bounds, for every
+rational degree argument, by multiplying by the positive factor y^2. The
+ambient meanDegree is 2j/y, equal to 4cj when c=1/(2y). The low square uses
+K=4R+1>0 from R>=0. The high normalization uses y-1/2>0. The domain y>1/2
+also gives 0<alpha<1. No denominator argument passes through the balanced
+endpoint, where alpha=1 and y-1/2=0.
+
+The actual side graph remains triangle-free by induced-graph inheritance.
+The unchanged accepted E8 theorem derives its moments from adjacency and
+uses actual feasible neighborhood profiles. E9 supplies its two affine
+bounds with the same rational L/y for every side vertex. The global square
+bounds are stronger than branch-restricted bounds, which is a conservative
+sufficient condition, not a circular graph conclusion. Equality at the degree
+branch boundary is allowed by E8's low branch; no degree or vertex is omitted.
+
+The proof extends E8's profile by zero outside Y. It proves
+ sum(extension)=k*weightedMean(profile)=k/(2y)=n/2,
+ normalizedEdgeCost(extension)=y^2*localObjective(profile)<=R.
+The induced-edge count, neighbor sums and factor two between ordered pairs
+and unordered edges are proved in the helper extraction. The local degree
+scaling lemma is also proved explicitly. No state, plant or controls theorem
+is imported; lean-controls appears only as the existing package-cache location.
+The result proves existence. It is not an efficient selector implementation.
+
+Attribution and extraction
+The seven copied upstream proof modules are unchanged at the recorded
+ba85f319ebb33ec2194ef4c2929a12916329e1e7 source pin. WeightedProfiles.lean is
+byte-identical to accepted E8. The original LowDensityConstruction.lean is
+preserved in full but is not compiled as an unchanged module in this review.
+Instead CutHelpers extracts its selected zero-extension and cost helpers.
+I checked all seven inclusive source ranges after the disclosed visibility
+changes and one compatibility repair. I also regenerated and compared the
+complete original-to-helper diff. Both checks passed, and I read the full
+executed helper source. No selected statement gains or loses a mathematical
+hypothesis. The finite-subtype cardinality proof adds convert/simp/congr;
+its equality statement stays the same.
+
+The helper imports only LowDensityGraph and WeightedGraph. Its retained
+names collide with the original full LowDensityConstruction declarations;
+later integration must choose one of these modules, not import both. This is
+an attributed extraction and compatibility port, not an untouched replay of
+the whole original module. Source attribution and numerical usefulness are
+separate from novelty; this review makes no novelty claim.
+
+Nonvacuity and semantic controls
+The six-vertex graph has one edge and four isolated vertices. The small cut
+side is one isolated vertex, so y=5/6,j=1/36 and c=3/5. A constant 3/5
+profile on Y has local edge objective 9/625, ambient mass 3 and normalized
+cost 1/100. Its exact square certificates are -1/5850 and -19/22500. The
+six_vertex_endpoint proof calls the main theorem with these actual graph
+parameters and certificates. The existential output of that call is not
+identified with the independently exhibited constant profile.
+
+The same graph has the independent half {2,3,4} with zero cost. Thus the
+positive example is a normalization and nonvacuity test, not sharpness.
+The critic adds the legal half {0,1,2}, whose normalized cost is 1/36>.01.
+This rejects a false universal interpretation of E9's existential conclusion.
+
+The four copied mathematical rejection controls test the actual wrong
+alternatives: cost scaled by y instead of y^2; local mass 1/2 instead of
+1/(2y); an ambient slope used locally without division by y; and alpha<1 at
+the balanced endpoint. Positive compiled control theorems state their exact
+counterfacts. The critic's fifth rejection is the false claim that every
+fractional half of the six-vertex graph has cost <=.01. Rejection requires
+an unsolved mathematical goal, not timeout, syntax or missing-name failure.
+
+Next interface and limits
+NEXT-E10-INTERFACE.txt gives the exact call needed after an independently
+proved universal U/Q/M parameter selector. In its moment branch use y=1/(2c),
+j=sideEdges C, the same rational L, and the named E9 certificates or proved
+identical expanded forms. Its balanced endpoint must use U/Q. The selector
+must still prove the 872-cell cover and exterior inequalities; E9 does not.
+
+The uniform and completion branches then need their actual graph witnesses,
+normalization and the exact retained cut budget. Positive blowup/descent,
+empty-graph handling and floor-half rounding remain separate graph
+composition work. E9 does not prove the full .0251 Lean endpoint or the
+conjectured .02 coefficient. It does not validate the unaccepted stronger
+external cut input. Root owns any new assignment, integration and Git.

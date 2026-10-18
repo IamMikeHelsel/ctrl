@@ -1,0 +1,60 @@
+/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/pods/2026-10-18/method-transfer-01/controls/detector-bridge-06/build/DetectorBridge.lean:80:8: error: Type mismatch: After simplification, term
+  hL (1 / 20)
+    ⟨Mathlib.Meta.NormNum.isRat_le_true
+        (Mathlib.Meta.NormNum.IsNNRat.to_isRat
+          (Mathlib.Meta.NormNum.IsNat.to_isNNRat (Mathlib.Meta.NormNum.isNat_ofNat ℝ Nat.cast_zero)))
+        (Mathlib.Meta.NormNum.IsNNRat.to_isRat
+          (Mathlib.Meta.NormNum.isNNRat_div
+            (Mathlib.Meta.NormNum.isNNRat_mul (Eq.refl HMul.hMul)
+              (Mathlib.Meta.NormNum.IsNat.to_isNNRat (Mathlib.Meta.NormNum.isNat_ofNat ℝ Nat.cast_one))
+              (Mathlib.Meta.NormNum.isNNRat_inv_pos
+                (Mathlib.Meta.NormNum.IsNat.to_isNNRat (Mathlib.Meta.NormNum.isNat_ofNat ℝ (Eq.refl 20))))
+              (Eq.refl (Nat.mul 1 1)) (Eq.refl 20))))
+        (Eq.refl true),
+      le_rfl⟩
+ has type
+  39 / 100 + -61 / 50 * 20⁻¹ ≤ f 20⁻¹ 1
+but is expected to have type
+  39 / 100 ≤ f 20⁻¹ 1 + 61 / 50 * 20⁻¹
+
+Note: The following definitions were not unfolded because their definition is not exposed:
+  Real.instAdd ↦ 1
+  Real.instLE ↦ 2
+/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/pods/2026-10-18/method-transfer-01/controls/detector-bridge-06/build/DetectorBridge.lean:84:4: error: Type mismatch: After simplification, term
+  hL t ⟨ht.left, hp⟩
+ has type
+  39 / 100 + -61 / 50 * t ≤ f t 1
+but is expected to have type
+  39 / 100 ≤ f t 1 + 61 / 50 * t
+
+Note: The following definitions were not unfolded because their definition is not exposed:
+  Real.instAdd ↦ 1
+  Real.instLE ↦ 2
+/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/pods/2026-10-18/method-transfer-01/controls/detector-bridge-06/build/DetectorBridge.lean:98:2: error: Tactic `apply` failed: could not unify the conclusion of `Recovery.recovered_upper_flow ?m.222 ?m.229
+  ex.brake_rate_continuous (fun s hs => (ex.brake_rate s hs).left) (fun s hs => ?m.257) ex.brake ?m.264`
+  ∀ t ∈ Icc 0 (12 / 25), ∀ (i : Fin 3), f (1 / 20 + t) i ≤ heldSolution 8 t (-?m.209) ?m.233 i
+with the goal
+  ∀ s ∈ Icc 0 (12 / 25),
+    ∀ (i : Fin 3), f (1 / 20 + s) i ≤ heldSolution 8 s (-6 / 5) StoppingCertificate.engagementUpper i
+
+Note: The full type of `Recovery.recovered_upper_flow ?m.222 ?m.229 ex.brake_rate_continuous
+  (fun s hs => (ex.brake_rate s hs).left) (fun s hs => ?m.257) ex.brake ?m.264` is
+  (∀ (i : Fin 3), f (1 / 20 + 0) i ≤ ?m.233 i) →
+    ∀ t ∈ Icc 0 (12 / 25), ∀ (i : Fin 3), f (1 / 20 + t) i ≤ heldSolution 8 t (-?m.209) ?m.233 i
+
+Note: The following definitions were not unfolded because their definition is not exposed:
+  Real.instAdd ↦ 156
+  Real.instLE ↦ 2
+
+f : ℝ → State
+rLoss qLoss rBrake qBrake : ℝ → ℝ
+ex : BrakingExecution f rLoss qLoss rBrake qBrake
+ha : ∀ t ∈ Icc 0 (1 / 20), f t 2 ≤ 1 / 10
+hd : ActualStop.IsDelayTrajectory (1 / 20) f
+hp : ∀ t ∈ Icc 0 (1 / 20), f t 0 ≤ 1 / 1000 + 41 / 100 * t + 1 / 10 * t ^ 2 / 2 ∧ f t 1 ≤ 41 / 100 + 1 / 10 * t
+he :
+  f (1 / 20) 0 ≤ 1 / 1000 + 41 / 100 * (1 / 20) + 1 / 10 * (1 / 20) ^ 2 / 2 ∧
+    f (1 / 20) 1 ≤ 41 / 100 + 1 / 10 * (1 / 20)
+⊢ ∀ s ∈ Icc 0 (12 / 25),
+    ∀ (i : Fin 3), f (1 / 20 + s) i ≤ heldSolution 8 s (-6 / 5) StoppingCertificate.engagementUpper i
+/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/pods/2026-10-18/method-transfer-01/controls/detector-bridge-06/build/DetectorBridge.lean:135:2: error: `simp` made no progress

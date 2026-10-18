@@ -1,0 +1,58 @@
+E9: ACTUAL FINITE-GRAPH FRACTIONAL HALF
+
+All coefficients, profile values and costs below are rational. Let V be a
+nonempty finite type and G a triangle-free simple graph. Let C be the existing
+OrientedBCLCut G object. Its small side X has size at most the complement Y.
+The structure also carries e(X)+e(Y)<=(2/47)n^2. The new proof does not use
+that numerical budget, a maximum-cut premise, or a global edge-density bound.
+
+Set n=|V|, k=|Y|, y=k/n, j=e(Y)/n^2, m=2j/y and b=y-1/2. Require y>1/2.
+Let R,L be rational with R>=0. Define
+  K = 4R+1,
+  C0 = j-4R(y-m)^2-m^2,
+  L0 = 8R(y-m)-2m,
+  A(L) = C0+(L-L0)^2/(4K),
+  H(L) = ((j-R)/b-L)^2/4+L*m.
+If A(L)<=0 and H(L)<=0, then there is an actual function z:V->Q such that
+  0<=z_v<=1 for every v,
+  sum_v z_v=n/2,
+  edgeCost G z / n^2 <= R.
+edgeCost counts each unordered edge once. This is exactly the existing
+predicate HasNormalizedFractionalHalfBoundQ G R. The Lean endpoint is
+Erdos128.FiniteProfileBridge.half_from_squared_certificates.
+
+The only new arithmetic premises are R>=0, y>1/2 and the two square tests.
+No feasible profile, graph moment identity or objective bound is a premise.
+The theorem applies to odd orders as a fractional-half statement. It has no
+integer-half or floor-half conclusion. It does not assert existence of C.
+
+Derived normalization
+The graph on Y is the actual induced graph, with uniform probability weights
+1/k. Its edge mass is mu=j/y^2. Its local target mass is alpha=n/(2k)=1/(2y),
+which is strictly between zero and one. With ambient side degree defined as
+the induced neighbor count divided by n, its local weighted degree is d/y.
+The local target cost is T=R/y^2 and the local affine slope is L/y.
+
+The exact universal identities are
+  ambient_phi_low(d)-L(d-m)
+    =A(L)-K*(d-m-(L0-L)/(2K))^2,
+  ambient_phi_high(d)-L(d-m)
+    =H(L)-(d-((j-R)/b-L)/2)^2,
+where ambient_phi_low(d)=j-4R(y-d)^2-d^2 and
+ambient_phi_high(d)=d(j-R)/b-d^2. Since K>0, both square tests give global
+pointwise majorants. Thus they cover the restricted E8 degree domains too.
+
+At a local degree t, the ambient degree is y*t. Each ambient difference
+equals y^2 times its E8 normalized difference. The proof derives this by
+exact rational identities, including slope L/y. The threshold scales as
+y*(1-alpha)=y-1/2, with y positive. No branch direction is reversed.
+
+E8 then supplies a unit profile pi on Y, with local mean alpha and local
+objective at most R/y^2. Extend pi by zero outside Y. The reused attributed
+helpers derive ambient mass k*alpha=n/2 and normalized edge cost
+y^2*objective. The new wrapper proves that this cost is at most R.
+
+The balanced case y=1/2 is excluded: alpha=1 and b=0. Lean's total division
+does not supply a valid positive-denominator instance there. The balanced
+endpoint stays separate. No .0251 cover, BCL all-order argument, blowup,
+rounding or novelty conclusion is part of this theorem.

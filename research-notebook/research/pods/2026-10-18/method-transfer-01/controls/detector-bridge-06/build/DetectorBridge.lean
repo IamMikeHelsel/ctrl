@@ -54,8 +54,56 @@ theorem velocity_lower {H L U : ℝ} (hH : 0 ≤ H)
     (fun t _ => hd t) (fun t ht => hf.ode t ht 1) (by simpa using hi)
     (fun t ht => ha t ⟨ht.1.le,ht.2.le⟩)
 
+/-- A loss-only position bound needs only the supplied prefix, not a future
+first zero or a continuation through the recovery phase. -/
+theorem loss_prefix_position_upper {P : ℝ} (hP : P ∈ Icc (0:ℝ) (1/20))
+    {f : ℝ → State} {r q : ℝ → ℝ} (hf : IsTrajectory P r q f)
+    (hrc : ContinuousOn r (Icc 0 P)) (hr : ∀ t ∈ Icc 0 P, 0 ≤ r t)
+    (hq : ∀ t ∈ Icc 0 P, q t ≤ 1/10)
+    (hx : f 0 0 ≤ 1/1000) (hv : f 0 1 ≤ 41/100) (ha : f 0 2 ≤ 1/10) :
+    ∀ t ∈ Icc 0 P, f t 0 ≤ 71/500 := by
+  have hb := Recovery.loss_acceleration_upper hP.1 hrc hr hq hf ha
+  have hd : ActualStop.IsDelayTrajectory P f :=
+    ⟨hf.continuous,(fun t ht => hf.ode t ht 0),(fun t ht => hf.ode t ht 1)⟩
+  intro t ht
+  have hh := (ActualStop.delay_coordinate_upper hP.1 hd hx hv hb t ht).1
+  have hsq : t^2 ≤ (1/20:ℝ)^2 := by nlinarith [ht.1,ht.2,hP.2]
+  nlinarith [ht.2,hP.2]
+
+/-- This upper comparison requires braking only through the chosen endpoint S.
+It does not assume a future zero or a future braking continuation. -/
+theorem recovered_prefix_position_upper {S : ℝ} (hS : 0 ≤ S)
+    {f : ℝ → State} {rL qL rB qB : ℝ → ℝ}
+    (hL : IsTrajectory (1/20) rL qL f)
+    (hrLc : ContinuousOn rL (Icc 0 (1/20))) (hrL : ∀ t ∈ Icc 0 (1/20), 0 ≤ rL t)
+    (hqL : ∀ t ∈ Icc 0 (1/20), qL t ≤ 1/10)
+    (hx : f 0 0 ≤ 1/1000) (hv : f 0 1 ≤ 41/100) (ha0 : f 0 2 ≤ 1/10)
+    (hB : IsTrajectory S rB qB (fun s => f (1/20+s)))
+    (hrBc : ContinuousOn rB (Icc 0 S)) (hrB : ∀ s ∈ Icc 0 S, 8 ≤ rB s)
+    (hqB : ∀ s ∈ Icc 0 S, qB s ≤ -6/5) :
+    ∀ t ∈ Icc 0 (1/20+S), f t 0 ≤ 71/500 := by
+  have ha := Recovery.loss_acceleration_upper (by norm_num : (0:ℝ) ≤ 1/20) hrLc hrL hqL hL ha0
+  have hd : ActualStop.IsDelayTrajectory (1/20) f :=
+    ⟨hL.continuous,(fun t ht => hL.ode t ht 0),(fun t ht => hL.ode t ht 1)⟩
+  have he := ActualStop.delay_coordinate_upper (by norm_num : (0:ℝ) ≤ 1/20)
+    hd hx hv ha (1/20) ⟨by norm_num,le_rfl⟩
+  have hi : ∀ i : Fin 3, f (1/20) i ≤ StoppingCertificate.engagementUpper i := by
+    intro i
+    fin_cases i <;> norm_num [StoppingCertificate.engagementUpper] <;>
+      linarith [ha (1/20) ⟨by norm_num,le_rfl⟩]
+  have hu := Recovery.recovered_upper_flow (b := 6/5) (z := StoppingCertificate.engagementUpper) hS (by norm_num : (0:ℝ)<8)
+    hrBc hrB (fun s hs => by simpa only [neg_div] using hqB s hs) hB
+    (by norm_num [StoppingCertificate.engagementUpper]) (by simpa using hi)
+  intro t ht
+  by_cases hp : t ≤ 1/20
+  · exact loss_prefix_position_upper ⟨by norm_num,le_rfl⟩ hL hrLc hrL hqL hx hv ha0 t ⟨ht.1,hp⟩
+  · have hs : t-1/20 ∈ Icc (0:ℝ) S := ⟨by linarith,by linarith [ht.2]⟩
+    have hh := (hu (t-1/20) hs 0).trans (by simpa only [neg_div] using RecoveryPeak.old_upper_position_le hs.1)
+    simpa only [add_sub_cancel] using hh
+
 variable {f : ℝ → State} {rLoss qLoss rBrake qBrake : ℝ → ℝ}
 variable (ex : BrakingExecution f rLoss qLoss rBrake qBrake)
+include ex
 
 theorem all_acceleration_lower : ∀ t ∈ Icc 0 (53/100), -61/50 ≤ f t 2 := by
   have hL := acceleration_lower (by norm_num : (0:ℝ) ≤ 1/20)
@@ -76,11 +124,11 @@ theorem all_velocity_lower : ∀ t ∈ Icc 0 (53/100), 39/100-(61/50)*t ≤ f t 
     (fun t ht => ha t ⟨ht.1,by linarith [ht.2]⟩)
   have hB := velocity_lower (L := -61/50) (U := 39/100-(61/50)*(1/20))
     (by norm_num : (0:ℝ) ≤ 12/25) ex.brake
-    (by simpa using hL (1/20) ⟨by norm_num,le_rfl⟩)
+    (by have hh := hL (1/20) ⟨by norm_num,le_rfl⟩; simp only [add_zero]; linarith)
     (fun s hs => ha (1/20+s) ⟨by linarith [hs.1],by linarith [hs.2]⟩)
   intro t ht
   by_cases hp : t ≤ 1/20
-  · simpa [sub_eq_add_neg] using hL t ⟨ht.1,hp⟩
+  · have hh := hL t ⟨ht.1,hp⟩; linarith
   · have hh := hB (t-1/20) ⟨by linarith,by linarith [ht.2]⟩
     simp only [add_sub_cancel] at hh
     linarith
@@ -94,13 +142,15 @@ theorem recovered_upper : ∀ s ∈ Icc 0 (12/25), ∀ i : Fin 3,
   have hp := ActualStop.delay_coordinate_upper (by norm_num : (0:ℝ) ≤ 1/20)
     hd ex.position_initial ex.velocity_initial.2 ha
   have he := hp (1/20) ⟨by norm_num,le_rfl⟩
-  apply Recovery.recovered_upper_flow (by norm_num : (0:ℝ) ≤ 12/25) (by norm_num : (0:ℝ)<8)
+  have hi : ∀ i : Fin 3, f (1/20) i ≤ StoppingCertificate.engagementUpper i := by
+    intro i
+    fin_cases i <;> norm_num [StoppingCertificate.engagementUpper] <;>
+      linarith [ha (1/20) ⟨by norm_num,le_rfl⟩]
+  simpa only [neg_div] using Recovery.recovered_upper_flow (b := 6/5) (z := StoppingCertificate.engagementUpper)
+    (by norm_num : (0:ℝ) ≤ 12/25) (by norm_num : (0:ℝ)<8)
     ex.brake_rate_continuous (fun s hs => (ex.brake_rate s hs).1)
-    (fun s hs => (ex.brake_target s hs).2) ex.brake
-    (by norm_num [StoppingCertificate.engagementUpper])
-  intro i
-  fin_cases i <;> norm_num [StoppingCertificate.engagementUpper] <;>
-    linarith [ha (1/20) ⟨by norm_num,le_rfl⟩]
+    (fun s hs => by simpa only [neg_div] using (ex.brake_target s hs).2) ex.brake
+    (by norm_num [StoppingCertificate.engagementUpper]) (by simpa using hi)
 
 theorem all_position_upper : ∀ t ∈ Icc 0 (53/100), f t 0 ≤ 71/500 := by
   have ha := Recovery.loss_acceleration_upper (by norm_num : (0:ℝ) ≤ 1/20)
@@ -131,7 +181,7 @@ theorem late_acceleration_upper : ∀ t ∈ Icc (1/10) (53/100), f t 2 ≤ -19/7
   have hx : Real.exp (-8*(t-1/20)) ≤ 5/7 :=
     (Real.exp_le_exp.mpr (by linarith [ht.1])).trans he
   norm_num [heldSolution,StoppingCertificate.engagementUpper] at hh
-  simp only [add_sub_cancel] at hh
+  simp only [neg_mul] at hx
   nlinarith
 
 theorem first_zero : ∃ τ ∈ Icc (39/122:ℝ) (529/1000),

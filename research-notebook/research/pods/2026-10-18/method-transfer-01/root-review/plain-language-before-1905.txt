@@ -1,0 +1,90 @@
+HOW ONE KIND OF MATH CAN HELP ANOTHER
+18 October 2026
+
+For Erdos 128, we want to choose half the vertices of a triangle-free graph
+while keeping few edges between the chosen vertices. Our first bound kept
+only two numbers: the sizes of a split and the edge counts inside it. It
+lost information about how the edges meet.
+
+Probability gives us a way to keep some of that information without listing
+every graph. Choose one vertex at random. Count its neighbors. Then add the
+neighbor counts of those neighbors. These two measurements obey an exact
+identity when averaged over the graph.
+
+For example, take the four-vertex path A--B--C--D:
+
+  vertex                    A   B   C   D
+  number of neighbors       1   2   2   1
+  square of that number     1   4   4   1
+  neighbors' counts added   2   3   3   2
+
+The last two rows both sum to 10. This holds for every finite undirected
+simple graph, by counting the same contributions in two orders. Our proof
+uses the weighted version on one side of the split.
+
+The absence of triangles supplies a second fact: no two neighbors of one
+vertex are joined. That gives us actual ways to choose a fractional half.
+Here "fractional" means that a vertex can be selected by a fraction between
+zero and one. An existing rounding result later gives an ordinary half.
+
+The bridge is this: the graph gives feasible selections, probability gives
+an exact relation between their measurements, and a quadratic inequality
+shows that at least one selection must be cheap enough. Exact rational
+arithmetic can check the parameter ranges. Lean can then check a formal
+version of the argument. None of those steps alone proves the conjecture.
+
+The recent matching and moment-matrix papers prompted us to restore joint
+information. We did not apply their theorems to this graph. The neighborhood
+selection itself comes from existing sparse-half work. This distinction
+matters when we assess what, if anything, is new.
+
+In controls, the same question has a different answer: what did the earlier
+bound throw away? It threw away part of the actuator's exponential response.
+Keeping that term gives a tighter position envelope. Checking its whole peak
+can certify clearance that the simpler formula cannot certify. The math is
+standard comparison theory; its value is the stronger explicit contract.
+
+A second controls test follows the largest weighted state component. That
+component can change as the system moves or a new command takes effect. If
+every component that can be largest has enough inward drift, the state must
+enter a smaller region by a calculable time. A recent chemical-dynamics proof
+uses this pattern. We must establish our own robot-model inequalities.
+
+Our rule for choosing the next idea
+
+1. Identify the information that the present bound loses.
+2. Find a method that can retain that information.
+3. Translate its assumptions and conclusion exactly.
+4. Try a small counterexample before a large search.
+5. Compare against existing results under the same assumptions.
+6. Prove the full claim and have another agent check it.
+
+This is a map for experiments. It is not evidence that combining more fields
+necessarily makes a proof better, or that the current results are novel.
+
+The next controls step: choose where to hold
+
+A safe stopping point and a safe holding target are different. At zero speed,
+the actuator can still apply force. Its delayed response can start motion again.
+Our current proof tracks position, speed and acceleration together.
+
+The proposed rule starts from one sensor reading. It finds holding targets
+that fit all three state bounds, including sensor error and the pending command.
+It chooses one target and keeps it fixed. The full proof must then show that
+the old and new commands cannot move the axis beyond the travel limit.
+
+For the illustrative reading at 140 mm, the proposed target is 95.73033 mm.
+That is about 44.27 mm behind the measured position. The old target was
+100.9375 mm. This is an intentional retreat from the limit, not a promise to
+stay at the stopping point. With the same error calculation, the proposed
+upper tube is 141.63033 mm; the old target's tube is 151.41254 mm.
+A tube is a guaranteed enclosure if its proof assumptions hold. A tube that
+crosses the limit does not prove that the actual motion crosses it.
+
+Across the proposed range of readings, the candidate upper tube is below
+150 mm by only about 0.064 mm. The arithmetic passed independent review.
+The dynamics proof is being built. The rule is a scalar model result; it
+has no robot, two-sided travel, precision-rest or hardware acceptance yet.
+Its reference-adjustment idea belongs to established reference-governor work.
+The research question is whether the explicit proof and useful contract add
+something worth sharing under a fair comparison.

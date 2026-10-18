@@ -1,0 +1,71 @@
+E9 CANDIDATE: FROM A WEIGHTED PROFILE TO AN ACTUAL FINITE-GRAPH HALF
+Root preparation,18 October2026. Not assigned. Reconsider after E8 review.
+
+Missing step
+E8 constructs a normalized probability-weighted profile. E5 needs an actual
+fractional half of the ambient finite graph. This bridge must account for
+the larger side's size, objective normalization and the balanced endpoint.
+The scalar872-cell cover and eventual-BCL/all-order/rounding endpoint remain
+later obligations. Do not call this bridge the final .0251 graph theorem.
+
+Pinned reusable source
+The clean local aimir repository at research/opportunity-assessment/sources/
+erdos128 has HEAD ba85f319ebb33ec2194ef4c2929a12916329e1e7, matching E3.
+Use the same Lean4.35/mathlib56a005855ea17e0b0958f73ec801ae140b0a1679.
+LowDensityGraph defines OrientedBCLCut and its exact cardinality parameters.
+LowDensityConstruction has largeGraph, uniformLargeWeight, extendLarge,
+edgeMass_uniformLargeWeight, edgeCost_extendLarge_zeroPotential and
+isFractionalHalf_extendLarge. Its private cliqueFree proof is an induced
+embedding argument. E3 recorded these interfaces but did not replay them.
+Rebuild the needed source dependency closure freshly, or extract attributed
+helpers with all namespace/context changes recorded. Do not use a new pin.
+
+Concrete statement
+Take nonempty finite triangle-free G and an oriented cut C. Put
+ n=|V|, k=|Y|, y=k/n, j=e(Y)/n^2, m=2j/y, b=y-1/2.
+Require y>1/2 and R>=0. For an ambient affine slope L define
+ K=4R+1, C0=j-4R(y-m)^2-m^2, L0=8R(y-m)-2m,
+ A(L)=C0+(L-L0)^2/(4K),
+ H(L)=((j-R)/b-L)^2/4+L*m.
+If A(L)<=0 and H(L)<=0, conclude
+ HasNormalizedFractionalHalfBoundQ G R.
+These are explicit arithmetic certificate inputs. No profile feasibility,
+moment identity or graph objective bound may be a premise.
+The cut's BCL budget may remain in its structure; no maximum-cut or global
+edge-density hypothesis is needed for this bridge.
+
+Object map that must be checked
+For the induced Y graph with uniform weights1/k:
+ alpha=n/(2k)=1/(2y), edgeMass=j/y^2, target T=R/y^2,
+ L_normalized=L/y, d_normalized=d_ambient/y.
+E8's positive alpha<1 and b_normalized=1-alpha follow from y>1/2.
+The completed-square identities give both required pointwise affine bounds:
+ ambient_phi_low(d)-L(d-m)
+   =A(L)-K*(d-m-(L0-L)/(2K))^2;
+ ambient_phi_high(d)-L(d-m)
+   =H(L)-(d-((j-R)/b-L)/2)^2.
+Here ambient_phi_low=j-4R(y-d)^2-d^2 and
+ambient_phi_high=d(j-R)/b-d^2. Each ambient difference is y^2 times
+its normalized E8 difference. Nonnegative squares and positive denominators
+justify the comparison. Extend the resulting profile by zero on the other
+side. Derive sum z=n/2 and normalized edgeCost=(k/n)^2*objective<=R.
+The y=1/2 case gives alpha=1 and is excluded. Keep the existing balanced
+completion/uniform endpoint separate. Do not divide by b=0.
+
+Small normalization control
+Use six vertices with one edge and four isolated vertices. Let Y contain
+the edge and three isolates, X the remaining isolate. Then y=5/6,j=1/36,
+local edgeMass=1/25, alpha=3/5. The constant profile3/5 on Y has weighted
+objective9/625, ambient mass3 and normalized cost1/100. This checks the
+square scaling factor on a nonzero cost. Using local alpha1/2 instead
+would give ambient mass5/2, which is not a half of the six-vertex graph.
+For R=1/100 and ambientL=-1/15, the two proposed arithmetic tests should
+also hold (verify independently before using this as nonvacuity).
+
+Falsifiers and scope
+Reject wrong y-versus-y^2 cost scaling, missing slope scaling, alpha1/2
+on a strict larger side, and balanced division by zero. Preserve failures.
+One45-60minute milestone only after E8 independent acceptance and a statement
+gate. Fresh source, axiom and separate kernel checks; inspect theorem type.
+A successful bridge closes normalization and finite-graph construction, not
+the remaining exact cover, BCL transport, rounding or novelty comparison.

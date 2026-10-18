@@ -1,0 +1,34 @@
+E9 INDEPENDENT REVIEW REPLAY ORDER
+
+Keep the recorded evidence and this frozen review intact. To repeat, copy this
+review directory into a new location inside the same workspace. Its ancestors
+must include the pinned lean-controls directory. All paths below are relative
+to the new review copy. No installation, network access or pin edit is needed.
+
+1. Run python3 check_preservation.py. It reads the original builder packet,
+   earlier freezes, copied inputs and pins; writes only preservation.json in
+   this new review copy. It verifies the original/helper diff and extraction.
+2. Run python3 builder-copy/replay.py. It makes a NEW fresh-source-* folder
+   under builder-copy/evidence. Record its final printed work directory. It
+   copies all 12 local proof sources, builds them plus Audit, audits 102 public
+   closures, separately kernel-checks those 13 modules and rejects four false
+   mathematical claims. Existing builder evidence is retained and not reused
+   as local proof products. Only the configured pinned package products are
+   imported besides this new local build.
+3. Run python3 check_statements.py ABSOLUTE_NEW_WORK_DIRECTORY.
+4. Run python3 replay_extra.py ABSOLUTE_NEW_WORK_DIRECTORY. This adds the
+   independent CriticControls module to the new build, audits its two closures,
+   kernel-checks it and rejects the false universal-half claim. The extra
+   result is separate from the main verification JSON. Run only after step 2
+   has fully completed, so product accounting stays separate.
+5. Run python3 check_preservation.py again. The final manifest binds main and
+   extra evidence separately, plus all scripts, sources, logs and retained
+   builder development failures. Do not overwrite an earlier failed attempt.
+
+The main run has 30 steps: 13 builds, 13 kernels, 4 expected mathematical
+rejections. The extra run has 3 steps: 1 build, 1 kernel, 1 rejection. Combined:
+33 accepted steps, 104 audited public closures, 14 kernels and 5 rejecting
+controls. An axiom audit is included in compilation; it is not an additional
+counted process. None of this claims a full Mathlib rebuild or an original
+Lean 4.30 replay. The recorded execution uses Lean 4.35 and the existing
+mathlib 56a005855ea17e0b0958f73ec801ae140b0a1679 package boundary.

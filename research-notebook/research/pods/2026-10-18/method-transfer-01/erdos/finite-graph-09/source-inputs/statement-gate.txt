@@ -1,0 +1,101 @@
+E9 FINITE-GRAPH BRIDGE: INDEPENDENT STATEMENT GATE
+18 October 2026. This is a feasibility review, not a Lean proof acceptance.
+
+Verdict
+Accept the proposed statement for a bounded builder assignment after E8 has
+passed independent review. The normalization, both completed squares, and the
+six-vertex example are correct. No correction to the mathematical statement is
+needed. State R and L as rational numbers, or supply explicit casts throughout,
+because the proposed conclusion and E8 interface are rational.
+
+No source build, axiom audit, kernel replay, or final graph theorem was performed
+here. The input card and five inspected source files are copied and hashed in
+inputs.json. Root owns revision verification. I checked the actual definitions
+and interfaces in those source bytes; I did not run Git or independently assert
+a clean checkout. E8 development sources were not reviewed as accepted evidence.
+
+Universal algebra and domains
+Write z=d-m and K=4R+1. Since R>=0, K>0. Expanding the low difference gives
+ C0+(L0-L)z-Kz^2.
+Completing its square gives
+ A(L)-K*(z-(L0-L)/(2K))^2.
+For a=(j-R)/b, the high difference is -d^2+(a-L)d+L*m. It equals
+ H(L)-(d-(a-L)/2)^2.
+Thus A<=0 and H<=0 imply the two pointwise bounds for every real d, and hence
+for the required restricted rational degree domains. There is no optimization,
+strong-duality, or attainment premise. One common L is used for all vertices.
+
+Nonempty V gives n>0. A strict larger side gives k>0, y=k/n>1/2, b>0,
+and 0<alpha=1/(2y)<1. Also y<=1. The local threshold 1-alpha equals b/y,
+so the low/high degree branch conditions transport without changing direction.
+The balanced case y=1/2 gives alpha=1 and b=0. It is excluded before division;
+Lean's total division cannot make it a valid instance of this argument. The
+balanced construction remains a separate endpoint.
+
+Normalization
+Under uniform weight 1/k on the induced graph, its edge mass is
+ mu=e(Y)/k^2=j/y^2.
+Its normalized degree is d/y and its mean degree is 2mu. Put
+ T=R/y^2 and L_normalized=L/y.
+Then y^2*(d/y-2mu)*(L/y)=L*(d-m), since m=2j/y. For the low expression,
+ y^2*(T/alpha^2)*(1-d/y)^2=4R*(y-d)^2.
+For the high expression,
+ y^2*(d/y)*(mu-T)/(1-alpha)=d*(j-R)/b.
+These identities prove the claimed scaling for both differences. They do not
+rely on finite numerical tests.
+
+The E8 output has values in [0,1] and weighted mean alpha. Extending it by zero
+outside Y preserves the unit interval and gives total mass k*alpha=n/2.
+Each ambient edge inside Y is counted once. Edges outside Y contribute zero.
+Thus normalized ambient cost equals y^2 times the local weighted objective,
+and a local cost <=R/y^2 gives ambient cost <=R. This works for odd n as a
+fractional half. It does not itself supply a floor-sized integral half.
+
+Attributed source interface
+GraphBasics defines IsFractionalHalf with rational mass n/2. GraphRational
+normalizes edgeCost by n^2; there is no hidden factor of two. WeightedGraph
+uses one half of the ordered adjacency sum, which counts each unordered edge
+once. LowDensityGraph's C.c is n/(2k), exactly the required alpha. It must not
+be confused with y or with the coefficient C0.
+
+LowDensityConstruction supplies edgeMass_uniformLargeWeight,
+edgeCost_extendLarge_zeroPotential and isFractionalHalf_extendLarge with the
+needed statements. Its private largeGraph_cliqueFree is the induced embedding
+argument. The source's OrientedBCLCut structure carries the internal BCL budget;
+this bridge does not use the numerical budget beyond that interface. No maximum
+cut or global edge-density hypothesis is required. These helpers are attributed
+source reuse. Their dependency closure was not accepted by the earlier E3
+weighted-lemma replay. Rebuild it freshly, or extract the helpers with source
+attribution and all namespace/context changes recorded. Do not treat cached
+products from that wider project as new verification.
+
+Disclosed exact control
+check.py independently reconstructs the six-vertex graph arithmetic. There is
+one edge and four isolates; Y contains the edge and three isolates. It checks
+ y=5/6, j=1/36, mu=1/25, alpha=3/5,
+ weighted objective=9/625, ambient mass=3, normalized cost=1/100.
+For R=1/100 and L=-1/15, it finds A=-1/5850 and H=-19/22500. The cut also meets
+the structure's BCL budget, since 1 <= (2/47)*36. This is a nonzero-cost
+normalization and arithmetic nonvacuity example. It is not a sharpness example:
+the same graph has an independent half of cost zero.
+
+The exact rejected alternatives are preserved in result.json. Replacing y^2
+by y gives 3/250 rather than 1/100. Using alpha=1/2 gives mass 5/2 rather than
+3. At d=1/6, omitting the slope scale produces discrepancy 1/900. The balanced
+endpoint violates alpha<1 and has b=0. These are arithmetic falsifiers, not
+failed Lean builds. The script also checks both quadratic coefficients at the
+example and five exact scaling points; those controls supplement the universal
+algebra above and do not prove it by sampling.
+
+Remaining acceptance gates
+The actual E8 theorem must derive its moments, profile feasibility and objective
+bound. The eventual E9 theorem must construct the ambient fractional half and
+rebuild its needed local source closure, then pass axiom and separate kernel
+checks. The exact 872-cell cover, all-order/BCL transport, integral rounding,
+and any .0251 final endpoint remain later obligations. This review makes no
+novelty or best-known-bound claim and does not adopt the unverified external
+stronger-cut premise.
+
+Replay
+Run python3 check.py from this directory or by its full path. It rewrites only
+result.json deterministically. All output evidence is independent of E8 builds.

@@ -25,3 +25,18 @@ already handles asynchronous delivery through explicit delay uncertainty.
 What does our final formal certificate add under a matched task and model?
 Current C5 compares two holding-center policies, not that published method.
 See root-review/REFERENCE-GOVERNOR-COMPARISON.txt before any novelty language.
+
+Implementation gate for the controls result
+Which finite-precision reading, threshold and command implementation should
+realize the mathematical policy? Its real-valued execution proof does not
+by itself verify floating-point arithmetic, a running detector, or a physical
+actuator interface. Quantization and rounding must fit the declared error
+budget, especially with only about 64 micrometres of forward margin. Keep
+this separate from successful Lean compilation and the planned causal-path
+construction. This is a later validation question, not a new job this round.
+
+The current detector grid is 0.5 ms (2 kHz). The proposed finite-hold
+constructor also uses a fixed 0.5 ms delay. A 1 ms sample period plus that
+delay exceeds the proved 1 ms age cap. The intended robot interface must
+meet the actual timing contract, or the bound must be recomputed and proved
+for its timing. No compatibility with a Franka control interface is assumed.

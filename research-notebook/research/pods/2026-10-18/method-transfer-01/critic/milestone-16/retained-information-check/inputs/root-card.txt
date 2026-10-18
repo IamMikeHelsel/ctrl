@@ -1,0 +1,53 @@
+HYPOTHESIS CARD — KEEP THE JOINT BRAKING STATE
+18 October 2026. Later candidate; no new builder job is assigned.
+
+Missing information
+C5 chooses a target from a box around one measured position, speed and
+acceleration. C6 supplies a preceding braking path. That path constrains how
+the three coordinates can occur together. Separate coordinate ranges may
+discard useful information about that path.
+
+Source statements and mapping
+C5 ClearancePolicy.forward_upper bounds the actual implemented center policy
+over its full measurement guard. C6's candidate recovered_upper and velocity
+lower estimate describe one shared physical trajectory. Map that trajectory's
+reachable set into a set of possible current states, then intersect it with
+the sensor-error box. This is related to set-membership state estimation and
+reference-governor design. Those are established ideas; this card does not
+claim an unusual new combination or a novel control architecture.
+
+Cheap test already performed
+The candidate first-guard time is at least18439/61000>.3 s. The recovered
+acceleration envelope would then give a<=-71/70, using exp(-2)<=1/7.
+Adding the sensor error gives measured acceleration<=-27/28. This deduction
+is a proposed written consequence here, not a new accepted Lean theorem.
+
+Even granting that stronger upper acceleration bound does NOT improve the
+existing C5 ceiling over the resulting box. Exact rational policy arithmetic
+finds the same attaining corner in both boxes:
+ mx=.143, mv=561/50000, ma=-127/100;
+ K=2266829/50250000, c=2088856217/20100000000;
+ c+(51/50)K=3013722449/20100000000.
+The existing accepted C5 theorem supplies the matching global upper bound.
+The corner remains inside the proposed narrower acceleration interval.
+See retained-braking-information-idea.json. This is a certificate obstruction,
+not evidence that a C6 physical trajectory can reach that joint corner.
+
+Decision
+Reject an acceleration-upper-bound-only improvement route. It cannot lower
+this fixed policy's box certificate. A next test must prove that a relevant
+joint corner is physically impossible, change the justified set representation,
+or change the policy under the same task. Do not optimize another decimal
+while retaining the same worst-case box.
+
+Possible later45–60 minute milestone
+Derive one simple joint inequality valid for every actual C6 braking prefix
+at an admitted sample. Do not assume a future first zero. Include sensor
+errors and the pending interval. Check whether that inequality excludes the
+attaining corner and improves the same all-time forward certificate.
+The unchanged C5 policy, sensors, delay and physical model are the baseline.
+Falsifier: if the corner is still permitted, or a valid trajectory violates
+the proposed inequality, stop that route and keep the counterexample.
+Acceptance requires a source proof and independent review; finite trajectories
+alone cannot certify the new reachable set. Full-handoff closure remains the
+current priority, and this card does not extend the round.

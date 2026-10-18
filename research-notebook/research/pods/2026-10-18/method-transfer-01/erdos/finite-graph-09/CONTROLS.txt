@@ -1,0 +1,28 @@
+E9 EXACT SIX-VERTEX CONTROLS
+
+FiniteControls.lean defines the actual graph on Fin 6 with only edge {0,1}.
+The other four vertices are isolated. The oriented cut has X={5} and
+Y={0,1,2,3,4}. It proves the edge set, triangle-freeness and cut budget.
+The parameters are y=5/6, j=1/36, local mu=1/25 and alpha=3/5.
+
+The constant profile 3/5 on Y has local objective 9/625. Its zero extension
+has ambient mass 3 and normalized cost 1/100. This checks nonzero cost and
+the actual graph normalization, not just a scalar equality.
+
+For R=1/100 and L=-1/15, the exact square tests are
+  A=-1/5850 and H=-19/22500.
+The six_vertex_endpoint theorem invokes the general E9 bridge at those
+parameters. A separate explicit-profile theorem checks the same target.
+
+This is not a sharpness example. The actual independent set {2,3,4} is a
+half of the six-vertex graph and has normalized cost zero. The source proves
+that witness separately.
+
+Four semantic errors are disproved and then submitted as false Lean claims:
+1. Using y instead of y^2 gives cost 3/250, not 1/100, on the nonzero profile.
+2. Using local alpha=1/2 gives ambient mass 5/2, not 3; it is not a half.
+3. Keeping slope L instead of L/y gives discrepancy 1/900 at ambient d=1/6.
+4. At balanced y=1/2, alpha=1 violates alpha<1 and b=0.
+Each expected rejection must be a mathematical unsolved goal, not a syntax,
+missing-name, timeout or typeclass setup error. The exact negative theorems
+are part of the positive compiled source; the four false files are separate.

@@ -1,0 +1,23 @@
+/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/pods/2026-10-18/method-transfer-01/controls/detector-bridge-06/build/DetectorBridge.lean:96:5: error: unsolved goals
+S : ℝ
+hS : 0 ≤ S
+f : ℝ → State
+rL qL rB qB : ℝ → ℝ
+hL : IsTrajectory (1 / 20) rL qL f
+hrLc : ContinuousOn rL (Icc 0 (1 / 20))
+hrL : ∀ t ∈ Icc 0 (1 / 20), 0 ≤ rL t
+hqL : ∀ t ∈ Icc 0 (1 / 20), qL t ≤ 1 / 10
+hx : f 0 0 ≤ 1 / 1000
+hv : f 0 1 ≤ 41 / 100
+ha0 : f 0 2 ≤ 1 / 10
+hB : IsTrajectory S rB qB fun s => f (1 / 20 + s)
+hrBc : ContinuousOn rB (Icc 0 S)
+hrB : ∀ s ∈ Icc 0 S, 8 ≤ rB s
+hqB : ∀ s ∈ Icc 0 S, qB s ≤ -6 / 5
+ha : ∀ t ∈ Icc 0 (1 / 20), f t 2 ≤ 1 / 10
+hd : ActualStop.IsDelayTrajectory (1 / 20) f
+he :
+  f (1 / 20) 0 ≤ 1 / 1000 + 41 / 100 * (1 / 20) + 1 / 10 * (1 / 20) ^ 2 / 2 ∧
+    f (1 / 20) 1 ≤ 41 / 100 + 1 / 10 * (1 / 20)
+hi : ∀ (i : Fin 3), f (1 / 20) i ≤ StoppingCertificate.engagementUpper i
+⊢ -(6 / 5) ≤ ?m.891 2

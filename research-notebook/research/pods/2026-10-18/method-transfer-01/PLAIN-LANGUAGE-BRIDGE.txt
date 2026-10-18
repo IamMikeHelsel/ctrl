@@ -68,10 +68,10 @@ A safe stopping point and a safe holding target are different. At zero speed,
 the actuator can still apply force. Its delayed response can start motion again.
 Our current proof tracks position, speed and acceleration together.
 
-The proposed rule starts from one sensor reading. It finds holding targets
+The checked rule starts from one sensor reading. It finds holding targets
 that fit all three state bounds, including sensor error and the pending command.
-It chooses one target and keeps it fixed. The full proof must then show that
-the old and new commands cannot move the axis beyond the travel limit.
+It chooses one target and keeps it fixed. The accepted C5 proof shows that
+the old and new commands preserve its forward limit for a supplied execution.
 
 For the illustrative reading at 140 mm, the proposed target is 95.73033 mm.
 That is about 44.27 mm behind the measured position. The old target was
@@ -81,10 +81,28 @@ upper tube is 141.63033 mm; the old target's tube is 151.41254 mm.
 A tube is a guaranteed enclosure if its proof assumptions hold. A tube that
 crosses the limit does not prove that the actual motion crosses it.
 
-Across the proposed range of readings, the candidate upper tube is below
-150 mm by only about 0.064 mm. The arithmetic passed independent review.
-The dynamics proof is being built. The rule is a scalar model result; it
+Across the stated range of readings, the checked upper tube is below
+150 mm by only about 0.064 mm. The arithmetic and dynamics proof passed
+independent review. The rule is a scalar model result; it
 has no robot, two-sided travel, precision-rest or hardware acceptance yet.
 Its reference-adjustment idea belongs to established reference-governor work.
 The research question is whether the explicit proof and useful contract add
 something worth sharing under a fair comparison.
+
+The handoff must work while motion remains
+
+A qualifying sensor reading is not the same as a stopped axis. An exact
+constant-acceleration example meets the guard at 0.320 s with forward speed
+6 mm/s. Its first velocity zero is at 0.325 s. The proof must protect the
+motion that remains after the decision and during the command delay.
+
+C6 has now passed independent review: continued braking supplies a
+qualifying reading on a finite 0.5 ms grid, for every allowed sensor error.
+Its stronger physical assumptions stay
+visible. Reaching that reading alone does not construct the switched path.
+
+The next proposed construction keeps the actual braking prefix, including
+its acceleration, then builds each later held-command segment from the
+previous physical state. New readings must come from that new path. They
+cannot come from a future braking path that the controller no longer follows.
+This construction and the full handoff remain open.
