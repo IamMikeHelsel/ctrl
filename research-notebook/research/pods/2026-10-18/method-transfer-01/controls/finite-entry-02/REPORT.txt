@@ -1,0 +1,75 @@
+C2 — FINITE ENTRY UNDER THE ACCEPTED 1 ms SAMPLED CONTRACT
+18 October 2026. Builder result; independent acceptance is pending.
+
+Result
+WeightedEntry.sampled_finite_entry proves entry into weighted radius <= .045
+by 7157/1200 s (about 5.9642 s), then containment at every real time through
+the supplied horizon H. The theorem explicitly requires H >= 7157/1200.
+It retains the old cube throughout. It uses the same initial cube, physical
+state, feedback, sensors, dispatch schedule and original clock. The mismatch
+bound is derived from the old invariant theorem; it is not a new premise.
+
+Let z=(x-c, x-c+v/4, x-c+v/2+a/16). The weighted radius is
+  rho(z)=max(|z0|/1.02, |z1|/1.01, |z2|).
+For every t in [0,H], the new theorem proves
+  rho(z(t)) <= max(.045, .055525-(3/1700)*t).
+It also proves the original |zi(t)| <= .055525 throughout [0,H].
+
+Fair comparison, under unchanged assumptions
+                            Old cube       After entry
+  |x-c|, metres              .055525        .0459
+  |v|, metres/second         .4442          .3654
+  |a|, metres/second^2       3.5536          2.9088
+The position half-width improves by 9.625 mm. This is structural settling
+progress. The velocity and acceleration bounds remain wide. No supplied
+task threshold makes these bounds an operational standstill certificate.
+
+Proof mechanism
+1. Apply the accepted DigitalHold.digital_invariant on the entire horizon.
+2. Apply its prefix_mismatch with the proved cube to derive W=.1090800376.
+3. Prove robust inward drift on all six weighted faces for every radius
+   K >= .045, rate r in [8,12], and |w| <= W. The common normalized drift
+   is 3/1700. The first face attains that drift at the plateau.
+4. Apply the existing finite_prefix_barrier to six signed faces of the
+   shrinking box, with a positive epsilon inflation. Remove epsilon.
+The original left ODE handles dispatch boundaries and the incoming slope
+at the envelope kink. Continuity covers endpoints. There is no clock reset,
+new measurement, or new command at entry. Original initialization at time 0
+still requires the accepted fresh-first-command schedule contract.
+
+Source transfer
+Family 149's active-affine finite-entry argument suggested the proof target.
+The implementation reconstructs that pattern with our existing first-contact
+lemma. It imports no corpus code or chemical theorem. Generic weighted
+polyhedral Lyapunov and comparison methods are older standard mathematics.
+This result does not establish novelty or validate the source's full result.
+See SOURCE-PROVENANCE.txt for the exact lemma, scope and pinned references.
+
+Witnesses and rejection controls
+An exact periodic 1 ms schedule supplies an equilibrium execution on every
+finite horizon, including six seconds. It starts inside the target box; it
+is not a nonconstant arrival experiment. An algebraic initial-state witness
+shows that the original initial cube includes states outside the target box.
+No general execution-existence theorem from those states is claimed.
+
+The equal-weight box has two active faces with zero drift at z=(rho,rho,rho),
+r=8,w=0. It cannot supply the selected strict uniform drift. At radius .04,
+an extreme allowed aggregate residual makes a weighted face point outward.
+That is an obstruction to this enclosure proof, not a sampled-history
+impossibility result. Failed earlier-deadline and larger-age proof mutations
+likewise do not establish that every alternative physical proof must fail.
+
+Verification and boundary
+All three local modules were freshly rebuilt without cached local proof
+products. All 46 theorem closures used only propext, Classical.choice and
+Quot.sound. Three separate kernel replays and six semantic rejection controls
+passed: 13 saved steps. Pinned external package artifacts were reused.
+The 25-file shortlist, 153-file C1 freeze, and accepted input remain unchanged.
+See verification.json and REPLAY.txt. No verification job remains running.
+
+This is conditional on a supplied scalar execution through H. It adds no
+general existence, precision rest, braking/detector liveness, stop-to-hold
+composition, coupled robot dynamics, contact model, implementation or hardware
+acceptance. C1 is not a proof premise. A useful next research decision needs
+a concrete task tolerance or a composition gap; more alternate boxes alone
+would not establish further engineering value.

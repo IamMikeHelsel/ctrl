@@ -1,0 +1,44 @@
+E3 SAVING-LEMMA TRUST GATE — CLAIMS FOR INDEPENDENT REVIEW
+18 October 2026
+
+Verified by the builder's recorded tools, pending independent acceptance
+The unchanged upstream WeightedGraph, CubicNeighborhood and OneStepSaving
+sources compile in a fresh directory under existing Lean 4.35.0 and the
+existing mathlib pin 56a005855ea17e0b0958f73ec801ae140b0a1679. Each module,
+and the audit module, passed a separate leanchecker invocation.
+
+The public endpoint is Erdos128.exists_oneStepSaving. For any finite vertex
+type, simple triangle-free H, strictly positive rational weights summing 1,
+arbitrary rational linear potential psi, and rational alpha in [0,1], it gives
+a rational unit profile pi with weighted mean alpha and objective at most
+the constant-profile objective minus 4*savingLQ(alpha)*edgeMass(H,W)^3.
+The exact printed type and all definitions are retained in the audit log.
+
+All 12 public theorem axiom audits across the three modules list only
+propext, Classical.choice, Quot.sound. The main endpoint's audit follows
+its full theorem dependency closure, including private helpers. This does
+not mean every cached mathlib module was freshly rebuilt. Cached mathlib
+and its pinned package artifacts remain trusted imported dependencies.
+
+Compatibility scope
+The upstream declares Lean 4.30.0 and mathlib revision
+c5ea00351c28e24afc9f0f84379aa41082b1188f. Those pins and source bytes are
+preserved under original/. This is an unchanged-source replay under 4.35,
+not a replay of the unavailable 4.30 environment. No source port was needed.
+No toolchain or package was installed or changed. No new axiom or forbidden
+proof shortcut appears in the submitted proof sources.
+
+Negative controls
+MeaningfulControls.lean proves that the saving conclusion fails on K3 with
+uniform thirds and alpha=1/2: every feasible profile costs at least 1/18,
+but the triangle-free saving formula would require at most 5/108.
+It also proves that two unit masses do not form a probability weight and
+that the unchanged alpha=1/2 profile on K2 does not achieve the saving.
+The final controls replay separately checks their kernel proofs and rejects
+corresponding well-typed false arithmetic/normalization claims.
+
+Not claimed
+Independent acceptance; a new theorem or proof method; completion of the
+comparison02 graph endpoint; an unconditional BCL theorem; the stronger
+moment route proposed by root; or novelty/best-known status. The smallest
+finite-Y API bridge is identified in BRIDGE-CARD.txt, not implemented.

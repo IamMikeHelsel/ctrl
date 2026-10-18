@@ -1,0 +1,43 @@
+REFINED MOMENT CRITERION — STATEMENT ACCEPTED
+18 October 2026
+
+Accept the general sufficient implication under E1's neighborhood and moment
+assumptions. It does not require S<=0. R>=-1/4, C<=0 and C+S<=0 suffice.
+No new graph-wide constant, parameter coverage, sampled screen or Lean endpoint
+is accepted by this report.
+
+With L,C,B,S as defined in the copied card, the two identities are
+ phi_low(d)=C+L(d-mu)-(4R+1)(d-mu)^2,
+ phi_high(d)=C+S+L(d-mu)-(d-B/2)^2.
+The sign assumptions make each right side <=L(d-mu). The exact graph identity
+E[d]=mu therefore gives E[phi(d)]<=0. If all feasible neighborhood costs F_v
+were >R, positive denominators and E[s]=E[d^2] would instead give
+E[phi(d)]>0. This contradiction produces some F_v<=R. Nonstrict conditions
+are sufficient; no claim of a strict improvement is needed at equality.
+
+I rechecked the graph constructions and moments against the accepted E1 proof.
+The domain still requires y>1/2 and finite positive vertex masses summing to y;
+normalize expectation by y. Triangle-freeness makes every neighborhood
+independent and gives the displayed costs. d=0 uses the low branch without
+dividing by d; d=y-1/2 gives agreeing formulas. y=1/2 is excluded from this
+rational criterion and needs the separate old/uniform construction. R>=-1/4
+ensures the low square coefficient is nonnegative. These conditions cannot be
+silently dropped when applying the new sufficient test.
+
+Independent check_identities.py expands both equations as formal polynomials
+in six independent variables, with a=(j-R)/(y-1/2) substituted afterward.
+The two identities hold identically, not only at tested points. It also checks
+three rational controls. The old failed tangent has S>0 but C<0 and C+S<0;
+it is accepted by the new line and remains a failure of the stronger old line.
+The second control has the same pattern. The third has positive C or C+S and
+is rejected. A rejected scalar test is not a graph counterexample.
+
+This is an elementary relaxation of the sufficient affine bound. It is not
+Jensen's inequality, a new neighborhood construction or a proof of novelty.
+To accept a proposed constant, a later packet must cover the whole parameter
+domain, handle its complement with valid graph witnesses, and preserve the
+same BCL, rational-profile and floor-half rounding contracts. Root's three-point
+script is preserved as input; its results alone would not prove that coverage.
+
+Replay: run a copy of check_identities.py in a reviewer-owned output folder.
+The copied input card may evolve at root; this report binds only its snapshot.

@@ -1,0 +1,56 @@
+C2 CLAIMS AND ASSUMPTIONS
+
+Main theorem: LeanControls.WeightedEntry.sampled_finite_entry.
+Definitions and exact statement are in WeightedEntry.lean.
+
+Inputs
+  H >= entryTime = 7157/1200.
+  IsSampledExecution H c f r d stamp read q, exactly as in copied DigitalHold.
+  For each i in Fin 3: |coordinates c (f 0) i| <= radius = 2221/40000.
+No assumed invariant cube, smaller initial box, residual bound, or new clock.
+
+The accepted execution contract means:
+  - One physical state f=(x,v,a), continuous on [0,H].
+  - x'=v, v'=a, a'=r*(clip(command(read))+d-a), with the specified left
+    and right derivatives. Acceleration can have a derivative jump; the
+    physical acceleration itself stays continuous.
+  - command(s)=-8*(s0-c)-6*s1-s2/2; clip is to [-2,2]. Target error follows
+    clipping and has magnitude <= .01.
+  - Both rate channels satisfy 8 <= r <= 12 throughout the horizon.
+  - Causal stamps lie in [0,t], with total sample age <= .001 seconds.
+  - Reading errors are <= .001 m, .01 m/s, .05 m/s^2 at their stamps.
+  - The discrete held schedule has increasing, locally finite dispatches,
+    causal samples, specified half-open/half-closed cells, and fresh first
+    sample and dispatch at 0. All premises persist through H.
+These are mathematical premises, not checked device specifications.
+
+Conclusions, all for this same f and original clock
+  For all t in [0,H]: every |zi(t)| <= 2221/40000.
+  For all t in [0,H]: rho(z(t)) <= max(9/200,2221/40000-(3/1700)*t).
+  For all t in [7157/1200,H]: rho(z(t)) <= 9/200, and
+    |x(t)-c| <= 459/10000, |v(t)| <= 1827/5000, |a(t)| <= 1818/625.
+No dispatch time is excluded. No command or state is reinitialized at entry.
+execution_shrinking_box also supplies progress on shorter nonnegative horizons.
+The theorem quantifies over arbitrary finite H. It does not assert existence
+of a single all-time execution.
+
+Supporting exact facts
+  derived_residual derives |mismatch| <= 136350047/1250000000 from the old
+    invariant plus the old sample-age calculation, without a circular premise.
+  weighted_face proves the six robust drift inequalities for every K>=9/200.
+  equal_weight_zero_drift proves transformedRHS 8 0 [target,target,target]
+    =[0,0,-4*target], so the selected strict first-face drift is false there.
+  first_face_drift_exact attains the chosen normalized first-face drift.
+  old_initial_not_small gives an old-cube initial state outside the new box.
+    This is state algebra; it does not supply an execution from that state.
+  smaller_plateau_outward proves an outward third face at K=.04 under the
+    aggregate residual budget. No realizing sampled history is supplied.
+  Witness.periodic_sampled_execution supplies a periodic equilibrium execution
+    on every finite horizon. Witness.six_second_instance applies the main
+    theorem on a nonempty late interval. This witness is already in the box.
+
+Not claimed
+  Strict drift for equal weights; a physically necessary entry deadline;
+  impossibility at .04; general initial-value existence; instantaneous force
+  jumps; rest or zero velocity; detector entry; a complete stop-and-hold
+  operation; new control theory; source chemical-theorem applicability.

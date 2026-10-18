@@ -23,7 +23,7 @@ Write
   x=|X|/n, y=|Y|/n, c=1/(2y), q=e(X)/n^2, j=e(Y)/n^2.
 Then x+y=1, 0<=x<=1/2, 1/2<=y<=1, 1/2<=c<=1,
 x=1-1/(2c), q>=0, j>=0, q+j<=I. Thus 0<=j<=I.
-A rational fractional half is a profile z_v in[0,1] with sum z_v=n/2.
+A rational fractional half is a profile z_v in [0,1] with sum z_v=n/2.
 Its normalized cost is n^(-2) sum_{uv in E(G)} z_u z_v.
 All costs below are costs of such profiles. We do not identify a scalar
 feasible value with the minimum over actual graph profiles.
@@ -81,7 +81,7 @@ needs triangle-freeness. Double counting alone does not imply it.
 For each v construct a profile, zero on X, by these rules:
 
 LOW, when d_v<=b: put 0 on N_Y(v) and 1/[2(y-d_v)] elsewhere in Y.
-Its mass is 1/2. Since y-d_v>=1/2, its values are in[0,1]. Its cost is
+Its mass is 1/2. Since y-d_v>=1/2, its values are in [0,1]. Its cost is
   F_v=(j-s_v)/[4(y-d_v)^2].
 
 HIGH, when d_v>b: put 1-b/d_v on N_Y(v) and 1 elsewhere in Y.
@@ -91,7 +91,7 @@ Here 0<b/d_v<1. Its mass is y-b=1/2, and its cost is
 At d_v=b>0 the two profiles and costs agree. At d_v=0 use LOW, so no
 reciprocal of zero occurs. Positive masses imply d_v<y because a vertex
 is not its own neighbor. The case y=1/2 does not enter this lemma; the old
-bound in section 5 covers it. For w_v=1/n, mass1/2 means sum z_v=n/2.
+bound in section 5 covers it. For w_v=1/n, mass 1/2 means sum z_v=n/2.
 All profile entries are rational. No degree divisibility is needed.
 
 These are the negative feasible endpoint profiles from Sarid's existing
@@ -149,7 +149,7 @@ LOW EXTERIOR: 1/2<=c<=a. UNIFORM gives cost<=I a^2<R, since
 This includes c=1/2 and y=1.
 
 MIDDLE: a<=c<=h and 0<=j<=I. This is the entire closed rectangle, not a
-sampled dangerous subset. Its c values exceed3/4, so both existing graph
+sampled dangerous subset. Its c values exceed 3/4, so both existing graph
 constructions are available. The y transformation reverses endpoints:
   25/44<=y=1/(2c)<=500/769,
   b=y-1/2>=3/44>0.
@@ -157,7 +157,7 @@ Also c>=769/1000>0 and 1-c>=3/25>0. Every denominator used in the moment
 calculation is positive throughout the rectangle.
 
 certificate.json contains an exact binary partition of this rectangle.
-There are 2399 nodes and 1200 accepted leaves, at maximum depth20:
+There are 2399 nodes and 1200 accepted leaves, at maximum depth 20:
   98 leaves use UNIFORM;
   287 leaves use COMPLETION;
   815 leaves use the refined MOMENT implication.
@@ -165,7 +165,7 @@ The first split is at c=4/5. Every later split is an interior rational
 midpoint in one coordinate. Closed children have exactly their parent's
 union, with no interior overlap. No leaf is unresolved.
 
-For a cell c in[c_l,c_u], j in[j_l,j_u], its sufficient tests are:
+For a cell c in [c_l,c_u], j in [j_l,j_u], its sufficient tests are:
   UNIFORM: c_u^2 j_u<=R;
   COMPLETION: Q(1-1/(2c_l))+I-j_l<=R;
   MOMENT: interval_upper(C)<=0 and interval_upper(T)<=0.
@@ -175,7 +175,7 @@ For MOMENT the certificate evaluates, using rational interval operations,
   L=8R(y-mu)-2mu, C=j-4R(y-mu)^2-mu^2,
   B=(j-R)/b-L, T=B^2/4+Lmu.
 The identity mu=4cj=2j/y uses y=1/(2c). Reciprocals require intervals
-which avoid zero. Squaring uses lower bound0 when the interval crosses0.
+which avoid zero. Squaring uses lower bound 0 when the interval crosses 0.
 All acceptance arithmetic uses exact fractions.
 
 The largest stored MOMENT upper bounds are
@@ -188,10 +188,10 @@ These are strict margins, though the proof only needs non-strict signs.
 verify_cover.py does not import the generator. It checks every enclosure,
 method, parent/child partition and endpoint. It rejects cycles, repeated
 children, missing children and unreachable nodes. It also ignores the tree
-and checks a separate tiling by281 vertical strips. In each open strip the
-active leaf j intervals join exactly from0 to I without gaps or interior
+and checks a separate tiling by 281 vertical strips. In each open strip the
+active leaf j intervals join exactly from 0 to I without gaps or interior
 overlap. Closed leaves include all strip boundaries; the two outer vertical
-edges are checked explicitly. The sum of leaf areas is exactly111/23500,
+edges are checked explicitly. The sum of leaf areas is exactly 111/23500,
 which equals (h-a)I. The tree and strip checks prove coverage; area alone
 is not used as a coverage proof.
 
@@ -222,7 +222,7 @@ stored in mathematical-controls-development.json and the fresh replay.
 
 An irregular triangle-free graph on Y with vertex masses(1/5,1/5,9/40)
 and its only edge between the first two vertices realizes that c,j pair.
-The two nonisolated vertex profiles each cost3/200=.015<R. The isolated
+The two nonisolated vertex profiles each cost 3/200=.015<R. The isolated
 vertex uses LOW at d=0. The exact profiles, masses, degrees, second-degree
 sums and edge costs are recorded. This is finite semantic evidence for
 the construction; the all-graph argument is sections 3--4.
@@ -246,7 +246,7 @@ bound on the whole rectangle, a forged moment enclosure, an altered outer
 boundary and a changed target. Their source mutations and reasons are
 recorded. A separate triangle test has y=1 and uniform thirds. MOMENTS
 still holds, but its neighborhood contains an edge. The alleged profile
-cost is0 while its actual cost is1/16. Thus triangle-freeness cannot be
+cost is0 while its actual cost is 1/16. Thus triangle-freeness cannot be
 removed from the neighborhood cost formula. This test does not assert
 that the triangle lies in the BCL-admissible scalar rectangle.
 
@@ -259,7 +259,7 @@ premise tests. They are preserved rather than treated as accepted proofs.
 The even-order construction above is for any eligible cut, so apply it to
 the positive balanced two-fold blowup G[2]. Triangle-freeness is preserved
 and its order is even. hBCL gives an eligible cut by the existing theorem
-bclCutCertificate_all_of_eventually in PublishedBCL.lean:47. That theorem
+bclCutCertificate_all_of_eventually in PublishedBCL.lean:49. That theorem
 first takes a large enough positive balanced blowup to meet N and descends
 the normalized internal-cut bound. The descent is exact and has no error
 term, density assumption or new external input.
@@ -276,7 +276,7 @@ Finally invoke
 RoundingFinal.lean:84. Moving mass between two fractional coordinates
 makes the edge objective concave in the transfer, so some feasible endpoint
 does not increase cost. Iteration leaves at most one fractional coordinate.
-For even n there is none; for odd n its value is1/2 and removing it does not
+For even n there is none; for odd n its value is 1/2 and removing it does not
 increase cost. The resulting set has floor(n/2) vertices. For n=0 choose
 the empty set. The normalization divides by n^2 only when n>0.
 
@@ -287,8 +287,8 @@ to have compiled or kernel checked a new .0252 graph endpoint.
 
 8. Comparison and attribution boundary
 
-The coefficient .0252 is smaller than the old formal .02587 by67/100000,
-and smaller than comparison02's conservative .02584 by16/25000. The latter
+The coefficient .0252 is smaller than the old formal .02587 by 67/100000,
+and smaller than comparison02's conservative .02584 by 16/25000. The latter
 uses Sarid's cubic saving lemma. E4 does not depend on that lemma, its new
 E3 replay, or a finite-Y cubic bridge. The full .02584 graph composition
 also was not a new Lean endpoint in those packets.
