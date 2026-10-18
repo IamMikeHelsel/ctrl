@@ -27,7 +27,7 @@ statement, and that the challenge hasn't changed since approval:
 
 ```sh
 uv sync && uv run erdos doctor          # Mac + DGX Spark toolchains
-uv run erdos targets --tab formalize    # scored targets (data/erdos/)
+uv run erdos targets --tab formalize    # scored targets (Drive: lean/erdos-data)
 uv run erdos check --all               # verified so far: Erdős #261, #834 (part ii), #931
 uv run erdos spark prove NNN            # local Leanstral prover on the Spark
 ```

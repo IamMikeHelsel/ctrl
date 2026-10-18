@@ -1,8 +1,9 @@
 # Targets
 
 ## Data
-`data/erdos/open.csv` (642 open problems) and `data/erdos/formalize.csv` (263 solved problems with
-no Lean solution yet) are snapshots from 2026-10-17. They were built by `tools/erdos-assess/` from the
+`open.csv` (642 open problems) and `formalize.csv` (263 solved problems with
+no Lean solution yet) are snapshots from 2026-10-17. They are generated data, so they are not in git: they live in Drive at
+`My Drive/lean/erdos-data/` (the `erdos` CLI finds them there, or set `ERDOS_DATA_DIR`). They were built by `tools/erdos-assess/` from the
 teorth/erdosproblems database (commit b850d1a), the erdosproblems.com pages, and the Justin Sun Prize
 catalog. Ratings are quick model judgements, so re-check before investing. The columns are explained
 in the Drive workbook's README tab. erdosproblems.com text is deliberately not stored here.

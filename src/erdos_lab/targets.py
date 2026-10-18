@@ -1,8 +1,15 @@
-"""Ranked target rows from data/erdos/{open,formalize}.csv."""
+"""Ranked target rows from {open,formalize}.csv.
+
+The CSVs are generated (tools/erdos-assess) and live outside git. Lookup order:
+``$ERDOS_DATA_DIR``, then ``<repo>/data/erdos``, then the Drive copy
+``~/Library/CloudStorage/GoogleDrive-*/My Drive/lean/erdos-data``.
+"""
 
 from __future__ import annotations
 
 import csv
+import os
+from pathlib import Path
 
 from erdos_lab.errors import CtrlError, usage
 from erdos_lab.repo import Repo
@@ -32,12 +39,27 @@ def _int(v: str) -> int | None:
         return None
 
 
+def data_dirs(repo: Repo) -> list[Path]:
+    dirs = []
+    if os.environ.get("ERDOS_DATA_DIR"):
+        dirs.append(Path(os.environ["ERDOS_DATA_DIR"]).expanduser())
+    dirs.append(repo.root / "data" / "erdos")
+    dirs += sorted(Path.home().glob("Library/CloudStorage/GoogleDrive-*/My Drive/lean/erdos-data"))
+    return dirs
+
+
 def load(repo: Repo, tab: str) -> list[dict]:
     if tab not in TABS:
         raise usage(f"unknown tab {tab!r}", fix="erdos targets --tab formalize")
-    path = repo.root / "data" / "erdos" / f"{tab}.csv"
-    if not path.exists():
-        raise CtrlError("TOOL_MISSING", f"{repo.rel(path)} is missing", fix="git status data/")
+    dirs = data_dirs(repo)
+    path = next((d / f"{tab}.csv" for d in dirs if (d / f"{tab}.csv").exists()), None)
+    if path is None:
+        raise CtrlError(
+            "TOOL_MISSING",
+            f"{tab}.csv not found (looked in {', '.join(str(d) for d in dirs)})",
+            hint="the target CSVs are generated data kept in Drive (lean/erdos-data), not in git",
+            fix="export ERDOS_DATA_DIR=<folder with open.csv and formalize.csv>",
+        )
     with path.open(newline="", encoding="utf-8") as f:
         rows = list(csv.DictReader(f))
     for r in rows:

@@ -79,7 +79,7 @@ upstream Formal Conjectures update.
 4. Formalize the problem in the Erdős lab: run `uv run erdos new NNN`, which copies the FC statement
    verbatim and pins the commit. A human approves the statement (`erdos approve NNN --by NAME`); then
    prove it and gate with `erdos check NNN` and `erdos spark check NNN`. See
-   [docs/erdos-lab/loop.md](docs/erdos-lab/loop.md). The scored target lists are in `data/erdos/`
+   [docs/erdos-lab/loop.md](docs/erdos-lab/loop.md). The scored target lists are generated data kept in Drive (`lean/erdos-data`, or `$ERDOS_DATA_DIR`)
    (`uv run erdos targets --tab formalize`).
 5. Push to a **public** repo immediately to fix priority. Then run JSP `lean-verify`, open the
    PR, and add a Palomar submission if the result clears the research-interest floor.
