@@ -1,0 +1,69 @@
+E11 INDEPENDENT REVIEW REPLAY
+
+Keep this frozen packet intact. Run a replay in a new empty directory under
+the same research workspace, where the pinned lean-controls package tree
+and the frozen prior packets remain available. Do not run scripts in the
+frozen review or builder folders. No Git, network, new package download or
+toolchain change is needed.
+
+1. Verify the original E11 artifact-sha256.json against
+   64d2ab58dc3f2f0dd360d142f6a66bd2fd2b49fda288b50771d20b14508a8d76.
+   Copy its 348 listed files and that manifest to scratch/builder-copy/,
+   preserving relative paths. Copy this review's check_inputs.py,
+   replay_extra.py, final_check.py, source_options_check.py and
+   ReviewControls.lean to scratch/.
+   Do not copy compiled products or this review's generated evidence.
+
+2. In scratch/, run python3 check_inputs.py. It verifies the frozen builder
+   source/evidence, 654 earlier bindings, pins, source origins, exact
+   extraction ranges, the complete local import closure, and an independent
+   inventory of public theorem names. It writes input-check.json. Run
+   python3 source_options_check.py for the auxiliary comment-aware scan.
+
+3. In scratch/builder-copy/, run python3 replay.py with no arguments.
+   This is the full fresh path, not --resume-audit. It creates a new evidence
+   directory, rebuilds 34 proof modules plus Audit, checks all 1,966 public
+   axiom closures, runs 35 separate leanchecker invocations, and attempts
+   eight false mathematical claims. It uses only the new local products and
+   package products from the existing pin. Wait for passed=true.
+
+4. In scratch/, run python3 replay_extra.py. It requires exactly one passed
+   fresh main replay owned by that scratch directory. It builds the critic's
+   positive-blowup control against that closure, audits its three theorems,
+   kernel-checks its module, and rejects the zero-multiplicity mutation.
+   It writes extra-verification.json. This is a separate three-step record.
+
+5. Run python3 final_check.py. It matches the independent source inventory
+   against the raw audit, checks all expected run labels and kernel logs,
+   preserves each full rejection log with its mathematical interpretation,
+   and checks the extra record. Read the actual negative goals too.
+   Run python3 check_inputs.py again for final preservation.
+
+The main record has 78 steps: 35 compiles, 35 kernels and eight rejections.
+The extra record has three steps: one compile, one kernel and one rejection.
+Combined: 81 steps, 36 compiles, 36 kernels, 1,969 axiom closures and nine
+mathematical rejections. The 1,744 mechanical selector-tree declarations are
+included in the audit count; they are not independent new results.
+One earlier critic-control compile failed before a transparent predicate was
+unfolded. That attempt is retained separately and excluded from these 81
+accepted steps. A fresh replay runs the corrected control directly.
+
+Recorded execution uses Lean 4.35.0 and Mathlib revision
+56a005855ea17e0b0958f73ec801ae140b0a1679. The unchanged upstream sources
+declare Lean 4.30.0 and a different Mathlib pin. This is not a replay under
+that upstream environment. The absolute Lean binary path is recorded in
+the scripts and run evidence. Do not silently substitute another version.
+
+Preserved failures are distinct from the accepted fresh replay. The builder
+packet retains its early completion proof error and the first audit parser
+failure. The critic's main replay starts from scratch with the corrected
+parser. The old E10 ambiguous-square rejection is excluded from accepted
+evidence; the new E11 test explicitly names E10.sq.
+The critic's failed extra control is preserved under
+attempts/positive-blowup-control/ and extra-ju04ylru/. It reported a missing
+Decidable instance and sorryAx, and is excluded. The corrected control has
+unchanged theorem statements and unfolds the predicate before kernel
+decision. Its accepted workspace is extra-ks_u0jll/. An auxiliary broad
+text scan also failed on the word "external" in comments; its source/log
+and the comment-aware replacement are retained separately. Neither failure
+is a negative mathematical result.

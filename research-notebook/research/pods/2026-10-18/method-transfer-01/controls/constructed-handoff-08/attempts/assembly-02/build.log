@@ -1,0 +1,145 @@
+/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/pods/2026-10-18/method-transfer-01/controls/constructed-handoff-08/build/HandoffAssembly.lean:130:4: error: Type mismatch
+  join_prefix hpre
+has type
+  ?m.288 ∈ Icc 0 (grid k + h) → join f (hold f m k N R δ ε) (grid k) ?m.288 = f ?m.288
+but is expected to have type
+  ∀ t ∈ Icc 0 (grid k + h), trajectory f m k N R δ ε t = f t
+/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/pods/2026-10-18/method-transfer-01/controls/constructed-handoff-08/build/HandoffAssembly.lean:137:4: error: unsolved goals
+case e'_3
+f : ℝ → State
+rL qL rB qB : ℝ → ℝ
+m : ℕ → State
+ex : BrakingExecution f rL qL rB qB
+hm : Readings f m
+k N : ℕ
+hk : k ≤ 1058
+hf : First m k
+hN : 2 ≤ N
+R δ : ℕ → ℝ
+ε : ℕ → State
+hr : ∀ (n : ℕ), 1 ≤ n → 8 ≤ R n ∧ R n ≤ 12
+hd : ∀ (n : ℕ), 1 ≤ n → |δ n| ≤ 1 / 100
+he : ∀ (n : ℕ), |ε n 0| ≤ 1 / 1000 ∧ |ε n 1| ≤ 1 / 100 ∧ |ε n 2| ≤ 1 / 20
+hb : 605 ≤ k ∧ 1 / 20 < grid k ∧ grid k + h < 53 / 100
+hp :
+  ClearanceAdmission.Execution h h (m k) (pending f (grid k)) (prefixRate rB (grid k)) (prefixError qB (grid k))
+    (fun x x_1 => 0) fun x x_1 => m k
+hc :
+  (∀ t ∈ Icc 0 h, state (m k) (pending f (grid k)) R δ ε (N - 1) t = pending f (grid k) t) ∧
+    ClearanceAdmission.Execution (grid N) h (m k) (state (m k) (pending f (grid k)) R δ ε (N - 1))
+        (field (prefixRate rB (grid k)) R) (field (prefixError qB (grid k)) δ) stamp
+        (readings (m k) ε (state (m k) (pending f (grid k)) R δ ε (N - 1))) ∧
+      ClearanceAdmission.IsSchedule (grid N) h (schedule (m k) ε (state (m k) (pending f (grid k)) R δ ε (N - 1))) stamp
+          (readings (m k) ε (state (m k) (pending f (grid k)) R δ ε (N - 1))) ∧
+        (schedule (m k) ε (state (m k) (pending f (grid k)) R δ ε (N - 1))).measurement 0 = m k ∧
+          ∀ t ∈ Icc 0 (grid N), state (m k) (pending f (grid k)) R δ ε (N - 1) t 0 ≤ 3 / 20 - 1277551 / 20100000000
+hpre : ∀ s ∈ Icc 0 h, hold f m k N R δ ε s = f (grid k + s)
+heq : f (grid k) = hold f m k N R δ ε 0
+t : ℝ
+ht : t ∈ Icc 0 (grid k + grid N)
+hs : ¬t ≤ grid k
+hh : state (m k) (pending f (grid k)) R δ ε (N - 1) (t - grid k) 0 ≤ 3 / 20 - 1277551 / 20100000000
+⊢ hold f m k N R δ ε (t - grid k) 0 = state (m k) (pending f (grid k)) R δ ε (N - 1) (t - grid k) 0
+/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/pods/2026-10-18/method-transfer-01/controls/constructed-handoff-08/build/HandoffAssembly.lean:141:39: error: linarith failed to find a contradiction
+f : ℝ → State
+rL qL rB qB : ℝ → ℝ
+m : ℕ → State
+ex : BrakingExecution f rL qL rB qB
+hm : Readings f m
+k N : ℕ
+hk : k ≤ 1058
+hf : First m k
+hN : 2 ≤ N
+R δ : ℕ → ℝ
+ε : ℕ → State
+hr : ∀ (n : ℕ), 1 ≤ n → 8 ≤ R n ∧ R n ≤ 12
+hd : ∀ (n : ℕ), 1 ≤ n → |δ n| ≤ 1 / 100
+he : ∀ (n : ℕ), |ε n 0| ≤ 1 / 1000 ∧ |ε n 1| ≤ 1 / 100 ∧ |ε n 2| ≤ 1 / 20
+hb : 605 ≤ k ∧ 1 / 20 < grid k ∧ grid k + h < 53 / 100
+hp :
+  ClearanceAdmission.Execution h h (m k) (pending f (grid k)) (prefixRate rB (grid k)) (prefixError qB (grid k))
+    (fun x x_1 => 0) fun x x_1 => m k
+hc :
+  (∀ t ∈ Icc 0 h, state (m k) (pending f (grid k)) R δ ε (N - 1) t = pending f (grid k) t) ∧
+    ClearanceAdmission.Execution (grid N) h (m k) (state (m k) (pending f (grid k)) R δ ε (N - 1))
+        (field (prefixRate rB (grid k)) R) (field (prefixError qB (grid k)) δ) stamp
+        (readings (m k) ε (state (m k) (pending f (grid k)) R δ ε (N - 1))) ∧
+      ClearanceAdmission.IsSchedule (grid N) h (schedule (m k) ε (state (m k) (pending f (grid k)) R δ ε (N - 1))) stamp
+          (readings (m k) ε (state (m k) (pending f (grid k)) R δ ε (N - 1))) ∧
+        (schedule (m k) ε (state (m k) (pending f (grid k)) R δ ε (N - 1))).measurement 0 = m k ∧
+          ∀ t ∈ Icc 0 (grid N), state (m k) (pending f (grid k)) R δ ε (N - 1) t 0 ≤ 3 / 20 - 1277551 / 20100000000
+hpre : ∀ s ∈ Icc 0 h, hold f m k N R δ ε s = f (grid k + s)
+heq : f (grid k) = hold f m k N R δ ε 0
+t : ℝ
+ht : t ∈ Ioo 0 (1 / 20)
+i : Fin 3
+a✝ : grid k + h ≤ t
+⊢ False
+failed
+/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/pods/2026-10-18/method-transfer-01/controls/constructed-handoff-08/build/HandoffAssembly.lean:143:85: error: linarith failed to find a contradiction
+f : ℝ → State
+rL qL rB qB : ℝ → ℝ
+m : ℕ → State
+ex : BrakingExecution f rL qL rB qB
+hm : Readings f m
+k N : ℕ
+hk : k ≤ 1058
+hf : First m k
+hN : 2 ≤ N
+R δ : ℕ → ℝ
+ε : ℕ → State
+hr : ∀ (n : ℕ), 1 ≤ n → 8 ≤ R n ∧ R n ≤ 12
+hd : ∀ (n : ℕ), 1 ≤ n → |δ n| ≤ 1 / 100
+he : ∀ (n : ℕ), |ε n 0| ≤ 1 / 1000 ∧ |ε n 1| ≤ 1 / 100 ∧ |ε n 2| ≤ 1 / 20
+hb : 605 ≤ k ∧ 1 / 20 < grid k ∧ grid k + h < 53 / 100
+hp :
+  ClearanceAdmission.Execution h h (m k) (pending f (grid k)) (prefixRate rB (grid k)) (prefixError qB (grid k))
+    (fun x x_1 => 0) fun x x_1 => m k
+hc :
+  (∀ t ∈ Icc 0 h, state (m k) (pending f (grid k)) R δ ε (N - 1) t = pending f (grid k) t) ∧
+    ClearanceAdmission.Execution (grid N) h (m k) (state (m k) (pending f (grid k)) R δ ε (N - 1))
+        (field (prefixRate rB (grid k)) R) (field (prefixError qB (grid k)) δ) stamp
+        (readings (m k) ε (state (m k) (pending f (grid k)) R δ ε (N - 1))) ∧
+      ClearanceAdmission.IsSchedule (grid N) h (schedule (m k) ε (state (m k) (pending f (grid k)) R δ ε (N - 1))) stamp
+          (readings (m k) ε (state (m k) (pending f (grid k)) R δ ε (N - 1))) ∧
+        (schedule (m k) ε (state (m k) (pending f (grid k)) R δ ε (N - 1))).measurement 0 = m k ∧
+          ∀ t ∈ Icc 0 (grid N), state (m k) (pending f (grid k)) R δ ε (N - 1) t 0 ≤ 3 / 20 - 1277551 / 20100000000
+hpre : ∀ s ∈ Icc 0 h, hold f m k N R δ ε s = f (grid k + s)
+heq : f (grid k) = hold f m k N R δ ε 0
+t : ℝ
+ht : t ∈ Ioo (1 / 20) (grid k + h)
+i : Fin 3
+a✝ : 53 / 100 ≤ t
+⊢ False
+failed
+/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/pods/2026-10-18/method-transfer-01/controls/constructed-handoff-08/build/HandoffAssembly.lean:160:13: error(lean.unknownIdentifier): Unknown identifier `a.prefix_eq`
+/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/pods/2026-10-18/method-transfer-01/controls/constructed-handoff-08/build/HandoffAssembly.lean:159:65: error: unsolved goals
+f : ℝ → State
+m : ℕ → State
+k N : ℕ
+R δ : ℕ → ℝ
+ε : ℕ → State
+⊢ f (grid k) = hold f m k N R δ ε 0
+/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/pods/2026-10-18/method-transfer-01/controls/constructed-handoff-08/build/HandoffAssembly.lean:171:20: error: Function expected at
+  assembly_join_value
+but this term has type
+  ?m.34 (grid ?m.36) = hold ?m.34 ?m.35 ?m.36 ?m.37 ?m.38 ?m.39 ?m.40 0
+
+Note: Expected a function because this term is being applied to the argument
+  a
+/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/pods/2026-10-18/method-transfer-01/controls/constructed-handoff-08/build/HandoffAssembly.lean:171:49: error(lean.unknownIdentifier): Unknown identifier `a.execution.right_ode`
+/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/pods/2026-10-18/method-transfer-01/controls/constructed-handoff-08/build/HandoffAssembly.lean:180:19: error: Function expected at
+  assembly_join_value
+but this term has type
+  ?m.34 (grid ?m.36) = hold ?m.34 ?m.35 ?m.36 ?m.37 ?m.38 ?m.39 ?m.40 0
+
+Note: Expected a function because this term is being applied to the argument
+  a
+/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/pods/2026-10-18/method-transfer-01/controls/constructed-handoff-08/build/HandoffAssembly.lean:180:48: error(lean.unknownIdentifier): Unknown identifier `a.execution.left_ode`
+/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/pods/2026-10-18/method-transfer-01/controls/constructed-handoff-08/build/HandoffAssembly.lean:184:29: error(lean.unknownIdentifier): Unknown identifier `a.first`
+/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/pods/2026-10-18/method-transfer-01/controls/constructed-handoff-08/build/HandoffAssembly.lean:192:20: warning: `if_pos` has been deprecated: Use `ite_eq_left` instead
+
+Hint: Replace the deprecated name:
+  i̵f̵_̵p̵o̵s̵i̲t̲e̲_̲e̲q̲_̲l̲e̲f̲t̲
+/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/pods/2026-10-18/method-transfer-01/controls/constructed-handoff-08/build/HandoffAssembly.lean:192:32: error(lean.unknownIdentifier): Unknown identifier `a.prefix_eq`
+/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/pods/2026-10-18/method-transfer-01/controls/constructed-handoff-08/build/HandoffAssembly.lean:198:17: error(lean.unknownIdentifier): Unknown identifier `a.local_match`

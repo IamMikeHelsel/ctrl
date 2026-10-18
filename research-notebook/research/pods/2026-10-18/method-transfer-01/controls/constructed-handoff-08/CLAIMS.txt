@@ -1,0 +1,108 @@
+C8 CLAIMS — ONE CONSTRUCTED FINITE RECOVERY/DETECTOR/HOLD PATH
+18 October 2026. Builder evidence; independent acceptance is separate.
+
+Main endpoint
+LeanControls.ConstructedHandoff.exists_assembly returns a first qualifying index k and one
+source-defined physical trajectory F for every supplied C6 BrakingExecution,
+valid finite reading sequence, N>=2, and bounded future discrete choices.
+It proves an Assembly through H=grid(k)+grid(N), where grid(n)=n/2000 s:
+- 605<=k<=1058, guard success at k, and failure at every earlier index;
+- continuity of all three state coordinates on the full [0,H];
+- F=f_brake through the entire [0,grid(k)+h], h=.0005 s;
+- F(grid(k)+s)=f_hold(s) for every s in [0,grid(N)];
+- the actual unchanged C5 holding Execution and IsSchedule, first read m_k;
+- F(t)_x<=3013722449/20100000000<.15 m for every real t in [0,H];
+- the original loss/recovered classical ODEs on their original open phases
+  up to the actual switch.
+The separate absolute_right and absolute_left theorems give the holding
+ODEs on absolute-time one-sided domains. The left theorem includes the
+final time H. No future execution, invariant, residual or endpoint cube is
+an input. The C7 continuation is constructed before C5 safety is applied.
+
+Exact supplied braking contract (stronger than C1)
+The input f is continuous on [0,.530]. Initially x<=.001, v in [.39,.41]
+and a in [-1.22,.1]. On [0,.05], the loss-phase rate is continuous and
+nonnegative; its effective target lies in [-1.22,.1]. The physical ODE is
+required classically on (0,.05). The recovered phase has local time u,
+physical time .05+u, u in [0,.48]. Its rate is continuous and lies in [8,12];
+its effective target lies in [-1.22,-1.2]. Its physical ODE is required
+classically on the open recovered phase. These are the unchanged C6 inputs.
+The finite old readings at n/2000, n<=1060, have sensor errors bounded by
+(.001,.01,.05). No acceleration derivative at the old .05 recovery join is
+assumed or proved. No target continuity is silently added.
+
+Exact future choices
+For N>=2, C7 accepts a sequence of constant digital-cell rates in [8,12]
+and physical target errors in [-.01,.01], plus sensor errors bounded by
+(.001,.01,.05). Values may change each cell. The physical target is the
+clipped command plus the chosen target error. The first reading remains
+m_k; its actual error is fixed by m_k-f(grid(k)). epsilon_0 is unused.
+Later readings are generated from the constructed state and chosen errors.
+This is finite continuation in a piecewise-constant digital subclass, not
+existence for every time-varying rate signal or every physical plant.
+
+Pending prefix and recovery clock
+Let sigma=grid(k). The sensor/guard bounds give sigma>=18439/61000>.05.
+The upper index bound gives sigma+h<=.5295<.530. The whole pending interval,
+including endpoints, is inside the recovered classical domain. It uses
+  g(s)=f(sigma+s),
+  r_prefix(s)=rBrake(sigma+s-.05),
+  delta_prefix(s)=qBrake(sigma+s-.05)+1.21.
+The -1.21 pending command plus delta_prefix is exactly the original physical
+braking target. pending_execution derives its rate, error, sensor and ODE
+fields from the supplied C6 input. There is no assumed startup box.
+
+The source defines F by pasting at sigma. This is only a representation:
+join_prefix and C7's full pending-prefix equality prove F=f_brake through
+sigma+h, and the physical command stays pending until that actual arrival.
+Acceleration is the same physical state across the switch. Finite-interval
+continuity uses only the finite continuity of the constructed holding path;
+global continuity of its totalized formula is not assumed.
+
+Clock, readings and decision causality
+Sample j is at j*h and arrives at (j+1)*h. The first qualifying m_k is sampled
+at sigma and acts at sigma+h. translated_clocks proves that local sample j
+is at (k+j)*h and its arrival is (k+j+1)*h. Incoming total age remains <=1 ms.
+The pending auxiliary m_k/stamp-zero fields do not renew an old queued stamp.
+
+newReadings keeps the old readings exactly through k. After k it uses the
+actual constructed state plus the new sensor errors. schedule_reading_link
+proves, including j=0,
+  newReadings(m,v,k,epsilon,k+j)=schedule(m_k,epsilon,v).measurement(j).
+actual_readings proves the original sensor box for these global readings
+against F at all sample indices through k+N. new_readings_first preserves
+the first decision on the constructed sequence. first_prefix_stable and
+arrived_first_and_stable prove that agreement through k preserves the first
+qualifying index and common-latency arrival order. These are mathematical
+causal-dependence claims, not a floating-point detector implementation.
+
+Safety uses only the actual prefix
+position_to_decision restricts the accepted recovered comparison to the
+chosen prefix endpoint sigma. It needs no future zero or post-switch braking
+segment. That prefix has x<=.142. The overlapping constructed C5 tail gives
+the final common ceiling. The discarded continued-braking future is not
+identified with the physical post-switch path.
+
+Combined nonempty witness
+LeanControls.ConstructedHandoff.Witness.combined instantiates the assembly, not two separate examples.
+The actual C6 input is
+  x(t)=.001+.39*t-.6*t^2, v(t)=.39-1.2*t, a(t)=-1.2.
+Its target stays -1.2 across the old .05 boundary. This witnesses the
+admitted combined class, not a loss/restoration event. Old sensor errors
+are zero. The first qualifying index is exactly 632:
+sigma=.316 s, arrival=.3165 s, N=4 final horizon=.318 s. At arrival the
+velocity is exactly .0102 m/s>0 and acceleration is -1.2. Arrival precedes
+the old braking trajectory's zero at .325 s; this is not a rest detector.
+The command changes from -1.21 to .22264264. Pending target error .01 gives
+physical target -1.2. The three digital cells have rates 8,12,8; the middle
+cell has target error .005. Future sensor errors are (.0005,.005,.025).
+The next acceleration reading differs from the old m_633 by exactly .025.
+Thus the source does not promise both arbitrary fresh errors and preservation
+of an old future reading. Exact boundary/stamp and rate-change facts are proved.
+
+Open limits
+The initial C6 braking input remains supplied. This constructs one finite
+causal path in the admitted scalar model; it does not prove liveness of every
+abstract hybrid model, existence for every plant, infinite execution, a lower
+travel limit, maintained rest, contact physics, or hardware acceptance. The
+old recovery join retains its original regularity. No novelty claim is made.

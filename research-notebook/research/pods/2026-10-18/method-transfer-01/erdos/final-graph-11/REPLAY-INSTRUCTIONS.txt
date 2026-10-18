@@ -1,0 +1,9 @@
+REPLAY
+
+From this packet, run python3 replay.py. It creates a fresh copied-source directory, rebuilds the exact34-module closure plus Audit, audits all public theorem axioms, checks every module using the separate leanchecker, and runs eight expected mathematical rejections. It uses only the existing Lean4.35/Mathlib pin. It does not install packages or import development products.
+
+The completed builder run first rebuilt all 34 proof modules, then repaired the audit-name parser. Its exact continuation is:
+  python3 replay.py --resume-audit evidence/fresh-source-zsj9spb_
+The option requires a recorded compile-Audit failure, successful fresh builds for every proof module and exact source-hash equality. It saves the previous Audit/log/verification, recompiles Audit, and runs the full audit, kernel and control stages. This is a repair of fresh evidence, not reuse of development products. A new reviewer should use the default full fresh run.
+
+provenance.py checks all 654 prior frozen files and records exact source/pin bindings. Do not run finalization or provenance against an accepted frozen copy; use a copied review directory.

@@ -1,0 +1,33 @@
+E11 ALL-FINITE-GRAPH ENDPOINT
+
+Erdos128.FinalGraph.sparse_half_251_10000:
+For a finite type V in universe u with decidable equality, a simple graph G
+with decidable adjacency, and G.CliqueFree 3, given BCLEventual.{u}, there
+exists a finite vertex set S such that
+  S.card = Fintype.card V / 2
+and
+  (edgeCountOn G S : rational) <= (251/10000)*(Fintype.card V)^2.
+Natural-number division by 2 is floor division. Each unordered edge is
+counted once. Empty, odd and even graph orders are included.
+
+The only external mathematical hypothesis is the transparent definition
+Erdos128.CompletionBridge.BCLEventual:
+  There exists N : Nat such that, for every finite type W in universe u
+  with decidable equality and every decidable-adjacency simple graph H,
+  N <= Fintype.card W and H.CliqueFree 3 imply BCLCutCertificate H.
+BCLCutCertificate H means that there exists a vertex cut whose two internal
+edge counts sum to at most (2/47)*(Fintype.card W)^2.
+The exact definition and full endpoint type are printed in the fresh audit.
+BCLEventual is a hypothesis, not an axiom and not a theorem proved here.
+
+Intermediate endpoints:
+- fractional_of_oriented_cut_even takes an actual oriented BCL cut and a
+  positive even-order representation, then constructs a normalized rational
+  fractional half of cost <=251/10000. It derives the scalar domain from
+  that cut. It has no separate scalar-domain or desired-cost premise.
+- fractional_251_10000_all_orders gives the corresponding fractional half
+  for all finite orders from BCLEventual, including the empty graph.
+
+No regularity, maximum-cut optimality, stronger density bound or assumed
+cost profile is added. This formalizes the existing written E5 route. It
+is not the conjectural 1/50 bound and carries no novelty or best-known claim.

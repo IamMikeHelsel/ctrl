@@ -1,126 +1,95 @@
-METHOD TRANSFER — CURRENT REVIEW PACKET
-18 October 2026, 20:18 UTC. Active round; hard stop21:45 UTC /14:45 Pacific.
+METHOD TRANSFER — FINAL REVIEW PACKET
+18 October 2026. Research complete; heartbeat paused before the 21:45 UTC cap.
 
-The two final proof joins are now assigned. Neither is accepted yet.
-Controls must join braking, detection and a constructed finite hold. Erdos
-must turn the universal scalar selector into an actual graph subset. The
-supporting pieces below passed independent review. No submission-ready or
-novel-result claim is made.
+Two final proof joins passed independent review. They are ready for team
+review. Novelty and practical value still need the tests below before a
+submission claim. The existing manuscripts have not been expanded to claim
+these results.
 
-Controls: what is accepted
-The recovery certificate gives a142mm position ceiling through the first
-velocity zero, which occurs by.529s, under its declared scalar contract.
-It retains the exponential response term that the simpler160.586mm bound
-loses. This first result needs only a recovered response-rate floor.
+Controls: a full finite handoff
+The result constructs one continuous physical path from supplied braking
+motion, through the first qualifying sensor reading, the pending command,
+and later digital holding motion. It keeps the actual acceleration and the
+original sample/arrival clocks. Later readings come from the new path.
+It derives the future execution and its forward bound; it does not assume
+an invariant, a future trajectory or an aggregate feedback-error budget.
 
-The later detector result C6 has stronger assumptions. It proves a qualifying
-reading appears on a finite.5ms grid, for every allowed sensor error. A
-qualifying reading can occur before rest. The exact example at.320s still
-has forward speed6mm/s and does not stop until.325s.
+For every admitted finite horizon, position stays at or below
+3013722449/20100000000 m, about 149.93644 mm, at every real time. This includes
+the command delay and dispatch boundaries. The margin below 150 mm is only
+about 63.56 micrometres. The theorem is finite; it does not prove an infinite
+physical execution or maintained rest.
 
-C7 now constructs a finite holding motion for every natural horizon N>=2.
-It retains the whole admitted pending prefix, then builds each held-command
-phase from the actual old state and prior sample. Response rates and target
-errors can change between cells. Future readings come from the new path.
-The constructor proves its execution and schedule; it does not assume a
-future motion, invariant or feedback mismatch. It preserves the C5 forward
-ceiling149.93644mm, including pending motion. An additional checked dependency
-lemma shows that changing future inputs cannot alter the constructed history.
+The supplied braking input uses the stronger C6 contract. It has initial
+position <= 1 mm, speed between 0.39 and 0.41 m/s, and acceleration between -1.22
+and 0.1 m/s². Its recovered response rate lies between 8 and 12 s⁻¹, with effective
+braking target between -1.22 and -1.2 m/s². The exact loss-phase, continuity and
+sensor assumptions remain in controls/constructed-handoff-08/CLAIMS.txt.
+Future digital cells have bounded constant rates and target errors; these
+may change between cells. Samples and fixed command delay are each 0.5 ms.
+Sensor error bounds are 1 mm, 10 mm/s and 0.05 m/s².
 
-The margin below150mm is only about63.56micrometres. The rule changes the
-holding target: at the nominal140mm reading it chooses95.73033mm, a44.27mm
-retreat. The late position half-width can be45.9mm. This is a forward travel
-certificate, not precision rest or protection of a lower travel limit.
-The old-center comparison uses the same errors and weights. Its enclosure
-crosses150mm; that does not prove its actual trajectory crosses the limit.
+The combined example switches at 0.3165 s while moving forward at 10.2 mm/s.
+Acceleration is continuous; the command changes and later noisy readings
+follow the new path. This example has a constant old braking target. It
+shows a valid handoff, not an actual loss/restoration event or settling test.
 
-An independent algebra review shows that the chosen center and radius
-already minimize this particular enclosure under the fixed interval rules.
-Further center-only tuning cannot improve it. A useful next gain needs
-better joint information, another certificate or a changed controller.
+The policy allows retreat. At the nominal 140 mm reading, its target is
+95.73033 mm, about 44.27 mm back. Its late position band can have 45.9 mm half-width.
+It does not protect a lower travel limit or establish precision standstill.
+Franka documents 1 kHz measurements; the present proof needs 2 kHz fresh samples.
+There is no coupled-arm, contact, finite-precision or hardware acceptance.
 
-C8 is assigned to construct the full causal handoff from the actual braking
-prefix. It must preserve the original clocks and recovery-phase regularity.
-Its target freeze is21:07; independent review follows. Until then, reaching
-a guard and having a separate hold constructor do not prove that full join.
+Independent controls review rebuilt 58 local/research modules, audited 314
+public theorem closures, ran 58 separate kernel checks and examined all ten
+rejections. The private helpers are checked in their modules and public
+dependencies. Reviewer diagnostic errors and builder failures are preserved.
+Start with root-review/constructed-handoff-08/REPORT.txt.
 
-Erdos128: what is accepted
-The written conditional result gives a floor(n/2)-vertex subset with at most
-.0251*n^2 internal edges, under the same explicit eventual BCL cut input.
-Its conjectural target is.02. The written comparison beats this project's
-old.02587 and matched.02584 bounds. No best-known claim is established.
+Erdos128: the complete conditional graph result
+For every finite triangle-free simple graph on n vertices, the accepted
+Lean result gives a set of floor(n/2) vertices with at most 0.0251*n² unordered
+internal edges. Its only external mathematical premise is the transparent
+BCLEventual input: above some finite order, each triangle-free graph admits
+a cut with total internal edges at most (2/47)*n².
 
-E8/E9 formalize the actual weighted graph profile and its normalization to
-an ambient fractional half. E10 now proves the full rational selector over
-1/2<=c<=1 and0<=j<=2/47. It returns a uniform, completion or common-slope
-moment certificate. Its generic interval semantics, closed tree coverage,
-analytic exteriors, fresh builds and separate kernel checks passed review.
-This is full parameter coverage, not a sampled grid test.
+The proof constructs actual graph selections, covers every rational parameter,
+handles empty/odd/even orders, and proves the blowup, descent and rounding
+links. It does not prove BCL itself or the conjectured 0.02 coefficient.
+It improves this project's earlier matched bounds, but best-known status and
+novelty remain unestablished. A stronger external cut claim could imply 0.02491;
+its complete graph certificate and normalization remain unaccepted.
 
-The independent reviewer caught one invalid rejection test caused by an
-ambiguous name. Its source, log and raw passed=true result remain preserved.
-A corrected qualified test fails for the intended mathematical reason.
-The positive proof sources needed no repair. This distinction is recorded
-in the final review, rather than hidden in a success count.
+The independent reviewer passed the full fresh source and kernel replay,
+checked the premise and graph scaling, and added a control for positive
+blowup size. Failed parser and test attempts remain separate from accepted
+evidence. Most declaration counts come from generated coverage-tree nodes;
+they are not counts of new mathematical results.
+Start with critic/milestone-21/final-graph-review/REPORT.txt.
 
-E11 is assigned to assemble actual graph witnesses, the exact BCL premise,
-positive blowup/descent, the empty case and floor rounding. Its headline
-statement compiles in development. Fresh complete verification and independent
-review remain pending; target freeze21:00. Do not call this an accepted full
-Lean graph endpoint yet.
+What the method study established
+We indexed 372 families and 719 manuscripts. The disclosed subset includes
+ten abridged search summaries: 48 of 202 full pages plus six introductory
+excerpts; four short summaries were read in full. We did not validate all
+headline proofs or measure the success rate of cross-field search.
 
-Failed routes are useful evidence
-The exact.025 obstruction belongs to a restricted selector, not to the
-conjecture. An actual graph can defeat our chosen-side construction while
-having a global independent half. A separate local-cut example also defeats
-the retained certificate. The42-case global-cut screen reached no difficult
-case: every tested orientation already passed uniform selection. We did not
-turn that null screen into a universal graph statement or keep expanding it.
+The useful pattern was to restore information discarded by a bound: graph
+neighborhood moments, the actuator response history, or the sample clock.
+Each transfer needed an exact object map and a falsifier. METHOD-MAP.txt
+records sources and distinctions between reported routes and our reconstruction.
+The C/E chains are dependent exploratory work, not controlled research trials.
+GU remains blocked on source-defined operators, domains and variation choices.
 
-Usefulness, novelty and hardware remain open
-A2015 network reference governor already handles asynchronous references
-with explicit delay uncertainty and fallback. Our present two-center test
-is not a matched benchmark against that method. A recent external max-cut
-claim would imply.02491 using the older graph argument; its graph certificate
-and normalization remain unaccepted. We have neither accepted nor refuted it.
-These comparisons must be resolved before priority or publication claims.
+Before the next research round
+1. Test whether the controls certificate can meet the intended 1 kHz clock.
+2. Test a reusable recovery-parameter family and a matched reference governor.
+3. Resolve the graph comparison before claiming numerical novelty.
+NEXT-JOBS.txt gives bounded job cards with sources, assumptions and falsifiers.
+SCOPE-AND-CONTRIBUTION.txt gives the internal paper review.
+QUESTIONS-BEFORE-NEXT-ROUND.txt lists the remaining decisions.
 
-Franka documents a1kHz control/measurement interface. The current constructor
-requires2kHz fresh samples and.5ms delay. A1ms period plus that delay exceeds
-the proved1ms age cap. Retiming the proof or certifying prediction error is
-a concrete next gate. No hardware or coupled-arm result exists here. The
-current controls work is the stopping/holding track, not a new VLA smoothing
-performance claim.
-
-Method study and GU
-We inventoried372 families and719 manuscripts in the pinned corpus. We read
-a disclosed relevant subset, including all ten published abridged search
-summaries:48 full pages of202 plus six introductory excerpts; four short
-summaries were read in full. We did not validate the headline proofs or
-infer success odds. The method-selection protocol is exploratory; it does
-not establish that cross-field search outperforms same-field search.
-
-The useful question has been: what information did the old bound discard?
-Graph moments retain neighborhood information; the recovery envelope retains
-response history; discrete contracts retain sample and command timing. These
-are specific mathematical mappings. Familiarity with several fields alone
-is not a proof mechanism or a novelty claim.
-
-GU remains blocked on source-defined normalized operators, domains and
-variation conventions. Standard accepted algebra does not supply those
-choices or validate physics. No old pod has been resumed.
-
-Start with these records
-- PLAIN-LANGUAGE-BRIDGE.txt and METHOD-MAP.txt: explanation and transfer map.
-- root-review/constructive-hold-07/REPORT.txt: accepted C7 source review.
-- root-review/detector-bridge-06/REPORT.txt: accepted C6 detector review.
-- critic/milestone-20/formal-cover-review/REPORT.txt: accepted E10 selector.
-- critic/milestone-15/finite-graph-review/REPORT.txt: accepted E9 graph bridge.
-- ROOT-GRADE.txt: value limits, comparisons and stop decisions.
-- NEXT-JOBS.txt and QUESTIONS-BEFORE-NEXT-ROUND.txt: remaining gates.
-- state.json: exact ownership, schedule, frozen hashes, usage and jobs.
-
-Four small Sparky scouts completed. No new paid API, model, dependency or
-billing setup was added. All earlier failures and pins remain preserved.
-The heartbeat stays active for the bounded final proof/review work. Old rounds
-remain complete and paused. There is no public release, submission or merge.
+All three workers finished. No research job from this round remains. Four small Sparky scouts
+completed earlier. Credits stayed above the reserve; no paid API setup, model download,
+billing change, external contact, public release, submission or merge occurred.
+The private notebook save is handled separately from proof acceptance and
+main-library CI. State and FINAL-EVIDENCE.json retain exact hashes and scope.

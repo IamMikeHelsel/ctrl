@@ -57,11 +57,11 @@ theorem join_right_deriv {f v : ℝ → State} {σ s d : ℝ} {i : Fin 3}
     (hd : HasDerivWithinAt (fun u => v u i) d (Ici s) s) :
     HasDerivWithinAt (fun t => join f v σ t i) d (Ici (σ+s)) (σ+s) := by
   have hh := hd.comp_of_eq (σ+s) ((hasDerivAt_id (σ+s)).sub_const σ).hasDerivWithinAt
-    (s := Ici (σ+s)) (by intro t ht; dsimp; linarith) (by ring : s=σ+s-σ)
+    (s := Ici (σ+s)) (by intro t ht; change s≤t-σ; change σ+s≤t at ht; linarith) (by ring : s=σ+s-σ)
   have hh' : HasDerivWithinAt (fun t => v (t-σ) i) d (Ici (σ+s)) (σ+s) := by
-    simpa only [Function.comp_def,mul_one] using hh
+    simpa only [Function.comp_def,id_eq,mul_one] using hh
   apply hh'.congr_of_mem
-  · intro t ht; exact congrArg (fun z => z i) (join_after he (by linarith))
+  · intro t ht; exact congrArg (fun z => z i) (join_after (t:=t) he (by change σ+s≤t at ht; linarith))
   · exact le_rfl
 
 theorem join_left_deriv {f v : ℝ → State} {σ s d : ℝ} {i : Fin 3}
@@ -69,13 +69,13 @@ theorem join_left_deriv {f v : ℝ → State} {σ s d : ℝ} {i : Fin 3}
     (hd : HasDerivWithinAt (fun u => v u i) d (Iic s) s) :
     HasDerivWithinAt (fun t => join f v σ t i) d (Iic (σ+s)) (σ+s) := by
   have hh := hd.comp_of_eq (σ+s) ((hasDerivAt_id (σ+s)).sub_const σ).hasDerivWithinAt
-    (s := Iic (σ+s)) (by intro t ht; dsimp; linarith) (by ring : s=σ+s-σ)
+    (s := Iic (σ+s)) (by intro t ht; change t-σ≤s; change t≤σ+s at ht; linarith) (by ring : s=σ+s-σ)
   have hh' : HasDerivWithinAt (fun t => v (t-σ) i) d (Iic (σ+s)) (σ+s) := by
-    simpa only [Function.comp_def,mul_one] using hh
+    simpa only [Function.comp_def,id_eq,mul_one] using hh
   apply hh'.congr_of_eventuallyEq
   · filter_upwards [mem_nhdsWithin_of_mem_nhds (Ioi_mem_nhds (show σ<σ+s by linarith))] with t ht
-    exact congrArg (fun z => z i) (join_after he ht.le)
-  · exact congrArg (fun z => z i) (join_after he (by linarith))
+    exact congrArg (fun z => z i) (join_after (t:=t) he ht.le)
+  · exact congrArg (fun z => z i) (join_after (t:=σ+s) he (by linarith))
 
 def hold (f : ℝ → State) (m : ℕ → State) (k N : ℕ) (R δ : ℕ → ℝ) (ε : ℕ → State) : ℝ → State :=
   state (m k) (pending f (grid k)) R δ ε (N-1)
@@ -83,22 +83,29 @@ def trajectory (f : ℝ → State) (m : ℕ → State) (k N : ℕ) (R δ : ℕ �
   join f (hold f m k N R δ ε) (grid k)
 
 def newReadings (m : ℕ → State) (v : ℝ → State) (k : ℕ) (ε : ℕ → State) (j : ℕ) : State :=
-  if j≤k then m j else measure (m k) ε v (j-k)
+  if j≤k then m j else ConstructiveHold.measure (m k) ε v (j-k)
 
 theorem new_readings_first {m : ℕ → State} {v : ℝ → State} {k : ℕ} {ε : ℕ → State}
     (hk : First m k) : First (newReadings m v k ε) k :=
   first_prefix_stable hk (fun j hj => by simp [newReadings,hj])
 
+theorem schedule_reading_link (m : ℕ → State) (v : ℝ → State) (k j : ℕ) (ε : ℕ → State) :
+    newReadings m v k ε (k+j)=(ConstructiveHold.schedule (m k) ε v).measurement j := by
+  by_cases hj : j=0
+  · subst j; simp [newReadings,ConstructiveHold.schedule,ConstructiveHold.measure]
+  · have hk : ¬k+j≤k := by omega
+    simp [newReadings,hk,ConstructiveHold.schedule]
+
 theorem translated_clocks (k j : ℕ) : grid k+grid j=grid (k+j) ∧
     grid k+h+grid j=grid (k+j+1) ∧ grid k+h+grid (j+1)-(grid k+grid j)=1/1000 := by
-  simp [grid,Nat.cast_add]; constructor <;> try constructor <;> ring
+  refine ⟨?_,?_,?_⟩ <;> simp [grid,Nat.cast_add] <;> ring
 
 structure Assembly (f : ℝ → State) (rL qL rB qB : ℝ → ℝ) (m : ℕ → State)
     (k N : ℕ) (R δ : ℕ → ℝ) (ε : ℕ → State) : Prop where
   first : First m k
   bounds : 605≤k ∧ k≤1058
   continuous : ContinuousOn (trajectory f m k N R δ ε) (Icc 0 (grid k+grid N))
-  prefix : ∀ t ∈ Icc 0 (grid k+h), trajectory f m k N R δ ε t=f t
+  prefix_eq : ∀ t ∈ Icc 0 (grid k+h), trajectory f m k N R δ ε t=f t
   local_match : ∀ s ∈ Icc 0 (grid N), trajectory f m k N R δ ε (grid k+s)=hold f m k N R δ ε s
   execution : ClearanceAdmission.Execution (grid N) h (m k) (hold f m k N R δ ε)
     (field (prefixRate rB (grid k)) R) (field (prefixError qB (grid k)) δ)
@@ -127,7 +134,7 @@ theorem assemble {f : ℝ → State} {rL qL rB qB : ℝ → ℝ} {m : ℕ → St
   have heq : f (grid k)=hold f m k N R δ ε 0 := by simpa using (hpre 0 ⟨le_rfl,by norm_num⟩).symm
   refine ⟨hf,⟨hb.1,hk⟩,?_,?_,?_,hc.2.1,hc.2.2.1,hc.2.2.2.1,?_,?_,?_⟩
   · exact join_continuous (ex.continuous.mono (Icc_subset_Icc_right (by linarith [hb.2.2]))) hc.2.1.continuous heq
-  · exact join_prefix hpre
+  · intro t ht; exact join_prefix hpre ht
   · intro s hs; exact join_local heq hs.1
   · intro t ht
     by_cases hs : t≤grid k
@@ -136,11 +143,11 @@ theorem assemble {f : ℝ → State} {rL qL rB qB : ℝ → ℝ} {m : ℕ → St
       linarith
     · have hh := hc.2.2.2.2 (t-grid k) ⟨by linarith,by linarith [ht.2]⟩
       rw [show trajectory f m k N R δ ε t=hold f m k N R δ ε (t-grid k) from join_after heq (le_of_not_ge hs)]
-      convert hh using 1 <;> norm_num
+      convert hh using 1 <;> norm_num [hold]
   · intro t ht i
-    exact join_old_deriv hpre ⟨ht.1,by linarith [hb.2.1,ht.2]⟩ (ex.loss.ode t ht i)
+    exact join_old_deriv hpre ⟨ht.1,ht.2.trans (hb.2.1.trans_le (le_add_of_nonneg_right (by norm_num : (0:ℝ)≤h)))⟩ (ex.loss.ode t ht i)
   · intro t ht i
-    exact join_old_deriv hpre ⟨by linarith [ht.1],ht.2⟩ (recovered_deriv ex ⟨ht.1,by linarith [ht.2,hb.2.2]⟩ i)
+    exact join_old_deriv hpre ⟨by linarith [ht.1],ht.2⟩ (recovered_deriv ex ⟨ht.1,ht.2.trans hb.2.2⟩ i)
 
 theorem exists_assembly {f : ℝ → State} {rL qL rB qB : ℝ → ℝ} {m : ℕ → State}
     (ex : BrakingExecution f rL qL rB qB) (hm : Readings f m) (N : ℕ) (hN : 2≤N)
@@ -150,5 +157,57 @@ theorem exists_assembly {f : ℝ → State} {rL qL rB qB : ℝ → ℝ} {m : ℕ
     ∃ k, Assembly f rL qL rB qB m k N R δ ε := by
   obtain ⟨k,hk,hg,hfirst,_⟩ := finite_first_guard ex hm
   exact ⟨k,assemble ex hm hk ⟨hg,hfirst⟩ hN hr hd he⟩
+
+section Consequences
+variable {f : ℝ → State} {rL qL rB qB : ℝ → ℝ} {m : ℕ → State}
+  {k N : ℕ} {R δ : ℕ → ℝ} {ε : ℕ → State}
+variable (a : Assembly f rL qL rB qB m k N R δ ε)
+include a
+
+theorem assembly_join_value : f (grid k)=hold f m k N R δ ε 0 := by
+  have hp := a.prefix_eq (grid k) ⟨grid_nonneg k,by norm_num⟩
+  have hl := a.local_match 0 ⟨le_rfl,grid_nonneg N⟩
+  simp only [add_zero] at hl
+  exact hp.symm.trans hl
+
+theorem absolute_right {s : ℝ} (hs : s ∈ Ico 0 (grid N)) (i : Fin 3) :
+    HasDerivWithinAt (fun t => trajectory f m k N R δ ε t i)
+      (rhs (field (prefixRate rB (grid k)) R true s)
+        (ClearanceAdmission.actualCommand h (ClearanceAdmission.center (m k))
+          (readings (m k) ε (hold f m k N R δ ε)) true s)
+        (field (prefixError qB (grid k)) δ true s) (hold f m k N R δ ε s) i)
+      (Ici (grid k+s)) (grid k+s) :=
+  join_right_deriv (assembly_join_value a) hs.1 (a.execution.right_ode s hs i)
+
+theorem absolute_left {s : ℝ} (hs : s ∈ Ioc 0 (grid N)) (i : Fin 3) :
+    HasDerivWithinAt (fun t => trajectory f m k N R δ ε t i)
+      (rhs (field (prefixRate rB (grid k)) R false s)
+        (ClearanceAdmission.actualCommand h (ClearanceAdmission.center (m k))
+          (readings (m k) ε (hold f m k N R δ ε)) false s)
+        (field (prefixError qB (grid k)) δ false s) (hold f m k N R δ ε s) i)
+      (Iic (grid k+s)) (grid k+s) :=
+  join_left_deriv (assembly_join_value a) hs.1 (a.execution.left_ode s hs i)
+
+theorem arrived_first_and_stable {m' : ℕ → State} (he : ∀ j≤k, m' j=m j) :
+    First m' k ∧ ∀ j<k, grid j+h<grid k+h := by
+  exact ⟨first_prefix_stable a.first he,fun j hj => by linarith [grid_strict hj]⟩
+
+theorem actual_readings (hm : Readings f m)
+    (he : ∀ n, |ε n 0|≤1/1000 ∧ |ε n 1|≤1/100 ∧ |ε n 2|≤1/20)
+    (j : ℕ) (hj : j≤k+N) :
+    SensorBox (trajectory f m k N R δ ε (grid j))
+      (newReadings m (hold f m k N R δ ε) k ε j) := by
+  by_cases hpre : j≤k
+  · rw [newReadings,if_pos hpre,a.prefix_eq (grid j) ⟨grid_nonneg j,by
+      exact (grid_strict.monotone hpre).trans (le_add_of_nonneg_right (by norm_num : (0:ℝ)≤h))⟩]
+    exact hm j (by have hk := a.bounds.2; omega)
+  · have hn : j-k≠0 := by omega
+    have hg : grid j=grid k+grid (j-k) := by
+      rw [(translated_clocks k (j-k)).1,Nat.add_sub_of_le (le_of_not_ge hpre)]
+    have hmch := a.local_match (grid (j-k)) ⟨grid_nonneg _,grid_strict.monotone (by omega)⟩
+    rw [newReadings,if_neg hpre,ConstructiveHold.measure,if_neg hn,hg,hmch]
+    simpa [SensorBox] using he (j-k)
+
+end Consequences
 
 end LeanControls.ConstructedHandoff

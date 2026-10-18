@@ -44,7 +44,15 @@ def main():
  # Preserve an explicit context diff; extracted theorem bodies are unchanged.
  old_context='import FixedCutBound\nimport Erdos128.BalancedBlowup\nimport Erdos128.RoundingFinal\n'
  new_context='import CutWitness\nimport Erdos128.BalancedBlowup\nimport Erdos128.RoundingFinal\n'
- (H/'BCLTransport-context.patch').write_text(''.join(difflib.unified_diff(old_context.splitlines(True),new_context.splitlines(True),fromfile='PublishedBCL import context',tofile='BCLTransport import context'))+'\ncompletionEnvelope_scale additionally moves from FixedCutBound (import CutScalar) to the same CutWitness context. Full exact extraction ranges/hashes are in extraction.json.\n')
+ patch=''.join(difflib.unified_diff(old_context.splitlines(True),new_context.splitlines(True),fromfile='PublishedBCL import context',tofile='BCLTransport import context'))
+ patch+=''.join(difflib.unified_diff(['import CutScalar\n'],['import CutWitness\n'],fromfile='FixedCutBound homogeneity import context',tofile='BCLTransport homogeneity import context'))
+ (H/'BCLTransport-context.patch').write_text(patch)
+ extraction=json.loads((H/'extraction.json').read_text())['BCLTransport.lean']
+ for item in extraction['source_sections']:
+  lines=(H/item['file']).read_text().splitlines(True)
+  fragment=''.join(lines[item['start_line']-1:item['end_line']])
+  assert hashlib.sha256(fragment.encode()).hexdigest()==item['sha256']
+  assert fragment in (H/'BCLTransport.lean').read_text()
  result={'recorded_utc':datetime.now(timezone.utc).isoformat(),'prior_freezes':checks,'prior_files_verified':sum(x['files_checked'] for x in checks),'copies':copies,'unchanged_inherited_modules':inherited,'local_modules':len(modules),'upstream_repository':'https://github.com/aimir/erdos-128-sparse-halves','upstream_revision':'ba85f319ebb33ec2194ef4c2929a12916329e1e7','declared_toolchain':'leanprover/lean4:v4.30.0','declared_mathlib':'c5ea00351c28e24afc9f0f84379aa41082b1188f','executed_toolchain':'leanprover/lean4:v4.35.0','executed_mathlib':'56a005855ea17e0b0958f73ec801ae140b0a1679','unchanged_upstream_modules':upstream_checks,'new_compatibility_patches':None,'inherited_context_patch':'inputs/E9-CutHelpers.patch','BCL_extraction':'extraction.json','E10_control_correction':'Original freeze/raw ambiguous-square result retained. Accepted critic correction bound above. New rejection filter excludes Ambiguous term and elaborated sorry placeholders.'}
  (H/'INPUTS.json').write_text(json.dumps(result,indent=2)+'\n');print({'prior_packets':len(checks),'prior_files':result['prior_files_verified'],'local_modules':len(modules),'all_intact':True})
 if __name__=='__main__':main()

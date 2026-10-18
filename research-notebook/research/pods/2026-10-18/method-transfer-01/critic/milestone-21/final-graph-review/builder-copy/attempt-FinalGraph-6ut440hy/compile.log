@@ -1,0 +1,73 @@
+FinalGraph.lean:48:77: error: linarith failed to find a contradiction
+case mp
+c : ℚ
+⊢ False
+failed
+FinalGraph.lean:48:77: error: linarith failed to find a contradiction
+case mpr
+c : ℚ
+⊢ False
+failed
+FinalGraph.lean:50:5: error: Tactic `rewrite` failed: motive is not type correct:
+  fun _a =>
+    (if _a then 3 * E10.xval c ^ 2 / 2 - 5 * E10.xval c * (1 / 2) / 2 + 9 * (1 / 2) ^ 2 / 8
+      else E10.xval c * (1 / 2 - E10.xval c) / 2) =
+      if E10.xval c ≤ 3 / 8 then 3 * E10.xval c ^ 2 / 2 - 5 * E10.xval c / 4 + 9 / 32
+      else E10.xval c * (1 / 2 - E10.xval c) / 2
+Error: Application type mismatch: The argument
+  (4 * E10.xval c).instDecidableLe (3 * (1 / 2))
+has type
+  Decidable (4 * E10.xval c ≤ 3 * (1 / 2))
+but is expected to have type
+  Decidable _a
+in the application
+  @ite ℚ _a ((4 * E10.xval c).instDecidableLe (3 * (1 / 2)))
+
+Explanation: The rewrite tactic rewrites an expression 'e' using an equality 'a = b' by the following process. First, it looks for all 'a' in 'e'. Second, it tries to abstract these occurrences of 'a' to create a function 'm := fun _a => ...', called the *motive*, with the property that 'm a' is definitionally equal to 'e'. Third, we observe that 'congrArg' implies that 'm a = m b', which can be used with lemmas such as 'Eq.mpr' to change the goal. However, if 'e' depends on specific properties of 'a', then the motive 'm' might not typecheck.
+
+Possible solutions: use rewrite's 'occs' configuration option to limit which occurrences are rewritten, or use 'simp' or 'conv' mode, which have strategies for certain kinds of dependencies (these tactics can handle proofs and 'Decidable' instances whose types depend on the rewritten term, and 'simp' can apply user-defined '@[congr]' theorems as well).
+
+c : ℚ
+hb : 4 * E10.xval c ≤ 3 * (1 / 2) ↔ E10.xval c ≤ 3 / 8
+⊢ (if 4 * E10.xval c ≤ 3 * (1 / 2) then 3 * E10.xval c ^ 2 / 2 - 5 * E10.xval c * (1 / 2) / 2 + 9 * (1 / 2) ^ 2 / 8
+    else E10.xval c * (1 / 2 - E10.xval c) / 2) =
+    if E10.xval c ≤ 3 / 8 then 3 * E10.xval c ^ 2 / 2 - 5 * E10.xval c / 4 + 9 / 32
+    else E10.xval c * (1 / 2 - E10.xval c) / 2
+FinalGraph.lean:67:33: warning: Variable name `ht` is not explicitly referenced.
+
+Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
+  [apply] _ht
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+FinalGraph.lean:122:3: warning: Try this: 
+  letI̵
+
+The goal is a proposition, so `let` is preferred over `letI`.
+The difference between `let` and `letI` is that `letI` inlines the value.
+But this is not relevant for proofs because of proof irrelevance.
+
+Note: This linter can be disabled with `set_option linter.style.haveILetI false`
+FinalGraph.lean:126:3: warning: Try this: 
+  letI̵
+
+The goal is a proposition, so `let` is preferred over `letI`.
+The difference between `let` and `letI` is that `letI` inlines the value.
+But this is not relevant for proofs because of proof irrelevance.
+
+Note: This linter can be disabled with `set_option linter.style.haveILetI false`
+FinalGraph.lean:144:3: warning: Try this: 
+  letI̵
+
+The goal is a proposition, so `let` is preferred over `letI`.
+The difference between `let` and `letI` is that `letI` inlines the value.
+But this is not relevant for proofs because of proof irrelevance.
+
+Note: This linter can be disabled with `set_option linter.style.haveILetI false`
+FinalGraph.lean:147:3: warning: Try this: 
+  letI̵
+
+The goal is a proposition, so `let` is preferred over `letI`.
+The difference between `let` and `letI` is that `letI` inlines the value.
+But this is not relevant for proofs because of proof irrelevance.
+
+Note: This linter can be disabled with `set_option linter.style.haveILetI false`

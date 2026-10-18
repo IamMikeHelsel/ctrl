@@ -47,13 +47,17 @@ theorem recovered_deriv (ex : BrakingExecution f rL qL rB qB) {t : ℝ}
   have hh := hd.comp t ((hasDerivAt_id t).sub_const (1/20:ℝ))
   convert hh using 1 <;> simp [Function.comp_def]
 
+theorem pending_inside {σ s : ℝ} (hσ : (1/20:ℝ)<σ) (hend : σ+h<53/100)
+    (hs : s ∈ Icc 0 h) : σ+s ∈ Ioo (1/20:ℝ) (53/100) :=
+  ⟨hσ.trans_le (le_add_of_nonneg_right hs.1),(add_le_add (le_refl σ) hs.2).trans_lt hend⟩
+
 theorem pending_deriv (ex : BrakingExecution f rL qL rB qB) {σ s : ℝ}
     (hσ : (1/20:ℝ)<σ) (hend : σ+h<53/100) (hs : s ∈ Icc 0 h) (i : Fin 3) :
     HasDerivAt (fun u => pending f σ u i)
       (rhs (prefixRate rB σ true s) (-121/100) (prefixError qB σ true s) (pending f σ s) i) s := by
-  have hd := (recovered_deriv ex (t:=σ+s) ⟨by linarith [hs.1],by linarith [hs.2]⟩ i).comp s
+  have hd := (recovered_deriv ex (t:=σ+s) (pending_inside hσ hend hs) i).comp s
     ((hasDerivAt_id s).const_add σ)
-  simpa [pending,prefixRate,prefixError,rhs,Function.comp_def] using hd
+  convert hd using 1 <;> dsimp [pending,prefixRate,prefixError,rhs,Function.comp_def] <;> fin_cases i <;> norm_num <;> ring
 
 theorem pending_execution (ex : BrakingExecution f rL qL rB qB) (hm : Readings f m)
     (hk : k≤1058) (hg : ClearancePolicy.Guard (m k)) :
@@ -62,12 +66,15 @@ theorem pending_execution (ex : BrakingExecution f rL qL rB qB) (hm : Readings f
   have hb := decision_bounds ex hm hk hg
   constructor
   · exact ex.continuous.comp (continuous_const.add continuous_id).continuousOn (by
-      intro s hs; exact ⟨by linarith [hb.2.1,hs.1],by linarith [hb.2.2,hs.2]⟩)
+      intro s hs; have hh := pending_inside hb.2.1 hb.2.2 hs; exact ⟨by linarith [hh.1],hh.2.le⟩)
   · intro b s hs; exact ⟨le_rfl,hs.1,by have hh : s≤(1/2000:ℝ) := hs.2; linarith⟩
-  · intro b s hs; simpa [pending,grid,sample] using hm k (by omega)
-  · intro b s hs; exact ex.brake_rate _ ⟨by linarith [hb.2.1,hs.1],by linarith [hb.2.2,hs.2]⟩
+  · intro b s hs; simpa [pending,grid,sample,SensorBox] using hm k (by omega)
   · intro b s hs
-    have hh := ex.brake_target (grid k+s-1/20) ⟨by linarith [hb.2.1,hs.1],by linarith [hb.2.2,hs.2]⟩
+    have hh := pending_inside hb.2.1 hb.2.2 hs
+    exact ex.brake_rate _ ⟨by linarith [hh.1],by linarith [hh.2]⟩
+  · intro b s hs
+    have ht := pending_inside hb.2.1 hb.2.2 hs
+    have hh := ex.brake_target (grid k+s-1/20) ⟨by linarith [ht.1],by linarith [ht.2]⟩
     dsimp [prefixError]; exact abs_le.mpr ⟨by linarith [hh.1],by linarith [hh.2]⟩
   · intro s hs i
     have hd := (pending_deriv ex hb.2.1 hb.2.2 ⟨hs.1,hs.2.le⟩ i).hasDerivWithinAt (s:=Ici s)

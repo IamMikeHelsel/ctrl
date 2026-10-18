@@ -1,0 +1,11 @@
+Preserved critic harness failure, not a proof failure.
+
+The original auxiliary text scan searched for the substring "extern" in
+unstripped source. It matched "external" in comments in four modules and
+failed its assertion before writing a result. The tool returned exit 1.
+The exact stdin script is preserved. Its output is reproduced in scan.log.
+
+The replacement source_options_check.py strips Lean comments and checks
+whole tokens. It reads the same unchanged 34 sources. Neither scan replaces
+the axiom audit or separate kernel checks. The failed broad-text assertion
+is excluded from the accepted Lean step counts.

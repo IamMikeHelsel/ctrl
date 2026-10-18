@@ -1903,11 +1903,11 @@ set_option pp.universes false
 #print axioms Erdos128.hasNormalizedFractionalHalfBoundQ_balancedBlowup_iff
 #print axioms Erdos128.hasNormalizedInternalCutBoundQ_balancedBlowup_iff
 #print axioms Erdos128.roundingEdgeCost_eq_edgeCost
-#print axioms Erdos128.edgeBilin_add_left
-#print axioms Erdos128.edgeBilin_add_right
-#print axioms Erdos128.edgeBilin_smul_left
-#print axioms Erdos128.edgeBilin_smul_right
-#print axioms Erdos128.edgeBilin_symm
+#print axioms Erdos128.edgeBilin_add_left'
+#print axioms Erdos128.edgeBilin_add_right'
+#print axioms Erdos128.edgeBilin_smul_left'
+#print axioms Erdos128.edgeBilin_smul_right'
+#print axioms Erdos128.edgeBilin_symm'
 #print axioms Erdos128.edgeCost_add_smul
 #print axioms Erdos128.ratDelta_eq_indicator
 #print axioms Erdos128.roundingEdgeCost_ratDelta

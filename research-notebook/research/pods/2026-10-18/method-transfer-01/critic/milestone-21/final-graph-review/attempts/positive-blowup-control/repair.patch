@@ -1,0 +1,13 @@
+--- failed-ReviewControls.lean
++++ repaired-ReviewControls.lean
+@@ -4,7 +4,9 @@
+ 
+ /-- The triangle-free odd cycle has no cut with zero internal edges. -/
+ theorem cycle5_no_zero_cut :
+-    ¬ HasNormalizedInternalCutBoundQ cycle5 0 := by decide +kernel
++    ¬ HasNormalizedInternalCutBoundQ cycle5 0 := by
++  unfold HasNormalizedInternalCutBoundQ
++  decide +kernel
+ 
+ /-- The zero-fold blowup discards the graph entirely. -/
+ theorem zero_blowup_zero_cut :
