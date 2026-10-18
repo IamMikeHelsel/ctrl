@@ -1,14 +1,17 @@
 name: Erdős lab checks
 
 # Check-only (lint, tests, Lean audit). Never pushes, merges or writes anywhere.
-# Runs on the self-hosted runner on sparky (DGX Spark, ARM64): no GitHub-hosted runners for
-# private repos.
+# Runs on the self-hosted runner on sparky (no GitHub-hosted runners for private repos), but the
+# gates themselves run inside docker/erdos-lab.Dockerfile with no network, as a non-root user, and
+# without the host's $HOME, so nothing a job runs (including agent-written proofs) can leave state
+# behind for later jobs. Trust boundary: this repo is private and non-fork (add-runner.sh refuses
+# public repos), so only collaborators can trigger it. Note the runner user is in the docker group.
 on:
   pull_request:
-    paths: ["erdos/**", "src/**", "tests/**", "work/**", "pyproject.toml", "uv.lock", ".github/workflows/erdos-lab.yml"]
+    paths: ["erdos/**", "src/**", "tests/**", "work/**", "docker/**", "pyproject.toml", "uv.lock", ".github/workflows/erdos-lab.yml"]
   push:
     branches: [main]
-    paths: ["erdos/**", "src/**", "tests/**", "work/**", "pyproject.toml", "uv.lock", ".github/workflows/erdos-lab.yml"]
+    paths: ["erdos/**", "src/**", "tests/**", "work/**", "docker/**", "pyproject.toml", "uv.lock", ".github/workflows/erdos-lab.yml"]
   workflow_dispatch:
 
 permissions:
@@ -22,23 +25,14 @@ jobs:
   check:
     runs-on: [self-hosted, ARM64, ctrl-local]
     timeout-minutes: 90
+    env:
+      IMAGE: erdos-lab:ci-${{ github.run_id }}
     steps:
-      # clean: false keeps the gitignored erdos/.lake between runs (Mathlib is ~5 GB).
       - uses: actions/checkout@v7
-        with:
-          clean: false
-      - name: Toolchain on PATH
-        run: |
-          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
-          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
-      - name: Python gates
-        run: |
-          uv sync --frozen
-          uv run ruff check .
-          uv run ruff format --check .
-          uv run pytest -q
-      - name: Lean dependencies (cached Mathlib)
-        working-directory: erdos
-        run: lake exe cache get
-      - name: Audit every solution (build, tokens, axioms, binding, approval hash)
-        run: uv run erdos check --all --plain
+      - name: Build the test image (Mathlib cache lives in a cached layer)
+        run: docker build -q -f docker/erdos-lab.Dockerfile -t "$IMAGE" .
+      - name: Gates in the container (ruff, pytest, erdos check --all)
+        run: docker run --rm --network none "$IMAGE"
+      - name: Remove the image tag
+        if: always()
+        run: docker rmi -f "$IMAGE" >/dev/null 2>&1 || true

@@ -1,7 +1,7 @@
 # Clean-room test environment for the Erdős lab (erdos/ + the erdos CLI).
 # Works on arm64 (DGX Spark) and amd64. Build from the repo root:
 #   docker build -f docker/erdos-lab.Dockerfile -t erdos-lab .
-#   docker run --rm erdos-lab                  # ruff + pytest + erdos check --all
+#   docker run --rm --network none erdos-lab   # ruff + pytest + erdos check --all (offline)
 #   docker run --rm erdos-lab uv run erdos check 834   # one problem
 # The image holds the Mathlib cache (~5 GB), so later builds that only change sources are fast.
 FROM ubuntu:24.04
@@ -34,5 +34,5 @@ RUN uv sync --frozen --no-install-project
 COPY --chown=lab . .
 RUN uv sync --frozen
 
-ENV ERDOS_AGENT=1
+ENV ERDOS_AGENT=1 UV_OFFLINE=1 UV_FROZEN=1
 CMD ["sh", "-c", "uv run ruff check . && uv run ruff format --check . && uv run pytest -q && uv run erdos check --all --plain"]
