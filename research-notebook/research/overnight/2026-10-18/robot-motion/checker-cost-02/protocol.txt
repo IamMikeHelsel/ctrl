@@ -1,0 +1,23 @@
+CHECKER COST — exploratory local measurement, frozen before execution
+
+Question: how costly is the exact all-pairs acceleration checker as retained
+history grows? No real-time, worst-case, or Franka execution claim is intended.
+
+Use the unchanged frozen builder-01 AccelerationGuard via its fresh compiled
+closure. Run Lean's --run path, not a native hardware deployment. Counts are
+1, 2, 4, 8, 16 and 32 events, in that order, three separate processes each.
+Event i has time i/100 seconds and alternating increment +1/1000, -1/1000
+metres, starting positive. Width is 1/5 second, current time is zero and the
+acceleration limit is 1/2 m/s^2. Record every acceptance result.
+
+Each process has a 30-second wall limit. Record a timeout, do not treat it as
+rejection. The internal interval starts after input creation and ends after
+one result line is printed. It excludes Lean startup/elaboration and includes
+that small output cost. Also record whole-process elapsed time. Other proof
+workers share this host, so these observations cannot be used as isolated CPU
+benchmarks or execution-time bounds. No numerical outcome changes the counts,
+limits, inputs, interpretation, or old proof artifacts.
+
+The finite check may test extra nonadjacent-pair roots. This is mathematically
+safe because those points are still in the future. A sorted-adjacent version
+needs a separate proof and is not substituted in this measurement.

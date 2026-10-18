@@ -1,0 +1,127 @@
+INDEPENDENT REVIEW — ROBOT MOTION MILESTONE 01
+
+Decision: ACCEPT for the exact reference-admission scope.
+Evidence gate: A. This grade is for the stated proof and its audit, not novelty,
+physical performance, or publication prospects. No required repair was found.
+Recommendation: continue with physical-task composition and a fixed comparison.
+
+Accepted result
+
+For a finite rational event history, the Boolean acceleration guard is exactly
+equivalent to positive filter width, a nonnegative limit, and the acceleration
+limit at every future real time. The acceleration is the second derivative of
+the same retained four-box position reference. The proof does not assume the
+desired bound and does not depend on sampled numerical results.
+
+The all-pairs list contains every needed stationary point. It may contain roots
+from nonadjacent knot pairs, including roots outside those pairs. Such extra
+points remain at or after the current time. They therefore cannot invalidate
+the equivalence. The proof separately covers the final zero tail, coincident
+knots, the cell cut by current time, constant nonzero jerk, and zero jerk with
+nonzero constant acceleration. It does not divide by a zero jerk difference.
+The rational-to-real bridge applies to the same primitive and event list.
+
+The finite selector accepts the first supplied execution time that meets its
+checks. The selected new event is not before the supplied ready time. Every
+retained event, including a queued future event, must finish by the deadline.
+The reference prefix through the selected execution time is unchanged. The
+final position is the initial offset plus the sum of every retained increment.
+The caller must encode the desired goal as that sum. No intent inference is
+present in the theorem.
+
+The old failed case remains unchanged: return execution at 0.52 s, acceleration
+-21/32 m/s^2 at 0.77 s, and rejection of the 0.5 m/s^2 limit. The new case executes
+the return at 0.62 s. It has separate all-time reference velocity, acceleration
+and jerk bounds, and exact reference rest by 1.42 s. The deadline remains 1.70 s.
+The source, report and figure distinguish these cases. The delayed reference
+travels farther toward the old goal. It is not an emergency-stop or travel-limit
+result.
+
+Fresh verification
+
+- Independently reconstructed and built all 9 local source modules in an empty
+  build directory. No builder verification script or cached local object was
+  used for this build. The existing pinned Mathlib dependencies were reused.
+- Audited all 249 elaborated local declarations. No local axiom, unsafe local
+  declaration, sorry/admit, native_decide or implemented_by path was found.
+  The only collected axioms were propext, Classical.choice and Quot.sound.
+- Replayed all 9 local modules with the separate leanchecker executable.
+- Wrote 26 independent named witness theorems, built them, audited the enlarged
+  298-declaration closure, and replayed the witness module with leanchecker.
+  Generated auxiliary declarations explain the larger elaborated count.
+- Required 8 false statements to fail for semantic reasons, without missing
+  imports or identifiers. These cover the interior peak, current time, original
+  failure, zero-jerk plateau, old future commitments, goal-sum interpretation,
+  an unpromised velocity limit, and omitted feasible candidates.
+- Compared the all-pairs point construction against an independent exact
+  Fraction polynomial-extrema oracle on 210 deterministic cases. Maxima agreed.
+  Cases included 550 extra points outside their generating pairs, 22 constant
+  nonzero-jerk cells, and a zero-jerk/nonzero-acceleration plateau.
+- Recomputed all 3,402 figure rows with exact rational arithmetic at the saved
+  decimal times. Maximum absolute differences were below 4.1e-17 m, 2.4e-16 m/s,
+  1.4e-15 m/s^2 and 5.4e-15 m/s^3. Viewed the complete PNG; labels and limits are
+  clear. This remains an illustration of reference trajectories.
+- Verified all 56 files in the supplied builder artifact manifest and all 5
+  recorded prior-evidence files, then checked preservation again at closeout.
+
+Boundary challenges
+
+The generic selector has no velocity test. A separate witness admits a reference
+that exceeds an arbitrary 0.5 m/s velocity limit. The new equal-and-opposite
+two-event example has its own velocity proof; that proof does not generalize
+the selector to arbitrary histories.
+
+An empty candidate list returns none even when the concrete 0.62 s candidate
+passes. Thus none rejects only the supplied list. It is not a continuous-search
+completeness result or a proof of trajectory infeasibility.
+
+The full-event deadline rule is conservative even beyond finite search. A
+retained zero-amplitude event at 10 s rejects a deadline-4 candidate although
+the event has no effect on the reference. This is consistent with the stated
+rule. Do not describe the deadline test as necessary for all feasible motion.
+
+Readiness is an input to the theorem. Computation time, packet timestamps,
+transport, clock error and actual dispatch are not proved to satisfy that input.
+The reference result bounds no physical velocity, acceleration, torque, contact,
+Franka firmware behavior, or physical settling. Existing plant theorems need
+explicit composition from the original state; do not reset state at the delay.
+
+Checker-cost addendum
+
+Read and checked checker-cost-02's frozen harness, protocol, records and report.
+All 18 rows were present and accepted. Recomputed medians and ranges matched.
+All recorded input bindings and the cost manifest matched their hashes. I did
+not rerun the timings. The internal interval includes the result print and
+excludes Lean startup/elaboration. The report states shared-host Lean --run,
+not native deployment, a worst-case bound, or a Franka result. The approximately
+22.5 s median at 32 events supports optimizing this implementation. It does not
+prove that an optimized exact checker cannot meet a particular control deadline.
+
+Next gates, in order
+
+1. Compose this already velocity/acceleration/jerk-proved return with the actual
+   scalar plant from its original state. Freeze a new comparison protocol and
+   allow strong baselines to succeed. Measure physical task completion, waiting,
+   tracking error, actual jerk, rejection and extra forward travel. Keep old
+   failed cases intact. This tests practical value sooner than adding guards.
+2. In parallel, prove an adjacent-cell implementation equivalent to the exact
+   acceleration contract. Deduplicate/sort knots with a checked implementation,
+   cache endpoint values, and benchmark against the same declared inputs.
+3. For arbitrary histories, a cubic Bernstein velocity bound is a tractable
+   sufficient guard. On a cell of length dt, prove the four control values are
+   vL, vL + dt*aL/3, vR - dt*aR/3 and vR. Bounding all four can imply a velocity
+   bound. It must not be called exact or necessary. It still does not construct
+   a feasible task response or establish an improved robot controller.
+
+Reproduction and files
+
+rebuild.py reconstructs the actual local closure, audits it and replays it.
+oracle.py creates the deterministic independent cases and Witnesses.lean.
+check_witnesses.py builds/audits/replays those witnesses and tests false claims.
+Use a new sibling copy before rerunning a fresh build. Build caches are excluded
+from preservation. Logs and object hashes are retained. The scripts do not edit
+frozen builder inputs. figure-audit.json and cost-study-review.json record the
+separate read-only illustration and timing-data checks.
+
+This is a bounded machine-aided independent review. It is not external human
+peer review and does not establish publication novelty.

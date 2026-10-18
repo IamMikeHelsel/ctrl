@@ -1,0 +1,56 @@
+RANKED NEXT GATES
+
+1. Review the frozen exact acceleration proof before integration.
+   Ask a fresh critic to reconstruct the point list, test off-knot extrema,
+   constant-jerk intervals, current time, old active events and future events.
+   The all-pairs implementation is exact but is not a measured real-time kernel.
+   A sorted-adjacent optimization needs its own equivalence proof.
+
+2. Compose the new reference witness with the existing actual-plant tracking
+   theorem. Use the old initial state at time 0. Keep the physical state and
+   retained history continuous at 0.52 s and 0.62 s. Do not reset a tracking
+   error cube at the deferred event. This can turn the reference position
+   arrival into a conditional physical position result. It cannot turn the
+   reference acceleration/velocity bounds into actual acceleration/velocity
+   bounds without separate estimates.
+
+3. Test the new policy against the frozen strong baselines on a NEW protocol.
+   The policy is: try candidate execution times in order, require all retained
+   reference events to finish by the supplied deadline, and accept only when
+   both exact acceleration and jerk checks pass. The concrete return list
+   [0.52, 0.62] chooses 0.62 s. It is causally available at 0.52 s and still
+   finishes the reference at 1.42 s before the unchanged 1.70 s deadline.
+   The old negative result remains intact. Compare actual task completion,
+   delay, peak error and actual jerk. Include outcomes where no candidate fits.
+   Our finite-list rejection is not a proof that no controller can succeed.
+
+4. Add a general velocity check or a conservative fallback service theorem.
+   The isolated-tail fallback is tractable: wait until the full retained tail
+   ends, then propose an isolated increment. Candidate isolated constants are
+   max |F1| = 2/3, max |F2| = 2/3, max |F3| = 2. F1's full range is proved in
+   this batch; the exact F2 value 2/3 at 4/3 is proved but its general upper
+   bound still needs a theorem in the fallback's own source closure. F3's
+   isolated bound is inherited from task-contract-08. Require a supplied
+   deadline and all three scaled bounds. This service rule is conservative.
+   It cannot substitute for competitive mid-motion planning.
+
+   A full velocity checker is harder because velocity is cubic and its
+   stationary points are roots of quadratic acceleration. Those roots need
+   not be rational. Options are certified algebraic roots or rational interval
+   and Bernstein certificates. Neither is assumed solved here. A sufficient
+   interval certificate would be useful but must not be called exact.
+
+5. Tie the model to Franka before any hardware guarantee.
+   A scalar reference result does not cover coupled joint dynamics, task-space
+   mapping, torque, position-dependent joint limits, firmware filters or
+   emergency-stop behavior. Use the simulation harness to identify and state
+   the needed model error and controller assumptions first.
+
+PUBLICATION QUESTION
+
+Can this become a useful formal contract for an existing replan interface,
+with a clear benefit over strong delivery-time and spline-motion baselines?
+The exact polynomial check is established mathematics; formalization and a
+small feasible witness do not establish a novel robot controller. The most
+useful next evidence is physical-task composition plus a fixed, challenging
+comparison that allows the strong baselines to succeed.

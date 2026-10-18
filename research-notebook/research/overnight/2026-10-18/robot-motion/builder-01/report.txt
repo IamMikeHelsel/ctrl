@@ -1,0 +1,79 @@
+FIRST MILESTONE: EXACT ACCELERATION AND A FEASIBLE REFERENCE RETURN
+
+Result
+
+The Lean proof now checks the acceleration condition that the old jerk-only
+checker missed. It proves an equivalence, not just a sufficient inequality:
+for any finite rational event history and current time, the Boolean guard
+passes exactly when h > 0, A >= 0, and the real reference acceleration stays
+within A at every future time. No sampling result is a proof premise.
+
+The old failure is preserved. With h = 0.2 s, a 20 mm event at 0.22 s and a
+-20 mm event at 0.52 s pass the 7.5 m/s^3 jerk limit. Their exact acceleration
+at 0.77 s is -21/32 m/s^2. The new 0.5 m/s^2 guard rejects this history. The
+old buffered case passes exactly at its 0.5 m/s^2 limit.
+
+The batch also constructs a new reference response. Keep the first event,
+then execute the return at 0.62 s. This delays the new event by 100 ms. The
+full retained reference then satisfies acceleration <= 0.5 m/s^2, jerk <=
+7.5 m/s^3 and velocity <= 1/15 m/s. It reaches the requested zero position
+with zero reference velocity, acceleration and jerk by 1.42 s. That is before
+the unchanged 1.70 s deadline. The committed prefix through 0.62 s is proved
+unchanged. This is a new proposed policy example; it does not erase or retune
+the old failed comparison.
+
+A finite execution-time selector tries the immediate time first. It rejects
+0.52 s and selects 0.62 s. Every selected time has a checked acceleration
+bound, checked jerk bound, causal execution time and full-history reference
+rest by the deadline. All retained events count toward that deadline. A
+none result only rejects the supplied list. A 1.30 s deadline causes the
+same two-candidate list to return none. A time before readiness is rejected.
+
+Verification
+
+Fresh build: PASS, 9 local modules.
+Axiom and unsafe-declaration audit: PASS, 249 local declarations.
+Allowed axioms: propext, Classical.choice, Quot.sound only.
+Separate leanchecker replays: PASS, 7 modules.
+False acceptance controls: 4 rejected as intended.
+Source and pin preservation: PASS.
+Run: 2026-10-18 06:54:38 to 06:57:18 UTC.
+The independent critic has not yet reviewed this new batch.
+
+The false controls try to accept the original acceleration violation, omit
+the single-event interior extremum, select a candidate after an insufficient
+deadline, and accept a candidate before readiness. Boundary fixtures also
+cover empty and expired histories, coincident cancellation, zero width,
+negative limits and a current-time violation.
+
+Limits and tradeoffs
+
+The all-pairs implementation is exact but does redundant work. No real-time
+latency claim is made. A checked sorted-adjacent implementation is a possible
+optimization.
+
+The generic selector does not check velocity. The two-event return witness
+has a separate all-time velocity proof. General cubic velocity extrema can
+have irrational locations; a complete rational velocity checker is not
+claimed.
+
+These are reference guarantees. The physical plant's acceleration, velocity,
+actuator effort and rest are not proved. The existing physical tracking
+result still needs explicit composition with this new history. No Franka,
+contact, inverse-kinematics or firmware guarantee follows from this batch.
+
+Waiting gives the old motion more time to continue. It is not an emergency
+stop policy. The example checks no obstacle or travel constraint. In the
+illustration, the delayed reference goes farther toward the old target before
+returning. A task that forbids that movement needs another condition.
+
+The new policy has not been run against Ruckig or through the scalar plant.
+The source and reference figure are ready for independent review; this is
+not yet an improved physical controller result or a submission-ready paper.
+
+Next
+
+See next-gate.txt. First review the exact checker. Then compose the retained
+history with the actual-plant theorem and run a new fixed comparison. The
+conservative isolated-tail service rule is a useful fallback gate, not a
+replacement for competitive mid-motion planning.

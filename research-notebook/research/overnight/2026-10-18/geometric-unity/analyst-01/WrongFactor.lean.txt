@@ -1,0 +1,62 @@
+import Mathlib.LinearAlgebra.CliffordAlgebra.Contraction
+import Mathlib.LinearAlgebra.QuadraticForm.Dual
+import Mathlib.LinearAlgebra.ExteriorAlgebra.Basis
+import Mathlib.Tactic
+
+noncomputable section
+namespace HyperbolicSpinor
+
+variable (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M]
+
+abbrev Spinor := ExteriorAlgebra R M
+abbrev Hyperbolic := Module.Dual R M × M
+
+/-- Exterior multiplication plus contraction. The quadratic form is `f v`. -/
+def cliffordVector : Hyperbolic R M →ₗ[R] Module.End R (Spinor R M) :=
+  (CliffordAlgebra.contractLeft (Q := (0 : QuadraticForm R M))).comp
+      (LinearMap.fst R (Module.Dual R M) M) +
+    (((Algebra.lmul R (Spinor R M)).toLinearMap).comp (ExteriorAlgebra.ι R)).comp
+      (LinearMap.snd R (Module.Dual R M) M)
+
+@[simp] theorem cliffordVector_apply (p : Hyperbolic R M) (x : Spinor R M) :
+    cliffordVector R M p x = CliffordAlgebra.contractLeft p.1 x +
+      ExteriorAlgebra.ι R p.2 * x := rfl
+
+theorem cliffordVector_square_apply (p : Hyperbolic R M) (x : Spinor R M) :
+    cliffordVector R M p (cliffordVector R M p x) = (2 * p.1 p.2) • x := by
+  simp only [cliffordVector_apply, map_add,
+    CliffordAlgebra.contractLeft_contractLeft, CliffordAlgebra.contractLeft_ι_mul,
+    ← mul_assoc, ExteriorAlgebra.ι_sq_zero, zero_mul, zero_add, add_zero]
+  abel
+
+/-- The actual universal Clifford action, not an action postulated by its laws. -/
+def action : CliffordAlgebra (QuadraticForm.dualProd R M) →ₐ[R]
+    Module.End R (Spinor R M) :=
+  CliffordAlgebra.lift (QuadraticForm.dualProd R M)
+    ⟨cliffordVector R M, fun p => by
+      apply LinearMap.ext
+      intro x
+      change cliffordVector R M p (cliffordVector R M p x) = p.1 p.2 • x
+      exact cliffordVector_square_apply R M p x⟩
+
+@[simp] theorem action_ι (p : Hyperbolic R M) :
+    action R M (CliffordAlgebra.ι (QuadraticForm.dualProd R M) p) =
+      cliffordVector R M p := CliffordAlgebra.lift_ι_apply _ _ _
+
+/-- The two null summands have their expected exterior meanings. -/
+@[simp] theorem action_creation (v : M) (x : Spinor R M) :
+    action R M (CliffordAlgebra.ι (QuadraticForm.dualProd R M) (0, v)) x =
+      ExteriorAlgebra.ι R v * x := by simp
+
+@[simp] theorem action_annihilation (f : Module.Dual R M) (x : Spinor R M) :
+    action R M (CliffordAlgebra.ι (QuadraticForm.dualProd R M) (f, 0)) x =
+      CliffordAlgebra.contractLeft f x := by simp
+
+/-- This constructor pins the mixed anticommutator factor to one. -/
+theorem mixed_relation (f : Module.Dual R M) (v : M) (x : Spinor R M) :
+    CliffordAlgebra.contractLeft f (ExteriorAlgebra.ι R v * x) +
+      ExteriorAlgebra.ι R v * CliffordAlgebra.contractLeft f x = f v • x := by
+  rw [CliffordAlgebra.contractLeft_ι_mul]
+  abel
+
+end HyperbolicSpinor

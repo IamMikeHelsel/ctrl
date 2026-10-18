@@ -1,0 +1,32 @@
+EXPLORATORY COST OF THE EXACT ACCELERATION CHECK
+
+The declared 18 runs completed and all checks accepted. This measures the
+frozen all-pairs guard with Lean --run on the shared local host. It is not
+a native production benchmark, worst-case bound, or Franka timing result.
+
+Events    Median time (ms)    Observed range (ms)
+     1               1.475    1.445 to 2.528
+     2               6.333    6.320 to 6.525
+     4              44.966    44.352 to 45.045
+     8             352.686    346.692 to 352.767
+    16            2764.119    2755.417 to 2787.838
+    32           22520.811    22252.408 to 22566.352
+
+Times exclude process startup and elaboration. They include one result line
+printed before the final clock read. The host also ran proof workers. Three
+repeats describe this run; they do not establish a timing distribution.
+
+The growth is consistent with the nested knot-pair checks and repeated sums
+over the history. An input of 32 events took about 22.5 seconds in this harness.
+This implementation is unsuitable for a fast callback in this form. This does
+not prove that a native or optimized exact checker cannot meet such a deadline.
+
+Next implementation gate: prove equivalence of an adjacent-cell version, then
+measure it on the same frozen inputs. Cache endpoint values, remove duplicate
+knots, and evaluate each history once per needed point where the proof permits.
+Any speed claim must identify compilation mode and arithmetic precision.
+
+Attempt 01 preserves a harness compilation error. Attempt 02 removes only an
+invalid Nat.toNat projection. No input or limit changed after execution.
+This is coordinator-generated numerical evidence; independent scope/data review
+is requested separately. No frozen proof file was modified.

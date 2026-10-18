@@ -1,0 +1,121 @@
+BUILD Settling
+/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/overnight/2026-10-18/controls/builder-01/build/Settling.lean:78:52: warning: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/overnight/2026-10-18/controls/builder-01/build/Settling.lean:78:52: warning: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+Try this:
+  [apply] ring_nf
+  
+  The `ring` tactic failed to close the goal. Use `ring_nf` to obtain a normal form.
+    
+  Note that `ring` works primarily in *commutative* rings. If you have a noncommutative ring, abelian group or module, consider using `noncomm_ring`, `abel` or `module` instead.
+/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/overnight/2026-10-18/controls/builder-01/build/Settling.lean:231:39: error: linarith failed to find a contradiction
+case refine_1
+σ H W R c : ℝ
+hσ : 0 < σ
+hH : 0 ≤ H
+hW : 0 ≤ W
+hR : 0 ≤ R
+r w : ℝ → ℝ
+f : ℝ → State
+hf : IsTrajectory H r (fun t => holdInput σ c f t + w t) f
+hrlo : ∀ t ∈ Icc 0 H, 8 * σ ≤ r t
+hrhi : ∀ t ∈ Icc 0 H, r t ≤ 12 * σ
+hw : ∀ t ∈ Icc 0 H, |w t| ≤ W
+hi : ∀ (i : Fin 3), |coordinates c (scaleState σ (f 0)) i| ≤ R
+hC : 0 ≤ 5 * R / 4
+hcub : ∀ t ∈ Icc 0 H, ∀ (i : Fin 3), |coordinates c (scaleState σ (f t)) i| ≤ radius (W / σ ^ 2) (5 * R / 4) (σ * t) i
+t : ℝ
+ht : t ∈ Icc 0 H
+E : ℝ := 3 * W / (8 * σ ^ 2) + 5 * R / 4 * Real.exp (-(2 / 5 * (σ * t)))
+hz : ∀ (i : Fin 3), |coordinates c (scaleState σ (f t)) i| ≤ E
+hx : |scaleState σ (f t) 0 - c| ≤ 3 * W / (8 * σ ^ 2) + 5 * R / 4 * Real.exp (-(2 / 5 * (σ * t)))
+hv : |scaleState σ (f t) 1| ≤ 8 * E
+ha : |scaleState σ (f t) 2| ≤ 64 * E
+hu : |command c (scaleState σ (f t))| ≤ 24 * (3 * W / (8 * σ ^ 2) + 5 * R / 4 * Real.exp (-(2 / 5 * (σ * t))))
+hv' : |f t 1| / σ ≤ 8 * (3 * W / (8 * σ ^ 2) + 5 * R / 4 * Real.exp (-(2 / 5 * (σ * t))))
+ha' : |f t 2| / σ ^ 2 ≤ 64 * (3 * W / (8 * σ ^ 2) + 5 * R / 4 * Real.exp (-(2 / 5 * (σ * t))))
+h : |f t 1| ≤ 8 * (3 * W / (8 * σ ^ 2) + 5 * R / 4 * Real.exp (-(2 / 5 * (σ * t)))) * σ
+a✝ : 8 * σ * (3 * W / (8 * σ ^ 2) + 5 * R / 4 * Real.exp (-(2 / 5) * (σ * t))) < |f t 1|
+⊢ False
+failed
+/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/overnight/2026-10-18/controls/builder-01/build/Settling.lean:232:51: error: linarith failed to find a contradiction
+case refine_2
+σ H W R c : ℝ
+hσ : 0 < σ
+hH : 0 ≤ H
+hW : 0 ≤ W
+hR : 0 ≤ R
+r w : ℝ → ℝ
+f : ℝ → State
+hf : IsTrajectory H r (fun t => holdInput σ c f t + w t) f
+hrlo : ∀ t ∈ Icc 0 H, 8 * σ ≤ r t
+hrhi : ∀ t ∈ Icc 0 H, r t ≤ 12 * σ
+hw : ∀ t ∈ Icc 0 H, |w t| ≤ W
+hi : ∀ (i : Fin 3), |coordinates c (scaleState σ (f 0)) i| ≤ R
+hC : 0 ≤ 5 * R / 4
+hcub : ∀ t ∈ Icc 0 H, ∀ (i : Fin 3), |coordinates c (scaleState σ (f t)) i| ≤ radius (W / σ ^ 2) (5 * R / 4) (σ * t) i
+t : ℝ
+ht : t ∈ Icc 0 H
+E : ℝ := 3 * W / (8 * σ ^ 2) + 5 * R / 4 * Real.exp (-(2 / 5 * (σ * t)))
+hz : ∀ (i : Fin 3), |coordinates c (scaleState σ (f t)) i| ≤ E
+hx : |scaleState σ (f t) 0 - c| ≤ 3 * W / (8 * σ ^ 2) + 5 * R / 4 * Real.exp (-(2 / 5 * (σ * t)))
+hv : |scaleState σ (f t) 1| ≤ 8 * E
+ha : |scaleState σ (f t) 2| ≤ 64 * E
+hu : |command c (scaleState σ (f t))| ≤ 24 * (3 * W / (8 * σ ^ 2) + 5 * R / 4 * Real.exp (-(2 / 5 * (σ * t))))
+hv' : |f t 1| / σ ≤ 8 * (3 * W / (8 * σ ^ 2) + 5 * R / 4 * Real.exp (-(2 / 5 * (σ * t))))
+ha' : |f t 2| / σ ^ 2 ≤ 64 * (3 * W / (8 * σ ^ 2) + 5 * R / 4 * Real.exp (-(2 / 5 * (σ * t))))
+h : |f t 2| ≤ 64 * (3 * W / (8 * σ ^ 2) + 5 * R / 4 * Real.exp (-(2 / 5 * (σ * t)))) * σ ^ 2
+a✝ : 64 * σ ^ 2 * (3 * W / (8 * σ ^ 2) + 5 * R / 4 * Real.exp (-(2 / 5) * (σ * t))) < |f t 2|
+⊢ False
+failed
+/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/overnight/2026-10-18/controls/builder-01/build/Settling.lean:235:4: error: linarith failed to find a contradiction
+case refine_3
+σ H W R c : ℝ
+hσ : 0 < σ
+hH : 0 ≤ H
+hW : 0 ≤ W
+hR : 0 ≤ R
+r w : ℝ → ℝ
+f : ℝ → State
+hf : IsTrajectory H r (fun t => holdInput σ c f t + w t) f
+hrlo : ∀ t ∈ Icc 0 H, 8 * σ ≤ r t
+hrhi : ∀ t ∈ Icc 0 H, r t ≤ 12 * σ
+hw : ∀ t ∈ Icc 0 H, |w t| ≤ W
+hi : ∀ (i : Fin 3), |coordinates c (scaleState σ (f 0)) i| ≤ R
+hC : 0 ≤ 5 * R / 4
+hcub : ∀ t ∈ Icc 0 H, ∀ (i : Fin 3), |coordinates c (scaleState σ (f t)) i| ≤ radius (W / σ ^ 2) (5 * R / 4) (σ * t) i
+t : ℝ
+ht : t ∈ Icc 0 H
+E : ℝ := 3 * W / (8 * σ ^ 2) + 5 * R / 4 * Real.exp (-(2 / 5 * (σ * t)))
+hz : ∀ (i : Fin 3), |coordinates c (scaleState σ (f t)) i| ≤ E
+hx : |scaleState σ (f t) 0 - c| ≤ 3 * W / (8 * σ ^ 2) + 5 * R / 4 * Real.exp (-(2 / 5 * (σ * t)))
+hv : |scaleState σ (f t) 1| ≤ 8 * E
+ha : |scaleState σ (f t) 2| ≤ 64 * E
+hu : |command c (scaleState σ (f t))| ≤ 24 * (3 * W / (8 * σ ^ 2) + 5 * R / 4 * Real.exp (-(2 / 5 * (σ * t))))
+hv' : |f t 1| / σ ≤ 8 * (3 * W / (8 * σ ^ 2) + 5 * R / 4 * Real.exp (-(2 / 5 * (σ * t))))
+ha' : |f t 2| / σ ^ 2 ≤ 64 * (3 * W / (8 * σ ^ 2) + 5 * R / 4 * Real.exp (-(2 / 5 * (σ * t))))
+a✝ :
+  24 * σ ^ 2 * (3 * W / (8 * σ ^ 2) + 5 * R / 4 * Real.exp (-(2 / 5) * (σ * t))) <
+    σ ^ 2 * |command c (scaleState σ (f t))|
+⊢ False
+failed
+/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/overnight/2026-10-18/controls/builder-01/build/Settling.lean:239:5: warning: Variable name `hσ` is not explicitly referenced.
+
+Hint: The binding can be removed (if unused) or named `_` (if used implicitly). Alternatively, prefix the name with `_` to silence this warning:
+  [apply] _hσ
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`
+Traceback (most recent call last):
+  File "/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/overnight/2026-10-18/controls/builder-01/dev.py", line 43, in <module>
+    if __name__=='__main__':main()
+                            ~~~~^^
+  File "/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/overnight/2026-10-18/controls/builder-01/dev.py", line 42, in main
+    subprocess.run([lean,'--root='+str(root),'-o',str(out),str(dst)],cwd=root,env=env,check=True)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py", line 577, in run
+    raise CalledProcessError(retcode, process.args,
+                             output=stdout, stderr=stderr)
+subprocess.CalledProcessError: Command '['/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/.tools/elan/toolchains/leanprover--lean4---v4.35.0/bin/lean', '--root=/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/overnight/2026-10-18/controls/builder-01/build', '-o', '/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/overnight/2026-10-18/controls/builder-01/build/Settling.olean', '/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/overnight/2026-10-18/controls/builder-01/build/Settling.lean']' returned non-zero exit status 1.

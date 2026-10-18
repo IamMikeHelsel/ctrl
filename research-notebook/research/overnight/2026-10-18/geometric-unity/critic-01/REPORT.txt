@@ -1,0 +1,88 @@
+GU analyst-01 independent review
+18 October 2026 UTC
+
+Decision: ACCEPT the bounded mathematics. REPAIR the source-question wording.
+Continue for one 60-minute basis-action and projector gate. No GU validation,
+faithfulness, matrix-adjoint Lean theorem or publication claim is accepted.
+
+Lean result: ACCEPT (A for this named verification gate).
+The action is constructed from actual exterior multiplication and contraction.
+It is lifted through the universal Clifford algebra, not postulated from action
+laws. The split form map is correct: (x,y) maps to (x-y as a covector, x+y), so
+dualProd evaluates to |x|^2-|y|^2. Thus positive generators are a_i+c_i and
+negative generators are c_i-a_i. The mixed coefficient is one; the full signed
+orthogonal generator relation has the expected factor two.
+
+The matrix coordinate map uses the actual ordered exterior basis. Its dimension
+is 128. The real Clifford algebra has dimension 16384. The action is unital and
+its generators have the claimed squares. Equal dimensions do not prove this
+map injective or onto. Neither property is in the accepted statements.
+
+Independent verification rebuilt four modules and audited all 48 public
+declarations. Only propext, Classical.choice and Quot.sound occur. Separate
+leanchecker replays accepted each local module and the independent client.
+Eleven client statements include a concrete mixed-relation witness and a proof
+that its coefficient cannot be two. Three false clients were rejected for the
+wrong negative square, doubled mixed coefficient and wrong spinor dimension.
+The source and proof pins remained Lean 4.35.0 and Mathlib
+56a005855ea17e0b0958f73ec801ae140b0a1679. Pinned prebuilt Mathlib was reused.
+This is separate kernel replay, not a second implementation of the Lean kernel.
+
+Finite adjoint calculation: ACCEPT (exact computational evidence).
+review_adjoint.py independently creates ordered-wedge matrices. It solves the
+equations with breadth-first signed-graph traversal, not the analyst's union-find
+implementation. It checks all 229376 equations on 16384 entries. There are 128
+components of 128 entries; 127 are forced to zero and one is free. The free
+support consists exactly of complementary subsets. Hence H=cK over C.
+
+The script separately verifies every generator residual and the supplied
+congruence. Put all positive columns first and all negative columns last. Then
+U^T K U = diag(2I64,-2I64) and U^T U = UU^T = 2I128. Thus U is invertible with
+inverse U^T/2. This gives signature (64,64) by exact congruence. Since K is real,
+symmetric and nonzero, Hermitian H=cK requires c real; nondegeneracy requires
+c nonzero. This is not a Lean proof or a proved link to splitMatrix's entries.
+
+Semantic challenge: the full vector-adjoint premise is necessary.
+With D the exterior parity matrix, iKD is Hermitian and invariant under every
+real bivector. It is independent of K and fails the vector-adjoint conditions.
+Therefore the phrase "unique Spin-invariant Hermitian form" is not supported.
+The exact calculation correctly proves uniqueness under all 14 vector equations.
+Wrong Euclidean form, wrong negative squares, doubled mixed coefficients,
+plain transpose on iI and a missing congruence column also fail their controls.
+
+Source review: REPAIR before external use.
+ERRATA.txt records three corrections. The source already displays action (9.4)
+on page 44. Ask for its missing variation conventions, domain and boundary
+assumptions; do not imply no action is given. The complex adjoint must explicitly
+conjugate scalars. This agrees with the grade pattern in (3.27), but the nearby
+prose does not state it. Keep the full vector-skew premise separate from Spin
+invariance. QUESTIONS-FOR-AUTHOR.txt is the corrected, unsent question list.
+
+I checked the author's live homepage and PDF, read the relevant local source,
+and visually inspected pages 23, 42 and 44. The live homepage still links the
+April 2021 draft. The bounded transcript search found no normalized coefficient
+specification. It cannot rule out slides, unindexed material or unpublished notes.
+The prior negative-tilt proof and the public Kleis code were not replayed here.
+
+The next proof route is sound but unfinished.
+The projector P=product(a_i c_i) should select the exterior vacuum. Creation,
+P and reversed annihilation products should give all matrix units. Each operator
+must be linked to splitAction, with the halves in a_i and c_i proved. Only the
+full matrix-unit family establishes surjectivity; dimensions can then establish
+injectivity. NEXT-GATE.txt states the exact acceptance and stop conditions.
+The public TauCeti roadmap describes the same general route. This is prior-art
+overlap, not evidence of an existing completed implementation. Pinned Mathlib
+search found no matching split-matrix equivalence. Global novelty is unverified.
+
+Integrity
+Frozen analyst manifest:
+0c667224d83d64fc6cd9b764e1a556da23e5c7f90ef462b5f5f35149e60f579e
+All 49 listed files match before and after review. No frozen analyst or older
+proof file was edited. Reviewer development failures are retained in logs and
+concern only the reviewer's extra client; the final full run passes.
+No Git action, submission, human contact, paid service or new axiom was used.
+
+Primary sources
+https://geometricunity.org/
+https://geometricunity.nyc3.digitaloceanspaces.com/Geometric_Unity-Draft-April-1st-2021.pdf
+https://github.com/TauCetiProject/TauCetiRoadmap/blob/main/TauCetiRoadmap/RepresentationTheory/SpinRepresentations/README.md

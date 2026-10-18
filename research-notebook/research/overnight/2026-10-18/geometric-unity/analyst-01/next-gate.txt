@@ -1,0 +1,98 @@
+ONE TARGET FOR THE NEXT GU MATHEMATICS POD
+18 October 2026 UTC
+
+Decision
+Build the faithful split Clifford representation and its compatible adjoint.
+This is a standalone formalization of standard mathematics. It also checks a
+specific source claim. It does not select a Shiab operator or validate physics.
+
+Exact target
+Let Cl be the accepted real CliffordAlgebra Q, where Q has seven positive and
+seven negative squares. Let S = ExteriorAlgebra R (Fin 7 -> R), with its ordered
+subset basis. The new splitMatrix is the actual Clifford action in this basis.
+Prove that splitMatrix is an algebra equivalence onto all 128 by 128 real
+matrices. Define K as the product of its seven negative generator matrices.
+Prove K^T=K, K^2=I, and a concrete congruence to diag(I64,-I64). After complex
+base change, prove that the accepted bar is transported to K^-1 A^dagger K.
+Conclude that the accepted skew subspace maps exactly to the K-skew-Hermitian
+matrices. This is the precise u(64,64) identification that remains open.
+
+Why this target ranks first
+The draft names this algebra and real form, and asks for its decomposition to
+be checked. This target does not depend on the missing Phi choice. It fills an
+actual API gap in the pinned Mathlib. The construction is useful for other split
+Clifford representations, not only this audit. A formalization contribution is
+plausible; a new physics result or mathematical discovery is not claimed.
+
+What this analyst already built
+HyperbolicSpinor.lean defines, for any commutative ring R and R-module M,
+  c(f,v)(x) = contraction_f(x) + v wedge x.
+It proves c(f,v)^2 = f(v) Id and uses the universal Clifford lift to construct
+an actual action of Cl(dualProd) on the actual exterior algebra. The mixed
+anticommutator normalization is one, not two.
+SpinorDimensions.lean gives the actual matrix coordinates and proves dim S=128.
+SplitSpinor.lean gives an explicit form-preserving map from the accepted Q to
+dualProd, composes the action, and proves dim Cl=16384. It checks positive and
+negative generator squares and supplies a nonzero witness. There is no theorem
+that this representation is faithful or onto. No adjoint claim is smuggled into
+its definition. The new modules are a draft until an independent review passes.
+
+Gate ladder and stop rules
+1. First, review the draft and its exact normalization. Expose its action on
+   basis subsets and compare with creation/contraction signed permutations.
+2. Build a vacuum projector P and matrix units a_I P b_J. Prove their action on
+   every subset basis vector. This is the main missing proof. It proves
+   surjectivity without assuming irreducibility or the structure theorem.
+3. Use the already proved dimensions to prove bijectivity. State the actual
+   algebra equivalence. A dimension equality by itself is insufficient.
+4. Prove the generator K-adjoint identities. Extend the adjoint bridge by
+   Clifford induction and complex tensor induction. Do not assume the bridge.
+5. Give explicit positive/negative basis vectors for K, or an exact invertible
+   congruence matrix. A floating-point eigensolver is not acceptable evidence.
+6. Require an independent client, all-public declaration axiom audit, separate
+   kernel replay, and semantic negative controls.
+
+Do not claim the complete target after only steps 1 or 2. A first 60-minute
+builder gate should deliver basis action formulas and a working projector.
+If it cannot, preserve the exact API obstacle and reconsider scope. Do not spend
+hours expanding representation theory beyond this finite split case. A later
+generic n theorem is a separate library-quality improvement.
+
+Exact preflight
+exact_adjoint_gate.py solves all 229376 entry equations G_a^T H+H G_a=0 using
+signed union-find over 16384 variables. There are 128 components: 127 are forced
+to zero and one is free. Thus the computed solution space is cK. Hermitian H
+requires c real. K pairs each subset with its complement. The supplied 64 pairs
+provide an integer congruence with diagonal entries +2 and -2. This proves the
+signature by elementary algebra if the construction is reviewed. It is exact
+Python evidence, not yet a kernel proof or a bridge to splitMatrix's coordinates.
+
+Falsification tests
+- Ordinary transpose with Euclidean I must fail for positive generators.
+- Replacing negative a-b by a+b must fail the negative square test.
+- Contraction/creation mixed factor 2 must fail (the form is f(v)).
+- Replacing conjugate transpose with transpose must fail on iI.
+- Omitting any matrix-unit family must not leave a claim of surjectivity.
+- The K congruence must be invertible and cover all 128 basis coordinates.
+- Match the matrix generator signs with the accepted Q and bar conventions.
+
+Other candidates, ranked
+2. Prove that invariance and Weyl annihilation do not select a unique Phi pair.
+   The existing exact coefficient tests support this, but a genuine formal
+   theorem needs exterior/Clifford-grade embeddings, equivariance and an explicit
+   curvature domain. Merely introducing abstract operators with assumed laws
+   would not settle the source. Useful audit work, but currently less reusable.
+3. Assemble the chosen Hodge/Phi candidate through its Einstein contraction.
+   Technically in reach, but it certifies analyst-selected data. The prior grader
+   correctly paused this expansion. Defer unless Mike deliberately selects it as
+   a standalone example and we give it a purpose beyond a GU label.
+4. Global field equations, physical predictions, or a full GU consistency verdict.
+   Not ready. The operator and domain are not yet fixed by the inspected sources.
+
+Publication gate
+The accepted package plus a faithful matrix/adjoint bridge could support a
+reproducible formalization note or library contribution. It is not enough to
+claim GU is complete, correct, or refuted. Before submission, identify the venue,
+check current library/prior-art overlap, and obtain a subject-matter review of
+both the source reading and the actual theorem statements. Do not count theorem
+names as mathematical novelty. No submission or external contact was made.

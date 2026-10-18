@@ -1,0 +1,115 @@
+Shrinking residual bounds after a reference finishes
+Builder milestone 01 — local verification passed; independent review pending
+
+Main result
+The final hold now has a shrinking error bound derived from the actual plant.
+The rate can change throughout its allowed band. The proof does not reset the
+actual position, velocity or acceleration when the reference finishes.
+
+Physical model
+  x' = v, v' = a, a' = r(t) [u + w(t) - a]
+  u = -8 sigma^2 (x-c) -6 sigma v -a/2
+  8 sigma <= r(t) <= 12 sigma, sigma > 0, |w(t)| <= W.
+The goal c is constant during this hold. The feedback is the same direct
+controller as before, with constant reference and zero planned jerk.
+
+The trajectory must be continuous on its closed hold interval and must satisfy
+the ODE classically on its open interior. The theorem is conditional on such a
+trajectory. No continuity or derivative bound on r or w is assumed. It does not
+prove existence for arbitrary discontinuous signals. These pointwise assumptions
+are the same type as the inherited holding theorem.
+
+Checked bound
+Define normalized error coordinates
+  z0 = x-c
+  z1 = x-c + v/(4 sigma)
+  z2 = x-c + v/(2 sigma) + a/(16 sigma^2).
+If all three start inside |zi| <= R, R >= 0, then
+  |zi(t)| <= 3W/(8 sigma^2) + di (5R/4) exp(-2 sigma t/5),
+  d = (1, 9/10, 4/5).
+The proof first establishes the exact vector-field face inequalities for this
+box. It then uses strict first-contact barriers and lets their inflation tend
+to zero. The result follows from the physical ODE by the checked chain rule and
+coordinate transformation. The decay inequality is not an assumed premise.
+
+A simpler common radius is
+  E(t) = 3W/(8 sigma^2) + (5R/4) exp(-2 sigma t/5).
+It gives |x-c| <= E, |v| <= 8 sigma E, |a| <= 64 sigma^2 E and
+|u| <= 24 sigma^2 E. This is an error certificate, not an optimal bound.
+The common radius can be wider than the starting cube at early times. It does
+not cancel the earlier invariant-cube theorem or establish a smaller all-time
+travel margin by itself.
+
+Concrete composition
+DirectSettling.fixed_reference_then_hold imports the accepted DirectPlant and
+its exact eight-phase reference. It obtains the inherited endpoint cube from
+DirectReference.direct_cube, checks the finished reference is (3/5,0,0), and
+uses equality of the actual endpoint and the new hold's initial state. The
+composition does not assume a new initial-error bound. Hold time t=0 is global
+time 1.5 seconds for this fixed reference.
+
+With sigma=10/s, R=0.2 mm and W=0.01 m/s^2, every hold time t >= 1 second within
+the declared horizon has these bounds:
+  position error <= 53.125 micrometres;
+  speed <= 4.25 mm/s;
+  acceleration magnitude <= 0.34 m/s^2.
+Thus this concrete claim starts at global time 2.5 seconds. These are analytic
+upper bounds, not sampled results, observed errors or claimed optimal times.
+
+If the final hold instead has W=0, every hold time t >= 2 seconds has:
+  position error <= 0.9765625 micrometres;
+  speed <= 0.078125 mm/s;
+  acceleration magnitude <= 0.00625 m/s^2.
+To use these claims, the declared hold horizon must include the stated time:
+H >= 1 second for the first claim, or H >= 2 seconds for the second.
+This meets the illustrative 1 mm/s and 0.02 m/s^2 bands. The preceding motion
+still permits its original disturbance allowance; only the final hold is
+assumed disturbance-free. This claim starts at global time 3.5 seconds.
+
+What remains open
+For W=0.01, this common-radius certificate has floors of 37.5 micrometres,
+3 mm/s and 0.24 m/s^2. It cannot certify the tighter robot speed/acceleration
+bands. This is a limitation of this certificate. It is not a physical
+impossibility result and is not a lower bound on actual speed or acceleration.
+A constant nonzero disturbance has a static shifted equilibrium; an explicit
+Lean witness checks that fact.
+
+An explicit disturbance-free trajectory x=A exp(-4t), v=-4A exp(-4t),
+a=16A exp(-4t), r=8 satisfies the normalized plant and has nonzero velocity at
+every finite time for A>0. This witness refutes a claim of exact finite rest
+from the reference endpoint alone. It does not refute finite tolerances.
+
+The controller uses the actual position, velocity and acceleration states.
+No sensor or state-estimator error is modeled beyond the declared target
+disturbance w. The result does not cover sampled control, actuator saturation, joint coupling,
+Franka firmware, contact or hardware behavior. It does not prove novelty or
+publication readiness. It is a conditional model theorem that closes a specific
+residual-decay gap in the earlier direct-controller proof.
+
+Next useful question
+Can a tighter bound on the physical velocity and acceleration, rather than the
+common coordinate radius, meet the same tight bands under the full W=0.01
+allowance? If not, what precise disturbance regularity or decay assumption is
+needed? A particularly small next extension is a constant bias: algebra gives
+an equivalent goal c*=c+w0/(8 sigma^2), with an initial cube enlarged by
+|w0|/(8 sigma^2). The existing zero-disturbance theorem can then bound speed
+and acceleration relative to that shifted equilibrium. This extension is a
+proposed next proof, not a result in this frozen package.
+Do not silently change the frozen comparison or weaken its limits.
+
+Evidence
+Settling.lean: derived shrinking box, physical scaling and matched-state identity.
+SettlingFixtures.lean: concrete thresholds, real nonrest and static-bias witnesses.
+DirectSettling.lean: composition with the accepted frozen physical trajectory.
+MutationWitness.lean: exact counterexamples to a faster decay and a zero floor.
+verify.py and verification.json: fresh build, public axiom audit, kernel replay
+and two rejected false modifications. Independent review remains separate.
+
+Final builder verification
+All 42 local source modules compiled from fresh copies. All 608 public local
+statements passed the standard-axiom audit. This count includes inherited
+statements; it is not a count of new results. Seven modules passed separate
+leanchecker replay. Both concrete false controls were rejected without a
+timeout, and both accepted negation witnesses compiled. All frozen source
+hashes match. The initial negative-test harness issue is documented in
+development-note.txt. Independent review remains pending.

@@ -6,7 +6,10 @@ and final animations. Start with the reports below.
 
 | Area | Start here |
 |---|---|
-| Current bounded research session | [Checkpoint](research/pods/2026-10-17/five-hour-checkpoint-06.txt), [session limits](research/pods/2026-10-17/five-hour-session.json) |
+| Current overnight round | [Runbook](research/overnight/2026-10-18/README.txt), [live state](research/overnight/2026-10-18/state.json), [first checkpoint](research/overnight/2026-10-18/checkpoint-01.txt), [submission requirements](research/overnight/2026-10-18/submission-readiness.txt) |
+| Previous five-hour session | [Checkpoint](research/pods/2026-10-17/five-hour-checkpoint-06.txt), [session limits](research/pods/2026-10-17/five-hour-session.json) |
+| Overnight acceleration admission | [Accepted independent review](research/overnight/2026-10-18/robot-motion/critic-01/report.txt), [proved delayed return](research/overnight/2026-10-18/robot-motion/builder-01/report.txt), [checker cost](research/overnight/2026-10-18/robot-motion/checker-cost-02/report.txt) |
+| Overnight Clifford representation | [Accepted bounded review and source corrections](research/overnight/2026-10-18/geometric-unity/critic-01/REPORT.txt), [corrected author questions](research/overnight/2026-10-18/geometric-unity/critic-01/QUESTIONS-FOR-AUTHOR.txt) |
 | Exact fixed motion and continuous tracking | [25-statement proof review](research/pods/2026-10-17/controls/direct-reference-06/grader/review-report.txt), [interactive comparison](research/pods/2026-10-17/controls/causal-stop-05/figure/index.html), [numerical review](research/pods/2026-10-17/controls/causal-stop-05/grader/grade.txt) |
 | Causal acceleration deadline | [Proof and scope](research/pods/2026-10-17/controls/admission-04/builder/report.txt), [independent review](research/pods/2026-10-17/controls/admission-04/grader-proof/grade.txt) |
 | Validated filter failure bounds | [Independent rational enclosure review](research/pods/2026-10-17/controls/filter-enclosure-08/grader/report.txt), [model and tail argument](research/pods/2026-10-17/controls/filter-enclosure-08/builder/report.txt) |
@@ -112,8 +115,10 @@ Its mixed-sign and non-Bianchi controls were independently checked. It formalize
 ingredient with explicit conventions; it does not validate Geometric Unity or establish novelty.
 The accepted complex-adjoint package adds 37 theorems in three modules. It constructs the
 conjugate-linear reversal in the actual complexified Clifford algebra and checks its faithful
-real inclusion and negative controls. Further GU assembly is paused pending missing selection
-and normalization inputs; this algebra does not establish the global theory or physics.
+real inclusion and negative controls. GU operator selection and normalization remain unresolved. The new overnight
+round resumes a bounded standalone split-representation proof; its first action
+and dimension gate passed independent review. Faithfulness and the adjoint bridge
+remain open. This algebra does not establish the global theory or physics.
 
 The original files are copied byte-for-byte. In particular, no theorem, source claim, negative
 result, or verification record is rewritten to fit this repository. AI assistance and open
