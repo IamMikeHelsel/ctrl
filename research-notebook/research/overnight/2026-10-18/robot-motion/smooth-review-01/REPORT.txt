@@ -1,0 +1,163 @@
+INDEPENDENT REVIEW: FIXED-CAP SMOOTH RETURN
+18 October 2026 UTC. Reviewer owns smooth-review-01 only.
+
+Decision
+ACCEPT the exact stored reference and the bounded offline numerical comparison.
+REPAIR the causal wording before paper use. The plan starts at the instant the
+request becomes available, but the simulation does not charge planning time.
+This is a matched-boundary offline comparison, not a demonstrated online planner.
+The fixed optimization batch should stop. No solver was rerun in this review.
+
+Input identity
+Original builder manifest:
+14b028f05727b6459b30e63d84162fc49de1fdeb65c1a9327d30468149afd3c9
+216 frozen files; all hashes pass.
+Builder final manifest with ERRATA-01:
+25d2b152cfc0890bdbef79870560474a291f4bdf64c9076ca0e034eb7fd3f26f
+218 frozen files; all hashes pass.
+Prior builder03 baseline:209 files; prior critic03 evidence:22 files.
+Both complete frozen sets pass. Earlier results remain unchanged.
+
+Exact reference result
+The accepted N90/10mm candidate passes a separately written Fraction checker.
+This checker directly integrates the piecewise linear jerk. It converts power
+coefficients to Bernstein coefficients by the general binomial identity. It
+does not import the builder's propagation, validation or repair functions.
+
+All90 intervals,91 rational states and1,260 Bernstein controls agree. Initial
+(q,v,a,j)=(77/19200,23/480,5/16,-5/4) matches the exact inherited FIR reference.
+Position, velocity, acceleration and jerk are continuous. At1.42s, all four
+are exactly zero. The tail is zero without a state reset. Both task deadlines
+execute the same reference. The generic Bernstein convex-hull property gives
+sufficient bounds for every real time in each interval; these are reference
+bounds, not physical bounds. This is not a Lean proof or a solver certificate.
+
+The exact squared-reference-jerk integral is
+279511465541501742047220397/75000000000000000000000000
+=3.7268195405533566m^2/s^5. The exact repair changes only nodes87,88,89.
+The stored uncorrected endpoint, both objectives, all repair values, raw-node
+rounding and the float views used by the physical engine agree independently.
+The reference cap bound is strictly below10mm. Maximum reference snap is
+624.9899999998m/s^4. There is no snap limit.
+
+The four supplied negative controls reject for their intended conditions:
+9mm reference cap, excessive jerk, nonzero endpoint jerk and an interior-node
+change that loses exact rest. An extra altered-node control gives a nonzero
+endpoint; writing a zero tail there would introduce a state jump. These checks
+support this implementation audit. They do not prove a general validator sound.
+
+Solver review and preserved failure
+The saved batch has one optimal, two infeasible and THREE optimal_inaccurate
+statuses. REPORT and DEVIATIONS originally said four inaccurate outcomes.
+ERRATA-01 corrects this count and the ratio typography. The original files stay
+frozen. Raw vectors and residuals are missing for the three inaccurate outcomes.
+This is a real preservation gap. It cannot be repaired by pretending those
+outcomes are infeasibility certificates or grid-convergence evidence.
+
+The accepted floating candidate's normalized objective and every displayed
+constraint were checked without another optimizer call. Maximum equality
+residual is5.684341886080802e-14 in the millimeter-based units; all saved
+inequalities have nonpositive residual. The exact repaired reference then
+passes the original limits with no numerical tolerance. The convex model is
+a positive sum of squares with convex constraints. No dual/KKT certificate
+was supplied, so no optimality claim is accepted.
+
+Independent physical replay
+All90 new traces were replayed from zero using80-digit arithmetic. The method
+is a rational polynomial particular solution plus a separate3x3 homogeneous
+matrix exponential. The builder uses a9x9 augmented matrix exponential. The
+review reuses the already independent critic03 algorithm, with input directory,
+manifest and expected counts changed. Its exact source hash and modifications
+are recorded in review-provenance.json. No builder Python code was imported.
+This is a fresh replay of all new traces, not a copy of earlier results.
+
+All363,564 saved rows and3,294 saved event records agree. Maximum discrepancy:
+position4.191e-16m; velocity5.610e-15m/s; acceleration3.723e-14m/s^2;
+actual jerk2.956e-12m/s^3. No physical state jump was found. All task decisions
+agree. Maximum physical-metric discrepancy is2.671e-12. These are comparison
+errors, not certified integration error bounds or all-time physical guarantees.
+
+The reviewer recomputed511 table, range, ratio and output-grid entries from
+the independent replay. Maximum difference is1.795e-12. The prior three
+baseline methods use their frozen critic03 replay. All270 new-to-baseline
+prefix comparisons pass, both as serialized fields and as55-digit independent
+replay digests. All failed requests retain the authoritative return goal and
+execute the declared old-reference fallback. Rejection is counted as failure.
+
+Accepted readout
+For the six constant-rate/disturbance scalar cases, the N90/10mm return gives
+0.6086–0.6153 of FIR's sampled squared-jerk integral and0.6980–0.6983 of its
+sampled forward excursion. Its peak actual jerk is1.4113–1.6182 times FIR's.
+The integral and travel therefore improve while the peak worsens. The native
+comparators have less travel than this smooth candidate. No method dominates
+all declared criteria. Squared jerk is not mechanical energy.
+
+All six accepted generous cases pass the sampled task. All six tight cases
+fail. The planner is deliberately blind to the task deadline. “Accepted” means
+the fixed solver/status/exact-reference procedure accepted the return plan; it
+does not mean the deadline contract was accepted. Native fast alone passes the
+tight task in this comparison. Every rejected solver attempt remains visible.
+
+The strict10mm reference cap is NOT an actual10mm cap. At rate80/s, both
+disturbance cases exceed10mm sampled actual travel; the largest is
+0.010003275995800445m. The figure and paper must preserve this distinction.
+Agreement of1ms and0.5ms output grids is a resolution check. It proves neither
+convergence nor error bounds. N180 has no accepted candidate and establishes
+no reference-grid convergence.
+
+Comparison fairness and timing limitation
+The prefix, moving reference state, actual state, return goal, arrival time,
+plant, controller, output grids and scoring are matched. The new comparator
+has extra jerk-continuity and reference-travel constraints. Native fast is a
+different arrival policy; native matched is not a squared-jerk optimizer.
+It is fair to report the resulting tradeoff. It is not fair to claim planner
+dominance, equal objective optimality, equal feasible sets or general robustness.
+
+The accepted solve records0.11887738s solver time and0.13767125s whole-attempt
+time. Neither is charged before the scheduled0.52s execution start. The root
+protocol's wording about receiving the request at0.52s must not be read as
+evidence that this computation can finish and execute at that same instant.
+All comparisons here idealize planning latency. The timing measures are one
+host observation, not a worst-case execution bound. Append an explicit erratum
+and label the comparator offline before manuscript integration. Do not alter
+the old data or shift this plan retrospectively to hide the issue.
+
+Figure review
+The PNG was inspected at full displayed resolution. Axes, units and labels are
+readable; data are not clipped. The top panels show rate100/s, disturbance0;
+the lower panels show all six generous cases. All four plotted trace hashes
+match. The lower values match independently recomputed metrics. The plot
+visibly communicates lower integral but higher peak and a larger path than
+native motion. Its caption must say that the10mm cap is on the reference,
+the comparator is offline, the dashed times are0.52s and1.42s, and rejected
+attempts are in the accompanying table. Six cases are not a general benchmark.
+
+Useful next gate
+Use an explicit future execution time. Retain the old reference while a plan
+is computed. Build the candidate from the reference jet at that future time,
+then check the whole retained prefix plus candidate against the deadline and
+travel contract. Carry the actual plant state; never reset it to the old0.52s
+state. Include deliberate late completion and stale-result rejection controls.
+This tests the time contract the present comparison leaves open. Do not spend
+the next batch tuning the same six optimization cases.
+
+Limits and disposition
+No physical robot, Franka dynamics, learned policy, force/contact behavior,
+actuator clipping, sampled controller, all-time physical maximum, optimum,
+infeasibility theorem, global algorithm or novelty result is established.
+No Lean proof was added or accepted in this gate. The exact reference and
+independent numerical evidence are suitable as a bounded paper example after
+the timing wording is repaired. They are not a standalone research claim.
+
+Replay commands from the workspace root
+python3 research/overnight/2026-10-18/robot-motion/smooth-review-01/exact_review.py
+.tools/research-python/bin/python research/overnight/2026-10-18/robot-motion/smooth-review-01/physical_replay.py
+python3 research/overnight/2026-10-18/robot-motion/smooth-review-01/summary_review.py
+python3 research/overnight/2026-10-18/robot-motion/smooth-review-01/solver_model_review.py
+Run in a fresh copied output folder when preserving this frozen review.
+
+Environment note
+The first interpreter probes found no mpmath in system Python or franka-sim-
+python. The existing .tools/research-python environment already had mpmath.
+The complete physical replay then passed there. No package was installed,
+no optimizer was repeated, and no baseline or builder evidence was changed.

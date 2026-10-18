@@ -1,0 +1,53 @@
+What this gate proves
+
+The preserved algebra is GUComplex.CCl = C tensor_real Cl(7,7). The real Clifford
+algebra and its ordered exterior representation are the accepted ones. The new
+complexMatrixEquiv is a complex algebra equivalence to 128 by 128 complex matrices.
+For every complex z and real Clifford element a, its exact coordinate formula is:
+  complexMatrixEquiv(z tensor a)[I,T] = z * ofReal(splitMatrixEquiv(a)[I,T]).
+It has an inverse for every complex matrix. Its multiplication is matrix
+multiplication, which sums over the common index.
+
+The map construction
+ComplexEquivalence.lean defines realToComplexMatrix by the coefficient algebra
+map R -> C, applied entrywise. complexLinearEquiv first applies the existing
+real splitMatrixEquiv under tensor extension. Two finite-product linear
+equivalences then distribute the complex tensor over the matrix rows and columns.
+Their inverses are defined in the pinned Mathlib source. This proves bijectivity
+without a fresh faithfulness assumption or a dimension-only assertion.
+
+The library helper algEquivOfLinearEquivTensorProduct upgrades that actual linear
+equivalence only after the source proves multiplication and the identity on pure
+tensors. The pure multiplication proof uses realToComplexMatrix.map_mul and the
+commuting scalar/matrix multiplication law. A function-space algebra with
+pointwise multiplication is never substituted for the matrix algebra.
+
+The adjoint bridge
+ComplexBridge.lean defines Kc by entrywise extension of the accepted real K.
+K is the ordered product N0*N1*N2*N3*N4*N5*N6 of the actual negative generators.
+The source proves Kc is Hermitian and Kc*Kc=I from the accepted real identities.
+The accepted GUComplex.bar is reused byte-for-byte. It conjugates complex
+scalars, negates real Clifford vectors and reverses products.
+
+The pure-tensor bridge combines bar_tmul with the accepted real adjoint bridge.
+Tensor induction then gives, for every x in CCl:
+  complexMatrixEquiv(bar x) = Kc * conjugateTranspose(complexMatrixEquiv x) * Kc.
+The inverse-image theorem covers every complex matrix. skew_iff_matrix transports
+the actual bar-skew condition, without assuming it of the representation.
+
+Non-vacuity and false controls
+ComplexControls.lean proves the imaginary scalar identity is not fixed by bar,
+and that replacing conjugate transpose with ordinary transpose fails on that
+actual input. Two off-diagonal matrix units do not commute. Their actual
+Clifford preimages therefore do not commute either. Client.lean.txt checks the
+forward and inverse maps, scalar mixtures, product reversal, vector behavior and
+the form-adjoint involution. The deliberately false clients are separate files
+and must fail for mathematical reasons, not missing imports or names.
+
+Limits
+This is standard algebra formalization. No signature theorem, global Spin-group
+claim, Phi choice, action variation, field equation or physical prediction is
+proved here. In particular, this result does not repair missing GU operator
+choices. It does not establish publication novelty. Fresh local verification
+still trusts pinned Lean, prebuilt third-party dependencies and hardware. An
+independent critic must accept this gate before it enters accepted claims.

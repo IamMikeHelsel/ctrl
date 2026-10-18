@@ -1,0 +1,108 @@
+SMOOTH RETURN UNDER A FIXED TRAVEL CAP — ROOT BUILDER REPORT
+18 October 2026. Independent review is required before acceptance.
+
+Result
+One of six predeclared solver attempts produced an accepted reference. The
+N90 plan with a 10 mm forward-reference cap returns to exact reference rest at
+1.42 s. It starts from the same moving reference at .52 s, with continuous
+position, speed, acceleration and jerk. The actual plant starts at zero and
+keeps its state through the shared prefix and revision.
+
+In six declared scalar plant cases, this plan lowers the integral of actual
+squared jerk and forward travel relative to the checked FIR return. It raises
+peak actual jerk. It passes the generous task and fails the tight task. Thus it
+is a stronger smooth comparator, not a universal performance winner.
+
+All solver outcomes
+                    7 mm                 10 mm                 15 mm
+N90                 infeasible           optimal / accepted    optimal_inaccurate
+N180                infeasible           optimal_inaccurate    optimal_inaccurate
+Only the optimal candidate was eligible for exact reconstruction under the
+frozen procedure. Every other result is an unsuccessful attempt. No status is
+a mathematical infeasibility certificate. The rejected cases execute the old
+FIR motion as fallback, retain the rejected authoritative request, and count as
+task failures. No attempt was removed, retuned, or repeated. The N180 runs do
+not establish reference-grid convergence. See DEVIATIONS.txt for missing raw
+vectors and residuals from the four inaccurate outcomes.
+
+Exact reference evidence
+The initial reference is (q,v,a,j)=(77/19200,23/480,5/16,-5/4) in SI units.
+There are90 intervals of.01 s. Jerk is linear on each interval. Its integral
+gives quadratic acceleration, cubic speed and quartic position. The stored
+rational Bernstein controls certify the declared reference V/A/J limits and
+the10 mm forward cap for all real times on the suffix. The final q=v=a=j=0
+is exact. This is a Python Fraction polynomial check, not a new Lean theorem.
+
+The last three interior jerk values were corrected by about
+5.306e-9,-1.045e-8,5.145e-9 m/s^3 to enforce the endpoint exactly. This is the
+predeclared repair, not a state reset. The repaired reference squared-jerk
+integral is3.7268195405533566 m^2/s^5. Maximum reference snap is about
+624.99 m/s^4. There was no snap limit. The reference objective is distinct
+from physical jerk, mechanical energy, peak jerk and task completion.
+
+Physical numerical replay
+All90 declared traces ran:72 primary traces and18 refinement/fallback traces,
+with363564 saved state rows. All90 exact serialized prefix comparisons match
+the accepted prior baseline through the left side of.52 s. Physical state
+jumps are zero. Rates80,100,120/s and disturbances0,.01m/s^2 are constant
+within each plant case. Output steps are1 ms and.5 ms; N180 uses.5 ms only.
+The unchanged matrix-exponential plant engine generated these rows.
+
+At .5 ms output spacing, six generous-task cases per accepted method give:
+Method             Integral jerk^2    Extra forward travel     Peak actual jerk
+                   m^2/s^5            mm                       m/s^3
+Checked FIR        6.067..6.121        14.315..14.331            5.000..5.002
+Native fast        17.307..17.494       6.851..6.872              7.770..9.390
+Native matched     15.171..15.250       6.851..6.872              8.000..11.392
+Smooth10mm         3.692..3.766         9.996..10.003             7.059..8.091
+These metrics use the suffix[.52,2.50]s. The integral uses trapezoidal
+quadrature. Travel is a sampled maximum relative to actual position at.52s.
+Full ranges, both integration horizons, path length, reverse overshoot,
+command variation, all task outcomes and output-grid differences are stored
+in analysis-summary.json and metrics.json. The smooth plan's command total
+variation is1.303..1.311m/s^2 and path length24.010..24.015mm.
+
+Paired with FIR across the six plants, the smooth candidate has.6086..6153
+times its squared-jerk integral,.6980..6983 times its forward travel, and
+1.4113..1.6182 times its peak jerk. The result is not a claim that FIR is an
+optimal smooth planner. Neither native baseline minimizes squared jerk.
+
+The reference10 mm cap does not imply an actual10 mm cap: the sampled actual
+maximum reaches10.003276 mm. The strict reference cap and a physical travel
+guarantee must remain distinct. All six generous-task cases pass the sampled
+position, velocity, acceleration, tracking, progress and admission conditions.
+All six tight-task cases fail the terminal position, velocity and acceleration
+conditions. The planner intentionally did not use the deadline as an input.
+Only native fast passes the tight task in this declared comparison.
+
+Output-grid check and negative controls
+Task decisions agree between1 ms and.5 ms output grids. For the accepted
+candidate, the largest squared-jerk integral difference is.000853 m^2/s^5;
+the largest sampled forward-travel difference is2.51e-8 m. These differences
+are convergence evidence for saved numerical metrics, not error bounds.
+Four altered references are rejected for their intended condition: a9 mm
+travel cap, excessive jerk, nonzero terminal jerk and a perturbed interior
+jerk value that loses the terminal state. They do not prove all invalid
+references are rejected, and do not independently review this implementation.
+
+Interpretation and next decision
+The comparison supports a clearer research question: which properties does
+the task require, and which are checked before a new plan is executed?
+An execution contract can still be useful when a different planner gives a
+better tradeoff. Do not present the FIR smoother as the contribution or claim
+that minimizing a single derivative measure solves VLA motion in general.
+
+Stop this fixed solver batch. Independently reconstruct the rational reference,
+replay saved actual states with a separate engine, recompute all metrics and
+task decisions, check the borrowed common-prefix logic, and inspect comparison
+fairness. Accept or repair the bounded claims before paper integration.
+
+Limits
+No physical robot, learned-policy evaluation, seven-axis dynamics, contact,
+sampled controller, actuator clipping, all-time physical bound or global
+continuous-time optimum is established. The current protocol has one return
+request and one moving initial state. It is not a general planner benchmark.
+The candidate was selected by the declared procedure, not chosen after ranking
+plant outcomes. New source and figure files are separate from prior frozen
+artifacts. The first plot environment probe found no system matplotlib; the
+saved data were rendered with existing .tools/franka-sim-python instead.

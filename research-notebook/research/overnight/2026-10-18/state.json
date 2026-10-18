@@ -14,16 +14,16 @@
   },
   "pods": {
     "robot-motion": {
-      "agent": "/root/overnight_motion_builder_04",
-      "role": "builder",
-      "owned_path": "research/overnight/2026-10-18/robot-motion/builder-04/",
+      "agent": "/root/overnight_motion_critic_04",
+      "role": "critic",
+      "owned_path": "research/overnight/2026-10-18/robot-motion/critic-04/",
       "milestone": "Sufficient cubic Bernstein velocity guard and finite-candidate composition",
-      "batch_deadline_utc": "2026-10-18T09:16:00Z",
-      "status": "active",
-      "started_weekly_used": 56,
-      "candidate_summary": "Actual-plant composition compiles. Frozen 96-trace comparison preliminarily shows the new guard repairs acceleration failure but does not outperform native fast Ruckig. Runtime parity reproduction and independent review pending.",
-      "builder_status": "builder-03 frozen; independent review active",
-      "builder_manifest_sha256": "abfc9ca6da02e5cbec77b4019e8f356c80d612f65bea3fcb3e7b227ec1cf6d58",
+      "batch_deadline_utc": "2026-10-18T09:20:00Z",
+      "status": "velocity gate accepted; independent smooth comparison review active",
+      "started_weekly_used": 59,
+      "candidate_summary": "Independent sufficient V/A/J/reference-deadline contract accepted. Smooth comparison frozen with explicit report errata; numerical reviewer active.",
+      "builder_status": "builder04 frozen; critic04 active",
+      "builder_manifest_sha256": "025661f2f14bd9bdb3ef12ba49bdbd73d364c41971da1e749c50073a07e46023",
       "accepted_milestones": [
         {
           "builder": "builder-01",
@@ -42,20 +42,26 @@
           "critic": "critic-03",
           "decision": "ACCEPT common-prefix numerical tradeoff, not optimality",
           "critic_manifest_sha256": "2b3cc05bf3e9374bb21478c486424afca21b5d67b76e0bd9551747a9ed5b3660"
+        },
+        {
+          "builder": "builder-04",
+          "critic": "critic-04",
+          "decision": "ACCEPT sufficient reference V/A/J/deadline contract; safe rejection and partition dependence explicit",
+          "critic_manifest_sha256": "101a0b071b2c05bf1b0dbac407b1b43f7319b7b7887180941d295c7ff35fac16"
         }
       ],
       "recommended_next_gate": "After acceptance, freeze and run a common-prefix/common-actual-revision-state suffix comparison, including native fast and native arrival-duration-matched baseline. Then exact checker optimization. See next-round-decisions.txt."
     },
     "controls": {
-      "agent": "/root/overnight_controls_critic_04",
-      "role": "critic",
-      "owned_path": "research/overnight/2026-10-18/controls/critic-04/",
-      "milestone": "Independent direct actual-state changing-input two-second terminal bounds",
-      "batch_deadline_utc": "2026-10-18T09:15:00Z",
-      "status": "reviewing",
-      "started_weekly_used": 58,
-      "candidate_summary": "Same commanded goal/controller and inherited state; candidate two-second position/speed/acceleration bounds for constant bias. Arbitrary changing disturbance remains separate.",
-      "builder_status": "builder04 frozen; critic04 active",
+      "agent": "/root/overnight_controls_builder_05",
+      "role": "builder",
+      "owned_path": "research/overnight/2026-10-18/controls/builder-05/",
+      "milestone": "Same physical FIR trajectory from0 through constant tail, inherited cube and actual terminal bands at3.42s",
+      "batch_deadline_utc": "2026-10-18T09:40:00Z",
+      "status": "building",
+      "started_weekly_used": 62,
+      "candidate_summary": "Actual changing-response and changing-disturbance scalar terminal bands at hold time >=2s; DirectPlant endpoint composition separately accepted, not FIR composition.",
+      "builder_status": "builder04 independently accepted",
       "builder_manifest_sha256": "fcd32812a407ff8589951ef313da896c106751fef00fa987cfefe4ae64327a9b",
       "accepted_milestones": [
         {
@@ -75,20 +81,26 @@
           "critic": "critic-03",
           "decision": "ACCEPT bounded numerical scout only; direct quadratic certificate recommended",
           "critic_manifest_sha256": "ee9f3b92f81c52cbbb1cac9cda0cec529510b8d9d212f7baede16cf53afd74bb"
+        },
+        {
+          "builder": "builder-04",
+          "critic": "critic-04",
+          "decision": "ACCEPT bounded scalar changing-input terminal theorem and DirectPlant handoff; stop fixed certificate optimization",
+          "critic_manifest_sha256": "96dffbd77ad98c637e56716c22c91f76de612b09b7e87063e08dda584c169773"
         }
       ]
     },
     "geometric-unity": {
-      "agent": "/root/overnight_gu_builder_04",
+      "agent": "/root/overnight_gu_builder_05",
       "role": "builder",
-      "owned_path": "research/overnight/2026-10-18/geometric-unity/builder-04/",
-      "milestone": "Actual complex tensor matrix representation and conjugate-transpose bridge",
-      "batch_deadline_utc": "2026-10-18T09:16:00Z",
+      "owned_path": "research/overnight/2026-10-18/geometric-unity/builder-05/",
+      "milestone": "ActualK complement action and explicit64+64signature congruence; stop at precise gate if full resulttoo broad",
+      "batch_deadline_utc": "2026-10-18T09:40:00Z",
       "status": "building",
-      "started_weekly_used": 58,
-      "candidate_summary": "Actual exterior matrix-unit action and normalized Clifford preimages compile. Explicit arbitrary-endomorphism lift and fresh verification underway.",
-      "builder_status": "builder-02 independently accepted; builder-03 started",
-      "builder_manifest_sha256": "fab7240941cb89b4517fd2614160f7ebf122eff095b017f4676bd09cd94b792d",
+      "started_weekly_used": 62,
+      "candidate_summary": "Actual complex tensor matrix algebra equivalence and conjugate-transpose bridge; fresh review active. No physics/novelty claim.",
+      "builder_status": "builder04 frozen; critic04 active",
+      "builder_manifest_sha256": "861cd093c525217d7f9f04dbee0ff22889efd541e746bc7a82eeea9a20c4a8c9",
       "accepted_milestones": [
         {
           "builder": "analyst-01",
@@ -107,14 +119,20 @@
           "critic": "critic-03",
           "decision": "ACCEPT actual real matrix-adjoint bridge; no physics or complex claim",
           "critic_manifest_sha256": "a6af23a3104a95e72aa5141ce327369a947d478eacf333600df052d07a0bb23c"
+        },
+        {
+          "builder": "builder-04",
+          "critic": "critic-04",
+          "decision": "ACCEPT actual complex matrix algebra equivalence and adjoint, no physics/novelty",
+          "critic_manifest_sha256": "06239fa65dbb56bc5b90f96eb8e54e98c4ea1e5cd9d5d3218c1ec688bb2c69fd"
         }
       ],
       "authoritative_source_questions": "research/overnight/2026-10-18/geometric-unity/critic-01/QUESTIONS-FOR-AUTHOR.txt"
     }
   },
-  "root_current_work": "Frozen root50-module portable bundle passed fresh replay:3153 declarations,9 kernel replays,12 false clients and3 provenance mutation controls. Six-page paper compiled and visually checked. Both await independent packaging/content review; frozen manifests index04, do not edit them. Next review slot after current builders should cover each newly frozen proof first; then root bundle/paper in a new reviewer folder. For any paper revision create a new version preserving frozen original. GU builder04 complex gate active. Controls builder04 actual varying-r/w theorem compiles and verifies; motion builder04 sufficient velocity theorem compiles and verifies. Root checkpoint04 sync in progress.",
-  "next_dispatch_policy": "Review each newly frozen builder first. Motion builder04 next gets independent critic04. GU builder04 next gets independent critic04. Root50-module portable package and six-page paper then need one independent packaging/content review in new publication-review-01 folder; avoid file overlap and frozen-source edits. Consider controls/FIR composition only after actual changing-input result acceptance.",
-  "latest_verified_remote_sha": "25334b693a92f844e248095bcfcb35ce0e244727",
+  "root_current_work": "Checkpoint05 preservation/sync. New7page integrationdraft includes acceptedvelocity andoffline smoothcomparison+requiredcaption/timingrepairs. Originalsixpagepaper unchanged. Controls/GUbuilders05 active, progressgrader05 active. Nextroot tasks: acceptedFIRterminalintegration ifbuilder/criticpass, portablebundlehardening/expandedclosure, finalindependentpaperreview. Consider onecausal futurestart/historyversion gate only ongraderrecommendation; no additionaloptimizer sweep.",
+  "next_dispatch_policy": "Review controls/GU newfrozenbuilder05 withfreshcritics before acceptance. Do not start source-specificGUoperators withoutfixeddefinitions aftersignature. Smooth numerical review thenroot integration, no repeated optimization batch. Rootowns allGit/PR/manuscript/state.",
+  "latest_verified_remote_sha": "865e1a47bb403ac589c2188aad71ad2c4de0c742",
   "continuation": "ACTIVE thread heartbeat, every ten minutes at :04/:14/:24/:34/:44/:54; final scheduled tick 14:44 UTC. Stop guard is in prompt and state. Avoid duplicate active jobs.",
   "local_host_keep_awake": {
     "pid": 16927,
@@ -123,11 +141,11 @@
     "mode": "temporary idle-sleep assertion only; expires at round deadline",
     "ac_power_verified": true
   },
-  "last_coordinator_update_utc": "2026-10-18T08:22:25.997107+00:00",
+  "last_coordinator_update_utc": "2026-10-18T08:52:18.616629+00:00",
   "latest_shared_usage": {
-    "weekly_used": 58,
+    "weekly_used": 62,
     "credits": "66235.3330170000",
-    "observed_utc": "2026-10-18T08:17:20Z"
+    "observed_utc": "2026-10-18T08:45:03Z"
   },
   "repository_ci": {
     "head_sha": "9465d90050b9ecb0675039ce8921caf22e030b49",
@@ -147,13 +165,13 @@
     "mode": "shared-host Lean --run, no realtime claim",
     "next": "prove adjacent-cell equivalence and compare fixed inputs"
   },
-  "latest_local_checkpoint": "research/overnight/2026-10-18/checkpoint-03.txt",
+  "latest_local_checkpoint": "research/overnight/2026-10-18/checkpoint-04.txt",
   "repository_checkpoint": {
-    "remote_sha": "25334b693a92f844e248095bcfcb35ce0e244727",
-    "remote_verified_utc": "2026-10-18T07:59:01Z",
-    "staged_manifest_files_verified": 7967,
+    "remote_sha": "865e1a47bb403ac589c2188aad71ad2c4de0c742",
+    "remote_verified_utc": "2026-10-18T08:24:00Z",
+    "staged_manifest_files_verified": 8758,
     "checkout_clean_after_push": true,
-    "scope": "36 frozen manifests:5106 stored files and36 compiled products checked in source. All7967 snapshot files match manifest. Active-state full freshness found2 changing files; final full check remains open."
+    "scope": "44 frozen manifests:5644 stored files and36 compiled products checked in source. All8758 snapshot files match. Full live-source freshness found4 changing files; final full check remains open."
   },
   "coordinator_proof_gate": {
     "path": "research/overnight/2026-10-18/robot-motion/history-pruning-01",
@@ -172,18 +190,42 @@
     "claim": "Same exact all-future acceleration acceptance; observed 32-event median219.648ms in Lean --run on shared host",
     "critic_manifest_sha256": "3620c6af12b074de71d19232ab07db61af2d4f4c191429bae000b23c45f92753"
   },
-  "active_agent_usage_note": "Shared meter55; motion/controls critics began earlier review work around47 and resumed at55. Conservatively review their continuity/cap before65 used. Current GU builder03 began53. No per-agent usage meter exists.",
+  "active_agent_usage_note": "Current critics04 began58/59shared points; publicationcritic01 began60. Shared meter60. No per-agent meter. Stop/review any uninterrupted specialist at+18points.",
   "publication_candidates": {
     "paper": {
       "path": "publication/robot-motion/checked-motion-paper",
       "manifest_sha256": "d8bf7fab19e445b4650c12933cefcfbd4dca5295a94daa51cfa51625258d410c",
       "pdf_sha256": "5f24bc9dc7b43486d828e991b70d914d06925dc353c74d843cf9e1f705fcb462",
-      "status": "6-page draft; independent content review pending"
+      "status": "independently accepted bounded evidence; required caption repair before submission, new velocity/terminal/comparison integration pending",
+      "critic_manifest_sha256": "174175c0d9dc8b74da4c1496377513d589325e9f08bae5d419d24e1fac76b8de"
     },
     "bundle": {
       "path": "publication/robot-motion/overnight-reviewer-bundle",
       "manifest_sha256": "a03f4866baa0b97437f251ab1b0315f45132a91992324b8d031a29de912e59f4",
-      "status": "fresh50-module replay passed; independent packaging review pending"
+      "status": "independent copied-path fresh50-module replay accepted; optional kernel-plan metadata hardening before next version",
+      "critic_manifest_sha256": "174175c0d9dc8b74da4c1496377513d589325e9f08bae5d419d24e1fac76b8de"
+    },
+    "integration_draft": {
+      "path": "publication/robot-motion/checked-motion-paper-v2",
+      "status": "7pages compile and render; not frozen or independently reviewed. Velocity and offline smooth comparison added; FIRterminal and expandedportablebundle pending."
     }
+  },
+  "additional_active_review": {
+    "agent": "/root/overnight_progress_grader_05",
+    "path": "research/overnight/2026-10-18/progress-review-05/",
+    "deadline_utc": "2026-10-18T09:30:00Z",
+    "started_weekly_used": 62,
+    "milestone": "Closest primary sources, useful claim, per-pod stop/continue decision and one next test"
+  },
+  "root_comparison": {
+    "path": "research/overnight/2026-10-18/robot-motion/smooth-baseline-01",
+    "deadline_utc": "2026-10-18T09:32:00Z",
+    "status": "ACCEPT bounded exact reference and offline numerical comparison; timing errata02 saved",
+    "protocol_sha256": "c83f6abdddb50468ff23a6a7bfbe01ef270cf597debf9872451263fa6cd637de",
+    "gate": "One accepted reference out of six.90traces363564rows. Lower squared jerk and forward travel vsFIR, higher peak; tight task fails. Provisional until independent review. Three inaccurate status raw vectors/residuals missing; explicit deviation. Root report count/ratio errata added without modifying original216files.",
+    "manifest_sha256": "25d2b152cfc0890bdbef79870560474a291f4bdf64c9076ca0e034eb7fd3f26f",
+    "critic": "/root/overnight_smooth_critic_01",
+    "review_deadline_utc": "2026-10-18T09:35:00Z",
+    "critic_manifest_sha256": "cf71b8400b5a301666587e7787ca1aedca8ec219d4cfb116ac24aee48faf7c04"
   }
 }

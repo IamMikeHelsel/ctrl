@@ -1,0 +1,71 @@
+import BasisActions
+import RealEquivalence
+import Mathlib.LinearAlgebra.CliffordAlgebra.Star
+
+noncomputable section
+namespace HyperbolicSpinor
+open GUClifford
+abbrev SpinMatrix := Matrix (Finset J) (Finset J) ℝ
+
+def creationMatrix (i : J) : SpinMatrix := LinearMap.toMatrixAlgEquiv spinBasis (create i)
+def contractionMatrix (i : J) : SpinMatrix := LinearMap.toMatrixAlgEquiv spinBasis (annihilate i)
+
+/-- Creation and contraction use the same actual ordered exterior basis. -/
+theorem creation_transpose (i : J) : (creationMatrix i).transpose = contractionMatrix i := by
+  ext I T
+  simp only [Matrix.transpose_apply, creationMatrix, contractionMatrix, LinearMap.toMatrixAlgEquiv_apply]
+  by_cases hiT : i ∈ T
+  · obtain ⟨A, B, hs, ha⟩ := annihilate_basis_present_exact i T hiT
+    rw [ha]
+    by_cases he : I = T.erase i
+    · subst I
+      have hc : create i (spinBasis (T.erase i)) = (-1 : ℝ)^A.length • spinBasis T := by
+        rw [basis_word (T.erase i), ordered_erase_of_split i T A B hs,
+          create_word_insert, basis_word T, hs]
+      rw [hc]
+      simp
+    · by_cases hiI : i ∈ I
+      · rw [create_basis_present i I hiI]
+        simp [he]
+      · obtain ⟨C, D, _, _, hc⟩ := create_basis_absent_exact i I hiI
+        rw [hc]
+        have hne : insert i I ≠ T := by
+          intro hh
+          have her := congrArg (fun U : Finset J => U.erase i) hh
+          simp [hiI] at her
+          exact he her
+        simp [he, hne]
+  · rw [annihilate_basis_absent i T hiT]
+    by_cases hiI : i ∈ I
+    · rw [create_basis_present i I hiI]
+      simp
+    · obtain ⟨A, B, _, _, hc⟩ := create_basis_absent_exact i I hiI
+      rw [hc]
+      have hne : insert i I ≠ T := by
+        intro hh
+        exact hiT (hh ▸ Finset.mem_insert_self i I)
+      simp [hne]
+
+theorem contraction_transpose (i : J) : (contractionMatrix i).transpose = creationMatrix i := by
+  rw [← creation_transpose, Matrix.transpose_transpose]
+
+def positiveMatrix (i : J) : SpinMatrix := splitMatrix (gamma (Fin.castAdd 7 i))
+def negativeMatrix (i : J) : SpinMatrix := splitMatrix (gamma (Fin.addNat i 7))
+
+theorem positiveMatrix_fock (i : J) : positiveMatrix i = contractionMatrix i + creationMatrix i := by
+  change LinearMap.toMatrixAlgEquiv spinBasis (splitAction _) = _
+  rw [gamma_positive_action, map_add]
+  rfl
+
+theorem negativeMatrix_fock (i : J) : negativeMatrix i = creationMatrix i - contractionMatrix i := by
+  change LinearMap.toMatrixAlgEquiv spinBasis (splitAction _) = _
+  rw [gamma_negative_action, map_sub]
+  rfl
+
+theorem positive_transpose (i : J) : (positiveMatrix i).transpose = positiveMatrix i := by
+  simp [positiveMatrix_fock, Matrix.transpose_add, creation_transpose, contraction_transpose, add_comm]
+
+theorem negative_transpose (i : J) : (negativeMatrix i).transpose = -negativeMatrix i := by
+  simp [negativeMatrix_fock, Matrix.transpose_sub, creation_transpose, contraction_transpose]
+
+end HyperbolicSpinor

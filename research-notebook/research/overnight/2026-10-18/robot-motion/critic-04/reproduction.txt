@@ -1,0 +1,41 @@
+Run from the original workspace with the pinned dependency project present:
+  python3 research/overnight/2026-10-18/robot-motion/critic-04/replay.py
+
+The saved run already exists. For a fresh replay, copy this review's input
+scripts, ReviewerWitnesses.lean and negative-controls/ to a new sibling review
+folder. Do not copy .cache/, logs/ or previous output evidence. The script
+derives the workspace root from that folder, checks the fixed builder final
+manifest and source freeze, resolves dependencies through the pinned lake,
+and starts with an empty local module cache. It does not write the builder.
+
+The pinned Lean standard library and external package caches are reused.
+No project-local build cache is used. This is not a fresh download/audit of
+the full Lean/mathlib dependency distribution.
+
+The B-spline oracle uses Python Fraction arithmetic and a degree recursion.
+It does not import or call the builder oracle, qVelocity implementation, or
+positive-part cubic code. It generates exact finite decisions and endpoint
+jet equalities for Lean to check. It also checks interior cubic identities
+in Python. These finite cases supplement the universal proof; they do not
+replace it.
+
+Strict negative controls count only when Lean reaches an explicit False goal.
+Unknown imports, unknown names, lack of tactic progress and other harness
+failures do not count. The review keeps the first environment-preflight error
+under attempts/preflight-01/. That run failed before building any proof because
+the reviewer dependency allowlist omitted the pinned Lean standard library.
+The corrected allowlist accepts only that exact path and package paths.
+
+The first proof run built all 15 frozen modules and ReviewerOracle. The three
+reviewer client conversions then needed `neg_div` to match -(1/50) with
+(-1)/50. That failure is preserved under attempts/witness-01/. The final
+verification continues with finish_review.py, which checks the unchanged
+fresh sources and previous successful build records, rebuilds only the fixed
+reviewer client, audits all local declarations, replays all 17 modules with
+leanchecker and runs the eight strict false-claim controls. Read result.json
+and final-result.json together. The former is deliberately retained as FAIL.
+
+After replay, verify both builder artifact manifests, their file hashes,
+source closure and toolchain bindings. The original 85-file manifest and the
+final 92-file manifest are distinct preserved records. The original failed
+negative tactic remains excluded. The reviewer uses its own false claims.

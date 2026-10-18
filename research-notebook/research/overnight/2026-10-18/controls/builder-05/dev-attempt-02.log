@@ -1,0 +1,57 @@
+BUILD FIRHold
+/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/overnight/2026-10-18/controls/builder-05/build/FIRHold.lean:58:13: warning: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/overnight/2026-10-18/controls/builder-05/build/FIRHold.lean:58:17: warning: Unused tactic linter: `ring` does nothing.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/overnight/2026-10-18/controls/builder-05/build/FIRHold.lean:58:17: warning: this tactic is never executed
+
+Note: This linter can be disabled with `set_option linter.unreachableTactic false`
+BUILD FIRHoldWitness
+Try this:
+  [apply] ring_nf
+  
+  The `ring` tactic failed to close the goal. Use `ring_nf` to obtain a normal form.
+    
+  Note that `ring` works primarily in *commutative* rings. If you have a noncommutative ring, abelian group or module, consider using `noncomm_ring`, `abel` or `module` instead.
+/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/overnight/2026-10-18/controls/builder-05/build/FIRHoldWitness.lean:38:4: error: unsolved goals
+case e'_9
+b H t : ℝ
+ht : t ∈ Ioo 0 H
+⊢ ![biasedReference b t 1, biasedReference b t 2,
+        physicalInput 10 (biasedReference b) (referenceState 0 (1 / 5) (realEvents deferredReturn))
+                (jerk (1 / 5) (realEvents deferredReturn)) t *
+              96 +
+            b * 96 -
+          biasedReference b t 2 * 96]
+      ⟨2, ⋯⟩ =
+    jerk (1 / 5) (realEvents deferredReturn) t
+/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/overnight/2026-10-18/controls/builder-05/build/FIRHoldWitness.lean:114:6: error: Tactic `split_ifs` failed: no if-then-else conditions to split
+
+case e'_9
+H t : ℝ
+ht : t ∈ Ioo 0 H
+⊢ ![biasedReference (1 / 200) t 1, biasedReference (1 / 200) t 2,
+        changingRate t *
+          (physicalInput 10 (biasedReference (1 / 200)) (referenceState 0 (1 / 5) (realEvents deferredReturn))
+                (jerk (1 / 5) (realEvents deferredReturn)) t +
+              changingDisturbance t -
+            biasedReference (1 / 200) t 2)]
+      ((fun i => i) ⟨2, ⋯⟩) =
+    jerk (1 / 5) (realEvents deferredReturn) t
+/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/overnight/2026-10-18/controls/builder-05/build/FIRHoldWitness.lean:131:2: error: linarith failed to find a contradiction
+t : ℝ
+ht : 0 ≤ t
+hj : |jerk (1 / 5) (realEvents deferredReturn) t| ≤ 15 / 2
+hk : |1 / changingRate t - 1 / 96| ≤ 1 / 2000
+hm : |jerk (1 / 5) (realEvents deferredReturn) t| * |1 / changingRate t - 1 / 96| ≤ 15 / 2 * (1 / 2000)
+hb :
+  |1 / 200 + jerk (1 / 5) (realEvents deferredReturn) t * ((changingRate t)⁻¹ - 1 / 96)| ≤
+    1 / 200 + |jerk (1 / 5) (realEvents deferredReturn) t| * |(changingRate t)⁻¹ - 1 / 96|
+a✝ : 1 / 100 < |1 / 200 + jerk (1 / 5) (realEvents deferredReturn) t * (1 / changingRate t - 1 / 96)|
+⊢ False
+failed
+/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/overnight/2026-10-18/controls/builder-05/build/FIRHoldWitness.lean:134:57: error: unsolved goals
+⊢ ¬eventJerk (1 / 5) (11 / 50, 1 / 50) 0 + eventJerk (1 / 5) (31 / 50, -(1 / 50)) 0 =
+      eventJerk (1 / 5) (11 / 50, 1 / 50) (1 / 2) + eventJerk (1 / 5) (31 / 50, -(1 / 50)) (1 / 2)

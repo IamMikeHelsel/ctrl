@@ -1,0 +1,82 @@
+CONTROLS CRITIC04 — ACCEPT THE BOUNDED SCALAR CLAIM
+Evidence gate: A. This grades the stated proof and review, not novelty or hardware.
+
+Accepted result
+For every supplied classical trajectory of the original scalar hold model,
+a fixed goal, response 80<=r(t)<=120/s, disturbance |w(t)|<=.01 m/s^2, and the
+original transformed initial cube of radius .0002 m, every hold time t in [2,H]
+satisfies |v(t)|<=.001 m/s and |a(t)|<=.02 m/s^2. Use H>=2 for a nonempty claim.
+Both response and disturbance can change. There is no added derivative,
+constancy, dwell-time, hidden forced-trajectory, reset or retargeting premise.
+
+The accepted primary theorem is
+  LeanControls.QuadraticHold.two_seconds_actual_changing_input.
+The accepted inherited-endpoint theorem is
+  LeanControls.QuadraticWitness.fixed_reference_then_changing_hold.
+It carries the actual existing eight-phase DirectPlant endpoint into this hold.
+The hold clock starts after 1.5 seconds of preceding motion. Its two-second
+entry is therefore at global time 3.5 seconds. It is not a composition with the
+separate FIR robot-motion reference.
+
+Independent exact review
+The reviewer reconstructed the rational Q inverse with Gaussian elimination,
+checked all 37 strict principal minors of Q and the negative endpoint LMIs,
+and reconstructed both endpoint sums of squares. The direct derivative
+matrix and the Q-congruence matrix agree exactly. Affine rate interpolation,
+the two output-coordinate inequalities, initial-cube scaling, and the
+exponential entry arithmetic all pass with Python Fraction arithmetic.
+No builder checker or optimizer implementation was imported.
+
+The original cube's eight vertices lie inside the claimed physical box.
+The larger box has exact maximum V=995542624000/68317631. The loose source
+bound V(0)<=1000000 is valid. The checked entry estimate
+1+999999/16^10<=101/100 leaves positive margins for both physical targets.
+All numerical solver outcomes were preserved. The first declared passing
+candidate remains alpha 20, denominator 1000. No optimality is claimed.
+
+Fresh proof evidence
+All 43 local modules rebuilt from original source bytes into a fresh directory.
+The environment audit inspected 2934 local declarations. It found no local
+axiom, unsafe declaration, or axiom outside propext, Classical.choice and
+Quot.sound. All 10 selected source kernel replays passed. The independent
+review client module also passed compilation, a separate kernel replay, and
+an axiom audit of all 14 named client theorems.
+
+The reviewer raw_physical_equations_suffice client starts from the explicit
+physical scalar equations and initial inequalities. A moving witness changes
+both inputs, starts outside both final bands, and satisfies the conclusion
+through a nonempty [2,4] interval. A separate analytic nonzero-disturbance
+DirectPlant handoff client proves the inherited composition is realizable.
+That analytic example was adapted from critic02 and is copied and rebuilt
+here, with its provenance stated in ReviewClients.lean.
+
+All 6 false clients failed for the intended mathematical reason after imports
+resolved: an unbounded disturbance certificate, an outside-rate certificate,
+a unit-ellipsoid reset, immediate terminal speed, a false inherited endpoint,
+and exact zero speed after two seconds. The first two are failures of the
+chosen certificate, not universal impossibility results outside its bounds.
+
+Preservation
+The 101-file builder manifest remains unchanged, as do every closure source
+and every source-freeze entry. Lean 4.35.0 and Mathlib
+56a005855ea17e0b0958f73ec801ae140b0a1679 remain pinned. The existing external
+package cache is part of the trust base. Root owns repository sync and Git.
+This review has not pushed or merged anything.
+
+Reviewer correction
+The first independent exact script omitted 20*(1-d^2) when testing the
+out-of-bound input example. This was a reviewer test error. The original
+script, reproduced failure log and explanation are preserved. The corrected
+test passes. No builder proof source needed repair.
+
+Limits and decision
+Accept and integrate this bounded mathematical result. Stop certificate
+optimization for the fixed target. The identifier energy denotes a quadratic
+measure, not mechanical energy. The theorem gives residual bands, not exact
+finite-time rest, physical stopping safety or validated robot performance.
+It assumes a classical trajectory and does not prove existence for every
+bounded input pair. It does not cover a sampled controller, actuator clipping,
+sensor error, joint coupling, contact, response below 80/s, full loss of grip,
+Franka hardware, or PLd/PLe. The separate position theorem and this speed/
+acceleration theorem must retain their individual assumptions. Publication
+novelty and the hardware relevance of the chosen bands still need review.

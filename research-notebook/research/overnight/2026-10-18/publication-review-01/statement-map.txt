@@ -1,0 +1,63 @@
+FROZEN MANUSCRIPT TO ACTUAL LEAN STATEMENTS
+
+Theorem1: exact reference checks
+RationalGuard.check_real_iff has positive width, nonnegative jerk cap and an
+all-real-time future jerk conclusion. AccelerationGuard.checkAcceleration_real_iff
+has the corresponding acceleration conclusion. SuccessorGuard.successor_future_iff
+and checkSuccessor_real_iff give the adjacent-cell version. The paper's interior
+critical point description differs only by omitting repeated endpoints, which
+are already checked. The tail argument explicitly uses the finite history.
+No grid, event-order, distinct-knot, sign or no-cancellation premise is hidden.
+
+Theorem2: completed tails
+HistoryPruning.future_jet_eq requires h>0 and t>=c and keeps the signed position
+offset. jerk_guard_pruned and acceleration_guard_pruned preserve decisions.
+The positive width is introduced at the start of the section. Past motion and
+unbounded active history are correctly excluded. This is not a physical-state
+reset or an equivalence of past executions.
+
+Timed candidate rule
+TimedAdmission.chosen_reference_contract proves c<=tau, all-future acceleration
+and jerk bounds, exact reference prefix through tau, and final reference position
+with zero velocity, acceleration and jerk from D onward. The rest target is
+g0+sum(increments). The text's caller convention must bind a requested goal to
+that value. The causal ordering wrapper in Admission is a separate result; the
+paper correctly labels it as separate. No generic velocity admission, complete
+planner, minimum wait, infeasibility over all trajectories, or task completion
+from rejection is claimed. A useful clarity edit is to write the increment rule
+explicitly: delta=g_requested-(g0+sum(old increments)).
+
+Theorem3: generic physical error bounds
+ScaledTracking.tracking_cube_scaled assumes a continuous reference state with
+its three derivative identities, a classical physical trajectory, pointwise
+rate/disturbance/jerk bounds, initial transformed cube and disturbance budget.
+The reference regularity is supplied by the four-box history defined earlier.
+scaled_cube_physical_bounds gives exactly the paper's R,8*sigma*R,64*sigma^2*R
+bounds. The independent ManuscriptClaims client restates and composes these two
+results with every premise visible. No physical-state equality with an analytic
+solution, stability test on a finite grid, or endpoint reset is a premise.
+
+Theorem3: fixed position task
+PhysicalArrival.delayed_return_physical_position has one initial cube premise
+at timezero and preserves the same f for the whole[0,2.5] interval. It proves
+tracking, progress and position arrival. It does not prove physical rest or the
+experiment's speed/acceleration terminal bands. The manuscript says so.
+Independent Fraction arithmetic reconstructs q(.52),q'(.52),q''(.52),q'''(.52),
+q(.5), the positive progress margin and the budget. The example has meaningful
+positive margins; its claims do not follow from contradictory scalar arithmetic.
+Existence of the actual classical trajectory remains a declared premise.
+
+Physical vs numerical scope
+The native reference may have jerk jumps. Numerical replay uses one-sided event
+values and continuous physical state. It is not included in the classical FIR
+tracking theorem. The numerical table uses six constant plant cases and two
+output grids, while the conditional FIR theorem allows changing bounded r,w
+provided a classical trajectory exists. Neither establishes a coupled Franka,
+contact, sampled actuation, actuator saturation or machine-safety claim.
+
+Independent scope witnesses
+The manuscript client also proves that the initial error cube can allow actual
+acceleration1.28m/s^2 despite the reference's.5m/s^2 cap, and that a nonzero point
+can satisfy the final position band. These are direct checks that the stated
+limits matter. The acceleration witness is an initial-state point, not a new
+physical trajectory or a hardware test.

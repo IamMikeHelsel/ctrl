@@ -1,0 +1,50 @@
+NEXT CONTROLS GATE — SAME PHYSICAL TRAJECTORY THROUGH FIR RETURN AND HOLD
+Coordinator proposal. No new theorem or acceptance is claimed here.
+
+Why this gate
+The accepted FIR result proves position arrival. The accepted quadratic hold
+result proves small speed and acceleration after two hold seconds. Their
+current composition examples use different preceding motions. A useful next
+theorem must close that exact gap. More certificate optimization is unnecessary.
+
+Fixed target
+Use the existing delayed-return FIR history, the same actual feedback law,
+response80..120/s, disturbance magnitude<=.01m/s^2 and transformed initial
+error cube radius.0002m at global time0. Keep the supplied classical trajectory
+assumption explicit. Use a horizon H>=171/50=3.42s.
+
+The reference becomes exactly zero in position, speed, acceleration and jerk
+at t0=71/50=1.42s. Prove from the existing all-time transformed tracking cube
+that the ACTUAL state at t0 meets the quadratic hold theorem's initial cube.
+Derive the shifted hold trajectory f(t0+s) from the original physical ODE and
+the zero reference tail. Do not assume a fresh cube, reset the actual state,
+replace the reference clock or add an independent endpoint matching premise.
+
+Conclude the existing tracking/position/progress obligations and, for every
+t in[171/50,H], |x(t)|<=.0002m, |v(t)|<=.001m/s and |a(t)|<=.02m/s^2.
+This is a conservative guaranteed deadline3.42s. It does not prove actual
+terminal settling by the numerical comparison's1.7s deadline, and does not
+make the tight1.3s task feasible. Preserve that distinction in theorem names.
+
+Prefer one reusable time-shift/constant-tail lemma and one concrete FIR client.
+Bind the final reference position to the actual goal0 explicitly. The accepted
+new velocity guard can remain a separate reference contract; it is not needed
+to invent a tighter physical velocity statement.
+
+Non-vacuity lead, to check rather than assume
+For constant r=96/s and w=0, taking the actual state equal to the FIR reference
+should satisfy the declared feedback exactly: its feed-forward term is j/96.
+The accepted reference derivative chain can construct this actual moving
+trajectory. For constant nonzero disturbance b, adding b/800 to actual
+position while retaining reference speed and acceleration should give another
+exact trajectory, since feedback cancels b. Check the initial cube and units.
+This witness does not establish existence for every bounded input pair.
+
+Verification gate
+Read the actual source interfaces before fixing the statement. Preserve all
+accepted sources byte-for-byte in the new closure; report conflicts, do not
+silently overwrite them. Fresh-source build, all-local axiom audit, selected
+separate kernel replay, intended negative clients for reset/clock/error bounds,
+and a fresh independent critic are required. Stop at one falsifiable45–60minute
+builder milestone. If shifting fails due to a real interface or mathematical
+gap, record it precisely instead of adding the intended conclusion as a premise.

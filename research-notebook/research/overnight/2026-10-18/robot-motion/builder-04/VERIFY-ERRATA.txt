@@ -1,0 +1,38 @@
+AUTHORITATIVE VERIFICATION CORRECTION — 18 October 2026
+
+Read FINAL-REPORT.txt for this handoff. The first report and artifact manifest
+are preserved byte-for-byte, including their premature negative-control claim.
+
+The positive proof result is unchanged: all 15 fresh module builds, all 15
+separate kernel replays and the standard-axiom audit of 769 local declarations
+passed. The 180 exact finite decisions also passed. No theorem source changed.
+
+The initial negative harness required a nonzero exit and an error, and rejected
+missing imports/names. It did not require that the diagnostic reach False.
+One of its six tests, FalseNoSafeRejectedHistory, stopped at `simp made no
+progress`. That initial run is a harness failure, not a mathematical negative
+control, and must be excluded from the count. The other five logs each end
+with an explicit False goal.
+
+negative-repair-01/FalseNoSafeRejectedHistory.lean repairs only this test's
+rewriting tactic. It uses iff_true_intro on rejected_history_is_safe, so its
+false negation reduces to False. The corrected replay failed with `unsolved
+goals` and the explicit goal `False`. replay.py requires that diagnostic and
+checks that all 85 files in the first frozen manifest stayed unchanged.
+
+The final count is five original mathematical controls plus one corrected
+control. The original tactic failure remains in the evidence. The original
+verification.json PASS is not sufficient by itself for the six-control claim;
+read it together with this correction and negative-repair-01/result.json.
+
+For a fresh independent repeat, follow reproduction.txt for the 15-module
+build. Exclude the original FalseNoSafeRejectedHistory run from the count.
+Compile the corrected negative source against the resulting fresh module
+cache and the same pinned dependency paths. It must fail with an explicit
+False goal and no import/name/tactic-progress error. The repair replay script
+is bound to the original frozen workspace evidence; it does not claim to be
+a portable standalone runner.
+
+The final handoff manifest is artifact-sha256-final.json. It includes the
+original manifest, original failure, correction, corrected source and log.
+Root owns repository sync and independent acceptance.

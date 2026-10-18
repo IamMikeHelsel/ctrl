@@ -1,0 +1,88 @@
+{
+  "status": "PASS",
+  "method": "Independent rational power integration and generic power-to-Bernstein transform; no builder import",
+  "input_manifest_sha256": "14b028f05727b6459b30e63d84162fc49de1fdeb65c1a9327d30468149afd3c9",
+  "files_checked": 216,
+  "final_manifest_files_checked": 218,
+  "solver_status_counts": {
+    "infeasible": 2,
+    "optimal": 1,
+    "optimal_inaccurate": 3
+  },
+  "exact_checks": {
+    "intervals": 90,
+    "rational_states": 91,
+    "Bernstein_controls": 1260,
+    "objective": "279511465541501742047220397/75000000000000000000000000",
+    "objective_float": 3.7268195405533566,
+    "initial_jet": [
+      "77/19200",
+      "23/480",
+      "5/16",
+      "-5/4"
+    ],
+    "terminal_jet": [
+      "0",
+      "0",
+      "0",
+      "0"
+    ],
+    "C3_continuous": true,
+    "all_future_reference_bounds": {
+      "speed": "8796278012343/156250000000000",
+      "acceleration": "4146494514227/12500000000000",
+      "jerk": "3749949999999/500000000000",
+      "snap": "3124949999999/5000000000"
+    },
+    "reference_forward_upper_m": "119999880000006497/12000000000000000000",
+    "correction_indices": [
+      87,
+      88,
+      89
+    ],
+    "exact_terminal_no_reset": true,
+    "same_plan_both_deadlines": true,
+    "not_Lean": true,
+    "not_optimality_certificate": true
+  },
+  "negative_controls": [
+    {
+      "name": "tighter_travel_cap",
+      "independent_rejection": true,
+      "conditions": [
+        "position_cap"
+      ]
+    },
+    {
+      "name": "outside_jerk_bound",
+      "independent_rejection": true,
+      "conditions": [
+        "jerk",
+        "terminal_state"
+      ]
+    },
+    {
+      "name": "nonzero_terminal_jerk",
+      "independent_rejection": true,
+      "conditions": [
+        "terminal_or_initial_jerk",
+        "terminal_state"
+      ]
+    },
+    {
+      "name": "perturbed_interior_jerk",
+      "independent_rejection": true,
+      "conditions": [
+        "terminal_state"
+      ]
+    }
+  ],
+  "extra_endpoint_reset_control": {
+    "detected_nonzero_endpoint": [
+      "15001/12000000000000",
+      "1/200000000",
+      "1/100000000"
+    ],
+    "reason": "Writing a zero tail would create a q/v/a state jump and cannot replace exact endpoint equality."
+  }
+}

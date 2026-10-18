@@ -1,0 +1,215 @@
+import TransposeBridge
+
+set_option linter.unusedSimpArgs false
+noncomputable section
+namespace HyperbolicSpinor
+open GUClifford
+
+theorem negative_square_all (i : J) : negativeMatrix i * negativeMatrix i = -1 := by
+  have hs := splitMatrix_gamma_sq (Fin.addNat i 7)
+  have he : eps (Fin.addNat i 7) = -1 := by
+    unfold eps
+    simp only [Fin.val_addNat]
+    split_ifs with h
+    · omega
+    · rfl
+  simpa only [negativeMatrix, he, neg_smul, one_smul] using hs
+
+theorem negative_swap_all (i j : J) (h : i ≠ j) :
+    negativeMatrix i * negativeMatrix j = -(negativeMatrix j * negativeMatrix i) := by
+  have he : Fin.addNat i 7 ≠ Fin.addNat j 7 := by
+    intro hh
+    apply h
+    apply Fin.ext
+    have hv := congrArg Fin.val hh
+    simp only [Fin.val_addNat] at hv
+    omega
+  simpa only [negativeMatrix, map_mul, map_neg] using congrArg splitMatrix (gamma_swap _ _ he)
+
+theorem negative_swap_right (i j : J) (h : i ≠ j) (X : SpinMatrix) :
+    negativeMatrix i * (negativeMatrix j * X) = -(negativeMatrix j * (negativeMatrix i * X)) := by
+  rw [← mul_assoc, negative_swap_all i j h, neg_mul, mul_assoc]
+
+theorem negative_square_right (i : J) (X : SpinMatrix) :
+    negativeMatrix i * (negativeMatrix i * X) = -X := by
+  rw [← mul_assoc, negative_square_all, neg_mul, one_mul]
+
+theorem positive_negative_swap (i j : J) :
+    positiveMatrix i * negativeMatrix j = -(negativeMatrix j * positiveMatrix i) := by
+  have he : Fin.castAdd 7 i ≠ Fin.addNat j 7 := by
+    intro hh
+    have hh' := congrArg Fin.val hh
+    simp only [Fin.val_castAdd, Fin.val_addNat] at hh'
+    have hi := i.isLt
+    omega
+  simpa only [positiveMatrix, negativeMatrix, map_mul, map_neg] using congrArg splitMatrix (gamma_swap _ _ he)
+
+/-- Ordered product of the seven actual negative generator matrices. -/
+def K : SpinMatrix := negativeMatrix 0 * negativeMatrix 1 * negativeMatrix 2 *
+  negativeMatrix 3 * negativeMatrix 4 * negativeMatrix 5 * negativeMatrix 6
+
+theorem K_transpose : K.transpose = K := by
+  simp only [K, Matrix.transpose_mul, negative_transpose, mul_assoc,
+    neg_mul, mul_neg, neg_neg,
+    negative_swap_right 1 0 (by decide),
+    negative_swap_right 2 0 (by decide),
+    negative_swap_right 2 1 (by decide),
+    negative_swap_right 3 0 (by decide),
+    negative_swap_right 3 1 (by decide),
+    negative_swap_right 3 2 (by decide),
+    negative_swap_right 4 0 (by decide),
+    negative_swap_right 4 1 (by decide),
+    negative_swap_right 4 2 (by decide),
+    negative_swap_right 4 3 (by decide),
+    negative_swap_right 5 0 (by decide),
+    negative_swap_right 5 1 (by decide),
+    negative_swap_right 5 2 (by decide),
+    negative_swap_right 5 3 (by decide),
+    negative_swap_right 5 4 (by decide),
+    negative_swap_right 6 0 (by decide),
+    negative_swap_right 6 1 (by decide),
+    negative_swap_right 6 2 (by decide),
+    negative_swap_right 6 3 (by decide),
+    negative_swap_right 6 4 (by decide),
+    negative_swap_right 6 5 (by decide),
+    negative_swap_all 1 0 (by decide),
+    negative_swap_all 2 0 (by decide),
+    negative_swap_all 2 1 (by decide),
+    negative_swap_all 3 0 (by decide),
+    negative_swap_all 3 1 (by decide),
+    negative_swap_all 3 2 (by decide),
+    negative_swap_all 4 0 (by decide),
+    negative_swap_all 4 1 (by decide),
+    negative_swap_all 4 2 (by decide),
+    negative_swap_all 4 3 (by decide),
+    negative_swap_all 5 0 (by decide),
+    negative_swap_all 5 1 (by decide),
+    negative_swap_all 5 2 (by decide),
+    negative_swap_all 5 3 (by decide),
+    negative_swap_all 5 4 (by decide),
+    negative_swap_all 6 0 (by decide),
+    negative_swap_all 6 1 (by decide),
+    negative_swap_all 6 2 (by decide),
+    negative_swap_all 6 3 (by decide),
+    negative_swap_all 6 4 (by decide),
+    negative_swap_all 6 5 (by decide)]
+
+theorem K_square : K * K = 1 := by
+  simp only [K, mul_assoc, neg_mul, mul_neg, neg_neg, one_mul, mul_one,
+    negative_square_all, negative_square_right,
+    negative_swap_right 1 0 (by decide),
+    negative_swap_right 2 0 (by decide),
+    negative_swap_right 2 1 (by decide),
+    negative_swap_right 3 0 (by decide),
+    negative_swap_right 3 1 (by decide),
+    negative_swap_right 3 2 (by decide),
+    negative_swap_right 4 0 (by decide),
+    negative_swap_right 4 1 (by decide),
+    negative_swap_right 4 2 (by decide),
+    negative_swap_right 4 3 (by decide),
+    negative_swap_right 5 0 (by decide),
+    negative_swap_right 5 1 (by decide),
+    negative_swap_right 5 2 (by decide),
+    negative_swap_right 5 3 (by decide),
+    negative_swap_right 5 4 (by decide),
+    negative_swap_right 6 0 (by decide),
+    negative_swap_right 6 1 (by decide),
+    negative_swap_right 6 2 (by decide),
+    negative_swap_right 6 3 (by decide),
+    negative_swap_right 6 4 (by decide),
+    negative_swap_right 6 5 (by decide),
+    negative_swap_all 1 0 (by decide),
+    negative_swap_all 2 0 (by decide),
+    negative_swap_all 2 1 (by decide),
+    negative_swap_all 3 0 (by decide),
+    negative_swap_all 3 1 (by decide),
+    negative_swap_all 3 2 (by decide),
+    negative_swap_all 4 0 (by decide),
+    negative_swap_all 4 1 (by decide),
+    negative_swap_all 4 2 (by decide),
+    negative_swap_all 4 3 (by decide),
+    negative_swap_all 5 0 (by decide),
+    negative_swap_all 5 1 (by decide),
+    negative_swap_all 5 2 (by decide),
+    negative_swap_all 5 3 (by decide),
+    negative_swap_all 5 4 (by decide),
+    negative_swap_all 6 0 (by decide),
+    negative_swap_all 6 1 (by decide),
+    negative_swap_all 6 2 (by decide),
+    negative_swap_all 6 3 (by decide),
+    negative_swap_all 6 4 (by decide),
+    negative_swap_all 6 5 (by decide)]
+
+theorem K_commutes_negative (i : J) : K * negativeMatrix i = negativeMatrix i * K := by
+  fin_cases i
+  all_goals first
+    | change K * negativeMatrix 0 = negativeMatrix 0 * K
+    | change K * negativeMatrix 1 = negativeMatrix 1 * K
+    | change K * negativeMatrix 2 = negativeMatrix 2 * K
+    | change K * negativeMatrix 3 = negativeMatrix 3 * K
+    | change K * negativeMatrix 4 = negativeMatrix 4 * K
+    | change K * negativeMatrix 5 = negativeMatrix 5 * K
+    | change K * negativeMatrix 6 = negativeMatrix 6 * K
+  all_goals
+    simp only [K, mul_assoc, neg_mul, mul_neg, neg_neg, one_mul, mul_one,
+      negative_square_all, negative_square_right,
+    negative_swap_right 1 0 (by decide),
+    negative_swap_right 2 0 (by decide),
+    negative_swap_right 2 1 (by decide),
+    negative_swap_right 3 0 (by decide),
+    negative_swap_right 3 1 (by decide),
+    negative_swap_right 3 2 (by decide),
+    negative_swap_right 4 0 (by decide),
+    negative_swap_right 4 1 (by decide),
+    negative_swap_right 4 2 (by decide),
+    negative_swap_right 4 3 (by decide),
+    negative_swap_right 5 0 (by decide),
+    negative_swap_right 5 1 (by decide),
+    negative_swap_right 5 2 (by decide),
+    negative_swap_right 5 3 (by decide),
+    negative_swap_right 5 4 (by decide),
+    negative_swap_right 6 0 (by decide),
+    negative_swap_right 6 1 (by decide),
+    negative_swap_right 6 2 (by decide),
+    negative_swap_right 6 3 (by decide),
+    negative_swap_right 6 4 (by decide),
+    negative_swap_right 6 5 (by decide),
+    negative_swap_all 1 0 (by decide),
+    negative_swap_all 2 0 (by decide),
+    negative_swap_all 2 1 (by decide),
+    negative_swap_all 3 0 (by decide),
+    negative_swap_all 3 1 (by decide),
+    negative_swap_all 3 2 (by decide),
+    negative_swap_all 4 0 (by decide),
+    negative_swap_all 4 1 (by decide),
+    negative_swap_all 4 2 (by decide),
+    negative_swap_all 4 3 (by decide),
+    negative_swap_all 5 0 (by decide),
+    negative_swap_all 5 1 (by decide),
+    negative_swap_all 5 2 (by decide),
+    negative_swap_all 5 3 (by decide),
+    negative_swap_all 5 4 (by decide),
+    negative_swap_all 6 0 (by decide),
+    negative_swap_all 6 1 (by decide),
+    negative_swap_all 6 2 (by decide),
+    negative_swap_all 6 3 (by decide),
+    negative_swap_all 6 4 (by decide),
+    negative_swap_all 6 5 (by decide)]
+
+theorem positive_move_product (i : J) (L : List J) :
+    positiveMatrix i * (L.map negativeMatrix).prod =
+      (-1 : ℝ)^L.length • ((L.map negativeMatrix).prod * positiveMatrix i) := by
+  induction L with
+  | nil => simp
+  | cons j L ih =>
+    simp only [List.map_cons, List.prod_cons, List.length_cons]
+    rw [← mul_assoc, positive_negative_swap, neg_mul, mul_assoc, ih]
+    simp only [mul_smul_comm, ← mul_assoc, pow_succ, mul_neg, mul_one, neg_smul]
+
+theorem K_anticommutes_positive (i : J) :
+    positiveMatrix i * K = -(K * positiveMatrix i) := by
+  have h := positive_move_product i [0,1,2,3,4,5,6]
+  norm_num at h
+  simpa [K, mul_assoc] using h
+
+end HyperbolicSpinor

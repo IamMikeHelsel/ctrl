@@ -1,0 +1,81 @@
+CONTROLS CRITIC04 — statement and assumption review
+Working review; final decision is in report.txt after replay.
+
+Target
+The fixed controller is u=-800*(x-c)-60*v-a/2. The plant is
+x'=v, v'=a, a'=r*(u+w-a). Thus the acceleration equation contains
+-3*a/2 after the controller is substituted. The source proves this exact
+scaling in qState_ode. The reviewer raw_physical_equations_suffice client
+starts from these scalar equations, the explicit initial inequalities,
+and a nonempty H>=2 horizon.
+
+The theorem two_seconds_actual_changing_input requires H>=0 and returns a
+universal conclusion on [2,H]. That set is empty when H<2. This is standard
+conditional interval scope, not a nonempty-duration claim. The inherited
+composition theorem explicitly requires H>=2. Reviewer clients use H=4
+and check the endpoint H=2 is nonempty.
+
+Trajectory assumptions
+A supplied state f is continuous on [0,H]. Each component has the actual ODE
+derivative at every interior time. The equations are classical, not merely
+almost-everywhere equations. r and w have pointwise closed-interval bounds.
+They have no separate continuity, derivative, dwell-time, or constancy premise.
+The scalar comparison uses a constant coefficient 20, so it does not smuggle in
+continuity of physical r. Arbitrary bounded signals need not admit a classical
+trajectory. Existence for every bounded signal pair is not claimed.
+
+State and input
+c is fixed during the hold. No estimated disturbance is supplied to the
+controller. The initial assumptions bound the three coordinates
+x-c, x-c+v/40, x-c+v/20+a/1600 by 1/5000 m. This cube is not replaced by the
+unit ellipsoid. The proof retains it and derives the generous V(0)<=1000000.
+V=q^T Pq is a dimensionless quadratic measure. The identifier energy is not
+mechanical energy, power, work or actuator effort.
+
+Exact reasoning
+q=(80000*(x-c),2000*v,50*a) and d=100*w.
+A(r)=[[0,40,0],[0,0,40],[-r/2,-3r/2,-3r/2]], B=(0,0,r/2).
+The endpoint SOS inequalities give V'<=20*(d^2-V). Affine interpolation with
+weights (120-r)/40 and (r-80)/40 is valid throughout 80<=r<=120. |d|<=1 gives
+V'<=20*(1-V). Independent exact checks reconstruct these matrices and both
+SOS decompositions. Q and -M80,-M120 have 37 positive principal minors.
+The coordinate matrices Q11*P-e1*e1^T and Q22*P-e2*e2^T are positive
+semidefinite; their exact SOS formulas agree with the source.
+
+The comparison gives V(t)<=1+999999*exp(-20*t). At t>=2, exp(-20*t)<=16^-10
+follows from the checked exp(-4)<=1/16 and the exponential product law.
+1+999999/16^10<=101/100. Consequently q1^2<=.518*1.01<4 and
+q2^2<=.81*1.01<1. Dividing by 2000 and 50 gives |v|<=.001 m/s and
+|a|<=.02 m/s^2. All-time extension follows from t>=2, not from sampling.
+
+Inherited endpoint
+DirectPlant retains all eight actual physical phases, their state matches,
+rate/disturbance bounds, and zero initial physical state. direct_cube proves
+the transformed tracking-error cube through the last closed phase. The exact
+reference endpoint is [3/5,0,0]. hmatch identifies hold f(0) with the actual
+previous phase 7 endpoint. matched_hold_cube is an algebraic change of error
+coordinates. It does not reset the state or assert zero endpoint error.
+The two-second clock starts after the 1.5-second previous motion. It corresponds
+to global time 3.5 seconds. This is not a composition with the separate FIR
+retained-history reference and not a coupled Franka theorem.
+
+Non-vacuity and controls
+The supplied exponential moving witness changes both rate and disturbance,
+starts at speed 8 mm/s and acceleration .32 m/s^2, and obeys the classical ODE even
+at its switch. Its compensated switch keeps the actual derivative consistent.
+The reviewer also rebuilds an analytic nonzero-disturbance handoff client of
+the full DirectPlant composition, adapted from critic02's witness and declared
+as such in ReviewClients.lean. Exact rest is false for these exponential tails.
+Negative certificate cases distinguish necessity of the proof assumptions from
+necessity for all possible controllers or trajectories. They do not prove that
+the original target fails when a bound is removed.
+
+Publication boundary
+This is a conditional all-time mathematical guarantee for a fixed scalar
+continuous-feedback model. It adds useful speed and acceleration residuals
+under changing response and changing disturbance. It proves neither exact
+finite-time rest nor safety of a sampled, clipped, sensor-limited, coupled or
+contact robot. It does not justify rate/disturbance bands on hardware, cover
+r<80 or full loss of response, establish PLd/PLe, or settle novelty. The
+quadratic method is established mathematics. No optimizer rerun is needed for
+this review; a rational certificate is sufficient once checked.

@@ -1,0 +1,37 @@
+INDEPENDENT CRITIC04 REPLAY
+
+Do not rerun into this frozen folder. Create an empty sibling directory under
+research/overnight/2026-10-18/controls/. Copy rebuild.py, exact_review.py,
+ReviewClients.lean and clients.py into that new directory. The scripts resolve
+the same frozen builder-04 sibling and workspace source paths. This is a local
+research replay, not a portable standalone package.
+
+Run from the new directory in this order:
+  python3 exact_review.py
+  python3 rebuild.py
+  python3 clients.py
+
+The exact check uses only Python standard-library Fraction arithmetic. It does
+not import the builder's checker, use an SDP solver, or assume floating-point
+matrix signs. The source replay validates the pinned builder manifest, original
+source closure, import graph and every source hash. It copies all43 local
+modules to a new fresh/ directory. Only existing pinned external package caches
+are reused. It audits all local declarations and separately checks ten selected
+modules with leanchecker. The client replay adds the raw physical-equation
+restatement, an actual nonzero-disturbance full handoff, and six false clients.
+
+The full handoff witness was adapted from critic02's checked analytic example.
+The definition and its derivative proof are copied and rebuilt here. No extra
+critic02 object or source import is used. This provenance is explicit in the
+source comment. The new arbitrary-input theorem is the one applied to it.
+
+All negative clients must fail with an unsolved mathematical goal after imports
+resolve. A syntax/import failure is not a successful negative test. The pinned
+Lean4.35.0 toolchain and Mathlib56a005855ea17e0b0958f73ec801ae140b0a1679
+must remain unchanged. The existing dependency cache is part of the trust base.
+
+Preserved reviewer failure
+exact_review_attempt01.py omitted the term20*(1-d^2) in its own out-of-bound
+input negative test. This test error is explained in reviewer-failure-01.txt.
+The corrected independent test distinguishes the homogeneous matrix inequality
+from the bounded-input inequality. No builder source changed.

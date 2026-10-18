@@ -1,0 +1,86 @@
+MATCHED-ARRIVAL SMOOTH RETURN WITH A DECLARED TRAVEL CAP
+Root builder gate; independent review required. 18 October2026 UTC.
+Hard batch deadline09:32UTC. Stop after the declared solves, validation and replay.
+No post-result tuning or expanded optimization sweep.
+
+Question
+Can a smooth reference with the same start and arrival reduce the observed
+jerk/travel tradeoff? This is a stronger comparison baseline, not a new motion
+algorithm. It minimizes reference squared jerk in one finite-dimensional convex
+model. Actual jerk, command variation, task failure and travel are scored later.
+A successful numerical solver does not prove global continuous-time optimality.
+
+Same prefix and task
+Use the accepted builder03 common FIR prefix from time0 through .52 seconds.
+Initial actual state is zero and is carried through the prefix. Reference state
+at .52 is exactly (q,v,a,j)=(77/19200,23/480,5/16,-5/4) in SI units.
+Return goal is zero, with zero reference velocity, acceleration and jerk at1.42.
+Both deadlines1.70 and1.30 seconds remain; horizon2.50. A new plan is generated
+without using the deadline; both tasks execute the identical plan. Score requests,
+initial1mm progress at.50, reference V/A/J limits, tracking and all terminal bands
+as in builder03. No initial physical reset, optimistic acceptance or retuning.
+
+Optimizer
+Piecewise linear reference jerk on uniform elapsed intervals over T=.90 s.
+Primary N=90. Exactly three primary forward-excursion caps:7,10,15 mm.
+The cap means REFERENCE position q(t)<=q(.52)+cap for the full suffix. It is
+not a physical travel guarantee. Report actual forward excursion separately.
+Also perform the predeclared discretization check N=180 for the same three caps.
+All six solves are mandatory even if an earlier one succeeds or fails.
+No lower position bound is imposed. Report reverse overshoot and total path too.
+
+Initial jerk continuity and terminal jerk zero are additional constraints on this
+smooth comparator. Native fast and matched keep their original discontinuous
+jerk policies. No snap bound is imposed; report maximum reference snap explicitly.
+The planner has advance knowledge only of the return request after its .52 arrival.
+
+Reference limits
+V=.1m/s; A=.5m/s^2; J=7.5m/s^3. Enforce each piece's rational Bernstein controls:
+position degree4, speed degree3, acceleration degree2, jerk degree1. These are
+sufficient continuous bounds. They can be conservative and depend on the grid.
+For numerical headroom use optimizer limits V-1e-7, A-1e-7, J-1e-4 and cap-1e-8
+in SI units. Final validation uses the original exact limits with no tolerance.
+
+For dt=T/N and jerk endpoints ji,jk, exact dynamics are
+ a_next=a+dt*(ji+jk)/2,
+ v_next=v+dt*a+dt^2*(ji/3+jk/6),
+ q_next=q+dt*v+dt^2*a/2+dt^3*(ji/8+jk/24).
+The exact reference objective is sum dt*(ji^2+ji*jk+jk^2)/3.
+Use millimeter units inside the optimizer and normalize jerk by7500 in its
+objective. This is only conditioning; report SI objectives and state explicitly.
+Use CVXPY1.9.3 with Clarabel0.11.1, max_iter500 and feasibility/gap tolerances1e-10.
+No solver retries. Preserve statuses, warnings, residuals and solve metadata.
+
+Exact candidate reconstruction
+Round each interior optimized jerk node in SI units to a rational with denominator
+10^12. Keep initial -5/4 and final0 exactly. Correct exactly the last three interior
+jerk nodes by solving the three linear endpoint equations with Fraction arithmetic.
+This enforces exact q=v=a=0 at1.42 without a reset. Save pre/post corrections and
+both objectives. If the corrected plan fails any original Bernstein V/A/J/cap
+condition, reject it. Do not silently clip it, alter its cap, or re-optimize.
+A solver status other than optimal, an exception or failed reconstruction remains
+an unsuccessful result. It is not a mathematical infeasibility certificate.
+
+Numerical plant replay
+Use the unchanged builder03 scalar plant/controller. Rates80,100,120/s and constant
+w0,.01m/s^2. Every accepted candidate starts from the same actual prefix state.
+Primary N90 plans: both deadlines, six cases and output steps .001/.0005 s
+(72 traces if all three accepted). N180 refinement: generous task, six cases,
+.0005 s only (18 traces if all three accepted). Keep all event sides.
+A rejected optimized candidate falls back to old FIR motion and counts as failure.
+Compare to the already accepted, unchanged FIR/native fast/native matched data.
+
+Score actual squared-jerk integral and command total variation on [.52,2.50],
+actual excursion beyond x(.52), path length, goal overshoot, peak actual jerk,
+tracking, terminal bands, actual speed/acceleration, reference limits and snap.
+Also score [.52,1.42] to expose horizon effects. Squared jerk is not physical energy.
+Report all cases and all caps, not only the best curve. Existing baseline input,
+code, data, native pins and reference clocks stay unchanged. No hardware claim.
+
+Acceptance boundaries
+Freeze this protocol and configuration before the first optimizer call. Freeze
+implementation before solves. Freeze corrected rational schedules and validation
+before physical runs. Exact Fraction checks prove properties of those stored
+polynomials, not a Lean theorem or solver optimum. Independent review must replay
+actual schedules, all physical rows, decisions and summary metrics before any
+performance conclusion is integrated. A negative comparison is useful evidence.
