@@ -88,16 +88,25 @@ def local(repo: Repo) -> list[dict]:
 
 
 REMOTE_SCRIPT = r"""
-export PATH="$HOME/.elan/bin:$HOME/.local/bin:$HOME/opt/bin:$PATH"
+# Non-login ssh shells lack ~/.local/bin and elan: use the repo copy's env.sh when it exists,
+# and put the same dirs on PATH ourselves for a first run (before any `ctrl spark sync`).
+export PATH="$HOME/.local/bin:$HOME/opt/bin:$HOME/.elan/bin:$PATH"
+[ -f "$HOME/__REPO__/tools/spark/env.sh" ] && source "$HOME/__REPO__/tools/spark/env.sh" >/dev/null 2>&1
 c() { printf '{"name":"%s","ok":%s,"detail":"%s"}\n' "$1" "$2" \
   "$(printf '%s' "$3" | tr -d '"\\' | tr '\n\t\r' '   ' | cut -c1-200)"; }
 v() { command -v "$1" >/dev/null 2>&1; }
 ver() { "$@" 2>&1 | head -1; }
+tool() {  # tool NAME: on PATH or in ~/.local/bin (full path)
+  if v "$1"; then command -v "$1"; elif [ -x "$HOME/.local/bin/$1" ]; then echo "$HOME/.local/bin/$1"; fi
+}
 if v elan; then c elan true "$(ver elan --version)"; else c elan false "not found"; fi
 if v lake; then c lake true "$(command -v lake)"; else c lake false "not found"; fi
 tc='__TOOLCHAIN__'; d="$HOME/.elan/toolchains/__TCDIR__"
 if [ -x "$d/bin/lean" ]; then c toolchain true "$tc"; else c toolchain false "$tc not installed"; fi
-if v uv; then c uv true "$(ver uv --version)"; else c uv false "not found"; fi
+p=$(tool uv); if [ -n "$p" ]; then c uv true "$(ver "$p" --version)"; else c uv false "not found"; fi
+if [ -d "$HOME/__REPO__/lean/.lake/packages/mathlib" ]; then
+  c "lean packages" true "~/__REPO__/lean/.lake/packages/mathlib"
+else c "lean packages" false "no ~/__REPO__/lean/.lake/packages/mathlib (ctrl spark sync)"; fi
 if [ -d "$HOME/__REPO__/lean/.lake/packages/mathlib/.lake/build/lib" ]; then
   c "lean cache" true "Mathlib oleans present"
 else c "lean cache" false "no Mathlib build in ~/__REPO__/lean (ctrl spark sync)"; fi
@@ -108,14 +117,15 @@ if [ -x "$HOME/venvs/solve/bin/python" ]; then
     c "venvs/solve" true "$out"
   else c "venvs/solve" false "$(printf '%s' "$out" | tail -1)"; fi
 else c "venvs/solve" false "~/venvs/solve missing"; fi
+if v tmux; then c tmux true "$(ver tmux -V)"; else c tmux false "not found (prove/solve jobs run in tmux)"; fi
 if v ollama; then
   c ollama true "$(ver ollama --version)"
-  if ollama list 2>/dev/null | awk '{print $1}' | grep -q '^leanstral'; then
-    c leanstral true "ollama model present"
-  else c leanstral false "no ollama model named leanstral"; fi
+  if ollama show leanstral >/dev/null 2>&1; then
+    c leanstral true "ollama show leanstral ok"
+  else c leanstral false "ollama show leanstral failed (bash tools/spark/build-leanstral.sh)"; fi
 else c ollama false "not found"; c leanstral false "ollama not found"; fi
-if v lean-lsp-mcp; then c lean-lsp-mcp true "$(command -v lean-lsp-mcp)"; else c lean-lsp-mcp false "not found"; fi
-if v claude; then c claude true "$(ver claude --version)"; else c claude false "not found"; fi
+p=$(tool lean-lsp-mcp); if [ -n "$p" ]; then c lean-lsp-mcp true "$p"; else c lean-lsp-mcp false "not found (uv tool install lean-lsp-mcp)"; fi
+p=$(tool claude); if [ -n "$p" ]; then c claude true "$(ver "$p" --version)"; else c claude false "not found"; fi
 """
 
 

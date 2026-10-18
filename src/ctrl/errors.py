@@ -25,6 +25,7 @@ CODES = (
     "NEEDS_ANSWER",
     "EXISTS",
     "SPARK_UNREACHABLE",
+    "JOB_RUNNING",
     "JOB_NOT_FOUND",
     "REMOTE_FAILED",
     "BAD_USAGE",

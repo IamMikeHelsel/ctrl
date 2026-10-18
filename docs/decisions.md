@@ -57,11 +57,23 @@
   anything is sent; `spark solve` does not, since searches can be exploratory. Only `--model` (default
   `leanstral`) is always passed; `--minutes`/`--attempts` are passed only when given, so the script's
   defaults apply. Job ids are appended to status.json `jobs`. `spark fetch JOB` rsyncs `outputs/` into
-  `work/NNN/candidates/JOB/` (a directory, not cli.md's `candidates/JOB.lean`, since a job can produce
-  several files), with NNN from the job's `meta.json`. `spark log -f` streams raw text, so it refuses
+  `work/NNN/candidates/JOB/` (a directory, since a job produces several files; the proof candidate
+  is `final.lean`), with NNN from the job's `meta.json`. `spark log -f` streams raw text, so it refuses
   `--json`.
 - **D15. Defaults.** `ctrl doctor` checks the Spark by default (`--no-remote` skips it), as the README's
   quick start implies. `ctrl targets` defaults to `--tab open`; `--max-difficulty` filters on
   `difficulty_1to5` (open) or `formalization_effort_1to5` (formalize); `--min-fit` on `ai_lean_fit_1to5`
   (open) or `priority_1to5` (formalize). The envelope has exactly the six documented keys (no
   `exit_code`); `next` is a list of command strings.
+- **D16. Sync guard.** Before rsync, one ssh call reads `tools/spark/jobs.sh` and the remote
+  manifest's sha256. If a prove job is `running`/`starting` and the remote manifest differs from the
+  local one, sync refuses with `JOB_RUNNING`, exit 3 (`--force` on `ctrl spark sync` overrides). Syncs
+  that don't touch the manifest are allowed under a running job: prove works in its own scratch copy.
+- **D17. Promotion.** `ctrl promote NNN JOB` needs an approved, undrifted challenge, the job's
+  `final.lean`, and at least one `attempt-*/challenge.diff`, all empty (no diff file means "can't
+  tell", which is refused as `CHALLENGE_DRIFT`). It copies `final.lean` over the solution, runs the
+  `--fast` check and restores the previous file on any failure, including a crash. Only `final.lean`
+  is promoted; a `final-subdir/` is left for a human.
+- **D18. Remote knobs.** `--reasoning`/`--max-turns` (prove) and `--timeout-min` (solve) become
+  `PROVE_REASONING`, `PROVE_MAX_TURNS` and `SOLVE_TIMEOUT_MIN` env prefixes on the remote command,
+  and are passed only when given.
