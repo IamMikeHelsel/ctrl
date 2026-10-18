@@ -1,0 +1,37 @@
+C8 implementation notes for the accepted conditional statement gate
+18 October2026. No new acceptance or assignment is recorded here.
+
+Reuse the independently checked guard_time_lower theorem from
+root-review/detector-bridge-06/ReviewControls.lean with source attribution.
+C6's finite_first_guard already supplies minimality. A separate uniqueness
+lemma for first qualifying indices makes prefix stability immediate: if two
+reading sequences agree through k, guard k and failure before k agree.
+No agreement of later counterfactual readings is needed.
+
+The pending prefix lives strictly inside the recovered open phase. Its
+coefficient argument is sigma+s-1/20. Restrict the original classical ODE
+there, compose with the affine clock, then weaken to left/right derivatives.
+Do not silently use sigma+s as the recovered coefficient's argument.
+
+C7's paste_continuous assumes the new branch is globally continuous. The
+constructed holding path is only known continuous on its finite horizon.
+For C8, use a finite-interval pasting proof with the appropriate restricted
+branch domains; do not add global continuity as an input. The old braking
+and new holding states agree over the whole pending interval, so pasting
+at sigma or sigma+h is equivalent on the physical interval. If the source
+definition pastes at sigma, separately prove that the physical command still
+remains the old braking command through the actual arrival at sigma+h.
+
+A useful combined witness uses the already checked early_execution with
+zero initial reading error. The first qualifying grid index is k=632,
+sigma=.316s, arrival=.3165s and arrival speed=.0102m/s>0. This is a
+handoff before rest. The new holding command is .22264264 and the pending
+physical target is-1.2, represented by command-1.21 plus error .01. Attach
+several changing-rate digital cells to this actual prefix, not the separate
+C7 witness's different reading. These exact numbers are a proposal to prove
+in the combined Lean witness; the gate's arithmetic alone is not acceptance.
+
+At the next sample, either use a new bounded error and generate its reading,
+or retain the old next reading and set the error accordingly. Do not require
+both an arbitrary new error and unchanged old reading. Only readings through
+the first decision index are fixed by the causal detector premise.

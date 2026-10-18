@@ -1,0 +1,38 @@
+C6 DOES NOT IMPLY A ONE-SIDED ACCELERATION DERIVATIVE AT THE OLD JOIN
+18 October 2026. Analytic counterexample, not a Lean-checked theorem.
+
+Set T=1/20, A=-3/5 and e=1/100. On 0<=t<T let z=T-t and
+ a(t)=A+e*z*sin(log z),     a(T)=A.
+Then a is continuous through T and, on the open loss phase,
+ a'(t)=-e*(sin(log z)+cos(log z)).
+Take rLoss=8 and qLoss(t)=a(t)+a'(t)/8. At the phase endpoints
+assign any legal target value, for example A. The open-phase ODE holds.
+
+Since |a-A|<=e*T=1/2000 and |a'|<=2e=1/50,
+ |qLoss-A|<=1/2000+1/400=3/1000.
+Thus qLoss lies in [-603/1000,-597/1000], inside C6's allowed
+[-61/50,1/10]. The initial acceleration also lies in C6's initial box.
+Choose v(0)=2/5 and x(0)=1/1000. Define v by integrating the continuous
+a, and x by integrating v. This gives the required continuous full state
+and the classical position/velocity derivatives on the open loss phase.
+
+After T attach the exact constant-rate lag flow with rBrake=8 and
+qBrake=-6/5, starting from the full state at T. This gives C6's recovered
+open-phase ODE, rate continuity and all target bounds through .530.
+The acceleration is continuous at T. The supplied C6 class permits this
+example because it does not require continuity of qLoss or a derivative
+at the join.
+
+The left difference quotient at T is
+ [a(T-h)-a(T)]/(-h)=-e*sin(log h).
+Along h_n=exp(-2*pi*n) it is zero. Along
+ h'_n=exp(pi/2-2*pi*n) it is -e. For sufficiently large n both sequences
+are positive and below T, and both tend to zero. The two limits differ.
+There is no left acceleration derivative at T.
+
+This refutes automatic promotion of C6 to a global two-sided-channel
+Execution at the old recovery join. It does not refute C6 or C8's narrowed
+proposal. C8's new sample/dispatch interval lies strictly inside the
+recovered classical domain, where derivative restriction is valid.
+check.py checks the exact bounds. The trigonometric and limiting argument
+above is reviewed mathematical reasoning, not numerical evidence.

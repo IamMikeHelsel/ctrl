@@ -1,0 +1,40 @@
+EXACT NEXT INTERFACE — E9 DOES NOT SUPPLY THE COVER
+
+The accepted candidate endpoint to call after final E9 review is:
+ Erdos128.FiniteProfileBridge.half_from_squared_certificates
+For C : OrientedBCLCut G, finite nonempty V, triangle-free G, rationals R,L:
+ 1/2 < sideMass C,
+ 0 <= R,
+ lowCertificate (sideMass C) (sideEdges C) R L <= 0,
+ highCertificate (sideMass C) (sideEdges C) R L <= 0
+imply HasNormalizedFractionalHalfBoundQ G R.
+This file records the interface, not a proof of any parameter cover.
+
+E10 should prove its universal rational selection theorem at R=251/10000,
+I=2/47, for 1/2<=c<=1 and 0<=j<=I, with disjuncts:
+ U: c^2*j<=R;
+ Q: 3/4<=c and completion(c)+I-j<=R;
+ M: c<1 and exists rational L satisfying both E9 certificates at
+    y=1/(2*c), j, R, L.
+If E10 uses expanded A,H instead of E9's named definitions, prove that they
+are identical. In particular meanDegree (1/(2*c)) j=4*c*j for c>0.
+A separate certificate expression with unproved equivalence is not enough.
+
+For an actual oriented cut, take c=C.c and j=sideEdges C. The existing
+one_half_le_c and c_le_one give the c domain. Derive j>=0 and j<=I from
+edge counting and C.internal_bound, retaining its actual finite cut.
+side_alpha gives c=1/(2*sideMass C); hence c<1 gives sideMass C>1/2.
+No balanced endpoint is passed to the M branch. Use the SAME rational L
+from the selected M branch at every vertex. E9 handles local target R/y^2,
+local slope L/y, local half mass 1/(2y), and ambient zero extension.
+
+U and Q still need their actual graph witness calls and normalization.
+The existing uniform/completion helper statements use an even order n=2t
+and unnormalized cost. Reuse their exact hypotheses; the completion domain
+is c>=3/4. Derive q<=I-j rather than adding a desired cost premise.
+Then retain explicit BCL eventual input, all-order positive blowup/descent,
+empty-graph case, and floor-half rounding in a later graph endpoint.
+E9 does not prove these compositions, E10's 872-leaf cover, or the full .0251
+Lean theorem. The old .02587 endpoint cannot substitute for the new graph
+wrapper. Avoid simultaneously importing the extracted CutHelpers and the
+original full LowDensityConstruction: they retain the same declaration names.

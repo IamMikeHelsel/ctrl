@@ -1,0 +1,51 @@
+--- builder/verify.py
++++ root/replay.py
+@@ -5,11 +5,19 @@
+ """
+ from pathlib import Path
+ import hashlib,json,os,re,shutil,subprocess,time
+-HERE=Path(__file__).resolve().parent;WORK=HERE.parents[5];BASE=WORK/'lean-controls'
+-FRESH=HERE/'fresh-replay';LOG=HERE/'verification-logs'
++REVIEW=Path(__file__).resolve().parent;WORK=REVIEW.parents[5];HERE=REVIEW.parents[1]/'controls/constructive-hold-07';BASE=WORK/'lean-controls'
++FRESH=REVIEW/'fresh-replay';LOG=REVIEW/'verification-logs'
+ MODS=['DigitalHold','WeightedEntry','ClearancePolicy','ClearanceAdmission','AdaptiveAdmission','DelayedEntry','ClearanceEntry','AdaptiveWitness','ClearanceWitness','DelayedWitness','ConstructiveClock','ConstructiveFlow','ConstructiveHold','ConstructiveWitness']
+ def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+ def main():
++ manifest=HERE/'frozen-manifest.json'
++ assert manifest.is_file(),'Builder must be frozen before independent replay.'
++ frozen=manifest.read_bytes(); expected=json.loads(frozen)['files']
++ def preserve_builder():
++  assert manifest.read_bytes()==frozen
++  assert all(sha(HERE/f)==h for f,h in expected.items())
++ preserve_builder()
++ (REVIEW/'builder-manifest.json').write_bytes(frozen)
+  FRESH.mkdir(exist_ok=True);LOG.mkdir(exist_ok=True)
+  assert not list(FRESH.iterdir()),'Use a new replay directory; preserve previous evidence.'
+  sources={m:(HERE if m.startswith('Constructive') else HERE/'inputs')/(m+'.lean') for m in MODS}
+@@ -62,7 +70,7 @@
+   'lake_manifest_sha256':sha(BASE/'lake-manifest.json'),'package_revisions':json.loads((BASE/'lake-manifest.json').read_text())['packages'],
+   'lean_path':env['LEAN_PATH'],'steps':[],'axioms':{},'verifier_sha256':sha(Path(__file__))}
+  for k in ['toolchain','lean_sha256','leanchecker_sha256','lean_toolchain_sha256','lake_manifest_sha256']:assert report[k]==prior[k],k
+- def save():(HERE/'verification.json').write_text(json.dumps(report,indent=2)+'\n')
++ def save():(REVIEW/'verification.json').write_text(json.dumps(report,indent=2)+'\n')
+  def run(label,args,negative=False):
+   start=time.monotonic();p=LOG/(label+'.log')
+   with p.open('w') as out:r=subprocess.run(list(map(str,args)),cwd=FRESH,env=env,stdout=out,stderr=subprocess.STDOUT,timeout=180)
+@@ -88,7 +96,7 @@
+   report['axioms'][n]=sorted(a)
+  assert set(report['axioms'])==set(names);save()
+  for n in order+MODS:run('kernel-'+n,[checker,n,'-v'])
+- negative=HERE/'negative-controls';negative.mkdir(exist_ok=True)
++ negative=REVIEW/'negative-controls';negative.mkdir(exist_ok=True)
+  mutations=[
+   ('ReadCurrentInsteadOfPriorNode','ConstructiveFlow','(measure m ε f n))','(measure m ε f (n+1)))'),
+   ('ResetCellToInitialState','ConstructiveFlow','(f (grid (n+1)))','(f 0)'),
+@@ -137,7 +145,7 @@
+  for label,body in claims.items():
+   p=negative/(label+'.lean');p.write_text(body)
+   run('reject-'+label,[lean,p],True)
+- preserve();report['prior_frozen_inputs_preserved']=True
++ preserve();preserve_builder();report['builder_frozen_manifest_preserved']=True;report['builder_manifest_sha256']=sha(manifest);report['prior_frozen_inputs_preserved']=True
+  report['source_unchanged']=all(sha(p)==original[m] and sha(FRESH/(m+'.lean'))==original[m] for m,p in sources.items())
+  report['core_source_unchanged']=all(sha(p)==report['core_source_sha256'][m] and sha(FRESH/Path(m.replace('.','/')+'.lean'))==sha(p) for m,p in core.items())
+  report['old_inputs_preserved']=all(sha(WORK/r['source'])==r['sha256'] for r in json.loads((HERE/'INPUTS.json').read_text()))

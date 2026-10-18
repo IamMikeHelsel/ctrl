@@ -1,0 +1,46 @@
+E10 PROOF MAP
+
+1. RationalIntervals.lean proves interval membership for constants, addition,
+negation, subtraction, four-corner multiplication, square and positive
+reciprocal. A square interval that straddles zero has lower endpoint zero.
+A positive reciprocal reverses the endpoints. Membership itself implies
+ordered endpoints. Every reciprocal in an expression requires a checked
+strictly positive lower endpoint. Expr.sound proves the complete recursive
+evaluator sound for every rational parameter point in the input intervals.
+
+2. SelectorSemantics.lean encodes A and H as expressions. A_eq and H_eq prove
+exact equality with the unchanged E9 certificates at
+  L=L0+theta*(L1-L0), L1=(j-R)/(y-1/2)-2mu.
+Both identities use that SAME L. moment_sound turns checked expression
+upper bounds into the M disjunct. uniform_sound and completion_sound prove
+the other leaf implications. x_mono, x_bounds and Q_antitone establish
+completion monotonicity on its actual valid domain, including the join.
+
+3. split_c and split_j prove closed-child coverage. At a split, a point on
+the shared boundary is in both children; the proof may choose the left
+child. Neither area equality nor sampled points establish coverage.
+
+4. CheckedTree.lean contains 1743 explicit node theorems generated from the
+unchanged E5 certificate. All 872 leaf tests are reduced in the Lean kernel
+using decide +kernel: 53 uniform, 250 completion, 569 moment. Moment leaves
+select theta 0 or 1, while their slopes are evaluated at the actual point.
+The 871 internal node theorems instantiate the generic closed split rules.
+Their types check all child endpoints against their parent. The root proves
+coverage of [767/1000,22/25] x [0,I]. The generator and JSON are not trusted
+proof engines: the source theorem remains valid only if its arithmetic and
+all node applications typecheck. No supplied stored enclosure is accepted
+as a premise. All expression enclosures are recomputed in the kernel.
+
+5. UniversalSelector.lean adds analytic exteriors. Below 767/1000, uniform
+cost is bounded by I*(767/1000)^2<R. Above 22/25, it proves exactly
+ (1+c^2)R-c^2(completion(c)+I)
+ = 54123/293750000 + (201409/5875000)(c-22/25)
+   + (109297/470000)(c-22/25)^2 > 0.
+If U fails there, this identity implies Q. The balanced boundary c=1 is
+covered without dividing by y-1/2. The lower boundary c=1/2 is covered by
+U. Both middle/exterior boundaries are closed. universal_selector joins
+these regions; it retains only the parameter-bound hypotheses.
+
+The general soundness, coverage and full endpoint all compiled before
+fresh replay began. The earlier 16-cell cost preflight is not imported
+and supplies no premise to the proof.

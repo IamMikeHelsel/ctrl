@@ -1,0 +1,157 @@
+C7 CONSTRUCTIVE HOLD: INDEPENDENT STATEMENT GATE
+18 October 2026
+
+Verdict
+A single 45-60 minute milestone is feasible and useful if narrowed to finite
+continuation from an admitted actual pending prefix. Keep supplied-hybrid
+liveness and construction of the entire braking-to-hold execution out of that
+milestone. Follow root's gate requiring C6 acceptance before dispatch. This is
+mathematical feasibility, not a proof, implementation, or C6 acceptance.
+
+The root card, C5 interfaces, old clock/join helpers and the observed C6
+interfaces are copied and hashed in inputs.json. C6 files are DEVELOPMENT
+snapshots only. Their statements and proof evidence remain unaccepted. No Lean
+build or trajectory recurrence was implemented here. check.py checks only exact
+clock and guard arithmetic.
+
+Narrow endpoint worth building
+Set h=D=1/2000 and H=N*h for arbitrary natural N>=2. Supply a continuous
+physical prefix g on [0,h], its actual reading m with the unchanged C5 guard
+and initial sensor box, and pending command -1.21. Require the actual incoming
+and outgoing rate/error bounds and the pending one-sided ODE on [0,h): right,
+and (0,h]: left. Do not assume a startup invariant or an endpoint box.
+An equivalent precisely restricted Execution h h with stamp zero and read m
+can encode these conditions; it does not supply any later holding execution.
+
+Given bounded future cell rates r_n in [8,12], target errors delta_n in
+[-.01,.01], and sensor errors e_n in the original box, construct a state f,
+held readings, stamps and one-sided fields through H. Require f=g on ALL of
+[0,h], not just at zero. Let e_0=m-g(0); it is fixed by the supplied reading.
+Later errors are free bounded inputs, but the readings are GENERATED from f.
+Return the actual unchanged C5 Execution and IsSchedule, first measurement m,
+and derive C5's forward ceiling on every real time in [0,H]. Do not return
+only an abstract state recurrence or another supplied-execution assumption.
+
+The phase formula is correct
+For r>0 and fixed q=u+delta, E'= -r*E. The proposed formulas give
+ a'= -r*(a0-q)*E=r*(q-a),
+ v'= q+(a0-q)*E=a,
+ x'= v0+q*s+(a0-q)*(1-E)/r=v.
+At s=0, E=1 and the state is exactly (x0,v0,a0). The target error is added
+AFTER clipping: u=clip(command(c,m_old)), q=u+delta. Replacing this with
+clip(command+delta) changes the model.
+
+Let z0=g(0), z1=g(h). For n>=1, define
+ m_(n-1)=z_(n-1)+e_(n-1),
+ z_(n+1)=Flow(r_n, clip(command(c,m_(n-1)))+delta_n, z_n, h).
+A recurrence on the pair (z_(n-1),z_n) is explicit. No unknown future state
+occurs on its right side. The reference c is chosen once from m_0. Clipping
+and the exponential phase are defined for every such input, so no invariant,
+smallness assumption or C5 safety conclusion is needed to define the next
+state. C5 is applied only after the execution has been constructed.
+
+Clock and boundary obligations
+Use q.sample j=j*h and q.dispatch j=(j+1)*h. The existing floor/ceil clock
+lemmas in the C4 witness give the needed right and left cell indices.
+At n*h for n>=2, the incoming command/read uses m_(n-2), stamp (n-2)*h,
+rate/error from cell n-1; the outgoing command/read uses m_(n-1), stamp
+(n-1)*h, and rate/error from cell n. Their ages are 2h and h respectively.
+At h, BOTH read/stamp channels remain m_0/0, but the incoming command is
+pending -1.21 and the outgoing command is digital. The incoming rate/error
+at h belong to the supplied prefix; the outgoing values belong to cell 1.
+The full physical state, including acceleration, is continuous at each join.
+A jerk jump does not imply a state jump or a classical derivative there.
+
+A sample m_n exists physically at the start of cell n, but its specified
+arrival is at (n+1)*h. Using it on cell n violates the one-step latency and
+schedule. It is not, by itself, an implicit equation or a future-state read.
+A 1 ms period plus .5 ms delay has incoming age 1.5 ms and fails C5.
+
+Schedule has total Nat-indexed fields. A finite array alone does not fill
+that structure. Define harmless unused extensions or a Nat recurrence, and
+prove which indices are used through H. The existing Execution requires a
+left derivative at H but no right derivative at H. Either limit the claim
+to those exact endpoint sides, or construct one extra cell to justify a
+claimed outgoing derivative at H. Do not infer it from the finite contract.
+
+The current right_join/left_join helper statements require classical
+HasDerivAt hypotheses for both input functions at the queried time. An
+arbitrary one-sided prefix does not provide these. A local one-sided gluing
+lemma or a direct branch proof is a real remaining obligation. It must use
+the prefix derivative only on its valid side and the phase derivative on the
+new side, plus equality at the join. No derivative or equality of the old
+prefix after h may be assumed. This is an elementary local proof obligation,
+not an identified mathematical impossibility.
+
+Braking prefix and the no-hit argument
+The correction at the end of the root card is essential. An actual controller
+that has switched cannot borrow a braking theorem that needs continuation to
+a future first zero. Require a position comparison valid from braking only
+through each candidate time sigma. If that comparison covers the whole
+braking prefix, it protects both early and late first hits. C5 then protects
+[sigma,sigma+h] and the subsequent hold; an extra first-zero case split is
+not needed for that safety composition.
+
+For a supplied hybrid execution, a no-hit contradiction can prove a hit
+without uniqueness or counterfactual post-switch agreement. It needs:
+- the actual same-state sensor sequence on the finite physical grid;
+- a causal policy that preserves the loss phase and keeps restored braking
+  until the first qualifying reading ARRIVES, with incoming/outgoing sides
+  at that dispatch stated separately;
+- every other C6 hypothesis on the no-hit prefix: initial bounds, effective
+  targets, response bounds, continuity and phasewise derivative regularity.
+Absence of a guard alone does not imply these plant hypotheses. The inspected
+C6 BrakingExecution requires a continuous rate in each braking phase and
+classical interior ODEs. C5's broader one-sided rate model does not imply that
+contract. Rate jumps while braking cannot silently inherit C6's comparison.
+
+Under those conditions, assuming no hit on the finite grid keeps the ACTUAL
+trajectory in C6's braking contract through its deadline. A C6 hit result
+would contradict that assumption. A least natural index then supplies the
+first actual hit. This proves conditional liveness for supplied executions,
+not their existence. The no-hit premise alone also does not specify post-hit
+holding; a separate policy clause must implement C5's center, readings,
+clipping, delay and held command after that first hit.
+
+Timing and endpoint reserve
+At any qualifying sample, the sensor box gives |v(sigma)|<=1061/50000=.02122.
+The braking lower estimate v(sigma)>=.39-1.22*sigma therefore gives
+ sigma>=18439/61000>.05.
+Thus an actual first hit, while braking has persisted until it, is in the
+restored phase. On the .5 ms grid its index is at least 605.
+
+The inspected C6 candidate finite_guard_hit states an upper index 1058.
+IF accepted unchanged, that gives sigma<=.529 and dispatch<=.5295<.530.
+This strict .5 ms reserve permits restriction of a supplied continued-braking
+trajectory to the required pending prefix inside its classical ODE domain.
+Its IsTrajectory only supplies interior derivatives: continuity at the terminal
+horizon alone would not give the required incoming derivative there. A loose
+bound allowing dispatch exactly at .530 is therefore insufficient for that
+restriction without an extra endpoint condition. For an already switched
+hybrid, the incoming one-sided derivative at its switch must still come from
+its actual prefix contract; the deadline reserve does not invent it.
+
+Translate the actual shared state by sigma and translate ALL stamps by the
+same sigma. The first local sample is zero and dispatch is h, preserving its
+age. After switching, generate future readings from the constructed hybrid
+state plus their sensor errors. Do not reuse future state readings from a
+continued-braking path. Prefix agreement for an explicit paste can be proved
+by definition; no uniqueness or agreement after the paste is needed.
+
+Acceptance and stop conditions for a later builder
+Aim for the arbitrary-N Execution/IsSchedule constructor and its C5 clearance
+corollary. Include a concrete N=4 instance: one pending phase and at least
+three digital cells, changing rates within [8,12], nonzero bounded sensor noise,
+a changed physical startup state and a verified nonzero command jump. Compare
+with the same constructor at fixed rate and zero future noise; claim broader
+constructed scope, not improved numerical performance. Retain exact clock,
+wrong-side and reset falsifiers. Do not replace this endpoint with a collection
+of flow lemmas or only a three-cell simulation.
+
+If the one-sided gluing or indexed schedule cannot be completed within the
+milestone, freeze that exact missing interface. Do not add general ODE
+existence, full hybrid liveness, infinite-horizon claims, precision rest,
+C1's broader floor-only-rate case, or hardware conclusions. The current gate
+supports a useful restricted existence bridge only. C6 proof acceptance and
+its prefix-valid comparison interface remain separate prerequisites for the
+later full hybrid claim. Root owns dispatch, integration and Git.

@@ -1,0 +1,80 @@
+C7 CLAIMS — FINITE CONSTRUCTED HOLD CONTINUATION
+18 October 2026. Builder evidence; independent acceptance is separate.
+
+Main endpoint
+ConstructiveHold.continuation constructs a specific physical state, readings,
+clock and side-dependent coefficients through H=N/2000, for every natural
+N>=2. It proves C5 Execution, C5 IsSchedule, full equality with the supplied
+pending prefix on [0,h], and the unchanged C5 clearance on every real time
+in [0,H]. Here h=D=1/2000 s. The ceiling is
+  x(t) <= 3/20 - 1277551/20100000000 < 0.15 m.
+No invariant, endpoint cube, residual bound, or future Execution is a premise.
+The old startup and sampled-history bounds enter only through the unchanged
+C5 theorem, after the new Execution has been constructed.
+
+Exact inputs
+- An arbitrary state function g and an actual initial reading m. The pending
+  prefix is ClearanceAdmission.Execution h h m g rp dp (constant stamp 0)
+  (constant reading m). Thus g is continuous on [0,h], has the required right
+  ODE on [0,h) and left ODE on (0,h], and satisfies the original rate and
+  target-error boxes. The pending command is -1.21. Its rate/error need not
+  be constant. No classical derivative across a dispatch is required.
+- For clearance, the unchanged C5 Guard: m_x<=.143, |m_v|<=.01122,
+  and -1.27<=m_a<=-.2. The execution constructor itself needs no Guard.
+- Each digital cell n>=1 has constant R_n in [8,12] and constant physical
+  target error delta_n in [-.01,.01]. Values can change between cells.
+- A sequence epsilon with component bounds (.001,.01,.05). The implementation
+  accepts bounds also at index zero, but epsilon_0 is unused by measure.
+  The actual first sensor error is m-g(0), fixed and bounded by pre.error.
+  Later readings are generated as state(n*h)+epsilon_n. Arbitrary old future
+  braking readings are not retained.
+
+Causality and joins
+Cell n>=1, from n*h to (n+1)*h, uses reading n-1. The command is clipped
+first. Then delta_n is added to obtain the physical target. The heldSolution
+formula initializes from the actual state at n*h. node_recurrence exposes
+this second-order recurrence: the next endpoint uses the two prior nodes.
+state_prefix proves full physical prefix equality, not just initial equality.
+No state is reset at h or any later dispatch.
+
+At h, the incoming derivative uses the pending command and pending fields;
+the outgoing derivative uses the first digital command and digital fields.
+At each later dispatch the incoming side uses the prior cell and the outgoing
+side the next cell. The final time H has the incoming derivative required by
+Execution.left_ode. No outgoing physical ODE at H is claimed.
+
+Samples occur at n*h and dispatches at (n+1)*h. Incoming age is at most
+2*h=.001 s. used_index proves that each auxiliary index through grid(n+1)
+is at most n. The schedule is algebraically defined for all natural indices.
+The physical state family is proved to execute the controller only through
+its own finite horizon. Its last formula outside that horizon is not an
+infinite-horizon controller execution.
+
+The pending interval's stamp-zero/read-m fields are unused by its independent
+-1.21 command. They do not rename the timestamp of an old queued command.
+The constructed first digital command uses the actual supplied reading m.
+
+Nonvacuity and fair baseline
+ConstructiveWitness proves both contracts at N=4, H=.002 s, from the same
+nonconstant pending prefix and reading (.14,-.01,-1.17). Its changing case
+uses rates 8,12,8 on the three digital cells, physical target error .005 on
+the middle cell, and nonzero sensor errors (.0005,.005,.025) after index zero.
+It proves startup acceleration changes, incoming/outgoing rates differ at
+.001 s, and the command jumps from -1.21 to .29084264 at h. The matched
+baseline uses the same constructor and prefix with rate 8 and zero digital
+target/sensor errors. Both receive exactly the same clearance theorem.
+This tests admissible continuation, not improved control performance.
+
+The Lean witness proves the contracts and exact boundary facts. The separate
+witness-trace.json gives binary64 endpoint illustrations only. It is not an
+interval certificate and is not used by any Lean theorem.
+
+Limits and remaining glue
+This closes finite continuation for this piecewise-constant digital subclass,
+given an admitted actual pending prefix. It does not establish existence for
+arbitrary time-varying digital rate signals or a global infinite execution.
+It does not construct the detector's earlier braking trajectory or prove a
+full braking/detection/switch/hold operation. C8 still needs actual prefix and
+time-coordinate composition; C6 is not a proof dependency of this packet.
+It does not prove precision rest, hardware behavior, contact physics, or
+novel control theory. All sources use the existing scalar response model.

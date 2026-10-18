@@ -40,3 +40,17 @@ constructor also uses a fixed 0.5 ms delay. A 1 ms sample period plus that
 delay exceeds the proved 1 ms age cap. The intended robot interface must
 meet the actual timing contract, or the bound must be recomputed and proved
 for its timing. No compatibility with a Franka control interface is assumed.
+
+Model regularity at the original recovery instant
+C6 assumes classical dynamics inside each phase. A bounded effective target
+need not have an acceleration derivative limit at the old recovery join.
+The proposed constructed handoff will retain that original scope. Its new
+switch has separate one-sided proofs. Stronger global endpoint regularity
+would need a declared target regularity condition, not an inferred one.
+
+Franka timing is now a concrete gap, not just an unspecified configuration.
+The official FCI pages rechecked today specify1kHz control/measurements.
+The current constructor uses2kHz fresh samples. See
+root-review/FRANKA-TIMING-GATE.txt for sources and the distinction between
+host read-to-write budget and total sensor-to-actuator age. Retiming the
+proof or proving a prediction-error interface comes before a hardware claim.

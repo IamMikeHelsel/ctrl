@@ -1,0 +1,32 @@
+/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/pods/2026-10-18/method-transfer-01/root-review/constructive-hold-07/negative-controls/ReadCurrentInsteadOfPriorNode.lean:119:32: error: unsolved goals
+m : State
+g : ℝ → State
+R δ : ℕ → ℝ
+ε : ℕ → State
+n : ℕ
+htime : grid (n + 2) - grid (n + 1) = h
+⊢ UncertainLag.heldSolution (R (n + 1)) h
+      (clip
+          (command (ClearanceAdmission.center m)
+            (if n + 1 = 0 then m else fun i => state m g R δ ε n (grid (n + 1)) i + ε (n + 1) i)) +
+        δ (n + 1))
+      (state m g R δ ε n (grid (n + 1))) =
+    UncertainLag.heldSolution (R (n + 1)) h
+      (clip
+          (command (ClearanceAdmission.center m)
+            (if n = 0 then m
+            else fun i =>
+              (match n with
+                  | 0 => g 0
+                  | n.succ => state m g R δ ε n (grid (n + 1)))
+                  i +
+                ε n i)) +
+        δ (n + 1))
+      (state m g R δ ε n (grid (n + 1)))
+/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/pods/2026-10-18/method-transfer-01/root-review/constructive-hold-07/negative-controls/ReadCurrentInsteadOfPriorNode.lean:125:45: warning: This simp argument is unused:
+  state_at_node
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [phase, htime, cellCommand, measure, node]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`

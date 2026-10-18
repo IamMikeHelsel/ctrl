@@ -1,0 +1,38 @@
+FRANKA TIMING — CONCRETE INTERFACE GAP
+18 October2026, primary documentation rechecked during this round.
+
+The current scalar constructor uses a0.5ms sensor period and a fixed0.5ms
+command delay. That is a2kHz sensor stream. The official FCI overview says
+control and robot measurements use1kHz. The current proof therefore does
+not directly match the documented FCI sample clock.
+Source: https://frankarobotics.github.io/docs/overview.html
+Read the overview's control-mode, measurement and network-frequency text.
+
+The troubleshooting guide requires the read-to-write interval to fit within
+500microseconds and the network round trip plus control execution to remain
+below1ms. This is an implementation requirement, not evidence that physical
+sensor-to-actuator latency equals a fixed0.5ms. The installed robot, software
+version, clock map, network and actual latency still need measurement.
+Source: https://frankarobotics.github.io/docs/troubleshooting.html#realtime-control-loop-best-practices
+Read the timing and discontinuity sections. No settings were changed.
+
+Mathematical implication
+For periodic fresh samples separated by T and a common actuation delay D,
+the incoming old sample can be T+D old at a dispatch. If T=1ms and the
+illustrative D=.5ms, that is1.5ms, beyond the current1ms age budget.
+Interpolating a1kHz stream to2kHz does not create new measurements. It needs
+an explicit prediction-error bound to act as an input to this theorem.
+This timing gap is separate from the much larger task of relating one scalar
+lag model to a coupled robot arm, payload, contact and joint limits.
+
+Next-round priority
+Before a Franka demonstration claim, make a timing-specific theorem for its
+actual sampled interface, with declared and measured age bounds. First test
+whether the existing error/drift argument can tolerate the required age at
+all. If it fails, record the exact failing inequality before constructing a
+new schedule. Compare the same physical model and sensor errors. A larger
+allowed age may require a different radius, guard or reference policy.
+Do not silently rescale current samples, keep an old fresh-state assumption,
+or call the host500microsecond requirement an end-to-end latency guarantee.
+The present construction remains useful as a scalar mathematical result;
+its hardware applicability is not yet established.

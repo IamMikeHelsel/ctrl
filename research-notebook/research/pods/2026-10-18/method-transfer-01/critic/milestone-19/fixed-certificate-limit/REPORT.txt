@@ -1,0 +1,65 @@
+FIXED C5 INTERVAL CERTIFICATE — INDEPENDENT WRITTEN DEDUCTION
+18 October 2026
+
+Verdict
+Accepted as a written algebraic optimum for the EXACT fixed comparison
+class. It is not a new Lean theorem or a physical trajectory optimum.
+The actual C5 definitions match the proposal. All weights are positive
+and no weight exceeds the forward multiplier W=51/50.
+
+Proof and quantifiers
+Fix any reading m, its three offsets A_i, errors e_i, weights w_i and
+radius floor K0. Take ANY feasible real center c and radius K, where
+K>=K0 and |A_i-c|+e_i<=w_i*K for every i. Absolute value gives
+ A_i+e_i-w_i*K <= c <= A_j-e_j+w_j*K.
+Therefore (w_i+w_j)*K>=A_i-A_j+e_i+e_j. Since the denominator is positive,
+K is at least every ordered pair ratio, including i=j, and hence K>=K*.
+This uses precisely C5's max over all nine pairs, not a sampled subset.
+
+For each i,
+ c+W*K >= A_i+e_i+(W-w_i)*K
+        >= A_i+e_i+(W-w_i)*K*.
+The second inequality is valid because W-w_i>=0. Taking the finite maximum
+gives c+W*K>=max_i(A_i+e_i-w_i*K*)+W*K*=c*+W*K*.
+C5's accepted feasible theorem proves that (c*,K*) belongs to the class.
+Thus the lower bound is attained and is its global minimum. The proof does
+not require a guard, compactness, differentiation, or bounded center domain.
+It also does not claim a unique minimizer; flat portions can occur.
+
+The interval center is the left endpoint, not the midpoint. A larger radius
+can reduce that left endpoint, but it cannot reduce this objective with the
+actual weights. The midpoint is strictly worse for the nominal reading, as
+the independent exact check confirms. A fixed different center cannot beat
+the candidate after making the same interval constraints feasible.
+
+Limits and practical meaning
+This compares c+1.02*K using the same offsets, interval errors, weights and
+radius floor. It does not prove that an arbitrary alternative controller is
+stable or that its actual maximum position equals this bound. A competitor
+using different reachable-state information, errors, weights, certificate
+shape, radius floor or control contract is outside this comparison class.
+The argument rules out a better value from center-only optimization within
+the stated class, even when a larger feasible radius is allowed.
+
+At the retained worst guard corner (.143,.01122,-1.27), the exact objective
+is 3013722449/20100000000. The prior independently checked corner packet is
+copied here. It is still a certificate extremum; physical reachability of
+that joint corner is not proved. Tightening only measured acceleration's
+upper bound to -27/28 keeps this corner and hence keeps that optimum over
+the rectangular guard. This does not rule out a useful joint physical
+constraint that removes the corner, and does not establish such a constraint.
+
+The sign condition is essential
+With one coordinate A=e=0, w=2, W=1, K0=1, the minimum-radius left endpoint
+is (c,K)=(-2,1), giving U=-1. The feasible pair (-4,2) gives U=-2. Thus
+the same conclusion is false when a weight exceeds the forward multiplier.
+Also retain diagonal pairs: A=0,e=1,w=1,K0=0 requires K>=1. Omitting its
+only diagonal pair would incorrectly permit K=0 and an empty feasible set.
+
+Evidence
+The root proposal and actual accepted C5 source files are copied and hashed.
+check.py independently verifies feasibility/objective values at the nominal
+reading, worst corner and an unguarded reading, plus larger-radius cases,
+the midpoint control, sign counterexample and diagonal control. These finite
+checks corroborate the calculation; the universal proof is the algebra above.
+No Lean build, new plant model, novelty or hardware claim was made.

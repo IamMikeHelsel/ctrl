@@ -1,0 +1,58 @@
+C7 independent statement reading
+18 October2026. Execution verdict remains pending.
+
+The public continuation theorem has only an admitted pending prefix, bounded
+cell rates, target errors and sensor errors, a guard reading, and finite N>=2
+as inputs. The new state is the specific recursive state definition. It does
+not assume an invariant, endpoint cube, aggregate mismatch, future execution,
+or equality to the counterfactual future braking path.
+
+The pending prefix satisfies the unchanged C5 one-sided Execution contract
+on[0,h], where h=.0005. This is a real remaining input, not an initial-value
+existence theorem. Both prefix ends matter. The first actual reading m has
+its error fixed by pre.error. epsilon0 is unused. The pending command is
+-1.21 and does not use the auxiliary stamp-zero reading.
+
+Each new phase uses the exact pinned heldSolution, with positive cell rate.
+Its elapsed time is t-grid(n+1), initial state is the actual old state at that
+grid point, and command uses the sample at grid(n). Target error is added
+after clipping. The phase formula has the claimed initial state and ODE.
+Pasting preserves the state at every join. At an incoming boundary the old
+phase supplies the derivative; at an outgoing boundary the new phase does.
+The final time has only its incoming physical ODE, as required by Execution.
+
+The induction proves continuity and both side-dependent dynamics first.
+make_execution then derives sensor-error and coefficient bounds from the
+actual samples and cell bounds. The original C5 theorem is applied only
+after this execution and the discrete schedule exist. It supplies the same
+forward ceiling, not a new or smaller number.
+
+The schedule uses samples n*h and dispatches(n+1)*h. At a shared boundary
+the incoming reading is one index older than the outgoing reading. Thus
+maximum incoming age is2*h=.001. Local finiteness follows from the strict
+positive grid; it is not an assumed no-Zeno condition. The schedule has a
+total algebraic extension; the physical execution claim is finite only.
+
+The source state at recursion index n is proved through grid(n+1). In the
+public N-horizon theorem that index is N-1. The source function extends
+outside its proved interval, but no infinite controller claim follows.
+The final outgoing auxiliary fields have bounded values but no outgoing
+physical ODE at the final time. This distinction must survive later use.
+
+The N=4 changing-response witness and fixed-rate comparison share their
+actual nonconstant pending prefix and initial reading. They establish that
+the contracts are inhabited and handle rate, noise and command changes.
+They do not show lower error, better response or a physical advantage.
+The binary64 trace is illustration and is not used in the proof.
+
+Root's additional finite_history test checks that the recursive state through
+index N depends only on cell rates/errors through N and sensor errors before
+N. It is a source-defined mathematical dependency theorem. It does not verify
+a floating-point controller, communication transport or hardware timing.
+
+C8 must still derive the pending prefix from the actual recovery history,
+choose a prefix-stable first detector event, and translate all time fields.
+It must keep the C6 stronger physical assumptions visible. A scalar2kHz
+fresh-sample constructor does not match Franka's documented1kHz interface.
+Precision rest, a lower travel limit and arbitrary time-varying cell-rate
+existence remain outside this result.

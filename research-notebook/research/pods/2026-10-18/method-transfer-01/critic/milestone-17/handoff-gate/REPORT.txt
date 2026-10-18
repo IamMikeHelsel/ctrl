@@ -1,0 +1,130 @@
+C8 CONSTRUCTED HANDOFF — INDEPENDENT STATEMENT GATE
+18 October 2026
+
+Verdict
+Feasible and useful as a finite construction from a supplied accepted C6
+trajectory, conditional on the exact C7 constructor passing later review.
+This gate accepts no C7 proof, hybrid theorem, program, or hardware result.
+Do not strengthen the old recovery join to a one-sided Execution contract.
+Keep C6's continuous state and classical ODE only on its two open phases.
+One-sided semantics at the NEW digital handoffs can be proved separately.
+
+Narrow endpoint
+Supply the actual C6 BrakingExecution f and its Readings m on the stated
+.5 ms grid. These are stronger premises than C1: C6 includes initial lower
+bounds, continuous phase rates, a recovered rate ceiling, and two-sided
+effective-target bounds. Supply arbitrary N>=2 and bounded future discrete
+cell rates, target errors and sensor errors of the exact accepted C7 type.
+Find the least qualifying index k. Return one continuous physical F through
+sigma+N*h, where h=1/2000 and sigma=k*h, with these properties:
+- 605<=k<=1058; the decision is the first qualifying arrived reading.
+- F=f on the entire interval [0,sigma+h].
+- F(sigma+s)=f_hold(s) for every s in [0,N*h], including pending startup.
+- f_hold satisfies unchanged C5 Execution and IsSchedule, with m_0=m_k,
+  sample j=j*h, dispatch j=(j+1)*h and the actual bounded sensor errors.
+- The old braking phases retain their original open-phase ODEs up to the
+  switch. The new switch and digital dispatches have their correct incoming
+  and outgoing derivatives. All three state coordinates stay continuous.
+- F(t) 0<=3013722449/20100000000 for every admitted global time.
+This is an existence/assembly endpoint conditional on a supplied C6 input.
+It is not existence for every plant or liveness of every abstract hybrid.
+
+Actual prefix and local coordinates
+The accepted guard-time lower bound is 18439/61000>.05. The grid gives
+k>=605, and k<=1058 gives sigma+h<=1059/2000=.5295<.530. Therefore the
+WHOLE pending interval, including both endpoints, is strictly inside the
+recovered phase's classical derivative domain. Set g(s)=f(sigma+s) on
+[0,h]. Recovered rates and targets are stored in LOCAL recovered time:
+ r_prefix(s)=rBrake(sigma+s-1/20),
+ delta_prefix(s)=qBrake(sigma+s-1/20)+121/100.
+Using sigma+s without subtracting 1/20 is the wrong coefficient function.
+The target bounds give |delta_prefix|<=.01 and
+ -1.21+delta_prefix(s)=qBrake(sigma+s-1/20).
+Use these on both derivative channels within the pending prefix. Restrict
+the original classical derivatives to the needed sides; no uniqueness or
+post-switch agreement with the old solution is used.
+
+C7 must accept this arbitrary admitted actual prefix and preserve ALL of
+[0,h]. A fixed-example constructor, equality only at zero, a startup-box
+premise, a supplied future holding execution, or an assumption of its safety
+would not close this interface. C7 must generate future readings from its
+constructed state and return the actual C5 schedule/execution. Its first
+sensor error is fixed as m_k-g(0); later errors may be free bounded inputs.
+
+Paste and derivative boundaries
+Define F(t)=f(t) for t<=sigma+h and f_hold(t-sigma) afterwards. C7's full
+prefix equality proves the overlapping equality with f_hold from sigma.
+At sigma no actuator change occurs. At sigma+h the incoming command is
+-1.21 and the outgoing command is the clipped policy command from m_k.
+Incoming rate/error belong to the old prefix; outgoing rate/error belong
+to the new cell. Acceleration is preserved as a state value even when its
+derivative jumps. At the final horizon C5 supplies the incoming derivative,
+not an outgoing derivative beyond the constructed interval.
+
+The old .05 recovery join is different. C6 need not give either one-sided
+acceleration derivative there. OSCILLATORY-COUNTEREXAMPLE.txt gives a full
+analytic C6-compatible example without a left derivative. Bounded target
+values and continuous rate do not repair this. Keep this limit explicit;
+do not retrofit stronger regularity or a new global Execution structure.
+
+Clock, measurements and causality
+In absolute time the pre-trigger sample j is at j*h and arrives at (j+1)*h.
+The first qualifying m_k is sampled at sigma and acts at sigma+h. Local
+hold sample j is at sigma+j*h=(k+j)*h and arrives at (k+j+1)*h. It is the
+same clock, not a newly sampled value at dispatch. Incoming digital age
+is at most 2h=.001; outgoing age at a dispatch is h=.0005.
+
+Keep the original readings m_j for j<=k. At the simultaneous next sample
+and switch, time sigma+h, choose ONE explicit convention. Either generate
+the local m_1 from the shared state plus its chosen future error, or require
+it to equal the old m_(k+1) and fix that error accordingly. One cannot both
+preserve an arbitrary old m_(k+1) and independently choose its new error.
+After that time, no continued-braking reading may be reused as a reading
+of F without a separate proof of its error bound. In particular exact
+zero-noise future readings need not agree once the commands diverge.
+
+The pending read/stamp fields m_k/0 are unused auxiliary fields required by
+C5; they do not timestamp an earlier queued command or renew its reading.
+Prove first-index prefix stability: agreement of a second sequence through
+k preserves the failure of every j<k and the success at k. Common latency
+then preserves arrival order. This proves decision causality, not executable
+floating-point detection. The selection can be proved over the finite list;
+no measurements beyond k are needed by the decision itself.
+
+Safety composition has no future-zero premise
+Restrict the accepted loss/recovered position comparisons to the actual
+braking prefix through sigma. They give position<=71/500=.142. C5 protects
+the overlapping pending interval and the whole constructed continuation.
+Since .142 is strictly below the C5 ceiling, the global bound follows by
+the two time cases. No claim that the guard follows first zero is needed.
+No invariant, residual, endpoint cube or post-switch braking is a premise.
+
+Concrete falsifier and combined nonvacuity requirement
+Use root's accepted early_execution with zero sensor errors:
+ x(t)=.001+.39*t-.6*t^2, v(t)=.39-1.2*t, a(t)=-1.2.
+Exact arithmetic shows the first guard is k=632 at sigma=.316; index 631
+fails the speed guard. The arrival is .3165, with velocity .0102>0, before
+the first zero at .325. Thus even the first command arrival need not be a
+stop. The policy at that actual reading has radius .045, center .02525673
+and unclipped command 2783033/12500000=.22264264. The pending command is
+-1.21 with error .01. This supplies a concrete admitted, nonconstant prefix
+with a nonzero command change while preserving acceleration -1.2.
+
+A later builder must instantiate the accepted C7 constructor on this prefix
+(or another equally explicit C6 input) through several digital cells, with
+legal nonzero future noise/rate choices and a proved command change. Two
+separate witnesses for C6 and C7 do not by themselves witness the combined
+interface. This gate checks the prefix arithmetic only; it constructs no
+future cells and makes no reachability or precision-rest claim.
+
+Evidence and scope
+Nineteen inputs are copied byte-for-byte. Thirteen selected source/report
+bindings were checked against their frozen manifests. The original C7 gate
+called its C6 snapshots development inputs; the copied accepted C6 packet
+and root review now establish their current status separately. check.py
+uses exact Fractions for clock reserve, first guard, policy command and
+counterexample bounds. No Lean build was run for this statement gate.
+Run python3 check.py from this directory to reproduce result.json. The
+oscillatory limit argument is analytic reasoning, explicitly unformalized.
+No novelty, general ODE existence, infinite horizon, lower travel limit,
+maintained rest, or physical robot acceptance follows from this gate.

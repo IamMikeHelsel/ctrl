@@ -1,0 +1,68 @@
+E10 INDEPENDENT REVIEW REPLAY
+
+Keep this frozen packet unchanged. Use a new scratch reviewer directory
+under the same workspace, so its ancestor still contains lean-controls/.
+The existing pinned toolchain and package build products are required.
+No toolchain/package install, Git action or source-pin change is part of this
+recipe. Do not run the builder's finalize.py, provenance.py or compile_dev.py.
+
+1. Verify the recorded manifest before copying. Copy check_inputs.py,
+   replay_extra.py, verify_final.py, ReviewControls.lean and
+   FalseUnguardedReciprocal.lean and FalseSquareBoundRepaired.lean into the
+   new reviewer directory. Copy the
+   builder-copy/ tree using only its artifact-sha256.json-listed files plus
+   that manifest. Exclude all compiled products. Keep recorded execution
+   outputs in the frozen packet; do not overwrite them. The new reviewer
+   directory must not already have extra-evidence/.
+
+2. From the new reviewer directory run:
+     python3 check_inputs.py
+   This verifies original freezes/pins, reproduces the tree in regeneration/,
+   and independently checks exact child geometry, reachability and counts.
+   It writes input-check.json. It does not compile Lean.
+
+3. From its builder-copy/ directory run:
+     python3 replay.py
+   The script makes a new evidence/fresh-source-*/ directory, copies all ten
+   local sources, builds those plus Audit, audits every local public theorem,
+   runs eleven separate kernel checks, and attempts seven false claims.
+   Its square-control result is a KNOWN invalid interpretation: ambiguous
+   unqualified sq yields an elaboration placeholder. Preserve its raw
+   passed=true and source/log; only six original rejections are mathematical.
+   Record the NEW successful verification.json path relative to the reviewer
+   directory as the sole line of main-replay-path.txt. The final console
+   result prints the new path. Do not select the old builder-recorded run.
+
+4. From the reviewer directory run:
+     python3 replay_extra.py <new-verification-json-path>
+   This requires the main replay's positive proof checks to pass. It copies
+   the critic theorem and two false controls
+   into a new empty extra-evidence/ and uses only that new main closure plus
+   pinned packages. It compiles one theorem, audits its axiom closure,
+   separately kernel-checks it, and rejects both the qualified square control
+   and the false unguarded reciprocal. These logs must have genuine false
+   goals and no ambiguity, type errors or elaborated sorry placeholders.
+   A failed attempt must be preserved before any source repair or rerun.
+
+5. Read all eight fresh rejected goals. Then run:
+     python3 verify_final.py
+   It cross-checks the independent declaration inventory, execution counts,
+   axiom allowlist, false-goal diagnostics and original preservation. It
+   writes negative-review.json, final-preservation.json and FINAL-INDEX.json.
+   Human statement/semantic review remains necessary; the script cannot
+   decide research merit or substitute for reading the endpoint.
+
+The recorded main and extra verification JSON files are separate. Main has
+29 attempted steps, 1821 public theorem closures, eleven compiles, eleven
+kernels, six valid false-claim checks and ONE excluded ambiguous-square
+attempt. Extra has four steps, one additional closure, one compile, one
+kernel and two false-claim checks. Combined totals are 33 attempted steps,
+32 accepted steps, 1822 closures, twelve compiles, twelve kernels and eight
+valid negatives. The excluded attempt is preserved under attempts/ and is
+not silently changed to a pass. FINAL-INDEX.json records this distinction.
+The 1744 generated node/root declarations are mechanical proof structure,
+not separate mathematical discoveries. Do not count the Audit module as an
+extra theorem or double-count its printed closures.
+
+This replays the rational selector only. It does not construct a final
+finite-graph U/Q/M wrapper, prove BCLEventual, or perform floor-half rounding.

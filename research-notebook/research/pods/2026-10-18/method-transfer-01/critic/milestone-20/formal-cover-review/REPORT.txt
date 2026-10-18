@@ -1,0 +1,110 @@
+E10 FORMAL RATIONAL SELECTOR — INDEPENDENT ACCEPTANCE
+18 October 2026
+
+Verdict
+Accept E10.universal_selector at its exact rational scalar scope. The
+copied-source proof, generic interval semantics, complete closed coverage,
+analytic exteriors and axiom/kernel checks passed. One invalid original
+negative-control interpretation was found, preserved and replaced. No proof
+source or frozen builder file needed repair. E11's graph composition is
+still separate work and is not accepted by this report.
+
+Accepted statement
+For rationals c,j with 1/2<=c<=1 and 0<=j<=2/47, at fixed R=251/10000,
+the theorem gives at least one of:
+- c^2*j<=R;
+- c>=3/4 and completion(c)+2/47-j<=R;
+- c<1 and ONE rational L with both unchanged E9 low/high certificates
+  at y=1/(2c), j, R, L nonpositive.
+completion(c)=Q(1-1/(2c)); Q uses the two prior completion polynomials
+joined at x=3/8 with common value 3/128. The endpoint has exactly the four
+parameter-bound premises. It has no supplied certificate, cover-validity,
+graph-cost, regularity or external BCL premise. The selected L can depend
+on c,j but is common to both certificates and all later vertices.
+
+Why the proof closes the stated gap
+Expr.sound proves the whole rational evaluator by structural induction,
+including four-corner multiplication, zero-crossing square and strictly
+positive reciprocal guards. A_eq/H_eq connect the evaluated expressions
+to the exact E9 certificate definitions with the same slope. Leaf rules
+derive their semantic disjuncts; completion uses its proved monotonicity
+on the valid domain. Closed split rules include shared boundaries.
+
+Independent regeneration exactly reproduced CheckedTree.lean from the
+unchanged E5 certificate. A separate exact walk found all 1743 reachable
+nodes, 872 leaves and correct parent-child geometry: 53 uniform, 250
+completion, and 569 moment cells (205 theta0, 364 theta1). The Lean tree
+recomputes leaf arithmetic with decide +kernel; stored JSON enclosures are
+not proof premises. Analytic exteriors cover the remaining parameter range,
+including c=1/2 and c=1. The balanced endpoint never uses the M denominator.
+SEMANTIC-REVIEW.txt records the full statement, algebra and boundary audit.
+
+Actual independent execution
+The fresh main run is builder-copy/evidence/fresh-source-gp1abwom/verification.json,
+SHA256 8c4ef180301cfa3b61c706940a44cbd95f0312c2a64271e4d1385b6a9f85bd89.
+It compiled all ten local source modules plus Audit, checked all 1821
+public theorem axiom closures, and passed eleven separate leanchecker runs.
+Those closures include 1744 generated node/root declarations; this is a
+mechanical proof count, not a count of independent discoveries. Every closure
+uses only propext, Classical.choice and Quot.sound.
+
+The extra run is extra-evidence/verification.json,
+SHA256 fe4be5f5268f3760cfced4fd900ee38472a41863045dade80fae72e56c140bf8.
+It compiled and separately kernel-checked one critic theorem showing why
+reciprocal safety cannot be dropped, audited its closure, and rejected two
+false claims. All actual rejected goals were read. Accepted totals are
+32 checks: twelve compiles, twelve separate kernels and eight valid negative
+controls; 1822 public theorem closures were audited. There were 33 attempted
+checks because one original rejection is excluded as described below.
+FINAL-INDEX.json separates main, extra, attempted and accepted evidence.
+
+Invalid rejection preserved and repaired
+The original FalseSquareBound uses unqualified sq. In the fresh run this is
+ambiguous between Mathlib's root lemma and E10's interval function. Its log
+then shows an elaborated `sorry () = 1` goal. The builder replay's filter
+missed ambiguity and reported raw passed=true. That is not a mathematical
+rejection and is not counted as accepted evidence.
+
+The exact source, log and complete raw result are preserved under
+attempts/ambiguous-square-control/, with an explicit assessment. The raw
+passed=true remains unchanged. A separate critic-owned replacement qualifies
+E10.sq and now fails only at `False`. The independent reciprocal control
+also fails only at `False`. The other six original negative goals were
+mathematical failures. Thus the final set is six original controls, one
+corrected square control and one added reciprocal-safety control. No unchanged
+positive proof build or kernel check was unnecessarily repeated.
+
+Trust and preservation
+Builder manifest: 7ec490ffe083b7db4767105ef8a4ff5e369e99f46905760f72673a288ac466b4.
+All 158 original and copied bindings matched before and after review. All
+496 entries in ten earlier builder freezes and all recorded input/pin
+copies remained unchanged. The unchanged E5 certificate SHA is
+130162c84e4e7c899cf873e40cbad19bccad8d836afe86013beea700fd2e8dfb;
+the reproduced CheckedTree source SHA is
+60f26bcf5c1764a2fd5535256e8664af71142f8ba08a679b9f867e65ab457746.
+UniversalSelector.lean SHA is
+155ab51b1b22c2a67586079909bf4caf8b4e81dce64f292203b7808fd84afa84.
+
+The five old dependencies are byte-identical and were freshly rebuilt.
+Only this review's fresh local products and pinned package products entered
+LEAN_PATH. The executed pin is Lean 4.35.0 / mathlib
+56a005855ea17e0b0958f73ec801ae140b0a1679. Cached standard packages were not
+rebuilt. Recorded upstream 4.30 pins remain separately attributed; no claim
+of a 4.30 replay is made. Six failed builder development compilations and
+the generator failure remain in the copied evidence. No new proof failure
+was hidden, no pin changed, and no original freeze was edited.
+
+Next interface and limits
+E11 can now call this accepted selector on actual oriented-cut c and j,
+derive their domain from that cut, invoke the actual even-order U/Q witnesses
+or accepted E9 M bridge, and prove every normalization identity. It must
+retain the explicit eventual BCL hypothesis, positive blowup/descent, empty
+graph case and floor-half rounding. The earlier E11 statement gate remains
+guidance; those compositions still need actual source and independent replay.
+
+The .025 all-slope obstruction is a selector obstruction, not a finite-graph
+counterexample. E10 formalizes the existing written .0251 route and does not
+improve its coefficient. It does not prove the conjectural .02, establish
+priority/best-known status, validate the separate stronger external cut claim,
+or establish publication merit. REPLAY-INSTRUCTIONS.txt gives the exact
+main/extra script ordering and preserves the invalid attempt separately.

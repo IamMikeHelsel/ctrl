@@ -1,0 +1,24 @@
+C7 NEGATIVE CONTROLS
+The verifier changes one contract/formula at a time and expects a semantic
+Lean rejection. These failed proofs are tests, not physical counterexamples.
+
+1. ReadCurrentInsteadOfPriorNode: replace the prior sample by the sample at
+   the cell start. This breaks the stated delay recurrence.
+2. ResetCellToInitialState: replace the actual dispatch state by f(0). The
+   required phase initial-value equality then fails.
+3. WrongCellRateIndex: use R(index) instead of R(index+1). The rate field
+   no longer matches the actual digital cell.
+4. DropIncomingPendingEndpoint: remove h from the incoming pending side.
+   This changes the first endpoint contract.
+5. FalseIncomingStamp: claim that incoming .001 s uses stamp .0005 s.
+6. FalseFinalOutgoingStamp: claim that incoming H=.002 s uses stamp .0015 s.
+7. FalseRateContinuity: equate the two rate sides at .001 s.
+8. FalseCommandContinuity: equate the two command sides at .0005 s.
+9. FalseStartupStateReset: equate startup acceleration with initial acceleration.
+10. FalseOneMillisecondPeriod: retain the 1 ms age budget with a 1 ms sample
+    period plus .5 ms latency.
+
+Controls 5-9 are contrasted with exact positive witness facts in the ordinary
+source. The state and command changes are actual facts of a generated physical
+execution, not an aggregate-enclosure impossibility argument. Control 10 is
+an exact clock arithmetic obstruction. None proves a broader hardware claim.
