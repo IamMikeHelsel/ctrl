@@ -1,0 +1,62 @@
+Theorem inventory and exact scope
+
+All unqualified names below are in HyperbolicSpinor unless noted otherwise.
+Exact Lean declarations remain authoritative; source line numbers can drift only
+if a future copy changes them. source-hashes.json fixes this copy.
+
+1. CliffordModel.lean, namespace GUClifford
+Q is weightedSumSquares on Fin 14 -> real, with first seven signs positive and
+last seven negative. Cl is mathlib's CliffordAlgebra Q. gamma_relation proves
+{gamma_a,gamma_b}=2 eps_a delta_ab. This is the real (7,7) generator convention.
+
+2. HyperbolicSpinor.lean, SplitSpinor.lean, SpinorDimensions.lean
+S7 is the exterior algebra on a seven-dimensional real space. Its actual ordered
+exterior basis has 128 subset labels. splitAction is the algebra action built
+from creation and contraction. splitMatrix is that action in spinBasis.
+clifford_finrank proves 16384. These dimensions alone are not faithfulness.
+
+3. BasisActions, FockOperators, FockImage, WordActions, VacuumProjector,
+MatrixUnits, FullImage, RealEquivalence
+Matrix units arise in the image through actual operator words and the vacuum
+projector. splitMatrix_surjective plus the dimension argument gives
+splitMatrix_injective. splitMatrixEquiv is Cl ≃ₐ[real] Matrix (Finset (Fin 7)) _ real.
+This is an actual full-matrix algebra equivalence, not an assumed representation.
+
+4. TransposeBridge, VolumeForm, RealAdjoint
+K is the ordered product of seven negative generators in the same actual basis.
+K_transpose, K_square prove Kᵀ=K and K²=I. realAdjoint is A -> K Aᵀ K.
+splitMatrixEquiv_star intertwines Clifford conjugation and this form adjoint.
+This fixes every vector to minus itself under conjugation.
+
+5. ComplexAdjoint, ComplexEquivalence, ComplexBridge
+GUComplex.CCl is complex ⊗[real] Cl. complexMatrixEquiv is an algebra equivalence
+over complex to the full 128 by 128 complex matrix algebra. bar conjugates the
+complex scalar AND applies real Clifford conjugation. complexMatrixEquiv_bar
+proves rho(bar x)=Kc rho(x)ᴴ Kc, where Kc is the entrywise extension of actual K.
+skew_iff_matrix identifies the skew locus exactly. bar(i)=-i is essential.
+This is a declared scalar-conjugation convention; the source GU paper's intended
+convention must be determined separately. No assertion resolves that source issue.
+
+6. ComplementAction, SplitSignature, ComplexSignature
+K sends e_T to (-1)^(sum over i in T of (7-i)) e_complement(T).
+D has diagonal +1 without index zero, -1 with index zero. U=I+KD.
+U_congruence: Uᵀ K U=2D. U_orthogonal_scaled: UᵀU=2I.
+Uinverse_left/right give both inverses, Uinverse=(1/2)Uᵀ.
+positive_half_count and negative_half_count each prove 64.
+Uc_congruence and Ucinverse_left/right transport the same result to conjugate
+transpose over complex. This is an explicit (64,64) spinor form. It is distinct
+from the (7,7) form on the 14-dimensional generator space. The formal diagonal
+is still subset-indexed; no separate Fin 64 reindexing is claimed.
+
+7. AdjointControls, OrderControls, ComplexControls, SignatureControls,
+ReviewerClient, CounterWitnesses
+Concrete witnesses reject omitted complement/sign, positive-only signature,
+wrong scale, mistaken inverse, wrong half-count, fixed imaginary scalar and the
+singular I+K substitution. Nine false statements are both rejected and negated.
+
+What is not established
+A differential-geometric model of GU; the Phi operators or projected brackets;
+Bianchi assumptions; variational field equations; gravity/Standard Model recovery;
+physical predictions; uniqueness from Spin invariance alone; literature novelty.
+The full-generator adjoint condition is stronger than Spin invariance. The matrix
+commutant argument under the former must not be advertised as the latter.

@@ -1,0 +1,138 @@
+READ-ONLY REPRODUCTION REVIEW
+18 October 2026
+
+Reviewed proof-bundle/integrated_replay.py, README.txt, controls/FinalAudit.lean,
+accepted-hashes.json, accepted-origins.json, all eleven new false clients and
+their corresponding positive reviewer lemmas. Did not rerun the full suite.
+
+Decision: scoped acceptance of the current proof coverage and trust description,
+with small inventory/integrity hardening gaps listed below. These gaps do not
+show that a current theorem is false or that a recorded kernel replay failed.
+
+CURRENT COVERAGE
+The actual tree contains 25 baseline modules, 13 accepted additions, 8 new
+positive reviewer modules, and 2 baseline reviewer modules: 48 positive modules.
+There are 9 baseline and 11 new false clients: 20 total. This matches README.
+The topological traversal orders local imports before clients. Every selected
+positive source is copied into a new directory, compiled there, and separately
+submitted to leanchecker. The generated audit includes all selected module names
+and insists that every module contributes at least one audited declaration.
+
+The declaration audit rejects owned axioms and unsafe declarations. It traverses
+axiom dependencies and permits only propext, Classical.choice, and Quot.sound.
+Module ownership includes private helpers. A lexical scan also rejects local
+sorry/admit/axiom/unsafe/native_decide tokens before compilation. The audit is
+stronger than a scan of theorem names alone. Its trust remains the documented
+Lean kernel, compiler, dependency products, operating system, and hardware.
+
+The false-client checks require nonzero exit status and unsolved mathematical
+goals, and reject common import/syntax/type failures. Every one of the eleven
+new false claims also has a positive theorem proving its negation in an audited
+reviewer module. Thus a weak tactic is not the sole evidence that these claims
+are false. Baseline CounterWitnesses serves that role for the nine old controls.
+These controls test specific mistakes; they do not prove implementation-wide
+mutation completeness.
+
+PORTABILITY AND CACHE BOUNDARY
+The integrated script uses accepted copies and local hash manifests. Original
+working paths are optional preservation checks: if absent, it uses the pinned
+accepted copies. No theorem import requires the old research folder. With exact
+pinned dependencies and toolchain available, the documented copied-source route
+is structurally independent of that folder. A clean network bootstrap was not
+performed, and README correctly says so.
+
+LEAN_PATH contains the new local output directory and filtered dependency paths.
+The dependency project's own .lake/build/lib/lean is explicitly excluded. The
+old local proof caches are not included. All dependency Git revisions and clean
+working trees are checked against the hard-coded pinned revisions. Reused
+dependency .olean provenance is trusted rather than independently reconstructed;
+README already discloses this.
+
+The implementation is POSIX-oriented: it uses `which`, colon-separated PATH and
+LEAN_PATH, and Git. It is suitable as documented for macOS/Linux environments
+with those tools. README's phrase 'new machine' should not be interpreted as a
+tested native Windows path.
+
+CONCRETE HARDENING GAPS AT REVIEW TIME
+1. Baseline source verification loops over existing source/*.lean files and looks
+   each up in source-hashes.json. It does not assert equality of the discovered
+   filename set and the manifest's filename set. An omitted unreferenced file
+   could therefore reduce coverage without failing that check.
+2. False controls are discovered by glob. Their expected filename set is not
+   asserted. Removing a baseline negative file can reduce the reported count
+   while the remaining suite still reports PASS.
+3. accepted-hashes.json pins the new sources and reviewer controls, but the
+   integrated script does not similarly hash-check the baseline ReviewerClient,
+   CounterWitnesses, FinalAudit template, or nine baseline false clients. The
+   external SHA256SUMS can cover portable files, but the replay script does not
+   automatically verify it. Its final source-before/source-after comparison
+   proves preservation during this run, not identity to an earlier control set.
+4. Conversely, directory globs can include added files not listed in accepted
+   hashes. These would still be compiled/audited, but the accepted manifest would
+   not be a complete inventory. Exact filename-set checks would close this gap.
+
+Suggested narrow fix: freeze baseline control hashes; assert exact source and
+control filename inventories against their manifests before compilation. Keep
+actual returned build/replay/audit counts in results. These are harness changes,
+not mathematical changes. The current inspected inventories match the claims.
+
+The dependency path check currently accepts any path containing
+'/.lake/packages/', rather than only outputs beneath the verified dependency
+project. With the ordinary lake-generated environment this gives the intended
+paths. A future stronger version can whitelist the verified package roots and
+toolchain directory to reject unrelated inherited package paths. This is a
+hygiene improvement within the declared dependency-product trust boundary.
+
+FINAL PAPER CHECK
+The H_t subsection matches the compiled HermitianFamily declarations: H_t is
+Hermitian, has both inverse equations for real t, is invariant under actual
+mathlib Spin matrices, and H_1 is not any complex scalar multiple of K_C. This
+is a valid counterexample to replacing full Clifford compatibility by Spin-only
+invariance. The text does not claim classification of all invariant forms,
+positive definiteness, or physical inequivalence. No scope correction needed.
+
+ADDITIVE HARDENING COMPLETED
+The coordinator authorized a bounded repair after the review. I implemented
+proof-bundle/inventory_check.py and completed verification-inventory.json.
+The checker uses explicit exceptions, so Python optimization cannot disable its
+checks. It freezes exact filename sets and hashes for all 70 proof-critical
+inputs: 25 baseline modules, 13 additions, 13 baseline controls/support files,
+and 19 new reviewer/control files. It checks 38 mathematical modules, 10 positive
+reviewer modules, and 20 false clients as distinct expected sets.
+
+Before freezing, all 13 baseline controls were compared to critic-05's original
+accepted SHA256SUMS, and all 25 baseline modules to builder-05's original accepted
+SHA256SUMS. The portable provenance manifest copies were byte-compared to those
+original records. The checker now revalidates against those pinned portable
+provenance records and needs no original workspace path.
+
+The --run mode checks all 48 positive copied Lean inputs and any present negative
+copies. The --complete mode requires all 20 negative inputs and a generated audit
+matching the frozen audit template, exact 48-module import set, and same owned
+module list. Unexpected/missing files, symlinks, changed hashes, and modified
+audit logic or ownership are rejected. This validates inputs and coverage;
+it does not replace Lean compilation or kernel replay.
+
+Twelve isolated temporary-copy tests passed. Three valid cases were accepted:
+a pristine portable input tree, that tree under python -O, and complete copied
+inputs with the correctly generated audit. Nine mutations were rejected:
+missing baseline module, missing baseline false control, changed baseline
+reviewer, extra unpinned source, changed audit template, missing control under
+python -O, changed compiled-input copy, missing copied false control, and reduced
+generated-audit ownership. No live proof source or running replay was mutated.
+
+Evidence:
+research-audit/inventory-current-result.json
+research-audit/inventory-copied-source-result.json
+research-audit/inventory-mutation-results.json
+research-audit/test_inventory_check.py
+
+The archivist owns runner integration and the additive post-run complete check.
+The in-flight proof replay used the original snapshotted runner. Its proof
+results must remain labeled separately from the later coverage check. The
+future runner additionally rejects optimized Python before assertion-based
+logic and invokes the inventory checker before and after its proof suite.
+
+The inventory/control-hash gaps above are closed by this additive checker.
+The previously noted dependency-path whitelist refinement remains a possible
+future hygiene improvement; dependency products remain an explicit trust input.

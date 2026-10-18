@@ -1,0 +1,6 @@
+from pathlib import Path
+import json,subprocess,os,hashlib
+B=Path(__file__).resolve().parent;P=B.parent;E=json.loads((P/json.loads((P/'latest-result.json').read_text())['run']/'environment.json').read_text());env=os.environ.copy();env['LEAN_PATH']=':'.join(str(P/d) for d in ['review-final','review-algebra','review-spin','review-additions'])+':'+E['LEAN_PATH'];steps=[]
+for m in ['VolumeTwist','VolumeTwistActual','QuadraticTwist','ComplexChoices','LiftEquivalence','GeneralBoost','HermitianFamily','QuadraticClient','FinalClient']:
+ p=P/('accepted-controls' if m.endswith('Client') else 'accepted')/(m+'.lean');q=B/p.name;q.write_bytes(p.read_bytes());r=subprocess.run([E['compiler'],'-o',str(B/(m+'.olean')),str(q)],cwd=B,env=env,text=True,stdout=subprocess.PIPE,stderr=subprocess.STDOUT,timeout=600);(B/(m+'.log')).write_text(r.stdout);steps.append({'module':m,'code':r.returncode,'sha256':hashlib.sha256(q.read_bytes()).hexdigest()});print(m,r.returncode,flush=True);assert r.returncode==0,r.stdout
+(B/'preflight-result.json').write_text(json.dumps({'status':'PASS','scope':'Independent fresh compilation of last additions and reviewer controls; separate kernel replay and audit supplied by final integrated run.','steps':steps},indent=2)+'\n')

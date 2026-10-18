@@ -1,0 +1,35 @@
+Independent review: skew locus and chirality
+
+SkewLie source hash: 034b733fbaef7fe77c0bf4843f6d0170e1b1026b86a884e204d5795b34121348.
+The source proves an equivalence of the actual Clifford-conjugation skew locus
+with the matrices that infinitesimally preserve K. It proves commutator closure
+and transport to the explicit split diagonal D via Uinverse*A*U. It does not
+package a mathlib LieEquiv; the subtype bijection and bracket transport are proved
+as separate statements. The signature already supplies 64 indices of each sign.
+
+The reviewer proves gamma0 is in the skew locus but its ordinary product with
+itself is not: its square is the identity, whose K-adjoint is positive identity.
+A false ordinary-product closure client fails and its negation is proved. This
+separates Lie closure under commutator from associative subalgebra closure.
+Fresh builds, separate checker replays and 33-declaration audit passed; see
+result.json. Only standard propext/Classical.choice/Quot.sound axioms occur.
+
+Chirality source hash: a0304129b7bd89339cf06e1ac1185a7c670d14518c30a76c5618312f72c13fef.
+The source defines the ordered product gamma0...gamma13. Its involutive square,
+skew Clifford conjugation and anticommutation with each vector are concrete
+claims. Commutation with products of two vectors is not stated as a constructed
+Spin-group action. The commutator identity is infinitesimal equivariance for
+those bivectors, and is not by itself a classification of all equivariant maps.
+
+Reviewer probes check the product is nonzero and not selfadjoint, and that the
+twisted positive generator omega*gamma0 squares to -1 rather than +1. That sign
+flip makes this twist substantively different from a scalar multiple and prevents
+mistaking it for an automorphism preserving the original vector quadratic form.
+chirality-result.json records completion and audit; absence means still pending.
+The separate false-square client must fail on a mathematical goal.
+
+Run after successful baseline replay:
+  python3 review-algebra/review.py
+  python3 review-algebra/chirality_review.py
+No source under ../../algebra/ was changed by this reviewer. Copies are preserved
+for reproducibility. Compiler and external dependency products remain trusted.

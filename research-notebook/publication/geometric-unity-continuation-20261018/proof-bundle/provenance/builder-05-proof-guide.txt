@@ -1,0 +1,83 @@
+Proof guide — actual complement action and split signature
+
+Fixed data
+J=Fin 7. Basis vectors are indexed by all 128 finite subsets T of J. The basis
+is the accepted increasing-order exterior basis. Each negative generator is
+Ni=creation(i)-contraction(i). K is the existing product N0*N1*...*N6.
+The rightmost factor acts first. No generator or basis convention is changed.
+
+1. Actual basis action
+ComplementAction.prefix_length identifies the insertion/contraction sign with
+the number of occupied coordinates below i. The accepted actual creation and
+contraction formulas then give negative_basis and negative_mulVec.
+product_mulVec transports these facts to an ordered generator product.
+
+signedToggles_seven proves, by Lean kernel evaluation of a finite decidable
+statement, that all 128 subsets satisfy
+  K e_T = s(T) e_(T complement),
+  s(T)=(-1)^(sum over i in T of (7-i)).
+There is no native_decide or external calculation in this proof. The finite
+identity is bookkeeping, not an assumption about the actual matrix. The bridge
+from actual exterior operators to that bookkeeping is proved first.
+
+Why the sign has this form: factor i contributes one sign for every occupied
+index below it. A contraction contributes one more minus sign. Applying factors
+in order 6,...,0 leaves the lower occupied indices unchanged at each step.
+Thus an occupied index j contributes (6-j)+1=7-j signs.
+
+2. Explicit real congruence
+Let d(T)=+1 if coordinate 0 is absent and -1 if it is present. D is the diagonal
+matrix with entries d(T). The complement action proves DK=-KD. The accepted
+K^T=K and K^2=I remain the same actual-matrix theorems.
+
+Define U=I+KD. Direct matrix algebra proves
+  U^T U = U U^T = 2I,
+  K U = U D,
+  U^T K U = 2D,
+  Uinverse=(1/2)U^T,
+  Uinverse U = U Uinverse = I.
+
+The columns are explicit. For each T not containing 0, let s=s(T):
+  column T             = e_T + s e_(T complement),
+  column (T complement)= e_(T complement) - s e_T.
+The sign identity s(T complement)=s(T) is proved. On this ordered pair the
+matrices are
+  K = [[0,s],[s,0]], D = [[1,0],[0,-1]], U = [[1,-s],[s,1]].
+
+The congruence remains indexed by the original finite subsets. Its diagonal
+entry is +2 for the 64 subsets without 0, and -2 for the 64 subsets with 0.
+The two cardinalities are proved. Thus it is diag(2I64,-2I64) after grouping
+those two explicit sets of columns. No separate Fin 64 enumeration is needed
+or asserted. Off-diagonal entries are proved zero.
+
+3. Actual complex extension
+ComplexSignature uses the accepted realToComplexMatrix map. Uc, Dc and the
+inverse are entrywise extensions of U, D and Uinverse. The existing Kc is used.
+It proves
+  Uc^H Uc = 2I,
+  Uc^H Kc Uc = 2Dc,
+  Ucinverse=(1/2)Uc^H,
+  Ucinverse Uc = Uc Ucinverse = I.
+Here H denotes conjugate transpose. The complex congruence entries are explicitly
++2, -2 and zero on the same actual subset indices.
+
+4. Non-vacuity and false claims
+The vacuum column goes to the full subset. The singleton {0} needs a minus sign.
+The real and complex forms have explicit positive and negative transformed
+entries. Omitting D gives I+K, which kills the nonzero vector e_empty-K e_empty.
+This prevents replacing the invertible change of basis with a singular projector.
+Six false clients challenge signs, complementation, normalization, positive-only
+signature and the omitted-D construction. Exact failure logs are preserved.
+
+Trust and scope
+All local source modules are rebuilt fresh. Pinned external dependency products,
+compiler products and hardware remain trusted. The separate checker adds proof
+replay evidence; it does not remove all software trust. The finite Python check
+supplements the proof and is only a builder cross-check, not independent review.
+This result formalizes standard split Clifford algebra. It is not GU physics.
+
+Two different signatures
+The (7,7) label describes the quadratic form on the 14 Clifford generators.
+The (64,64) result here describes the compatible form on their 128-dimensional
+spinor representation. These are different spaces and different forms. The
+result does not change spacetime dimension or identify an observable spectrum.

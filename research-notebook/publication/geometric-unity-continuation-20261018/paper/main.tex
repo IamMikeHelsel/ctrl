@@ -1,0 +1,303 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\setlength{\emergencystretch}{2em}
+\usepackage{amsmath,amssymb,amsthm,booktabs,longtable,array,hyperref,microtype}
+\hypersetup{hidelinks}
+\usepackage[T1]{fontenc}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{definition}[theorem]{Definition}
+\newcommand{\R}{\mathbb R}
+\newcommand{\C}{\mathbb C}
+\newcommand{\Cl}{\operatorname{Cl}}
+\newcommand{\Spin}{\operatorname{Spin}}
+\newcommand{\Mat}{\operatorname{Mat}}
+\newcommand{\Span}{\operatorname{span}}
+\title{A Certified Split Clifford Model and\ Explicit Choice Boundaries in Geometric Unity}
+\author{Research working draft}
+\date{18 October 2026}
+\begin{document}
+\maketitle
+\begin{abstract}
+We formalize a finite-dimensional algebraic sector relevant to Geometric Unity in Lean 4. Starting from exterior multiplication and contraction, the construction gives an actual isomorphism from $\Cl(7,7)$ to $128\times128$ real matrices. Its scalar extension identifies the specified conjugate-linear Clifford adjoint with an indefinite Hermitian matrix adjoint. An explicit change of basis proves the spinor signature $(64,64)$. We extend this foundation with uniqueness of the fully compatible form, an explicit counterexample to uniqueness under Spin invariance alone, and transport of the skew locus and its commutator to split coordinates. A separate source-facing argument exhibits two independent invariant choices in each of the low-degree tensor spaces used to define an operator. These results separate determinate algebra from additional operator-selection data. They do not formalize the full theory, derive its field equations, or test a physical prediction. Classical Clifford theory and prior Lean work \cite{wieser} supply the mathematical background; the contribution is a concrete checked construction, its proof boundaries, and a reproducible artifact.
+\end{abstract}
+
+\section{Question and scope}
+The relevant algebraic question is precise: can the split Clifford data be realized as actual matrices, with an explicit adjoint and signature, rather than inferred only from matching dimensions? A second question follows: which structures become unique when those data are fixed, and which still require a choice?
+
+The 2021 Geometric Unity draft motivates this study through its algebraic identifications in (3.26)--(3.28), its invariant-tensor construction in Definition 8.1, and the subsequent operator discussion \cite{gu}. The action is displayed in (9.4). The present work does not claim that an action is absent. It distinguishes the existence of that expression from a fully specified variational problem.
+
+We use three evidence levels. \emph{Formal} means an exact Lean statement with recorded compilation and replay evidence. \emph{Hand proof} means the argument is written here but its complete application has not been certified in Lean. \emph{Source question} means an input is not fixed by the sources examined. A conditional Lean lemma does not establish its hypotheses for an intended physical model.
+
+The main formalized results concern ordinary finite-dimensional algebra. They are not new classification theorems. The research value to assess is whether the explicit construction, theorem interfaces, and reusable checks improve a future formal treatment.
+
+\section{The fixed model}
+Let $V=\R^{14}$ with ordered basis $e_0,\ldots,e_{13}$ and quadratic form
+\[
+ Q(x)=\sum_{i=0}^{6}x_i^2-\sum_{i=7}^{13}x_i^2.
+\]
+Write $A=\Cl(V,Q)$ and $S=\Lambda^*(\R^7)$. Let $c_i$ denote exterior multiplication and $a_i$ contraction with the $i$th dual basis vector. The positive and negative generators act as
+\[
+ P_i=c_i+a_i,\qquad N_i=c_i-a_i\qquad(0\le i<7).
+\]
+Thus $P_i^2=I$, $N_i^2=-I$, and distinct Clifford generators anticommute. Index the exterior basis by subsets $T\subseteq\{0,\ldots,6\}$, in increasing wedge order. Then $\dim_\R S=128$.
+
+\begin{theorem}[Concrete representation; formal baseline]
+The representation induced by these operators is an algebra isomorphism
+\[
+ \rho:A\xrightarrow{\sim}\Mat_{128}(\R).
+\]
+Its complex extension is an algebra isomorphism
+\[
+ \rho_\C:\C\otimes_\R A\xrightarrow{\sim}\Mat_{128}(\C).
+\]
+\end{theorem}
+\begin{proof}[Proof structure]
+Creation, contraction, and the vacuum projector construct each actual matrix unit. This proves surjectivity. The Clifford algebra and the matrix algebra each have real dimension $2^{14}=128^2=16384$; finite-dimensional linear algebra then proves injectivity. The complex extension uses explicit tensor-product linear equivalences and verifies multiplication. A dimension equality alone is not used as a substitute for constructing the representation or its image.
+\end{proof}
+
+Let $x\mapsto x^*$ denote Clifford conjugation: $v^*=-v$ for $v\in V$, with product order reversed. On $A_\C=\C\otimes_\R A$ fix
+\[
+ \overline{z\otimes x}=\overline z\otimes x^*.
+\]
+This notation includes scalar conjugation. In particular, $\overline{i}=-i$.
+
+\section{The actual form and its signature}
+Define the actual matrix
+\[
+ K=N_0N_1\cdots N_6.
+\]
+This seven-factor product is \emph{not} the full fourteen-generator Clifford volume used later.
+
+\begin{theorem}[Adjoint and split signature; formal baseline]
+The matrix $K$ satisfies $K^T=K$ and $K^2=I$. For every $x\in A$,
+\[
+ \rho(x^*)=K\rho(x)^T K.
+\]
+For the entrywise complex extension $K_\C$, every $z\in A_\C$ satisfies
+\[
+ \rho_\C(\overline z)=K_\C\rho_\C(z)^\dagger K_\C.
+\]
+The real symmetric form represented by $K$ and the complex Hermitian form represented by $K_\C$ have signature $(64,64)$.
+\end{theorem}
+\begin{proof}[Explicit signature certificate]
+For each exterior basis vector,
+\[
+ K e_T=s(T)e_{T^c},\qquad
+ s(T)=(-1)^{\sum_{i\in T}(7-i)}.
+\]
+This identity is derived from the actual operators. Put $d(T)=1$ if $0\notin T$ and $d(T)=-1$ otherwise, and let $D$ be the diagonal matrix with these entries. Then $DK=-KD$. Set
+\[
+ U=I+KD,\qquad U^{-1}=\tfrac12 U^T.
+\]
+Direct matrix identities give
+\[
+ U^TU=UU^T=2I,\quad KU=UD,\quad U^TKU=2D.
+\]
+Both inverse equations are proved. Exactly 64 indices have each sign. The diagonal certificate is therefore $\operatorname{diag}(2I_{64},-2I_{64})$ after grouping the two explicit index sets. The Lean result retains subset indices; it does not assert a separate chosen enumeration by $\mathrm{Fin}\,64$. Complex extension gives $U_\C^\dagger K_\C U_\C=2D_\C$ and the same two-sided inverse.
+\end{proof}
+
+The generator signature $(7,7)$ and the spinor-form signature $(64,64)$ belong to different spaces. Neither is a count of observable particles. The factor $2$ in the congruence is essential for this unnormalized $U$.
+
+\section{Uniqueness under full adjoint compatibility}
+The next result states exactly which hypothesis removes freedom in the form.
+
+\begin{definition}
+A real matrix $H$ is vector-compatible if
+\[
+ \rho(v)^T H=-H\rho(v)\quad\hbox{for every }v\in V.
+\]
+No symmetry, invertibility, or positivity is included in this definition.
+\end{definition}
+
+\begin{theorem}[Real compatible-form classification; formal]
+A real matrix $H$ is vector-compatible if and only if $H=cK$ for some $c\in\R$. If $K_{ij}\ne0$ and $H_{ij}=K_{ij}$, vector compatibility forces $H=K$.
+\end{theorem}
+\begin{proof}
+Clifford induction extends vector compatibility to
+\[
+ \rho(x)^T H=H\rho(x^*)\qquad(x\in A).
+\]
+Insert the established adjoint identity and multiply by $K$. Surjectivity of $\rho$, together with transposition, shows that $HK$ commutes with every real matrix. Commutation with the matrix units forces $HK=cI$. Since $K^2=I$, $H=cK$. Conversely each such scalar multiple satisfies the vector equations. At a nonzero entry, normalization gives $cK_{ij}=K_{ij}$ and hence $c=1$.
+\end{proof}
+
+The zero form is included intentionally. A nondegenerate compatible form requires $c\ne0$. The statement does not replace the full vector equations by Spin invariance.
+
+\begin{theorem}[Complex compatible-form classification; formal]
+Suppose $H\in\Mat_{128}(\C)$ satisfies
+\[
+ \rho_\C(x)^\dagger H=H\rho_\C(\overline x)\qquad(x\in A_\C).
+\]
+This holds if and only if $H=cK_\C$ for some $c\in\C$. If in addition $H^\dagger=H$, then $c$ can be chosen real.
+\end{theorem}
+\begin{proof}
+The same matrix-unit centralizer argument gives a complex scalar. Hermiticity gives $\overline c K_\C=cK_\C$. Since $K_\C^2=I$, the matrix is nonzero, so $\overline c=c$.
+\end{proof}
+
+The complex theorem explicitly assumes the intertwining equation for \emph{all} complex Clifford elements. Its current statement is not advertised as a separate proof that a smaller list of complex generator conditions suffices.
+
+\subsection{A counterexample to Spin-only uniqueness}
+The stronger compatibility hypothesis is essential, even if one requires a nondegenerate Hermitian form.
+
+\begin{theorem}[Nonproportional invariant Hermitian forms; formal]
+Let $\omega=e_0\cdots e_{13}$ be the full ordered Clifford volume, $P=\rho_\C(\omega)$, and $W=iP$. For real $t$, define
+\[
+ H_t=K_\C(I+tW).
+\]
+Then $H_t$ is Hermitian and has the two-sided inverse
+\[
+ H_t^{-1}=\frac{1}{1+t^2}(I-tW)K_\C.
+\]
+For every element $s$ of mathlib's $\Spin$ group, its actual complex matrix $S_s$ satisfies
+\[
+ S_s^\dagger H_t S_s=H_t.
+\]
+However, $H_1$ is not $cK_\C$ for any complex scalar $c$.
+\end{theorem}
+\begin{proof}
+The actual adjoint gives $W^\dagger K_\C=K_\C W$, while $W^2=-I$. These prove Hermiticity and both inverse equations; $1+t^2$ is nonzero for real $t$. Spin matrices preserve $K_\C$ and commute with $W$, which proves invariance. If $H_1=cK_\C$, then $W=(c-1)I$. But $i\omega$ anticommutes with the invertible first generator and squares to $-1$, so it cannot be scalar.
+\end{proof}
+
+This is an actual counterexample to replacing full Clifford compatibility by Spin invariance in the form-uniqueness theorem. It is not a counterexample to the existence of the source's preferred form, and it does not classify every Spin-invariant form or quotient them by changes of spinor coordinates.
+
+\section{The skew locus and change of coordinates}
+For a real matrix $M$, write
+\[
+ \mathfrak o(K)=\{M:M^TK+KM=0\}.
+\]
+For complex matrices the corresponding set uses conjugate transpose and is a real vector space, denoted $\mathfrak u(K_\C)$.
+
+\begin{theorem}[Real skew transport; formal]
+Clifford conjugation-skew elements correspond through $\rho$ to $\mathfrak o(K)$. This set is closed under addition, real scalar multiplication, and the commutator $[M,N]=MN-NM$. The transformation $M\mapsto U^{-1}MU$ carries the $K$-skew condition to the $D$-skew condition.
+\end{theorem}
+\begin{proof}[Proof structure]
+Multiply the actual adjoint equality by $K$ and use $K^2=I$. Closure follows by distributing transpose over sums and reversing products. For the basis change, use both inverse identities and $U^TKU=2D$. The nonzero scalar $2$ cancels from the skew equation.
+\end{proof}
+
+This checks the concrete skew locus and bracket identities. It must not be confused with an asserted dimension theorem or an unimplemented identification with a named mathlib Lie algebra. Over $\R$ the target is orthogonal; after conjugate-linear complex extension it is unitary. Those are different real Lie algebras.
+
+\section{Explicit freedom in the invariant tensors}
+The full invariant-tensor lower bound below is a \emph{hand proof}. Its algebraic core now has Lean proofs: the actual full volume identities, independence of the generator-indexed vector choices, and the two complex skew alternating-pair choices. Group-level conjugation of the vector choices is also proved for mathlib's \texttt{spinGroup}. The artifact has not packaged these facts as a formal dimension theorem for an invariant Hom space or descended the bivector construction through the exterior-power universal property.
+
+Let
+\[
+ \omega=e_0e_1\cdots e_{13}\in A.
+\]
+Then
+\[
+ \omega^2=(-1)^{91}(-1)^7=1,\qquad \omega^*=-\omega,
+ \qquad \omega v=-v\omega\quad(v\in V).
+\]
+Consequently $\omega$ commutes with all even Clifford elements, including Spin elements. Let $\mathcal U=\{x\in A_\C:\overline x=-x\}$, considered as a \emph{real} vector space. Define $c_2(u\wedge v)=(uv-vu)/2$.
+
+\begin{proposition}[Two invariant directions; hand proof]
+For $r=1,2$, there are two real-linearly independent maps in
+$\operatorname{Hom}_{\Spin(7,7)}(\Lambda^rV,\mathcal U)$:
+\[
+ \begin{array}{ll}
+ F_1(v)=v,&G_1(v)=\omega v,\\
+ F_2(\alpha)=c_2(\alpha),&G_2(\alpha)=i\omega c_2(\alpha).
+ \end{array}
+\]
+Thus each of these real invariant-map spaces has dimension at least two.
+\end{proposition}
+\begin{proof}
+For vectors, $(\omega v)^*=v\omega=-\omega v$, so both vector maps are skew. For a bivector $B=c_2(\alpha)$, $B^*=-B$ and $B\omega=\omega B$. Hence $(\omega B)^*=\omega B$, and scalar conjugation makes $i\omega B$ skew.
+
+Clifford inclusion and the alternating bivector inclusion intertwine the Spin action with conjugation. Multiplication by $\omega$ preserves equivariance because Spin elements are even. The scalar $i$ is central. Evaluate a real linear relation between the two vector maps at $e_0$: the outputs have distinct, nonzero PBW supports of grades 1 and 13. Evaluate a relation between the bivector maps at $e_0\wedge e_1$: the supports have grades 2 and 12. Independence of ordered Clifford monomials forces both coefficients to vanish.
+\end{proof}
+
+The nondegenerate invariant form on $\Lambda^rV$ identifies it with its real dual. Thus these maps also yield two independent invariant tensors in $\Lambda^rV\otimes_\R\mathcal U$, the kind of tensor space involved in the source construction. This is a lower bound, not a classification. A Pin action that reverses orientation changes the volume transformation law and needs a different statement.
+
+The implication is limited but useful: fixing equivariance alone does not select a preferred invariant direction. A grade restriction or a further equation may do so. The original lecture already discusses Hodge-related alternatives and product choices \cite{lecture}; this result makes that freedom concrete rather than exposing an alleged contradiction. Distinct invariant tensors need not induce distinct operators after a bracket, projection, or curvature restriction. That further question needs the operator's exact definition.
+
+\section{Normalization and equivalence of choices}
+Equivariance and skewness alone do not imply that a candidate vector map preserves the Clifford relation. This gives a concrete test of an extra selection rule.
+
+\begin{theorem}[Quadratic normalization; formal]
+For real $a,b$, set $F_{a,b}(v)=av+b\omega v$. For every $v\in V$,
+\[
+ F_{a,b}(v)^2=(a^2-b^2)Q(v)\,1.
+\]
+The original Clifford square is preserved for all vectors if and only if $a^2-b^2=1$. Every normalized choice has an actual Clifford algebra endomorphism extending it. The choice $(a,b)=(5/3,4/3)$ is normalized and differs from the original inclusion.
+\end{theorem}
+\begin{proof}
+Anticommutation cancels the cross terms. Also $(\omega v)^2=-v^2$. This proves the square formula and sufficiency. Necessity follows by testing $e_0$, whose square is one. Real linearity and the Clifford universal property give the endomorphism. Independence of $e_0$ and $\omega e_0$ proves that the rational choice is different.
+\end{proof}
+
+We do not assert that the source requires $\Phi_1$ itself to preserve this Clifford relation. The theorem evaluates a possible added restriction and shows that it leaves a hyperbola of choices.
+
+\begin{theorem}[A nontrivial choice is inner-equivalent; formal]
+Put $T=2+\omega$. Then $T^{-1}=(2-\omega)/3$, and
+\[
+ TvT^{-1}=\tfrac53v+\tfrac43\omega v.
+\]
+The normalized rational Clifford endomorphism equals $x\mapsto TxT^{-1}$ on all Clifford elements and is bijective. Moreover, $T$ commutes with Spin elements and $T^*T=3$. Its actual matrix satisfies
+\[
+ \rho(T)^T K\rho(T)=3K.
+\]
+\end{theorem}
+\begin{proof}
+Expand the products using $\omega^2=1$ and $\omega v=-v\omega$. The vector identity extends to all Clifford elements by induction. Multiplication by $T^{-1}$ on the left and $T$ on the right gives an inverse for the endomorphism. Since $T$ is scalar plus an even-central volume, it commutes with Spin. The adjoint and matrix equations follow from $\omega^*=-\omega$ and the actual adjoint bridge.
+\end{proof}
+
+\begin{theorem}[The whole normalized family is inner; formal]
+For every real pair with $a^2-b^2=1$, there is a unit $T_{a,b}\in A^\times$ which commutes with mathlib Spin elements and satisfies
+\[
+ T_{a,b}vT_{a,b}^{-1}=av+b\omega v\qquad(v\in V).
+\]
+\end{theorem}
+\begin{proof}
+If $a\ne-1$, take
+\[
+ T_{a,b}=(a+1)+b\omega,\qquad
+ T_{a,b}^{-1}=\frac{(a+1)-b\omega}{2(a+1)}.
+\]
+The normalization equation gives $(a+1)^2-b^2=2(a+1)$. Product expansion proves both inverse identities and the vector formula. If $a=-1$, normalization forces $b=0$; take $T_{-1,0}=\omega$. Its square is one and conjugation negates every vector. All displayed units commute with Spin because $\omega$ does.
+\end{proof}
+
+This classifies equivalence only within the displayed two-parameter vector family. It does not classify all invariant tensors. For $a<-1$, the displayed unit has negative adjoint norm $2(a+1)$; at $(-1,0)$, $\omega^*\omega=-1$. Scalar rescaling cannot make those units have adjoint norm $+1$. Thus algebraic inner equivalence must not be silently replaced by equivalence under an intended unitary gauge group.
+
+This example is a necessary restraint on interpretation. Distinct invariant formulas can describe equivalent algebraic realizations. A normalized real matrix $\rho(T)/\sqrt3$ preserves $K$ by the displayed identity, but we have not proved that the complete source operator or action identifies these choices as gauge-equivalent. That depends on all fields and operations in the model.
+
+\section{Proof artifact and verification boundary}
+The artifact pins Lean 4.35.0 and mathlib revision
+\texttt{56a005855ea17e0b0958f73ec801ae140b0a1679}. The baseline contains 25 source modules. Its fresh replay copies local sources and excludes previous project and builder output caches. Pinned external dependency products are reused and their checkout revisions are checked. A separate \texttt{leanchecker} process replays proof objects; it is not a second kernel implementation.
+
+The final integrated run passed 48 fresh module builds and 48 separate kernel replays, rejected 20 false clients, and audited 723 owned declarations. An additional inventory check verified the complete frozen input set and recorded outcomes. Standard Lean foundational dependencies are \texttt{propext}, \texttt{Classical.choice}, and \texttt{Quot.sound}. The artifact admits no local mathematical axiom, \texttt{sorry}, or unchecked numerical oracle as a theorem proof. Exact Python checks supplement the Lean results and do not replace them.
+
+The Spin declarations use mathlib's explicit definition: a closure of invertible vector units, intersected with the Clifford-unitary and even conditions. The artifact does not prove a separate equivalence of this definition with every convention for disconnected real Spin groups. The volume commutation theorem itself holds for every even Clifford element.
+
+The source audit uses an independent signed-monomial Clifford implementation. It checks the volume signs, 14 vector anticommutations, 91 even commutations, skewness of the candidate images, and 9,555 infinitesimal equivariance identities. These finite checks do not alone prove equivariance for every group component; the hand proof uses evenness directly.
+
+\begingroup\small\raggedright
+\begin{longtable}{>{\raggedright\arraybackslash}p{0.28\linewidth}>{\raggedright\arraybackslash}p{0.64\linewidth}}
+\toprule
+Claim & Principal declaration or source \\\midrule
+Actual real equivalence & \texttt{splitMatrixEquiv} \\
+Actual complex equivalence & \texttt{complexMatrixEquiv} \\
+Actual adjoints & \texttt{splitMatrixEquiv\_star}, \texttt{complexMatrixEquiv\_bar} \\
+Split congruence & \texttt{U\_congruence}, \texttt{Uc\_congruence} \\
+Real form uniqueness & \texttt{vectorCompatible\_iff}; normalization theorem in \texttt{FormUniqueness.lean} \\
+Complex form uniqueness & \texttt{complexCompatible\_iff}; Hermitian theorem in \texttt{ComplexFormUniqueness.lean} \\
+Spin-invariant forms & \texttt{HermitianFamily.lean} \\
+Real skew transport & \texttt{algebra/SkewLie.lean} \\
+Normalized choices & \texttt{QuadraticTwist.lean}, \texttt{RationalBoost.lean}, \texttt{LiftEquivalence.lean}, \texttt{GeneralBoost.lean} \\
+Invariant-space lower bound & Hand proof in the invariant-tensor section; \texttt{research-audit/} \\\bottomrule
+\end{longtable}
+\endgroup
+
+\section{What a source-specific continuation needs}
+A useful next formal target is a parameterized operator, with all free data explicit. It should specify the real invariant-tensor coefficients, product or bracket, projections, curvature domain, orientation and Hodge-star conventions, and connection and torsion assumptions. One can then prove exactly which parameter directions survive the curvature restrictions or a Bianchi identity.
+
+A variational treatment also needs the independent fields, boundary or compact-support assumptions, and the stage at which pullback is performed. If a metric varies, its induced Hodge star and connection cannot be silently held fixed unless that is the intended model. These are inputs to a theorem, not proof tactics to be guessed.
+
+The present work identifies a productive boundary. The representation and full adjoint compatibility are rigid enough for exact classification. Invariant tensor selection retains demonstrable freedom. Resolving that freedom requires additional mathematics or an explicit source choice. Neither the checked algebra nor the ambiguity argument settles the physical claims of Geometric Unity.
+
+\begin{thebibliography}{9}
+\bibitem{gu} E. Weinstein. \emph{Geometric Unity: Author's Working Draft}, v1.0, 1 April 2021. \url{https://geometricunity.nyc3.digitaloceanspaces.com/Geometric_Unity-Draft-April-1st-2021.pdf}. Printed pp. 23, 41--44. Retrieved 18 October 2026.
+\bibitem{lecture} E. Weinstein. \emph{Geometric Unity: A First Look}, 2013 lecture, transcript hosted by The Portal. Relevant passages at 01:35:12 and 01:36:44. \url{https://theportal.group/a-portal-special-presentation-geometric-unity-a-first-look/}.
+\bibitem{wieser} E. Wieser and U. Song. \emph{Formalizing Geometric Algebra in Lean}. Advances in Applied Clifford Algebras 32, article 28 (2022). DOI: 10.1007/s00006-021-01164-1. \url{https://arxiv.org/abs/2110.03551}.
+\bibitem{mathlib} The mathlib Community. \emph{mathlib4}, pinned source revision above. In particular the Clifford algebra, exterior algebra, tensor product, and matrix libraries. \url{https://github.com/leanprover-community/mathlib4}.
+\end{thebibliography}
+\end{document}

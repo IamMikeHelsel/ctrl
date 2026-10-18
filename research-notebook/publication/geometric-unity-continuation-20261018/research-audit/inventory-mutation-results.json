@@ -1,0 +1,151 @@
+{
+  "status": "PASS",
+  "tests": [
+    {
+      "test": "pristine_copy_without_original_workspace",
+      "expected_pass": true,
+      "returncode": 0,
+      "result": {
+        "status": "PASS",
+        "bundle": "/private/var/folders/my/gvpc8lhn61b07vzgm7fxmnmh0000gn/T/gu-inventory-review-cm55ynzn/pristine_copy_without_original_workspace",
+        "manifest_sha256": "7cb3827b6479d5d239cb442c558757435b4a6ae69352bc21a358b95942f85c9d",
+        "frozen_files": 70,
+        "mathematical_modules": 38,
+        "reviewer_modules": 10,
+        "false_clients": 20,
+        "baseline_control_provenance": "13 hashes match accepted critic-05 manifest",
+        "python_optimization": 0,
+        "complete": false
+      }
+    },
+    {
+      "test": "delete_baseline_module",
+      "expected_pass": false,
+      "returncode": 1,
+      "result": {
+        "status": "FAIL",
+        "error": "Inventory mismatch; missing=['source/CliffordModel.lean']; extra=[]",
+        "python_optimization": 0
+      }
+    },
+    {
+      "test": "delete_baseline_false_control",
+      "expected_pass": false,
+      "returncode": 1,
+      "result": {
+        "status": "FAIL",
+        "error": "Inventory mismatch; missing=['controls/FalseHalfCount.lean.txt']; extra=[]",
+        "python_optimization": 0
+      }
+    },
+    {
+      "test": "modify_baseline_control",
+      "expected_pass": false,
+      "returncode": 1,
+      "result": {
+        "status": "FAIL",
+        "error": "Hash mismatch: controls/CounterWitnesses.lean",
+        "python_optimization": 0
+      }
+    },
+    {
+      "test": "add_unpinned_source",
+      "expected_pass": false,
+      "returncode": 1,
+      "result": {
+        "status": "FAIL",
+        "error": "Inventory mismatch; missing=[]; extra=['accepted/Unpinned.lean']",
+        "python_optimization": 0
+      }
+    },
+    {
+      "test": "modify_audit_template",
+      "expected_pass": false,
+      "returncode": 1,
+      "result": {
+        "status": "FAIL",
+        "error": "Hash mismatch: controls/FinalAudit.lean",
+        "python_optimization": 0
+      }
+    },
+    {
+      "test": "optimized_missing_control",
+      "expected_pass": false,
+      "returncode": 1,
+      "result": {
+        "status": "FAIL",
+        "error": "Inventory mismatch; missing=['controls/FalseHalfCount.lean.txt']; extra=[]",
+        "python_optimization": 1
+      }
+    },
+    {
+      "test": "optimized_pristine_copy",
+      "expected_pass": true,
+      "returncode": 0,
+      "result": {
+        "status": "PASS",
+        "bundle": "/private/var/folders/my/gvpc8lhn61b07vzgm7fxmnmh0000gn/T/gu-inventory-review-cm55ynzn/optimized_pristine_copy",
+        "manifest_sha256": "7cb3827b6479d5d239cb442c558757435b4a6ae69352bc21a358b95942f85c9d",
+        "frozen_files": 70,
+        "mathematical_modules": 38,
+        "reviewer_modules": 10,
+        "false_clients": 20,
+        "baseline_control_provenance": "13 hashes match accepted critic-05 manifest",
+        "python_optimization": 1,
+        "complete": false
+      }
+    },
+    {
+      "test": "complete_copied_inputs",
+      "expected_pass": true,
+      "returncode": 0,
+      "result": {
+        "status": "PASS",
+        "bundle": "/private/var/folders/my/gvpc8lhn61b07vzgm7fxmnmh0000gn/T/gu-inventory-review-cm55ynzn/complete_copied_inputs",
+        "manifest_sha256": "7cb3827b6479d5d239cb442c558757435b4a6ae69352bc21a358b95942f85c9d",
+        "frozen_files": 70,
+        "mathematical_modules": 38,
+        "reviewer_modules": 10,
+        "false_clients": 20,
+        "baseline_control_provenance": "13 hashes match accepted critic-05 manifest",
+        "python_optimization": 0,
+        "complete": true,
+        "run": "/private/var/folders/my/gvpc8lhn61b07vzgm7fxmnmh0000gn/T/gu-inventory-review-cm55ynzn/complete_copied_inputs-run",
+        "copied_positive_sources": 48,
+        "copied_false_sources": 20,
+        "generated_audit_checked": true
+      }
+    },
+    {
+      "test": "alter_copied_positive",
+      "expected_pass": false,
+      "returncode": 1,
+      "result": {
+        "status": "FAIL",
+        "error": "Copied-source hash mismatch: CliffordModel.lean",
+        "python_optimization": 0
+      }
+    },
+    {
+      "test": "delete_copied_false",
+      "expected_pass": false,
+      "returncode": 1,
+      "result": {
+        "status": "FAIL",
+        "error": "Missing copied false control: ['FalseHalfCount.lean']",
+        "python_optimization": 0
+      }
+    },
+    {
+      "test": "reduce_generated_audit_coverage",
+      "expected_pass": false,
+      "returncode": 1,
+      "result": {
+        "status": "FAIL",
+        "error": "Generated audit differs from frozen template or ownership coverage",
+        "python_optimization": 0
+      }
+    }
+  ],
+  "boundary": "File-inventory tests only. No Lean execution; temporary copied inputs deleted after run. Optimized Python remains checked because implementation uses explicit exceptions."
+}
