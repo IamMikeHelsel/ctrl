@@ -22,6 +22,11 @@ Do not run `erdos new`. That belongs to statement-drafter.
 
 ## Method
 1. Shortlist 5 to 8 rows. Drop anything already in `work/` or solved upstream.
+   **Prior-art gate (required):** screen every shortlisted problem for existing Lean work with
+   `./ctrl triage -v <JSP ids>` (main's tool: Justin Sun award PRs, open or closed, and
+   `plby/lean-proofs`). Also grep `tools/data/awards_prs.json` for the Erdős number. Drop or flag any
+   problem with an existing open PR or published Lean proof. Priority goes to the *earliest* public
+   proof, so a second formalization earns nothing. (Lesson: #834 was already covered by JSP PR #1613.)
 2. For each, open the FC file `FormalConjectures/ErdosProblems/NNN.lean` and note: whether a
    theorem exists, `answer(sorry)` vs a concrete claim, the number of parts, and the Mathlib notions
    used.
