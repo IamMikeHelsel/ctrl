@@ -1,0 +1,266 @@
+ROBOT MOTION: INDEPENDENT ULTRA PREFLIGHT 02
+18 October 2026 UTC
+
+Decision: GO with the revisions below for ONE bounded Lean package and the
+frozen comparison. Preflight design grade: B+. This grades scope, mathematical
+feasibility, and test design. It is not a probability, proof-completion score,
+novelty judgment, or hardware grade. The full certificate remains unproved.
+
+Mike Helsel receives credit for the problem framing, timing/architecture
+direction, and working title. The four-box filter, retained trajectory state,
+explicit timing contracts, and continuous online motion generation have prior
+art. The proposed artifact is a checked history-admission guard and its link to
+one uncertain-lag tracking theorem. No general novelty claim is justified.
+
+WHAT PASSED
+
+The supplied lead manifest matches SHA-256
+9fa2ac2917bdf273c2cf4632d7da44aea08ba18a8bea8b84146eb5d2454f10ec.
+All 16 manifest-listed lead files stayed byte-for-byte unchanged.
+
+independent_checks.py imports no lead checker. It computes derivatives directly
+from the truncated-power expression. It independently rebuilds the packet
+schedule and uses exact rational Lagrange interpolation for the Bernstein data.
+Results: 30 kernel derivative pieces match; all seven frozen cases and all
+118 enclosure cells match; 256 additional rational histories pass 5,394 interior
+affine checks. Histories include repeated, unsorted, old, and future event times,
+empty histories, and current times inside cells or after the tail. These finite
+checks are evidence for the implementation, not proof of the universal result.
+
+PrimitiveProbe.lean also compiles under the pinned Lean4.35.0 environment. It
+proves the actual positive-part power derivative for every natural power n>=2,
+including at zero. Its axiom audit is exactly propext, Classical.choice and
+Quot.sound. This removes one concrete calculus risk for the builder. It is a
+small proved helper, not the C3 reference or finite-knot theorem.
+
+The four primary global jerk peaks are 3/80, 5, 403/80, and 5 m/s^3. These are
+peaks of the final accepted histories. An earlier admission can have a larger
+predicted future peak than the final history, since later accepted changes can
+cancel it. Do not substitute the final-history peak for the admission transcript.
+
+The retained rejection and 400 ms deadline failures are correct. A no-change
+accepted packet adds no event. A new rejected sequence still advances the
+watermark: an independent rejection/stale/acceptance test passed.
+
+MATHEMATICAL ASSESSMENT
+
+No counterexample was found to the stated finite-knot equivalence. It is true
+for every finite event list, h>0 and J>=0. Chronological input is needed for the
+scheduler interpretation, not for this algebraic equivalence.
+
+For d=0,1,2,3, define
+  F_d(z) = sum_{m=0}^4 (-1)^m C(4,m) (z-m)_+^(4-d)/(4-d)!.
+The required derivative chain is F_0'=F_1, F_1'=F_2, F_2'=F_3 at EVERY real z.
+It follows by proving the positive-part power derivative for powers 4,3,2.
+At a joining point the derivative is zero for these powers; away from it the
+function is locally either zero or an ordinary polynomial. Each F_d is
+continuous. Thus F_0 is C3, including all five joins. Do not prove the derivative
+only away from knots and call that C3.
+
+F_3(z)=sum (-1)^m C(4,m)(z-m)_+ gives exactly the six K branches in the contract.
+For z>=4, expand all positive parts: the coefficients give F_0=1 and F_1=F_2=
+F_3=0. For z<=0 they all vanish. Both tail identities must be proved from F,
+not built into an unrelated piecewise reference and assumed equivalent.
+
+The complete-knot proof need not assume a partition. Define E from the actual
+event roots and c. For any t>=c, if t is in E, use the guard. Otherwise take the
+greatest member L of E below t; it exists since c is in E. If there is a later
+member, take the least such member R. There is no event root inside (L,R): any
+such root is >=c and therefore belongs to E, a contradiction. Each positive-part
+term in F_3 is affine throughout [L,R], so the entire jerk is the linear
+interpolation of its endpoint values. The absolute value is bounded by the larger
+endpoint absolute value. If there is no later member, all event tail times are
+at or before t, so jerk is zero. A tail time below c has already expired. This
+also covers duplicate roots, c inside a cell, empty input, and the infinite tail.
+
+Use that positive-part argument to avoid a combinatorial split across six K
+branches for every event. Derive the actual K branches separately as simple
+algebraic identities. This is a feasible package with finite-set order lemmas,
+calculus, exact rational casts, and a short state induction. The proof effort is
+moderate; it is more than a renamed finite predicate over reals.
+
+COUNTEREXAMPLES THAT THE IMPLEMENTATION MUST KEEP
+
+1. Omitting c is unsound. With h=1, event (0,1), c=7/2, J=1/4, the only future
+   event root is 4 and its jerk is zero. At c, jerk is 1/2 and fails the limit.
+2. Checking just the start and tail is unsound. The same step has zero jerk at
+   0 and 4, but jerk -2 at time 2. This also rejects the false unit constant 1.
+3. Dropping old ACTIVE history is unsound. At c=1, event (0,1) still has jerk -2
+   at time 2. Event time before c does not mean its support has expired.
+4. Erasing future commitments is unsound. With h=1, J=1, c=0, events (0,1) and
+   (1/4,-1) have exact future peak 3/4. Removing the second event leaves peak 2.
+   Acceptance based on cancellation obliges execution of that committed event.
+5. Duplicate opposite events can cancel exactly. Rejecting them solely because
+   of large total variation is a different, conservative guard. The main theorem
+   must retain signed sums. The fixed scheduler coalesces alternatives BEFORE
+   admission; this is different from deleting an already committed event.
+
+REQUIRED CONTRACT REVISIONS
+
+A. Separate admission time c from execution time tau. State 0<=c<=tau, with
+   nondecreasing admission times. The simplest first scheduler sets c=tau at
+   the commit tick and has no future queue. If future committed input is allowed,
+   store every such event in the candidate guard, append only after the already
+   committed chronological target, and preserve it. Delta is relative to that
+   final committed target. A new event with tau>=c has zero contribution and
+   derivatives through c, so the required prefix proof still holds.
+
+B. Batch all packets ready by a commit tick before admission. Sequence values
+   must identify a unique payload, or conflicting duplicate sequences need an
+   explicit reject/tie rule. The frozen cases have no such conflict. Advancing
+   the sequence watermark on rejection is correct for this declared policy, but
+   it can suppress a later-arriving feasible older goal. State that progress is
+   not guaranteed. Do not reset history on rejection, stale arrival, or no-change.
+
+C. Make an executable Lean Rat Boolean function the authoritative checker.
+   It can check c plus a list of filtered roots; sorting and deduplication are
+   optional for correctness. Prove cast equality of jerk evaluations, preservation
+   of root membership and order, and soundness against the actual real reference.
+   Prefer the iff form if inexpensive. Evaluate or kernel-prove the frozen finite
+   fixtures with this same function. Python agreement alone does not certify
+   Python execution. If Python remains the runtime authority, its implementation
+   correspondence is an additional unfinished obligation. The supplied Python
+   functions expect rational inputs but do not enforce their types themselves.
+
+D. Prove finite admission induction. The initial empty history has zero jerk.
+   Acceptance gives the future bound; prefix preservation gives the past bound.
+   Rejection retains the old bounded history. Later steps cannot rewrite an
+   earlier executed prefix. The final reference target is g0+sum(delta); prove
+   that this equals the scheduler's final committed target by telescoping. The
+   rest tail begins at the greatest accepted execution time plus 4h. For an
+   empty history the reference is already at rest. Include every queued accepted
+   event when identifying the final event.
+
+E. Label settling as 'enter and remain through the fixed observation horizon'.
+   Samples over a finite horizon do not prove no later exit. An infinite-time
+   claim needs a separate tail argument. Keep the frozen deadlines and horizons.
+
+TRACKING COMPOSITION
+
+I checked the actual ScaledTracking.lean statements. tracking_cube_scaled needs
+reference continuity and the derivative chain on the whole open horizon, the
+reference jerk bound on the closed horizon, the classical plant trajectory,
+rate/disturbance bounds, initial transformed-cube membership, and the budget.
+The proposed C3 reference can discharge the reference premises directly. The
+controller formula matches. No command filter or mismatch bound is needed.
+
+The formal conclusion is conditional on the physical trajectory hypotheses.
+It does not prove model identification, solution existence, sampled control,
+or state estimation. A C3 reference is compatible with continuous plant states.
+Continuous physical jerk additionally needs continuous rate r and disturbance w;
+magnitude bounds alone are insufficient. Preserve actual state across every
+event. The initial rest reference and actual rest state give zero initial error
+for the fixed cases; they do not cover an arbitrary moving initial arm.
+
+At final reference rest, the cube gives position error <=R, speed <=8 sigma R,
+and acceleration <=64 sigma^2 R. With the proposed numbers these latter bounds
+are .016 m/s and 1.28 m/s^2, much weaker than the endpoint tests .001 and .02.
+Do not promote the internal tube into all endpoint tests or a true-goal tube.
+The actual-jerk bound 144.975 m/s^3 is consistent with the supplied algebra and
+is distinct from the reference limit 7.5 m/s^3.
+
+RUCKIG SOURCE GATE
+
+Official online docs advertise Community get_profiles() and get_brakes().
+The source actually pinned during this review is
+  99751e6ebc7c963bb80e99fbbe66f2c279d1db57
+from https://github.com/pantor/ruckig . Its CMake version is 0.19.6, while the
+online docs describe 0.19.7. This pin HAS get_profiles() and DOES NOT HAVE
+get_brakes(). Its public Profile includes public brake and accel members.
+BrakeProfile exposes duration and t/j/a/v/p arrays. Public segment export is
+therefore feasible at this pin without guessing switch times or using cloud.
+Five exact source files, including LICENSE, and their hashes are preserved here.
+This source audit is not a full source archive or a compiled exporter smoke test.
+
+Important source details for the builder:
+- Main profiles have seven durations/jerks and eight state boundaries. Shift
+  their cumulative times by the pre-brake duration. Preserve zero-duration
+  phase metadata; union coincident event times for propagation and retain both
+  mathematical one-sided values. Include target replans as events too.
+- A brake of duration zero can have uninitialized state array elements. Do not
+  read or serialize inactive brake states. With positive braking, only export
+  initialized positive-duration phases; preserve omitted inactive phase metadata.
+- at_time selects the right phase with upper_bound. At and beyond the trajectory
+  duration it continues the final acceleration with jerk zero. It does not simply
+  overwrite the output with the target pose. Inspect and record final residuals.
+- The accel post-profile path is commented out in this pin's evaluator. For this
+  point-to-point baseline, assert accel.duration==0 or fail the source gate.
+- These are exported floating-point polynomial segments, not rationally exact
+  optimal trajectories. Source-level switch access does not prove optimality.
+
+Before the 72 runs, compile a small local exporter at the pin and verify rest-to-
+rest, a replan during acceleration, a replan at a switch, and a braking fixture.
+Reconstruct public segments independently and compare with at_time at boundaries
+and interior times. Record all validation errors, compiler options and executable
+hashes. Propose endpoint/export residual limits of 1e-8 m, 1e-8 m/s, 1e-10 m/s^2
+before executing cases; these match the pin's own Profile check scales. Do not
+round a failed residual away or snap it silently to the requested target.
+
+COMPARISON ACCEPTANCE
+
+The frozen 3 x 4 x 3 x 2 = 72 cases are a fair bounded diagnostic when interpreted
+as a speed/smoothness tradeoff under common deadlines. All methods receive the
+same readiness/coalescing/stale trace; all primary FIR proposals happen to pass.
+The filter's 800 ms support delay remains part of its result. Ruckig uses maximum
+limits while the 20 mm filter step uses less. Lower jerk energy alone can reflect
+slower motion. Do not conclude general superiority, and do not tune the current
+gate. A duration-matched comparison would be a separately frozen later gate.
+
+The raw-target method has position jumps, so it is a diagnostic baseline outside
+the smooth-reference theorem. Its reference derivatives are not finite physical
+impulses. With retained actual state its command jump is 8 sigma^2 Delta q.
+The Ruckig command jump is 5 Delta jerk/(48 sigma) when its position, velocity and
+acceleration match. Use exported left/right states at replans; account for any
+floating-point mismatch separately. Compute actual jerk from the plant equation.
+
+The augmented matrix-exponential plan is appropriate for the fixed polynomial
+reference and constant r,w. Include zero, readiness/commit boundaries, all phase
+switches, the requested deadline, final tail and full horizon. Keep actual state
+continuous at all of them. The independent high-precision run must reconstruct
+its schedule and states, not reuse the primary segment starts. Refinement checks
+must cover sampled extrema, energy and total variation. TV includes jumps.
+
+The existing simulation can give numerical support at samples, and one failing
+sample is a real counterexample to the claimed tolerance in that model. Passing
+samples do not enclose all between-sample extrema. Record signed endpoint error,
+velocity and acceleration separately. Keep internal x-q and external x-g_true
+separate. No full-arm, learned-policy, timing-deadline, or hardware claim follows.
+
+NEXT BUILDER TASK, IN ORDER
+
+1. Freeze the clarified contract without changing any lead-01 file. Implement
+   F_0..F_3 and prove the real derivative chain, continuity, K pieces and tails.
+2. Prove complete future-knot coverage and the iff bound for arbitrary finite
+   histories. Add the current-time and future-commitment counterexamples.
+3. Implement the authoritative Rat Boolean guard; prove its real cast and verify
+   concrete positive/negative fixtures. No sorry, unsafe, native_decide, or new
+   axiom. Use the pinned Lean4.35.0 environment and audit theorem axioms.
+4. Prove prefix preservation, rejection retention, finite admission induction,
+   target telescoping, and final rest. Compose with tracking_cube_scaled using
+   the actual reference. A theorem that assumes the target global bound or an
+   arbitrary complete partition fails acceptance.
+5. Build and pass the Ruckig exporter smoke gate, then run exactly the frozen72
+   comparison and its independent numerical check. Save every case, including
+   failures. Keep formal certificates and numerical plant evidence separate.
+
+Steps 1-4 are ONE certificate package. Step 5 is its separate empirical gate.
+Do not expand to contact, a full arm, adaptive width, or a new policy architecture.
+If the bounded build cannot finish, report the strongest proved subset and the
+specific remaining lemma. Do not downgrade the contract silently.
+
+PRESERVATION AND SOURCE SCOPE
+
+This assessor wrote only ultra-preflight-02. Root owns notebook sync/check,
+preservation review and research-branch commit. No commit, push, merge, paid
+service, hardware action, or plant comparison was performed by this assessor.
+The current aligned-timestamp filter plot is not evidence of a stale-frame bug.
+
+Sources checked for this review:
+https://docs.ruckig.com/classruckig_1_1Trajectory.html
+https://github.com/pantor/ruckig/blob/99751e6ebc7c963bb80e99fbbe66f2c279d1db57/include/ruckig/trajectory.hpp
+https://github.com/pantor/ruckig/blob/99751e6ebc7c963bb80e99fbbe66f2c279d1db57/include/ruckig/profile.hpp
+https://github.com/pantor/ruckig/blob/99751e6ebc7c963bb80e99fbbe66f2c279d1db57/include/ruckig/brake.hpp
+Also read the frozen lead report, theorem contract, comparison plan, source index,
+coordinator adjacent-work note, and the local ScaledTracking theorem. Prior-art
+claims above are bounded by that supplied source audit; this was not a new
+exhaustive literature or novelty review.

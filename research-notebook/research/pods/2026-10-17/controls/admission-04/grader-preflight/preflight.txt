@@ -1,0 +1,107 @@
+ADMISSION-04 INDEPENDENT PREFLIGHT — 18 October 2026 UTC
+Decision: continue one fixed comparison. Grade: B.
+This grade covers the verified reference contract. It is not a Lean proof grade.
+
+The new reference is feasible under its stated kinematic contract. It is a
+different task from the failed grade-03 reference. The old failure remains valid.
+The comparison will test position tracking and measured output costs. It will not
+establish physical stopping, corridor safety, or a general smoothing benefit.
+
+Evidence
+The three analyst artifact hashes match the frozen manifest. A copied checker
+passed and reproduced exact-task-check.json byte for byte. A separate checker
+used repeated rational polynomial integration, not the analyst's step formula.
+It confirmed every constant-snap endpoint, the cruise duration, brake polynomial,
+and derivative bounds. See replay-verification.json and independent-check.json.
+The analyst sources remained unchanged. No plant comparison was run here.
+
+The reference begins at (q,q',q'',j)=(0,0,0,10). The goal arrives at 1/4 s.
+The old reference remains unchanged until 51/200 s, after 5 ms latency.
+The three blend durations are 1/20, 97/400, and 1/40 s. Their snaps are
+-400, 0, and +400 m/s^4. They end at
+(q,q',q'',j)=(8782613/38400000,75089/96000,0,0).
+Cruise lasts 3744927/30035600 s. The brake lasts 7/10 s.
+The exact endpoint is (3/5,0,0,0), reached at 10491307/7508900 s
+(1.3971829429 s), with 772043/7508900 s of rest before the 1.5 s deadline.
+
+On the whole interval, 0<=q<=3/5 and 0<=q'<=75089/96000<1.
+The blend has max q''=107/40<3. The brake has max |q''|=10727/5120<3,
+max j^2=115068529/1354752<100, and max |snap|=53635/392<400.
+The blend bounds follow from quadratic extrema. The brake bounds follow from
+z=y(1-y) in [0,1/4], a=-30Vz^2/L, and
+j^2=(3600V^2/L^4)z^2(1-4z), whose maximum occurs at z=1/6.
+Acceleration is nonnegative in the blend and nonpositive in the brake.
+This proves forward reference travel to the fixed endpoint.
+
+Causality and regularity
+No reference action before 51/200 s depends on the new goal. The scheduled tail
+can be selected after arrival using the execution reference state and known goal.
+This establishes causality for this fixed schedule, not a measured 5 ms planner
+runtime or feasibility for arbitrary goals. Initial jerk +10 is a supplied
+initial condition. No pre-t=0 jerk or command history is asserted.
+Jerk is continuous at all interior joins. Snap may jump. Interpret the snap
+bound through right derivatives or piecewise derivatives, not a two-sided
+derivative at every join. The reference corridor does not constrain actual x.
+
+Deadline theorem review
+For a0,J,S>0 and T>=0, require a and j continuous on [0,T], a(0)=a0,
+j(0)=J, a'=j on (0,T), |j|<=J on [0,T], and a right derivative s of j
+at every t in [0,T), with |s|<=S. Then the one-sided mean-value bound gives
+j(t)>=max(J-St,-J). Integration gives
+a(t)>=a0+Jt-St^2/2 for t<=L=2J/S, and
+a(t)>=a0-J(t-L) for t>=L.
+Thus a(T)<=0 implies T>=a0/J+2J/S. The jerk max(J-St,-J) attains equality.
+Its right derivative at L is zero. This is an acceleration-zero deadline.
+It is not a stopping deadline. The theorem does not derive physical jerk/snap
+bounds from the feedback controller. The latency formula a0/J+2ell+2J/S
+is valid only for the stated +J hold policy during latency ell.
+The inspected CausalAdmission.lean statements match this scope and derive the
+envelope from the snap hypothesis. No mathematical correction was needed.
+The builder has now frozen source 3abee2a4c0080f72e33676c3fd25fdd206db9fa70dcf4cf1fccc56b99cc1501a.
+Independent Lean replay is a separate gate; no proof acceptance is issued here.
+
+Authorized next test: exactly three controller runs
+Use the common frozen reference on [0,1.5] s. Set r=80/s and w=+1/100 m/s^2.
+Use plant x'=v, v'=a, a'=80(u+w-a), with x(0)=v(0)=a(0)=0.
+Define ex=x-q, ev=v-q', ea=a-q'' and
+U_k=q''-800ex-60ev-ea/2+k*j.
+Run direct u=U_(5/480); original filtered u'=20(U_(5/480)-u);
+and compensated filtered u'=20(U_(29/480)-u).
+The filtered runs start u(0)=0. Direct u is algebraic, so u(0)=5/48.
+Do not force direct u to zero or reset any state at any event. Initial actual
+jerk must be 137/15 for direct and 4/5 for each filtered law, in m/s^3.
+Equal plant initial states are the fair comparison. Equal command initial
+values would define another controller and are not required. This convention
+can affect transients; conclusions must remain specific to these initial states.
+
+Use exact polynomial forcing or a numerical method that handles the varying
+jerk. The old constant-jerk equilibrium formula is insufficient. Save a 0.5 ms
+physical grid plus exact event times and both event sides. Independently check
+the full traces at high precision. Check q,q',q'',j and plant/controller-state
+continuity at joins. In this reference, direct u is also continuous at interior
+joins; an interior jump would be an implementation error. Log initial command
+values without inventing a pre-t=0 jump.
+
+Report sampled max |x-q|, x(1.5)-0.6, endpoint v and a, min/max x, actual travel,
+actual jerk a', command u, target U_k, command derivative where defined, and
+command total variation. Keep actual jerk, reference jerk, and command derivative
+as distinct quantities. Compare each filtered law with direct using those same
+metrics. The predeclared position thresholds are 0.0002 m for all-time internal
+tracking and endpoint position. Any verified sampled violation rejects that
+position target for that law. A sample pass is not a between-sample proof.
+No physical endpoint v/a tolerance or actual-state corridor was supplied.
+Report these values without assigning physical-stop or safety acceptance.
+
+Acceptance and stop condition
+A useful result closes this fixed comparison with stable hashes, correct
+equations, retained states, and independent numerical agreement. Positive and
+negative results are both useful. A smoothing cost reduction cannot erase a
+tracking failure. Do not tune gains, move the endpoint, change latency, or expand
+the parameter set to obtain a pass. Stop after three runs and request the next
+independent grade. No general forced tube or stop theorem is authorized here.
+Final proof replay remains separate. All work must stop by 07:23:43 UTC.
+
+Prior-art scope
+The five source scopes were checked against primary material. See prior-art.txt.
+They support treating bounded-snap planning, reference governors, and FIR motion
+filtering as prior work. This gate makes no novelty or publication claim.

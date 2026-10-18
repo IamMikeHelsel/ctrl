@@ -1,0 +1,56 @@
+import CliffordModel
+import ContractionAlgebra
+import CliffordContraction
+import CliffordControls
+#print axioms GUClifford.eps_sq
+#print axioms GUClifford.Q_apply
+#print axioms GUClifford.Q_e
+#print axioms GUClifford.Q_polar_e
+#print axioms GUClifford.gamma_relation
+#print axioms GUClifford.gamma_sq
+#print axioms GUClifford.gamma_swap
+#print axioms GUClifford.clifford_nontrivial
+#print axioms GUContraction.symmetric_contraction
+#print axioms GUContraction.diagonalContract_eq
+#print axioms GUContraction.word_swap
+#print axioms GUContraction.crossed_eq
+#print axioms GUContraction.word_last_swap
+#print axioms GUContraction.cycled_eq
+#print axioms GUContraction.bianchi_sum
+#print axioms GUContraction.total_contraction
+#print axioms GUContraction.sum_sorted
+#print axioms GUContraction.sortedK_eq_two
+#print axioms GUContraction.term_swap1
+#print axioms GUContraction.term_swap2
+#print axioms GUContraction.total_eq_four_sorted
+#print axioms GUContraction.normalization_bridge
+#print axioms GUContraction.sorted_contraction
+#print axioms GUClifford.rho_pair
+#print axioms GUClifford.rho_curvature
+#print axioms GUClifford.rho_diag
+#print axioms GUClifford.trace_rho
+#print axioms GUClifford.actual_normalization_bridge
+#print axioms GUClifford.actual_clifford_contraction
+#print axioms GUClifford.sectional_curvature
+#print axioms GUClifford.sectional_component
+#print axioms GUClifford.sectional_scalar
+#print axioms GUClifford.sectional_K
+#print axioms GUClifford.fourform_pair
+#print axioms GUClifford.fourform_middle_skew
+#print axioms GUClifford.fourform_support
+#print axioms GUClifford.fourform_repeated
+#print axioms GUClifford.fourform_Ric_zero
+#print axioms GUClifford.fourform_scalar_zero
+#print axioms GUClifford.fourform_component
+#print axioms GUClifford.fourform_bianchi_residual
+#print axioms GUClifford.fourform_not_curvature
+#print axioms GUClifford.gamma_move
+#print axioms GUClifford.gamma_square_move
+#print axioms GUClifford.blade0123_square
+#print axioms GUClifford.blade0123_ne_zero
+#print axioms GUClifford.fourform_total
+#print axioms GUClifford.fourform_K
+#print axioms GUClifford.fourform_K_ne_zero
+#print axioms GUClifford.dropping_bianchi_false
+#print axioms GUClifford.no_universal_without_bianchi
+#print axioms GUClifford.sectional_false_positive_sign

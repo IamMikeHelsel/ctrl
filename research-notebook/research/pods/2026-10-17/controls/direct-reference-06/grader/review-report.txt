@@ -1,0 +1,100 @@
+DIRECT REFERENCE BRIDGE — independent review
+
+Decision: ACCEPT. Grade A for this bounded proof milestone.
+All required independent verification checks passed. No semantic defect was found.
+
+The two new modules contain 25 public theorem statements, all in DirectReference.
+FrozenReference contains the exact data definitions and no theorem statements.
+The 579 audited public local statements include 554 inherited statements. This
+count is an audit scope, not a claim of 579 new results. All 38 local modules
+were compiled from fresh copies. Six modules received separate kernel replay,
+including the reviewer witness module. Both false controls were rejected.
+All frozen builder artifacts and all nine fixed-comparison artifacts are unchanged.
+
+Reviewed claim
+For each supplied matched piecewise classical trajectory of the stated direct-control
+plant, position error stays at or below 1/5000 m on the whole closed interval
+[0,3/2] s. The reference is the exact eight-phase motion from the fixed
+comparison. The reference finishes at position 3/5 m with zero velocity and
+acceleration. Actual endpoint position is within 1/5000 m of that position.
+
+Semantic review
+1. FrozenReference contains exactly the eight rational position polynomials,
+   start times, and durations in causal-stop-05/builder/reference.json. An
+   independent parser reads the Lean source and compares each coefficient and
+   time as a rational number. It does not call the builder's generator.
+2. DirectReference defines reference velocity and acceleration as polynomial
+   derivatives, and jerk as the third derivative. It proves their analytic
+   derivative identities. These facts are not assumptions about opaque data.
+3. The seven state joins and seven jerk joins match. All durations are positive.
+   The first reference state is zero, its initial jerk is 10, and the final
+   reference state is (3/5,0,0). An independent rational derivative check
+   confirms those values.
+4. The reference jerk proof covers every closed phase interval. The brake proof
+   uses its exact polynomial square and a nonnegative square identity. Other
+   phases use constant or affine jerk inequalities. A separate rational
+   Bernstein check covers the same eight phases with 11 closed cells. This
+   Python check is additional evidence; the Lean theorem is the formal proof.
+5. DirectPlant contains the actual classical ODE, pointwise rate and disturbance
+   bounds, matched physical state at every join, and the initial physical state.
+   It does not contain the desired tracking or corridor conclusion. IsTrajectory
+   means continuity on the closed local interval and x'=v, v'=a,
+   a'=r*(u+w-a) on its interior. No trace is reset at a join.
+6. The actual input is q'' - 800*(x-q) - 60*(v-q') - (a-q'')/2 + j/96.
+   The j/96 coefficient is checked by an extra Lean witness. No input filter
+   occurs in the model. The rate bounds are [80,120] per second and the
+   disturbance magnitude is at most 1/100 m/s^2.
+7. The reference facts discharge finite_replans_scaled. That theorem transports
+   the physical plant and reference by chain rules, derives the error dynamics,
+   and uses the robust invariant cube. The finite induction passes the actual
+   final state to the next phase through matched_error. The exact budget is
+   37/1200 <= 1/25. No step assumes the eventual error bound.
+8. phaseIndex_valid and phaseIndex_local cover every time in [0,3/2]. atTime
+   selects the left phase at a join. The proved state matching makes this choice
+   harmless for the position, velocity, and acceleration values.
+9. Nonnegative reference velocity and endpoint inequalities prove reference
+   corridor [0,3/5]. The resulting actual corridor is only
+   [-1/5000,3001/5000]. The report does not claim the smaller actual corridor.
+
+Scope limits
+The theorem is conditional on supplied classical trajectories. It does not prove
+existence for arbitrary discontinuous rate or disturbance functions. This limit
+is stated in the source and report. It does not invalidate the conditional bound.
+
+The endpoint bounds on actual velocity and acceleration are 2/125 m/s and
+32/25 m/s^2. These are nonzero and coarse. The proof does not establish a physical
+stop, an actuator limit, a physical jerk limit, sampled servo execution, floating
+point behavior, or hardware performance. It does not establish the analyst's
+other reference acceleration or snap limits. Those limits are not premises of
+this tracking theorem.
+
+The two slow filters still fail the fixed sampled position target. This review
+changes none of their evidence. The direct theorem covers more rate and
+disturbance variation than that fixed numerical comparison, but only for the
+stated plant and direct controller.
+
+Next useful test
+The direct half of the fixed comparison is now ready for an all-time claim under
+the stated plant assumptions. To make the adverse filter results equally
+rigorous, certify one position-target violation for each fixed filter with an
+explicit enclosure of numerical error. Agreement between high-precision replays
+is strong evidence but is not, by itself, such an enclosure. No new tuning is
+needed for that test.
+
+If physical stopping is the next goal, first state the required endpoint speed,
+acceleration, position, and actuator limits. Then prove a shrinking error bound
+through the final hold phase or give a counterexample to those limits. Reusing
+this constant invariant cube alone cannot establish smaller endpoint residuals.
+For the robot-motion work, this direct tracking bridge can be reused only after
+its new reference has discharged the same derivative, join, and jerk premises.
+
+Evidence locations
+independent_review.py: separate review driver. It does not import the builder's
+Python code and removes the current package's cached local objects from LEAN_PATH.
+verification.json and logs/: fresh build, axiom, kernel and mutation outcomes.
+ReviewWitness.lean: exact false-bound, changed-join, and controller witnesses.
+exact_reference_audit.py/json: separate rational Bernstein cross-check.
+
+This is a proof milestone review. It is not a publication or novelty assessment.
+The reviewer performed no Git commit, push, merge, controller tuning, or new
+simulation. Root owns notebook preservation and repository state reporting.

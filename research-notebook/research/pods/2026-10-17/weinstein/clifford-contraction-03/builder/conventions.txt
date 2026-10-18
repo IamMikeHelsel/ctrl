@@ -1,0 +1,77 @@
+EXACT CONVENTIONS AND PROOF MAP
+
+I=Fin 14. V=I -> Real.
+epsilon(a)=+1 for a.val<7, and -1 otherwise.
+Q is Mathlib QuadraticMap.weightedSumSquares Real epsilon.
+Q(v)=sum_a epsilon(a)*v(a)^2 is proved, not an interpretation assumption.
+e_a=Pi.single a 1. gamma_a=CliffordAlgebra.iota Q e_a.
+Cl is Mathlib's actual CliffordAlgebra Q.
+
+The proved generator relation is
+  gamma_a gamma_b+gamma_b gamma_a
+    =(if a=b then 2 epsilon_a else 0) times 1.
+The proved square relation is gamma_a gamma_a=epsilon_a times 1.
+The Clifford algebra is nontrivial through Mathlib's characteristic-not-two
+exterior-algebra equivalence. No external matrix representation is assumed.
+
+R:I -> I -> I -> I -> Real is an arbitrary real tensor subject to:
+  R_abcd=-R_bacd,
+  R_abcd=-R_abdc,
+  R_abcd=R_cdab,
+  R_abcd-R_acbd+R_adbc=0.
+PairSymmetries bundles only the first three. Curvature adds the fourth.
+Ric_bd=sum_a epsilon_a R_ab a d.
+scal=sum_b epsilon_b Ric_bb.
+rho_abcd=epsilon_a epsilon_b epsilon_c epsilon_d R_abcd.
+
+pairs is the actual finite set {(a,b):a<b}.
+K(R)=sum_p in pairs, sum_q in pairs, rho_(p1,p2,q1,q2) times
+  (gamma_p1 gamma_p2 gamma_q1 gamma_q2
+    +gamma_q1 gamma_q2 gamma_p1 gamma_p2).
+The definition is a finite sum of actual Clifford products. It does not define
+K from the scalar curvature or from an assumed contraction identity.
+
+Main conclusion:
+  K(R)=algebraMap Real Cl (-scal).
+Its exact name is GUClifford.actual_clifford_contraction.
+
+Proof map
+1. The general associative-algebra lemma symmetric_contraction contracts a
+   symmetric coefficient matrix using the Clifford anticommutation relation.
+2. diagonalContract_eq applies this to the Ricci-type intermediate sum.
+3. word_swap and word_last_swap derive two adjacent Clifford reorderings.
+4. bianchi_sum reindexes finite sums to expose the Bianchi equation.
+5. total_contraction combines these results. For the all-index sum C, it proves
+   C=-2 times the weighted scalar trace times 1.
+6. sum_sorted, term_swap1 and term_swap2 prove C=4 times the increasing-pair
+   ordered-word sum. Pair exchange proves K=2 times that same sum.
+   normalization_bridge therefore proves C=2K; K is never replaced by C/2
+   as a definition.
+7. rho_curvature and trace_rho discharge the weighted coefficient identities.
+   gamma_relation instantiates the general algebra theorem in actual Cl(Q).
+
+Exact controls
+eta(i,a)=1 when a=i, and 0 otherwise.
+delta(i,j,a,b)=eta(i,a)eta(j,b)-eta(j,a)eta(i,b).
+The sectional tensor is delta(0,1,a,b)delta(0,1,c,d). It has R_0101=1,
+the full curvature symmetries, scal=2, and K=-2 times 1.
+
+The four-form A is the six-term expression for theta^0 wedge theta^1 wedge
+theta^2 wedge theta^3, using the delta pair forms. It is supported on indices
+0,1,2,3, has A_0123=1, and is skew under all adjacent exchanges. It has both
+pair antisymmetries and pair exchange symmetry. Its Ricci tensor and scalar
+curvature are zero. Its Bianchi residual at 0123 is 3, not zero.
+In the same actual Clifford algebra, K(A)=12 gamma_0 gamma_1 gamma_2 gamma_3.
+This product squares to 1 and is nonzero. Therefore K(A) is nonzero.
+The theorem no_universal_without_bianchi refutes the universal scalar identity
+under PairSymmetries alone. It is a concrete contradiction, not a timeout.
+
+The separate positive-sign control proves K(sectional) != +scal times 1.
+The verification script also mutates the main target to the positive sign and
+requires Lean to reject it. An independent false sectional client must fail
+with the mathematical type mismatch, not a missing import or identifier.
+
+No complex scalar, conjugate-linear adjoint, Hodge star, Phi tensor, gauge field,
+connection, torsion, manifold or physical field equation occurs in this gate.
+Those bridges remain separate. This is standard spin geometry, not a novelty
+claim or a proof that Geometric Unity is a complete physical theory.

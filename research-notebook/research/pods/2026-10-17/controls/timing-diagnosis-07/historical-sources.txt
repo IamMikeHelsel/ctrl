@@ -1,0 +1,63 @@
+TIMING, HUNTING, AND THE MEANING OF A CORRECTION
+18 October2026UTC. Primary sources inspected after Mike's cruise-control analogy.
+
+A concrete early cruise-control example
+Robert H. Thorner, US3476206A, published4 November1969, discusses the design
+tradeoff in automotive speed control. A larger servo can overcome linkage
+friction and inertia, but its slower response can produce hunting or sluggish
+motion. A smaller servo can respond faster yet suffer lag or hysteresis from
+insufficient force. This is the inventor's technical account, not a controlled
+fleet study. It supports a historical architecture/actuator example. It does
+not prove that every early cruise controller failed for one cause.
+https://patents.google.com/patent/US3476206A/en
+See the paragraphs on connection of the governor to vehicle linkage.
+
+An experimental timing example, distinct from road cruise control
+Yoshihiko Kawazoe,1985, Low Speed Hunting of the Pneumatically Governed
+Compression-Ignition Engine, first report, Bulletin of JSME28(243),2022-2027,
+DOI10.1299/jsme1958.28.2022. The primary abstract reports experiments in which
+reducing pressure-signal phase lag removed hunting. This is an engine governor,
+not an automotive cruise-control road trial. The abstract says the conventional
+linear model did not explain the observed phenomenon.
+https://www.jstage.jst.go.jp/article/jsme1958/28/243/28_243_2022/_article/-char/ja
+
+A mode-transition example
+Nakajima and Aoi, Honda, US4598370A, published1 July1986, describes overshoot
+and hunting after acceleration/deceleration transitions in auto-cruise. Its
+proposed compensation depends on operating state and transition timing. This
+supports the importance of the transition policy. Patent descriptions do not
+provide independent evidence of the proposed remedy's performance.
+https://patents.google.com/patent/US4598370A/en
+
+An established, different mechanism
+Astrom and Murray, Feedback Systems, example10.6 and figure10.10 in the2012
+author PDF, use cruise control on a steep hill to show integral windup. The
+throttle reaches its limit while the controller's integral state keeps growing.
+Feedback of the actuator discrepancy limits the overshoot. This is saturation
+and integral memory, not the mechanism in our current linear simulation.
+https://www.cds.caltech.edu/~murray/books/AM08/pdf/am08-complete_28Sep12.pdf
+
+What our model supports
+No measurement is stale and no timestamp is shifted. The extra command filter
+adds a50ms time constant inside a loop with a12.5ms actuator time constant.
+The unchanged feedback gains then produce a lightly damped mode near4.92Hz.
+Its amplitude decays with a1.88s time constant. The direct model instead has
+three poles at-40/s. The two filtered laws have identical homogeneous dynamics;
+the extra feedforward term changes how the reference excites those dynamics.
+These statements come from exact characteristic polynomials and numerical
+roots, saved in result.json. They are not new Lean theorems.
+
+The broader design interpretation
+A useful correction must be defined for a stated state, execution time, and
+actuator response. Filtering, queueing, saturation, and late inference can each
+break a different part of that contract. Similar-looking oscillation does not
+establish the same cause. Timing is already central to classical control;
+our possible contribution is a checked, explicit execution contract for learned
+updates and a clear comparison. A new explanation alone is not a new theorem.
+
+Potential public story, subject to evidence
+Treating the Tremors We Built into Robots: when smoothing changes the loop,
+why history must survive replanning, and what must be checked before a new
+command takes effect. The intended human author and contributions are recorded
+in publication/robot-motion/contributions.txt. The proposed FIR checker and
+its eventual robot evidence must support the technical claim.

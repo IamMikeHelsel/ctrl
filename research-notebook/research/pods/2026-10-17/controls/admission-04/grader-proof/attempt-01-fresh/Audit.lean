@@ -1,0 +1,40 @@
+import CausalAdmission
+set_option pp.universes true
+#check CausalAdmission.leastJerk_continuous
+#check CausalAdmission.leastJerk_before
+#check CausalAdmission.leastJerk_after
+#check CausalAdmission.jerk_lower
+#check CausalAdmission.leastAccel_before
+#check CausalAdmission.leastAccel_after
+#check CausalAdmission.acceleration_lower
+#check CausalAdmission.nonpositive_acceleration_deadline
+#check CausalAdmission.leastAccel_derivative
+#check CausalAdmission.leastJerk_right_derivative
+#check CausalAdmission.least_isAdmissible
+#check CausalAdmission.least_reaches_zero
+#check CausalAdmission.original_deadline_impossible
+#check CausalAdmission.exact_earliest_deadline
+#check CausalAdmission.exact_acceleration_residual
+#check CausalAdmission.leastVelocity_after
+#check CausalAdmission.velocity_lower
+#check CausalAdmission.exact_velocity_residual
+#print axioms CausalAdmission.leastJerk_continuous
+#print axioms CausalAdmission.leastJerk_before
+#print axioms CausalAdmission.leastJerk_after
+#print axioms CausalAdmission.jerk_lower
+#print axioms CausalAdmission.leastAccel_before
+#print axioms CausalAdmission.leastAccel_after
+#print axioms CausalAdmission.acceleration_lower
+#print axioms CausalAdmission.nonpositive_acceleration_deadline
+#print axioms CausalAdmission.leastAccel_derivative
+#print axioms CausalAdmission.leastJerk_right_derivative
+#print axioms CausalAdmission.least_isAdmissible
+#print axioms CausalAdmission.least_reaches_zero
+#print axioms CausalAdmission.original_deadline_impossible
+#print axioms CausalAdmission.exact_earliest_deadline
+#print axioms CausalAdmission.exact_acceleration_residual
+#print axioms CausalAdmission.leastVelocity_after
+#print axioms CausalAdmission.velocity_lower
+#print axioms CausalAdmission.exact_velocity_residual
+#print CausalAdmission.IsAdmissible
+#print CausalAdmission.deadline

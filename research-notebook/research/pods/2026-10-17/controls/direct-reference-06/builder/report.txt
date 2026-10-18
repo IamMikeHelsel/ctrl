@@ -1,0 +1,121 @@
+DIRECT REFERENCE BRIDGE — proof batch 06
+
+The concrete eight-phase reference is connected to an all-time direct-control
+tracking bound. The proof derives the reference facts from the frozen rational
+polynomials. It does not assume a reference jerk bound or a tracking bound.
+
+For every supplied matched classical plant trajectory in the stated model,
+  |x(t)-q(t)| <= 1/5000 m = 0.2 mm, for every t in [0,1.5] s.
+The reference endpoint is exactly (q,v,a)=(3/5,0,0). Thus actual endpoint
+position satisfies |x(1.5)-3/5|<=1/5000 m. This is an all-time model theorem,
+not a sampled numerical pass and not hardware acceptance.
+
+Supplied plant assumptions
+The phase functions f_k(t)=(x,v,a) are supplied by the theorem caller.
+Each is continuous on its closed local interval. In its open interval it obeys
+  x'=v, v'=a, a'=r*(u+w-a),
+  u=q''-800*(x-q)-60*(v-q')-(a-q'')/2+j/96.
+This is ScaledTracking.physicalInput with sigma=10. No input filter is present.
+Each rate is in [80,120] per second and each disturbance has |w|<=1/100 m/s^2
+throughout its closed interval. Every plant state matches the next phase's
+initial state. The first actual state is (0,0,0). There are no state resets.
+
+The assumptions are the fields of DirectPlant in DirectReference.lean.
+The theorem supplies no existence theorem for arbitrary discontinuous rate or
+disturbance functions. It applies when trajectories with the stated classical
+derivatives and continuity are supplied. Different phases may have different
+rates or disturbances within these bounds. No derivative is required at a join.
+
+Concrete reference and source binding
+FrozenReference.lean displays all eight position polynomials over real numbers.
+Every coefficient, start time and duration is an exact rational value copied
+from causal-stop-05/builder/reference.json. generate_reference.py performs no
+fit or optimization. reference-binding.json records that frozen input's hash,
+its exact data, the generated source hash and the generator hash. The verifier
+recreates the source in memory and checks byte equality.
+
+The reference has these phases:
+  0 old plan:          start 0;                duration 1/4 s
+  1 latency:           start 1/4;              duration 1/200 s
+  2 jerk reversal:     start 51/200;           duration 1/20 s
+  3 negative jerk:     start 61/200;           duration 97/400 s
+  4 jerk to zero:      start 219/400;          duration 1/40 s
+  5 cruise:            start 229/400;          duration 3744927/30035600 s
+  6 brake:             start 5235077/7508900;  duration 7/10 s
+  7 hold:              start 10491307/7508900; duration 772043/7508900 s
+The total endpoint is exactly 3/2 s. These are the same phases as the accepted
+fixed comparison, including its separate arrival and latency intervals.
+This does not measure a planner's 5 ms execution latency.
+
+Reference facts proved in Lean
+Position, velocity and acceleration are the position polynomial and its first
+two algebraic derivatives. Jerk is its third derivative. Mathlib's polynomial
+derivative theorem proves q'=v, v'=a and a'=j for each phase.
+Every phase is continuous, all seven reference state joins match exactly, and
+all seven jerk joins match exactly. Every duration is positive. The initial
+reference state is (0,0,0), with jerk 10. The final state is (3/5,0,0).
+The phase time map covers every time in the closed interval [0,3/2].
+
+The proof gives |j|<=10 on every entire closed phase interval. For the brake,
+put y=t/(7/10) and z=y*(1-y). The exact jerk square is
+  j^2=(115068529/12544)*z^2*(1-4*z).
+For z>=0, the identity
+  1/108-z^2*(1-4*z)=(z-1/6)^2*(4*z+1/3)
+gives j^2<=115068529/1354752<100. This is an interval proof, not a sample test.
+The other jerk bounds are constant or linear interval inequalities.
+
+Tracking bridge
+The proved reference continuity, derivatives, joins and jerk bounds are passed
+directly to ScaledTracking.finite_replans_scaled. Its exact budget here is
+  1/100 + 10/(48*10) <= 2*10^2*(1/5000).
+The physical state starts at the proved reference initial state, so the initial
+scaled error is zero. The finite-phase invariant therefore gives the complete
+position-error bound. atTime selects the left phase at each join; exact matching
+makes both sides the same state.
+
+Additional proved bounds and limits
+The proof also gives velocity error <=2/125 m/s and acceleration error
+<=32/25 m/s^2. At the reference endpoint these bound actual residual velocity
+and acceleration. Their values are 0.016 m/s and 1.28 m/s^2. They do not prove
+actual stopping, and no physical stop tolerances were supplied.
+
+Nonnegative reference velocity is proved on every phase. Polynomial endpoint
+values and monotonicity then give 0<=q<=3/5. The tracking bound gives only the
+enlarged actual corridor -1/5000<=x<=3001/5000, or [-0.0002,0.6002] m.
+It does not establish the narrower actual corridor [0,0.6] m.
+
+The analyst's other reference limits, such as |acceleration|<=3 and bounded
+snap, are not needed as assumptions for this tracking theorem. This batch does
+not add Lean theorems for those limits. Its formal reference facts are listed
+above. It does not derive physical jerk, command variation, actuator authority,
+measurement error, sampled execution, floating-point implementation, or hardware
+limits. The two slow-filter failures and their numerical evidence stay unchanged.
+
+Verification and preservation
+Run python3 verify.py from this folder or by absolute path. All 38 local modules
+in the source dependency closure are copied into a fresh directory and compiled.
+Pinned Mathlib cache artifacts are reused. No local target or local dependency
+olean is reused for this final verification. All named public theorems in the
+local sources receive an axiom audit. Only propext, Classical.choice and Quot.sound
+are allowed. The source scan rejects proof holes, native_decide, unsafe code and
+new axioms in the local proof closure.
+
+Separate leanchecker runs replay ScaledTracking and both new target modules.
+Two negative tests check meaningful failures: a jerk limit of 9 contradicts
+the proved initial jerk of 10; adding 1/1600000 m to only the reversal phase's
+initial position breaks its matched reference join. The changed data module
+must compile before the unchanged proof is required to reject that altered join.
+MutationWitness.lean checks the corresponding exact arithmetic witnesses.
+
+verification.json records the actual outcome, versions, source and log hashes,
+theorem names and axioms. That report is authoritative for pass/fail status.
+The manifest excludes build caches. All previous source and evidence files were
+read only. Root owns the independent review and notebook sync, hash verification
+and Git commit. This builder performed no Git commit, push or merge.
+
+One next falsifiable task
+Review whether the coarse endpoint residuals satisfy a separately stated physical
+stop contract. If such a contract is needed, supply its velocity, acceleration,
+position and actuator limits before extending the certificate. The current bound
+must not be relabeled as stopping. No further controller tuning or simulation was
+performed in this batch.

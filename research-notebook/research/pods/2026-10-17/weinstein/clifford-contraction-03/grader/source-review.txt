@@ -1,0 +1,81 @@
+SOURCE AND STATEMENT REVIEW
+
+The submitted target matches the approved real Clifford gate. I read all four
+proof modules, including their definitions, before running the fresh replay.
+
+Actual algebra
+CliffordModel.lean:8-14 defines Fin 14, the real coordinate space, seven positive
+and seven negative weights, the weighted-sum-of-squares quadratic form, and the
+actual Mathlib CliffordAlgebra Q. Each gamma is CliffordAlgebra.iota of a
+coordinate vector. Q_apply, Q_e and Q_polar_e prove the stated form and its
+generator relations. These are not hypotheses supplied by an external matrix
+model. The actual nontriviality instance is available and is used by the
+nonzero controls.
+
+Literal operator and domain
+ContractionAlgebra.lean defines PairSymmetries from the two pair
+antisymmetries and pair exchange. Curvature adds exactly
+R_abcd - R_acbd + R_adbc = 0. No scalar identity is part of either structure.
+The pair set is Finset.univ filtered by a < b. sortedK is the literal double
+sum of a coefficient times the two four-generator products. In
+CliffordContraction.lean:9-15, rho inserts all four metric weights, Ric and
+scal are explicit finite contractions, and K is this sortedK in actual Cl(Q).
+K is not defined by scalar curvature, C/2, or a desired output.
+
+Algebraic route
+The general proof uses an associative real algebra and the Clifford generator
+relation. It first contracts symmetric coefficients. Pair exchange makes the
+intermediate r_abcb symmetric in its free indices. Two adjacent Clifford swaps
+give crossed = -total - 2 diagonalContract and
+cycled = -crossed + 2 diagonalContract. Bianchi is used in bianchi_sum to prove
+total - crossed + cycled = 0. Their combination gives total = -2 traceR.
+The proof does not assume Ricci symmetry as an extra input.
+
+The normalization is separate. Pair antisymmetry and off-diagonal Clifford
+anticommutation make each pair ordering contribute equally. Diagonal pair
+terms vanish. This gives total = 4 sortedWord. Pair exchange gives
+sortedK = 2 sortedWord, hence total = 2 sortedK. The main scalar theorem then
+cancels the factor two over the reals. This bridge is explicit and does not
+redefine the operator.
+
+Weighted trace bridge
+rho_curvature proves all required symmetries after the four metric weights.
+rho_diag proves rho_abab = R_abab by eps_a squared = eps_b squared = 1.
+trace_rho unfolds the Ricci and scalar definitions and reorders the finite
+sums. Thus its trace is precisely sum_b eps_b sum_a eps_a R_abab.
+actual_clifford_contraction discharges the general generator relation using
+the actual Q and iota. No free gamma or relation hypothesis remains.
+
+Controls and non-vacuity
+The submitted sectional tensor proves that the curvature assumptions have a
+nonzero instance. It has R_0101 = 1, scal = 2 and K = -2. The four-form is an
+explicit six-term delta expression, with R_0123 = 1. It satisfies both pair
+antisymmetries and pair exchange, has Ric = 0, and has Bianchi residual 3.
+Its all-index contraction is reduced directly to 24 gamma_0123; the proved
+normalization bridge then gives K = 12 gamma_0123. The blade squares to 1,
+so actual Clifford nontriviality proves K is nonzero. This is a concrete
+counterexample to dropping Bianchi, rather than a failed proof attempt.
+
+The independent client exposes the main result as the full sorted sum with
+explicit Ricci trace. It also checks a mixed-sign sectional tensor R_0707 = 1:
+its scalar is -2 and its K is +2. It checks gamma_7 squared = -1 and the
+mixed blade gamma_0 gamma_7 squared = +1 in the actual Clifford algebra.
+These checks exercise negative metric weights, which the submitted positive
+sectional and four-form controls do not use.
+
+Limits
+This proof concerns real Clifford algebra and algebraic curvature at one
+point. It contains no complex conjugation, exterior-valued candidate, Hodge
+assembly, global connection, or physical field equation. The analyst's Phi
+selection and normalization remain declared choices, not a uniquely recovered
+author definition. The exact C/J/J candidate formula remains open in Lean.
+
+I also checked the pinned Mathlib CliffordAlgebra/Star.lean:52-62. Its star_smul
+and star_algebraMap fix scalars. Over the complex numbers this fixes i, so this
+operation alone cannot supply the candidate's conjugate-linear adjoint.
+The real result does not silently close that separate bridge.
+
+Minor maintenance issue
+The fresh build reports unused section-variable warnings in general helper
+lemmas. They do not affect the proved statements or the kernel checks. The
+frozen builder sources were left unchanged.

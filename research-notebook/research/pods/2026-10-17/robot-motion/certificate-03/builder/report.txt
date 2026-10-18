@@ -1,0 +1,119 @@
+ROBOT-MOTION CERTIFICATE 03
+Frozen 2026-10-18T03:35:27.391019+00:00
+
+The general four-box reference certificate and guarded finite-admission kernel
+are proved. The final verification passed. This package closes the mathematical
+certificate in preflight steps 1-4 under the declared scalar input interface.
+The separate 72-case plant comparison is outside this folder.
+
+The actual positive-part F0,F1,F2,F3 formulas have the derivative chain
+F0'=F1, F1'=F2, F2'=F3 at every real point. Each function is continuous.
+The proof includes the five knots. It derives all six exact K branches and both
+tails from those same formulas. Primitive.lean is a byte-for-byte copy of the
+preflight PrimitiveProbe.lean helper, used with attribution. Its SHA-256 is
+ae0a01a04aa8c46d6c9ab7388986cb03eaf995f3e6f07b502b39a53e03772aad.
+
+For every finite real event list, h>0, J>=0 and any current time c, the proved
+future_knot_iff states that the real jerk bound for every t>=c is equivalent to
+checking c and all actual event roots at or after c. The proof constructs the
+adjacent endpoints from that finite set. It derives affine interpolation from
+the positive-part terms and proves zero jerk on the infinite tail. It assumes
+no partition and no desired global jerk bound. Empty, duplicate, unsorted, old
+and future events are covered. Signed cancellation is retained.
+
+RobotMotion.check is the authoritative executable Lean Rat Boolean guard.
+It checks h>0, J>=0, c, and the filtered event roots. check_real_iff proves its
+exact equivalence to the real future bound, including casts, membership and
+order. The general admission predicate certifies reference jerk. Universal
+reference speed and acceleration limits are outside this predicate.
+Python is independent arithmetic evidence only. There is no claim that
+an arbitrary Python runtime implementation has been certified.
+
+The admission kernel keeps c distinct from execution time tau. Its causal test
+requires nondecreasing c, 0<=c<=tau, and tau no earlier than the last committed
+execution. The increment is relative to the final committed target. Acceptance
+appends an event. Rejection, invalid timing and no-change retain the history.
+The finite induction proves the bound for all t>=0 from the empty history. The prefix
+lemma includes position, velocity, acceleration and jerk. Every later finite run
+preserves the executed prefix and retains every earlier commitment. Prefix
+equality does not permit deleting a future event.
+
+The target telescopes to g0+sum(delta). The last execution is the greatest
+accepted event time for a nonempty run. Four widths after that time, the
+reference equals the final committed target and its velocity, acceleration and
+jerk are zero. The empty history is already at rest. These are reference facts;
+they do not assert an exact physical stop.
+
+The sequence wrapper refuses a packet before readiness and retains state for a
+stale sequence. A ready new sequence advances the watermark even on rejection.
+It receives one winner from a batch of ready packets. The batch producer and
+its conflicting-duplicate rejection rule are declared upstream preconditions;
+they are not formalized here. The frozen cases have no conflicting duplicate
+sequences. Rejection can block task progress. The implementation stores a finite
+history. No online storage bound or expired-event pruning theorem is claimed.
+
+checked_tracking and admitted_tracking compose this actual reference directly
+with ScaledTracking.tracking_cube_scaled. They derive reference continuity,
+the derivative chain and the jerk bound. Their remaining premises are the
+classical physical trajectory, rate and disturbance bounds, positive scale,
+initial transformed-cube membership, and the original budget. They do not prove
+plant identification, trajectory existence, sampled control or state estimation.
+
+The supplied limits stay h=1/5 s, J=15/2 m/s^3, sigma=10/s,
+W=1/100 m/s^2 and R=1/5000 m.
+The checked budget is 41/1600<=1/25 m/s^2. The supplied conservative actual-jerk
+expression evaluates to 5799/40=144.975 m/s^3, distinct from reference jerk 7.5 m/s^3.
+The tracking cube bounds x-q. It does not by itself bound x-g_true. At final
+reference rest its inherited speed and acceleration bounds are 0.016 m/s and 1.28 m/s^2,
+which do not establish the fixed endpoint tests. No additional hold enclosure,
+deadline success, full-arm result, VLA success or hardware result is claimed.
+
+Verification rebuilt all 44 local source modules in a fresh temporary directory.
+It reused the pinned Mathlib package cache. Lean is 4.35.0; the recorded Mathlib
+revision is 56a005855ea17e0b0958f73ec801ae140b0a1679. Toolchain pins are unchanged.
+All 660 public local theorem statements were audited;
+106 are in the eight package modules, including the one copied helper
+and concrete fixtures. These counts include support lemmas, not separate
+research results. The only reported axioms are propext, Classical.choice and
+Quot.sound; 0 statements use no axioms. No proof placeholder, untrusted
+native decision proof, unsafe declaration or new axiom is used.
+
+A separate leanchecker process replayed ScaledTracking and every new module.
+All seven frozen final histories are kernel-proved with check and decide+kernel.
+The same executable function also evaluated all 52 frozen admission decisions;
+each agrees with the supplied acceptance transcript. The final-history peaks
+must not replace the per-admission predictions.
+
+All four actual negative controls were rejected as intended:
+- Removing c accepts the bad future-root check, while jerk(c)=1/2>1/4.
+- Removing interior roots accepts start/tail checks, while jerk(2)=-2.
+- Erasing the future cancellation after acceptance changes the certified
+  history into one that fails the unit jerk limit.
+- Replacing the unit-step peak 2 by 1 fails at time 2.
+The failed sources and their error logs are preserved. Accepted witness theorems
+are in Fixtures.lean. The fixed 50 mm proposal rejects. At 400 ms after acceptance, 10 mm of the
+20 mm reference move remains. These failures remain visible.
+
+Independent Python arithmetic rebuilt the seven schedules and 52 admissions,
+matched their final histories and exact final peaks, and checked 256 additional
+histories with 8448 interior affine equalities. This finite arithmetic evidence
+is separate from the Lean theorem. No plant comparison was run by this builder.
+
+The source closure, all public theorem names, axiom lists, source hashes, command
+results and log hashes are in verification.json. theorem-map.json maps each
+requirement to its declaration. Both frozen input manifests match their supplied
+hashes, and all 28 manifest-listed input files remain unchanged.
+
+For replay in a copy of the workspace with the pinned tools and Mathlib cache,
+run from this builder folder:
+  mkdir -p build
+  python3 verify.py
+  python3 finalize.py
+Build caches are excluded from the artifact manifest. Root owns notebook
+sync/check and the research-branch commit. This builder made no Git operation,
+remote push or merge. No dependency installation was needed.
+
+Credit: Mike Helsel supplied the problem framing and architecture direction.
+The four-box FIR filter and retained trajectory state have prior art. This
+artifact is the checked history guard and tracking connection described above.
+It makes no general novelty or publication claim.

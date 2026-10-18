@@ -1,0 +1,138 @@
+ROBOT MOTION COMPARISON 04 — EMPIRICAL BUILDER
+18 October 2026 UTC
+Status: fixed numerical gate complete; independent high-precision review pending.
+
+The 72 fixed parameter cases all pass the declared endpoint tests. Six cases
+fail the additional hold requirement: Ruckig follows the alternating estimates
+outside the 0.2 mm band around the true stationary goal. All six raw and all six
+FIR hold cases pass that band. Raw control has much larger command and physical
+jerk. FIR has a slower response to a real goal change. These results show a
+speed/smoothness tradeoff on synthetic scalar inputs, not general superiority.
+
+Mike Helsel supplied the problem framing, timing/architecture direction, and
+working title, "Treating the Tremors We Built into Robots". The four-box filter,
+Ruckig, retained trajectory state, and timing contracts have prior art. This gate
+does not establish algorithm novelty or human-like motor control.
+
+NUMERICAL RESULT
+
+Each range below spans r={80,100,120}/s and w={0,.01} m/s^2 at 0.5 ms sampling.
+Every method receives the same accepted trace and unchanged direct controller.
+Actual x,v,a start at zero and remain continuous at every event.
+
+Hold jitter, true goal zero:
+Method   Max |x|, mm       Physical jerk peak, m/s^3   Command TV, m/s^2   Band
+Raw      .123 to .136      136.05 to 209.22            91.97 to 98.34      6/6
+Ruckig   .986 to 1.014     8.066 to 11.809             11.40 to 12.28      0/6
+FIR      .0334 to .0460    .0364 to 1.2                .0244 to .0398      6/6
+
+The FIR upper jerk value 1.2 includes the initial disturbance transient. With
+w=0, its hold-jitter peak is near .0364. The Ruckig hold failure is an external
+task error: internal tracking error stays below .029 mm. The true goal does not
+move, while the supplied target estimates alternate by 1 mm. Ruckig follows
+those accepted estimates. This is a stated input condition, not a defect claim.
+
+Persistent 20 mm goal, first enter/remain THROUGH THE OBSERVATION HORIZON:
+Method   Settling time, s   Jerk energy, m^2/s^5   Command TV, m/s^2
+Raw      .5035 to .5040     7688.19 to 11086.86    36.52 to 37.70
+Ruckig   .6895 to .6900     14.995 to 15.081       2.471 to 2.596
+FIR      .9635 to .9640     3.306 to 3.365         1.336 to 1.365
+
+The goal is observed at .20 s and committed at .22 s. Its deadline is 1.50 s.
+The FIR uses less than Ruckig's available reference speed and acceleration on
+this step. Lower jerk energy therefore also buys delay. No duration matching,
+gain changes, or width tuning were done. The raw baseline permits command peaks
+up to 16 m/s^2 and is outside the smooth-reference theorem.
+
+All 72 deadline samples satisfy |x-g_true|<=.2 mm, |v|<=.001 m/s and |a|<=.02 m/s^2.
+Their largest absolute values are .0125063 mm, 1.340e-7 m/s and 2.047e-6 m/s^2.
+The revised-goal and late/stale cases also pass their fixed deadlines. metrics.csv
+contains every signed endpoint value and all 144 rows: 72 cases at two resolutions.
+There are 66/72 required-task passes after the hold band is included. All 48
+Ruckig/FIR cases pass the sampled internal .2 mm tube; all 24 raw cases fail it.
+Neither passing samples nor this count prove a continuous-time task guarantee.
+
+RUCKIG SOURCE AND EXPORT GATE
+
+Local source pin: 99751e6ebc7c963bb80e99fbbe66f2c279d1db57 from pantor/ruckig.
+CMake reports 0.19.6; the inspected online documentation reports 0.19.7. The
+build disables the cloud client, intermediate waypoints are absent, and no paid
+service is used. The archive, source files, compiler, flags, library, executables,
+exporter source and MIT license have recorded hashes in ruckig-provenance.json.
+Installed sources and binaries remain under excluded .cache.
+
+The four required smoke fixtures pass: rest-to-rest, replan during acceleration,
+replan at a switch, and active braking. Public profiles reconstruct against
+at_time at boundaries, nearby sides, interiors and after duration. The largest
+smoke acceleration residual is 4.45e-16 m/s^2, below the fixed 1e-10 tolerance.
+Position and velocity limits are 1e-8. All 49 primary plans also pass. Inactive
+brake arrays are omitted, zero-duration phase metadata is retained, and every
+accel.duration is zero. Final residual acceleration is extrapolated; targets are
+never snapped. These are floating polynomial profiles, not exact optimality proofs.
+
+The replay retains native t and t_sum fields with hexadecimal and binary-rational
+metadata. Its clock is rational commit time plus the exported native rounded
+cumulative boundary. It does not sum binary durations into a new switch schedule.
+Three exported positive phases are shorter than 1 ps; two would collapse when
+added to a double absolute clock. They remain distinct in the canonical schedule.
+Both-sided jumps and any floating reference-state mismatch are recorded separately.
+time-convention.txt states the exact interpretation and its limits.
+
+The largest Ruckig hold excursion is 1.013767739 mm at .4105 s, r=80/s, w=.01.
+The reference is .993513040 mm and internal error is .020254700 mm there.
+hold-jitter-diagnostic.json preserves all 41 native current states, targets,
+the exact input history and phases within 50 ms of that peak. native_replay.cpp
+rebuilds the reference using native at_time at every commit, without the primary
+polynomial replay. On 5,114 query times, maximum reference disagreement is
+1.28e-17 m, 4.34e-17 m/s and 9.30e-16 m/s^2. Fifteen jerk branch differences occur
+within 7.51e-17 s of rounded switch boundaries and remain visible. This is a
+builder diagnostic, not independent validation of the physical trajectory.
+
+NUMERICAL METHOD AND REFINEMENT
+
+Physical state uses a nine-state augmented matrix exponential on every polynomial
+piece. All switches, replans, readiness/observation times, truth changes, deadlines,
+tails and horizons are events. No actual state resets occur. Per-case compressed
+CSV files contain all reference and physical states, command, physical jerk, all
+three errors, and both sides of events. Event CSV files give the jump identities.
+Largest actual state jump is exactly zero in the implementation. Command-jump
+identity residual is below 1.78e-15 m/s^2; the physical-jerk identity residual is
+below 2.28e-13 m/s^3.
+
+The .5 ms refinement changes no pass/fail decision. Maximum sampled jerk-peak
+change is 4.04e-5 m/s^3. Jerk energy changes by at most .747% and command TV by
+.0404%, relative to the fine result. Settling changes by at most .5 ms. Event
+state differences are below 5.11e-16 m, 6.99e-15 m/s and 5.33e-14 m/s^2. Energy
+uses trapezoidal quadrature. TV integrates |u'| on smooth pieces and adds every
+command jump. This is refinement evidence, not a rigorous quadrature enclosure.
+
+Raw reference derivatives at position jumps are not bounded impulses. Ruckig
+jerk jumps produce command and physical-jerk jumps. For matched q,v,a,
+Delta u=Delta j/96 and Delta physical_jerk=r*Delta u. The largest Ruckig physical
+jerk jump is 18.75 m/s^3. FIR's theoretical corresponding jumps are zero; the
+largest recorded residual is 6.40e-13 m/s^3. No finite snap peak is inferred from
+grid differences across a jump.
+
+PROOF, ASSUMPTIONS AND OPEN WORK
+
+This directory adds no Lean theorem. The exact rational FIR fixture evidence
+stays separate from the authoritative checker being built in certificate-03.
+The physical plant, continuous feedback, constant rate/disturbance, unlimited
+command authority and scalar coordinates are model assumptions. This is not a
+learned-policy execution, full-arm test, timing-deadline measurement or hardware
+result. It does not imply contact or general safety.
+
+The frozen 50 mm proposal still fails the reference jerk admission limit; its
+external goal remains unmet. The 400 ms deadline case still reaches only 10 mm
+of a 20 mm reference change. They remain exact negative reference cases. No
+extra negative plant cases were added or counted as successful tasks.
+
+Next: independent high-precision replay from the input fixtures and pinned source.
+Rebuild schedules and states without importing the primary segment-start states.
+Pay special attention to the Ruckig hold excursion, native timing convention,
+short phases, both-sided jumps, and all signed endpoint tests. Then decide whether
+this is a useful scalar verification benchmark. No publication or superiority
+claim follows from this gate alone.
+
+All 28 manifest-listed lead/preflight files remain unchanged. No Git command,
+commit, push or merge was performed. Root owns notebook sync/check and commit.

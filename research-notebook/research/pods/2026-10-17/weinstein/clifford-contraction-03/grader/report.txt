@@ -1,0 +1,73 @@
+INDEPENDENT REVIEW: CLIFFORD CONTRACTION 03
+Decision: ACCEPT the real Clifford contraction gate. Grade: A for this theorem
+milestone. This grade does not measure GU validity, novelty, or publication odds.
+
+The literal increasing-pair operator is proved equal to minus scalar curvature
+in Mathlib's actual Clifford algebra for the diagonal (7,7) form. The target has
+the intended pair antisymmetries, pair exchange, and first Bianchi assumptions.
+The proof includes the separate all-index normalization C = 2K and the weighted
+Ricci/scalar bridge. It does not define K by the desired answer or leave the
+actual Clifford generator relations as unproved inputs. See source-review.txt.
+
+Independent verification passed
+I wrote and ran independent_verify.py. It did not execute the builder's
+verification script. It copied all four proof sources byte-for-byte into a
+fresh build directory and produced fresh target oleans. The pinned prebuilt
+Mathlib dependencies were reused. Every one of the 52 public builder theorems
+was included in an axiom audit. All dependencies are subsets of propext,
+Classical.choice and Quot.sound. Each of the four modules passed its own
+leanchecker replay. No source contains sorry, admit, an added axiom,
+native_decide, or unsafe declarations.
+
+An independently written client states the main result with the full sorted
+sum and explicit scalar trace. It also exposes the all-index bridge, checks
+the negative metric generator and a mixed-sign sectional tensor, and proves
+that the universal positive-sign variant is false. It compiled and passed a
+separate kernel replay. The mixed tensor R_0707 = 1 has scal = -2 and K = +2.
+
+The submitted positive sectional control has scal = 2 and K = -2. The
+non-Bianchi four-form has Ric = 0, Bianchi residual 3, and
+K = 12 gamma_0 gamma_1 gamma_2 gamma_3 != 0. The blade squares to 1 in the
+same actual, nontrivial Clifford algebra. Thus dropping Bianchi is disproved
+by a concrete theorem, not merely by an unsuccessful proof search.
+
+Three false clients or mutations failed for mathematical reasons:
+1. Replacing the main target's minus scalar with plus scalar leaves the goal
+   -(scal R times 1) = scal R times 1.
+2. Claiming K(sectional) = +2 gives the expected -2 versus +2 type mismatch.
+3. Using PairSymmetries alone for the four-form cannot supply Curvature.
+The last failure is backed by the independently replayed nonzero four-form
+counterexample. None of these failures was caused by an unknown import or name.
+
+Evidence integrity
+The supplied builder SHA256SUMS hash was verified:
+a283b2848de505c7565eb768e35215d9330f2eedfc015d51876fb29784aaf085
+All 34 listed builder files and the manifest itself matched before and after
+the independent checks. The builder directory was not modified. Source copies,
+clients, logs, commands, exit codes, versions and hashes are retained here.
+Lean is 4.35.0 and Mathlib is
+56a005855ea17e0b0958f73ec801ae140b0a1679.
+
+This is a fresh target build and kernel replay under the pinned Lean toolchain.
+It is not a rebuild of all Mathlib, a separate Lean implementation, or a proof
+that the chosen definitions describe a physical theory.
+
+Done and open
+Done: the approved real pointwise algebra identity, its actual-Clifford
+instance, all normalization and metric-weight bridges, and the required
+positive and negative controls.
+Open: the author's preferred Phi selection, the candidate's conjugate-linear
+adjoint, Hodge/exterior assembly, the full C/J/J identity, global geometry, and
+physical content. No novelty review was performed in this proof replay. The
+prior preflight's classification as a standard spin-geometry identity remains
+the scope assumption; this report establishes the formalization milestone.
+
+One optional next gate is written in next-gate.txt: construct the actual
+conjugate-linear adjoint and prove the two skew-closure rules. The current
+scalar-fixed Mathlib star cannot stand in for that construction. Do not extend
+this review into global GU equations or a physics claim.
+
+Storage
+Only this grader directory was created or changed. No Git operation, paid
+service, external message, or submission occurred. Repository sync, local
+commit, remote push and merge remain separate coordinator actions.

@@ -1,0 +1,124 @@
+FIXED SYNTHETIC MOTION COMPARISON
+Proposed next gate after independent review. No plant results are recorded here.
+
+Use fixed-streams.json byte-for-byte. Its packets and truth goals were written
+before this comparison. reference-checks.json records the exact proposed guard's
+decisions. All primary proposals pass. Coalesced and stale packets are never
+executed. The four primary cases are hold jitter, a persistent 20 mm goal, revised
+estimates of that same goal, and a 120 ms late goal followed by an older packet.
+These are synthetic scalar target streams, not recorded VLA output or an arm test.
+
+Run exactly 72 primary cases: three reference methods times four streams times
+r in {80,100,120}/s times constant w in {0,+.01} m/s^2. Use sigma=10/s and the
+same unchanged direct controller stated in theorem-contract.txt. The actual
+initial state is x=v=a=0 for all methods. Continuous actual state survives every
+packet, reference join, and internal trajectory event. Do not tune h, gains,
+limits, input timestamps, endpoints, or deadlines after looking at outputs.
+
+Methods
+
+1. Latest target. Set q to each accepted position; between updates q'=q''=j_q=0.
+   This is a diagnostic position-step baseline. Keep and report the resulting
+   command jumps. Do not assign impulsive reference derivatives fictitious finite
+   peaks, or call this the best established motion generator.
+
+2. Ruckig Community point-to-point generation. Build a pinned public revision
+   locally in the builder's scope and record source archive, revision, build and
+   executable hashes. Use no intermediate waypoints or cloud calls. Its current
+   state is its own executed reference q,q',q'', retained at each target update.
+   The target is the same accepted position with target velocity and acceleration
+   zero. Use velocity=.1 m/s, acceleration=.5 m/s^2, jerk=7.5 m/s^3. Do not reset
+   the reference to the physical state. Export exact segment definitions and all
+   jerk-switch times supported by the pinned implementation. Include its input
+   checks and any returned error. A return error is a visible case failure.
+   Segment access is an implementation risk. Use exact public trajectory/profile
+   events only when exposed by that revision. If they are unavailable, stop that
+   exact-segment gate or label a separate stepwise numerical evaluation honestly.
+   Do not fabricate jerk-switch times from samples or claim it meets this event
+   verification plan. The independent assessor must resolve this before execution.
+
+3. Four-box retained reference. Use h=.2 s, the exact history and the same accepted
+   stream. The finite rational guard limits reference jerk to 7.5 m/s^3. The fixed
+   reference V,A,J enclosures pass before plant simulation. Retain the complete
+   active history through each update; old history may be compressed only after
+   proving it contributes a constant position and zero derivatives thereafter.
+
+The primary comparison receives the same accepted input trace. The negative
+50 mm proposal is a separate admission case, reported as rejection and unresolved
+task error. Do not count rejection as successful arrival or silently subdivide it.
+The short-deadline case is a fixed negative reference result, not an extra tuning
+trial. The coincident-packet case checks scheduler semantics. ACT, RTC, VLA-RAIL,
+and learned policies are literature baselines here; no synthetic proxy may be
+labelled an execution of those learned systems.
+
+Actuator model and causality
+
+Use x'=v, v'=a, a'=r*(u+w-a), with the identical controller for all three methods.
+There is no motor command filter, saturation, clipping, unknown network queue,
+sensor estimator, flexible mode, contact force, or torque model in this gate.
+Packet observation, readiness, and commit times are explicit in the input JSON.
+Use an event-driven feed: a method may see only packets ready by current time.
+Reference derivatives are evaluated continuously between events. These timings
+are an ideal execution model, not a measured real-time deadline guarantee.
+
+On each polynomial reference segment, evaluate the forced linear physical ODE
+with an augmented matrix exponential. Retain the actual state at every segment
+boundary. Sample every 1 ms and save both one-sided outputs at all events, including
+Ruckig jerk changes. Independently rebuild the schedules and check saved states
+with the existing high-precision runtime. Do not reuse the primary method's
+segment-start states in that check. Peak claims remain sampled numerical values
+unless separately enclosed. The exact FIR reference certificate has a different
+status from the physical numerical trace.
+
+Metrics and task requirements
+
+- Internal tracking max|x-q|; the fixed target is .2 mm. Also save q-g_true and
+  x-g_true. They are different errors.
+- At each declared deadline, require actual |x-g_true|<=.2 mm, |v|<=.001 m/s and
+  |a|<=.02 m/s^2. These are predeclared illustrative task tolerances. The current
+  tracking cube alone does not prove all three. Show the three signed outputs.
+- Hold-jitter additionally requires actual |x|<=.2 mm for the complete case.
+  A goal step cannot satisfy an immediate all-time .2 mm external-error target;
+  no such target is imposed on the three goal-change cases.
+- First enter-and-remain time for the endpoint tolerances, measured against the
+  final true goal. A later exit invalidates an earlier reported settling time.
+- Actual jerk max|r*(u+w-a)| and integral of its square over the fixed full horizon.
+  Give RMS only with its same common horizon. Do not substitute reference jerk.
+- Command peak, command total variation, largest command jump, and largest actual
+  jerk jump. Total variation includes both the continuous portions and all jump
+  magnitudes. Label quadrature or sampled TV approximations and check refinement.
+- Reference V,A,J and all constraint/guard failures, accepted/rejected/stale counts,
+  maximum packet age, and final accepted-goal deviation from the external goal.
+
+When q,q',q'' match but j_q jumps, the direct command jump is
+  Delta u=5*Delta j_q/(48*sigma).
+At fixed r,w, actual jerk jumps by r*Delta u. Record these analytically for
+Ruckig. A finite difference across that jump is not a finite snap bound. FIR
+reference jerk is continuous, so these particular jumps vanish under the fixed
+r,w cases. This does not imply smaller peaks or faster task completion.
+
+Decision rule
+
+One explicit sample outside a required tolerance rejects that method on the case.
+All passing samples are numerical support, not a between-sample proof. The formal
+tracking theorem can supply a separate conditional internal tube for an admitted
+reference. It must not be used to upgrade an external endpoint or implementation
+claim. Report every fixed result. Stop after this comparison and independent
+checks; any changed h or task is a new gate with a new specification.
+
+The falsifiable benefit test is whether the retained reference reduces actual
+jerk energy and command variation on held jitter, while meeting its hold band,
+and whether its delayed goal response meets the fixed endpoint tolerances. Ruckig
+may dominate response time or other metrics. Preserve that result if it happens.
+This experiment cannot establish general superiority or a publication claim.
+
+Downstream full-arm gate
+
+Only after this scalar gate, select one recorded learned-action stream and one
+identified arm model. Check joint-to-Cartesian mapping, joint velocity/acceleration,
+torque authority, singularities, self-collision and task geometry, and the stated
+contact condition. Use the same model, target stream, latency, and measured/validated
+state estimates for all methods. MuJoCo or hardware can address those particular
+gaps later. Neither is installed or used by this first batch. No claim about
+dexterous manipulation, learned task success, or human motor control follows from
+the scalar synthetic experiment.

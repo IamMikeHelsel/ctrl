@@ -1,0 +1,52 @@
+Gate 04 review target
+
+Check the actual construction before the closure proofs. CCl is Mathlib's
+TensorProduct of Complex and the accepted real CliffordAlgebra Q over Real.
+Its multiplication and complex scalar action come from Algebra.TensorProduct.
+The only new star compatibility instance is StarModule Real Cl. It follows
+from the scalar-fixed real Clifford star and the trivial star on Real.
+
+bar is the existing tensor star. On pure tensors it is
+bar(z tensor a) = conjugate(z) tensor star_Cl(a).
+The tensor StarRing instance supplies product reversal and involution.
+bar_scalar and bar_smul prove complex conjugate-linearity for the actual
+complex algebra action. bar_I_smul and bar_gamma expose the required signs.
+
+embed is includeRight, a real algebra homomorphism. Its injectivity uses
+Mathlib's flat base-change theorem over Real and the injective Real-to-Complex
+algebra map. Actual real Clifford nontriviality then proves CCl nontrivial.
+scalar_injective makes the scalar sign controls non-vacuous.
+
+The two closure operations are literal products:
+C(A,B) = A*B-B*A and J(A,B) = I smul (A*B+B*A).
+Neither has a factor of one half. Skew means exactly bar(A) = -A.
+The closure statements have no extra product or adjoint hypotheses.
+
+fixedBar is a separate actual tensor map, not an assumed comparison function.
+It is the complex-linear extension of the real Clifford star. Its involution,
+product reversal, complex scalar law and generator signs are all proved.
+It fixes J(gamma_0,gamma_0) = 2*I*1, which is nonzero and is not fixedBar-skew.
+Thus fixing complex scalars prevents J-closure even with the other laws intact.
+
+The other controls reject omission of I and preservation of multiplication
+order. The latter uses gamma_0*gamma_7, whose square is 1. The negative metric
+weight is tested explicitly by gamma_7 squared = -1.
+
+complexK is defined as the accepted literal sorted-pair sum with cgamma.
+complexK_embed proves that includeRight preserves this sum and each product.
+The accepted real contraction therefore gives complexK(R) = -scal(R)*1
+under the same explicit curvature symmetries and Bianchi identity. The client
+checks the sectional value -2 and preserves the nonzero four-form defect.
+
+verify.py copies all four accepted local dependencies and all three new
+modules to an isolated temporary source directory. It compiles fresh oleans,
+audits every public theorem, named instance, definition and abbreviation,
+and runs leanchecker separately on each module. The pinned prebuilt Mathlib
+dependencies are reused. Three mutated sources and one wrong-adjoint client
+must fail for semantic proof errors, not missing imports or identifiers.
+Direct counterexample theorems accompany the mutations.
+
+The new source does not identify this algebra with a matrix algebra or its
+bar-skew part with u(64,64). It does not assemble exterior forms or a Hodge
+operator. It does not select Phi tensors, their normalization, global field
+equations, or a physical interpretation. These limits remain open.

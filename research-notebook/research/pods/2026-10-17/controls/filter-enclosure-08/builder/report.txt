@@ -1,0 +1,76 @@
+TWO FILTER FAILURES WITH EXPLICIT NUMERICAL ENCLOSURES
+Coordinator-built follow-up to the direct-reference independent review.
+Status: calculation passed; independent review pending.
+
+Both fixed slow filters violate the 0.2 mm position-error target even after an
+explicit error bound is included. The witnesses use the original frozen model,
+reference, controller coefficients and zero initial filter state. No tuning or
+new trajectory is introduced. The witness times were selected from the previous
+saved trace. They are not new global peak claims.
+
+Original filter, t=171/400 s:
+  0.001259612313705 <= x-q <= 0.001259612313706 m.
+Compensated filter, t=1581/2000 s:
+  0.000335036376680 <= x-q <= 0.000335036376681 m.
+Both lower endpoints exceed 0.0002 m. Each displayed interval has width 1e-15 m.
+The internal enclosures are tighter. Every displayed endpoint rounds outwards.
+
+Model binding
+The model is x'=v, v'=a, a'=80*(u+1/100-a), with
+  u'=20*(q''-800*(x-q)-60*(v-q')-(a-q'')/2+k*j-u).
+Use k=5/480 for the original filter and k=29/480 for compensation. The physical
+and reference initial states and the filter input start at zero. The reference
+comes from the unchanged causal-stop-05/builder/reference.json. Its actual
+polynomial derivatives and joins have been separately verified in Lean by the
+direct-reference-06 package. This calculation reads those rational coefficients.
+
+Define y=(x-q, (v-q')/10, (a-q'')/100, (u-q'')/100). Then
+  y0'=10*y1,
+  y1'=10*y2,
+  y2'=-80*y2+80*y3+1/125-j/100,
+  y3'=-160*y0-120*y1-10*y2-20*y3+(20*k-1)*j/100.
+On each phase, j is a polynomial of degree at most three. Append the local
+monomials (1,t,t^2,t^3) to y. This gives a constant rational matrix A. Only the
+local monomials restart at a phase boundary. The four error states retain their
+enclosures. Reference position, velocity and acceleration match at every join,
+so this state transfer introduces no physical or controller reset.
+
+Finite series and remainder
+For phase duration d, let M=d*A, a=||M||_infinity, and B bound the initial vector
+infinity norm. The finite series is sum from k=0 to N of M^k*v/k!. It is evaluated
+with closed integer intervals at scale 10^600. Multiplication by an exact rational
+number uses floor for the lower endpoint and ceiling for the upper endpoint.
+Negative multipliers reverse the endpoints. Addition is exact on this grid.
+Induction therefore encloses every term and every partial sum, including every
+initial state in the previous phase's enclosure.
+
+When a/(N+2)<1, submultiplicativity of the induced matrix infinity norm gives
+  ||sum from k=N+1 to infinity M^k*v/k!||_infinity
+    <= B*a^(N+1)/(N+1)! / (1-a/(N+2)).
+The bound follows because each later scalar term ratio is at most a/(N+2).
+The implementation chooses N until this exact rational bound is at most 10^-500.
+It then rounds the bound upward to the integer grid and pads every component.
+This includes the infinite tail; merely increasing precision would not do so.
+
+All calculations use Python integers and Fraction. There are no floating-point
+steps, imported simulator states, SciPy calls or mpmath calls. enclosure.json
+records each rational matrix, duration, degree, norm bound, tail padding, and
+incoming/outgoing interval. The interval implementation is separate from the
+earlier numerical simulator. It is still written by the coordinator; independent
+agent review is required and is not claimed here.
+
+Reproduce
+  python3 enclose.py
+The output enclosure.json is deterministic. The printed runtime is not part of
+the saved certificate. The script checks outward rounding for both signs and
+retains both strict violation witnesses.
+
+Formal boundary
+The Taylor-series argument above is ordinary mathematical justification for a
+validated calculation. This batch does not formalize the matrix exponential,
+ODE solution relation, interval program or series remainder in Lean. The actual
+Lean all-time direct-tracking theorem has a different proof status. Do not label
+these two enclosures kernel-checked physical traces or hardware evidence.
+
+The result is a counterexample for each declared filter, not a theorem that all
+filters fail, an optimality result, or a physical stopping certificate.

@@ -1,0 +1,57 @@
+INDEPENDENT REVIEW: TWO FILTER VIOLATION ENCLOSURES
+Decision: ACCEPT. Grade: A for this arithmetic enclosure audit.
+Scope: validated numerical counterexamples in the stated model, not Lean
+theorems about the interval program or hardware results.
+
+The independently bounded position errors are:
+  Original filter at t=171/400 s:
+    0.001259612313705 <= x-q <= 0.001259612313706 m.
+  Compensated filter at t=1581/2000 s:
+    0.000335036376680 <= x-q <= 0.000335036376681 m.
+Both lower endpoints are above the 0.0002 m target. The actual independent
+lower bounds are strictly above the displayed lower endpoints as well.
+These witnesses establish failure of each fixed filter on the frozen task.
+They are not global peak estimates or claims about all possible filters.
+
+The independent calculation used exact rational variation of constants in
+scaled physical states x,v/10,a/100,u/100. It computed finite four-by-four
+transition matrices and integrated polynomial forcing, with explicit rational
+bounds on both omitted series. It rounded outward once per phase to 90 decimal
+places and used tail targets of 10^-75. No builder function, floating-point
+operation, numerical package, or saved simulator state was used. Both results
+give exactly the builder's displayed intervals when rounded outward to 15
+decimal places. Each independent internal width is below 10^-70 m.
+
+The source audit also checked the physical-to-error coordinate derivation,
+all 11 primary phase matrices and tail certificates, state retention, exact
+phase durations, initial conditions, and outward display rounding. Exact
+reference differentiation checks 28 derivative joins. The implementation
+counterchecks cover 4,725 signed interval images and explicit bad rounding
+and endpoint-order controls. See mathematical-audit.txt for the reasoning.
+
+Reproduce with:
+  python3 independent_enclosure.py
+The deterministic evidence is independent-enclosures.json. It records the
+physical input/output boxes, Taylor degrees, separate tail terms and source
+hashes. The reviewer script had one physical-to-error transcription error in
+its first draft; the exact matrix comparison caught it before any result was
+accepted. development-note.txt records the correction. No builder file changed.
+
+Integrity
+The supplied artifact-sha256.json hash matched:
+b284178e77f8cf2bda67d4ee9ec29583b4b87a53a32cd9b6d8c54e8ff7b94cb8.
+All three listed builder files and that manifest matched before and after.
+The reference also remained unchanged, with SHA256
+0afc2c547033e22570711ea63a4d62c8a4380499c62a5da3f644de04fce5ad02.
+
+Open boundary
+The ordinary matrix-exponential/ODE relation and this interval implementation
+are not formalized in Lean. The earlier all-time direct-controller theorem
+remains a separate proof result. These two enclosures close the concern that
+floating-point error might account for the sampled filter violations. They
+do not prove optimality, physical stopping, hardware safety, or full-system
+behavior beyond the declared model and initial states.
+
+Only this grader directory was created or edited. No extra agent, Git action,
+paid service or external submission was used. Repository preservation remains
+the coordinator's action.

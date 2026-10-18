@@ -1,0 +1,27 @@
+import AdjointControls
+import ComplexContraction
+import CliffordControls
+open GUComplex GUClifford GUContraction
+open scoped TensorProduct
+example : Function.Injective embed := embed_injective
+example (z : ℂ) (a : Cl) : bar (z ⊗ₜ[ℝ] a) = star z ⊗ₜ[ℝ] star a := bar_tmul z a
+example (a : CCl) : bar (Complex.I • a) = -Complex.I • bar a := bar_I_smul a
+example (a b : CCl) : bar (a*b) = bar b * bar a := bar_mul a b
+example (a : CCl) : bar (bar a) = a := bar_involutive a
+example (a : Ix) : bar (cgamma a) = -cgamma a := bar_gamma a
+example (a b : CCl) (ha : Skew a) (hb : Skew b) : Skew (a*b-b*a) := commutator_skew a b ha hb
+example (a b : CCl) (ha : Skew a) (hb : Skew b) : Skew (Complex.I • (a*b+b*a)) := iAnti_skew a b ha hb
+example : cgamma 7 * cgamma 7 = -1 := cgamma_seven_sq
+example : iAnti (cgamma 0) (cgamma 0) ≠ 0 := iAnti_gamma_zero_ne_zero
+example : fixedBar (iAnti (cgamma 0) (cgamma 0)) ≠ -iAnti (cgamma 0) (cgamma 0) := fixedBar_iAnti_not_skew
+example : ¬ Skew (cgamma 0 * cgamma 0 + cgamma 0 * cgamma 0) := anticommutator_without_I_not_skew
+example : bar (cgamma 0 * cgamma 7) ≠ bar (cgamma 0) * bar (cgamma 7) := bar_product_wrong_order_false
+example (R : Tensor) (h : Curvature R) : complexK R = algebraMap ℝ CCl (-scal R) := complex_clifford_contraction R h
+example : complexK sectional = algebraMap ℝ CCl (-2) := by
+  rw [complex_clifford_contraction sectional sectional_curvature, sectional_scalar]
+example : complexK fourform ≠ 0 := by
+  rw [complexK_embed]
+  intro h
+  apply fourform_K_ne_zero
+  apply embed_injective
+  simpa only [map_zero] using h

@@ -1,0 +1,74 @@
+TIMING, PRIOR WORK, AND THE COMPARISON IMPLEMENTATION
+Coordinator note, 18 October 2026 UTC. This supplements the frozen lead proposal.
+
+Timing contracts are established work. We should test a specific certificate
+and execution layer, rather than claim that robotics has ignored time.
+
+Törngren, Tripakis, Derler and Lee (2012), Design Contracts for Cyber-Physical
+Systems: Making Timing Assumptions Explicit, UCB/EECS-2012-191.
+https://www2.eecs.berkeley.edu/Pubs/TechRpts/2012/EECS-2012-191.pdf
+Inspected title, abstract, introduction and sections 2–4. The paper makes timing
+assumptions explicit between control and software teams. It covers sampling,
+actuation delay, jitter and logical execution time. Our broader design framing
+has clear precedent here. A new result needs a precise additional claim.
+
+Wang et al. (2026), Real-Time Robot Execution with Masked Action Chunking.
+https://arxiv.org/abs/2601.20130v1
+Inspected abstract and version metadata. REMAC addresses mismatch between
+intended actions and execution during asynchronous inference, with learned
+corrections and prefix preservation. Its reported performance is the authors'
+claim; we have not reproduced it. Full technical comparison remains necessary.
+
+Jiang et al. (2026), FutureRTC: Real-Time Robot Execution with
+Anticipatory-Conditioned Action Chunking.
+https://arxiv.org/abs/2607.24008v1
+Inspected abstract and version metadata. It predicts execution-time observations
+and corrects the difference between rolled-forward and actual proprioception.
+This is close prior work for the stale-context hypothesis. It does not establish
+that our aligned-timestamp filtered-controller example has a stale-context bug.
+Full technical comparison remains necessary; no reproduction is claimed.
+
+Ruckig Community API
+https://docs.ruckig.com/classruckig_1_1Trajectory.html
+https://github.com/pantor/ruckig/blob/main/include/ruckig/trajectory.hpp
+The inspected official documentation identifies version 0.19.7 and exposes
+get_profiles() and get_brakes() for Community trajectories. at_time also exposes
+jerk. This suggests that the required segment export is feasible. The actual
+pinned local source, profile fields, brake segments, endpoint extrapolation and
+export consistency still need to be checked before accepting the experiment.
+These are floating-point polynomial segments, not exact rational solutions.
+Do not invent switch times from samples or silently omit zero-duration phases.
+
+Required reporting boundary
+The four-box filter, retained motion state, timing contracts and online motion
+generation are established ideas. The proposed contribution is a machine-checked
+admission test with explicit causal history, plus a tested connection to a
+specific uncertain-lag physical model. Novelty and practical value remain open.
+
+Further established motion-generation work
+https://iris.unimore.it/handle/11380/1175126?mode=complete
+Biagiotti and Melchiorri (2019), Trajectory generation via FIR filters: A
+procedure for time-optimization under kinematic and frequency constraints.
+The inspected institutional abstract and publisher introduction discuss FIR
+parameter selection, derivative constraints and rest-to-rest time optimality.
+The author-hosted full PDF fetch failed. We have not completed a full comparison.
+
+https://www.sciencedirect.com/science/article/pii/S096706611730151X
+Besset and Béarée (2017), FIR filter-based online jerk-constrained trajectory
+generation. The inspected abstract and introduction describe online updates from
+nonzero velocity and acceleration, fixed-time and time-optimal variants, and
+experiments on a seven-axis Kuka. This is stronger prior work than a raw-target
+baseline. Its experiments are not reproduced by this scalar gate.
+
+https://www.mdpi.com/2218-6581/11/4/73
+On Fast Jerk-Continuous Motion Functions with Higher-Order Kinematic Restrictions
+for Online Trajectory Generation (2022). Primary search excerpts describe
+four-filter parameter checks and jerk-continuous motion. Full-page access was
+rate-limited. Treat this as a follow-up source, not a completed paper audit.
+
+Pinned-source correction from the independent assessor
+Ruckig main at 99751e6ebc7c963bb80e99fbbe66f2c279d1db57 declares version0.19.6.
+It exposes get_profiles(), but does not expose the documented get_brakes()
+method. The public Profile.brake and Profile.accel fields expose brake data.
+The assessor retains inspected headers and hashes. The comparison builder must
+use the pinned source API rather than assume that latest documentation matches.

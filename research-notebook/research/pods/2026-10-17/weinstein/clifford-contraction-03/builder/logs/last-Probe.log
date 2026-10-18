@@ -1,0 +1,30 @@
+QuadraticMap.weightedSumSquares.{u_1, u_3, u_8} {S : Type u_1} (R : Type u_3) [CommSemiring R] {ι : Type u_8}
+  [Fintype ι] [Monoid S] [DistribMulAction S R] [SMulCommClass S R R] (w : ι → S) : QuadraticMap R (ι → R) R
+QuadraticMap.weightedSumSquares_apply.{u_1, u_3, u_8} {S : Type u_1} {R : Type u_3} [CommSemiring R] {ι : Type u_8}
+  [Fintype ι] [Monoid S] [DistribMulAction S R] [SMulCommClass S R R] (w : ι → S) (v : ι → R) :
+  (QuadraticMap.weightedSumSquares R w) v = ∑ i, w i • (v i * v i)
+QuadraticMap.polar.{u_4, u_5} {M : Type u_4} {N : Type u_5} [AddCommGroup M] [AddCommGroup N] (f : M → N) (x y : M) : N
+/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/pods/2026-10-17/weinstein/clifford-contraction-03/builder/Probe.lean:6:7: error(lean.unknownIdentifier): Unknown constant `QuadraticMap.polar_apply`
+CliffordAlgebra.ι_mul_ι_add_swap.{u_1, u_2} {R : Type u_1} [CommRing R] {M : Type u_2} [AddCommGroup M] [Module R M]
+  {Q : QuadraticForm R M} (a b : M) :
+  (CliffordAlgebra.ι Q) a * (CliffordAlgebra.ι Q) b + (CliffordAlgebra.ι Q) b * (CliffordAlgebra.ι Q) a =
+    (algebraMap R (CliffordAlgebra Q)) (QuadraticMap.polar (⇑Q) a b)
+CliffordAlgebra.ι_sq_scalar.{u_1, u_2} {R : Type u_1} [CommRing R] {M : Type u_2} [AddCommGroup M] [Module R M]
+  (Q : QuadraticForm R M) (m : M) :
+  (CliffordAlgebra.ι Q) m * (CliffordAlgebra.ι Q) m = (algebraMap R (CliffordAlgebra Q)) (Q m)
+/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/pods/2026-10-17/weinstein/clifford-contraction-03/builder/Probe.lean:9:7: error(lean.unknownIdentifier): Unknown constant `Finset.sum_lt_add_sum_gt`
+Finset.sum_bij.{u_1, u_2, u_3} {ι : Type u_1} {κ : Type u_2} {M : Type u_3} [AddCommMonoid M] {s : Finset ι}
+  {t : Finset κ} {f : ι → M} {g : κ → M} (i : (a : ι) → a ∈ s → κ) (hi : ∀ (a : ι) (ha : a ∈ s), i a ha ∈ t)
+  (i_inj : ∀ (a₁ : ι) (ha₁ : a₁ ∈ s) (a₂ : ι) (ha₂ : a₂ ∈ s), i a₁ ha₁ = i a₂ ha₂ → a₁ = a₂)
+  (i_surj : ∀ b ∈ t, ∃ a, ∃ (ha : a ∈ s), i a ha = b) (h : ∀ (a : ι) (ha : a ∈ s), f a = g (i a ha)) :
+  ∑ x ∈ s, f x = ∑ x ∈ t, g x
+Finset.sum_involution.{u_1, u_4} {ι : Type u_1} {M : Type u_4} {s : Finset ι} [AddCommMonoid M] {f : ι → M}
+  (g : (a : ι) → a ∈ s → ι) (hg₁ : ∀ (a : ι) (ha : a ∈ s), f a + f (g a ha) = 0)
+  (hg₃ : ∀ (a : ι) (ha : a ∈ s), f a ≠ 0 → g a ha ≠ a) (g_mem : ∀ (a : ι) (ha : a ∈ s), g a ha ∈ s)
+  (hg₄ : ∀ (a : ι) (ha : a ∈ s), g (g a ha) ⋯ = a) : ∑ x ∈ s, f x = 0
+Finset.sum_comm.{u_3, u_4, u_5} {α : Type u_3} {β : Type u_4} {γ : Type u_5} [AddCommMonoid β] {s : Finset γ}
+  {t : Finset α} {f : γ → α → β} : ∑ x ∈ s, ∑ y ∈ t, f x y = ∑ y ∈ t, ∑ x ∈ s, f x y
+Fintype.sum_prod_type.{u_3, u_4, u_5} {γ : Type u_3} {α₁ : Type u_4} {α₂ : Type u_5} [Fintype α₁] [Fintype α₂]
+  [AddCommMonoid γ] (f : α₁ × α₂ → γ) : ∑ x, f x = ∑ x, ∑ y, f (x, y)
+Finset.sum_ite_eq.{u_1, u_2} {ι : Type u_1} {M : Type u_2} [AddCommMonoid M] [DecidableEq ι] (s : Finset ι) (a : ι)
+  (b : ι → M) : (∑ x ∈ s, if a = x then b x else 0) = if a ∈ s then b a else 0

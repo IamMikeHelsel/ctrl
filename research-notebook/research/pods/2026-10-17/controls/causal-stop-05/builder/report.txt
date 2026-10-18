@@ -1,0 +1,44 @@
+CAUSAL STOP 05 — FIXED THREE-LAW COMPARISON
+18 October 2026 UTC. Numerical evidence; independent agent review pending.
+
+The direct controller performs better on this declared reference. Both filters
+exceed the 0.2 mm tracking target at saved samples. They also have larger peak
+actual jerk and command variation. No gain or reference was tuned after the run.
+
+                                  Direct       Filtered old   Filtered compensated
+Sampled max position error (mm)   0.0384646     1.2596123      0.3350364
+Sampled peak actual jerk (m/s^3) 10.4833843    30.1598936     17.5112388
+Sampled command variation(m/s^2) 9.6314011    20.5053389     11.7525510
+
+All three endpoint position errors are below 0.2 mm. Their endpoint velocity
+and acceleration remain separate outputs; no physical stop tolerance was given.
+No physical stop or actual travel-corridor acceptance is claimed.
+
+The preflight contract is controls/admission-04/grader-preflight/preflight.txt.
+The exact reference starts at rest with jerk +10, receives a new goal at .25 s,
+and holds the old plan through .255 s. Its jerk remains continuous. It reaches
+0.6 m at rest at 10491307/7508900 s and holds until 1.5 s. The same reference,
+plant initial states, disturbance +.01 m/s^2, and response rate80/s apply to all
+three laws. The filtered laws retain u from u(0)=0. Direct is algebraic and has
+u(0)=5/48. There are no state resets or invented pre-t=0 command histories.
+
+compare.py constructs the reference with exact rational polynomials, then uses
+SciPy matrix exponentials for an augmented polynomial-forced linear system.
+It records the .5 ms grid and exact event times, with both event sides.
+All 21 interior join checks pass for reference q,v,a,j, actual x,v,a, and u.
+The actual jerk at t=0 matches the exact required values137/15 and4/5.
+Rows include actual jerk, command derivative, and reference jerk separately.
+
+These are sampled metrics. Sampled violations reject the stated tracking target
+for those laws. A sampled pass is not a continuous-time bound. Sampled command
+variation and travel are numerical approximations. The comparison applies only
+to this fixed reference and these initial conditions. It neither establishes a
+general benefit of direct control nor proves that all smoothing methods fail.
+
+Second-method check: all9030 rows agree with80-digit Taylor exponential
+propagation in physical coordinates. Maximum column difference is below3e-12.
+Both scripts have the same coordinator author; this is not independent agent
+review. crosscheck.py and high-precision-check.json record that boundary.
+
+Next gate: independent agent equation, trace, join, and metric review. No more
+plant cases, tuning, or broader claims before that grade.

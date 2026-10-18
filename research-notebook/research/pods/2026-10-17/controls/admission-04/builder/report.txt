@@ -1,0 +1,88 @@
+CAUSAL REFERENCE ADMISSION — proof batch 04
+
+The result is a sharp necessary deadline for removing positive acceleration.
+It is not a stopping-time result, a control law, or a robot safety certificate.
+The old 0.2 mm controller failures remain unchanged.
+
+Statement and regularity
+Let a0,J,S>0 and T>=0. Time zero is when the new request arrives.
+The acceleration a is continuous on [0,T], has a(0)=a0, and has classical
+derivative a'=j at every point in (0,T). The jerk j is continuous on [0,T],
+has j(0)=J, and satisfies |j(t)|<=J throughout that closed interval.
+At each t in [0,T), j has right derivative s(t), with |s(t)|<=S.
+No continuity of s is assumed. No almost-everywhere or Sobolev result is claimed.
+
+Then a(T)<=0 implies T>=a0/J+2J/S. This includes the endpoint a(T)=0.
+The result applies to reference acceleration and reference jerk in the current
+task. Applying it to physical acceleration requires these same physical jerk
+and snap hypotheses. The existing filtered controller does not supply them.
+
+Proof content
+The one-sided mean-value theorem gives |j(t)-J|<=S*t. Combining this with
+j(t)>=-J proves j(t)>=max(J-S*t,-J). Thus the lower envelope is derived from
+actual derivative hypotheses, not supplied as a trajectory assumption.
+
+Put L=2J/S. Integration and the fundamental theorem of calculus give
+  a(t)>=a0+J*t-S*t^2/2         for 0<=t<=L,
+  a(t)>=a0-J*(t-L)            for L<=t<=T.
+The first lower bound is at least a0. The second cannot be nonpositive before
+a0/J+L. Both time cases are present in the Lean proof.
+
+Sharpness is proved for every positive a0,J,S. The attaining jerk is
+  j_min(t)=max(J-S*t,-J),
+and a_min(t)=a0+integral(0,t,j_min). Its right snap is -S before L and zero
+at and after L. The file proves continuity, the derivative relations, both
+motion bounds, the initial state, and a_min(a0/J+L)=0. At L the jerk lacks a
+two-sided derivative; its right derivative exists. This is why the stated
+regularity matters.
+
+Velocity consequence
+For a continuous velocity v with v(0)=v0 and v'=a on (0,T), integrating the
+acceleration comparison gives, for L<=t<=T,
+  v(t)>=v0+a0*t-J*t^2/2+(2*J^2/S)*t-4*J^3/(3*S^2).
+The Lean file proves this for every admissible trajectory. It is not only an
+evaluation of the attaining ramp.
+
+Exact old-task instance (SI units)
+At arrival, a0=5/2 m/s^2, incoming jerk J=10 m/s^3, and snap limit S=400 m/s^4.
+The earliest acceleration-zero time is 3/10 s after arrival. At the old 1/4 s
+deadline, every admissible acceleration is at least 1/2 m/s^2.
+With v0=5/16 m/s, at 3/10 s every admissible velocity is at least 181/240 m/s.
+This exceeds the old velocity endpoint 5/8 m/s by 31/240 m/s. Adding only
+50 ms therefore cannot retain the old full endpoint. No position theorem is
+claimed in this proof batch; the analyst's separate exact calculations cover it.
+
+Verification scope
+Run python3 verify.py from any directory. The verifier finds the pinned
+lean-controls environment, copies the target source to a fresh directory,
+builds a fresh target olean, audits every public theorem for standard axioms,
+and separately replays the target with leanchecker. Cached pinned Mathlib
+dependencies are reused. No target olean is reused.
+
+The accepted target contains no sorry, admit, native_decide, unsafe declaration,
+or new axiom. Allowed axioms are propext, Classical.choice, and Quot.sound.
+Exact results, versions, source hashes, log hashes and checks are recorded in
+verification.json. That report is authoritative for whether the checks passed.
+
+The negative test changes the necessary deadline to a0/J+2J/S+J/S. This is
+false: the accepted attaining trajectory reaches zero at the smaller deadline.
+For the exact instance the false bound is 13/40 s, but the accepted trajectory
+reaches zero at 3/10 s. The verifier requires the changed proof to fail, then
+compiles a positive witness to the counterexample in MutationWitness.lean.
+
+Limits and next falsifiable task
+This is elementary bounded-snap/S-curve kinematics, not a novelty claim.
+The result does not bound plant tracking, actuator authority, command variation,
+execution latency, sampled execution, robustness, or hardware behavior.
+It does not accept the analyst's separate new stopping reference automatically.
+
+The next task is to review one explicitly stated causal reference contract with
+its complete endpoint, latency, limits and deadline. Check that reference before
+any fixed-controller comparison. If the original limits and endpoint remain,
+the proven rejection applies. Any changed goal must remain visible as a changed
+task. No new simulation or parameter sweep was run by this builder.
+
+Preservation
+This builder changed only admission-04/builder/. Root is responsible for the
+independent review and the requested notebook sync, hash check and Git commit.
+No local commit, remote push, or merge was performed by this builder.

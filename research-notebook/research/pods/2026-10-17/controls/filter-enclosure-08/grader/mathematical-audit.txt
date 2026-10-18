@@ -1,0 +1,101 @@
+MODEL AND ENCLOSURE AUDIT
+
+Physical model
+The frozen plant is x'=v, v'=a, a'=80(u+1/100-a). The filtered controller is
+u'=20(qa-800(x-q)-60(v-qv)-(a-qa)/2+k*j-u), where qa=q'' and j=q'''.
+Expanding this gives
+  u'=-16000*x-1200*v-10*a-20*u+16000*q+1200*q'+30*q''+20*k*j.
+
+In the independent physical coordinates z=(x,v/10,a/100,u/100), this is
+z'=P*z+g(t), with
+  P = [[0,10,0,0],[0,0,10,0],[0,0,-80,80],[-160,-120,-10,-20]],
+  g = (0,0,1/125,160*q+12*q'+3*q''/10+k*j/5).
+All entries and all polynomial coefficients are exact rationals.
+
+The builder uses y=z-r, with r=(q,q'/10,q''/100,q''/100).
+Therefore y'=P*y+P*r+g-r'. Exact coefficient algebra gives
+  y0'=10*y1,
+  y1'=10*y2,
+  y2'=-80*y2+80*y3+1/125-j/100,
+  y3'=-160*y0-120*y1-10*y2-20*y3+(20*k-1)*j/100.
+The independently derived matrices match all 11 retained builder matrices.
+The monomial rows have the correct derivatives: (t^ell)'=ell*t^(ell-1).
+
+Reference and phase transfer
+reference.json matches the frozen causal-stop-05 reference hash. The reviewer
+reads its rational position coefficients, derives velocity, acceleration and
+jerk, and checks every join exactly. There are 28 equality checks across seven
+joins. The initial reference state is (0,0,0,10) for q,q',q'',q''' and the final
+state is (3/5,0,0,0). The full reference ends at 3/2 seconds.
+
+The physical initial state x,v,a,u is zero. The reference q,q',q'' is zero
+there, so the builder's initial y is also zero. At each phase boundary q,q',q''
+are continuous. Thus retaining y is equivalent to retaining the physical and
+controller states. Resetting the local polynomial clock to zero is correct;
+it does not reset a plant state. The exact witness times are in the intended
+negative-jerk-hold and brake phases. No simulator state is imported.
+
+Builder arithmetic
+point encloses an exact rational by floor and ceiling at scale 10^600. The
+multiplier routine reverses the endpoints before multiplication when its
+rational multiplier is negative. Python floor division rounds downward for
+negative values too; negated floor of the negated numerator gives ceiling.
+The denominator of Fraction is positive. Addition is exact on the grid.
+
+The term recurrence starts at the incoming interval vector and applies M/n
+at iteration n, so it encloses M^n*v/n!. The partial sum includes degrees
+zero through N. Each operation is outward, including signed matrix products.
+For a=||M||_infinity and B bounding the incoming box norm, the first omitted
+term is at most B*a^(N+1)/(N+1)!. The ratio of each following scalar majorant
+term to its predecessor is at most a/(N+2). When that ratio is below one,
+the geometric bound in the builder report is valid. Its numerator, denominator,
+degree, incoming norm and upward integer padding were recomputed exactly for
+all 11 phase certificates. The displayed decimal endpoints enclose the saved
+internal endpoints, and both lower endpoints strictly exceed 1/5000 m.
+
+Independent algorithm
+The independent implementation does not import or execute builder functions.
+It uses the scaled physical z coordinates above and a four-by-four homogeneous
+matrix. The reference enters as the full polynomial forcing g(t). It does not
+use the builder's eight-state augmented error system.
+
+For one phase of duration d, set M=d*P and a=||M||_infinity. If
+g(t)=sum_ell g_ell*t^ell, variation of constants gives
+  z(d)=exp(M)z(0)
+       +sum_ell ell!*d^(ell+1)*sum_(n>=0) M^n*g_ell/(n+ell+1)!.
+This follows by expanding exp(P(d-s)) and integrating each polynomial term.
+The finite sums through n=N are computed with exact Fraction arithmetic.
+The finite transition matrix is applied to the incoming interval box once.
+There is no rounding inside the finite sums.
+
+The homogeneous remainder is bounded by
+  B*a^(N+1)/(N+1)! / (1-a/(N+2)).
+The remainder for polynomial coefficient ell is bounded by
+  ||g_ell||_infinity * ell! * d^(ell+1) * a^(N+1)/(N+ell+2)!
+    / (1-a/(N+ell+3)).
+Each bound is an exact rational. The same induced-norm inequality and the
+ratio of the remaining positive scalar terms justify these geometric bounds.
+The sum of the homogeneous and forcing bounds pads every physical component.
+Only then is the output box rounded outward to 90 decimal places. Each phase
+uses a total tail bound at most 10^-75. The box is retained into the next phase.
+
+Subtracting the exact final q from the physical position interval gives the
+error enclosure. Both independent internal widths are below 10^-70 m. They
+round outward to the same 10^-15 m display intervals as the builder. This is
+an independent error bound, not just agreement of high-precision point values.
+
+Counterchecks
+The independent script checks 4,725 signed-rational interval images against
+their exact vertices. Explicit bad controls show that rounding negative values
+toward zero and failing to reverse endpoints for a negative multiplier can
+lose containment. An exact finite scalar tail lies below the geometric
+majorant in a separate scalar check. These are supporting implementation
+checks; the general containment argument is the arithmetic reasoning above.
+
+Trusted boundary
+Both calculations rely on Python integer/Fraction correctness and the usual
+real matrix exponential solution and uniqueness theorem for linear phase ODEs.
+The code, interval rules and analytic remainder argument are not formalized
+in Lean here. The reference's previous Lean proof and the direct controller's
+all-time theorem have a different proof status. This review does not rerun
+those Lean proofs or upgrade these computed traces to kernel-checked results.

@@ -1,0 +1,92 @@
+APPROVED NEXT LEAN GATE: A REAL CLIFFORD CURVATURE CONTRACTION
+
+Scope
+Prove a standard pointwise algebraic identity for the declared candidate.
+This does not select the author's preferred GU operator or prove a field theory.
+Use the pinned Mathlib actual CliffordAlgebra. Do not define K by its desired
+scalar value. No complex star or Hodge theorem is required at this first gate.
+
+Precise data
+I=Fin 14; epsilon(a)=1 for a<7 and -1 otherwise.
+V=I -> Real. Q(v)=sum_a epsilon(a)*v(a)^2 as a QuadraticForm.
+e_a is the coordinate unit vector; gamma_a=CliffordAlgebra.iota Q e_a.
+R : I -> I -> I -> I -> Real satisfies, for all a,b,c,d:
+  R_abcd = -R_bacd;
+  R_abcd = -R_abdc;
+  R_abcd = R_cdab;
+  R_abcd - R_acbd + R_adbc = 0.
+Ric_bd=sum_a epsilon_a R_ab a d.
+scal=sum_b epsilon_b Ric_bb.
+
+Define the displayed object, with its actual finite sums and products:
+  K(R)=sum_(a<b,c<d) epsilon_a epsilon_b epsilon_c epsilon_d R_abcd
+       * (gamma_a gamma_b gamma_c gamma_d
+          + gamma_c gamma_d gamma_a gamma_b).
+Real multiplication in that display means scalar multiplication in the algebra.
+Main target: K(R)=algebraMap Real (CliffordAlgebra Q) (-scal).
+
+Recommended proof route
+Use a general finite index set for the main algebra, if it simplifies code.
+Assume real weights epsilon with epsilon_a^2=1, and elements gamma in a real
+associative algebra satisfying
+  gamma_a gamma_b + gamma_b gamma_a
+      = (if a=b then 2 epsilon_a else 0) * 1.
+Prove the contraction there, then discharge this relation for the actual Q and
+actual iota. The final actual-Clifford instance is mandatory. A theorem with
+uninstantiated gamma assumptions alone is partial progress.
+
+Let rho_abcd=epsilon_a epsilon_b epsilon_c epsilon_d R_abcd, and define
+  C=sum_all rho_abcd gamma_a gamma_b gamma_c gamma_d,
+  C'=sum_all rho_abcd gamma_a gamma_c gamma_b gamma_d,
+  C''=sum_all rho_abcd gamma_a gamma_c gamma_d gamma_b,
+  Tbc=sum_all rho_abcd delta_bc epsilon_b gamma_a gamma_d,
+  Tbd=sum_all rho_abcd delta_bd epsilon_b gamma_a gamma_c.
+All sums run over a,b,c,d in I. These are proof auxiliaries, not assumptions.
+
+1. Pair symmetry implies Ric_bd=Ric_db. Hence Clifford anticommutation gives
+   sum_(a,d) epsilon_a epsilon_d Ric_ad gamma_a gamma_d = scal * 1.
+2. The two antisymmetries, epsilon^2=1, and the Ricci definition give
+   Tbc=-scal*1 and Tbd=scal*1.
+3. One adjacent swap gives C'=-C+2Tbc. Two adjacent swaps give
+   C''=C-2Tbc+2Tbd.
+4. Sum the Bianchi identity with the Clifford word, then reindex the last three
+   indices. This gives C-C'+C''=0. Thus 3C-4Tbc+2Tbd=0, so C=-2 scal*1.
+5. Establish the normalization bridge C=2K. First, pair antisymmetry and the
+   off-diagonal Clifford relation turn the ordered sum into four times the
+   increasing-pair sum. Pair exchange symmetry makes the two terms in K equal.
+   The bridge is part of the gate. Do not silently replace the declared K by C/2.
+
+This route is preferable to 3185 generated proofs: it exposes the Bianchi use,
+is independent of dimension, and avoids a large trusted translation script.
+A Fin 14 implementation of these same lemmas is acceptable if general finite
+index bookkeeping slows the proof. A basis-vector proof is a fallback only if
+its spanning theorem and its actual Clifford interpretation are also proved.
+
+Mandatory negative and normalization controls
+Define the alternating four-form A supported on indices {0,1,2,3}, with
+A_0123=1. It has both pair antisymmetries and pair exchange symmetry. It has
+Ric=0, scal=0, and Bianchi residual A_0123-A_0213+A_0312=3.
+Compute in the same actual Clifford algebra:
+  K(A)=12 gamma_0 gamma_1 gamma_2 gamma_3 != 0.
+For nonzero, the four-generator product squares to 1. Use the actual
+nontriviality of CliffordAlgebra Q (available through the exterior equivalence);
+there is no need to formalize the full Fock representation at this gate.
+
+Also use the sectional tensor with independent component R_0101=1. Its scalar
+is 2 and K=-2*1. This catches a sign flip and a missing factor of two.
+A mutated target K=+scal*1 must be rejected. Dropping Bianchi must also be
+rejected by the explicit four-form control, not merely by a tactic timeout.
+
+Verification gate
+Fresh source build under the pinned toolchain; all public target axiom audits;
+independent leanchecker run; meaningful failed mutation; source hashes and logs.
+No sorry, admit, native_decide, extra axiom, unsafe theorem, or changed pin.
+Only then call the real Clifford identity proved. The Q=i scal and full
+C/J/J candidate bridges remain separate future targets.
+
+Relevant pinned APIs
+CliffordAlgebra.Basic: iota_sq_scalar and iota_mul_iota_add_swap (Lean identifiers
+use the actual Greek iota character). CliffordAlgebra.Contraction provides the
+exterior equivalence and the characteristic-not-two Nontrivial instance.
+Check exact local signatures before using them. Mathlib's CliffordAlgebra star
+fixes scalars; it is not the complex-conjugate bar in the candidate ledger.

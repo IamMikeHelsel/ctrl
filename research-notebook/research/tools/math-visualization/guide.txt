@@ -1,0 +1,81 @@
+Pretty mathematics after Maple
+Checked 17 October 2026. Recommendation, not a compatibility benchmark.
+
+My default for this project: JupyterLab + SymPy + SciPy + Plotly.
+Add python-control when we need Bode plots, margins, root locus, or control design.
+This puts equations, notes, numerical experiments, and interactive plots in one
+local notebook. SymPy renders fractions, integrals, and matrices; Plotly supplies
+hover, zoom, sliders, and portable HTML. JupyterLab is the workspace, not a CAS.
+
+If you want one broad mathematics suite, choose SageMath with its Jupyter
+interface. It combines many systems through a Python-based language, including
+Maxima and SymPy. It is the strongest fit here for our number theory and algebra
+work. It is a larger environment than the small Python stack.
+
+If what you miss is Maple's worksheet GUI, try wxMaxima first. It is a graphical
+worksheet for the Maxima computer algebra system. It has formatted equations,
+menus for common operations, inline plots, and simple animations. Its syntax and
+capabilities differ from Maple. This is my closest workflow match, not a clone.
+
+Choose by task
+-------------
+SymPy + Jupyter: symbolic equations, calculus, exact rational expressions,
+                 attractive notebook output, and LaTeX export.
+SageMath:       a broader algebra and number theory suite, also with Jupyter.
+wxMaxima:       a traditional computer-algebra worksheet with menus.
+GNU Octave:    MATLAB-like numerical scripts, matrices, and 2D/3D plots.
+Scilab/Xcos:   numerical controls work plus graphical block-diagram simulation
+               for continuous, discrete, and hybrid systems. Choose this if you
+               want to build a loop by connecting blocks.
+python-control: control-specific analysis and design inside Python.
+Plotly:        attractive interactive charts that can be saved as local HTML.
+Manim:         scripted mathematical explanation videos. Use Manim Community
+               for our new videos; Grant Sanderson's ManimGL is a separate
+               branch with a different API. Neither replaces a CAS notebook.
+
+For our work, I would use the small Python stack first, keep SageMath available
+for algebra, and use Manim for finished explanations. I would add Xcos only when
+the block diagram itself helps us think. We do not need to build a new UI platform.
+
+Try the included examples
+-------------------------
+1. Open damping-demo.html in your usual browser. Move the damping slider. The
+   target stays fixed while the response changes. This is a simple teaching model,
+   not a replay or proof of our robot result. Click the camera button for a PNG.
+2. To regenerate it, run from this workspace:
+   python3 research/tools/math-visualization/damping_demo.py
+3. To see symbolic pretty printing now:
+   .tools/research-python/bin/python research/tools/math-visualization/pretty_math.py
+   Paste the same symbolic calculation into Jupyter for typeset math output.
+
+The earlier shelf is at ../../academic-tools/pretty-math.html. This note extends
+it with Octave, Xcos, python-control, Plotly, and a runnable interactive example.
+The earlier shelf already links our rendered Manim recovery explanation.
+
+What was checked
+----------------
+No installation, account, purchase, or service was needed. Python3 already has
+NumPy, SciPy, and Plotly. The research Python environment has SymPy 1.14.0.
+Neither of these checked environments currently has JupyterLab. The Python3
+environment lacks python-control. This is not an inventory of all Mac apps.
+The example generation and symbolic identities were executed. Numerical step
+responses were compared with the closed-form solution. Browser interaction was
+not tested in this side task. See verification.json for versions and errors.
+CAS checks and plots are separate from Lean proof evidence.
+
+Official sources, checked 17 October 2026
+----------------------------------------
+SymPy printing: https://docs.sympy.org/latest/tutorials/intro-tutorial/printing.html
+Jupyter: https://jupyter.org/
+SageMath: https://www.sagemath.org/
+Sage notebook: https://doc.sagemath.org/html/en/installation/launching.html
+wxMaxima: https://wxmaxima-developers.github.io/wxmaxima/
+wxMaxima manual: https://wxmaxima-developers.github.io/wxmaxima/Doxygen-documentation/md_info_wxmaxima.html
+GNU Octave: https://octave.org/
+Scilab/Xcos: https://www.scilab.org/software/xcos
+Python control: https://python-control.readthedocs.io/en/latest/
+Plotly charts: https://plotly.com/python/
+Plotly HTML: https://plotly.com/python/interactive-html-export/
+SciPy step response: https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.step.html
+Manim Community: https://www.manim.community/
+ManimGL: https://github.com/3b1b/manim

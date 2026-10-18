@@ -1,0 +1,108 @@
+WEINSTEIN CANDIDATE PREFLIGHT 02
+Decision: CONTINUE one bounded Lean gate. Grade: B+ for this preflight milestone.
+This grade is not a publication score or a probability that GU is correct.
+
+The declared scalar contraction passes independent review. The next useful
+step is K(R)=-scal*1 in Mathlib's actual real Cl(7,7), with explicit algebraic
+curvature assumptions and a non-Bianchi counterexample. See lean-target.txt.
+No Lean proof was built or accepted in this preflight.
+
+Frozen evidence
+The analyst SHA256SUMS file has the supplied hash
+fd33e27a0bc042954cb27d94876cdc83d2c45747c557da24f90ce51343d31ed7.
+Every listed source file matched before the checks and again after them.
+The four scripts were copied into grader/replay and run there. All four passed;
+their parsed JSON outputs match the retained analyst outputs exactly.
+The grader did not edit the analyst package or earlier accepted artifacts.
+
+Independent algebra check
+independent_contraction.py imports none of the analyst model. It reduces words
+by adjacent swaps and repeated-generator cancellation. It checks all 4186
+independent coordinates in Sym^2(Lambda^2 R14), including the non-Bianchi ones.
+It verifies the full scalar-plus-four-vector remainder, the factor C=2K, Ricci
+symmetry, and the two diagonal contractions in the recommended proof.
+It also checks all 3185 stated algebraic-curvature basis elements.
+
+The basis argument is sound. There are 91 two-index pairs and 4186 symmetric
+pair coordinates. Of these, 1183 have intersecting pairs. The remaining 3003
+split into 1001 disjoint four-index blocks. Each block has one independent
+Bianchi equation x-y+z=0. Its two vectors (1,1,0) and (0,1,1) span the kernel:
+their x,z coordinates are the standard basis. Different blocks have disjoint
+support. Repeated-index Bianchi equations already follow from the pair
+symmetries. Thus the basis has dimension 1183+2002=3185. The finite test is
+exhaustive for this coefficient model, but its Python interpreter and the
+basis-to-mathematics argument are outside Lean's trusted kernel.
+
+Normalization and domains
+The metric signs, increasing-pair convention, and scalar definition are
+consistent. For R_0101=1, scal=2 and K=-2. The Hodge convention uses S(vol)=-1
+in signature (7,7), so K=-scal gives Q=i scal under the declared J product.
+The full C/J/J algebra then has the claimed Einstein trace ratio. This ratio
+depends on the specified scale of Phi2 and the product choices. Weyl
+annihilation alone cannot determine it. Scaling Phi2 by beta preserves zero
+on Ricci-free curvature for every beta. The declared additional invariant
+tensors involving the volume element also show that a selection is needed.
+
+The four-form negative control is essential. It obeys both pair
+antisymmetries and pair exchange symmetry but violates Bianchi. Independently,
+K=12 gamma_0123, scal=0. The four-generator product squares to 1, so it is
+nonzero in a nontrivial real Clifford algebra. Ricci zero alone is insufficient.
+
+The gauge counterexample is also correct. Conjugation by gamma0 gamma1 flips
+exactly gamma0 and gamma1. For the stated four sectional components, the
+rotated Phi2 contraction becomes 8i. The first term has no gamma4 component;
+the scalar term gives +8 S(theta4) gamma4. Rotating the input curvature too
+restores zero by covariance. The valid statement is at the identity, or on the
+matching transported Weyl space. This does not refute the author's claim until
+his intended domain and gauge identification are fixed. The reported kernel
+is exactly the Weyl kernel only on the declared ordinary-curvature domain;
+it is not a kernel statement on all adjoint-valued two-forms.
+
+Adjoint and spinor checks
+The candidate's bar must conjugate complex scalars. Pinned Mathlib
+CliffordAlgebra.Star has star_smul and star_algebraMap that fix those scalars.
+It cannot supply the required complex adjoint directly. This is a real API
+boundary, not a notation difference.
+
+independent_fock.py constructs separate integer matrices from exterior
+creation and contraction. It verifies Clifford relations, symmetric K,
+K^2=I, trace K=0, and every generator's K-skew adjoint relation. This implies
+signature (64,64). It also constructs the exact vacuum projector and all 128
+creation columns and contraction rows. Their outer products give all 16384
+matrix units, which supplies the missing elementary spanning argument for
+faithfulness once the standard Clifford dimension is used. These are exact
+integer computations and a mathematical argument, not a Lean representation
+or a formally proved isomorphism. No floating-point rank or spectrum is used.
+
+Source check and novelty boundary
+The primary author PDF and official homepage were opened independently. The
+source map accurately separates the author's template from the analyst's
+choices. Definition 8.1 gives invariant spaces; section 8.2 leaves the preferred
+selection unresolved. The grade pattern is present at (3.27), and (9.3)
+contains the two-term template. No stronger source identification is accepted.
+Primary source: https://geometricunity.nyc3.digitaloceanspaces.com/Geometric_Unity-Draft-April-1st-2021.pdf
+Official page: https://geometricunity.org/
+
+The reduction of a Clifford curvature contraction to scalar curvature is
+standard spin geometry. A primary academic reference is Xianzhe Dai's notes,
+section 2.8, in the derivation of the Lichnerowicz formula:
+https://web.math.ucsb.edu/~dai/book.pdf
+The same scalar-collapse step appears as the Lichnerowitz identity in
+Gromov, Four Lectures on Scalar Curvature:
+https://cims.nyu.edu/~gromov/lectures%20on%20Curvature%202025/Scalar-Jul-8-2021.pdf
+The coordinator also supplied Debray's notes, theorem 5.10:
+https://adebray.github.io/lecture_notes/m392c_IND_notes.pdf
+These are versions of the algebraic core of the Schroedinger-Lichnerowicz
+formula. Their metric, Clifford, and curvature conventions must be translated
+before comparing factors. This gate is a formalization and audit contribution. No
+new mathematical theorem or publication value is established here.
+
+Stop and acceptance conditions
+Give the builder the real identity and the two controls in lean-target.txt.
+Prefer a dimension-independent ordered-contraction lemma, instantiated in
+actual Cl(7,7), with an explicit sorted-pair bridge. A finite-14 version is fine.
+Accept only after fresh compilation, all target axiom audits, kernel replay,
+and a rejected false mutation. If only an abstract gamma lemma compiles, record
+partial progress and do not claim the actual Clifford gate is closed.
+Do not expand into global GU equations, physical predictions, a full complex
+adjoint bridge, or the Hodge-to-candidate assembly in this first gate.

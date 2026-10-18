@@ -1,0 +1,92 @@
+CausalAdmission.leastJerk_continuous (J S : ℝ) : Continuous.{0, 0} (CausalAdmission.leastJerk J S)
+CausalAdmission.leastJerk_before {J S t : ℝ} (hS : LT.lt.{0} 0 S) (ht : LE.le.{0} t (CausalAdmission.rampTime J S)) :
+  Eq.{1} (CausalAdmission.leastJerk J S t) (HSub.hSub.{0, 0, 0} J (HMul.hMul.{0, 0, 0} S t))
+CausalAdmission.leastJerk_after {J S t : ℝ} (hS : LT.lt.{0} 0 S) (ht : LE.le.{0} (CausalAdmission.rampTime J S) t) :
+  Eq.{1} (CausalAdmission.leastJerk J S t) (Neg.neg.{0} J)
+CausalAdmission.jerk_lower {a0 J S T : ℝ} {a j s : ℝ → ℝ} (h : CausalAdmission.IsAdmissible a0 J S T a j s) {t : ℝ}
+  (ht : Membership.mem.{0, 0} (Set.Icc.{0} 0 T) t) : LE.le.{0} (CausalAdmission.leastJerk J S t) (j t)
+CausalAdmission.leastAccel_before {a0 J S t : ℝ} (hS : LT.lt.{0} 0 S) (ht0 : LE.le.{0} 0 t)
+  (ht : LE.le.{0} t (CausalAdmission.rampTime J S)) :
+  Eq.{1} (CausalAdmission.leastAccel a0 J S t)
+    (HSub.hSub.{0, 0, 0} (HAdd.hAdd.{0, 0, 0} a0 (HMul.hMul.{0, 0, 0} J t))
+      (HDiv.hDiv.{0, 0, 0} (HMul.hMul.{0, 0, 0} S (HPow.hPow.{0, 0, 0} t 2)) 2))
+CausalAdmission.leastAccel_after {a0 J S t : ℝ} (hJ : LT.lt.{0} 0 J) (hS : LT.lt.{0} 0 S)
+  (ht : LE.le.{0} (CausalAdmission.rampTime J S) t) :
+  Eq.{1} (CausalAdmission.leastAccel a0 J S t)
+    (HSub.hSub.{0, 0, 0} a0 (HMul.hMul.{0, 0, 0} J (HSub.hSub.{0, 0, 0} t (CausalAdmission.rampTime J S))))
+CausalAdmission.acceleration_lower {a0 J S T : ℝ} {a j s : ℝ → ℝ} (h : CausalAdmission.IsAdmissible a0 J S T a j s)
+  {t : ℝ} (ht : Membership.mem.{0, 0} (Set.Icc.{0} 0 T) t) : LE.le.{0} (CausalAdmission.leastAccel a0 J S t) (a t)
+CausalAdmission.nonpositive_acceleration_deadline {a0 J S T : ℝ} {a j s : ℝ → ℝ} (ha0 : LT.lt.{0} 0 a0)
+  (hJ : LT.lt.{0} 0 J) (hS : LT.lt.{0} 0 S) (hT : LE.le.{0} 0 T) (h : CausalAdmission.IsAdmissible a0 J S T a j s)
+  (hz : LE.le.{0} (a T) 0) : LE.le.{0} (CausalAdmission.deadline a0 J S) T
+CausalAdmission.leastAccel_derivative (a0 J S t : ℝ) :
+  HasDerivAt.{0, 0} (CausalAdmission.leastAccel a0 J S) (CausalAdmission.leastJerk J S t) t
+CausalAdmission.leastJerk_right_derivative {J S : ℝ} (hS : LT.lt.{0} 0 S) (t : ℝ) :
+  HasDerivWithinAt.{0, 0} (CausalAdmission.leastJerk J S) (CausalAdmission.leastSnap J S t) (Set.Ici.{0} t) t
+CausalAdmission.least_isAdmissible (a0 T : ℝ) {J S : ℝ} (hJ : LT.lt.{0} 0 J) (hS : LT.lt.{0} 0 S) :
+  CausalAdmission.IsAdmissible a0 J S T (CausalAdmission.leastAccel a0 J S) (CausalAdmission.leastJerk J S)
+    (CausalAdmission.leastSnap J S)
+CausalAdmission.least_reaches_zero {a0 J S : ℝ} (ha0 : LT.lt.{0} 0 a0) (hJ : LT.lt.{0} 0 J) (hS : LT.lt.{0} 0 S) :
+  Eq.{1} (CausalAdmission.leastAccel a0 J S (CausalAdmission.deadline a0 J S)) 0
+CausalAdmission.original_deadline_impossible {a j s : ℝ → ℝ}
+  (h : CausalAdmission.IsAdmissible (5 / 2) 10 400 (1 / 4) a j s) : Ne.{1} (a (1 / 4)) 0
+CausalAdmission.exact_earliest_deadline : Eq.{1} (CausalAdmission.deadline (5 / 2) 10 400) (3 / 10)
+CausalAdmission.exact_acceleration_residual {a j s : ℝ → ℝ}
+  (h : CausalAdmission.IsAdmissible (5 / 2) 10 400 (1 / 4) a j s) : LE.le.{0} (1 / 2) (a (1 / 4))
+CausalAdmission.leastVelocity_after {v0 a0 J S t : ℝ} (hJ : LT.lt.{0} 0 J) (hS : LT.lt.{0} 0 S)
+  (ht : LE.le.{0} (CausalAdmission.rampTime J S) t) :
+  Eq.{1} (CausalAdmission.leastVelocity v0 a0 J S t)
+    (HSub.hSub.{0, 0, 0}
+      (HAdd.hAdd.{0, 0, 0}
+        (HSub.hSub.{0, 0, 0} (HAdd.hAdd.{0, 0, 0} v0 (HMul.hMul.{0, 0, 0} a0 t))
+          (HDiv.hDiv.{0, 0, 0} (HMul.hMul.{0, 0, 0} J (HPow.hPow.{0, 0, 0} t 2)) 2))
+        (HMul.hMul.{0, 0, 0} (HDiv.hDiv.{0, 0, 0} (HMul.hMul.{0, 0, 0} 2 (HPow.hPow.{0, 0, 0} J 2)) S) t))
+      (HDiv.hDiv.{0, 0, 0} (HMul.hMul.{0, 0, 0} 4 (HPow.hPow.{0, 0, 0} J 3))
+        (HMul.hMul.{0, 0, 0} 3 (HPow.hPow.{0, 0, 0} S 2))))
+CausalAdmission.velocity_lower {v0 a0 J S T : ℝ} {v a j s : ℝ → ℝ} (h : CausalAdmission.IsAdmissible a0 J S T a j s)
+  (hv : ContinuousOn.{0, 0} v (Set.Icc.{0} 0 T)) (hv0 : Eq.{1} (v 0) v0)
+  (hvd : ∀ (t : ℝ), Membership.mem.{0, 0} (Set.Ioo.{0} 0 T) t → HasDerivAt.{0, 0} v (a t) t) {t : ℝ}
+  (ht : Membership.mem.{0, 0} (Set.Icc.{0} 0 T) t) : LE.le.{0} (CausalAdmission.leastVelocity v0 a0 J S t) (v t)
+CausalAdmission.exact_velocity_residual {v a j s : ℝ → ℝ}
+  (h : CausalAdmission.IsAdmissible (5 / 2) 10 400 (3 / 10) a j s) (hv : ContinuousOn.{0, 0} v (Set.Icc.{0} 0 (3 / 10)))
+  (hv0 : Eq.{1} (v 0) (5 / 16))
+  (hvd : ∀ (t : ℝ), Membership.mem.{0, 0} (Set.Ioo.{0} 0 (3 / 10)) t → HasDerivAt.{0, 0} v (a t) t) :
+  LE.le.{0} (31 / 240) (HSub.hSub.{0, 0, 0} (v (3 / 10)) (5 / 8))
+'CausalAdmission.leastJerk_continuous' depends on axioms: [propext, Classical.choice, Quot.sound]
+'CausalAdmission.leastJerk_before' depends on axioms: [propext, Classical.choice, Quot.sound]
+'CausalAdmission.leastJerk_after' depends on axioms: [propext, Classical.choice, Quot.sound]
+'CausalAdmission.jerk_lower' depends on axioms: [propext, Classical.choice, Quot.sound]
+'CausalAdmission.leastAccel_before' depends on axioms: [propext, Classical.choice, Quot.sound]
+'CausalAdmission.leastAccel_after' depends on axioms: [propext, Classical.choice, Quot.sound]
+'CausalAdmission.acceleration_lower' depends on axioms: [propext, Classical.choice, Quot.sound]
+'CausalAdmission.nonpositive_acceleration_deadline' depends on axioms: [propext, Classical.choice, Quot.sound]
+'CausalAdmission.leastAccel_derivative' depends on axioms: [propext, Classical.choice, Quot.sound]
+'CausalAdmission.leastJerk_right_derivative' depends on axioms: [propext, Classical.choice, Quot.sound]
+'CausalAdmission.least_isAdmissible' depends on axioms: [propext, Classical.choice, Quot.sound]
+'CausalAdmission.least_reaches_zero' depends on axioms: [propext, Classical.choice, Quot.sound]
+'CausalAdmission.original_deadline_impossible' depends on axioms: [propext, Classical.choice, Quot.sound]
+'CausalAdmission.exact_earliest_deadline' depends on axioms: [propext, Classical.choice, Quot.sound]
+'CausalAdmission.exact_acceleration_residual' depends on axioms: [propext, Classical.choice, Quot.sound]
+'CausalAdmission.leastVelocity_after' depends on axioms: [propext, Classical.choice, Quot.sound]
+'CausalAdmission.velocity_lower' depends on axioms: [propext, Classical.choice, Quot.sound]
+'CausalAdmission.exact_velocity_residual' depends on axioms: [propext, Classical.choice, Quot.sound]
+structure CausalAdmission.IsAdmissible (a0 J S T : ℝ) (a j s : ℝ → ℝ) : Prop
+number of parameters: 7
+fields:
+  CausalAdmission.IsAdmissible.acceleration_continuous : ContinuousOn a (Set.Icc 0 T)
+  CausalAdmission.IsAdmissible.acceleration_initial : a 0 = a0
+  CausalAdmission.IsAdmissible.acceleration_derivative : ∀ t ∈ Set.Ioo 0 T, HasDerivAt a (j t) t
+  CausalAdmission.IsAdmissible.jerk_continuous : ContinuousOn j (Set.Icc 0 T)
+  CausalAdmission.IsAdmissible.jerk_initial : j 0 = J
+  CausalAdmission.IsAdmissible.jerk_bound : ∀ t ∈ Set.Icc 0 T, |j t| ≤ J
+  CausalAdmission.IsAdmissible.snap_derivative : ∀ t ∈ Set.Ico 0 T, HasDerivWithinAt j (s t) (Set.Ici t) t
+  CausalAdmission.IsAdmissible.snap_bound : ∀ t ∈ Set.Ico 0 T, |s t| ≤ S
+constructor:
+  CausalAdmission.IsAdmissible.mk {a0 J S T : ℝ} {a j s : ℝ → ℝ}
+    (acceleration_continuous : ContinuousOn a (Set.Icc 0 T)) (acceleration_initial : a 0 = a0)
+    (acceleration_derivative : ∀ t ∈ Set.Ioo 0 T, HasDerivAt a (j t) t) (jerk_continuous : ContinuousOn j (Set.Icc 0 T))
+    (jerk_initial : j 0 = J) (jerk_bound : ∀ t ∈ Set.Icc 0 T, |j t| ≤ J)
+    (snap_derivative : ∀ t ∈ Set.Ico 0 T, HasDerivWithinAt j (s t) (Set.Ici t) t)
+    (snap_bound : ∀ t ∈ Set.Ico 0 T, |s t| ≤ S) : CausalAdmission.IsAdmissible a0 J S T a j s
+def CausalAdmission.deadline : ℝ → ℝ → ℝ → ℝ :=
+fun a0 J S => a0 / J + CausalAdmission.rampTime J S

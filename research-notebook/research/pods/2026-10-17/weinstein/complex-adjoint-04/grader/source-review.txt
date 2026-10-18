@@ -1,0 +1,79 @@
+ACTUAL COMPLEX ADJOINT: SOURCE REVIEW
+
+Construction
+ComplexAdjoint.lean:11-24 uses the accepted real Clifford algebra Cl(Q) and
+Mathlib's actual tensor algebra C tensor_R Cl(Q). The multiplication is the
+algebra tensor-product multiplication. The complex action is on the left
+factor. No product or adjoint is defined from a desired closure property.
+
+The new realCliffordStarModule instance only supplies compatibility with real
+scalars. It is valid because real conjugation is trivial and the accepted
+Clifford star fixes those scalars. The resulting tensor star conjugates the
+complex factor and applies the Clifford anti-involution on the real factor.
+bar is exactly that star. The pure-tensor formula makes this distinction
+visible; the operation is not the scalar-fixed star on a Clifford algebra
+defined directly over C.
+
+The pinned RingTheory/TensorProduct/Basic.lean supplies the actual tensor
+StarMul and StarRing instances. Its product-reversal proof uses tensor
+induction. Thus the submitted bar_mul and bar_involutive do not import
+assumed adjoint laws. bar_scalar and bar_smul prove the complex scalar rule
+for this actual algebra action. bar_I_smul and bar_gamma have the required
+negative signs.
+
+Faithfulness and non-vacuity
+embed is includeRight, a real algebra homomorphism. Its injectivity uses
+Mathlib's flat base-change theorem, with the real field and the injective
+map R -> C. The accepted real Clifford algebra is nontrivial. The inclusion
+therefore proves that the tensor algebra is nontrivial. Its complex scalar
+map is injective. None of the sign witnesses is proved in the zero algebra.
+
+Closure
+Skew means bar(a) = -a. It is a predicate on the constructed algebra, not an
+extra operation. commutator is a*b-b*a; iAnti is I times (a*b+b*a). Both
+closure theorems use the actual bar laws and only the two input skew
+hypotheses. The iAnti proof needs both product reversal and conjugation of I.
+No factor of one half is present. These are statements about skew elements;
+the submitted sources do not identify them with a matrix Lie algebra.
+
+Scalar-fixed comparison
+AdjointControls.lean defines realStar as the actual real Clifford star and
+fixedBar as TensorProduct.map id realStar. The code proves its complex
+linearity, product reversal, involution, scalar fixing, and generator signs.
+It is a valid anti-involution, but it is unsuitable for the declared J closure.
+For the positive generator gamma_0, J(gamma_0,gamma_0) = 2I times 1. This is
+nonzero. fixedBar fixes it, so it is not fixedBar-skew. The universal failure
+of that closure rule follows from this concrete example.
+
+Other controls
+Omitting I produces 2 times 1 from the same inputs; that result is not bar-skew.
+The order-preserving formula is false on gamma_0*gamma_7. This mixed-sign blade
+squares to 1, which provides a nonzero witness. The negative metric generator
+is checked explicitly: gamma_7 squared = -1. These are actual algebra facts,
+not failures caused solely by rewriting tactics or incomplete proof searches.
+
+Curvature inclusion
+ComplexContraction.lean:9 defines complexK from the literal accepted sorted
+sum and embedded generators. complexK_embed unfolds this definition and uses
+the algebra homomorphism to preserve every sum, real coefficient and product.
+Only after this bridge does the code invoke the accepted real contraction.
+The tensor, metric weights, sorted-pair convention and Bianchi hypothesis are
+unchanged. The scalar result is through the real scalar map into the complex
+algebra. complexK_bar_fixed is consistent with its real scalar value.
+
+The independent client exposes the entire finite curvature sum, proves that
+the real inclusion reflects equality, checks the positive sectional scalar,
+and preserves the nonzero four-form defect. It also distinguishes bar from
+fixedBar on their explicit shared J input. This checks the main interfaces
+without relying only on opaque names for K, Skew, or the coefficient algebra.
+
+Scope
+There are three new modules with 37 theorem statements and 49 named public
+declarations, including definitions and two instances. These counts describe
+audit coverage. They do not count new mathematical discoveries. The inherited
+four real-Clifford modules are recorded separately.
+
+No matrix representation, Hermitian signature, u(64,64) identification, exterior
+form, Hodge assembly, selected Phi tensors, field equation, or physical claim
+is proved by this gate. It closes the specific missing adjoint construction
+for the declared coefficient algebra.

@@ -1,0 +1,112 @@
+CAUSAL-STOP-05 INDEPENDENT GRADE — 18 October 2026 UTC
+Grade: B. Decision: pause these two slow-filter laws. Do not tune them here.
+
+The fixed comparison is accepted as numerical evidence. Both filtered laws fail
+the 0.2 mm position target at saved samples. Both have larger sampled actual jerk
+and command variation than direct control on this same reference. This closes a
+useful practical question. It does not prove that filtering is generally harmful.
+
+Independent results
+                                  Direct       Original filter   Compensated filter
+Max sampled |x-q| (mm)             0.038464574   1.259612314       0.335036377
+Peak actual jerk (m/s^3)          10.483384307  30.159893557      17.511238782
+Sampled command variation(m/s^2)   9.631401111  20.505338903      11.752551041
+Endpoint position error (mm)       0.010390049  -0.080758696      -0.144547162
+Endpoint velocity (m/s)            0.000056920  -0.014735749      -0.001836066
+Endpoint acceleration (m/s^2)     -0.001364493   0.048487100       0.162843727
+Max actual x (m)                   0.600010390   0.600421521       0.600236063
+Sampled travel (m)                 0.600010390   0.600923801       0.600616674
+
+The original filter's position witness is t=171/400 s. The compensated filter's
+witness is t=1581/2000 s. Their excess errors are far above numerical disagreement.
+Direct's sampled peak is at t=277/500 s. Direct has a sampled position pass;
+this review does not promote it to an all-time proof. All endpoint positions meet
+the declared tolerance. None of these facts certifies physical stopping.
+No actual endpoint velocity/acceleration tolerance was supplied. The actual
+positions exceed the reference's 0.6 m ceiling; that ceiling was not accepted
+as an actual-state safety constraint. The table keeps this distinction visible.
+
+Independent method and checks
+The grader wrote physical_replay.py before reading the coordinator's second
+method. It uses unscaled actual x,v,a,u, plus q and its six derivatives. It
+reconstructs the reference from the accepted rational contract. It uses an
+80-digit mpmath Pade exponential. It does not import compare.py or crosscheck.py.
+The reconstructed eight reference polynomials and exact event times match the
+frozen reference. No target trace state is used for propagation.
+
+All 9,030 rows and all 15 output columns were checked. Maximum absolute column
+differences were 4.466e-13 for direct, 2.552e-12 for original filtered, and
+2.115e-12 for compensated filtered. These are in each column's stated units,
+not a single norm over mixed physical units. Full differences and peak witnesses
+are in physical-replay.json; independent 80-digit traces are retained.
+
+All 21 joins passed. Actual x,v,a,u and reference q,q',q'',j remain continuous.
+Only reference derivatives of order four and higher change at joins. Actual jerk
+also remains continuous here. Direct u' has the expected jump k*Delta snap;
+filtered u' remains continuous. Both event sides are present in the traces.
+Plant states are carried throughout, including arrival and execution. There is
+no reset to the reference and no filtered command reset.
+
+Every initial plant state is zero. Direct u(0)=5/48 and actual jerk(0)=137/15.
+Each filter starts u(0)=0 and actual jerk(0)=4/5. This is the accepted comparison:
+direct u is algebraic; filtered u is a retained state. No pre-t=0 command jump
+is included in command variation. These initial conditions limit the conclusion.
+
+A copied compare.py reproduced reference.json, result.json and all three CSVs
+byte for byte. Peaks recomputed from the CSVs match the report. Independent
+high-precision peaks, endpoint values, min/max x, sampled travel, sampled command
+variation and trapezoid |u'| integrals agree. Travel and command variation remain
+grid approximations. No interval enclosure was calculated.
+
+Equation review
+The physical plant is x'=v, v'=a, a'=80(u+0.01-a).
+U_k=1.5q''+800q+60q'-800x-60v-a/2+k*j.
+Direct substitutes u=U_k with k=1/96. Thus
+a'=-64000x-4800v-120a+64000q+4800q'+120q''+80k*j+0.8.
+For each filter, a'=-80a+80u+0.8 and
+u'=-16000x-1200v-10a-20u+16000q+1200q'+30q''+20k*j.
+The original uses k=1/96. The compensated law uses k=29/480.
+These equations match the builder's scaled error equations under
+(ex,ev/10,ea/100,(u-q'')/100). Its constant forcing 0.008 is 80*0.01/100.
+The augmented polynomial forcing handles ramp and brake jerk correctly.
+Actual jerk, reference jerk, target command, and command derivative are distinct.
+
+Preservation and report scope
+All nine frozen builder files stayed unchanged. Final manifest SHA256:
+424d723ecff3b672f04fc74f4495f06f8306c6dbf401dd03ebe47f8b0d88980d.
+compare.py SHA256:
+444f4971a117adf4cf971bef54d1bd2cd8bfb65a75bef980e2d674b42fb093b3.
+crosscheck.py SHA256:
+7623781b622c606d30a96afe8cef2a64753cb34f8c901d651cb0784c15bbf4c8.
+The coordinator's Taylor cross-check is explicitly same-author evidence. This
+grade supplies the separate independent review. Frozen report/result wording
+still says independent review pending; that is historical freeze status, now
+superseded by this grade. No builder correction or source edit is required.
+
+Next useful gate
+Pause both slow-filter performance paths. Do not search gains, change the task,
+or broaden the forced-tube proof to rescue these numerical failures.
+The highest-value separate proof step is the explicit-reference bridge for the
+direct baseline. ScaledTracking.finite_replans_scaled already accepts arbitrary
+bounded jerk on matched finite segments. Its budget is satisfied exactly here:
+  1/100 + 10/(48*10) <= 2*10^2*(1/5000).
+One bounded proof batch can encode the eight frozen polynomials and durations,
+derive their reference ODEs, joins and |j|<=10, then apply that theorem to supplied
+physical trajectories with r in [80,120], |w|<=0.01, and the given initial state.
+The falsifiable result is |x-q|<=1/5000 on every segment through 1.5 s, without
+assuming a tracking bound. The exact reference endpoint should then give the
+endpoint position tolerance. Fresh compile, axiom audit, and kernel replay are
+required. The source must display the concrete reference, not replace it with
+an opaque assumption that the desired reference bounds hold.
+
+That bridge would still not establish physical rest or actual 0<=x<=0.6.
+The generic certificate only gives coarse velocity/acceleration error bounds.
+The reference reaches the corridor boundary, so a nonzero tube has no room for
+the exact actual corridor. Those gaps require a separately stated task contract.
+
+Coordinate any FIR-reference proposal with the same external goal, latency,
+deadline and endpoint rules. Its reference admission must be checked before a
+new plant comparison. No FIR benefit follows from the present filter failure.
+The coordinator should choose the explicit-reference bridge before another
+filter search. This grade runs no new case and authorizes no unbounded search.
+Stop this review now and use a separate dispatch for the next gate.

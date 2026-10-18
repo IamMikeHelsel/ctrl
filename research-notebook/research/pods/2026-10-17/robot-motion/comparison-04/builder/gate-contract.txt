@@ -1,0 +1,43 @@
+FROZEN EMPIRICAL GATE — BEFORE EXECUTION
+
+Use lead-01 fixed-streams.json and accepted reference-checks.json unchanged.
+The primary set is exactly 72 parameter cases: raw, Ruckig and FIR; four primary
+streams; rates 80,100,120 /s; constant disturbance 0,.01 m/s^2. Sigma is 10 /s.
+All actual states start at rest and remain continuous. No parameter tuning.
+
+The commit scheduler has admission time c equal to execution time tau at the
+20 ms commit tick. It has no future queue. Batch ready packets at that tick;
+maximum sequence wins. Duplicate sequences must identify identical payloads,
+otherwise fail. Rejection advances the watermark but retains all history.
+This can suppress an older feasible goal. Task progress is not guaranteed.
+
+Ruckig pin: 99751e6ebc7c963bb80e99fbbe66f2c279d1db57. Build local C++ point-to-point
+only, cloud disabled. Retain executed reference q,v,a at every replan. Target
+velocity and acceleration are zero. Limits V=.1, A=.5, J=7.5 in SI units.
+Use public get_profiles(), Profile.brake and Profile.accel. Never read inactive
+brake state arrays. Assert accel.duration==0. Preserve zero-duration metadata.
+The evaluator continues final acceleration after duration; never snap to target.
+
+Before the primary cases, export and reconstruct rest-to-rest, an acceleration
+replan, a switch-time replan, and an active-brake fixture. Compare public-profile
+polynomial reconstruction with at_time at each boundary, both nearby sides,
+interior points, and after the endpoint. Fixed absolute residual limits are
+1e-8 m, 1e-8 m/s, 1e-10 m/s^2. Failed limits stop the gate.
+
+Use polynomial forcing and augmented matrix exponentials for actual state.
+Include all switches, replans, observation/readiness/commit times, truth changes,
+deadline, reference tail, and horizon. Store one-sided outputs at every event.
+The two sampling resolutions are 1 ms and .5 ms, with the same event schedule.
+Refinement does not create new parameter cases or change reference generation.
+
+Deadline tolerances: position error .0002 m, speed .001 m/s, acceleration .02 m/s^2.
+Hold jitter also requires |x|<=.0002 m throughout the sampled horizon. Internal
+|x-q| is reported separately. Settling means enter and remain THROUGH THE FIXED
+OBSERVATION HORIZON; no infinite-time claim follows. Jerk energy and command total
+variation include the common horizon and all jumps. Peak values remain sampled.
+Raw reference steps do not have bounded impulsive derivatives. FIR arithmetic is
+exact reference evidence; the authoritative Lean checker is a separate package.
+
+Retain the 50 mm rejected/unmet goal and the 400 ms reference deadline failure.
+No new negative plant runs are added. No own numerical check is called independent.
+Freeze all scripts, fixtures, segment exports and results for a separate reviewer.

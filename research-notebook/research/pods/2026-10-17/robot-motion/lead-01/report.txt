@@ -1,0 +1,123 @@
+TREATING THE TREMORS WE BUILT INTO ROBOTS
+Robot-motion first gate — 18 October 2026 UTC
+Status: frozen proposal and exact reference arithmetic; no new Lean or plant result.
+
+Mike Helsel proposed the problem framing, the timing/architecture direction, and
+the working public title above. This batch checks one concrete execution layer.
+The title is a research framing, not a claim that all robots tremble or that a
+human neurological mechanism has been reproduced.
+
+Recommendation: independently assess the exact finite jerk guard in
+theorem-contract.txt. If its scope is accepted, build that one certificate and
+the fixed 72-case comparison in comparison-plan.txt. Keep the existing direct
+tracker. The candidate is a retained four-box reference history with an explicit
+800 ms tail, not an actuator-command filter.
+
+What is already established
+
+SmoothReplan.lean certifies scalar command splices that match position, velocity,
+and acceleration. It gives a reference jerk bound over finite histories. It does
+not certify physical jerk, task completion, or an arbitrary learned chunk stream.
+
+CommandSmoothing.lean transfers the old tracking cube only when an all-time filter
+mismatch bound is supplied. It does not prove that a filter maintains that bound.
+The old forced screen rejects the 0.2 mm claim in several filtered-controller
+cases. Its references do not stop. Admission-04 proves a separate acceleration
+deadline limitation; it does not establish a new robot motion smoother. This pod
+does not duplicate that stopping/reference task.
+
+The new candidate leaves the direct controller unchanged. Its reference is C3,
+meaning position has three continuous derivatives. Each new target enters a
+finite-memory history. The resulting reference jerk is continuous and affine
+between a finite set of known times. Checking those times is therefore the
+proposed exact all-time admission test. The proof obligation is still open.
+
+Exact evidence produced here
+
+The Python scripts use rational arithmetic. They verify the kernel's piecewise
+polynomials, derivative joins and constants. They check every proposed update
+against future jerk knots. They also generate sufficient Bernstein enclosures
+for the fixed references' speed, acceleration and jerk. These are reference
+calculations, not physical measurements or a completed Lean theorem.
+
+Synthetic case             Reference jerk peak       Reference tail time
+Hold jitter               3/80 = .0375 m/s^3          1.82 s
+Persistent 20 mm goal      5 m/s^3                    1.02 s
+Revised estimates         403/80 = 5.0375 m/s^3       1.28 s
+Late goal, stale packet    5 m/s^3                    1.12 s
+
+All primary proposals pass the fixed 7.5 m/s^3 jerk gate. The hold-jitter stream
+has local total variation of 80 mm. A simple 30 mm variation gate would fail it.
+The exact history check preserves the cancellation and passes it. This is a
+useful reason to prove the exact guard, rather than formalize only a loose bound.
+
+Two failures are retained. A 50 mm proposal requires a 12.5 m/s^3 reference jerk
+peak with the fixed filter width, so the gate rejects it and leaves the external
+goal unmet. A 20 mm goal with only 400 ms after acceptance reaches 10 mm at that
+deadline. Smoothing delay is part of the task result.
+
+The inherited tracking budget passes at sigma=10/s, disturbance .01 m/s^2,
+reference jerk 7.5 m/s^3, and position radius .2 mm. Conditional composition must
+still be proved. The corresponding simple physical-jerk bound is 144.975 m/s^3,
+far above the reference limit. Thus the certificate does not by itself show a
+useful actual-jerk magnitude. The fixed simulation must measure it. Physical
+jerk continuity additionally requires continuous actuator rate and disturbance.
+
+Closest prior work and novelty boundary
+
+LiPo already post-processes learned chunks using overlap blending and jerk
+minimization. VLA-RAIL already models asynchronous timing and claims matching
+position, velocity, and acceleration at fusion. RTC and Legato already preserve
+or learn continuation. Recent spline policies and persistent-noise methods add
+other forms of retained state. sources.json gives versioned primary sources and
+the inspected sections. A stateful VLA smoother is not an unoccupied category.
+
+FIR trajectory generation already derives smooth polynomial motion from moving
+average cascades. Ruckig already provides online jerk-constrained trajectories
+from complete states. Our possible artifact adds an exact finite guard on the
+accepted history, a proof of prefix preservation and tail behavior, and checked
+composition with the specific uncertain-lag tracker. Those would be new artifacts
+in this workspace. Their research novelty is not established.
+
+The quantitative gate compares raw targets, the real local Ruckig implementation,
+and this fixed FIR reference using identical targets and the identical controller.
+It reports internal tracking, true endpoint error, actual jerk, command variation,
+packet age, and delays. Ruckig may perform better. No gain or deadline changes
+are permitted within the fixed gate. The input streams are synthetic throughout.
+
+The current filtered-controller plots use aligned timestamps. A lightly damped
+closed-loop response after adding a filter is not evidence of a stale-frame bug.
+Timing mismatch and filter-induced dynamics are distinct failure mechanisms.
+The broader cruise-control hunting analogy motivates tests; it is not a diagnosis
+of every plotted trajectory or proof of a shared mechanism.
+
+Open items for the ultra independent assessor
+
+1. Prove or reject exact future-knot sufficiency, including c inside an interval,
+   duplicate knots, empty history, the infinite tail, and finite update induction.
+   Derive C3 regularity from the actual F. Prove a rational executable guard and
+   its cast to the real reference; a finite predicate over reals is not enough.
+2. Check that the C3 reference and the inherited direct-controller hypotheses
+   connect without a hidden filter-error or state-reset premise.
+3. Check fixed-stream semantics, endpoint tolerances and Ruckig fairness. Builder
+   must pin and hash its local source and expose all jerk-switch events.
+   If public segment events are unavailable, label stepwise evaluation separately
+   and leave exact-event validation open. Do not invent switch times.
+4. Judge whether the artifact is worth completing as a verification benchmark.
+   A publication claim needs stronger evidence and a closer novelty audit.
+
+The downstream gate needs an identified full-arm model and a recorded learned
+stream, with joint/Cartesian mapping, limits, torque, singularity and contact
+conditions. This first batch does not install MuJoCo or make a dexterous-arm,
+industrial-controller, human-motion, or general safety claim.
+
+Reproduction
+  python3 exact_checks.py
+  python3 make_cases.py
+  python3 reference_enclosures.py
+  python3 verify_lead.py
+
+Only this lead-01 directory was written. Original proof sources and earlier
+results were read, hashed, and left unchanged. No Git command, commit, push,
+merge, hardware action or new paid service was performed. Root owns notebook sync,
+hash preservation checks and the requested research-branch commit.

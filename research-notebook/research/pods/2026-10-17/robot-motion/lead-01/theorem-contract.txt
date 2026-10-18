@@ -1,0 +1,167 @@
+EXACT JERK CHECKING FOR A RETAINED REFERENCE HISTORY
+Proposed first formal result. Frozen specification, not a completed Lean proof.
+
+The result concerns a scalar position reference. It is a known four-stage FIR
+filter with a proposed exact, causal admission certificate and a connection to
+the existing uncertain-lag tracking theorem. It is not a new trajectory filter.
+
+1. Input and state
+
+Fix h>0 and J>=0. The initial accepted position is g0. Before time zero, the
+accepted input is constant g0, all filter stages are at g0, and their derivatives
+are zero. The first result has this rest history. It does not reset an arbitrary
+moving arm into that history.
+
+There are finitely many accepted target changes (tau_k,delta_k), with tau_k>=0.
+Their times are chronological. Same-time arrivals are resolved before admission:
+the packet with the largest sequence number wins. Older sequences are discarded.
+The sequence watermark advances even when its proposed target is rejected.
+Delta_k is the new accepted target minus the previous accepted target. A no-change
+packet adds no event. Coincident unexecuted alternatives are not extra variation.
+
+Tau_k is the first allowed raw-input execution time, after packet readiness and
+all already committed input. No computation can use a packet before readiness.
+Past accepted input is immutable. The reference layer retains that input history,
+not just the last target. Its width h never changes during a run.
+
+For the finite tests, readiness is rounded up to a 20 ms commit tick. Additional
+committed buffer time is zero. This is an input-scheduling rule. The modeled
+reference and physical controller still execute in continuous time; this first
+result does not prove a sampled actuator implementation.
+
+There is no maximum event count in the mathematical statement. It concerns any
+finite history. Infinite switching in finite time is excluded. Runtime and memory
+bounds need an explicit maximum arrival rate or separate implementation analysis.
+
+2. Reference and exact guard
+
+Put z_+=max(z,0) and define the four-box step response
+
+  F(z) = [z_+^4 - 4(z-1)_+^4 + 6(z-2)_+^4
+          - 4(z-3)_+^4 + (z-4)_+^4] / 24.
+
+Then
+  q(t) = g0 + sum_k delta_k F((t-tau_k)/h).
+
+The reference is C3. Its jerk is
+  j_q(t) = h^(-3) sum_k delta_k K((t-tau_k)/h),
+where K=F''' is the continuous piecewise affine function
+
+  K(z)=0             for z<=0,
+       z             for 0<=z<=1,
+       4-3z          for 1<=z<=2,
+       3z-8          for 2<=z<=3,
+       4-z           for 3<=z<=4,
+       0             for z>=4.
+
+The formulas agree at their boundaries. The fourth derivative can jump there.
+The Lean proof must derive F's three continuous derivatives and this K formula
+from the actual truncated-power expression. These are obligations, not imported
+assumptions that an unspecified spline has the required properties.
+
+At an admission time c, form the finite future guard set
+  E = {c} union {tau_k+m*h : k in the candidate history, m=0,1,2,3,4,
+                                   tau_k+m*h >= c}.
+
+MAIN TARGET:
+  [forall t>=c, |j_q(t)|<=J]
+       if and only if
+  [forall e in E, |j_q(e)|<=J].
+
+The proof must derive the affine pieces from the actual K formula. It must cover
+the interval starting at c even when c is not a knot, all later intervals, repeated
+knots, an empty history, and the infinite tail where jerk is zero. Assuming the
+desired global jerk bound, or assuming an unspecified complete partition, would
+leave the main obligation open.
+
+EXECUTABLE BRIDGE: specialize the executable guard to rational h>0, J>=0, c,
+tau_k and delta_k. Compute the finite set and all jerk values with exact rational
+arithmetic. Prove that acceptance casts to the real guard for the real-valued
+reference defined above. A theorem with only a finite predicate over arbitrary
+real numbers is insufficient to certify the Python rational checker. This bridge,
+including correspondence to the implementation or an extracted checker, is open.
+
+A new step at c contributes zero position change and zero first, second, and
+third derivatives for every t<=c. Thus acceptance preserves the already executed
+prefix and q,q',q'',j_q at the handoff. Admit the step if and only if its future
+guard passes. If it fails, retain the old accepted target and history. Induction
+over finite admissions should prove the same jerk bound at every executed time.
+Each future check assumes no further target changes; a later change gets its own
+check before affecting the history. It never rewrites an earlier command.
+
+If the final accepted target is g_f at time tau_f and no later target is accepted,
+then q(t)=g_f and q'=q''=j_q=0 for every t>=tau_f+4h. This is a reference endpoint.
+It does not state that the physical position, velocity, or acceleration are exact.
+Rejection also does not imply task progress: a goal beyond the fixed filter's
+admissible change can remain unaccepted forever.
+
+3. Simple sufficient bound, not the main gate
+
+For local variation V(t)=sum_{t-4h<=tau_k<=t}|delta_k|,
+  |q'| <= 2V(t)/(3h),   |q''| <= 2V(t)/(3h^2),
+  |j_q| <= 2V(t)/h^3,   |q''''| <= 3V(t)/h^4 away from knots.
+These constants follow from the cubic B-spline kernel. They are established
+filter mathematics. The exact guard can pass when this sufficient bound fails.
+Do not reject a valid cancellation merely because its total variation is large.
+
+4. Physical composition
+
+Use the unchanged direct controller already defined in ScaledTracking.lean:
+  x'=v, v'=a, a'=r(t)*(u+w-a),
+  u=q''-8*sigma^2*(x-q)-6*sigma*(v-q')-(a-q'')/2
+       +5*j_q/(48*sigma).
+
+Assume sigma>0, 8*sigma<=r(t)<=12*sigma, |w(t)|<=W, and the original classical
+segment trajectory hypotheses. Retain x,v,a at every event. Assume the initial
+scaled error lies in the existing transformed cube of radius R. The budget is
+  W+J/(48*sigma) <= 2*sigma^2*R.
+The new jerk guard should discharge the reference-jerk premise of the existing
+tracking theorem. It must not insert a new actuator filter or assume its mismatch
+is bounded. The inherited result gives |x-q|<=R, with its stated velocity,
+acceleration and command margins. It does not give |x-raw_target|<=R.
+
+The true task error is x-g_true=(x-q)+(q-g_true). Keep both terms visible.
+After tau_f+4h, the position error to an accepted persistent goal is at most R.
+The inherited cube only gives |v|<=8*sigma*R and |a|<=64*sigma^2*R there.
+Tighter endpoint velocity and acceleration requirements remain separate tests.
+
+With continuous r and w, C3 reference motion and continuous actual state make u
+and actual jerk r*(u+w-a) continuous. Magnitude-only uncertainty does not imply
+this regularity. If r or w jumps, retain the exact jump identity from the earlier
+CommandSmoothing note. A smooth reference cannot remove such physical jerk jumps.
+
+For z=(ex,ex+ev/(4*sigma),ex+ev/(2*sigma)+ea/(16*sigma^2)),
+  u+w-a = sigma^2*(-8*z0+24*z1-24*z2)+5*j_q/(48*sigma)+w.
+Thus the inherited cube yields the conservative actual-jerk magnitude bound
+  |a'| <= 12*sigma*(56*sigma^2*R+5*J/(48*sigma)+W).
+This bound is loose. It is not the reference limit J and does not establish a
+smoothness advantage. The proposed comparison measures actual jerk separately.
+
+5. Exact illustrative values and failure tests
+
+h=.2 s, J=7.5 m/s^3, sigma=10/s, W=.01 m/s^2, R=.0002 m.
+The tracking budget is 41/1600 <= 1/25 in m/s^2. The same sufficient cube allows
+R as small as 41/320000 m, but the fixed comparison retains R=.0002 m.
+The local-TV budget .03 m implies reference speed<=.1 m/s, acceleration<=.5 m/s^2,
+jerk<=7.5 m/s^3 and snap<=56.25 m/s^4 between knots. Exact fixed-stream Bernstein
+checks also pass the V,A,J bounds when the TV test fails.
+
+The conservative physical bounds are speed .116 m/s, acceleration 1.78 m/s^2,
+|u|<=1.058125 m/s^2, and actual jerk<=144.975 m/s^3. These are illustrative model
+bounds, not identified robot limits. Do not claim actual jerk is at most 7.5.
+
+Required negative tests:
+- Replace the correct single-step jerk constant 2 by 1. The unit step at z=2
+  is an exact counterexample.
+- Drop an interior knot from a single-step check. Checking only its start and
+  tail (both zero jerk) misses the peak.
+- Use a 20 mm step but claim the reference reaches it at 2h=.4 s. F(2)=1/2,
+  leaving 10 mm position error.
+- Propose 50 mm with the fixed h,J. Its reference jerk peak would be 12.5, so
+  the guard rejects it. The external goal remains unmet.
+- Reset filter history on a replan, or use a future packet before readiness.
+  Such an implementation does not satisfy the theorem's state or causal contract.
+
+This is one certificate/composition target with supporting lemmas. It does not
+prove a new FIR method, optimality, collision avoidance, contact safety, physical
+hardware behavior, human-like steadiness, or learned-policy task success.

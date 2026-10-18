@@ -1,0 +1,203 @@
+WEINSTEIN DEFINITION AUDIT 02 — DECLARED CANDIDATE LEDGER
+2026-10-18 UTC
+
+Decision requested
+Use one exact Clifford curvature contraction as the next formal proof gate.
+The author does not select the tensors or the three product choices below.
+They define a relevant member of his stated family. They are not a recovered
+definition of the full GU operator.
+
+What the source actually supplies
+The author draft was retrieved again. Its SHA256 is unchanged:
+3f28d742234a9841fc8e51ff172053200aa3eddf3ece38154a3328b9ebd186d4.
+The official homepage still presents the April 1, 2021 draft as its latest
+draft. A bounded search and inspection found no newer author specification of
+Phi_1/Phi_2. This is not proof that no unpublished or unindexed definition exists.
+
+Printed page 22, (3.18): the real Clifford algebra Cl(7,7) is M_128(R).
+Printed page 23, (3.27): the proposed real form is u(64,64). Real Clifford
+grades 1,2 mod 4 are in it. Grades 0,3 mod 4 require a factor of i.
+Printed page 41, (8.1): commutators and i times anticommutators are permitted.
+Printed page 42, Definition 8.1: Phi_i belongs to a Spin(7,7)-invariant tensor
+space. No coefficient list, normalization, or single distinguished element is
+provided. Section 8.2 records the missing preferred selection argument.
+Printed page 43, (9.2)-(9.3): the advertised map sends ad-valued 2-forms to
+ad-valued 13-forms. The displayed two-term expression uses Phi_1 and Phi_2
+and has a factor -1/2 in its second term. Its Weyl-annihilation claim does not
+give an explicit algebraic Weyl domain or assign the product at each bracket.
+Printed page 66, (12.24)-(12.27): Hodge star and contraction are available;
+the two fibre products are AB-BA and i(AB+BA).
+
+Primary source:
+https://geometricunity.nyc3.digitaloceanspaces.com/Geometric_Unity-Draft-April-1st-2021.pdf
+Official homepage: https://geometricunity.org/
+source-refresh.json records the live bytes, timestamps, and hashes. PDF page
+indices are the printed page number minus one. source-map.json gives the exact
+equation mapping. Accepted files outside this analyst folder were not changed.
+
+Declared model and normalization
+V has ordered basis e_0,...,e_13 and g(e_a,e_b)=epsilon_a delta_ab, where
+epsilon_0,...,epsilon_6=+1 and epsilon_7,...,epsilon_13=-1.
+theta^a is the dual basis, so theta^a(e_b)=delta_ab. Forms are in Lambda(V*).
+The orientation is theta^0 wedge ... wedge theta^13 with coefficient +1.
+The Hodge convention S satisfies alpha wedge S(beta)=<alpha,beta> volume.
+For an increasing index set I, S(theta^I)=sgn(I,I^c) product_I(epsilon) theta^I^c.
+In particular S(volume)=-1. This sign is used, not suppressed.
+
+Let gamma_a be the generator of Cl_R(7,7), with gamma_a^2=epsilon_a and
+gamma_a gamma_b=-gamma_b gamma_a for a!=b. Write gamma_ab=gamma_a gamma_b
+when a<b. Complexify this algebra. The adjoint bar conjugates complex scalars,
+reverses products, and sends gamma_a to -gamma_a. Set u={A:bar(A)=-A}.
+This is the declared u(64,64) real form in the explicit model below.
+
+Phi_1 = sum_a theta^a tensor gamma_a.
+Phi_2 = sum_(a<b) theta^a wedge theta^b tensor gamma_ab.
+These are canonical coevaluation tensors followed by the Clifford inclusion.
+Their stated coefficients are the normalization. No unit-norm claim is made.
+The coevaluation is basis independent: the exterior dual action and the
+Clifford vector action cancel. The Clifford inclusion is Spin-equivariant.
+Thus both tensors are Spin-invariant and are valued in u.
+
+The source does not uniquely force these choices. Let Omega=gamma_0...gamma_13.
+It is fixed by Spin, Omega^2=1, and bar(Omega)=-Omega. The tensors
+  Psi_1 = Phi_1 Omega,       Psi_2 = i Phi_2 Omega
+are also invariant and u-valued. Their Clifford grades are 13 and 12, while
+Phi_1/Phi_2 have grades 1 and 2. They are linearly independent of Phi_1/Phi_2.
+Hence each of the two invariant spaces has at least two independent elements.
+This lower bound is enough to establish a real selection issue. No complete
+classification or claim that its dimension is exactly two is needed here.
+There is also a separate scale choice. Replacing Phi_1 by alpha Phi_1 and
+Phi_2 by beta Phi_2 gives
+  D_(alpha,beta)(R)=-2 alpha S(Ric^sharp)+alpha beta scal S(Phi_1).
+Every such choice kills ordinary Weyl tensors. Thus Weyl annihilation alone
+does not select beta=1 or the Einstein trace ratio. The normalization must be
+supplied separately; it is not inferred from the zero result on W.
+
+Two fibre products, extended by exterior wedge
+  C(A,B)=AB-BA,              J(A,B)=i(AB+BA).
+If A and B are bar-skew, then bar(C(A,B))=-C(A,B) and
+bar(J(A,B))=-J(A,B). These follow from the conjugate-linear anti-involution.
+Every real coefficient of a resulting form remains in the declared real form.
+The products here act on fibre coefficients; no form-degree sign is inserted
+into C or J. The ordinary exterior wedge already carries its own signs.
+
+Important Lean API boundary
+Mathlib's CliffordAlgebra.star is Clifford conjugation but is linear over its
+scalar ring. Over C it fixes i. It is NOT the bar used here. A formal closure
+proof must compose with scalar conjugation or use conjugate transpose in the
+matrix model. Substituting the current linear star makes the J proof wrong.
+
+Explicit spinor and Hermitian model
+Let S_R=Lambda*(R^7), with its 128 ordered subset basis vectors u_J.
+Let a_j be exterior creation and b_j exterior contraction. Define
+  gamma_j=a_j+b_j,   gamma_(7+j)=a_j-b_j,  0<=j<7.
+On u_J, both change membership of j and multiply by
+(-1)^(number of elements of J less than j). The second formula has an extra
+minus sign when j is already in J. These are explicit real 128 by 128 matrices.
+Define K=gamma_7 gamma_8 ... gamma_13. Exact checks establish K^T=K,
+K^2=1, tr(K)=0, and gamma_a^T K+K gamma_a=0 for every a. Thus K has 64 positive
+and 64 negative eigenvalues. On complex matrices bar(A)=K^-1 A^dagger K.
+The real matrix representation is faithful: creation, contraction and the
+vacuum projector generate all matrix units, while both algebras have dimension
+2^14=128^2. The finite checks do not themselves formalize that argument.
+See fock_realization.py and fock_realization_results.json.
+
+Exact algebraic curvature domain
+R_abcd is a real covariant 4-tensor with
+  R_abcd=-R_bacd=-R_abdc,
+  R_abcd=R_cdab,
+  R_abcd-R_acbd+R_adbc=0.
+Define
+  F_R = sum_(a<b,c<d) epsilon_c epsilon_d R_abcd theta^ab tensor gamma_cd,
+  Ric_bd = sum_a epsilon_a R_ab a d,
+  scal = sum_b epsilon_b Ric_bb,
+  T^sharp = sum_(b,d) epsilon_d T_bd theta^b tensor gamma_d.
+This is a fixed curvature normalization. Some spin-connection conventions use
+F_R/2. That rescales all the conclusions below by 1/2.
+The Weyl space W in this audit means exactly the tensors above with Ric=0.
+This is the ordinary algebraic Weyl sector in signature (7,7).
+
+Declared candidate for the displayed two-term formula
+  Q(R) = S J(Phi_2, S F_R),
+  D(R) = C(Phi_1, S F_R) - (1/2) S J(Phi_1, Q(R)).
+The source permits both products, but this C/J/J assignment is our choice.
+All intermediate terms are valued in u. The respective exterior degrees are
+13, 0 and 13. The candidate is therefore a defined pointwise map.
+
+Mathematical derivation, not yet Lean-certified
+The Clifford relation gives
+  [gamma_a,gamma_c gamma_d]
+    = 2 epsilon_a(delta_ac gamma_d-delta_ad gamma_c).
+Also theta^a wedge S(theta^ab)=-epsilon_a S(theta^b).
+Expanding and collecting terms therefore gives
+  C(Phi_1,S F_R)=-2 S(Ric^sharp).
+This first identity uses pair antisymmetry and the definition of Ric.
+
+For the scalar ingredient, define the real Clifford contraction
+  K_R = sum_(a<b,c<d) epsilon_a epsilon_b epsilon_c epsilon_d R_abcd
+          (gamma_ab gamma_cd+gamma_cd gamma_ab).
+Equal pairs contribute -scal times 1. Pairs sharing exactly one index contribute
+zero. For four distinct indices a<b<c<d, the contribution is
+  4 epsilon_a epsilon_b epsilon_c epsilon_d
+    (R_abcd-R_acbd+R_adbc) gamma_a gamma_b gamma_c gamma_d.
+Pair symmetry supplies the factor 4; Bianchi kills this last coefficient.
+Consequently K_R=-scal times 1. Since S(volume)=-1, Q(R)=i scal times 1.
+Then J(Phi_1,i scal)=-2 scal Phi_1, so
+  D(R)=-2 S((Ric-(scal/2)g)^sharp).
+In particular D kills W. On this ordinary curvature domain its kernel is
+exactly W: tracing Ric-(scal/2)g gives -6 scal in dimension 14.
+Using the accepted Mathlib H=-S convention in all star positions changes the
+whole displayed candidate by a minus sign. Thus D_H=+2 S(Einstein^sharp), or
+equivalently D_H=-2 H(Einstein^sharp). The metric and tensor ledger stay fixed.
+
+Complete-basis exact evidence
+There are 91 coordinate 2-forms. A pair-symmetric curvature coefficient array
+has 91*92/2=4186 independent entries. Its 1001 disjoint four-index blocks each
+have three entries x,y,z and one Bianchi equation x-y+z=0.
+A basis therefore consists of 1183 entries whose two index pairs intersect,
+plus two vectors (x,y,z)=(1,1,0),(0,1,1) in each disjoint block.
+This yields 1183+2*1001=3185, equal to 14^2*(14^2-1)/12.
+basis_gate.py checks the two contraction identities and the assembled candidate
+on every one of these basis elements using Gaussian rationals and explicit
+Clifford/exterior multiplication. All pass. By linearity and the basis argument,
+this is an exhaustive finite coefficient check of the stated identities.
+It is not a trusted-kernel proof. The implementation and the basis argument
+still need independent review. No theorem count is used as a value claim.
+
+Negative controls that delimit the conclusion
+1. The fully alternating four-form with R_0123=1 has both pair antisymmetries
+   and pair symmetry, but fails Bianchi. Its Ricci tensor is zero, while
+   K_R=12 gamma_0123 and Q(R)=-12i gamma_0123. The candidate is nonzero.
+   Thus Ricci zero alone is insufficient outside the declared curvature domain.
+2. On constant sectional curvature +1, C/J/J yields 156 S(Phi_1), as the
+   Einstein formula requires. The all-commutator choice gives -26 S(Phi_1).
+   Among the eight C/J choices, only C/J/J gives this normalization. This test
+   does not classify all invariant tensors or every possible product choice.
+3. At general epsilon, Weyl annihilation concerns a transported domain.
+   Let h=gamma_0 gamma_1 in Spin(7,7), with h^-1=-h. Take a Weyl tensor with
+   independent entries R_0101=R_2323=1 and R_0202=R_1313=-1.
+   Conjugating Phi_1/Phi_2 by h while leaving F_R fixed gives a nonzero output:
+   its S(theta^4) tensor gamma_4 coefficient is 8. Conjugating F_R too gives
+   zero. Thus the valid claim is at epsilon=1, or on Ad_(epsilon^-1)(W).
+   It is not annihilation of a fixed geometric Weyl subspace for every epsilon.
+   This fixed-space counterexample is not a GU refutation. The author's domain
+   and its relation to epsilon must be settled before such a comparison.
+
+One bounded next formal target
+Prove K_R=-scal times 1 inside Mathlib's actual Cl(7,7), with gamma_a=ι(e_a),
+the stated coefficient definition, and the stated algebraic curvature axioms.
+Do not assume the scalar conclusion or insert it as an operator definition.
+Require the four-form negative control to remain nonzero. Prove the real
+Clifford statement first, so this gate does not depend on a misleading complex
+star instance. The later Q(R)=i scal bridge can use the explicit conjugate-linear
+matrix semantics and the accepted actual Hodge construction.
+Stop when this identity and its negative control are independently accepted,
+or when an exact counterexample identifies a missing hypothesis. Do not expand
+into global GU field equations or physical predictions at this gate.
+
+Downstream limit
+This fills a precise candidate's pointwise algebraic data and tests its ordinary
+curvature sector. It does not select the author's intended Phi tensors, repair
+the earlier global gauge/torsion conventions, establish a global bundle,
+identify a full GU curvature/Weyl domain, prove differential Bianchi properties,
+or establish field equations, physical content, novelty, or publication value.

@@ -1,0 +1,11 @@
+import CliffordControls
+open GUClifford GUContraction
+example (R:Tensor) (h:Curvature R) : K R=algebraMap ℝ Cl (-scal R) :=
+  actual_clifford_contraction R h
+example (R:Tensor) (h:PairSymmetries R) : total (rho R) gamma=(2:ℝ) • K R :=
+  actual_normalization_bridge R h
+example : K sectional=algebraMap ℝ Cl (-2) := sectional_K
+example : K fourform=(12:ℝ) • blade0123 := fourform_K
+example : K fourform≠0 := fourform_K_ne_zero
+example : ¬(∀ R:Tensor, PairSymmetries R → K R=algebraMap ℝ Cl (-scal R)) :=
+  no_universal_without_bianchi

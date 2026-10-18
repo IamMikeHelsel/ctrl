@@ -1,0 +1,92 @@
+[
+  {
+    "name": "CausalAdmission.leastJerk_continuous",
+    "source_line": 35,
+    "statement": "theorem leastJerk_continuous (J S : ℝ) : Continuous (leastJerk J S)"
+  },
+  {
+    "name": "CausalAdmission.leastJerk_before",
+    "source_line": 39,
+    "statement": "theorem leastJerk_before {J S t : ℝ} (hS : 0 < S)\n    (ht : t ≤ rampTime J S) : leastJerk J S t = J - S * t"
+  },
+  {
+    "name": "CausalAdmission.leastJerk_after",
+    "source_line": 45,
+    "statement": "theorem leastJerk_after {J S t : ℝ} (hS : 0 < S)\n    (ht : rampTime J S ≤ t) : leastJerk J S t = -J"
+  },
+  {
+    "name": "CausalAdmission.jerk_lower",
+    "source_line": 53,
+    "statement": "theorem jerk_lower {a0 J S T : ℝ} {a j s : ℝ → ℝ}\n    (h : IsAdmissible a0 J S T a j s) {t : ℝ} (ht : t ∈ Icc 0 T) :\n    leastJerk J S t ≤ j t"
+  },
+  {
+    "name": "CausalAdmission.leastAccel_before",
+    "source_line": 62,
+    "statement": "theorem leastAccel_before {a0 J S t : ℝ} (hS : 0 < S)\n    (ht0 : 0 ≤ t) (ht : t ≤ rampTime J S) :\n    leastAccel a0 J S t = a0 + J * t - S * t ^ 2 / 2"
+  },
+  {
+    "name": "CausalAdmission.leastAccel_after",
+    "source_line": 86,
+    "statement": "theorem leastAccel_after {a0 J S t : ℝ} (hJ : 0 < J) (hS : 0 < S)\n    (ht : rampTime J S ≤ t) :\n    leastAccel a0 J S t = a0 - J * (t - rampTime J S)"
+  },
+  {
+    "name": "CausalAdmission.acceleration_lower",
+    "source_line": 113,
+    "statement": "theorem acceleration_lower {a0 J S T : ℝ} {a j s : ℝ → ℝ}\n    (h : IsAdmissible a0 J S T a j s) {t : ℝ} (ht : t ∈ Icc 0 T) :\n    leastAccel a0 J S t ≤ a t"
+  },
+  {
+    "name": "CausalAdmission.nonpositive_acceleration_deadline",
+    "source_line": 131,
+    "statement": "theorem nonpositive_acceleration_deadline {a0 J S T : ℝ} {a j s : ℝ → ℝ}\n    (ha0 : 0 < a0) (hJ : 0 < J) (hS : 0 < S) (hT : 0 ≤ T)\n    (h : IsAdmissible a0 J S T a j s) (hz : a T ≤ 0) :\n    deadline a0 J S ≤ T"
+  },
+  {
+    "name": "CausalAdmission.leastAccel_derivative",
+    "source_line": 149,
+    "statement": "theorem leastAccel_derivative (a0 J S t : ℝ) :\n    HasDerivAt (leastAccel a0 J S) (leastJerk J S t) t"
+  },
+  {
+    "name": "CausalAdmission.leastJerk_right_derivative",
+    "source_line": 157,
+    "statement": "theorem leastJerk_right_derivative {J S : ℝ} (hS : 0 < S) (t : ℝ) :\n    HasDerivWithinAt (leastJerk J S) (leastSnap J S t) (Ici t) t"
+  },
+  {
+    "name": "CausalAdmission.least_isAdmissible",
+    "source_line": 174,
+    "statement": "theorem least_isAdmissible (a0 T : ℝ) {J S : ℝ} (hJ : 0 < J) (hS : 0 < S) :\n    IsAdmissible a0 J S T (leastAccel a0 J S) (leastJerk J S) (leastSnap J S)"
+  },
+  {
+    "name": "CausalAdmission.least_reaches_zero",
+    "source_line": 197,
+    "statement": "theorem least_reaches_zero {a0 J S : ℝ} (ha0 : 0 < a0) (hJ : 0 < J) (hS : 0 < S) :\n    leastAccel a0 J S (deadline a0 J S) = 0"
+  },
+  {
+    "name": "CausalAdmission.original_deadline_impossible",
+    "source_line": 210,
+    "statement": "theorem original_deadline_impossible {a j s : ℝ → ℝ}\n    (h : IsAdmissible (5/2) 10 400 (1/4) a j s) : a (1/4) ≠ 0"
+  },
+  {
+    "name": "CausalAdmission.exact_earliest_deadline",
+    "source_line": 218,
+    "statement": "theorem exact_earliest_deadline : deadline (5/2) 10 400 = (3/10 : ℝ)"
+  },
+  {
+    "name": "CausalAdmission.exact_acceleration_residual",
+    "source_line": 221,
+    "statement": "theorem exact_acceleration_residual {a j s : ℝ → ℝ}\n    (h : IsAdmissible (5/2) 10 400 (1/4) a j s) : (1/2 : ℝ) ≤ a (1/4)"
+  },
+  {
+    "name": "CausalAdmission.leastVelocity_after",
+    "source_line": 249,
+    "statement": "theorem leastVelocity_after {v0 a0 J S t : ℝ} (hJ : 0 < J) (hS : 0 < S)\n    (ht : rampTime J S ≤ t) :\n    leastVelocity v0 a0 J S t = v0 + a0*t - J*t^2/2 +\n      (2*J^2/S)*t - 4*J^3/(3*S^2)"
+  },
+  {
+    "name": "CausalAdmission.velocity_lower",
+    "source_line": 285,
+    "statement": "theorem velocity_lower {v0 a0 J S T : ℝ} {v a j s : ℝ → ℝ}\n    (h : IsAdmissible a0 J S T a j s)\n    (hv : ContinuousOn v (Icc 0 T)) (hv0 : v 0 = v0)\n    (hvd : ∀ t ∈ Ioo 0 T, HasDerivAt v (a t) t)\n    {t : ℝ} (ht : t ∈ Icc 0 T) : leastVelocity v0 a0 J S t ≤ v t"
+  },
+  {
+    "name": "CausalAdmission.exact_velocity_residual",
+    "source_line": 306,
+    "statement": "theorem exact_velocity_residual {v a j s : ℝ → ℝ}\n    (h : IsAdmissible (5/2) 10 400 (3/10) a j s)\n    (hv : ContinuousOn v (Icc 0 (3/10))) (hv0 : v 0 = 5/16)\n    (hvd : ∀ t ∈ Ioo 0 (3/10), HasDerivAt v (a t) t) :\n    (31/240 : ℝ) ≤ v (3/10) - 5/8"
+  }
+]

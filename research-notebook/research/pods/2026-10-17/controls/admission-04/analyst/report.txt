@@ -1,0 +1,143 @@
+CONTROLS ADMISSION ANALYSIS — 18 October 2026 UTC
+Status: frozen for independent review. No plant simulation or Lean file changed.
+
+The useful next step is an honest admission gate, followed by one fixed comparison.
+A smooth reference cannot retain every old endpoint and deadline. The rejected
+0.2 mm screen remains rejected. The stop task below is a new illustrative task.
+It is not a repair of the old reference, a new planner, or a hardware claim.
+
+1. Established prior work
+Ruckig computes jerk-limited online trajectories between complete position,
+velocity, and acceleration states. Its 2021 paper treats finite jerk limits;
+these do not by themselves require continuous jerk or finite snap. The current
+input API exposes velocity, acceleration, and jerk limits. It warns that a
+minimum duration request does not guarantee that exact duration. An endpoint and
+a deadline therefore need an explicit feasibility check. [1,2]
+
+Ezair, Tassa, and Shiller already give high-order trajectory planning with general
+initial/final states and asymmetric derivative bounds. Their method covers the
+setting in which snap is bounded. They distinguish a feasible, time-efficient
+trajectory from a universally time-optimal one. Our scalar inequality below is
+elementary bounded-snap/S-curve kinematics within this established subject. [3]
+
+Reference governors already modify commands to meet closed-loop state and input
+constraints. The survey includes disturbance and uncertainty handling, invariant
+admissible sets, and augmented controller/reference states. A bounded derivative
+reference alone is not a robust closed-loop certificate. Retaining filter state
+and keeping reference deviation visible fit this known framework. [4]
+
+Filtering itself is also prior art. Besset and Bearee combine analytic motion
+planning with FIR filtering for online jerk-constrained trajectories from arbitrary
+velocity and acceleration states. We should compare against this class of work,
+not claim that inserting a trajectory damper is new. [5]
+
+The plausible formalization contribution is an auditable chain: reject impossible
+requests, certify the accepted reference, retain the actual/controller state at
+handoff, and connect the reference certificate to a plant tracking guarantee.
+Each link needs its own assumptions. Novelty of that complete chain is unproved.
+
+2. The proposed deadline theorem is correct
+Let J,S,a0>0. Let j be absolutely continuous on [0,T], with j(0)=J,
+|j(t)|<=J everywhere and |j'(t)|<=S almost everywhere. Let
+  a(t)=a0+integral(0,t,j(s) ds).
+Then j(t)>=max(J-S*t,-J). Put h=2*J/S. Integration gives
+  a(t)>=a0+J*t-S*t^2/2                  for 0<=t<=h,
+  a(t)>=a0-J*(t-h)                     for h<=t.
+The first expression is at least a0. Thus a(T)<=0 requires
+  T >= a0/J+2*J/S.
+Equality is attainable with j(t)=max(J-S*t,-J). This is a sharp bound on the
+first loss of positive acceleration. It is NOT a stopping-time bound: velocity
+is generally still positive at that instant. If a0=0, the claimed positive
+"earliest zero" statement would fail at time zero, so a0>0 matters.
+
+A classical continuous/right-derivative version is also sufficient. The builder
+is formalizing that version. This analyst script checks exact examples, not the
+general real-analysis theorem. With latency ell during which j remains +J,
+substitute a0+J*ell at execution time. The necessary time from arrival becomes
+  a0/J + 2*ell + 2*J/S.
+This latency formula assumes that specified hold behavior; it is not universal
+for every latency policy.
+
+3. The old full endpoint remains impossible
+At old arrival time .25 s, (q,v,a,j)=(5/192,5/16,5/2,10) in SI units.
+The old requested endpoint at .5 s is (5/32,5/8,0). With J=10 and S=400,
+zero acceleration cannot occur before .30 s after arrival. At that earliest time,
+componentwise lower bounds are q>=1991/9600 and v>=181/240.
+They exceed the old position and velocity by 491/9600 m and 31/240 m/s.
+Adding only 50 ms therefore cannot preserve the old full endpoint. If forward-only
+motion is also required, no later deadline repairs that endpoint: the minimum
+position already exceeds the goal when acceleration can first become zero.
+This stronger rejection follows by integrating the pointwise jerk lower bound
+with nonnegative kernels, then using nondecreasing position.
+
+4. A fixed causal task that is feasible at the reference level
+All comparison runs start at global t=0 with x=v=a=0 and q=q'=q''=0.
+Filtered laws start with their own declared u=0; no u reset is allowed later.
+The direct law computes its algebraic u from its rule. It need not share the
+filtered laws' initial u. The common reference initially has jerk +10.
+
+A new external stop goal arrives only at t=1/4 s. No action uses it earlier.
+The fixed latency is 1/200 s. During latency the old reference continues.
+The goal is q=3/5 m, q'=q''=j=0 by t=3/2 s. The reference must stay within
+0<=q<=3/5, 0<=q'<=1, |q''|<=3, |j|<=10, and |snap|<=400, in SI units.
+Early arrival followed by rest is permitted. Endpoint drift is not permitted.
+This is a 1D axis illustration, not a claimed robot or machinery safety rating.
+
+At execution t=51/200, the exact reference state is
+  (44217/1600000,2601/8000,51/20,10).
+Apply these three jerk phases, with their durations:
+  snap -400 for 1/20 s; snap 0 for 97/400 s; snap +400 for 1/40 s.
+The resulting state is
+  (8782613/38400000,75089/96000,0,0).
+Let V=75089/96000 and L=7/10. Cruise for c=3744927/30035600 s.
+Then brake for L seconds. With y=(t-t_brake)/L in [0,1], use
+  q=q_brake+V*L*(y-(5/2)*y^4+3*y^5-y^6),
+  v=V*(1-10*y^3+15*y^4-6*y^5).
+The endpoint is exactly (3/5,0,0,0). Hold it through the deadline.
+Stop time is 10491307/7508900 s = 1.3971829429 s.
+Deadline slack is 772043/7508900 s = .1028170571 s.
+
+The initial blend has acceleration at most 107/40<3 and jerk/snap within limits.
+The brake has |a|<3, j^2=at most 115068529/1354752<100,
+and |snap|<=53635/392<400. Velocity decreases from V<1 to zero.
+All position changes are forward and the final position is exactly 3/5.
+For the jerk bound, put z=y*(1-y) in [0,1/4] and use
+  1/108-z^2*(1-4*z)=(z-1/6)^2*(4*z+1/3)>=0.
+The snap factor 1-6*z lies in [-1/2,1]. These are interval arguments,
+not sampled maxima. check_task.py records the exact rational checks and phases.
+
+5. Fair comparison and one falsifiable test
+Use exactly this accepted reference for all three laws: direct feedback,
+original filtered feedback, and lag-compensated filtered feedback. Keep the old
+screen gains, r=80/s, w=+.01 m/s^2, and filter lambda=20/s where present.
+All actual states evolve from the same initial plant state. Retain every actual
+state and every existing filter state across arrival, execution, and all joins.
+Do not splice three independently reset simulations. Record direct-command jumps
+rather than assigning them a fictitious finite command-rate peak.
+
+Report internal tracking x-q, endpoint task error x(1.5)-.6, endpoint velocity
+and acceleration, actual travel, actual jerk, and command variation. The external
+task specifies a goal and corridor, not a time-indexed external path. Thus a
+separate all-time external path error is not defined here. If a later task supplies
+q_external, report x-q_external=(x-q)+(q-q_external), with both terms visible.
+Internal tracking success alone must not be called task success.
+
+Predeclare the retained internal position target |x-q|<=.0002 m, and endpoint
+position tolerance .0002 m. Keep endpoint velocity/acceleration and all output
+peaks visible; no physical tolerances or actuator bounds were supplied for them.
+One explicit sample outside .0002 rejects that controller on this fixed task.
+A sample pass is not an interval proof. Compare actual-jerk and command-variation
+changes only within the same run, alongside tracking and endpoint error.
+Stop after the fixed comparison; do not tune gains or move the goal to obtain a
+pass. If it fails, retain the failure. If it passes, the next gate is a validated
+between-sample bound, not a claim of general safe smoothing.
+
+Sources (primary sources inspected on 2026-10-18 UTC)
+[1] Berscheid and Kroeger, RSS 2021: https://arxiv.org/abs/2105.04830
+[2] Official Ruckig input API: https://docs.ruckig.com/classruckig_1_1InputParameter.html
+[3] Ezair, Tassa, Shiller, IJRR 2014, doi:10.1177/0278364913517148.
+    Author copy: https://www.openu.ac.il/Lists/MediaServer_Documents/PersonalSites/TamirTassa/trajectory_planning.pdf
+[4] Garone, Di Cairano, Kolmanovsky, Automatica 2017, doi:10.1016/j.automatica.2016.08.013.
+    Author copy: https://www.merl.com/publications/docs/TR2016-102.pdf
+[5] Besset and Bearee, Control Engineering Practice 2017, doi:10.1016/j.conengprac.2017.06.015.
+    Publisher abstract: https://www.sciencedirect.com/science/article/pii/S096706611730151X

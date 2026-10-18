@@ -1,0 +1,48 @@
+POSSIBLE NEXT RESULT: SAFE PARTIAL PROGRESS
+Derivation to challenge, not a Lean result. Not part of the frozen comparison.
+
+The present rule can reject a distant goal forever. A useful next theorem could
+turn the exact jerk checker into a rule that accepts part of a requested move.
+This is a reference governor: it modifies the requested target to respect a limit.
+That general idea is established. We do not claim its invention.
+
+Fix an old accepted history and a proposed execution time tau >= admission time c.
+Keep the old history, including committed future events, unchanged. Add a step
+of size d at tau. Use the union of all old knots, tau + m*h for m=0,...,4, and c.
+The set does not depend on d. At each knot e, write the candidate jerk as
+
+  j_new(e) = a_e + b_e*d,
+  a_e = j_old(e),  b_e = K((e-tau)/h)/h^3.
+
+The exact guard is the finite system -J <= a_e+b_e*d <= J. Each condition gives
+a closed interval in d, or no restriction when b_e=0 and |a_e|<=J. Their
+intersection is an interval. If the old history passes its future guard, d=0
+is feasible. With rational input, all finite interval endpoints are rational.
+Projection of the requested step onto this interval is therefore a candidate
+exact rule. The proof would need to derive this from the actual jerk guard.
+
+This preserves the past and the bound, but does not by itself prove progress:
+the feasible interval can contain no useful step in the desired direction.
+It also does not override a previously committed target or a new deadline.
+
+A restricted progress result is easier. Start at a constant reference and assume
+a persistent goal, J>0, h>0, no other committed events and no later goal change.
+One isolated step can have magnitude at most D=J*h^3/2. Split the desired move
+into N=ceil(|goal-start|/D) same-direction steps of size at most D. Execute each
+only after the previous reference has settled for 4h. Then the reference reaches
+the goal after at most 4h*N, with zero velocity, acceleration and jerk. The case
+of zero distance uses N=0. These are reference facts, not physical stopping.
+
+For the existing illustrative values, D=30 mm. A 50 mm move could use 30 mm then
+20 mm and reach its reference endpoint after 1.6 s. This changes the current
+reject-only policy. It must be a new declared experiment, and its 1.6 s delay
+must be included. It does not rescue the frozen short-deadline failure.
+
+Potential proof dependencies
+1. Actual four-box derivatives and exact finite-knot theorem.
+2. Rational guard soundness and prefix preservation.
+3. Isolated-step maximum, final 4h tail and finite-history composition.
+4. For a physical position claim, the existing uncertain-lag tracking theorem.
+
+Do not start this extension until the current package and fair comparison have
+been independently reviewed. The next decision should depend on their value.

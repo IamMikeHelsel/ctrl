@@ -1,0 +1,40 @@
+TIMING AND FLOATING-PROFILE REPLAY
+
+Packet commit times, FIR roots and sample ticks use exact rational times from the
+frozen input. Admission equals execution at the commit tick; no future queue is
+added. Raw and FIR reference coefficients are rational before conversion to the
+numerical plant solver.
+
+Ruckig computes durations, cumulative t_sum and state arrays as binary doubles.
+The exporter retains those native values. JSON uses 17 significant digits; its
+hexadecimal and rational metadata also record each exact binary time. A main
+phase boundary is brake.duration + native t_sum, computed in the exporter.
+It is not an exact sum of the binary durations. Those two constructions differ
+by at most 1/18014398509481984 s over the saved smoke and primary plans.
+
+For the canonical plant replay, the absolute boundary is rational commit time
+plus that exact exported binary offset. This avoids losing very short positive
+phases when adding a small offset to a larger double absolute time. All positive
+phases and all zero-duration metadata remain in the native exports. The schedule
+uses every positive phase and retains both sides of each boundary, even where
+the decimal float time_s column is equal. The time_exact column orders them.
+
+The initial state of a new plan comes from the previous native trajectory's
+at_time query at the elapsed rational commit interval rounded once to a double.
+The native diagnostic instead subtracts double absolute commit clocks. These are
+explicit numerical conventions, not bit-identical executions. The diagnostic
+quantifies state agreement and pointwise jerk-branch disagreements at rounding
+boundaries. It does not erase them or turn a finite sample test into equivalence.
+
+The numerical plant sees a piecewise polynomial reference. It retains actual
+x,v,a at every boundary. Tiny reference q,v,a discrepancies from exported double
+states are recorded in event CSV files and included in the full command-jump
+identity. They are not described as mathematical C2 equality. Ruckig's physical
+jerk jumps are not assigned a finite snap bound.
+
+Implementation corrections before freeze did not change any input, gain, limit,
+deadline or horizon. The first reference assembly correctly rejected a collapsed
+absolute-double interval; rational absolute boundaries replaced that representation
+before the 72 plant cases. A native diagnostic parser then encountered a subnormal
+nextafter(0) input; strict parse checks and removal of that redundant zero-adjacent
+query fixed the diagnostic. No primary plant result depended on that parser.
