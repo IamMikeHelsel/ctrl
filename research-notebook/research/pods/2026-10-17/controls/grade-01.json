@@ -1,0 +1,114 @@
+{
+  "decision": "continue",
+  "grade": "A",
+  "grade_scope": "Closed joint-invariant and finite-composition proof milestone; no robotic benefit or publication grade.",
+  "changed_artifacts": [
+    "builder/JointFilter.lean",
+    "builder/FiniteJointFilter.lean"
+  ],
+  "exact_result": "Actual continuous, interior-classical plant/reference/un-clipped filter trajectories with constant segment jerk preserve the joint tracking/mismatch box from initial bounds and the two explicit budgets. Matched finite switches retain u and use exact post-jump admission.",
+  "hypotheses": {
+    "parameters": "sigma>0,R>0,D>0,W>=0,J>=0,H>=0; lambda positivity follows from budgets.",
+    "rates": "8*sigma<=r<=12*sigma pointwise; |w|<=W; constant segment jerk |j|<=J.",
+    "regularity": "Supplied continuous f,q,u on [0,H], their respective ODEs on (0,H). No explicit regularity of r,w. Existence is not derived; uniqueness is neither assumed nor proved.",
+    "initial": "|z_i(0)|<=R and |d(0)|<=D only.",
+    "budgets": [
+      "W+D+J/(48*sigma)<=2*sigma^2*R",
+      "96*sigma^3*R+(13/12)*J+6*sigma*W<=(lambda-6*sigma)*D"
+    ]
+  },
+  "evidence": {
+    "independent_replay_passed": true,
+    "all_source_hashes_stable": true,
+    "source_sha256": {
+      "ComparisonEnvelope": "735210fa549739ea28bc8ffab5afb9541534dedab24914653bcd1300dc34e21f",
+      "RobustHold": "9eaf5a2071f81b2339a6ee35a95b76b6e6c69360361ef245250d82598a1bc272",
+      "SmoothReplan": "978bd958b242fc767b642a044fdfcb7393ed61ad559aefcf02f9d4bbcb61e7d0",
+      "TrackingReplan": "c10dfd281ff8755b0131522436ee60424e8df3c8f72651a6c7d96aeae0144c7c",
+      "ScaledTracking": "d16727e92d30b73993d0aa409a95ce70945b03d8cf742a887740ba9daed255f6",
+      "CommandSmoothing": "61578bb87c2b9dbb27c1e20c1b3c5ebebe25c3219f2012f7e63e749c6c03111e",
+      "JointFilter": "4f5fd8bb395e37b1c50b1526e13f8c2d45075c37909ad8804de21f979d7da8d8",
+      "FiniteJointFilter": "f2cea0ccc194d9024f3a450b415cba5f52e15b64fac1cb0a169441fc2071ff6a"
+    },
+    "toolchain": "Lean (version 4.35.0, arm64-apple-darwin24.6.0, commit eb6cafb7290e8bd5f2937522d8d804f58f02bafc, Release)",
+    "lake_manifest_sha256": "6525e7195148f78782a5aeeee8f1a8a90eebc4ecd4e9c3cdc215b29ddd3fbcb0",
+    "verifier_sha256": "dbc4e91342fe8dee4a9368551b42df2904d2e3957ab89ed78bd2f5b668fbd7d0",
+    "replay_verification_sha256": "e2da0b77301f5dccbc321a704de263e368c3e9516548b69903090a4438fda4ea",
+    "post_replay_check_sha256": "aa638e88dbc543b823cb374cd13d22b7f0e5fb719f4ae610b3c24a8245cb8782",
+    "audited_statement_names": [
+      "LeanControls.JointFilter.coeff_bound",
+      "LeanControls.JointFilter.filter_face",
+      "LeanControls.JointFilter.inflated_budgets",
+      "LeanControls.JointFilter.joint_invariant",
+      "LeanControls.JointFilter.target_derivative",
+      "LeanControls.JointFilter.actual_joint",
+      "LeanControls.JointFilter.target_normalized",
+      "LeanControls.JointFilter.actual_joint_scaled",
+      "LeanControls.JointFilter.illustrative_joint_budgets",
+      "LeanControls.JointFilter.sharp_coeff_example",
+      "LeanControls.FiniteJointFilter.segment",
+      "LeanControls.FiniteJointFilter.matched_handoff",
+      "LeanControls.FiniteJointFilter.finite_segments",
+      "LeanControls.FiniteJointFilter.nonzero_admitted_update",
+      "LeanControls.FiniteJointFilter.large_jump_still_rejected",
+      "LeanControls.FiniteJointFilter.necessary_filter_rate"
+    ],
+    "permitted_axioms": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "kernel_replayed_targets": [
+      "JointFilter",
+      "FiniteJointFilter"
+    ],
+    "mutation": "95*K rejected with exactly two arithmetic-proof errors; accepted source proves coeff 8 [-1,1,0]=96.",
+    "source_review": {
+      "coeff_bound": "Correct 96*K cube coefficient bound; exact sharp witness retained.",
+      "filter_face": "Correct signed mismatch-face inequalities under stated budget.",
+      "inflated_budgets": "Common radius factor preserves both budgets for nonnegative forcing bounds.",
+      "joint_invariant": "Eight simultaneous barriers and epsilon limit; no circular all-time premise.",
+      "target_derivative": "Derived from actual plant and constant-jerk reference ODEs.",
+      "actual_joint": "Derives augmented ODE and joint box from initial bounds.",
+      "target_normalized": "Correct physical target scaling.",
+      "actual_joint_scaled": "Correct time, command, jerk and filter-rate scaling; physical D conclusion.",
+      "illustrative_joint_budgets": "Exact feasible arithmetic only.",
+      "sharp_coeff_example": "Exact 96 coupling counterexample to false 95 bound.",
+      "segment": "Wrapper structure has no hidden tracking or mismatch premise.",
+      "matched_handoff": "Retains u and uses exact state-dependent jump admission.",
+      "finite_segments": "Closed-endpoint induction over finitely many actual segments.",
+      "nonzero_admitted_update": "Nonzero admission arithmetic, not execution existence.",
+      "large_jump_still_rejected": "Preserves prior pointwise certificate obstruction.",
+      "necessary_filter_rate": "Correct implication lambda>=54*sigma from the sufficient budgets."
+    },
+    "diagnostic_review": "Three frozen-rate Routh margins independently match exact arithmetic; not a switching proof."
+  },
+  "practical_limitation": {
+    "proved": "These budgets require lambda>=54*sigma.",
+    "witness": "lambda=4000/s is a 0.25 ms filter versus assumed actuator time constants about 8.33-12.5 ms.",
+    "interpretation": "This is a certificate limitation and a mathematical bridge. No useful smoothing, sampled feasibility, hardware performance, or stopping result follows."
+  },
+  "documentation_correction": {
+    "path": "builder/result.json",
+    "old": "Trajectory existence and uniqueness are premises, not derived.",
+    "replacement": "Trajectory existence is not derived; uniqueness is neither required nor proved.",
+    "proof_impact": "none",
+    "status": "Requested coordinator correction after frozen review with original report/hash preservation."
+  },
+  "remaining_gap": [
+    "Useful slower-filter certificate",
+    "Forced tracking and replan-jump bounds for a shaped invariant",
+    "Trajectory existence under stated exogenous regularity",
+    "Clipped filters and within-segment changing jerk",
+    "Buffered or sampled execution",
+    "Combined stopping certificate",
+    "Measured smoothing and hardware acceptance"
+  ],
+  "next_milestone": {
+    "task": "One fixed-parameter common-quadratic certificate attempt at normalized sigma=1,lambda=2,r in [8,12].",
+    "matrix": "A(r)=[[0,1,0,0],[0,0,1,0],[0,0,-r,r],[-16,-12,-1,-2]], state xi=(ex,ev,ea,u-q2), homogeneous forcing.",
+    "acceptance": "Rational P=P^T>0 and mu>0 with exact endpoint negativity A(8)^TP+PA(8)<=-mu I and A(12)^TP+PA(12)<=-mu I; affine interval coverage and conditional energy-decay proof. A rigorously verified switching counterexample is also valuable.",
+    "scope_limit": "No claim of forced tracking, replan safety, smoothing performance, or stopping from homogeneous energy decay."
+  },
+  "stop_condition": "One batch only. If there is no rationally verified strict certificate or rigorous counterexample, save exact residuals and pause for review. Floating-point solver failure is not an impossibility result. Do not continue frozen-rate-only checks or unbounded parameter sweeps."
+}

@@ -1,0 +1,74 @@
+FORCED SCREEN: MODEL, UNITS, AND EXECUTION RULES
+
+The two controllers are both filtered. Original kappa=5/48. The explicit
+lag-compensated controller change is kappa=29/48. No direct-controller baseline
+is included. This comparison cannot establish smoothing benefit over direct control.
+
+Physical variables and constants
+sigma=10/s, lambda_physical=20/s, R=0.0002 m, |j|<=10 m/s^3,
+|w|<=0.01 m/s^2. All 48 cases begin with xi=0. To fix absolute command values,
+the reference starts at q0=q1=q2=0, the plant matches, and u=q2=0.
+This origin/rest reference is an explicit additional reporting convention.
+
+Plant: x'=v, v'=a, a'=r*(u+w-a).
+Reference: q0'=q1, q1'=q2, q2'=j, with piecewise constant j.
+Target: u_star=q2-8*sigma^2*(x-q0)-6*sigma*(v-q1)-(a-q2)/2+(kappa/sigma)*j.
+Filter: u'=20*(u_star-u). There is no clipping, sampling delay, or saturation.
+Actual physical jerk is a'=r*(u+w-a). It is distinct from u', u_star, and j.
+The specified J bounds reference jerk. No actual-jerk or command-authority limit
+was supplied, so those output peaks are not labelled actuator-limit violations.
+
+Normalization
+Set tau=sigma*t, rho=r/sigma, wn=w/sigma^2, jn=j/sigma^3,
+and xi=(ex, ev/sigma, ea/sigma^2, (u-q2)/sigma^2).
+With lambda_normalized=2,
+  dxi/dtau=A(rho)*xi+g,
+  A(rho)=[[0,1,0,0],[0,0,1,0],[0,0,-rho,rho],[-16,-12,-1,-2]],
+  g=(0,0,rho*wn-jn,(2*kappa-1)*jn).
+The exact coefficient change follows from diagonal scaling. check_equations.py
+checks it with Fraction arithmetic for all rates and forcing values in this gate.
+
+Exact constant-segment solution formula
+On a segment with constant rho, wn, and jn,
+  xi_eq=([wn+(kappa-1/rho-1/2)*jn]/8, 0, 0, jn/rho-wn),
+  xi(tau0+s)=xi_eq+exp(A(rho)*s)*(xi(tau0)-xi_eq).
+The equilibrium residual A*xi_eq+g is exactly zero in rational arithmetic.
+SciPy evaluates this analytical matrix-exponential formula separately from each
+segment start. It is numerical evaluation of an exact formula, not exact real
+arithmetic or a validated interval enclosure.
+
+Independent numerical cross-check
+The existing research-python runtime uses mpmath with 80 decimal digits. It
+independently constructs the schedules and the augmented forced 5x5 matrix,
+computes its Taylor matrix exponential for one 0.5 ms physical step, and propagates
+without using SciPy segment-start states. It independently evolves q from zero.
+Every saved row and every reported physical output is compared. The raw absolute
+comparison tolerance is 2e-10 in each column's stated units. Actual discrepancies
+are recorded per column, case, and time in high-precision-check.json.
+
+Switch handling
+Each trajectory is divided at every rate or reference-jerk switch. The complete
+state xi and reference q0,q1,q2 are carried unchanged to the next segment.
+Therefore x,v,a,u also remain continuous. Traces retain both left and right values
+at each event. The jump in u_star is (kappa/sigma)*Delta_j. Since u is retained,
+the corresponding u' jump is lambda_physical times that jump. Actual jerk can
+jump at a rate change by Delta_r*(u+w-a); it stays continuous at an isolated
+reference-jerk switch if r and w are unchanged. The continuity checker tests these
+identities separately. It does not reset u or the tracking error at a switch.
+
+Fixed case product
+2 controller choices x 4 rate choices x 3 disturbance choices x 2 jerk choices.
+Rates: 80,100,120/s, or 80->120->80/s at t=0.125,0.375 s.
+Disturbances: constant 0,+0.01,-0.01 m/s^2.
+Jerk A: +10 m/s^3 through t=0.5 s; the screen ends there without imposing a stop.
+Jerk B: +10 to 0.25 s, -10 to 0.5 s, then 0 through 1 s.
+The second reference ends with nonzero velocity. Neither reference is a stopping
+trajectory. No travel, speed, acceleration, or actuator-feasibility claim follows.
+
+Sampling and interpretation
+The saved physical grid is 0.5 ms, plus duplicate one-sided event rows.
+All maxima are sampled maxima. Threshold crossing brackets are adjacent sample
+pairs around |ex|=0.2 mm, labelled numerical. Agreement of the numerical methods
+supports these samples; it does not prove uniform safety between samples or
+under untested signals. A sampled target violation is retained as numerical
+finite-case failure evidence. No broad forced-tube or replan theorem is claimed.

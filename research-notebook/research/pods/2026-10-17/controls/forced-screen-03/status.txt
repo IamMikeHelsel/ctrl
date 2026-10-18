@@ -1,0 +1,90 @@
+CONTROLS FORCED SCREEN 03 — 17 October 2026
+Status: complete and frozen for independent grading. No further batch started.
+
+Neither filtered law meets the 0.2 mm position target in all 24 assigned cases.
+The original law exceeds the target in all 24. The explicitly changed,
+lag-compensated law stays within the target at saved samples in 20 of 24 cases.
+Its four failures occur after the reference jerk reversal. These are numerical
+finite-case findings, not interval proofs or a robust safety certificate.
+
+                           Original 5/48    Changed 29/48
+Within target at samples          0/24              20/24
+Constant +10 jerk subgroup        0/12              12/12
+Reversal/zero jerk subgroup       0/12               8/12
+Worst sampled |position error|    1.152601 mm        0.280948 mm
+Worst sampled |actual jerk|      27.051017 m/s^3    16.575134 m/s^3
+Worst sampled |u|                 5.278282 m/s^2     5.231364 m/s^2
+Worst sampled |u_star|            6.079287 m/s^2     5.706238 m/s^2
+Worst sampled |u_prime|          28.380283 m/s^3    17.176241 m/s^3
+
+Each peak is the maximum over that law's saved cases and may occur in a different
+case or at a different time. Full signed values, times, and case IDs are in
+screen-result.json and summary.csv. J=10 bounds reference jerk, not actual jerk.
+No actuator-authority or actual-jerk limit was supplied.
+
+Changed-law failures (all use the +10,-10,0 jerk schedule)
+Rate / disturbance          Sampled peak |ex|    Peak time    First exit bracket
+80/s, 0                     0.266134 mm          0.3625 s     [0.3345,0.3350] s
+80/s, +0.01 m/s^2            0.280948 mm          0.3610 s     [0.3305,0.3310] s
+80/s, -0.01 m/s^2            0.251643 mm          0.3635 s     [0.3395,0.3400] s
+100/s, +0.01 m/s^2           0.206831 mm          0.3485 s     [0.3385,0.3390] s
+These threshold brackets are numerical adjacent-sample brackets. The four saved
+violations exceed the target at explicitly checked times. The other 20 cases have
+no sampled violation; that does not establish safety between samples.
+
+Model and execution
+The exact gate used 2 controllers x 4 rate cases x 3 disturbances x 2 jerk cases.
+Physical sigma=10/s and lambda=20/s; normalized lambda=2. The normalized state
+is xi=(ex,ev/10,ea/100,(u-q2)/100), starting at zero. Absolute reference values
+start at q0=q1=q2=0, with matched plant and u=0. This explicit convention fixes
+absolute u and u_star, which xi(0)=0 alone does not fix. See equations.txt for
+all equations, units, schedules, and the analytical segment solution.
+
+Every constant segment uses the exact matrix-exponential solution formula,
+evaluated in floating point. The primary method uses SciPy expm independently
+from each segment start. A separate 80-digit mpmath Taylor exponential advances
+an augmented forced system and checks every saved row. It independently builds
+the schedules and reference, and does not use SciPy segment-start states.
+The grid is 0.5 ms with both one-sided values at events: 72,120 rows in 48 traces.
+Maximum discrepancy was 3.067e-18 m in position, 5.060e-15 m/s^2 in u_star,
+9.696e-14 m/s^3 in u_prime, and 2.536e-13 m/s^3 in actual jerk.
+No numerical disagreement remains at the stated tolerance.
+
+Checks
+Exact Fraction coefficient checks verify physical-to-normalized scaling and
+54 equilibrium combinations of the fixed rate/forcing values. The equilibrium
+plant jerk and filter u_prime both equal the reference jerk. All 72 switches
+retain xi, q0/q1/q2, actual state, and u. Maximum coordinate continuity residual
+was 2.776e-17. Target and actual-jerk jump identities pass separately.
+The reversal target jump is -5/24 m/s^2 for the original law and -29/24 m/s^2
+for the changed law. Retained u makes the corresponding u_prime jumps -25/6 and
+-145/6 m/s^3. Actual jerk is continuous at the isolated reference-jerk switches;
+it can jump at rate switches. Thus these outputs must not be conflated.
+
+An isolated reproduction reran both numerical methods and exact algebra checks.
+All 48 trace hashes and summary.csv match byte-for-byte. JSON evidence matches
+apart from elapsed execution times. Prior accepted proof source hashes match.
+All scripts, traces, checks, equations, runtime versions, and hashes are saved.
+No new package, remote service, Git operation, agent, or hardware change was used.
+
+Interpretation and next test for grader approval
+Lag compensation improves the fixed tracking screen, but does not fix all four
+reversal cases at the unchanged target. A broad claim that either current law
+maintains this 0.2 mm tube is not supported. Pause that formalization until the
+controller, permitted reference transitions, or target changes.
+One bounded candidate test is to retain the changed law, 20/s filter and 0.2 mm
+target, and replace only the worst case's instantaneous +10 to -10 reversal with
+a 50 ms linear jerk ramp centered at 0.25 s. Keep r=80/s, w=+0.01 m/s^2 and
+matched retained state. Check whether its sampled position peak falls below
+0.2 mm and report the same five physical outputs. This test has NOT been run.
+Passing it would still require another approved gate before expanding claims.
+
+Both screened laws are filtered. No direct/unfiltered baseline was included, so
+these results establish no smoothing advantage over direct control. There is no
+between-sample safety proof, arbitrary-signal tube, finite replan theorem, stopping
+result, sampled/clipped implementation test, actuator-feasibility result, hardware
+acceptance, or novelty claim. The illustrative references do not stop at the end.
+
+Reproduction
+python3 research/pods/2026-10-17/controls/forced-screen-03/verify.py
+The existing .tools/research-python runtime supplies mpmath for the cross-check.

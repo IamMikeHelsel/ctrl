@@ -1,0 +1,78 @@
+{
+  "status": "ready_for_independent_grade",
+  "builder_verification_passed": true,
+  "independent_grade": null,
+  "proved": [
+    "Joint segment invariant from actual physical plant/reference/un-clipped filter ODEs and initial joint box only.",
+    "Exact target derivative in normalized coordinates, with proved physical time/state scaling.",
+    "Matched physical/reference states plus retained filter and exact post-jump admission transfer the joint box.",
+    "Finite actual segment composition under state-dependent admission.",
+    "Nonempty stated parameter budgets; nonzero admitted jerk-update arithmetic; old large-jump rejection retained.",
+    "The stated sufficient budgets imply lambda >= 54*sigma."
+  ],
+  "open": [
+    "Independent grader replay and source review pending.",
+    "Trajectory existence and uniqueness are premises, not derived.",
+    "No clipped-filter or variable-within-segment jerk theorem.",
+    "No infinite-switch, dwell-time, accepted-update frequency, stopping, or goal-arrival theorem.",
+    "No actuator recommendation, measured smoothing benefit, or hardware acceptance."
+  ],
+  "hypotheses": {
+    "parameters": "sigma>0, R>0, D>0, W>=0, J>=0, H>=0; lambda positivity follows from budgets.",
+    "plant": "x_prime=v; v_prime=a; a_prime=r*(u+w-a). Continuous state on [0,H], equations on (0,H).",
+    "reference": "q0_prime=q1; q1_prime=q2; q2_prime=j with constant j and abs(j)<=J. Continuous reference on [0,H].",
+    "filter": "u_prime=lambda*(u_star-u), un-clipped; continuous u on [0,H].",
+    "command": "u_star=q2-8*sigma^2*(x-q0)-6*sigma*(v-q1)-(a-q2)/2+5*j/(48*sigma).",
+    "bounds": "8*sigma<=r<=12*sigma; abs(w)<=W pointwise on [0,H]. No derivatives of r or w assumed.",
+    "initial_only": "abs(z_i(0))<=R for i=0,1,2; abs(u(0)-u_star(0))<=D.",
+    "budgets": [
+      "W+D+J/(48*sigma)<=2*sigma^2*R",
+      "96*sigma^3*R+(13/12)*J+6*sigma*W<=(lambda-6*sigma)*D"
+    ],
+    "switches": "Match plant and reference componentwise; retain u; require abs(d_minus-5*(j_new-j_old)/(48*sigma))<=D; next segment jerk bound in Segment."
+  },
+  "checks": {
+    "fresh_source_build": true,
+    "audited_statements": [
+      "LeanControls.JointFilter.coeff_bound",
+      "LeanControls.JointFilter.filter_face",
+      "LeanControls.JointFilter.inflated_budgets",
+      "LeanControls.JointFilter.joint_invariant",
+      "LeanControls.JointFilter.target_derivative",
+      "LeanControls.JointFilter.actual_joint",
+      "LeanControls.JointFilter.target_normalized",
+      "LeanControls.JointFilter.actual_joint_scaled",
+      "LeanControls.JointFilter.illustrative_joint_budgets",
+      "LeanControls.JointFilter.sharp_coeff_example",
+      "LeanControls.FiniteJointFilter.segment",
+      "LeanControls.FiniteJointFilter.matched_handoff",
+      "LeanControls.FiniteJointFilter.finite_segments",
+      "LeanControls.FiniteJointFilter.nonzero_admitted_update",
+      "LeanControls.FiniteJointFilter.large_jump_still_rejected",
+      "LeanControls.FiniteJointFilter.necessary_filter_rate"
+    ],
+    "permitted_axioms": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "separate_kernel_replay": [
+      "JointFilter",
+      "FiniteJointFilter"
+    ],
+    "negative_control": "False coupling bound 95*K rejected; exact value 96 at r=8,z=(-1,1,0).",
+    "frozen_sources_match_preflight": true
+  },
+  "source_sha256": {
+    "ComparisonEnvelope": "735210fa549739ea28bc8ffab5afb9541534dedab24914653bcd1300dc34e21f",
+    "RobustHold": "9eaf5a2071f81b2339a6ee35a95b76b6e6c69360361ef245250d82598a1bc272",
+    "SmoothReplan": "978bd958b242fc767b642a044fdfcb7393ed61ad559aefcf02f9d4bbcb61e7d0",
+    "TrackingReplan": "c10dfd281ff8755b0131522436ee60424e8df3c8f72651a6c7d96aeae0144c7c",
+    "ScaledTracking": "d16727e92d30b73993d0aa409a95ce70945b03d8cf742a887740ba9daed255f6",
+    "CommandSmoothing": "61578bb87c2b9dbb27c1e20c1b3c5ebebe25c3219f2012f7e63e749c6c03111e",
+    "JointFilter": "4f5fd8bb395e37b1c50b1526e13f8c2d45075c37909ad8804de21f979d7da8d8",
+    "FiniteJointFilter": "f2cea0ccc194d9024f3a450b415cba5f52e15b64fac1cb0a169441fc2071ff6a"
+  },
+  "reproduction": "python3 research/pods/2026-10-17/controls/builder/verify.py",
+  "storage": "Local builder folder only. No Git operation, push, merge, external message, cloud service setup, or hardware change."
+}

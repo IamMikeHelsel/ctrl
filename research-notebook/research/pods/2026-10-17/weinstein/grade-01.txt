@@ -1,0 +1,121 @@
+WEINSTEIN POD — FINAL INDEPENDENT GRADE 01
+2026-10-17
+
+Grade: B. Milestone accepted.
+Decision: PAUSE further GU operator expansion at this completed boundary.
+The accepted result removes a specific mathematical uncertainty: a real Hodge
+coefficient array is now connected to the actual exterior algebra, metric and
+volume. It is a nontrivial verified bridge. This grade is not a novelty claim,
+a publication probability, or a grade for Geometric Unity as a theory.
+
+Exact accepted result and assumptions
+The model is V=R^14 with its ordered coordinate basis. The metric has seven +1
+entries at indices 0..6 and seven -1 entries at 7..13. Its bilinear map to the
+dual is proved bijective. The ordered top exterior wedge has volume +1.
+The exterior powers, induced metric and exterior product are Mathlib's actual
+objects. This is a declared pointwise model, with no claimed global bundle or
+spinor identification.
+
+Let mu(I) be the product of metric entries over an increasing subset I. Let
+eps(I) be the sign for the block order (I, complement I). The source proves
+  H_k(e_I) = eps(I) mu(complement I) e_(complement I),
+where H is exactly Mathlib exteriorPower.hodgeStar. Its defining equation is
+  B_(14-k)(H_k(alpha), beta) = vol(alpha wedge beta).
+The formula holds in every pair of complementary degrees. H_expansion extends
+it to arbitrary forms. In particular, the source proves
+  H_12(H_2(x))=-x for every x in Lambda^2 V,
+  H_2(H_12(y))=-y for every y in Lambda^12 V.
+
+The alternate convention S=-H is separately characterized by
+  vol(alpha wedge S_k(beta)) = B_k(alpha,beta).
+Its coefficient is eps(I) mu(I), and S_12(S_2(x))=-x. The statement H=-S alone
+is definitional; the independently proved S_pairing gives the mathematical
+content needed to identify S as the other Hodge convention. The negative total
+metric product, and the actual exterior swap sign in degrees 2/12, supply the
+square sign. No square-law premise is hidden in a definition or theorem input.
+
+The star2 array is defined from this actual Hodge map's basis images. A named
+subset/Fin equivalence reindexes the actual exterior basis. The representation
+theorem identifies the resulting sum with the frozen linearCoeff interface over
+R. Both H and S arrays are supplied, with opposite signs. This is not arbitrary
+array relabeling. Numeric array labels are not claimed to be lexicographic.
+
+Exact sign checks
+For I={0,1}, eps=+1, mu=+1, H coefficient=-1, S coefficient=+1.
+For I={0,7}, eps=+1, mu=-1, H coefficient=+1, S coefficient=-1.
+The actual exterior form e_{0,1} is proved nonzero. Its H square is proved unequal
+to itself. The checks use proof-producing Lean evaluation, not numerical samples.
+
+Independent verification performed
+I read status.txt, result.json, conventions.txt, verification.json, SHA256SUMS,
+and all three final Hodge source files. I also inspected the relevant pinned
+Mathlib definitions for the Hodge star, induced bilinear form, exterior basis
+and wedge pairing. The HodgeStar, WedgePairing and BilinForm source hashes match
+the earlier preflight observations.
+
+I used my own replay.py and grader-replay-01/source and logs directories. I did
+not run the builder's verification script or change its files. Every entry in
+its SHA256SUMS was checked. The accepted five Lean sources match both builder
+verification.json and result.json. The complete builder file tree and the two
+frozen dependency sources were hashed before and after; none changed.
+
+Fresh source compilation passed for GaugeSignAudit, ContractionCovariance,
+HodgeBridge, HodgeChecks and HodgeInterface. Each was separately replayed by
+leanchecker. All 53 exported target theorem declarations were independently
+audited: their only axioms are propext, Classical.choice and Quot.sound. The
+count records audit coverage; it is not the basis for this progress grade.
+The accepted sources contain no sorry, admit, added axiom, native_decide or
+unsafe declaration. The pin remains Lean 4.35.0 and Mathlib manifest revision
+56a005855ea17e0b0958f73ec801ae140b0a1679. Prebuilt Mathlib dependencies were reused;
+this is not a rebuild of Mathlib or an independent implementation of Lean.
+
+A separate client check accepted the correct square, the nonzero witness, the
+negation of positive square, and the frozen coordinate interface. Two negative
+checks failed for the intended mathematical reason:
+1. In a copied HodgeBridge source, changing only H_square's conclusion from -x
+   to x causes a type mismatch between the proved negative identity and the
+   positive identity. The unchanged proofs do not accept the false statement.
+2. On e_{0,1}, the false positive-square client fails because H_square proves
+   the negative form. There is no missing-import or unknown-identifier failure.
+See grader-replay-01/verification.json and its logs for commands and exact output.
+
+Closed gap and remaining limits
+This closes the preflight gate for one actual degree-2/12 Hodge ingredient and
+its finite-coordinate representation. The signed-complement formula is more
+general, but no broad GU claim follows. No blocker was found in the accepted
+statements. The three accepted source hashes are:
+HodgeBridge.lean: db2070dd6981f74d07618f900262f578d058324e3c330d1a6c284f472eac1f64
+HodgeChecks.lean: d0f5ecf4fd7988180c685b40b435575ce4bcc66aa88045edd50b75ee7c9a2421
+HodgeInterface.lean: 54caa5d69f52d1047ca5fd59cae9c389b7162116bbf9c3c8df2f30880ec1833b
+
+There is no full SwerveCoefficients instantiation. The remaining star1/star14
+and wedge coefficient bridges are not certified by this milestone. Phi_1 and
+Phi_2, a Clifford/spinor realization, the real form, product/bracket conventions,
+Lie-algebra closure, Weyl annihilation and Bianchi identities remain unfilled.
+The earlier global gauge/action/torsion convention mismatch is not repaired.
+No claim about field equations, physical predictions or physical validation is
+accepted. No external contact or submission took place in this review.
+
+Pause and exact restart inputs
+Accept and preserve this bounded result. Do not begin a full GU operator batch
+from generic covariance or wrapper lemmas. Restart that expansion only when a
+specific candidate supplies all of these mathematical objects:
+- Explicit normalized Phi_1 and Phi_2, including their coefficients in a declared
+  Clifford/spinor realization and their proposed invariance property.
+- The exact real Lie algebra, multiplication or bracket, and all i factors.
+- A complete Hodge/exterior-product convention for every term of the operator.
+- The exact algebraic curvature domain and Weyl subspace to be tested.
+- A consistent gauge action, connection and torsion ledger if their covariance
+  or differential identities are part of the next claim.
+Then the next falsifiable test is output closure and the operator's value on a
+basis of that declared Weyl subspace. A counterexample or a verified zero result
+would be useful evidence. These inputs have not been supplied by this milestone.
+A reusable general Mathlib Hodge theorem could be a separate future target after
+its own gate; it is not a new assignment or implied result of this review.
+
+Changed artifacts and storage state
+Created grade-01.txt/json and grader-replay-01/ evidence only. Builder files and
+frozen prior evidence remain byte-for-byte unchanged. Generated grader oleans
+were removed after successful replay; source copies and logs remain. Notebook
+sync, manifest checks, local commit, push and merge are the coordinator's
+separate storage work. This grader performed no Git operations.

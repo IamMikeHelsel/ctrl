@@ -1,0 +1,30 @@
+{
+  "proposal_executed": false,
+  "scope": "Exact reference-kinematics review of the proposed centered 50 ms ramp. No new controller trace or implementation batch.",
+  "parameters": {
+    "J_m_per_s3": "10",
+    "half_width_s": "1/40",
+    "center_s": "1/4",
+    "start_s": "9/40",
+    "end_s": "11/40"
+  },
+  "difference_moments_about_center": {
+    "integral_delta_jerk": "0",
+    "integral_time_offset_times_delta_jerk": "1/480",
+    "integral_time_offset_squared_times_delta_jerk": "0"
+  },
+  "end_ramp_reference_differences": {
+    "acceleration_m_per_s2": "0",
+    "velocity_m_per_s": "-1/480",
+    "position_m": "-1/19200"
+  },
+  "later_reference_position_differences_if_future_jerk_unchanged": {
+    "t_0_5_s_m": "-1/1920",
+    "t_1_s_m": "-1/640",
+    "t_1_s_mm": -1.5625
+  },
+  "preview_requirement": "The centered ramp starts at 0.225 s, 25 ms before a replan arriving at 0.25 s. It needs advance knowledge or an explicitly earlier admission.",
+  "same_task_assessment": "It changes the velocity and position reference. Error measured only relative to the new reference cannot establish repair of the original fixed task.",
+  "causal_fixed_endpoint_obstruction": "At t=0.25 s the original q2=2.5 m/s^2. Reaching q2=0 at t=0.5 s with |j|<=10 requires integral j=-2.5, the lower bound over 0.25 s. Therefore j=-10 almost everywhere on that interval. A nonzero continuous ramp from +10 cannot preserve that acceleration endpoint and deadline within the same jerk limit.",
+  "restart_requirement": "Explicitly allow a timing/endpoint/jerk-limit change or prove a causal endpoint-matched feasible reference on a broader horizon; compare methods on the same accepted task and error definition."
+}

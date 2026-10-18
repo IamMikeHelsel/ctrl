@@ -7,7 +7,7 @@
 
 **`ctrl`** (`https://github.com/IamMikeHelsel/ctrl`) is a verified library of formal, machine-checked mathematics in modern control theory, robotic state estimation, and projective computer vision, built on Lean 4 and Mathlib.
 
-Every declaration in `ctrl` is 100% `sorry`-free, contains zero custom axioms or unverified escape hatches, and every public headline theorem is programmatically audited to depend solely on Lean's standard foundational axioms (`propext`, `Classical.choice`, `Quot.sound`).
+The compiled `ControlsLean` library contains no `sorry`, custom axioms, or unverified escape hatches. Its public headline theorems are audited to depend only on Lean's standard foundational axioms (`propext`, `Classical.choice`, `Quot.sound`). The separate [research notebook](research-notebook/README.md) preserves exploratory work and has its own acceptance records.
 
 ---
 

@@ -34,7 +34,9 @@ SKIP_DIRS = {
     ".ruff_cache",
     ".mypy_cache",
 }
-SKIP_SUFFIXES = (".olean", ".ilean", ".ir", ".pyc", ".pyo", ".aux", ".out", ".cache-9")
+SKIP_SUFFIXES = (
+    ".olean", ".ilean", ".ir", ".ir.sig", ".pyc", ".pyo", ".aux", ".out", ".cache-9"
+)
 
 
 def digest(data):

@@ -1,0 +1,88 @@
+{
+  "status": "ready_for_independent_grade",
+  "independent_grade": null,
+  "builder_checks_passed": true,
+  "fixed_model": {
+    "sigma": 1,
+    "lambda": 2,
+    "rates": "8<=r(t)<=12",
+    "state": "xi=(x-q0,v-q1,a-q2,u-q2)",
+    "A": "[[0,1,0,0],[0,0,1,0],[0,0,-r,r],[-16,-12,-1,-2]]",
+    "forcing": "w=0 and reference jerk j=0"
+  },
+  "certificate": {
+    "P_denominator": 100,
+    "P_integer_numerator": [
+      [
+        22700,
+        16487,
+        1640,
+        143
+      ],
+      [
+        16487,
+        14809,
+        1421,
+        1567
+      ],
+      [
+        1640,
+        1421,
+        311,
+        36
+      ],
+      [
+        143,
+        1567,
+        36,
+        1027
+      ]
+    ],
+    "mu": "1/2",
+    "norm_lower": "1/2",
+    "norm_upper": "500",
+    "energy_decay": "V(t)<=exp(-t/1000)*V(0)",
+    "exact_certificate_sha256": "1a1d8f1f44c228c3dff5903874223b53f95a0d90c0f677ff54a7e7d1149bb815"
+  },
+  "proved": [
+    "Exact rational positive definite common P and positive mu=1/2.",
+    "Exact endpoint quadratic inequalities and affine coverage of every r in [8,12].",
+    "Exact equivalence of matrix quadratic form, polynomial energy, and derivative.",
+    "Conditional homogeneous energy decay from actual continuous/interior-classical plant, reference, and lambda=2 filter ODEs."
+  ],
+  "hypotheses": [
+    "H>=0; supplied f,q,u continuous on [0,H], their actual ODEs on (0,H).",
+    "Pointwise 8<=r<=12; no explicit derivative or continuity hypothesis on r.",
+    "Zero disturbance and zero reference jerk.",
+    "Un-clipped continuous first-order filter; normalized sigma=1, lambda=2."
+  ],
+  "open": [
+    "Independent grader replay pending.",
+    "Existence is not derived; uniqueness is neither assumed nor proved.",
+    "No forced tracking tube or finite replan-safety certificate.",
+    "No stopping, sampled/clipped execution, actuator feasibility, or measured-smoothness result."
+  ],
+  "search": {
+    "bounded": true,
+    "fixed_parameter_only": true,
+    "solver": "SciPy linprog HiGHS with violated-eigenvector cuts",
+    "lp_solves": 69,
+    "new_installs": false,
+    "numeric_evidence_not_used_as_proof": true
+  },
+  "checks": {
+    "exact_rational_LDL": true,
+    "source_generation_reproducible": true,
+    "fresh_source_build": true,
+    "axiom_audit_count": 25,
+    "separate_kernel_replay": true,
+    "targeted_false_mu_100_rejected": true,
+    "source_hash_stability": true,
+    "prior_proof_hashes_unchanged": true
+  },
+  "source_sha256": {
+    "ComparisonEnvelope": "735210fa549739ea28bc8ffab5afb9541534dedab24914653bcd1300dc34e21f",
+    "QuadraticSlowFilter": "df2d77f2697b89b9ff053e616f14d4e8cc89cc7c3ac62b4034b1ee984591f849"
+  },
+  "reproduction": "python3 research/pods/2026-10-17/controls/quadratic-02/verify.py"
+}

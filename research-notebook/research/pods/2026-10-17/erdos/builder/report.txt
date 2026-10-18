@@ -1,0 +1,160 @@
+BCL CERTIFICATE AND INTERFACE AUDIT
+17 October 2026 local date
+
+Result: PAUSE IMPLEMENTATION. The bounded search did not locate an original
+exact certificate for BCL part (a). This is an acquisition result, not a
+disproof of BCL. The existing 0.02587 endpoint remains conditional on BCL.
+No new sparse-half bound or proof of the 0.02 conjecture is claimed.
+
+PRIMARY SOURCE FINDINGS
+
+The pinned source archive is https://arxiv.org/src/2103.14179v1.
+Its SHA256 is e7cd89c1e6d3903b79fe7282da2c341a0166d895bdfd77d9311e75f4e87770f2.
+Its five members are Extendedabstract.tex, Extendedabstract.bbl, bibilo.bib,
+aliascnt.sty and svproc.cls. No witness, matrix file, graph list, program or
+supplement link is in this archive. Original archive and member bytes are saved.
+
+The publication entry at https://lidicky.name/pub.html (lines 1009-1016 in
+the saved HTML) links the paper PDF, arXiv and DOI. It gives no data link.
+The entry at https://sites.google.com/view/jozsefbaloghmath/publications
+(lines 134-137 in the saved text extraction) states that the journal version
+is still in preparation. It links arXiv, without a certificate link.
+These finite observations do not show that no package exists elsewhere.
+
+The paper supplies families of rooted cuts, but not their full probability
+tables, dual weights, PSD witnesses, graph orders or a part-(a) program map.
+The six-vertex cut prose repeats v1 in opposite groups and omits v0; its
+commented alternative does not settle a unique executable specification.
+The theorem and sketches are attributed published claims, not checked data.
+See Extendedabstract.tex lines 74-85, 195-224, 226-241 and 276-315.
+
+FIRST MISSING DATA ITEM
+
+The first missing object is an exact part-(a) dual/SOS witness, with its
+coefficient rows identified in a fixed triangle-free host/flag basis.
+To use it, the package must also give the full local-cut table (including
+special six-vertex cuts), basis order, averaging conventions, nonnegative
+multipliers, exact PSD factors, residual inequalities and density domains.
+No supplied exact checker was available or run. No BCL coefficient identity
+was independently checked. arithmetic-check.json checks only audit identities.
+
+C4 IS A DIFFERENT CERTIFICATE
+
+The retained clebsch_tangent_certificate.json states
+  t(C4) - r^3 + (3/64 + 1/50000000000) r >= 0.
+It concerns a four-cycle density. Its rational squares and the C4Certificate
+Lean tree do not certify the BCL cut bound. The fact that both developments
+mention the Clebsch graph does not connect their coefficients or conclusions.
+
+NORMALIZATION AND FINITE ROOT COST
+
+Use n=|V(G)|, m=|E(G)|, r=2m/n^2 and c=2/47. The Lean target is an
+unordered internal-edge count at most c*n^2. The paper also uses
+rho=m/binom(n,2). For n>1, rho=r*n/(n-1); the two are not equal at finite n.
+In the flag limit, a cut cost normalized by an unordered pair has threshold
+2c=4/47, not c. The paper's displayed 2/25 belongs to its stronger 1/25
+contradiction setup; it is not a ready part-(a) coefficient table.
+
+For an injective k-root and admissible probabilities, changing root vertex
+probabilities can affect only edges incident to a root. Their number is at
+most k*(n-k)+binom(k,2)=k*n-k*(k+1)/2. Each edge's same-side probability lies
+in [0,1]. Therefore
+  |rootedCutCost - bulkRootedCutCost| <= k*n-k*(k+1)/2 <= k*n.
+This is a hand-audited bound, not an existing theorem in Semantics.lean.
+After division by n^2, the bound is at most k/n. For n-k>=2, an exact
+non-root pair average F contributes binom(n-k,2)*F, plus at most the same
+root-incident cost. Both the pair denominator and this error must be tracked.
+
+There is an alternative when the certificate already bounds the full bulk
+cost: bulkVertexProbability_mem_Icc and exists_cut_le_expectedInternalCost
+can round bulk probabilities directly. Then the root override is unnecessary.
+This does not remove sampling/collision errors from a flag-limit calculation.
+The error must be uniform for the finite list of cuts and certificate terms.
+
+ASYMPTOTIC TO EXACT: A PRECISE ROUTE
+
+The current wrapper asks for an exact eventual c bound. A statement with
+fixed positive error or an unquantified numerical residual does not imply it.
+A sufficient replacement premise is the following uniform asymptotic claim:
+  For every rational eps>0, there is N such that every triangle-free H with
+  |H|>=N has a cut of normalized internal cost at most c+eps.
+This includes all required density regimes. A mere convergence claim for one
+sequence of graphs is insufficient.
+
+For a fixed nonempty graph G of order n, choose eps=1/(94*n^2). Apply the
+uniform claim to a positive balanced blow-up G(k) with k*n>=N. The existing
+hasNormalizedInternalCutBoundQ_balancedBlowup_iff descends the bound c+eps
+exactly to G. For its integer cut cost d this gives
+  d <= 2*n^2/47 + 1/94, hence 47*d <= 2*n^2 + 1/2.
+Since 47*d and 2*n^2 are integers, 47*d<=2*n^2. Thus G has an exact c cut.
+The empty graph is immediate. This gives all orders, hence the eventual
+premise. No strict slack at c is necessary for this route.
+
+The small missing Lean proposition is this uniform-epsilon descent theorem.
+It consumes the existing blow-up equivalence; it cannot manufacture the
+uniform asymptotic premise. With a verified uniform bound c-delta and a
+quantified O(1/n) error, positive delta would be an alternative route. No
+such part-(a) slack or error constants were found in the inspected data.
+
+DENSITY COVERAGE AND THE SEPARATE HIGH-DENSITY SKETCH
+
+Part (a) is stated for all triangle-free densities. The source does not give
+the domain of each numerical program. Parts (b) and (c) claim the stronger
+1/25 bound for rho>=0.3197 and rho<=0.2486, respectively. They cannot be
+assumed as certified branches without their proofs. Section 2.2 treats
+m/n^2>=1/5-10^-8 at target 1/25 and omits computations. No complete check of
+these branches was found. Thus original part-(a) numerical coverage is unknown.
+
+For the weaker target c, the separate near-2/5 argument is dispensable if
+one supplies the following elementary finite branch. This is an audited
+dependency reduction, not a new BCL theorem or an implemented Lean proof.
+
+1. A fair random cut has expected internal cost m/2. Hence r<=8/47 gives
+   D2/n^2<=r/4<=2/47. The retained rounding theorem supplies the basic API.
+2. For a triangle-free graph, N(v) is independent. The cut (N(v),V\N(v))
+   has crossing cost sum_{u in N(v)} degree(u). Summing over v gives
+   sum_u degree(u)^2 >= 4*m^2/n. Some cut therefore has
+   D2<=m-4*m^2/n^2. This is the elementary bound also stated as Theorem 1
+   in the primary paper; no standalone proof of this branch was found in
+   the inspected retained BCL API.
+3. For r>=49/125, g(r)=r/2-r^2 is decreasing and
+   g(49/125)=1323/31250=2/47-319/1468750.
+   Indeed g(a)-g(r)=(r-a)*(r+a-1/2), with 2a-1/2=71/250>0.
+   This covers the entire near-2/5 region with strict slack for part (a).
+
+Under this replacement, a recovered certificate need only cover the remaining
+middle interval 8/47<r<49/125, with the endpoint cases assigned to the finite
+branches. A closed interval certificate would also suffice. No located data
+establish this coverage. If a certificate uses rho instead, its finite domains
+and endpoint overlap must be translated; balanced blow-up preserves r exactly.
+The root error does not fix an unknown or uncovered density domain.
+
+EXISTING LEAN DEPENDENCIES
+
+Semantics.lean: RootedCut and IsAdmissible (32-39); finite and bulk costs
+(66-105); admissibility (107-124); expected sum over unordered edges
+(148-165); deterministic cut at most expected cost (294-322).
+Bridge.lean: exact-cost to BCLCutCertificate (26-33); normalized equivalence
+(37-52); exact eventual to all orders (60-93).
+BalancedBlowup.lean: triangle-free preservation (121); normalized cut bound
+equivalence at any rational threshold (677-706).
+ExternalInputs.lean: BCLCutCertificate (25-28); r=2m/n^2 (40-41).
+PublishedBCL.lean: BCLEventual (21-24) and conditional sparse-half endpoint
+(121-140). These source statements were inspected. No Lean build was rerun.
+The full source-to-interface matrix is in result.json and dependencies.tsv.
+
+CHECKS AND STOP
+
+Eight primary-source requests were made, including one TLS failure and one
+403 response. No more acquisition was attempted after that cap. Two search
+calls were used only for author-page discovery; their queries are logged.
+Acquired source hashes are in source-hashes.json. The six retained source
+checks are in frozen-hash-check.json; all match their preflight hashes.
+The arithmetic script passes with exact fractions.
+No solver search, generic proof infrastructure, frozen-source edit, Git action,
+outside contact, submission, purchase or service setup occurred.
+
+Restart only with actual part-(a) coefficient/witness data, reproducible
+semantics, complete density coverage and one bounded theorem that consumes
+the data. Alternatively, bring a new justified graph constraint and a
+falsifiable test. Require a fresh independent grade before implementation.

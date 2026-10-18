@@ -1,0 +1,103 @@
+WEINSTEIN POD — INDEPENDENT PREFLIGHT
+2026-10-17
+
+Decision: CONTINUE for one bounded batch. Grade: C.
+This grade means that the next step is concrete and has an explicit test. It is
+not a grade for Geometric Unity, a confidence estimate, or a novelty claim.
+
+One target
+Prove the degree 2 <-> 12 Hodge bridge for an actual oriented real exterior
+algebra of signature (7,7). Supply the resulting degree-2 coefficient array to
+the existing finite-coordinate interface. Do not attempt a full Shiab operator.
+This removes one named gap: star2 currently has the right size but arbitrary
+entries. It does not need a choice of Phi_1, Phi_2 or a spinor representation.
+
+Evidence inspected
+- AGENTS.md and the pod grading rules.
+- operator-audit/report.txt, independent-review.txt, GaugeSignAudit.lean,
+  ContractionCovariance.lean, verify.py, and the retained primary-source text.
+- Pinned Mathlib HodgeStar.lean, WedgePairing.lean, BilinForm.lean and Basis.lean.
+- Lean pin: 4.35.0. Mathlib manifest revision:
+  56a005855ea17e0b0958f73ec801ae140b0a1679.
+- The two frozen Lean source hashes still match their independent review:
+  GaugeSignAudit: 31d7084df0a3e0a80373902c87c56be406c6a88c49d1262bf017fb320fcd34de
+  ContractionCovariance: 663e101f90105aa6366fb37aec66ff175475fc348b977dcffc642ebf865cc083
+I did not rerun the unchanged prior proof suite. No new result is proved by this
+preflight. The following target formulas are derived expectations to be checked.
+
+Available machinery
+Module.Basis.exteriorPower gives a genuine exterior basis indexed by fixed-size
+subsets. exteriorPower.wedge is actual graded exterior multiplication, and its
+basis lemmas include zero for overlapping indices and signed complementary
+products. LinearMap.BilinForm.exteriorPower is defined from the induced map to
+the dual; bilinForm_ιMulti_ιMulti identifies its values with a determinant.
+exteriorPower.hodgeStar accepts a bijective bilinear form and a volume map. It
+has the defining identity exteriorPower_hodgeStar_eq_wedgePairing. Its source
+still lists the general star-square theorem as TODO. Thus there is usable
+infrastructure, but this is not a request to invoke a nonexistent identity.
+
+Convention ledger required before code
+Use V = Fin 14 -> R, where R is the real field, with the ordered coordinate basis.
+Use B = diag(+1 seven times, -1 seven times). Let vol send the ordered top wedge
+to +1. This is a declared local mathematical model; it does not select missing
+GU invariant tensors. Write mu(I) = product of the diagonal entries indexed by
+I. Write eps(I) for the sign of the permutation (I, complement I), with each
+block increasing. Let e_I be the ordered exterior-basis vector.
+
+Two Hodge conventions must be kept distinct:
+  S_k: alpha wedge S_k(beta) = B_k(alpha,beta) times the positive top wedge.
+  H_k: B_(14-k)(H_k(alpha), beta) = vol(alpha wedge beta).
+Mathlib's hodgeStar has the second definition. The expected formulas are
+  S_k(e_I) = eps(I) mu(I) e_(complement I),
+  H_k(e_I) = eps(I) mu(complement I) e_(complement I).
+Because product_i B_ii = -1, the expected relation is H_k = -S_k.
+For k=2 and its complementary degree 12, either convention has square -Id.
+Check these claims in Lean. Do not silently call the two conventions identical.
+
+Acceptance gate — all required
+1. Define B, its nondegeneracy/bijectivity proof, and the normalized volume map
+   in the pinned Mathlib exterior algebra. State the orientation and metric signs.
+2. Define the coordinate map using the real exterior basis, plus a named index
+   equivalence between its fixed-size subsets and Fin (choose 14 k). Prove the
+   degree-2 star coefficient array represents the declared actual Hodge map.
+   An arbitrary signed array, or dimensions alone, does not meet this gate.
+3. Prove the displayed signed-complement basis formula for degree 2 and degree
+   12 and extend the result to arbitrary real forms. Prove S_12(S_2(x))=-x, or
+   H_12(H_2(x))=-x, under the declared convention. Prove its relation to Mathlib's
+   hodgeStar; the definitional pairing identity must use actual exterior wedge.
+4. Include a sign-sensitive exact check: for I={0,1}, the expected S_2 coefficient
+   is +1 and H_2 coefficient is -1; for I={0,7}, S_2 is -1 and H_2 is +1. With the
+   stated basis order, eps({0,1})=eps({0,7})=+1. A wrong square +Id must be rejected
+   by Lean with a concrete nonzero 2-form, not by a missing-import failure.
+5. Compile fresh target sources under the existing pins, record source hashes,
+   audit exported theorem axioms, and replay target modules with leanchecker.
+   No sorry, extra mathematical axiom, or native_decide trust shortcut. Preserve
+   frozen sources. Separate proved statements from any executable spot checks.
+
+Scope and remaining gap
+The acceptable deliverable is one actual Hodge ingredient and its coordinate
+bridge. It may earn B after independent verification. It is not enough to repeat
+generic conjugation covariance. It need not instantiate all six SwerveCoefficients
+fields; star1, star14 and wedge arrays remain explicit later work. Do not fill
+those fields with dummy values to report that the full structure is instantiated.
+Phi tensors, Clifford/spinor realization, bracket and i factors, Lie-algebra
+closure, Weyl annihilation, and Bianchi identities remain outside this batch.
+The gauge-action/torsion sign ledger remains unresolved globally. This Hodge-only
+batch has no connection or torsion operation and therefore does not pick either
+of the two local repairs.
+
+Stop condition
+Allow one implementation batch, at most 60 minutes before grader review. Stop
+sooner if work becomes repeated API guesses without a new compiling bridge.
+If the actual exterior-basis/Hodge identification cannot be completed, preserve
+the exact failed lemma and compiler evidence and request a grader decision.
+Finite sign calculations alone are not the accepted bridge. Do not expand into
+GU physics or invent Phi data to avoid the obstruction.
+
+Restart condition for the full operator
+Require an explicit normalized Phi_1 and Phi_2 in a stated Clifford/spinor model,
+a stated real form of u(64,64), an exact product/bracket and i-factor convention,
+and a precise algebraic curvature domain. Also require a consistent action,
+connection, and torsion convention for any downstream covariance claim. Without
+these objects, pause closure/Weyl/Bianchi claims. This Hodge batch can proceed
+independently because its mathematical inputs are fully declared above.

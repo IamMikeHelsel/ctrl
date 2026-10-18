@@ -29,9 +29,11 @@ class ResearchSyncTest(unittest.TestCase):
             cache = source / "research/.lake"
             cache.mkdir()
             (cache / "cache").write_text("ignore")
+            (source / "research/Proof.ir.sig").write_bytes(b"compiled signature")
             sync_module.sync(source, dest)
             sync_module.sync(source, dest, check=True)
             self.assertFalse((dest / "research/.lake").exists())
+            self.assertFalse((dest / "research/Proof.ir.sig").exists())
             self.assertTrue((dest / "research/check.sh").stat().st_mode & 0o111)
             proof.write_text("updated proof")
             with self.assertRaisesRegex(RuntimeError, "out of date"):

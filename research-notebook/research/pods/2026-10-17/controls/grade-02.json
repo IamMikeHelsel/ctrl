@@ -1,0 +1,160 @@
+{
+  "decision": "continue",
+  "grade": "A",
+  "grade_scope": "Closed common-quadratic homogeneous-stability milestone with independent verification. No robotic-benefit or publication grade.",
+  "changed_artifacts": [
+    "quadratic-02/QuadraticSlowFilter.lean",
+    "quadratic-02/exact-certificate.json",
+    "quadratic-02/generate_lean.py"
+  ],
+  "exact_result": {
+    "model": "sigma=1,lambda=2,w=0,j=0; xi=(x-q0,v-q1,a-q2,u-q2)",
+    "matrix": "A(r)=[[0,1,0,0],[0,0,1,0],[0,0,-r,r],[-16,-12,-1,-2]]",
+    "certificate": "P positive definite; P=N/100; every r in [8,12] has x^T(A^TP+PA)x<=-(1/2)||x||^2.",
+    "decay": "Actual homogeneous trajectories imply V(t)<=exp(-t/1000)V(0).",
+    "norm_bounds": "(1/2)||xi||^2<=V<=500||xi||^2."
+  },
+  "hypotheses": [
+    "H>=0; supplied continuous f,q,u on [0,H], actual ODEs on (0,H).",
+    "8<=r(t)<=12; no explicit regularity of r. Supplied classical trajectory hypotheses still apply.",
+    "Zero disturbance and zero reference jerk; un-clipped first-order filter at lambda=2.",
+    "Existence not derived; uniqueness neither assumed nor proved.",
+    "No all-time tracking, mismatch, or command-rate hypothesis."
+  ],
+  "evidence": {
+    "independent_replay_passed": true,
+    "source_stability_passed": true,
+    "source_sha256": {
+      "ComparisonEnvelope": "735210fa549739ea28bc8ffab5afb9541534dedab24914653bcd1300dc34e21f",
+      "QuadraticSlowFilter": "df2d77f2697b89b9ff053e616f14d4e8cc89cc7c3ac62b4034b1ee984591f849"
+    },
+    "toolchain": "Lean (version 4.35.0, arm64-apple-darwin24.6.0, commit eb6cafb7290e8bd5f2937522d8d804f58f02bafc, Release)",
+    "lake_manifest_sha256": "6525e7195148f78782a5aeeee8f1a8a90eebc4ecd4e9c3cdc215b29ddd3fbcb0",
+    "verifier_sha256": "dfdb5b0e4c642cf00cca9abce7c2e1f31e525c499b638f603a029c80d6811706",
+    "verification_sha256": "ebecfd2ad6c7e190ac9a723851788a914f0fb8581307e9ded6532456accbcf48",
+    "post_replay_check_sha256": "8787e98518f53f27c3c4aa05ada249856fd2c3f8a26dedc1b9eb740395c209d7",
+    "generator_byte_reproduction": true,
+    "audited_statement_names": [
+      "LeanControls.QuadraticSlowFilter.lower_identity",
+      "LeanControls.QuadraticSlowFilter.sos_lower_nonneg",
+      "LeanControls.QuadraticSlowFilter.q8_identity",
+      "LeanControls.QuadraticSlowFilter.sos_q8_nonneg",
+      "LeanControls.QuadraticSlowFilter.q12_identity",
+      "LeanControls.QuadraticSlowFilter.sos_q12_nonneg",
+      "LeanControls.QuadraticSlowFilter.upper_identity",
+      "LeanControls.QuadraticSlowFilter.sos_upper_nonneg",
+      "LeanControls.QuadraticSlowFilter.energy_lower",
+      "LeanControls.QuadraticSlowFilter.energy_upper",
+      "LeanControls.QuadraticSlowFilter.endpoint8",
+      "LeanControls.QuadraticSlowFilter.endpoint12",
+      "LeanControls.QuadraticSlowFilter.matrix_rhs",
+      "LeanControls.QuadraticSlowFilter.matrix_energy",
+      "LeanControls.QuadraticSlowFilter.P_symmetric",
+      "LeanControls.QuadraticSlowFilter.normSq_pos",
+      "LeanControls.QuadraticSlowFilter.P_positive_definite",
+      "LeanControls.QuadraticSlowFilter.interval_dissipation",
+      "LeanControls.QuadraticSlowFilter.matrix_dissipation",
+      "LeanControls.QuadraticSlowFilter.common_quadratic_certificate",
+      "LeanControls.QuadraticSlowFilter.energy_derivative",
+      "LeanControls.QuadraticSlowFilter.energy_decay",
+      "LeanControls.QuadraticSlowFilter.actual_augmented_ode",
+      "LeanControls.QuadraticSlowFilter.actual_homogeneous_decay",
+      "LeanControls.QuadraticSlowFilter.false_stronger_margin_witness"
+    ],
+    "allowed_axioms": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "separate_kernel_replay": true,
+    "exact_arithmetic": "Copied exact checker passed; independent prior Fraction determinant/LDL check uses the same unchanged rational certificate.",
+    "negative_control": "First failure is the false mu=100 arithmetic statement; a downstream signature mismatch also occurs. Accepted exact witness Q8(e0)=1144/25<100 establishes falsity.",
+    "all_builder_manifest_entries_unchanged": true,
+    "prior_proof_sources_unchanged": true
+  },
+  "scaling_note": {
+    "correct": "P=integer_numerator/100",
+    "saved_artifacts_consistent": true,
+    "chat_typo": "P/100 = raw integer matrix was reversed; no saved artifact correction needed."
+  },
+  "limitations": {
+    "norm_multiplier": "sqrt(1000), approximately 31.62",
+    "energy_time_constant_normalized": 1000,
+    "norm_exponent_time_constant_normalized": 2000,
+    "pure_position_ellipsoid_gain_approx": 4.32,
+    "interpretation": "Certificate conservatism, not actual settling or overshoot evidence. No forced tube, finite forced-replan result, stopping, sampled/clipped execution, hardware feasibility, or measured smoothing."
+  },
+  "forced_response_review": {
+    "scope": "Exact reviewer algebra, not a new Lean theorem or transient/hardware evidence. Physical mapping sigma=10, lambda=20/s, r=100/s, j=10 m/s^3, w=0.",
+    "state": "xi=(ex,ev,ea,b=u-q2) in normalized coordinates",
+    "forcing": "g=(0,0,r*w-j,(lambda*kappa-1)*j)",
+    "constant_input_equilibrium": "ev=ea=0; b=j/r-w; ex=[w+(kappa-1/r-1/lambda)*j]/8",
+    "examples": [
+      {
+        "controller": "original",
+        "kappa_normalized": "5/48",
+        "lambda_normalized": "2",
+        "r_normalized": "10",
+        "j_normalized": "1/100",
+        "w_normalized": "0",
+        "steady_b": "1/1000",
+        "steady_position_error_m": "-119/192000",
+        "steady_position_error_mm_approx": -0.6197916666666666,
+        "forcing_fourth_coefficient": "-19/24",
+        "equilibrium_residual_exactly_zero": true
+      },
+      {
+        "controller": "lag_compensated_changed_controller",
+        "kappa_normalized": "29/48",
+        "lambda_normalized": "2",
+        "r_normalized": "10",
+        "j_normalized": "1/100",
+        "w_normalized": "0",
+        "steady_b": "1/1000",
+        "steady_position_error_m": "1/192000",
+        "steady_position_error_mm_approx": 0.005208333333333333,
+        "forcing_fourth_coefficient": "5/24",
+        "equilibrium_residual_exactly_zero": true
+      }
+    ],
+    "homogeneous_matrix_unchanged_by_kappa": true,
+    "matched_replan_coordinate_note": "Matching actual state, q0/q1/q2, and retained u keeps xi continuous despite a jerk jump. This remains an algebraic observation here; a finite forced-execution theorem is not yet proved.",
+    "caution": "An asymptotic offset is not a finite-horizon violation proof. Screen exact-segment transients before more formalization."
+  },
+  "next_milestone": {
+    "task": "One bounded original-versus-lag-compensated forced-response feasibility screen before a broad forced-tube theorem.",
+    "controllers": [
+      {
+        "lambda_normalized": "2",
+        "kappa_normalized": "5/48",
+        "label": "original"
+      },
+      {
+        "lambda_normalized": "2",
+        "kappa_normalized": "29/48",
+        "label": "explicitly changed lag-compensated controller"
+      }
+    ],
+    "physical_parameters": "sigma=10,lambda=20/s,J=10 m/s^3,W=0.01 m/s^2,R=0.2 mm; xi(0)=0.",
+    "rate_cases": [
+      "constant 80/s",
+      "constant 100/s",
+      "constant 120/s",
+      "80 to 120 to 80/s at t=0.125 and 0.375 s"
+    ],
+    "disturbance_cases": [
+      "0",
+      "+0.01 m/s^2",
+      "-0.01 m/s^2"
+    ],
+    "jerk_cases": [
+      "+10 m/s^3 through 0.5 s",
+      "+10 to 0.25 s, -10 to 0.5 s, 0 to 1 s"
+    ],
+    "case_count": 48,
+    "acceptance": "Exact constant-segment linear propagation with high-precision numeric cross-check; preserve traces and equations; check coordinate continuity/equilibrium; report position error, actual jerk, u, u_star, u_prime separately. Label sampled peaks and crossing brackets as numerical. Negative results are useful.",
+    "not_authorized_in_this_gate": "Broad forced-tube proof, unbounded parameter search, stopping/hardware claims, or novel-algorithm claim.",
+    "formalization_gate": "Regrade the screen before choosing forced tube, controller/requirement change, or pause."
+  },
+  "stop_condition": "One screening batch then independent review. Resolve numerical disagreement before performance interpretation. Preserve target violations. If neither law is useful in the fixed cases, pause further formalization and specify the required change."
+}

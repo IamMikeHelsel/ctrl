@@ -1,0 +1,155 @@
+CONTROLS INDEPENDENT GRADE 02 — 17 October 2026
+Decision: continue for one bounded forced-response feasibility screen.
+Grade: A for the closed homogeneous-stability milestone.
+This grade does not measure robotic usefulness or publication prospects. Do not
+start a broad forced-tube proof before the screen receives an independent grade.
+
+Accepted result
+QuadraticSlowFilter.lean supplies one rational symmetric positive definite P for
+normalized sigma=1, lambda=2, and every r in [8,12]. It proves
+  (1/2)||xi||^2 <= V(xi) <= 500||xi||^2,
+  V'=xi^T*(A(r)^T P+P A(r))*xi <= -(1/2)||xi||^2,
+  V(t) <= exp(-t/1000)*V(0),
+where xi=(x-q0,v-q1,a-q2,u-q2) and V(xi)=xi^T P xi.
+This closes the fixed common-quadratic search requested by grade 01. The filter
+rate 2 is below the entire actuator-rate band [8,12], while the old box budgets
+required at least 54. The earlier restriction is therefore conservative for
+homogeneous stability. It is not a necessary physical stability condition.
+
+Exact hypotheses and semantics
+The last theorem uses the actual equations x'=v, v'=a, a'=r*(u-a),
+q0'=q1, q1'=q2, q2'=0, and
+  u'=2*(q2-8*(x-q0)-6*(v-q1)-(a-q2)/2-u).
+Thus disturbance and reference jerk are zero. H>=0. Physical, reference, and
+filter trajectories are supplied and continuous on [0,H]. Their differential
+equations hold on (0,H). The rate obeys 8<=r(t)<=12 at every time in [0,H].
+No explicit derivative or continuity hypothesis on r is used. Supplied classical
+trajectories still restrict admissible executions. Existence is not proved;
+uniqueness is neither assumed nor proved. There is no all-time tracking,
+filter-error, or command-rate bound among the premises. No finite forced-switch
+or globally nonsmooth execution theorem is silently included.
+
+Source review
+I read all 25 theorem/lemma statements and proofs, the verifier, generator, exact
+checker, status/result reports, manifests, and certificate. The 25-result count
+is audit coverage, not the reason for the grade.
+
+The four sum-of-squares identities use the correct positive rational LDL weights.
+They prove the lower energy bound, two endpoint derivative bounds, and upper
+energy bound. matrix_rhs, matrix_energy, and matrix_dissipation connect the
+explicit polynomial expressions to the stated matrices. P_symmetric and
+P_positive_definite establish the actual matrix property.
+
+interval_dissipation interpolates with (12-r)/4 and (r-8)/4. Both weights are
+nonnegative, sum to one, and multiply the same energy derivative. The proof covers
+every real r in the interval, not just sampled rates. The endpoint matrix
+inequalities and the common P are explicit in common_quadratic_certificate.
+
+energy_derivative follows from the augmented ODE by the product rule. The
+comparison proof uses V'<=-(1/2)||xi||^2 and V<=500||xi||^2, giving V'<=-V/1000.
+The exponential sign, factor, initial value, and closed-interval conclusion are
+correct. actual_augmented_ode derives xi' from the actual plant/reference/filter
+hypotheses. actual_homogeneous_decay supplies its continuity and applies the
+proved comparison. The fourth coordinate is u-q2, not the old mismatch d.
+
+Scaling check
+The saved Lean source, exact-certificate.json, status.txt, and result.json all use
+  P = integer_numerator / 100.
+For example, P00=227, not 22700 or 2.27. The chat phrase 'P/100 = raw integer
+matrix' was reversed. I found no corresponding saved-artifact error. No correction
+to the frozen artifact is needed for that chat typo.
+
+Independent replay and stability
+I copied QuadraticSlowFilter.lean, verify.py, check_exact.py, generate_lean.py, and
+the rational certificate into grader-replay-02/. All copies were byte-identical.
+The copied generator reproduced the frozen Lean file byte-for-byte. The exact
+checker passed. My earlier independent Fraction determinant check used a separate
+algorithm and agrees with the unchanged certificate; see grade-02-preliminary.txt.
+
+Fresh builds passed for the target and ComparisonEnvelope. Pinned lower-level
+LeanControls/mathlib artifacts were reused. All 25 target declarations passed the
+axiom audit with only propext, Classical.choice, and Quot.sound. Separate
+leanchecker replay passed. No sorry, admit, extra axiom, or native_decide occurs
+in the accepted target source.
+
+The mu=100 mutation fails first at the false endpoint arithmetic proof. It also
+causes a later type mismatch because the altered signature reaches interpolation.
+That second error is a downstream effect; it is not the mathematical justification
+for rejection. The accepted theorem independently proves the concrete witness:
+  -dEnergy(8,(1,0,0,0))=1144/25<100.
+Thus this is a meaningful false-margin check, despite the extra downstream error.
+
+Source stability passed. Every builder manifest entry was unchanged after replay.
+Target and dependency hashes, verifier, toolchain, and lake-manifest hashes match.
+Prior accepted JointFilter and FiniteJointFilter sources also remain unchanged.
+Replay log hashes passed. The target SHA-256 is
+  df2d77f2697b89b9ff053e616f14d4e8cc89cc7c3ac62b4034b1ee984591f849.
+The toolchain is Lean 4.35.0, commit eb6cafb7290e8bd5f2937522d8d804f58f02bafc.
+Exact replay evidence is in grader-replay-02/pre-replay-check.json,
+verification.json, generation-reproducible.json, and post-replay-check.json.
+
+Practical limits
+The reported norm bound is
+  ||xi(t)|| <= sqrt(1000)*exp(-t/2000)*||xi(0)||.
+Its initial multiplier is about 31.62. Its guaranteed energy time constant is
+1000 normalized time units; the norm exponential time constant is 2000. These
+weak certified rates are not observed settling times or evidence of useful
+smoothing. The current energy ellipsoid alone permits |ex| up to about 4.320R
+from initial xi=(R,0,0,0). This is a geometric permission, not a proved transient
+overshoot. The certificate does not restore the old position tube unchanged.
+
+Why screen forcing next
+For the same normalized model with target jerk coefficient kappa and filter rate
+lambda, direct algebra gives the forcing
+  g=(0,0,r*w-j,(lambda*kappa-1)*j).
+At lambda=2, the accepted controller coefficient kappa=5/48 gives fourth forcing
+-19*j/24. Constant-input equilibrium has
+  ev=ea=0, b=j/r-w,
+  ex=[w+(kappa-1/r-1/lambda)*j]/8.
+With sigma=10, physical lambda=20/s, r=100/s, j=10 m/s^3 and w=0, this is
+-119/192000 m, about -0.619792 mm. It exceeds the old 0.2 mm radius in magnitude.
+This exact equilibrium calculation is not a finite-horizon violation proof.
+
+The standard lag compensation kappa=1/lambda+5/48 gives kappa=29/48 here. It leaves
+the homogeneous A and P unchanged, but changes the controller and its forcing to
+(0,0,r*w-j,5*j/24). The same equilibrium example becomes +1/192000 m, about
++0.005208 mm. The target's jerk coefficient increases. Transients and physical
+command demands still need to be checked. This is a named controller change,
+not a property of the accepted homogeneous theorem or a novelty claim.
+These reviewer calculations are recorded in forced-feasibility-review.json.
+
+Next milestone gate
+Run one fixed, reproducible forced-response screen before more tube formalization.
+Compare only the original kappa=5/48 and compensated kappa=29/48 laws at normalized
+lambda=2. Use physical sigma=10, lambda=20/s, J=10 m/s^3, W=0.01 m/s^2, and
+R=0.2 mm. Convert time, rate, disturbance, and jerk explicitly to normalized units.
+Start with matched actual/reference states and u=q2, so xi(0)=0.
+
+Use these finite model cases: constant r=80,100,120/s and one fixed schedule
+80 to 120 to 80/s at physical times 0.125 and 0.375 s; constant w=0,+0.01,-0.01;
+jerk +10 on [0,0.5] s, and a second schedule +10 to 0.25 s, -10 to 0.5 s, then
+zero to 1 s. Match q0,q1,q2 at each switch and retain u. This is 48 fixed cases,
+not an open parameter search. The references are illustrative model traces;
+no industrial travel, speed, acceleration, or actuator feasibility is presumed.
+
+Use exact constant-segment linear propagation with a high-precision numerical
+cross-check. Preserve equations, parameters, scripts, and traces. Report position
+error, actual jerk, u, u_star, and u' separately. Label sampled peaks and numerical
+crossing brackets accurately; do not call them uniform proofs. Check equilibrium
+and coordinate continuity independently. A negative result is useful progress.
+
+A successful screen says whether either controller meets the stated finite-case
+position target and what command/motion costs appear. It does not establish robust
+safety between samples or under arbitrary signals. Only then choose between a
+forced-energy tube, a controller change, a narrower target, or pausing this path.
+A future tube in xi may avoid the mismatch reset condition because xi is continuous
+when f,q0,q1,q2,u match despite a jerk jump. That transfer and the forced ODE must
+still be proved if that later work is approved. Stopping remains separate.
+
+Stop condition
+One screening batch, then independent grading. Do not start a broad forced-tube
+proof or an unbounded optimization search during it. If the two numerical methods
+disagree, resolve the exact model/scaling error before interpreting performance.
+If the original or compensated law misses the target, retain that negative result.
+If neither is useful in these fixed cases, pause further formalization and state
+the required controller or requirement change.

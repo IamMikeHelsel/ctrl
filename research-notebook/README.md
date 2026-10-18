@@ -6,6 +6,11 @@ and final animations. Start with the reports below.
 
 | Area | Start here |
 |---|---|
+| Independently graded research pods | [Round summary](research/pods/2026-10-17/round-summary.txt), [grading policy](research/pods/2026-10-17/README.txt), [dispatch record](research/pods/2026-10-17/dispatch.json) |
+| Actual command filter and slower-filter stability | [Joint-filter grade](research/pods/2026-10-17/controls/grade-01.txt), [quadratic stability grade](research/pods/2026-10-17/controls/grade-02.txt) |
+| Forced motion and the limits of a reference change | [48-case screen](research/pods/2026-10-17/controls/forced-screen-03/status.txt), [independent pause decision](research/pods/2026-10-17/controls/grade-03.txt) |
+| Actual Hodge map and the remaining GU inputs | [Verified bridge](research/pods/2026-10-17/weinstein/builder/README.txt), [independent grade](research/pods/2026-10-17/weinstein/grade-01.txt) |
+| Missing Erdős certificate data | [Bounded source audit and restart condition](research/pods/2026-10-17/erdos/grade-01.txt) |
 | Finished tracking through finite replans | [Five-page note](publication/tracking-note/main.pdf), [proof scope](research/adjacent-controls/tracking-replans/README.txt), [Manim video](research/adjacent-controls/tracking-replans/animation/changing-plans.mp4) |
 | Motion continuity when plans change | [Next proof](research/adjacent-controls/tracking-replans/trajectory-damper-next-step.txt), [industrial baselines](research/adjacent-controls/tracking-replans/industrial-motion-baselines.txt), [seven further checked statements](research/adjacent-controls/tracking-replans/smoothing-verification.json) |
 | Tonight's closure across tracks | [Status](research/tonight-closure/README.txt), [Erdős conditional formalization note](research/tonight-closure/erdos-formalization-note.txt) |
@@ -30,10 +35,16 @@ them part of the root build or its CI coverage.
 
 The tracking package contains 34 checked statements, including helper lemmas, plus a 144-case
 numerical comparison and independent critique. A separate seven-statement followup checks the
-cost of bounded command-filter error and limits on continuity at replans. It does not yet prove
-a filter keeps that error bound. The earlier steadiness package contains 16 checked
-theorem statements. Each package preserves its verifier, source hashes, axiom audit,
-kernel replay logs, and rejected false mutations.
+cost of bounded command-filter error and limits on continuity at replans. That followup assumes
+the filter-error bound. A later 16-statement pod result derives a joint bound from the actual
+filter dynamics under explicit budgets. Those budgets require a fast filter. A separate
+25-statement result proves homogeneous stability for a slower filter across the full uncertain
+actuator-rate interval. It does not prove forced tracking performance. The forced-response
+screen and its grade record which illustrative cases fail the requested position tolerance.
+
+The earlier steadiness package contains 16 checked theorem statements. Each proof package
+preserves its verifier, source hashes, axiom audit, kernel replay logs, and rejected false
+mutations. Progress grades apply to the named milestone, not publication readiness.
 Other folders have their own scopes and verification records. Some contain incomplete attempts
 and deliberate negative tests. A count of `.lean` files is not a count of proved results.
 

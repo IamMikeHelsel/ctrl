@@ -1,0 +1,62 @@
+CONTROLS BUILDER — 17 October 2026
+
+Result: the joint constant-jerk segment theorem compiles from the actual plant,
+reference, and un-clipped filter ODEs and the initial joint box. Retained-state
+matched handoff and finite composition also compile. Final fresh-source verification passed on unchanged source hashes. All 16 target
+statements passed the axiom audit. Both target modules passed separate leanchecker
+replay. The false 95*K coupling bound was rejected for failed arithmetic proof.
+Independent grading remains pending; see verification.json for exact evidence.
+
+Main declarations
+JointFilter.actual_joint_scaled: all three scaled error coordinates stay within
+R, and the actual filter mismatch stays within D on [0,H].
+FiniteJointFilter.matched_handoff: matched physical/reference state and a retained
+filter value transfer the joint box if the exact new mismatch is at most D.
+FiniteJointFilter.finite_segments: finitely many admitted constant-jerk segments
+preserve this certificate. Each segment includes the actual ODE hypotheses.
+FiniteJointFilter.necessary_filter_rate: the sufficient budgets imply lambda >=
+54*sigma. This certificate requires a fast filter; it does not show a useful
+smoothing benefit.
+
+Assumptions
+sigma>0, R>0, D>0, W>=0, J>=0, H>=0; continuous physical/reference/filter states;
+interior-classical plant/reference/filter ODEs; constant reference jerk j with
+|j|<=J; pointwise 8*sigma<=r<=12*sigma and |w|<=W. Actual trajectory existence is
+a premise. No regularity of r or w, and no derivative bound on them, is added.
+The two budgets are exactly those in controls/preflight.txt. Lambda positivity
+is implied by the budgets. Initial bounds are |zi(0)|<=R and |d(0)|<=D only.
+
+Proof route
+The plant and reference are normalized with the existing proved chain rules.
+The target derivative is derived from their ODEs and constant jerk. The filter
+mismatch derivative then follows from its actual first-order ODE. Four coordinates
+(three tracking coordinates plus mismatch), each with two signs, give eight
+simultaneous barriers. Common inflation multiplies R and D by 1+epsilon*(1+t).
+At a first contact all eight bounds hold at that time. Pointwise inward-face
+inequalities and positive barrier expansion give a contradiction. Sending
+epsilon to zero proves the non-strict joint box. No all-time tracking, filter,
+or nominal command-rate bound is assumed to prove this segment result.
+
+Arithmetic witnesses and limitations
+The stated sigma=10, R=1/5000, D=11/1200, W=1/100, J=10, lambda=4000 budgets are
+checked in Lean. A retained mismatch zero with jerk change 0 to 1/2 is admitted
+at sigma=10 and D=11/1200. This is an admission arithmetic witness, not a new
+trajectory existence theorem. The old -10 to +10 jerk jump remains rejected.
+No clipped filter, changing jerk within a segment, infinite switching, accepted
+update frequency, dwell time, stopping, goal arrival, or physical acceptance is
+proved. No actuator or smoothing benefit is claimed.
+
+Reproduction from the working research folder
+python3 research/pods/2026-10-17/controls/builder/verify.py
+
+The verifier queries the pinned Lean 4.35.0 toolchain through lake from
+lean-controls, rebuilds both target and six local dependency sources in a fresh
+temporary directory, audits every target theorem/lemma for permitted standard
+axioms only, runs a separate leanchecker replay of both target modules, and
+requires rejection of the false 95*K coupling bound. The accepted source proves
+that r=8,z=(-1,1,0) has coupling 96, so this mutation has a concrete counterexample.
+Pinned LeanControls and mathlib compiled artifacts are reused.
+
+Storage: only controls/builder was changed. Frozen source dependencies are read-only.
+No Git operation, remote push, cloud setup, external message, or hardware change
+was performed by this builder. The coordinator owns notebook synchronization.

@@ -1,0 +1,123 @@
+CONTROLS INDEPENDENT GRADE 01 — 17 October 2026
+Decision: continue for one new bounded milestone. Grade: A for this proof milestone.
+The joint invariant and finite retained-state composition meet the preflight A
+criteria. This is a useful closed mathematical result. It is not a grade for a
+robotic controller, a smoothing benefit, or publication readiness.
+
+Changed artifacts reviewed
+builder/JointFilter.lean and builder/FiniteJointFilter.lean are the proof sources.
+I read all 16 theorem/lemma statements and their proofs, the Segment structure,
+the verifier, status/result reports, source manifest, and prior frozen dependency
+interfaces. I did not alter any builder proof, report, log, or frozen dependency.
+Independent copies and evidence are under grader-replay-01/.
+
+Exact result and assumptions
+The physical theorem derives, for each t in [0,H], both |zi(t)|<=R and
+|u(t)-u_star(t)|<=D from the initial joint box and the actual plant, reference,
+and un-clipped first-order filter equations. Here zi are the three existing
+scaled tracking coordinates. The reference jerk is constant within each segment.
+The plant is x'=v, v'=a, a'=r*(u+w-a). The filter is u'=lambda*(u_star-u).
+Assume sigma>0, R>0, D>0, W>=0, J>=0, H>=0, 8*sigma<=r<=12*sigma,
+|w|<=W, |j|<=J, and the two budgets
+  W+D+J/(48*sigma) <= 2*sigma^2*R,
+  96*sigma^3*R+(13/12)*J+6*sigma*W <= (lambda-6*sigma)*D.
+Physical, reference, and filter trajectories are supplied and continuous on the
+closed segment. Their equations hold on its open interior. No explicit derivative
+or continuity condition on r or w is added. The supplied trajectory hypotheses
+still restrict which signals admit such an execution. Existence is not proved.
+Uniqueness is neither required nor proved.
+
+Semantic review
+1. coeff_bound and filter_face have the correct signs and constants. The coefficient
+96 is attained at r=8,z=(-1,1,0); it cannot be reduced in that isolated cube bound.
+2. inflated_budgets multiplies both radii by the same k>=1. Nonnegative W and J
+make the unchanged forcing terms compatible with that inflation.
+3. joint_invariant uses all eight signed faces at one possible first contact.
+Strict expansion uses R,D>0. The epsilon limit recovers the closed, non-strict box.
+It does not assume an all-time tracking or filter bound in its proof.
+4. target_derivative is derived from the actual plant and constant-jerk reference.
+actual_joint then derives d' from the filter ODE. There is no assumed command-rate
+bound. Its transformed ODE premise is discharged from the actual equations.
+5. target_normalized and actual_joint_scaled use tau=sigma*t, normalized command
+u/sigma^2, normalized jerk j/sigma^3, and filter rate lambda/sigma. Their chain-rule
+and budget transports preserve the physical units. The final filter bound is D,
+not D/sigma^2. The theorem has removed the old all-time hfilter premise.
+6. Segment contains dynamics and exogenous bounds, not a hidden joint invariant.
+matched_handoff requires componentwise matching of f and q and explicitly retains
+u_plus=u_minus. Its admission condition is the exact post-jump mismatch.
+finite_segments uses the previous closed endpoint to start the next segment.
+The next jerk bound comes from its Segment premise. There is no filter reset.
+7. The illustrative budgets and nonzero accepted-update arithmetic are checked.
+They are feasibility witnesses, not trajectory-existence or performance evidence.
+The old large jerk reversal remains rejected. necessary_filter_rate proves the
+new limitation described below.
+
+Independent replay
+I copied both target sources and verify.py byte-for-byte into grader-replay-01/.
+The unchanged verifier rebuilt both targets and all six local dependencies in a
+new temporary build directory. Pinned lower-level LeanControls/mathlib compiled
+artifacts were reused. All eight source builds passed. The complete target axiom
+audit allowed only propext, Classical.choice, and Quot.sound. Both targets passed
+separate leanchecker replay. No sorry, admit, added axiom, or native_decide occurs
+in the accepted target code. Audit coverage matches all 16 declared target results.
+
+The false coefficient bound 95*K was rejected by failed arithmetic proof in both
+sign branches of coeff_bound. There were exactly two error diagnostics, both
+'linarith failed to find a contradiction'. There was no unknown-name error.
+The accepted sharp_coeff_example independently gives the exact counterexample 96.
+This is a targeted mathematical mutation, not a missing-import rejection.
+
+Source stability passed. Original and copied source hashes match the builder's
+record. The toolchain, lake-manifest hash, and verifier hash also match. Every
+builder manifest entry and all original source hashes were unchanged after replay.
+Replay log hashes were checked. See pre-replay-check.json, verification.json, and
+post-replay-check.json for exact hashes and command outcomes. The pinned toolchain
+is Lean 4.35.0, commit eb6cafb7290e8bd5f2937522d8d804f58f02bafc.
+
+Practical limitation
+The budgets themselves imply lambda>=54*sigma. The first gives D<=2*sigma^2*R.
+The second gives (lambda-6*sigma)*D>=96*sigma^3*R. With D>0, their combination
+gives the bound. The new Lean theorem checks this implication. It limits this
+sufficient certificate; it is not a necessary condition for system stability.
+
+At sigma=10, lambda=4000/s means a 0.25 ms filter. The assumed actuator rates are
+80 to 120/s, with time constants about 8.33 to 12.5 ms. Thus this witness's filter
+rate is 33.3 to 50 times the actuator rate. Feasibility alone does not demonstrate
+useful smoothing, a viable sampled implementation, or better tracking. Even the
+certificate's universal minimum lambda=54*sigma exceeds r_max by a factor of 4.5.
+The report must keep this limitation beside the positive result.
+
+I independently checked the coordinator's constant-rate characteristic polynomial
+and its three exact Routh-margin calculations. They agree. These frozen cases
+suggest conservatism. They do not prove stability under arbitrary rate variation,
+a tracking tube, command smoothness quality, or hardware benefit. The diagnostic
+was not used as a premise in the accepted proof. See diagnostic-review.json.
+
+One documentation correction
+builder/result.json says 'Trajectory existence and uniqueness are premises, not
+derived.' Only the supplied trajectory/ODE hypotheses are premises. Replace that
+sentence with 'Trajectory existence is not derived; uniqueness is neither required
+nor proved.' This does not change the theorem grade. The coordinator will preserve
+the old report/hash and record this narrow correction after the frozen review.
+
+Next falsifiable milestone
+Allow one bounded search for a common quadratic certificate below the box rate
+limit. Fix normalized sigma=1 and lambda=2, with r in [8,12]. For homogeneous
+tracking, use xi=(ex,ev,ea,b), where b=u-q2. Its matrix is
+  A(r) = [[0,1,0,0], [0,0,1,0], [0,0,-r,r], [-16,-12,-1,-2]].
+Seek one rational symmetric P>0 and rational mu>0 such that
+  A(8)^T P+P A(8) <= -mu I,
+  A(12)^T P+P A(12) <= -mu I.
+Because A is affine in r, exact endpoint checks cover the full interval for this
+common quadratic energy. Verify matrix positivity with exact rational arithmetic,
+then prove the conditional energy-decay statement from the actual homogeneous
+ODE. This would test whether substantially slower filtering can be certified
+under the same pointwise rate uncertainty. It is a bridge, not yet a forced
+tracking tube or a smoothing result. Disturbances and replan jumps need a later
+explicit certificate; stopping remains separate.
+
+Stop the next batch if it yields only floating-point matrices without a verified
+strict margin, or only repeats frozen-rate eigenvalue tests. Solver failure is not
+an impossibility proof. Record its exact residuals and pause for review; do not
+expand into an unbounded parameter search. A rigorously verified switching
+counterexample at this fixed lambda would also resolve a valuable uncertainty.

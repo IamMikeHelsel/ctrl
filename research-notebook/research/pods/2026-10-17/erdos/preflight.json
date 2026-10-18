@@ -1,0 +1,83 @@
+{
+  "date": "2026-10-17",
+  "role": "independent Erdos progress grader",
+  "decision": "redirect",
+  "grade": "C",
+  "grade_meaning": "One feasible diagnostic batch is justified. No new graph result is claimed.",
+  "evidence": [
+    {
+      "path": "research/opportunity-assessment/erdos-completion-spike/PublishedBCL.lean",
+      "sha256": "842f708532a1bd2d1dcffbc1532321b9d97fd7b87418af99334a13d0444b1fef"
+    },
+    {
+      "path": "research/opportunity-assessment/sources/erdos128/lean/Erdos128/BCLCertificate/Semantics.lean",
+      "sha256": "7792c0510f905dd4cae261aca1322b295fc35b2e0bcd664b9504b0b76e749fb9"
+    },
+    {
+      "path": "research/opportunity-assessment/sources/erdos128/lean/Erdos128/BCLCertificate/Bridge.lean",
+      "sha256": "04c6a492b4856d686f29af9d52856363378bc442ca8db6fc8906c94ae7e45a17"
+    },
+    {
+      "path": "research/opportunity-assessment/sources/erdos128/lean/Erdos128/ModuloBCL.lean",
+      "sha256": "e9cd74a927a8e335acee4abd2b07cd16b38fe3508848c4f15ec2d466f5e40cbf"
+    },
+    {
+      "path": "research/opportunity-assessment/sources/erdos128/clebsch_tangent_certificate.json",
+      "sha256": "606b26d835d5b7fe70d077230f8091bbd9677283049a1d0b46a3e3ad30a200ce"
+    },
+    {
+      "path": "research/opportunity-assessment/erdos-scalar-relaxation/diagnostic.json",
+      "sha256": "cbe52289452fcdb3c44c68ffe5020a456f32460e27a34de814cdb04fdebe878f"
+    },
+    {
+      "finding": "PublishedBCL.lean lines 121-140 still take eventual BCL as an explicit hypothesis. The all-order integral 0.02587 bridge is already complete."
+    },
+    {
+      "finding": "The retained aimir BCLCertificate directory contains only Semantics.lean and Bridge.lean. Bridge lines 26-33 require hcost rather than prove the 2/47 bound; lines 60-67 require an eventual theorem."
+    },
+    {
+      "finding": "Semantics.lean lines 73-105 define a separate bulk cut cost. Its comment states an O(k n) discrepancy, but this file supplies no quantified theorem bounding that discrepancy."
+    },
+    {
+      "finding": "The retained clebsch_tangent_certificate.json and C4Certificate formalization establish the four-cycle inequality. They are not BCL numerical data."
+    },
+    {
+      "finding": "The exact scalar diagnostic has beta=6256019367/241832986336 > 2586/100000. Reoptimizing the same inequalities cannot reach 0.02586."
+    },
+    {
+      "url": "https://arxiv.org/html/2103.14179v1",
+      "finding": "Primary extended abstract inspected live. Section 2.1 lists rooted-cut families and sketches flag algebra use; section 2.2 sketches a separate high-density argument. The inspected text does not supply the numerical certificate or a supplementary download link. This is not a claim that none exists elsewhere."
+    }
+  ],
+  "remaining_gap": "A proof or verified import of the universal eventual BCL cut bound at 2/47. Exact coefficient data and a semantic derivation connecting it to finite graph cuts are not present in the inspected retained source.",
+  "new_graph_constraint_status": "No genuinely new graph constraint justified by this preflight.",
+  "task": {
+    "name": "Audit whether the actual BCL 2/47 certificate is available and sufficient for the existing Lean interface",
+    "budget_minutes": 30,
+    "scope": "One dependency and certificate audit. Do not implement generic flag algebra infrastructure, redo existing bridges, run a new SDP search, or polish the scalar constant.",
+    "sequence": [
+      "Use the retained source and the pinned arXiv v1 source bundle first. Follow only primary author publication pages or supplements tied to this exact paper. Acquisition cap: 15 minutes and at most 8 primary-source fetches after the retained-source audit; do not contact authors.",
+      "If data exist, preserve original bytes under this pod directory with URLs, retrieval time, and SHA256. Identify which files prove part (a), their exact target normalization, all density regimes, graph/flag orderings, local-cut probability tables, nonnegative multipliers, PSD or rational-square witnesses, and finite-size/error treatment.",
+      "Run the supplied exact checker when available. Independently recompute at least one nontrivial coefficient or PSD/rational-square identity using exact rational arithmetic. Report separately whether this is a full certificate check or one checked relation. Do not upgrade floating-point solver output to proof.",
+      "Map every required mathematical step to an existing theorem or an exact missing proposition. Explicitly distinguish a bound at 2/47+o(1) from the exact eventual 2/47 premise. Explain whether positive slack absorbs the finite error, or a new epsilon/blow-up descent theorem is required.",
+      "End with a machine-readable dependency matrix and one pass/fail feasibility decision. If an independently checkable package is absent, give the exact searched primary sources and the first missing data item. Report only that the bounded search did not locate it."
+    ]
+  },
+  "acceptance": [
+    "A source-to-interface table identifies the actual BCL numerical package or establishes its absence from the finite inspected set. It must not misidentify the C4 certificate as BCL.",
+    "If data are found: hashes, formats, exact normalization, coverage, independent exact arithmetic check, and a concrete minimal next theorem are supplied. Any unresolved host completeness, positivity, finite-size error, or density branch remains explicit.",
+    "If data are not found or only numerical solver output is found: the report names the exact missing item, search coverage, and why implementation cannot currently close hBCL. This is a valid negative audit, not mathematical disproof.",
+    "All changes stay in research/pods/2026-10-17/erdos. Prior proof and evidence hashes remain unchanged. No source toolchain changes, Git changes, contacts, or submissions."
+  ],
+  "stop_condition": [
+    "Hard stop after 30 minutes total, or sooner when the decisive missing certificate item is identified.",
+    "If no exact BCL package and reproducible coefficient semantics are located within the acquisition cap, stop acquisition and finish the dependency report; do not replace the task with scalar work or generic Lean lemmas.",
+    "If the only remaining step is rebuilding a whole flag algebra proof, proving the omitted high-density argument, or recovering missing SDP data without a supplied witness, wrap and pause this approach.",
+    "Any further implementation requires an independent grade on this audit. Restart requires concrete coefficient/witness data plus a bounded theorem that consumes them, or a new justified graph inequality."
+  ],
+  "preflight_checks": "Read specified status files; inspected both retained BCL Lean modules and ModuloBCL; searched retained BCL symbol uses; inspected scalar diagnostic and live primary paper. No proof recompile was needed or performed.",
+  "changed_artifacts": [
+    "research/pods/2026-10-17/erdos/preflight.txt",
+    "research/pods/2026-10-17/erdos/preflight.json"
+  ]
+}
