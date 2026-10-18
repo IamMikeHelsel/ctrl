@@ -1,0 +1,119 @@
+BUILDER-02: ACTUAL POSITION ARRIVAL AND A FIXED COMPARISON
+
+Main result
+
+The delayed-return history now has a conditional physical position proof.
+The actual scalar plant starts with its error-cube condition at time zero.
+No state or error bound is reset at 0.52 s or 0.62 s. Under the declared
+controller, rate range [80,120] /s and disturbance bound 0.01 m/s^2, Lean
+proves the 0.2 mm position tube throughout [0,2.5] s. It also proves at least
+1 mm of actual progress by 0.5 s and position arrival from 1.42 s through
+2.5 s, including the 1.70 s deadline. The numerical zero initial state
+satisfies the initial-cube premise.
+
+This theorem does not prove actual speed, acceleration or rest. Those extra
+task criteria are checked only in the saved numerical comparison. The theorem
+is conditional on the stated physical trajectory and controller equations.
+It is not a proof of the Python implementation, physical model identification,
+ODE existence, Franka behavior or hardware safety.
+
+New fixed comparison
+
+The protocol was frozen before reference generation. Implementation, native
+checks and reference schedules were frozen before physical integration. The
+batch has 96 traces with 362724 saved state rows and 1932 event-jump rows.
+The first packet reveals no revision deadline. The second packet reveals
+1.70 s or 1.30 s at availability 0.52 s. Both authoritative requests count.
+Rejected revisions remain task failures; their old reference continues.
+
+Full task pass counts, fine grid (six rate/disturbance settings per row):
+                                1.70 s deadline       1.30 s deadline
+Native fast                         6 / 6                 6 / 6
+Native minimum_duration 0.8          6 / 6                 0 / 6
+Old jerk-only FIR                   0 / 6                 0 / 6
+New checked FIR                     6 / 6                 0 / 6
+
+Every row passed the initial progress condition. The full task score also
+requires all requests admitted, causal deadline service, reference V/A/J
+limits, and actual position/speed/acceleration bands from deadline through
+2.5 s. These are sampled numerical results, not all-time settling proofs.
+
+The old FIR passes the numerical endpoint conditions but fails its exact
+0.5 m/s^2 reference acceleration limit. Its 21/32 m/s^2 failure is retained.
+For the generous deadline, the new FIR selects 0.62 s and passes the full
+sampled task. For the tight deadline, it rejects both candidate times and
+continues to the old +20 mm target. Its actual position error at the deadline
+is about 20.0125 mm. It does not silently redefine the authoritative goal.
+
+Native fast completes both tasks. The native minimum-duration method misses
+the tight settling condition. The new check repairs the old reference-limit
+violation; it does not outperform native fast on task completion or speed.
+
+Tradeoffs
+
+In the generous task, native fast settles at about 1.095--1.0955 s, the
+minimum-duration native method at 1.317--1.3185 s, and the checked FIR at
+1.3635--1.364 s. The checked FIR has lower integrated squared actual jerk in
+this test. That is not a matched-path benefit: the controllers have different
+actual states and remaining distances when the revision is issued. Before
+revision, minimum actual progress is 13.598 mm for native fast, 6.439 mm for
+minimum-duration native, and 3.112 mm for both FIR methods.
+
+Waiting also lets the old motion continue. This is not an emergency-stop
+policy. No obstacle, travel limit, torque or coupled-arm constraint is in
+this comparison. The generic selector has no velocity guard. The selected
+fixed two-event return uses the separate accepted velocity theorem.
+
+Numerical checks
+
+The 1 ms and 0.5 ms grids give identical task decisions. Maximum endpoint
+refinement differences are 1.46e-16 m in position, 1.96e-15 m/s in speed,
+and 1.12e-14 m/s^2 in acceleration. Largest sampled internal position error
+is about 0.03036 mm. All physical state jumps at reference events are zero.
+Those consistency checks do not replace an independent physical replay.
+
+All four native histories pass the separate pre-run native replay. Maximum
+q/v/a reconstruction residuals are approximately 6.94e-18 m, 1.39e-17 m/s,
+and 2.22e-16 m/s^2. No jerk-branch disagreement was observed. The generous
+native exports and carried inputs match moving-goal-08 exactly. The physical
+integration helper and native source frontends are unchanged.
+
+Three unchanged methods have 36 byte-identical deadline-contrast trace pairs.
+The checked FIR's two task prefixes are bit-identical through 0.62 s for all
+12 rate/disturbance/grid settings. This supports the declared absence of
+advance revision-deadline information or early physical state changes.
+
+Proof verification status
+
+Fresh verification PASS: 48 local modules, 3064 local declarations audited,
+seven separate kernel replays and four rejected false controls. Only the
+standard axioms propext, Classical.choice and Quot.sound are allowed. Source
+and toolchain-pin preservation passed. Read verification-02.json for details. The earlier verifier
+attempt failed on a lexical false positive: the inherited ordinary function
+named admit. That failed attempt is retained. The final verifier uses the
+standard declaration-axiom audit, which rejects sorryAx and all nonstandard
+axioms. PhysicalArrival.lean did not change between verifier runs.
+
+Next useful decision
+
+Review the proof and independently replay the saved traces. If both pass,
+frame this as a checked reference-admission and physical-position contract
+with explicit service limits. The experiment supports a repair and a delay
+tradeoff, not a superior robot motion controller. To assess motion quality,
+a next comparison should control the actual revision state and task timing,
+or state a task-level smoothness objective that accounts for different
+progress. Do not tune this batch after seeing its results.
+
+Runtime correction before handoff
+
+The first numerical run used an already installed Python 3.12 environment
+with NumPy 2.5.4 and SciPy 1.18.1. To restore recorded06 runtime parity, the
+same frozen inputs and implementation were rerun with system Python 3.14.0,
+NumPy 2.3.4 and SciPy 1.16.2. This correction was separately frozen before
+the repeated physical run. No parameter, candidate or pass criterion changed.
+
+Canonical numerical results are under runtime-replay-02/. The original root
+outputs remain preserved. Every task decision is unchanged. Across 362724
+saved rows, maximum position difference is 1.39e-17 m; maximum acceleration
+difference is 4.00e-15 m/s^2. This runtime comparison is not independent
+physical verification. That remains the next review gate.

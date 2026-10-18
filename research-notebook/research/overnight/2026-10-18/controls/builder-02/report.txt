@@ -1,0 +1,83 @@
+Settling under constant bias, without changing the controller
+Builder milestone 02 — verification and independent review pending
+
+Main claim
+The original holding controller can reach small speed and acceleration bounds
+under a constant nonzero acceleration-target bias. The position bound includes
+the resulting offset from the true commanded goal. This statement is not about
+an arbitrary changing disturbance.
+
+Physical model and unchanged command
+  x'=v, v'=a, a'=r(t)[u+b-a]
+  u=-8 sigma^2(x-c)-6 sigma v-a/2
+  sigma>0, 8 sigma<=r(t)<=12 sigma, b constant.
+The goal c and the controller remain unchanged. The bias b can be unknown to
+the controller. The analysis uses delta=b/(8 sigma^2) and c*=c+delta.
+The proved identity is
+  holdInput(sigma,c)+b = holdInput(sigma,c*).
+It rewrites an equal vector field on the same actual trajectory. It does not
+command c*. Changing the commanded goal to c* while keeping the physical bias
+would count the bias twice. An exact witness checks this error.
+
+The supplied actual trajectory must be continuous on the closed hold interval
+and satisfy the ODE classically on its open interior. The pointwise rate can
+change without a stated derivative bound. Existence for arbitrary discontinuous
+rate signals is not proved. Full actual-state feedback is assumed.
+
+Inherited state and bound
+The hold starts from the actual endpoint state of the preceding motion. If the
+original transformed state lies in a cube of radius R about c, the same state
+lies in a cube of radius R*=R+|delta| about c*. Only the analysis box changes.
+No position, velocity or acceleration state is reset.
+
+Let E*=(5/4)(R+|delta|) exp(-2 sigma t/5), where t is time since the hold starts.
+The new theorem gives
+  |x-c| <= |delta|+E*;
+  |v| <= 8 sigma E*;
+  |a| <= 64 sigma^2 E*;
+  |u+b| <= 24 sigma^2 E*;
+  |u| <= 24 sigma^2 E*+|b|.
+The final line retains the offset for the original command. It is not the same
+quantity as the effective acceleration target u+b.
+
+Concrete two-second result
+For sigma=10/s, R=0.0002 m and |b|<=0.01 m/s^2:
+  |delta| <= 1/80000 m;
+  R* <= 17/80000 m;
+  E* <= 17/16384000 m after two hold seconds.
+The true-goal and physical bounds after two seconds are
+  |x-c| <= 1109/81920000 m (about 13.538 micrometres);
+  |v| <= 17/204800 m/s (about 0.083008 mm/s);
+  |a| <= 17/2560 m/s^2 (0.006640625 m/s^2).
+The speed and acceleration bounds meet the illustrative 1 mm/s and 0.02 m/s^2
+limits. The theorem requires H>=2, and has a separate conclusion at t=2. Its
+certified interval is therefore nonempty.
+
+DirectBias connects the result to the accepted eight-phase DirectPlant. That
+motion still has its original varying-disturbance assumptions. Only its new
+final hold has constant bias. The actual endpoint is retained. Two hold seconds
+correspond to global time 3.5 seconds for that fixed reference. This does not
+certify the shorter deadlines in the separate moving-goal experiment.
+
+Witnesses and false claims
+A resting biased trajectory is checked against the original physical ODE and
+the original goal. Its nonzero position offset makes omission of the offset
+term false. Another exact trajectory has a constant nonzero bias and initial
+velocity -4 mm/s. It retains that state and satisfies the two-second theorem.
+This witness realizes the holding assumptions. It is not a construction of
+that same nonzero-error state through all eight preceding phases.
+The wrong-sign, double-counted-bias and omitted-position-offset controls each
+have an exact witness and a separate rejected false Lean statement.
+
+Limits
+This result does not reduce the previous bound for arbitrarily changing
+bounded disturbance. It does not prove that bound was a physical limit. It
+adds a distinct constant-bias theorem with a stronger disturbance assumption.
+No frozen experiment, accepted proof, limit, initial state or controller was
+changed. No bias estimator or runtime compensation method is proposed here.
+The result does not cover sampled control, saturation, measurement error,
+joint coupling, contact, Franka firmware or physical acceptance. It is not a
+claim of new mathematics or submission readiness.
+
+Read next-gate.txt for a bounded question about tighter output bounds under
+arbitrarily changing disturbance. That note is a proposal, not a new theorem.

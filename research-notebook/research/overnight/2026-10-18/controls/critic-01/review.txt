@@ -1,0 +1,136 @@
+Independent review of shrinking terminal residuals
+Decision: ACCEPT the bounded conditional theorem. CONTINUE to the stated next gate.
+
+Scope
+This review concerns the frozen controls builder-01 package. It does not approve
+a physical robot claim, a new control law, publication novelty, or submission.
+The frozen artifact manifest is
+961ef23c1e27b446e1a6165079c4305f168fcaf23a40504528c374d5734f636e.
+The source manifest is
+29f21adf979b66c9b3ef06be14d1ff4865642d33c9b307bbdb70ac7ae7628be5.
+
+Mathematical audit
+The main theorem derives a shrinking bound from a supplied physical trajectory.
+It does not assume that the physical error decays. The plant has x'=v, v'=a,
+and a'=r(u+w-a). During the final hold,
+u=-8 sigma^2(x-c)-6 sigma v-a/2. The assumptions are sigma>0,
+8 sigma<=r(t)<=12 sigma, and |w(t)|<=W. Full-state feedback is assumed.
+
+The normalized coordinates are z0=x-c, z1=x-c+v/(4 sigma), and
+z2=x-c+v/(2 sigma)+a/(16 sigma^2). Each coordinate has units of position.
+Physical time is mapped to tau=sigma*t. The disturbance becomes W/sigma^2.
+The final exponent is therefore exp(-2 sigma*t/5), not exp(-2t/5) in seconds.
+The common physical radius is 3W/(8 sigma^2)+(5R/4)exp(-2 sigma*t/5).
+
+The face proof is consistent with direct algebra. Write a moving radius as
+F+d_i K, d=(1,9/10,4/5), F>=3W/8 and K>=0 in normalized units. At the upper
+first face, the worst derivative is -2K/5. At the second it is -2K/5,
+which is at most -(2/5)(9/10)K. At the third it is bounded above by
+(r/2-8)F+(13r-168)K/20+rW/16. The rate interval and F>=3W/8 give the stated
+inward bound. The lower faces follow by the signs of the same linear system.
+The first face makes an exponent 1/2 fail for these particular weights.
+This does not rule out a faster estimate with another norm or another bound.
+
+The proof inflates every radius by epsilon*(1+t). This makes contact strict.
+The inherited finite-barrier lemma uses continuity on the closed interval and
+the ODE on its open interior. It excludes first contact before a positive
+violation. Letting epsilon approach zero gives the non-strict bound. No
+derivative or continuity assumption on r or w is introduced. The theorem is
+conditional on a classical trajectory satisfying the ODE; it does not prove
+existence for arbitrary discontinuous signals. That boundary is stated in the
+builder report and must remain in any paper claim.
+
+Composition and time
+The final hold starts with f(0)=previous phase 7 at its endpoint. The accepted
+DirectPlant theorem supplies the endpoint cube. The reference endpoint is
+(3/5,0,0), and matched_hold_cube transforms the actual endpoint into the hold
+coordinates. Neither velocity nor acceleration is reset or assumed zero.
+
+The concrete theorem uses hold time. One hold second is global time 2.5 seconds;
+two hold seconds is global time 3.5 seconds. Its quantified sets are [1,H] and
+[2,H]. These sets are empty if the horizon is shorter. The report explicitly
+requires H>=1 or H>=2 for the corresponding useful claim. Reviewer fixtures
+instantiate H=1 and H=2 at their included endpoints. They also construct an
+exact eight-phase DirectPlant with the reference itself, r=96/s, and w=0.
+This is a full nonempty composition witness. A separate nonzero initial-velocity
+hold witness checks the retained-state settling theorem. It is not presented
+as a nonzero-error realization of all eight preceding phases.
+
+Disturbance and physical meaning
+The W=0.01 certificate has a common-radius floor of 37.5 micrometres. Its
+unpacked speed and acceleration floors are 3 mm/s and 0.24 m/s^2. These are
+upper-bound limitations. They are not lower bounds on actual motion. A physical
+constant-bias witness at sigma=10 and w=0.01 has x-c=1/80000 m, v=0, a=0,
+and satisfies the ODE for every rate function. Thus a claim that nonzero
+disturbance requires nonzero speed would be false.
+
+With zero disturbance only during the hold, the two-second claim meets the
+stated illustrative speed and acceleration bands. Earlier phases can retain
+their original disturbance allowance. A nonzero exponential physical trajectory
+meets the finite tolerance but has nonzero velocity at every finite time.
+Finite tolerances and exact finite rest must remain distinct.
+
+The command bound is for the feedback command u. The plant input is u+w.
+This theorem does not include actuator saturation, sampled control, sensor
+errors, coupling, contact, robot firmware, or a physical stop test. The new
+two-second hold guarantee does not establish the shorter moving-goal deadlines
+from the other experiment. Those are different tasks and horizons.
+
+Verification
+All 42 local modules rebuilt from fresh copies. All 608 public local theorems
+passed the axiom audit, with only propext, Classical.choice and Quot.sound.
+This count includes inherited results and is not a novelty measure. Eight
+modules passed separate leanchecker replay, including the actual ODE bridge,
+barrier lemma, physical scaling, direct trajectory, and all four target modules.
+
+The review adds 14 checked theorems in ReviewWitnesses.lean. This module also
+passed separate proof replay and its own public-axiom audit. Four false controls
+were rejected without timeouts or missing imports: the faster face contraction,
+zero disturbance floor, positive speed floor as a lower bound, and exact finite
+rest. Their accepted counterexamples are in the builder or reviewer sources.
+
+The initial reviewer fixture run failed because an untyped constant vector was
+inferred as natural numbers. An explicit State type repaired this local witness.
+The failure is retained under review-attempt-01. The frozen source build and all
+eight frozen kernel replays had already passed. Only the corrected reviewer
+module and its dependent checks were rerun. final-verification.json records the
+completed result; verification.json preserves the initial run without rewriting
+its failed reviewer-fixture step. The builder's earlier timeout-based negative
+attempt is also preserved and was not counted as an accepted negative control.
+
+The old local project build directory was excluded from LEAN_PATH. Pinned
+Mathlib caches were reused. Lean is 4.35.0; Mathlib is clean at revision
+56a005855ea17e0b0958f73ec801ae140b0a1679. The independent script did not import
+the builder's Python helpers. All 78 frozen artifacts and all 44 source-manifest
+files matched their hashes. Final checks confirmed no builder artifact or
+closure source changed.
+
+Productive next gate
+CONTINUE with a bounded constant-bias proof. Keep the original commanded goal c
+and the original controller. Let delta=w0/(8 sigma^2) and c*=c+delta only for
+analysis. First prove the exact identity
+  holdInput(sigma,c,f,t)+w0 = holdInput(sigma,c*,f,t).
+Changing the actual command goal to c* would count the bias twice and is not the
+proposed result. No runtime bias measurement or goal change is needed by this
+analysis statement; the constant value is a theorem parameter.
+
+Then prove that the original matched endpoint cube of radius R gives a cube of
+radius R+|delta| about c*. Apply the zero-disturbance settling theorem to this
+same physical trajectory. State the true-goal result explicitly:
+  |x-c| <= |delta| + E*, |v| <= 8 sigma E*, |a| <= 64 sigma^2 E*,
+  E* = (5/4)(R+|delta|)exp(-2 sigma*t/5).
+The original command also needs its offset if a command bound is reported.
+This is a suggested next theorem, not a result accepted by this review.
+
+For |w0|<=0.01, sigma=10 and R=0.0002, the projected two-second arithmetic is
+R*=17/80000 m, E*<=17/16384000 m, true-goal error<=1109/81920000 m,
+speed<=17/204800 m/s, and acceleration<=17/2560 m/s^2. The proposed speed and
+acceleration values meet 1 mm/s and 0.02 m/s^2. These values must be connected
+by a new proof before they are reported as a theorem. Arbitrarily changing
+bounded disturbance is outside this constant-bias extension.
+
+This next gate closes a practical assumption gap in the present chain. It is
+not, by itself, a claim of new mathematics. After it passes independent review,
+assess a precise slowly changing or decaying disturbance model if the use case
+needs changing bias. Do not repeat common-radius algebra and call the unchanged
+floor a physical impossibility.

@@ -1,0 +1,54 @@
+NEW FIXED DELAYED-RETURN COMPARISON
+Frozen before reference generation or physical integration.
+
+Scope: the scalar actual plant and direct controller from moving-goal-08.
+No robot, Franka, contact, torque or firmware result is claimed.
+
+Authoritative task
+- Reference and actual position, velocity and acceleration start at zero.
+- Initial request: target 0.02 m, issued 0.20 s, available 0.22 s.
+- Revised request: target zero, issued 0.50 s, available 0.52 s.
+- Both authoritative requests count. The first must make at least 0.001 m
+  actual progress by 0.50 s. A rejected revision is a task failure.
+- Generous revision deadline: 1.70 s. Tight contrast: 1.30 s.
+- The revision deadline is carried ONLY in the second delivered packet.
+  No method sees it when handling the first request.
+- From deadline through 2.50 s, require actual position error <= 0.0002 m,
+  speed <= 0.001 m/s, acceleration <= 0.02 m/s^2 at all saved samples,
+  including both event sides. This numerical score is not an all-time proof.
+
+Four methods
+1. Unchanged native Ruckig fast, using the pinned moving-goal-08 native
+   execution convention, limits and retained state at actual binary time.
+2. Unchanged native Ruckig minimum_duration = 0.8 s, same convention.
+3. Old jerk-only retained four-box FIR, h = 0.2 s.
+4. New retained FIR, h = 0.2 s. First request: execute at 0.22 s after exact
+   acceleration and jerk checks, without revision-deadline information.
+   Second request: try ONLY [0.52, 0.62] s in that order. Use builder-01's
+   exact acceleration and jerk checks, causal time, and full-history tail
+   completion by the supplied deadline. If none passes, retain the old
+   history and report rejection. Do not erase pending or active old events.
+
+Common reference limits: V = 0.1 m/s, A = 0.5 m/s^2, J = 7.5 m/s^3.
+New selected two-event return has a separate Lean V <= 1/15 m/s theorem.
+There is no generic exact velocity certificate for the new selector.
+Reference conformity is scored for every method with the unchanged common
+absolute numerical allowance 1e-10 SI; native excesses remain recorded.
+
+Physical grid: rates 80, 100, 120 /s; constant disturbances 0, 0.01 m/s^2;
+1 ms and 0.5 ms output grids. Total: 2 tasks x 4 methods x 3 rates x 2
+constant disturbances x 2 grids = 96 traces. Horizon: 2.50 s.
+Use the same piecewise-polynomial matrix-exponential propagation as08.
+Never reset the actual plant or controller state at 0.52 or 0.62 s.
+
+Input and implementation freezes precede physical runs. Separate native
+replay must pass at the prior q/v/a tolerances before physical integration.
+Preserve event-side physical states, exact exported native boundaries,
+all failures, both grids, rejected packets and reference extrema.
+No tuning, extra execution candidates, hidden deadline access, native
+retiming changes, or changed pass criteria are allowed in this batch.
+
+Report task criteria together. Report reference bounds, conditional Lean
+physical position arrival, and sampled physical settling as separate claims.
+A none result only rejects the supplied candidate list. It is not a physical
+impossibility theorem. Waiting is not an emergency-stop policy.

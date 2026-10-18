@@ -108,7 +108,7 @@ theorem physical_biased_equilibrium (H : ℝ) (r : ℝ → ℝ) :
   constructor
   · exact continuousOn_const
   · intro t ht i
-    convert hasDerivAt_const t (![1/80000,0,0] i) using 1 <;>
+    convert hasDerivAt_const t ((![1/80000,0,0] : State) i) using 1 <;>
       fin_cases i <;> dsimp [holdInput,command,scaleState] <;> ring
 
 theorem biased_zero_speed_refutes_floor_as_lower_bound :

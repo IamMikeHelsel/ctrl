@@ -1,0 +1,28 @@
+Possible later gate — exploratory algebra, not a Lean result
+
+The current common-radius floor may be much too loose even for changing bounded
+disturbance. Before imposing disturbance regularity, test stronger output bounds.
+A simple constant-rate case gives a reason to investigate this route.
+
+At r=8 sigma the position transfer from w is
+  8 sigma / (s+4 sigma)^3.
+Its velocity impulse response is
+  8 sigma t (1-2 sigma t) exp(-4 sigma t).
+Its acceleration impulse response is
+  8 sigma (1-8 sigma t+8 sigma^2 t^2) exp(-4 sigma t).
+These expressions concern the linear, constant-rate, zero-initial-state forced
+response. They do not establish the pointwise changing-rate result.
+
+Using tau=sigma*t, direct integration of their signed lobes suggests induced
+bounded-input bounds with velocity factor 2 exp(-2)/sigma and acceleration
+factor 2[F((2-sqrt(2))/4)-F((2+sqrt(2))/4)],
+where F(tau)=8 tau(1-2 tau)exp(-4 tau).
+
+Numerically, these factors are 0.2706705665/sigma and 1.2400500303. At sigma=10
+and W=0.01, the candidate forced-response bounds are 0.27067 mm/s and
+0.0124005 m/s^2, both below the illustrative limits. Initial-state transients
+must still be added. This calculation is not independently formalized here.
+
+Question: can a uniform bound for r(t) in [8 sigma,12 sigma] achieve comparable
+output gains? Constant-rate transfer functions cannot answer that question.
+This is a later hypothesis, not a reason to skip the small constant-bias gate.

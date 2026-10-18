@@ -35,8 +35,11 @@ theorem delayed_return_physical_position {r w : ℝ → ℝ} {f : ℝ → State}
     |f (17/10) 0| ≤ 1/5000 := by
   have tracked := checked_tracking (h:=1/5) (J:=15/2) 0 deferredReturn deferred_return_jerk
     (σ:=10) (horizon:=5/2) (R:=1/5000) (W:=1/100)
-    (by norm_num) (by norm_num) (by norm_num) hf
-    (by simpa using hrlo) (by simpa using hrhi) hw (by norm_num) hi
+    (by norm_num) (by norm_num) (by norm_num)
+    (by norm_num; exact hf)
+    (by intro t ht; norm_num; exact hrlo t ht)
+    (by intro t ht; norm_num; exact hrhi t ht) hw (by norm_num)
+    (by norm_num; exact hi)
   have tube : ∀ t ∈ Icc (0:ℝ) (5/2),
       |f t 0-position 0 (1/5) (realEvents deferredReturn) t| ≤ 1/5000 := by
     intro t ht
@@ -45,7 +48,8 @@ theorem delayed_return_physical_position {r w : ℝ → ℝ} {f : ℝ → State}
     intro t ht
     have hp := tube t ⟨by linarith [ht.1],ht.2⟩
     have hq := (deferred_return_reference_contract.2.2.2 t ht.1).1
-    simpa [hq] using hp
+    rw [hq,sub_zero] at hp
+    exact hp
   refine ⟨tube,?_,arrival,arrival _ (by norm_num)⟩
   have h0 := tube 0 (by norm_num)
   have hmid := tube (1/2) (by norm_num)

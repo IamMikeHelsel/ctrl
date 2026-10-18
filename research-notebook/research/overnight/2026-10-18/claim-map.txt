@@ -1,0 +1,83 @@
+CLAIMS AND EVIDENCE — living coordinator index
+Updated 18 October 2026, 07:27 UTC. Read state.json for later gate decisions.
+
+Purpose
+Keep the paper focused on one claim: a finite motion history can carry a
+checked reference contract and a separate conditional physical-state bound.
+A smooth reference, an admitted request and a completed task are different
+results. The experiments must preserve that distinction.
+
+Accepted: exact reference acceleration check
+robot-motion/builder-01/AccelerationGuard.lean
+  RobotMotion.AccelerationAdmission.checkAcceleration_real_iff
+robot-motion/critic-01/report.txt
+The rational Boolean is equivalent to an acceleration bound at every future
+real time. Positive h and a nonnegative limit are part of the result. This is
+an exact check for the declared scalar FIR reference, not for a physical arm.
+
+Accepted: finite candidate service rule
+robot-motion/builder-01/TimedAdmission.lean
+  chosen_reference_contract, choose_none_iff, delayed_time_selected
+robot-motion/critic-01/report.txt
+A selected execution time retains the prefix and meets the acceleration,
+jerk and reference-rest deadline conditions. Rejection covers only the supplied
+candidate list. It is not a proof of continuous-time infeasibility. The generic
+rule has no velocity guard; the concrete return has a separate velocity proof.
+
+Pending independent review: actual position arrival during a return
+robot-motion/builder-02/PhysicalArrival.lean
+  delayed_return_physical_position
+robot-motion/builder-02/verification-02.json
+robot-motion/critic-02/ [review in progress]
+The proposed composition starts at physical time zero. It carries the state
+through the revision without resetting it. It bounds position tracking,
+initial progress and position arrival. Actual speed and acceleration settling
+are not proved by this statement. Keep the trajectory-existence assumption.
+
+Pending independent replay: stronger comparison
+robot-motion/builder-02/runtime-replay-02/
+robot-motion/builder-02/canonical-evidence.json
+The current numerical result is a repair, not a performance win. Native fast
+passes both deadline tasks. The checked FIR passes the generous task and
+rejects the tight revision. The old jerk-only FIR violates acceleration.
+All rejected authoritative requests remain task failures. Different physical
+states at revision confound a direct jerk-energy comparison.
+
+Accepted: actual-state terminal residuals
+controls/builder-01/Settling.lean and DirectSettling.lean
+controls/critic-01/review.txt
+A shrinking bound follows from the physical ODE with uncertain response rate.
+The final hold retains the inherited endpoint state. A bounded arbitrary
+disturbance leaves a floor in this certificate. That floor is not a lower bound
+on actual motion. Exact finite rest and meeting finite tolerances are different.
+
+In development: constant-bias extension
+controls/builder-02/
+The proposed equilibrium shift is for analysis only. The commanded goal and
+controller stay fixed. A true-goal position bound must include the offset.
+Constant bias is narrower than arbitrary time-varying disturbance. Integrate
+this result with the motion paper only after an actual same-task composition.
+
+Accepted bounded GU algebra; larger equivalence pending review
+geometric-unity/analyst-01/ and critic-01/
+geometric-unity/builder-02/ [verification in progress]
+The accepted result is the actual split Clifford action and its dimensions.
+The new candidate constructs matrix units and an inverse. Equal dimensions
+alone did not prove faithfulness. This is standard mathematical structure,
+not physical validation or a new theory. Keep the source errata authoritative.
+
+Practical implementation gaps
+The current all-pairs acceleration checker takes about 22.5 seconds at 32
+events in the recorded shared-host Lean --run harness. This is a measured
+implementation limitation, not a bound on an optimized native implementation.
+history-pruning-01/ is a candidate future-reference equivalence, not yet reviewed.
+It removes completed tails, but does not reduce the cost of many active events.
+Actual dispatch time, timestamp error, sensors, saturation, coupled dynamics,
+contact and hardware acceptance still need separate assumptions and evidence.
+
+Before manuscript integration
+Use only accepted proof statements and reviewed numerical claims. State the
+exact scope of any still-pending item. Rebuild the final portable dependency
+closure and trace each displayed number to the canonical evidence. The current
+14-page paper is a research record; it needs a shorter coherent argument.
+Agent review supports correctness checks. Human novelty review remains open.

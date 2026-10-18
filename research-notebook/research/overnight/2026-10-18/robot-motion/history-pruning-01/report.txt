@@ -1,0 +1,47 @@
+COMPLETED ACTIONS CAN BE REMOVED FROM FUTURE CHECKS
+Coordinator proof gate, 18 October 2026
+
+Result
+The candidate theorem removes an event only when its complete four-box support
+has ended. It adds that event's signed position increment to the constant
+offset. At every time t>=c, including t=c, the resulting position, velocity,
+acceleration and jerk are exactly equal to those of the original history.
+
+HistoryPruning.lean proves future_jet_eq over real histories. The executable
+rational qRetained and qCompletedOffset operations are connected to that result
+by rational_future_jet_eq. jerk_guard_pruned and acceleration_guard_pruned prove
+that the existing exact guards accept precisely the same inputs after pruning.
+This is equivalence to the accepted all-future properties, not sampled equality.
+
+The retained predicate is c < tau+4*h. It keeps events still active at c and all
+queued future events. The completed offset uses tau+4*h <= c. Repeated and signed
+increments are retained as such; their absolute values must not be summed.
+
+Verification
+The seven-module local closure rebuilt from fresh source copies. The original
+project build directory was excluded from LEAN_PATH. Only pinned dependency
+caches were reused. The declaration audit checked 202 local declarations and
+allowed only propext, Classical.choice and Quot.sound. Five modules passed
+separate leanchecker replay, including the new HistoryPruning module. Four false
+claims failed without missing-import errors: removing an active event, removing
+a queued event, dropping the completed position offset, and using an unsigned
+offset. The source-freeze and closure hashes remained unchanged.
+
+Verification status is PASS in verification.json. This is coordinator-generated
+proof evidence. Independent review is pending. The declaration count describes
+audit coverage, not novelty. Development syntax/tactic errors are not results;
+the final fresh verification had no failed step.
+
+Limits
+The theorem concerns future times only. A constant offset does not reconstruct
+past motion. It gives no bound on the number of active or future queued actions.
+It does not speed up the current all-pairs checker when many events remain
+active. A bounded arrival rate and future queue would be additional assumptions.
+No execution-time, physical-state, infinite-stream or hardware claim is made.
+
+Use and replay
+No frozen earlier proof changed. dev.py supplies the exact seven-module source
+closure. verify.py rebuilds and checks it; run from a fresh copy without .cache.
+The source freeze precedes that verification. Compiled products are excluded
+from the repository; their hashes are in compiled-object-hashes.json. This
+gate is ready for an independent reviewer before manuscript integration.

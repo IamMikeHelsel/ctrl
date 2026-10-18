@@ -1,0 +1,25 @@
+Development notes, not verification evidence
+
+The early FockOperators logs are retained in this folder. The final successful
+source is in the parent directory. No failed source is imported by the final
+closure. Development logs can be superseded by later compilations; fresh-*.log
+and verification.json are the final self-check evidence.
+
+Resolved API issues in this batch included:
+- ExteriorAlgebra.ι_add_mul_swap takes the scalar ring as a named implicit argument.
+- List membership in Fin 7 enumeration was proved through List.mem_ofFn, avoiding
+  an unhelpful expansion into seven equality cases.
+- Fin.natAdd normalizes to Fin.addNat in this pinned library. The generator image
+  lemmas use a consistent constructor and explicit Pi.single_apply facts.
+- Products of annihilator operators reverse their input list. This is proved by
+  the list product API; it is not a definitional reduction.
+- Algebra.lmul product laws require linear-map extensionality and associativity.
+- The final finite sum needed the sum-of-zero simplification before the delta sum.
+- FiniteDimensional R Cl is supplied from the already proved positive finrank.
+- A direct change tactic on the explicit seven-factor projector reached the
+  elaborator recursion limit. Rewriting Module.End.mul_apply instead avoids that
+  expansion. The failed source and log are retained as VacuumProjector-idempotent-01.
+
+The deliberate negative clients are preserved as complete .lean.txt files in the
+parent directory, with their rejection logs. OrderControls.lean also proves the
+actual counter-results, so the controls do more than test elaboration failures.

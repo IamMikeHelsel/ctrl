@@ -1,0 +1,52 @@
+Next gate: separate a loose bound from a real varying-disturbance limit
+Exploratory problem statement; no new result is claimed here.
+
+Keep the original scalar controller, sigma=10, r(t) in [80,120]/s, and
+|w(t)|<=0.01 m/s^2. Keep the inherited transformed cube R=0.0002 m.
+First falsifiable target: does every admissible trajectory satisfy
+|v|<=0.001 m/s and |a|<=0.02 m/s^2 for every t in [2,H], H>=2,
+without assuming that w is constant or differentiable? The answer must cover
+changing r and w and include the inherited initial-state transient.
+Start a bounded scout on [0,4] seconds with all eight initial-cube vertices
+and adverse changing inputs. Use bounded continuous ramps for r and w so a
+reported counterexample can satisfy the existing classical-trajectory premise.
+A jump-input scout alone would need a separate piecewise-trajectory argument.
+One verified admissible violation at t>=2 refutes this proposed two-second
+universal claim. It does not rule out a later entry time or a weaker bound.
+A cube-vertex counterexample rejects the general cube-based hold claim. It
+does not show that the frozen eight-phase motion reaches that endpoint state.
+
+The critic's exploratory constant-rate calculation is a useful target, not an
+answer. At r=8 sigma with zero initial state, the velocity impulse response is
+8 sigma t(1-2 sigma t) exp(-4 sigma t). The acceleration impulse response is
+8 sigma(1-8 sigma t+8 sigma^2 t^2) exp(-4 sigma t). Their suggested L1 factors are
+2 exp(-2)/sigma and about 1.2400500303. At sigma=10 and W=0.01, those would give
+forced-response limits about 0.27067 mm/s and 0.0124005 m/s^2. These constant-rate
+calculations do not establish a changing-rate bound.
+
+A bounded numerical scout can search for a counterexample with both inputs
+changing, followed by independent high-precision replay. Search failure is not
+a proof. A promising proof route is an output-aware robust invariant set for
+the linear differential inclusion, with exact rational face inequalities for
+rate/disturbance vertices and a separate entry-time argument. The old common
+coordinate cube loses correlations that matter for velocity and acceleration.
+
+The four endpoint pairs r in {80,120}, w in {-0.01,0.01} describe the extrema
+of the scalar acceleration derivative at a fixed state. A proposed set proof
+must establish the required convexity and face inequalities, rather than infer
+an all-time result from sampled simulation or constant-rate transfer functions.
+
+Success gate: either an exact reviewed certificate with a finite entry time and
+both physical output limits, or a verified admissible varying-input trajectory
+that violates one proposed universal limit. If neither is within a bounded
+batch, report the best explicit gain/time bound and the remaining inequality.
+Only then assess a weaker, stated disturbance model such as bounded bias rate
+or a decaying disturbance. Do not silently replace varying w with constant b.
+
+Alternative only after this test
+If the arbitrary-disturbance target fails or remains too loose, a distinct
+model can assume a bound on the bias derivative. A moving analysis equilibrium
+delta(t)=w(t)/(8 sigma^2) subtracts delta(t) from all three coordinates and
+adds -delta'(t) to each coordinate equation. This creates a real new regularity
+and magnitude assumption. Its proof and bounds would need a separate gate;
+neither the constant-bias theorem nor the old floor proves that extension.

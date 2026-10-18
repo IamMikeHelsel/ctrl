@@ -1,0 +1,54 @@
+REVIEW TARGETS
+
+1. Prove the PhysicalArrival statement is not stronger than its premises.
+   - The trajectory follows physicalInput 10 and the actual scalar plant.
+   - Rates lie in [80,120]; |w| <= 0.01; the initial cube radius is 0.0002.
+   - The same full history is present from time zero. No state reset is used.
+   - Extract position coordinate 0; do not infer speed/acceleration settling.
+   - Check the reference value 779/250000 m at 0.5 s and the initial-state
+     subtraction in the >=1 mm physical progress proof.
+   - Arrival is a position band, not exact zero or physical rest.
+   - The proof is conditional on an actual trajectory; it is not an ODE
+     existence theorem or hardware model identification result.
+
+2. Independently check the new selection binding.
+   - First event (0.22,+0.02) remains in both tasks and all FIR histories.
+   - Second packet first reveals the revision deadline at availability 0.52.
+   - Only candidates 0.52 and 0.62 are allowed. Immediate candidate violates
+     acceleration. Delayed candidate fits deadline 1.70, but not 1.30.
+   - Tight-case rejection retains the old event and does not change truth.
+   - The generic selector has no velocity checker. The fixed selected pair
+     has the accepted separate V bound. Tight rejection leaves a single event.
+
+3. Independently replay the saved physical traces in runtime-replay-02/.
+   This is the canonical run with the recorded06 numerical runtime. The
+   root-level first run is retained; runtime-comparison.json explains the
+   correction and confirms all task decisions agree.
+   - 96 traces; 362724 saved rows; 1932 saved event-jump rows.
+   - The unchanged run_comparison.py propagates the physical state with the
+     9x9 linear matrix exponential and saved polynomial reference pieces.
+   - Rates: 80,100,120; disturbances: 0,0.01; grids: 1 ms,0.5 ms.
+   - Retain event-side states and native exact-binary boundary metadata.
+   - All actual state jumps must be zero. Check command/jerk jump identities.
+   - Recompute task criteria from authoritative truth, including rejected
+     requests, initial progress, all reference limits, and the three physical
+     endpoint bands through the full horizon. Do not use accepted goal as truth.
+
+4. Check the strongest baseline and fairness boundaries.
+   - Native carried inputs and exports for generous case are exactly equal
+     to moving-goal-08 for both native methods.
+   - Native execution semantics and minimum_duration =0.8 are unchanged.
+   - Three unchanged methods have byte-identical deadline-contrast traces.
+   - New FIR deadline-contrast physical/reference prefixes are bit-identical
+     through 0.62 s, apart from later derivatives not used in that prefix test.
+   - Different motion before revision gives different distances to reverse.
+     The lower FIR jerk-energy values are not a matched-path dominance result.
+
+5. Evidence versions
+   - PhysicalArrival source froze before fresh proof verification and did not
+     change after either verification began.
+   - verify.py failed on a lexical false positive: the inherited definition
+     admit. Its failure is preserved. verify02.py corrects the scanner and
+     independently checks all local declaration axioms. It is not a proof fix.
+   - The numerical input, implementation and raw data freezes remain unchanged.
+   - Reproduction must use a new directory. Do not mutate this evidence.

@@ -13,7 +13,7 @@ def ordered (T : Finset J) : List J := List.ofFn (T.orderEmbOfFin rfl)
 theorem basis_word (T : Finset J) : spinBasis T = word (ordered T) := by
   simp [spinBasis, ExteriorAlgebra.basis_apply, ExteriorAlgebra.ιMulti_family,
     ExteriorAlgebra.ιMulti_apply, Set.powersetCard.ofFinEmbEquiv_symm_apply,
-    word, ordered, List.map_ofFn, basisVector]
+    word, ordered, List.map_ofFn, basisVector, Function.comp_def]
 
 @[simp] theorem mem_ordered (i : J) (T : Finset J) : i ∈ ordered T ↔ i ∈ T := by
   simp only [ordered, List.mem_ofFn]
@@ -30,7 +30,9 @@ theorem emptyFactor_word (i : J) (L : List J) :
   | nil => simp
   | cons j L ih =>
     by_cases h : i=j
-    · subst j; simp
+    · subst j
+      rw [word_cons, emptyFactor_same]
+      simp
     · rw [word_cons, emptyFactor_distinct i j h, ih]
       by_cases hm : i ∈ L <;> simp [h, hm]
 
@@ -58,8 +60,11 @@ theorem vacuum_word (T : List J) : vacuum (word T) = if T=[] then 1 else 0 := by
   rw [vacuum, factors_word]
   by_cases h : T=[]
   · subst T; simp
-  · have hn : ∃ i, i ∈ T := List.ne_nil_iff_exists_mem.mp h
-    simp [h, hn]
+  · have hn : ∃ i ∈ List.ofFn (fun i : J => i), i ∈ T := by
+      cases T with
+      | nil => contradiction
+      | cons i T => exact ⟨i, List.mem_ofFn.mpr ⟨i, rfl⟩, by simp⟩
+    rw [ite_eq_left hn, ite_eq_right h]
 
 /-- All 128 actual exterior basis vectors are covered. -/
 theorem vacuum_basis (T : Finset J) : vacuum (spinBasis T) = if T=∅ then 1 else 0 := by
@@ -71,5 +76,11 @@ theorem vacuum_basis (T : Finset J) : vacuum (spinBasis T) = if T=∅ then 1 els
 
 theorem vacuum_nonempty (T : Finset J) (h : T.Nonempty) : vacuum (spinBasis T) = 0 := by
   simp [vacuum_basis, h.ne_empty]
+
+theorem vacuum_idempotent : vacuum * vacuum = vacuum := by
+  apply spinBasis.ext
+  intro T
+  simp only [Module.End.mul_apply, vacuum_basis]
+  by_cases h : T=∅ <;> simp only [h, ↓reduceIte, vacuum_one, map_zero]
 
 end HyperbolicSpinor

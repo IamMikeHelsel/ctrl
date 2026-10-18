@@ -1,0 +1,119 @@
+BUILD ConstantBias
+/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/overnight/2026-10-18/controls/builder-02/build/ConstantBias.lean:32:28: error: Application type mismatch: The argument
+  add_le_add_right (hi i) ?m.49
+has type
+  ?m.49 + |coordinates c s i| ≤ ?m.49 + R
+but is expected to have type
+  |coordinates c s i| + |d| ≤ R + |d|
+in the application
+  LE.le.trans (abs_sub (coordinates c s i) d) (add_le_add_right (hi i) ?m.49)
+
+Note: The following definitions were not unfolded because their definition is not exposed:
+  Real.instAdd ↦ 2
+  Real.instLE ↦ 4
+/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/overnight/2026-10-18/controls/builder-02/build/ConstantBias.lean:76:66: error: linarith failed to find a contradiction
+σ H R c b : ℝ
+hσ : 0 < σ
+hH : 0 ≤ H
+hR : 0 ≤ R
+r : ℝ → ℝ
+f : ℝ → State
+hf : IsTrajectory H r (fun t => holdInput σ c f t + b) f
+hrlo : ∀ t ∈ Icc 0 H, 8 * σ ≤ r t
+hrhi : ∀ t ∈ Icc 0 H, r t ≤ 12 * σ
+hi : ∀ (i : Fin 3), |coordinates c (scaleState σ (f 0)) i| ≤ R
+hR' : 0 ≤ R + |offset σ b|
+hb :
+  ∀ t ∈ Icc 0 H,
+    have E := 3 * 0 / (8 * σ ^ 2) + 5 * (R + |offset σ b|) / 4 * Real.exp (-(2 / 5) * (σ * t));
+    |f t 0 - (c + offset σ b)| ≤ E ∧
+      |f t 1| ≤ 8 * σ * E ∧ |f t 2| ≤ 64 * σ ^ 2 * E ∧ |holdInput σ (c + offset σ b) f t| ≤ 24 * σ ^ 2 * E
+t : ℝ
+ht : t ∈ Icc 0 H
+hx : |f t 0 - (c + offset σ b)| ≤ 3 * 0 / (8 * σ ^ 2) + 5 * (R + |offset σ b|) / 4 * Real.exp (-(2 / 5) * (σ * t))
+hv : |f t 1| ≤ 8 * σ * (3 * 0 / (8 * σ ^ 2) + 5 * (R + |offset σ b|) / 4 * Real.exp (-(2 / 5) * (σ * t)))
+ha : |f t 2| ≤ 64 * σ ^ 2 * (3 * 0 / (8 * σ ^ 2) + 5 * (R + |offset σ b|) / 4 * Real.exp (-(2 / 5) * (σ * t)))
+hu :
+  |holdInput σ (c + offset σ b) f t| ≤
+    24 * σ ^ 2 * (3 * 0 / (8 * σ ^ 2) + 5 * (R + |offset σ b|) / 4 * Real.exp (-(2 / 5) * (σ * t)))
+a✝ :
+  |offset σ b| + 5 * (R + |offset σ b|) / 4 * Real.exp (-(2 / 5) * (σ * t)) < |f t 0 - (c + offset σ b)| + |offset σ b|
+⊢ False
+failed
+/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/overnight/2026-10-18/controls/builder-02/build/ConstantBias.lean:79:4: error: Type mismatch
+  hu
+has type
+  |holdInput σ (c + offset σ b) f t| ≤
+    24 * σ ^ 2 * (3 * 0 / (8 * σ ^ 2) + 5 * (R + |offset σ b|) / 4 * Real.exp (-(2 / 5) * (σ * t)))
+but is expected to have type
+  |holdInput σ (c + offset σ b) f t| ≤ 24 * σ ^ 2 * transient σ R b t
+
+Note: The following definitions were not unfolded because their definition is not exposed:
+  Real.instAdd ↦ 1
+  Real.instLE ↦ 2
+/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/overnight/2026-10-18/controls/builder-02/build/ConstantBias.lean:80:14: error: Application type mismatch: The argument
+  hv
+has type
+  |f t 1| ≤ 8 * σ * (3 * 0 / (8 * σ ^ 2) + 5 * (R + |offset σ b|) / 4 * Real.exp (-(2 / 5) * (σ * t)))
+but is expected to have type
+  |f t 1| ≤ 8 * σ * transient σ R b t
+in the application
+  And.intro hv
+
+Note: The following definitions were not unfolded because their definition is not exposed:
+  Real.instAdd ↦ 1
+  Real.instLE ↦ 2
+/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/overnight/2026-10-18/controls/builder-02/build/ConstantBias.lean:80:17: error: Application type mismatch: The argument
+  ha
+has type
+  |f t 2| ≤ 64 * σ ^ 2 * (3 * 0 / (8 * σ ^ 2) + 5 * (R + |offset σ b|) / 4 * Real.exp (-(2 / 5) * (σ * t)))
+but is expected to have type
+  |f t 2| ≤ 64 * σ ^ 2 * transient σ R b t
+in the application
+  And.intro ha
+
+Note: The following definitions were not unfolded because their definition is not exposed:
+  Real.instAdd ↦ 1
+  Real.instLE ↦ 2
+/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/overnight/2026-10-18/controls/builder-02/build/ConstantBias.lean:83:37: error: Type mismatch
+  abs_sub_le ?m.506 ?m.507
+has type
+  ∀ (c : ?m.502), |?m.506 - c| ≤ |?m.506 - ?m.507| + |?m.507 - c|
+but is expected to have type
+  |holdInput σ c f t + b - b| ≤ |holdInput σ c f t + b| + |b|
+
+Note: The following definitions were not unfolded because their definition is not exposed:
+  Real.instLE ↦ 2
+/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/overnight/2026-10-18/controls/builder-02/build/ConstantBias.lean:84:40: error: Type mismatch
+  add_le_add_right ht3 ?m.542
+has type
+  ?m.542 + |holdInput σ c f t + b| ≤ ?m.542 + 24 * σ ^ 2 * transient σ R b t
+but is expected to have type
+  |holdInput σ c f t + b| + |b| ≤ 24 * σ ^ 2 * transient σ R b t + |b|
+
+Note: The following definitions were not unfolded because their definition is not exposed:
+  Real.instAdd ↦ 6
+  Real.instLE ↦ 2
+/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/overnight/2026-10-18/controls/builder-02/build/ConstantBias.lean:96:73: warning: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/overnight/2026-10-18/controls/builder-02/build/ConstantBias.lean:97:59: warning: Unused tactic linter: `<;>` should be replaced with `;` or be removed.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/overnight/2026-10-18/controls/builder-02/build/ConstantBias.lean:96:73: warning: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/overnight/2026-10-18/controls/builder-02/build/ConstantBias.lean:97:59: warning: Used `tac1 <;> tac2` where `(tac1; tac2)` would suffice
+
+Note: This linter can be disabled with `set_option linter.unnecessarySeqFocus false`
+Traceback (most recent call last):
+  File "/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/overnight/2026-10-18/controls/builder-02/dev.py", line 49, in <module>
+    if __name__=='__main__':main()
+                            ~~~~^^
+  File "/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/overnight/2026-10-18/controls/builder-02/dev.py", line 48, in main
+    subprocess.run([lean,'--root='+str(root),'-o',str(out),str(dst)],cwd=root,env=env,check=True)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py", line 577, in run
+    raise CalledProcessError(retcode, process.args,
+                             output=stdout, stderr=stderr)
+subprocess.CalledProcessError: Command '['/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/.tools/elan/toolchains/leanprover--lean4---v4.35.0/bin/lean', '--root=/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/overnight/2026-10-18/controls/builder-02/build', '-o', '/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/overnight/2026-10-18/controls/builder-02/build/ConstantBias.olean', '/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/overnight/2026-10-18/controls/builder-02/build/ConstantBias.lean']' returned non-zero exit status 1.

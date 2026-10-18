@@ -1,0 +1,61 @@
+Proof guide
+
+1. Fix the actual operators.
+FockOperators.lean defines c_i as left exterior multiplication by e_i. It defines
+a_i as contraction by the dual coordinate. They act on ExteriorAlgebra R R^7.
+The proofs use Mathlib's contraction laws, not assumed anticommutation laws.
+
+FockImage.lean proves, for the actual splitAction:
+  G_i^+ = a_i + c_i
+  G_i^- = c_i - a_i
+  splitAction ((gamma_i^+ + gamma_i^-)/2) = c_i
+  splitAction ((gamma_i^+ - gamma_i^-)/2) = a_i
+The factors of one half and the negative-generator sign are explicit.
+The four low/high coordinate lemmas check the split map on every coordinate.
+No surjectivity of splitLinear is assumed.
+
+2. Link to the actual basis.
+VacuumProjector.basis_word identifies spinBasis T with its increasing exterior
+word. WordActions proves the signs obtained when a generator passes a prefix.
+BasisActions proves the insertion and erasure formulas for every subset:
+  c_i b_T = 0 if i is in T;
+  a_i b_T = 0 if i is not in T;
+  c_i b_T = (-1)^k b_(T union {i}) when i is absent;
+  a_i b_T = (-1)^k b_(T minus {i}) when i is present.
+Here k is the length of the increasing prefix before i. The exact Lean statements
+quantify that prefix and suffix, so there is no unstated ordering convention.
+
+3. Project to the vacuum.
+Let P be the increasing product of a_i c_i. Multiplication of endomorphisms means
+composition: a_i c_i first creates, then annihilates. Each factor preserves a
+word with i absent and kills a word with i present. Therefore
+  P b_T = 1 if T is empty, and 0 otherwise;
+  P P = P.
+FullImage.vacuum_image exhibits the actual Clifford element that maps to P.
+
+4. Build every matrix unit.
+Let C_I create the increasing word I. Let A_J be the reversed product of the
+annihilators for J. The rightmost operator acts first. MatrixUnits proves
+  C_I P A_J b_T = b_I if J=T, and 0 otherwise.
+The reversed annihilator order makes the nonzero coefficient +1.
+The proof covers arbitrary subset indices I,J,T, not a finite list of examples.
+
+5. Lift an arbitrary endomorphism.
+FullImage.preimage f is the double finite sum of the actual Clifford matrix-unit
+elements, weighted by the coordinates of f(b_J). The theorem preimage_image
+shows that its image is f. This proves surjectivity of splitAction and splitMatrix.
+
+6. Deduce faithfulness.
+RealEquivalence uses this proved surjectivity and the earlier dimension equality.
+Both the real Clifford algebra and the target matrix algebra have dimension
+16384. The finite-dimensional linear-map theorem then proves injectivity.
+AlgEquiv.ofBijective packages this specific map as splitMatrixEquiv.
+Dimension equality alone is not used as a faithfulness argument.
+
+7. Check the dangerous conventions.
+OrderControls proves three counterchecks on the same exterior space:
+  c_i a_i sends the vacuum to 0, so it is not the vacuum projector;
+  (gamma_i^- - gamma_i^+)/2 sends c_i(1) to -1;
+  a_0 a_1 applied to b_{0,1} gives -1 after vacuum projection.
+The correct reversed annihilator product gives +1. The negative clients try the
+wrong +1 claims and must fail. The positive client checks the intended results.

@@ -30,7 +30,7 @@ theorem annihilate_create (i j : J) (x : S7) :
 
 theorem create_swap (i j : J) (x : S7) : create i (create j x) = -create j (create i x) := by
   simp only [create_apply, ← mul_assoc]
-  rw [eq_neg_of_add_eq_zero_left (ExteriorAlgebra.ι_add_mul_swap ℝ W7 (basisVector i) (basisVector j))]
+  rw [eq_neg_of_add_eq_zero_left (ExteriorAlgebra.ι_add_mul_swap (R := ℝ) (basisVector i) (basisVector j))]
   simp only [neg_mul]
 
 def emptyFactor (i : J) : Module.End ℝ S7 := annihilate i * create i
