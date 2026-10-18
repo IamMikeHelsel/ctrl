@@ -1,3 +1,5 @@
+Latest: five-hour-checkpoint-05.txt closes the rounded native handoff proof and records the intent/industrial/motor-control assessment. See the ten-page execution note. Earlier checkpoints retain their historical scope.
+
 THREE RESEARCH PODS — 17 October 2026
 
 User authorization: controls, Erdos and Weinstein pods, each with an independent

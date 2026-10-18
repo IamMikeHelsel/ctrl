@@ -1,0 +1,41 @@
+\section{Tracking through rounded reference handoffs}\label{rounded}
+The same physical argument can cover an exported native path. It needs a different reference contract. The export consists of cubic position segments with constant jerk. Floating-point coefficients can leave small position, velocity, and acceleration jumps at joins. We retain those jumps; we do not replace them with exact matches.
+
+Let $Q_k=(q_k,\dot q_k,\ddot q_k)$ be segment $k$, with local duration $d_k$. Define the linear map
+\[
+T_\sigma(y_0,y_1,y_2)=
+\left(y_0,\ y_0+\frac{y_1}{4\sigma},\
+y_0+\frac{y_1}{2\sigma}+\frac{y_2}{16\sigma^2}\right).
+\]
+For each join, bound
+\[
+\left\|T_\sigma\bigl(Q_{k+1}(0)-Q_k(d_k)\bigr)\right\|_\infty\leq B_k,
+\qquad B_k\geq0.
+\]
+\begin{theorem}[Finite handoffs with a reference jump reserve]
+Let $\sigma>0$. Consider finitely many cubic reference segments with $d_k\geq0$. On every segment, assume the physical dynamics and feedback of \eqref{plant}--\eqref{feedback}, the rate and disturbance bounds, and the local segment jerk bound $|j_k|\leq J$. The physical state is continuous on each segment and matches exactly at joins. Derivatives are required only in segment interiors. Assume the initial transformed error is at most $R_0\geq0$ and
+\[
+W+J/(48\sigma)\leq2\sigma^2R_0.
+\]
+Then, throughout segment $k$, including its endpoints,
+\[
+\|T_\sigma(x-q_k,v-\dot q_k,a-\ddot q_k)\|_\infty
+\leq R_0+\sum_{i<k}B_i.
+\]
+\end{theorem}
+At a join, the transformed tracking error changes by minus the transformed reference jump. The triangle inequality adds $B_k$ to the radius. The larger radius still satisfies the segment budget. Lean derives each segment's propagation from its physical trajectory equations, then proves the finite induction. No segment tracking bound is assumed as a new premise.
+
+\textbf{Binding the native comparison.} A Lean checker verifies exact rational encodings of the frozen comparison's 12 Ruckig reference schedules: 886 cubic pieces and 874 joins. It checks positive duration, adjacent clock equality, initial rest, final horizon, $|j_k|\leq7.5$, and all three transformed jump components. The coefficients are the exact binary values stored in the export. Clock endpoints use the recorded exact values. An independent value audit binds every encoded piece to the frozen export. The JSON-to-Lean parser is not kernel-verified. Lean proves that an accepted check supplies the real cubic theorem's data premises. It also proves that the intervals cover every real time in the horizon.
+
+With the unchanged $\sigma=10\ \mathrm{s}^{-1}$, $W=.01\ \mathrm{m/s^2}$, and $J=7.5\ \mathrm{m/s^3}$, use
+\[
+R_0=\frac{41}{320000}\ \mathrm{m},\qquad B_k=10^{-15}\ \mathrm{m}.
+\]
+There are at most 189 pieces in any schedule. The common position tracking bound is therefore
+\[
+|x-q|\leq R_0+188\cdot10^{-15}\ \mathrm{m}
+=0.128125000188\ \mathrm{mm}<0.2\ \mathrm{mm}.
+\]
+The reserve was selected after inspecting the frozen exports. It is a conservative proof allowance, not a new performance result. The exact rational audit found a largest accumulated transformed jump of about $7.39\cdot10^{-18}$ m.
+
+\textbf{Scope.} The 12 named Lean instances concern these exact exported paths under the stated physical assumptions. The reference need not have a global classical third derivative at joins. These results do not certify the native solver, floating-point execution, every possible Ruckig output, or an industrial arm. They prove tracking relative to the reference. All earlier true-goal failures remain. A task guarantee still needs a bound on $q-g$; physical rest and tight endpoint speed or acceleration do not follow from this position bound.

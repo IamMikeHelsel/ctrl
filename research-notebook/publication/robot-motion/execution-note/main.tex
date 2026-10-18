@@ -16,7 +16,7 @@
 \begin{abstract}
 Frequent target changes can produce unwanted motion even when each plan limits jerk. We study a scalar execution layer based on an established four-stage moving average. A Lean proof shows that its rational history check is equivalent to a bound on reference jerk at every future real time. A finite admission rule retains committed actions and preserves executed motion. A separate theorem connects this reference to a tracking bound for a stated uncertain actuator model.
 
-A fixed comparison shows a benefit and a cost. The filter reduces motion in one hold task, but responds more slowly to a real target change. That hold input aligns with a frequency zero of the filter. A harder, predeclared comparison finds hold failures under irregular and random requests. A duration-limited baseline also removes much of the first apparent advantage. We distinguish formal proof, numerical evidence, and open implementation questions. This note does not claim a solution to general robot or VLA jitter.
+A fixed comparison shows a benefit and a cost. The filter reduces motion in one hold task, but responds more slowly to a real target change. That hold input aligns with a frequency zero of the filter. A harder, predeclared comparison finds hold failures under irregular and random requests. A duration-limited baseline also removes much of the first apparent advantage. A further Lean theorem bounds tracking across rounded native cubic handoffs. It applies to 12 frozen baseline paths and retains the true-goal failures. We distinguish formal proof, numerical evidence, and open implementation questions. This note does not claim a solution to general robot or VLA jitter.
 \end{abstract}
 \section{The problem is larger than smooth curves}
 A planner requests a target. An execution layer turns requests into reference motion. A controller makes the machine follow that motion. These are different objects:
@@ -132,7 +132,7 @@ Ranges use the saved .5 ms traces and event samples. Times start at simulation t
 \vspace{-.8em}
 {\small\textbf{Figure 1.} Fixed examples with $r=80\ \mathrm{s}^{-1}$ and $w=.01\ \mathrm{m/s^2}$. These curves and their peak metrics are numerical evidence.}
 
-An independent 80-digit replay checked all 476,928 trace rows and 3,636 event rows. All 72 endpoint tests passed. Six Ruckig hold cases failed the added $.2$ mm hold band, leaving 66/72 full-task passes. All 24 FIR and 24 Ruckig cases passed the sampled position band $|x-q|\leq.2$ mm. This metric does not test the full transformed cube. The Lean history and composition certificate applies to FIR only. Ruckig has jerk switches and exported state roundoff; its passes are numerical. Raw steps also lie outside that proof contract.
+An independent 80-digit replay checked all 476,928 trace rows and 3,636 event rows. All 72 endpoint tests passed. Six Ruckig hold cases failed the added $.2$ mm hold band, leaving 66/72 full-task passes. All 24 FIR and 24 Ruckig cases passed the sampled position band $|x-q|\leq.2$ mm. This metric does not test the full transformed cube. At this stage, the Lean history and composition certificate covers FIR only. These Ruckig passes are numerical. Section~\ref{rounded} later proves conditional tracking for the 12 frozen native paths in the repaired comparison, including their exported state roundoff. Raw steps also lie outside that proof contract.
 
 \newpage
 \section{The motion in the first hold example}
@@ -156,6 +156,15 @@ This explains one trace without a clock error. Later replans change the pattern.
 \input{robustness.tex}
 
 \newpage
+{\small
+\input{rounded-handoffs.tex}
+}
+
+\newpage
+\input{execution-context.tex}
+
+\newpage
+{\small
 \section{Existing work and the remaining research claim}
 FIR trajectory generation and derivative constraints are established. Biagiotti and Melchiorri study FIR planning and time optimization \cite{fir2012,fir2019}. Besset and B\'ear\'ee study online jerk-constrained FIR trajectories, including nonzero initial states and robot experiments \cite{fir2017}. Our four-box kernel is not a new smoothing method.
 
@@ -163,7 +172,7 @@ Real-Time Chunking retains committed actions while generating the remaining chun
 
 Reference and command governors already use finite checks for future constraints, invariant fallbacks, and uncertainty bounds. The survey also treats asynchronous execution and plant-side acceptance \cite{governors}. ModelPlex derives checked arithmetic monitors from proved models and addresses bounded disturbances, clock drift, and arithmetic implementation \cite{modelplex}. These works rule out a broad claim to introduce future checking or a verified execution layer.
 
-The narrower candidate is this list-parametric Lean rational guard, its retained-history contract, and its connection to a stated uncertain tracking bound. This is a specialized formalization and engineering case study. It is not yet an established new control method. The comparison ledger records which full methods were read and which FIR sources were only partly accessible. External specialist review is still needed to judge the artifact's research value.
+The narrower candidate is this list-parametric Lean rational guard, its retained-history contract, its connection to a stated uncertain tracking bound, and a checked bridge for the frozen rounded native references. This is a specialized formalization and engineering case study. It is not yet an established new control method. The comparison ledger records which full methods were read and which FIR sources were only partly accessible. External specialist review is still needed to judge the artifact's research value.
 
 \textbf{Limits on task intent.} If two tasks give the same observed history, a deterministic causal executor gives the same motion until the histories differ. If the tasks require goals $g_1$ and $g_2$, then
 \[
@@ -173,7 +182,7 @@ At least one error is at least half the goal separation. This elementary argumen
 
 \textbf{Next publication gate.} Make the proof artifact easy to replay, preserve the negative cases, and seek human formal-methods and controls review before expanding the claim. A real action-stream test must report delay, task error, actual motion, and failures together. A scalar position request is not a full robot action chunk. Joint coupling, contact, sampled actuation, and task progress need further work.
 
-{\small\raggedright\textbf{Reproducibility.} See \path{research/pods/2026-10-17/robot-motion/}: \path{certificate-03/}, \path{comparison-04/}, \path{latency-noise-05/}, \path{native-execution-06/}, and \path{jerk-prefix-animation/}. The proof bundle is in \path{publication/robot-motion/}, under \path{reviewer-bundle/}. Lean is version 4.35.0. The mathlib and Ruckig pins are:\par}
+{\small\raggedright\textbf{Reproducibility.} See \path{research/pods/2026-10-17/robot-motion/}: \path{certificate-03/}, \path{comparison-04/}, \path{latency-noise-05/}, \path{native-execution-06/}, \path{rounded-handoff-07/}, \path{intent-contract-07/}, and \path{jerk-prefix-animation/}. The FIR proof bundle is in \path{publication/robot-motion/}, under \path{reviewer-bundle/}. Lean is version 4.35.0. The mathlib and Ruckig pins are:\par}
 \begin{center}\small\ttfamily
 56a005855ea17e0b0958f73ec801ae140b0a1679\\
 99751e6ebc7c963bb80e99fbbe66f2c279d1db57
@@ -182,10 +191,11 @@ Ruckig cloud support is disabled.
 
 Numerical replay treats exported floating coefficients as exact polynomial inputs and retains tiny positive phases. It is not bit-for-bit native execution. Switch-side differences remain in the reports. Physical states carry continuously from rest. Maxima and quadrature are numerical metrics.
 
-\textbf{Contributions and assistance.} Mike Helsel set the question, proposed the execution-layer direction, identified the timing interpretation to test, and required fair comparisons and independent challenge. Codex agents assisted with sources, derivations, Lean proofs, numerical code, reviews, figures, and writing. Agent reviews are computational checks, not external human peer review. Author details, license, venue policy, and final claims remain to be settled before submission.
+\textbf{Contributions and assistance.} Mike Helsel set the question, proposed the execution-layer direction, identified the timing interpretation to test, required fair comparisons and independent challenge, and proposed the links to task intent, human motion, industrial interpolation, and smoothness or effort costs. Codex agents assisted with sources, derivations, Lean proofs, numerical code, reviews, figures, and writing. Agent reviews are computational checks, not external human peer review. Author details, license, venue policy, and final claims remain to be settled before submission.
 
+}
 \newpage
-\begin{thebibliography}{9}\small\raggedright
+\begin{thebibliography}{99}\small\raggedright
 \bibitem{ruckig} L. Berscheid and T. Kr\"oger.
 \emph{Jerk-limited Real-time Trajectory Generation with Arbitrary Target States}.
 RSS, 2021. \url{https://arxiv.org/abs/2105.04830v2}.
@@ -211,5 +221,26 @@ Automatica 75, 306--328, 2017. \url{https://doi.org/10.1016/j.automatica.2016.08
 \emph{ModelPlex: Verified Runtime Validation of Verified Cyber-Physical System Models}.
 Runtime Verification, 199--214, 2014.
 \url{https://symbolaris.com/pub/modelplex.pdf}.
+
+\bibitem{fanucterm} FANUC America.
+\emph{How Termination Type Affects Robot Path and Cycle Time}. Public guide description, 18 June 2026; video not viewed.
+\url{https://techtransfer.fanucamerica.com/tech-transfer/termination-types}.
+\bibitem{fanuctiming} FANUC Corporation.
+\emph{How to Configure 1kHz Mode}. ROS 2 Driver Documentation, v2.2.0.
+\url{https://fanuc-corporation.github.io/fanuc_driver_doc/v2.2.0/docs/fanuc_driver/how_to_configure_1khz_mode.html}.
+\bibitem{yaskawaapi} Yaskawa Motoman.
+\emph{Explanation of Different Remote-Motion-Control API's}. Updated 14 November 2024.
+\url{https://knowledge.motoman.com/hc/en-us/articles/20684798540951-Explanation-of-Different-Remote-Motion-Control-API-s}.
+\bibitem{yaskawasmooth} Yaskawa Motoman.
+\emph{SMOOTH Function Overview}. Updated 28 July 2023.
+\url{https://knowledge.motoman.com/hc/en-us/articles/16313283895191-SMOOTH-Function-Overview}.
+\bibitem{flashhogan} T. Flash and N. Hogan.
+\emph{The coordination of arm movements: an experimentally confirmed mathematical model}.
+Journal of Neuroscience 5(7), 1688--1703, 1985.
+\url{https://doi.org/10.1523/JNEUROSCI.05-07-01688.1985}.
+\bibitem{todorov} E. Todorov and M. I. Jordan.
+\emph{Optimal feedback control as a theory of motor coordination}.
+Nature Neuroscience 5, 1226--1235, 2002.
+\url{https://doi.org/10.1038/nn963}.
 \end{thebibliography}
 \end{document}

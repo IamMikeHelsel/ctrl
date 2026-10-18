@@ -1,0 +1,208 @@
+{
+  "status": "Predeclared candidate; no execution authorized by this plan and no new runs made.",
+  "existing_baseline": "native-execution-06; unchanged",
+  "packet_sha256": "0cae56481e77cd3c6f22e9c2c8c1012201b2252bafffc7736d162a0aa1f2f791",
+  "purpose": "Test the effect of shared authoritative task information; not infer intent and not reclassify old failures.",
+  "new_parameter_cases": 144,
+  "resolutions_s": [
+    "1/1000",
+    "1/2000"
+  ],
+  "new_traces_if_run": 288,
+  "methods": [
+    "raw",
+    "ruckig",
+    "ruckig_min_08",
+    "fir"
+  ],
+  "rates_per_s": [
+    80,
+    100,
+    120
+  ],
+  "disturbances_m_s2": [
+    "0",
+    "1/100"
+  ],
+  "unchanged": [
+    "controller",
+    "physical initial rest",
+    "physical state retention",
+    "method settings",
+    "clock conventions",
+    "numeric packet payloads and times",
+    "truth",
+    "deadlines",
+    "horizons",
+    "endpoint and hold tolerances",
+    "reference export fidelity gate",
+    "event and jump handling"
+  ],
+  "task_information": "Same authoritative epoch/goal/deadline/horizon to every method. Sideband derives from pre-existing task truth; it is additional trusted information, not an inferred label.",
+  "initial_authoritative_goal_m": "0",
+  "numeric_packets": "Retain exact source records as advisory observations. Only the persistent_goal packet also carries an authoritative revision. Advisory sequences cannot override an authoritative epoch.",
+  "cases": [
+    {
+      "id": "hold_jitter",
+      "source_packet_count": 41,
+      "truth": [
+        {
+          "time_s": "0",
+          "position_m": "0"
+        }
+      ],
+      "metadata": {
+        "role": "primary",
+        "deadline_s": "19/10",
+        "end_s": "5/2",
+        "task": "Actual hold error <=0.2 mm throughout; endpoint checks at deadline."
+      },
+      "authoritative_revisions": [],
+      "hold_goal_m": "0"
+    },
+    {
+      "id": "persistent_goal",
+      "source_packet_count": 1,
+      "truth": [
+        {
+          "time_s": "0",
+          "position_m": "0"
+        },
+        {
+          "time_s": "1/5",
+          "position_m": "1/50"
+        }
+      ],
+      "metadata": {
+        "role": "primary",
+        "deadline_s": "3/2",
+        "end_s": "2",
+        "task": "Actual position, velocity and acceleration meet the fixed endpoint tolerances at deadline."
+      },
+      "authoritative_revisions": [
+        {
+          "epoch": 1,
+          "source_sequence": 100,
+          "issued_s": "1/5",
+          "ready_s": "11/50",
+          "commit_tick_s": "11/50",
+          "goal_m": "1/50",
+          "deadline_s": "3/2",
+          "hold_through_s": "2"
+        }
+      ]
+    },
+    {
+      "id": "sign_60ms",
+      "source_packet_count": 21,
+      "truth": [
+        {
+          "time_s": "0",
+          "position_m": "0"
+        }
+      ],
+      "metadata": {
+        "role": "primary",
+        "deadline_s": "7/2",
+        "end_s": "4",
+        "task": "Alternating signs every 60 ms; not the original 40 ms full-period signal. Actual hold error <=0.2 mm throughout; endpoint tests at deadline."
+      },
+      "authoritative_revisions": [],
+      "hold_goal_m": "0"
+    },
+    {
+      "id": "irregular_alternation",
+      "source_packet_count": 21,
+      "truth": [
+        {
+          "time_s": "0",
+          "position_m": "0"
+        }
+      ],
+      "metadata": {
+        "role": "primary",
+        "deadline_s": "7/2",
+        "end_s": "4",
+        "task": "Alternating signs with the declared two-cycle irregular gap list. Actual hold error <=0.2 mm throughout; endpoint tests at deadline."
+      },
+      "authoritative_revisions": [],
+      "hold_goal_m": "0"
+    },
+    {
+      "id": "seeded_random",
+      "source_packet_count": 81,
+      "truth": [
+        {
+          "time_s": "0",
+          "position_m": "0"
+        }
+      ],
+      "metadata": {
+        "role": "primary",
+        "deadline_s": "7/2",
+        "end_s": "4",
+        "task": "Seeded bounded random target errors; finite realized sample mean is reported. Actual hold error <=0.2 mm throughout; endpoint tests at deadline."
+      },
+      "authoritative_revisions": [],
+      "hold_goal_m": "0"
+    },
+    {
+      "id": "biased_alternation",
+      "source_packet_count": 81,
+      "truth": [
+        {
+          "time_s": "0",
+          "position_m": "0"
+        }
+      ],
+      "metadata": {
+        "role": "primary",
+        "deadline_s": "7/2",
+        "end_s": "4",
+        "task": "Deliberate positive bias of .4 mm plus alternating .6 mm; true goal zero; not unbiased noise. Actual hold error <=0.2 mm throughout; endpoint tests at deadline."
+      },
+      "authoritative_revisions": [],
+      "hold_goal_m": "0"
+    }
+  ],
+  "all_task_checks_retained": true,
+  "rejections": "Count rejected/infeasible authoritative requests as task failures; do not drop a case or call it a hold success.",
+  "progress_diagnostics": {
+    "case": "persistent_goal",
+    "direction": 1,
+    "absolute_time_s": "31/50",
+    "required_position_from_initial_m": "49/5000",
+    "position_arrival_time_s": "51/50",
+    "position_arrival_tolerance_m": "1/5000",
+    "meaning": "Conditional analytic FIR candidate; measured decisions remain separate. No new numerical result."
+  },
+  "logical_negative_control": "Always-hold fails the persistent_goal deadline; no extra plant stream is required.",
+  "coverage_gaps": [
+    "label correctness",
+    "small intended moves",
+    "mid-move replacement",
+    "unbounded delivery",
+    "scheduler correctness"
+  ],
+  "prohibited_changes": [
+    "threshold selection from outcomes",
+    "h/R/gain tuning",
+    "new streams",
+    "deadline/horizon changes",
+    "physical-state reset",
+    "hidden future truth",
+    "reclassification of accepted06 failures"
+  ],
+  "industrial_comparison_axes": {
+    "status": "Documentary comparison only; no new industrial methods or runs in this gate.",
+    "sources": "industrial-comparison-addendum.md",
+    "axes": [
+      "native blended versus buffered/external interpolation ownership",
+      "retained future motion and latency across target replacement",
+      "both sides of q/v/a/j at execution joins",
+      "derivative order and within-plan cost versus join continuity",
+      "task error, progress and deadline before effort ranking",
+      "electrical energy and mechanical work require separate supported measurements; scalar jerk-squared/commandTV are not joules"
+    ]
+  }
+}

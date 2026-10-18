@@ -1,0 +1,36 @@
+ROUNDED HANDOFF 07 — FINITE REFERENCE-JUMP TRACKING
+
+Generalize the actual ScaledTracking.finite_replans_scaled theorem. Keep explicit
+per-piece physical trajectories, exact physical-state joins, reference continuity
+on each closed piece, and the reference/plant differential equations only on each
+open interior. Do not assume global C2 or a derivative at a jerk switch.
+
+For reference jump d_k = q_(k+1)(0)-q_k(H_k), choose B_k >= 0 with
+  |coordinates 0 (scaleState sigma d_k) i| <= B_k for every component i.
+Use R_k = R_0 + sum_{l<k} B_l. Keep the original positive sigma, nonnegative R_0,
+rate bounds [8 sigma,12 sigma], disturbance bound W, jerk bound J, initial error
+cube and budget W+J/(48 sigma) <= 2 sigma^2 R_0.
+
+Prove the exact transformed handoff equality from physical-state matching.
+Then prove an additive R+B handoff bound, budget monotonicity and finite-piece
+tracking at R_k. Expose physical position/velocity/acceleration error bounds and
+actual margins relative to reference bounds. This is a new nonzero-join induction,
+not an assumed per-piece certificate or a restatement of the matched theorem.
+
+The existing TrackingReplan.reference and reference_derivative already cover
+arbitrary real cubic coefficients. A cubic specialization may reuse them. It
+must retain the actual physical IsTrajectory, initial-error, rate/disturbance and
+physical-matching premises. Existence, numerical rounding semantics, and native
+firmware execution are not inferred from a conditional tracking theorem.
+
+Root owns rational data extraction and fixture checks from frozen06. Python-only
+checks will not be called a Lean-instantiated guarantee. A compiled fixture bridge
+is separate work unless it is explicitly supplied and proved in this batch.
+
+Validation: fresh local source closure build at the existing pinned Lean/Mathlib
+versions, environment-level standard-axiom audit, separate kernel replay, and
+meaningful negative controls that demonstrate why jump reserve and exact physical
+matching matter. No accepted-source edits, installs, Git, native or plant runs.
+
+First attempt is bounded to45 minutes. Stop and freeze if proof is blocked or
+only a wrapper restatement is obtained. No subagents. Shared usage stop at42%.

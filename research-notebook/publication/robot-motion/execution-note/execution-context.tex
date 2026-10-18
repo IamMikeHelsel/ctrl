@@ -1,0 +1,20 @@
+\section{Human motion and industrial execution}
+The practical question is how to preserve smooth execution while a planner changes its request. Smooth robot motion already exists. A useful comparison must include an industrial controller's native interpolation and blending, with its timing and accuracy costs.
+
+\textbf{Industrial reference points.} The public description of FANUC's termination guide compares FINE and continuous motion. It discusses how blending, speed, approach angle, and payload affect path accuracy and cycle time \cite{fanucterm}. Its official ROS 2 driver guide warns that PC timing jitter can cause drift or vibration in the documented 1 kHz configuration; buffer depth and update rate affect that interface \cite{fanuctiming}. The guide's login-gated video was not viewed. These are configuration-specific facts, not a public model of the proprietary servo law.
+
+Yaskawa distinguishes buffered targets, point-to-point requests that require full deceleration, and external increments supplied at the interpolation clock. Buffered YMConnect uses the INFORM planner, and the guide warns that very dense points can disturb the velocity profile \cite{yaskawaapi}. The SMOOTH function changes motion filtering. Its documented examples show effects on torque and acceleration, later attainment of speed, and more inward corner rounding \cite{yaskawasmooth}. We have not measured these industrial systems or reconstructed their internal algorithms.
+
+A fair hardware comparison would use the same arm, load, task, path tolerance, deadline, and declared motion limits. It would explicitly identify and vary the approved execution interface: native blended motion, buffered external targets, and the proposed execution rule on its supported interface. Record command age, buffer occupancy, goal changes, actual path error, vibration, and settling. A sequence of forced intermediate stops is not an adequate substitute for the native blended baseline.
+
+\textbf{Human motion as a source of hypotheses.} Minimum-jerk models reproduce features of human reaching in specific tasks \cite{flashhogan}. Optimal feedback control gives another useful principle: correct deviations that threaten the task while permitting harmless variation \cite{todorov}. Neither establishes that a brain runs this filter or that robot jitter has a neurological cause. The engineering hypothesis is narrower: repeated target estimates may impose unnecessary motion obligations when the intended task has not changed.
+
+\textbf{Smoothness must survive a new plan.} A low jerk cost within each plan does not bound the joins between plans. Penalizing snap also needs a stated treatment of jerk discontinuities. Repeated planning can be useful, but the executor must account for its present state, committed motion, command age, and the meaning of a revision. A changed estimate and a changed goal are different inputs.
+
+\textbf{Energy is a separate metric.} Signed mechanical work, positive work, electrical energy, squared torque, and squared jerk measure different things. For an ideal frictionless point mass,
+\[
+\int_0^T F(t)v(t)\,dt=\tfrac12m\,[v(T)^2-v(0)^2].
+\]
+Every rest-to-rest path has zero net work in this model, including rough ones. Thus net work alone cannot select smooth motion. Our scalar comparison has no motor loss or electrical supply model. Command variation and jerk cost must not be reported as measured energy savings.
+
+\textbf{Next controlled comparison.} Separate authoritative goal revisions from advisory estimates, and give every baseline the same information. The frozen plan keeps the four existing scalar methods and inputs. A later, separately specified comparison should test limits on jerk, jerk or snap costs, and continuity across plan replacement at the same accuracy and deadline. Industrial hardware comparisons require their own interface and measurement protocol. An always-hold rule must fail an intended move; a smoother but late move must retain its failure. The task-contract study specifies a bounded position-progress candidate, but it is not yet a proved full endpoint guarantee or an executed new comparison.

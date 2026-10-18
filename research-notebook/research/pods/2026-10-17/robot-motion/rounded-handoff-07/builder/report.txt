@@ -1,0 +1,73 @@
+PASS — Rounded handoff proof and concrete exported-reference bridge.
+
+Proved
+
+RoundedHandoff.finite_replans_with_jumps_scaled generalizes the existing matched
+handoff theorem. It obtains each segment invariant from the actual plant ODE.
+It proves the exact error-jump algebra and adds a nonnegative transformed join
+reserve B_k once at each handoff. The radius is R_0+sum_{l<k}B_l. The original
+disturbance/jerk budget remains valid at each larger radius.
+
+The result includes both endpoints of every piece. It needs no derivative at a
+jerk switch and no global C2 reference. Physical position, velocity and
+acceleration error bounds are proved. Absolute physical bounds require explicit
+reference bounds. The cubic specialization uses the existing proved derivative
+chain, with arbitrary real coefficients.
+
+NativeCoverage proves interval coverage from the rational check itself.
+NativeGlobal composes coverage with the physical theorem: every real time in the
+checked horizon has a valid piece, a valid local offset and the position error
+bound. The physical ODE, rate/disturbance bounds, exact physical-state joins and
+initial tracking cube remain explicit premises.
+
+Concrete binding
+
+The sibling, separately frozen bindings package checks the 12 native06 schedules
+with 886 positive pieces and 874 joins. Its Lean rational guard and proved real
+cast supply duration, jerk and reference-join premises. Its 12 named instances
+use sigma=10, J=7.5, W=0.01, R_0=41/320000 m and B=10^-15 m. At most 188 joins
+give a position error radius of 0.128125000188 mm relative to the exported
+reference. This is smaller than 0.2 mm, but it is not a true-goal guarantee.
+
+The JSON-to-Lean conversion is independently audited, not a verified parser.
+The polynomial interpretation is exact once those literals are fixed. This is
+not a proof of native floating-point execution, firmware, physical trajectory
+existence, or real hardware. The 05 failed fidelity gate and all prior task/hold
+failures are unchanged. No native or plant experiment ran in this gate.
+
+Builder validation
+
+The fresh generic build compiled 38 local source modules. The complete
+integration has 43 local source modules. The final environment audit checked
+2,885 declarations, including generated/private declarations, and allowed only
+propext, Classical.choice and Quot.sound. No local axiom, unsafe declaration,
+sorry, admit or native_decide was accepted.
+
+Eight distinct modules passed separate leanchecker replay: ScaledTracking,
+RoundedHandoff, HandoffWitnesses, NativeData, NativeBridge, NativeInstances,
+NativeCoverage and NativeGlobal. The five deliberately false controls failed
+for mathematical reasons: wrong handoff sign, omitted reserve, position-only
+join bound, unbounded physical reset and a clock gap accepted as contiguous.
+Nine proved witness statements give positive cases and explicit counterexamples.
+
+The generic gate finished at 2026-10-18T04:59:19.944727Z. The integration gate
+finished at 2026-10-18T05:02:11.841240Z. Source hashes were checked after the runs.
+The first scanner-only failure is preserved under attempt-1-*; it did not expose
+a Lean proof failure or require a source change. All accepted sources and pins
+remain unchanged. Compiled object hashes are recorded; build caches are excluded.
+
+Independent review
+
+The sibling grader accepted this bounded proof milestone, grade A. Its scope is
+the exported-polynomial conditional tracking bridge. Its separate closure build,
+630-statement audit, 13 kernel replays, data-literal audit and adversarial tests
+are recorded in grader/review-report.txt. Its frozen manifest SHA256 is
+df6e5b52f528875b6bbc2fd6d3a12a0dbeee6107bd7a7cc8898b994c843ed4af.
+This is not a novelty, publication or robot safety grade.
+
+Next task
+
+Preserve this proof gate. The next gap is the authoritative task goal: establish
+a reference-to-goal margin and add the physical tracking allowance. This proof
+alone cannot turn a near-limit numerical hold result into a task certificate.
+Do not tune or rerun the fixed numerical cases as part of this gate.

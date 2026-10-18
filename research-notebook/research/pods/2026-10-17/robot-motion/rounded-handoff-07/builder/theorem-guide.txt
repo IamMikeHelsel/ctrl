@@ -1,0 +1,49 @@
+ROUNDED HANDOFF 07 — WHAT THE THEOREM SAYS
+
+For each piece, let f=(x,v,a) be the actual physical state and q=(q,q',q'')
+the reference state. A piece has duration H_k >= 0. The actual state is continuous
+on that piece and solves the stated third-order lag model on its open interior.
+The reference is continuous on that piece and has the stated derivative chain
+on its open interior. The physical state matches exactly at adjacent endpoints.
+The reference can jump there.
+
+The transformed jump is
+  T_sigma(dp,dv,da) =
+    (dp, dp+dv/(4 sigma), dp+dv/(2 sigma)+da/(16 sigma^2)).
+Choose a nonnegative B_k that bounds each absolute transformed component.
+Then the new transformed error is the old transformed error minus this jump.
+The triangle inequality gives a new radius R+B_k.
+
+The main theorem starts with R_0 >= 0 and uses
+  R_k = R_0 + sum_{l<k} B_l.
+It proves the transformed tracking cube for every time in every closed piece.
+Both endpoint copies are covered. No derivative at a switch is required. There
+is no premise or conclusion of global C2 reference continuity.
+
+Plant conditions are explicit: sigma>0, 8 sigma <= r <= 12 sigma, |w|<=W,
+|j|<=J, and W+J/(48 sigma)<=2 sigma^2 R_0. The physical command is the existing
+ScaledTracking.physicalInput. Each larger radius still satisfies that budget.
+The proof obtains each segment bound from tracking_cube_scaled and IsTrajectory;
+it does not accept a segment invariance claim as a substitute for the plant ODE.
+
+The physical tracking errors satisfy
+  |x-q| <= R_k,
+  |v-q'| <= 8 sigma R_k,
+  |a-q''| <= 64 sigma^2 R_k.
+Bounds on actual |x|, |v|, and |a| require separate reference bounds P,V,A.
+The theorem then gives P+R_k, V+8 sigma R_k, and A+64 sigma^2 R_k.
+
+The cubic specialization uses TrackingReplan.reference, its proved derivative
+chain and continuity, with arbitrary real initial q/v/a and constant jerk.
+It retains the physical trajectory, disturbance, rate, initial-error and exact
+physical-state matching premises. A rational fixture bridge must discharge the
+reference duration, jerk and join bounds from its actual data.
+
+With sigma=10, W=1/100 and J=15/2, R_0=41/320000 m satisfies the budget exactly.
+A uniform B=10^-15 m and 188 joins give R=0.128125000188 mm. This is a bound
+relative to the reference. It is not a true-target or hold-band guarantee.
+
+The reserve sum ignores decay and cancellation. The result is finite-horizon and
+conditional on the stated physical model. It proves neither physical trajectory
+existence, machine execution, native double arithmetic nor full robot-arm safety.
+No new planner, experimental result, or superiority claim is made in this gate.

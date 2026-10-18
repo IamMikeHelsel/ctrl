@@ -1,0 +1,57 @@
+Independent contract review — rounded handoff 07
+
+The generic theorem addresses a real gap in the previous application. Frozen06
+exports have small, nonzero joins in reference position, velocity and acceleration.
+The old finite_replans_scaled theorem required those joins to be exactly zero.
+The new theorem allows them and accounts for their effect on the tracking error.
+
+The mathematical mechanism is a finite hybrid-system bound. The transformed
+error is linear. With an exactly matched actual state, a reference jump d changes
+that error by -T_sigma(d). The triangle inequality gives the new radius R+B.
+The old continuous-time theorem proves that each larger cube remains invariant.
+The finite induction adds each join reserve once. This is not a novel general
+principle by itself. The useful contribution here is the checked composition
+with the actual feedback equations and the exported polynomial data.
+
+The final generic theorem has IsTrajectory premises and invokes
+tracking_cube_scaled internally. It does not assume the desired segment bound.
+IsTrajectory means continuity of actual position, velocity and acceleration on
+each closed piece, and the stated plant ODE on the open interior. The reference
+has its own local derivative chain. No global C2 reference or derivative at a
+switch is required. Actual state equality across each switch is explicit. It is
+not supplied by the reference exporter and it must not be silently removed.
+
+The correct transformed jump at sigma=10 is
+  (dp, dp+dv/40, dp+dv/20+da/1600).
+Each component has units of metres. Position matching alone is insufficient.
+The error bound does not require a global reference velocity or acceleration
+limit. Absolute state bounds require separate reference bounds. Thus the tiny
+exact acceleration-limit excess found in06 does not invalidate this tracking
+contract. It still invalidates an exact nominal acceleration-limit claim.
+
+The constant radius choice starts at41/320000 metres. Its disturbance/jerk budget
+is exact for W=1/100 m/s^2, J=15/2 m/s^3 and sigma=10/s. One 1e-15 metre allowance
+per join gives at most0.128125000188 mm on the longest frozen schedule. The
+1e-15 choice is a conservative bound derived from already frozen data, not a new
+empirical-performance hypothesis. Every tiny positive executed phase must remain
+in the source-bound list. Empty metadata phases are not invented as intervals.
+
+The data checker must establish positive durations, jerk bounds, all transformed
+joins, initial rest and chain endpoints from the exact same fields used to form
+the real cubic references. A generic theorem that merely assumes those joins
+would not finish the concrete binding. A list-index and rational-to-real bridge
+is required. All-time results on each local piece are distinct from a formal
+assembly of one global time-indexed plant. Exact start/end coverage is separately
+checked by the rational audit unless a global coverage lemma is supplied.
+
+This review cannot upgrade Gate05, prove native at_time evaluation for all real
+times, establish firmware behavior, or prove that a real robot fits the plant.
+It does not change the fixed hold-task failures. Tracking a reference closely
+does not mean that the reference meets the user's task goal. It also does not
+bound jump-sensitive command total variation by the small reference-state gaps.
+
+Stop condition: accept the bounded mathematical bridge only after fresh local
+closure compilation, axiom and kernel checks, meaningful negative controls, and
+exact data binding pass. If the rational-to-real link is not completed, accept
+the generic theorem and exact fixtures separately, and leave their composition
+open. No new plant run or tuning is needed for this gate.
