@@ -43,7 +43,7 @@ for Palomar is `erdos package NNN`, planned.
 ## Data flow
 
 ```
-data/erdos/*.csv ──erdos targets──▶ pick NNN
+erdos-data/*.csv (Drive) ──erdos targets──▶ pick NNN
                                      │ erdos new NNN
                                      ▼
             erdos/Challenge/ErdosNNN.lean (draft) ── human review ──▶ erdos approve NNN --by mike

@@ -20,7 +20,7 @@ proved against that exact `Prop`, an axiom audit, and a build on both machines. 
 ```sh
 uv sync                        # Python CLI + dev tools (ruff, pytest)
 uv run erdos doctor             # check toolchains on this Mac and on the Spark
-uv run erdos targets --top 15   # best-ranked Erdős targets from data/erdos/
+uv run erdos targets --top 15   # best-ranked Erdős targets (CSVs in Drive lean/erdos-data)
 uv run erdos new 895            # scaffold challenge + solution + work/895/plan.md
 uv run erdos check 895          # build, audit, check the statement binding (local)
 uv run erdos spark check 895    # same on the Spark (clean Linux build + kernel replay)
