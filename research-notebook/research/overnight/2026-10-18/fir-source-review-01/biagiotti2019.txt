@@ -1,0 +1,2093 @@
+PAGE 1
+Trajectory Generation via FIR Filters:
+a Procedure for Time-Optimization under Kinematic
+and Frequency Constraints
+Luigi Biagiotti a,∗, Claudio Melchiorri b
+aDepartment of Engineering “Enzo Ferrari”, University of Mo dena and Reggio
+Emilia, Strada Vignolese 905, 41100 Modena, Italy
+bDepartment of Electrical, Electronic and Information Engin eering “Guglielmo
+Marconi”, University of Bologna, Viale Risorgimento 2, 401 36 Bologna, Italy
+Abstract
+This paper starts from the results reported in the article “FIR Filte rs for On-
+line Trajectory Planning with Time- and Frequency-Domain Speciﬁcat ions”,
+where the use of a cascade of FIR (Finite Impulse Response) ﬁlters for plan-
+ning minimum-time multi-segment polynomial trajectories, i.e. trajec tories
+composed of several polynomial segments, under constraints of velocity, ac-
+celeration, etc. is proposed. In particular, in that paper the relat ionship
+between the limits acting on the trajectory derivatives (i.e. velocity , acceler-
+ation, jerk, etc.), and the parameters of the ﬁlters is deduced, a long with a set
+of constraints among these parameters that guarantees the tim e-optimality
+of the trajectory in the rest-to-rest case, that is with null boun dary condi-
+tions on the trajectory derivatives. However, the choice of the p arameters,
+when these conditions are not satisﬁed, was still an open problem, a t least
+∗ Corresponding author. Tel.:+390592056315; fax:+390592056329.
+Email addresses: luigi.biagiotti@unimore.it (Luigi Biagiotti),
+claudio.melchiorri@unibo.it (Claudio Melchiorri)
+Preprint submitted to Control Engineering Practice Januar y 24, 2019
+
+PAGE 2
+for high order trajectories. In this paper, we show that in case th e conditions
+are not met by the ﬁlters parameters, the optimality of the trajec tory under
+the given kinematic bounds can be assured in any case. An algorithm f or
+the selection of the optimal parameters for a generic n-th order trajectory
+planner subject to n kinematic limits is provided. Additionally, the optimal
+combination of kinematic and frequency constraints is considered. In fact,
+the compliance with these two types of constraints may lead to a plan ner
+composed by a redundant number of ﬁlters and, therefore, a pro cedure for
+the selection of the minimum number of FIR ﬁlters is devised. The eﬀec tive-
+ness of the time-optimal trajectory planner is proved by means of numerical
+simulations and experimental tests.
+Keywords: Trajectory planning, Multi-segment trajectories, Smoothers,
+Shaping ﬁlters, Minimum-time trajectories, Residual vibrations sup pression
+1. Introduction
+Motion control systems used in industry are required to be more an d more
+responsive when unforseen events occur or manufacturing dema nds change.
+For this reason, there is a growing need for trajectory planning alg orithms
+that provide, possibly online, smooth motion proﬁles. The referenc e tra-
+jectories must guarantee high tracking accuracy and avoid excitin g natural
+vibration modes of the mechanical structure. Moreover, they mu st be compli-
+ant with the kinematic limits, i.e. torque, acceleration and jerk, impos ed by
+the actuators. The minimum-duration is another basic requirement . In the
+industrial practice and in the scientiﬁc literature, several solution s have been
+proposed but each of them shows pros and cons. They are typically based
+2
+
+PAGE 3
+on a combination of polynomial proﬁles, such as trapezoidal velocity , accel-
+eration, and jerk proﬁles, see Erkorkmaz and Altintas (2001); La mbrechts
+et al. (2005); Biagiotti and Melchiorri (2008) among many others. The most
+straightforward technique consists in the formulation of the traj ectory via its
+analytical expression, but unfortunately its complexity grows exp onentially
+as the required order n, i.e. the number of bounded derivatives and accord-
+ingly the number of desired kinematic constraints, increases. As a m atter of
+fact, these types of trajectories are a combination of a number o f properly
+joined segments, that may range from one up to 2 n − 1, according to the
+constraints and the boundary conditions. Therefore, the analyt ical expres-
+sion of the trajectory, that should take into account all the poss ible cases,
+is combined with a decision tree that determines the speciﬁc structu re that
+the motion proﬁle must have on the basis of the given inputs (constr aints
+and boundary conditions). This approach has been successfully us ed to de-
+sign online optimal trajectory planners with n = 2 [Kroger et al. (2006)] and
+n = 3 [Kroger and Wahl (2010)], but the high complexity of this method
+does not allow to plan higher order trajectories.
+Alternative solutions are based on properly tuned dynamic systems which ﬁl-
+ter and smoothen rough commands, like step signals, that specify t he target
+position [see Zanasi et al. (2000); Zanasi and Morselli (2003); Zhe ng et al.
+(2009); Biagiotti and Zanasi (2010); Bianco and Ghilardelli (2014) ]. These
+systems are generally designed as a chain of integrators with casca ded feed-
+back control loops, that allow minimum-time tracking of the referen ce input
+with saturated control input and saturated internal state varia bles. However,
+also in this case the solutions proposed in the literature are limited to t hird
+3
+
+PAGE 4
+order trajectories.
+In order to cope with this limitation, some simpliﬁcative assumptions ha ve
+been introduced on the constraints, supposed e.g. symmetric, an d on the
+boundary conditions, by assuming for instance that initial/ﬁnal velo city/ac-
+celeration are null. In this way, in Lambrechts et al. (2005) a fourth order
+rest-to-rest symmetric trajectory is determined analytically, by computing
+the closed-form expression of the application time-instants and of the dura-
+tions of the impulses composing the snap proﬁle, which is integrated f our
+times to obtain the position. It is worth mentioning that the propose d solu-
+tion is optimal only if the maximum velocity is actually reached. Moreove r
+this technique is speciﬁcally designed for trajectories with n = 4 and cannot
+be generalized to higher order motions.
+General solutions in terms of trajectory order are proposed in Ng uyen et al.
+(2008), Knierim and Sawodny (2012) and Ezair et al. (2014), where numeri-
+cal procedures for the computation of the parameters of a gene ricn-th order
+trajectory are devised. Because of their algorithmic nature, the use of the
+two above mentioned methods may be critical in online applications, sp e-
+cially when n assumes large values. Moreover, they do not guarantee the
+optimality of the resulting trajectory. For instance the approach proposed
+by Ezair et al. (2014) is based on the hypothesis, not always valid, th at all
+the given bounds are reached by the trajectory and its derivative s.
+A very promising method for time-optimal trajectory generation is based on
+a cascade of FIR ﬁlters, and, in particular, of moving average ﬁlter s. This
+type of ﬁlters has been used in several applications for smoothen a given
+reference signal, with the usual purpose of reducing vibrations in r esonant
+4
+
+PAGE 5
+systems, see for instance Nozawa et al. (1985); Kim et al. (1994); Chen and
+Lee (1998); Jeon and Ha (2000). In fact, one of the main advanta ges that this
+approach oﬀers with respect to the above mentioned methods for trajectory
+planning/smoothing is the possibility of shaping the frequency spect rum of
+the output trajectory. This feature of FIR ﬁlters has been mixed with the
+compliance to kinematic constraints, which is typical of trajectory generators.
+In Biagiotti and Melchiorri (2012) the proposed online trajectory generator
+is based solely on a cascade of FIR ﬁlters, while in Besset and Bearee ( 2017)
+a FIR ﬁlter is combined with the analytical expression of a second ord er tra-
+jectory with the aim of joining the eﬃciency and the low complexity of t he
+ﬁlter with the ﬂexibility given by the closed-form expression of the tr ajectory.
+In Sencer et al. (2015); Tajima et al. (2018), chains of FIR ﬁlters a re used in
+interpolation problems for online planning of multi-dimensional trajec tories
+with time and frequency speciﬁcations. In the ﬁeld of multi-dimension al in-
+terpolation, it is worth mentioning that also B-splines can be generat ed via
+a chain of FIR ﬁlters, see Biagiotti and Melchiorri (2011, 2013).
+Despite the wide literature on FIR ﬁlters based trajectory planner s, some
+open problems still remains. In particular, the results presented s o far do
+not guarantee the time-optimality of the trajectory for any set o f kinematic
+constraints even in the rest-to-rest case. This problem is highlight ed in Bia-
+giotti and Melchiorri (2012), where it is shown that the expression s relating
+the kinematic bounds with the ﬁlters parameters (which is used by all the
+above cited works in order to take into account the kinematic const raints)
+is valid only under certain conditions. One of the main contributions of this
+paper consists in a procedure for the computation of the paramet ers that
+5
+
+PAGE 6
+provides the optimal solution, for rest-to-rest trajectories of any order, start-
+ing from any set of constraints.
+Secondly, the optimal combination of kinematic and frequency cond itions in
+the design of the trajectory generator has been tackled. As a ma tter of fact,
+by simply considering an additional FIR ﬁlter for any constraint, as p roposed
+in the literature, the trajectory ﬁlter may be redundant, in the se nse that
+some ﬁlters can be unnecessary. In this paper, a procedure for t he com-
+putation of the minimum number of ﬁlters, that guarantees the com pliance
+with all the speciﬁcations, and of their parameters is proposed. By means
+of some experimental tests on a resonant systems, i.e. a ﬂexible link , the ef-
+fectiveness and the advantages of the proposed technique are d emonstrated.
+In particular, we have proved that an integrated solution to the pr oblems of
+compliance with kinematic limits and of vibration suppression may lead to
+motion proﬁles shorter in time with respect to the application of a ﬁlte ring
+action, like for instance a Zero Vibration (ZV) input shaper, to traj ectories
+already compatible with the required bounds but guarantees similar le vels of
+residual vibrations.
+The above mentioned procedures for the optimization of the chain o f ﬁlters,
+which have been implemented in the Matlab language, have been collect ed in
+Matlab/Simulink toolbox that computes the optimal ﬁlters paramete rs for a
+given set of constraints and then builds the Simulink block-scheme mo del of
+the trajectory generator (in Biagiotti (2019) the link to download this tool
+is reported).
+The paper is organized as follows. In Sec. 2 the problem of trajecto ry genera-
+tion by means of a particular type of FIR ﬁlters, called rectangular smoothers,
+6
+
+PAGE 7
+is brieﬂy summarized. Then, in Sec. 3 the procedure for the comput ation
+of the optimal ﬁlters parameters under kinematic limits is presented , and its
+working mode is illustrated in Sec. 4 with some numerical examples. The n,
+the optimization of the trajectory generator with the addition of f requency
+constraints is presented in Sec. 5 and experimentally tested in Sec. 6. Con-
+cluding remarks are provided in the last section.
+2. Multi-segment trajectories generation via rectangular smoothers
+In Biagiotti and Melchiorri (2012), it is shown that a multi-segment t ra-
+jectory qn(t) of order n, compliant with the symmetric constraints
+q(i)
+min = −q(i)
+max, i = 1,...,n
+can be obtained by ﬁltering a step input with a cascade of n dynamic ﬁlters
+characterized by the transfer function
+Mi(s) = 1
+Ti
+1 − e−sTi
+s (1)
+where the parameter Ti (in general diﬀerent for each ﬁlter composing the
+chain) is a time length, see Fig. 1. Note that the expression of ﬁlters , that in
+the ﬁeld of the trajectory planning are called rectangular smoothers, coincides
+with the transfer function of a standard moving average ﬁlter.
+The resulting trajectory qn(t) is composed by several polynomial segments
+deﬁned as linear combination of the basis functions ti, i = 0,...,n . The
+smoothness of the trajectory, that is the number of continuous derivatives,
+is strictly tied to the number of ﬁlters composing the chain. If n ﬁlters
+are considered, the resulting trajectory will be of class Cn−1. The generic
+7
+
+PAGE 8
+qf in,i·u(t) qn(t)
+q(1)
+n (t)
+q(2)
+n (t)
+q(n)
+n (t)
+q(1)
+n−1(t)
+q(n−1)
+n−1 (t)q(n−2)
+n−2 (t)q(1)
+1 (t)
+q1(t) qn−2(t) qn−1(t)1
+T1
+1 − e−sT1
+s
+1
+Tn−1
+1 − e−sTn− 1
+s
+1
+Tn
+1 − e−sTn
+s
+1 − e−sTn
+Tn
+1 − e−sTn
+Tn
+1 − e−sTn
+Tn
+1 − e−sT1
+T1
+1 − e−sTn− 1
+Tn−1
+1 − e−sTn− 1
+Tn−1
+Figure 1: System composed by n ﬁlters for the computation of an optimal trajectory qn(t)
+of class Cn− 1 and of all the derivatives q(i)
+n (t) of order i = 1, . . . , n .
+j-th derivative q(j)
+n (t) is composed by polynomial functions which are linear
+combination ofti,i = 0,...,n − j and then-th derivativeq(n)
+n (t) is necessarily
+formed by constant segments. Note that, as shown in Fig. 1, the p roposed
+trajectory generator provides all the derivatives up to the orde r n together
+with the trajectory qn(t).
+By increasing the smoothness of the trajectory, adding ﬁlters in t he chain,
+its duration augments as well. As a matter of fact, the total durat ion of a
+trajectory planned by means of n dynamic systems Mi(s) is simply given by
+the sum of the lengths of the impulse response of each ﬁlter, i.e.
+Ttot =T1 +T2 +... +Tn.
+8
+
+PAGE 9
+The parameters Ti are generally set with the purpose of imposing desired
+bounds on velocity, acceleration, jerk and higher derivatives, by s imply as-
+suming
+T1 = h
+q(1)
+max
+(2)
+Ti = q(i−1)
+max
+q(i)
+max
+, i = 2,...,n
+where h denotes the maximum required displacement, i.e. h = max i |qf in,i −
+qin,i| being qin,i and qf in,i the starting and the ending position of the i-th
+trajectory segment composing the motion proﬁles.
+However, conditions (2) alone do not assure the time-optimality of t he
+trajectory and the compliance with all the limits q(i)
+max, i = 1,...,n , but it is
+also necessary that the time-lengths Ti found with (2) meet the conditions
+T1 ≥ Tn +... +T2
+T2 ≥ Tn +... +T3
+.
+.
+. (3)
+Tn−2 ≥ Tn +Tn−1
+Tn−1 ≥ Tn,
+see Biagiotti and Melchiorri (2012) for more details. The fact that inequal-
+ities (3) are not satisﬁed does not mean that a time-optimal multi-se gment
+trajectory compliant with all the constraints cannot be generate d by the ﬁl-
+ters chain but that the parameters found with (2) do not lead to su ch a
+trajectory and, therefore, it is necessary to modify their values . In the next
+section a procedure for the computation of the optimal paramete rs Ti with
+any set of limits is proposed.
+9
+
+PAGE 10
+3. Parameters modiﬁcation for the time-optimality of the tr ajec-
+tory
+Given a trajectory generator composed by n ﬁlters, the veriﬁcation of
+conditions (3) proceeds from the last relation, involving only Tn−1 and Tn,
+towards the ﬁrst one, in which all the constants Ti appear. Let us consider
+a generic condition that can be rewritten in a compact form as
+Ti ≥
+n∑
+k=i+1
+Tk, i = 1,...,n − 1. (4)
+Since the parameters Ti are computed according to (2), the condition (4) can
+be written as
+q(i−1)
+max
+q(i)
+max
+≥ q(i)
+max
+q(i+1)
+max
++
+n∑
+k=i+2
+Tk, i = 1,...,n − 1. (5)
+where the term ∑ n
+k=i+2Tk does not depend on q(i)
+max. As a consequence, if
+for the i-th parameter Ti the inequality is not veriﬁed, it is possible to act
+by decreasing the value of q(i)
+max in order to make (5) true. Note that the
+reduction of q(i)
+max has a twofold eﬀect: on the one hand it increases the value
+ofTi = q(i− 1)
+max
+q(i)
+max
+on the left side, on the other hand it reduces Ti+1 = q(i)
+max
+q(i+1)
+max
+in the
+right side. Speciﬁcally, the new limit value ˆ q(i)
+max =αq (i)
+max is assumed, where
+α is a positive constant strictly smaller than 1. The new values of Ti and
+Ti+1 are
+ˆTi = Ti
+α , ˆTi+1 =αT i+1 (6)
+and, accordingly, equation (5) becomes
+Ti
+α ≥ αT i+1 +
+n∑
+k=i+2
+Tk, i = 1,...,n − 1. (7)
+10
+
+PAGE 11
+By iteratively applying (6) it is possible to met the condition (7). Howev er,
+the modiﬁcation of the parameter Ti+1, that allows to comply with (7) for a
+generic index i, may cause to violate the condition for i + 1. For this reason,
+at each modiﬁcation it is necessary to check if the previous condition still
+holds true and, if not, the procedure above outlined must be repea ted. For
+the sake of clarity, a schematic representation of the algorithm fo r parameters
+selection and optimization is illustrated in Fig. 2. The constant value of α
+determines the velocity of convergency of the algorithm and the pr ecision of
+the solution: values closer to 1 produce more accurate solutions bu t require
+a larger number of iterations and vice-versa. In order to improve t he velocity
+of the algorithm by reducing the number of iterations without worse n the
+accuracy of the solution a varying value of α can be adopted. In particular,
+the limit value of α , i.e. the maximum value of α that makes (7) true can be
+found by solving the second-degree equation
+Ti+1α 2 +
+( n∑
+k=i+2
+Tk
+)
+α − Ti = 0. (8)
+The positive solution of (8) to be inserted in (6) is
+α = −
+∑ n
+k=i+2Tk
+2Ti+1
++
+√ ( ∑ n
+k=i+2Tk
+2Ti+1
+) 2
++ Ti
+Ti+1
+. (9)
+Unfortunately, by using (9) the vector of parameters Tk may converge to a
+suboptimal solution, i.e. not minimum-time, if the modiﬁcation occurrin g on
+Ti+1 and Ti is very large (that is α is rather small) and requires a variation
+on Tk, k = i + 2,...,n . A simple and eﬀective way to avoid this drawback
+consists in limiting the minimum value of α to a value α min close enough to
+one. The Matlab code of the recursive function implementing the pro cedure
+11
+
+PAGE 12
+based on the variable α is reported in Appendix A. Note that α is also
+bounded from above. The limit value α max is imposed to prevent inﬁnite
+recursions caused by the numerical rounding of α to one.
+In order to estimate the computational eﬃciency of the proposed tech-
+h, q (i)
+max
+i = 1,...,n
+i = 1,...,n
+i = 1,...,n
+T1 = h
+q(1)
+max
+, T i = q(i−1)
+max
+q(i)
+max
+j =n − 1
+Tj ≥ ∑ n
+k=j+1Tk ? j = 1?
+j =j − 1
+Tj = Tj
+α , T j+1 =αT j+1
+optimal Ti
+no
+no yes
+yes
+Constraints
+Parameters computation
+Parameters optimization
+Figure 2: Flowchart for parameters selection and optimization of a n-th order trajectory
+generator.
+12
+
+PAGE 13
+Order n 2 3 4 5 6
+# iterations (constant α ) 3715 8151 15297 25538 34506
+# iterations (variable α ) 69 219 436 2712 12599
+Table 1: Maximum number of iterations required by the optimization pr ocedure in 10 6
+tests based on vectors T = [Ti], i = 1, . . . , n chosen randomly in the interval [0 . 01, 10] s.
+niques a number (10 6) of random tests have been performed and the worst
+case scenario, i.e. with the maximum number of iterations, has been c onsid-
+ered. Table 1 summarizes the results for diﬀerent orders n both with con-
+stant parameter α = 0. 999 and with α variable in the range [ α min, α max] =
+[0. 95, 0. 999999]. Even if the rate of growth in the latter case is higher than
+in the former, the number of required iterations is drastically reduc ed. The
+combination of the limited number of iterations and the simple calculatio ns
+required by each of them makes the procedure suitable also for onlin e trajec-
+tory planning.
+4. Numerical examples of optimal multi-segment trajectori es with
+kinematic constraints
+In order to show the eﬀectiveness of the proposed approach, a f ourth
+order trajectory planner is considered, i.e. a system composed by 4 rect-
+angular smoothers. A general closed-form solution of the motion t rajectory
+produced by this type of planner, which is called limited snap trajectory or
+ﬁfteen-segment trajectory, does not exist in the literature and the solutions
+proposed e.g. in Lambrechts et al. (2005) or in Ezair et al. (2014) ar e based
+on the assumption that the bounds on velocity and/or higher order deriva-
+13
+
+PAGE 14
+Trajectory No. h q (1)
+max q(2)
+max q(3)
+max q(4)
+max
+1 10 3 0.4 0.4 5
+2 0 . 4 3 0.4 0.4 5
+3 10 1.5 0.4 4 5
+4 10 3 5 5 5
+Table 2: Kinematic limits considered for the computation of the param eters of the ﬁlters
+composing a fourth order trajectory generator.
+Trajectory No. T1 T2 T3 T4 Ttot
+1 3.3333 7.5 1 0.08 11.9133
+2 0.1333 7.5 1 0.08 8.7133
+3 6.6667 3.75 0.1 0.8 11.3167
+4 3.3333 0.6 1 1 5.9333
+Table 3: Parameters Ti of the forth order trajectory planner computed according to (2 )
+on the basis of the kinematic constraints reported in Tab. 2.
+tives are all reached. Note that this hypothesis is exactly equivalen t to (3).
+In order to show how the proposed technique works, four diﬀeren t trajectory
+planning problems have been considered. The kinematic constraints imposed
+in each of them are reported in Tab. 2, while Tab. 3 contains the corr espond-
+ing values of the parameters Ti, computed according to the standard rela-
+tionships (2), and the total duration Ttot of the resulting trajectories. Finally,
+in Tab. 4 the new parameters Ti, obtained after the optimization procedure
+described in Sec. 3, and the consequent total duration of the tra jectory are
+shown.
+14
+
+PAGE 15
+Trajectory No. T1 T2 T3 T4 Ttot
+1 5.5691 4.4891 1 0.08 11.1382
+2 1.6426 0.8213 0.7413 0.08 3.2851
+3 6.6667 3.75 0.2828 0.2828 10.9824
+4 3.3333 1.3390 0.6694 0.6694 6.0111
+Table 4: Parameters Ti obtained by applying the optimization procedure described in
+Sec. 3 to the initial parameters reported in Tab. 3.
+The initial parameters that deﬁne the ﬁrst trajectory, denoted as trajec-
+tory No. 1, do not satisfy condition (3) for i = 1. On the basis of (4), it is
+clear that it is necessary to act by progressively reducing the boun d q(1)
+max in
+order to achieve the time-optimality of the motion. As a matter of fa ct, the
+trajectory proﬁles in Fig. 3(a) shows that the motion is not minimum- time
+since there is a time interval (highlighted in all the ﬁgures with a grey b ack-
+ground) in which none of the derivatives of the motion proﬁle reache s the
+corresponding bound. In particular, in this interval the velocity q4(1)(t) main-
+tain a constant value which is strictly smaller than q(1)
+max, while all the other
+derivatives are zero. The application of the proposed optimization p rocedure
+on the parameters Ti leads to the motion proﬁles of Fig. 3(b), with a reduc-
+tion of the total duration of the trajectory of − 6. 50%. In this case, even if
+the maximum velocity obtained is still strictly smaller than the given bou nd,
+a time interval where this value is kept constant no longer exists. Th ere-
+fore, the initial trajectories characterized by 2 n − 1 diﬀerent tracts, that is a
+standard 15 segments trajectory considering n = 4, becomes a 14 segments
+trajectory. Moreover, in every time-instant a derivative of the p lanned tra-
+15
+
+PAGE 16
+0 2 4 6 8 10 12 
+-5 
+0
+5
+-0.4 
+-0.2 
+0
+0.2 
+0.4 
+-0.4 
+-0.2 
+0
+0.2 
+0.4 
+0
+1
+2
+3
+0
+2
+4
+6
+8
+10 
+q4(t)q4(1)(t)q4(2)(t)q4(3)(t)q4(4)(t)
+t [s]
+0 2 4 6 8 10 12 
+-5 
+0
+5
+-0.4 
+-0.2 
+0
+0.2 
+0.4 
+-0.4 
+-0.2 
+0
+0.2 
+0.4 
+0
+1
+2
+3
+0
+2
+4
+6
+8
+10 
+q4(t)q4(1)(t)q4(2)(t)q4(3)(t)q4(4)(t)
+t [s]
+(a) (b)
+Figure 3: Proﬁles of position, velocity, acceleration, jerk and snap of the trajectories No.
+1 obtained with a cascade of four rectangular smoothers with the p arameters reported in
+Tab. 3 (a) and in Tab. 4 (b).
+jectory equals the corresponding bound. As a consequence, the trajectory,
+which is still compliant with the given kinematic constraints, cannot be fur-
+ther reduced in duration without violating one of these constraints and thus
+the new trajectory is optimal in time, at least by considering the typ ical pat-
+tern of multi-segment trajectories in which the velocity is composed by three
+phases (acceleration, constant velocity, deceleration), the acc eleration/decel-
+eration phases are in turn composed by three phases and so on, fo r a total
+of 2 n − 1 diﬀerent segments. As highlighted with a red circle in Fig. 4(a),
+16
+
+PAGE 17
+0 2 4 6 8 10 12 
+-5 
+0
+5
+-0.4 
+-0.2 
+0
+0.2 
+0.4 
+-0.4 
+-0.2 
+0
+0.2 
+0.4 
+0
+1
+2
+3
+0
+2
+4
+6
+8
+10 
+q4(t)q4(1)(t)q4(2)(t)q4(3)(t)q4(4)(t)
+t [s]
+0 2 4 6 8 10 12 
+-5 
+0
+5
+-0.4 
+-0.2 
+0
+0.2
+0.4
+-0.4 
+-0.2 
+0
+0.2
+0.4
+0
+0.5
+1
+1.5
+2
+2.5
+3
+0
+2
+4
+6
+8
+10 
+q4(t)q4(1)(t)q4(2)(t)q4(3)(t)q4(4)(t)
+t [s]
+(a) (b)
+Figure 4: Proﬁles of the trajectory No. 1 obtained with a cascade o f four rectangular
+smoothers with the parameters reported in Tab. 4 (a), compared with the proﬁles of the
+trajectory obtained by anticipating the deceleration phase (b). T he red circle in ﬁgure (a)
+is used to highlight an apparently irregular behavior of the trajecto ry generator (discussed
+in the text) which has been removed in the trajectory of ﬁgure (b) .
+where for the sake of clarity the trajectory proﬁles of Fig. 3(b) h ave been
+reproduced, the lack of the constant velocity phase causes a fas t oscillation
+of the jerk proﬁle from its minimum value to zero and again to the minimu m
+value. In order to avoid this oscillation and to further reduce the du ration
+of the trajectory, the deceleration phase must be anticipated of a time pe-
+riod which exactly equals T4. This means that T1, that alone determines
+the duration of the acceleration and deceleration phases, must be reduced of
+17
+
+PAGE 18
+T4. Since the maximum velocity is not reached, as a result the optimizatio n
+procedureT1 =T2 +T3 +T4. Therefore, the anticipation simply requires that
+T ′
+1 =T1 − T4 =T2 +T3. This can be obtained by modifying the procedure for
+kinematic optimization in Appendix A, which is based on (6), taking into
+account only three parameters at once, i.e.
+Ti
+α ≥ αT i+1 +Ti+2, i = 1,...,n − 1. (10)
+This strategy is valid in general to avoid the above mentioned oscillatio n that
+may occurs in any derivative proﬁle (and not only in the jerk) and lead ed
+to the algorithm reported in Appendix B. By applying this method the
+trajectory of Fig. 4(b), characterized by
+T1 = 5. 5249 s, T 2 = 4. 5249 s, T 3 = 1 s, T 4 = 0. 08 s,
+is obtained, for a total duration Ttot = 11. 1299 s, that is − 0. 0743% of the
+duration of the multi-segment trajectory initially optimized. Even if t he
+improvement is rather modest, this trajectory ﬁnally represents the rest-to-
+rest motion proﬁle of shortest duration that can be obtained with t he given
+set of constraints.
+Similarly to trajectory No. 1, also for trajectory No. 2, the condit ion (3)
+with the initial parameters Ti is not satisﬁed for i = 1, and again by analyzing
+the trajectory proﬁles, which are reported in Fig. 5(a), it comes o ut that the
+velocity reaches and maintains for a certain interval a constant va lues lower
+than the given constraints. Furthermore, since min {T1,T 2} < T3 +T4, also
+the acceleration does not reach the given bound but only a constan t value
+smaller than q(2)
+max. In this case, the optimization procedure modiﬁes T1, T2
+and T3, leading to a trajectory whose ﬁrst two derivatives do not reach t he
+18
+
+PAGE 19
+0 1 2 3 4 5 6 7 8 9 
+-5 
+0
+5
+-0.4 
+-0.2 
+0
+0.2 
+0.4 
+-0.4 
+-0.2 
+0
+0.2 
+0.4 
+0
+1
+2
+3
+0
+0.1 
+0.2 
+0.3 
+0.4 
+q4(t)q4(1)(t)q4(2)(t)q4(3)(t)q4(4)(t)
+t [s]
+0 1 2 3 4 5 6 7 8 9 
+-5 
+0
+5
+-0.4 
+-0.2 
+0
+0.2 
+0.4 
+-0.4 
+-0.2 
+0
+0.2 
+0.4 
+0
+1
+2
+3
+0
+0.1 
+0.2 
+0.3 
+0.4 
+q4(t)q4(1)(t)q4(2)(t)q4(3)(t)q4(4)(t)
+t [s]
+0 1 2 3 4 5 6 7 8 9 
+-5 
+0
+5
+-0.4 
+-0.2 
+0
+0.2
+0.4
+-0.4 
+-0.2 
+0
+0.2
+0.4
+0
+0.5
+1
+1.5
+2
+2.5
+3
+0
+0.1
+0.2
+0.3
+0.4
+q4(t)q4(1)(t)q4(2)(t)q4(3)(t)q4(4)(t)
+t [s]
+(a) (b) (c)
+Figure 5: Proﬁles of position, velocity, acceleration, jerk and snap of the trajectories No.
+2 obtained with a cascade of four rectangular smoothers with the p arameters reported in
+Tab. 3 (a) and in Tab. 4 (b). In Figure (c) the trajectory obtained with the algorithm,
+reported in Appendix B, which eliminates the oscillation of the jerk is sh own.
+kinematic limits, which however cannot be reduced in duration since je rk or
+snap are always equal to their maximum allowed value. The reduction o f the
+trajectory duration for the trajectory reported in Fig. 5(b) is − 62. 29%. Also
+in this case, it is possible to further reduce the duration of the traj ectory,
+by eliminating the oscillation of the jerk in the middle of the trajectory with
+the procedure reported in Appendix B. The ﬁnal motion proﬁle, sho wn in
+Fig. 5(c), is characterized by the parameters
+T1 = 1. 5887 s, T 2 = 0. 8344 s, T 3 = 0. 7544 s, T 4 = 0. 08 s,
+and a duration of 3 . 2575 s ( − 0. 8415% with respect to the trajectory already
+optimized according to the initial method).
+19
+
+PAGE 20
+0 2 4 6 8 10 
+-5 
+0
+5
+-4 
+-2 
+0
+2
+4
+-0.4 
+-0.2 
+0
+0.2 
+0.4 
+0
+0.5 
+1
+1.5 
+0
+2
+4
+6
+8
+10 
+q4(t)q4(1)(t)q4(2)(t)q4(3)(t)q4(4)(t)
+t [s]
+0 2 4 6 8 10 
+-5 
+0
+5
+-4 
+-2 
+0
+2
+4
+-0.4 
+-0.2 
+0
+0.2 
+0.4 
+0
+0.5 
+1
+1.5 
+0
+2
+4
+6
+8
+10 
+q4(t)q4(1)(t)q4(2)(t)q4(3)(t)q4(4)(t)
+t [s]
+(a) (b)
+Figure 6: Proﬁles of position, velocity, acceleration, jerk and snap of the trajectories No.
+3 obtained with a cascade of four rectangular smoothers with the p arameters reported in
+Tab. 3 (a) and in Tab. 4 (b).
+For the trajectory No. 3, shown in Fig. 6, the condition (3) is violate d
+for i = 3, and accordingly the maximum jerk q(3)
+max is not reached. The op-
+timization procedure modiﬁes the parameters that depends on q(3)
+max, i.e. T3
+andT4. In this manner the duration of the trajectory is reduced by − 2. 95%,
+even if it is still compliant with all the constraints.
+In the last example, the trajectory No. 4 is initially characterized by pa-
+20
+
+PAGE 21
+0 1 2 3 4 5 6 
+-10 
+-5 
+0
+5
+10 
+-5 
+0
+5
+-5 
+0
+5
+0
+1
+2
+3
+0
+2
+4
+6
+8
+10 
+q4(t)q4(1)(t)q4(2)(t)q4(3)(t)q4(4)(t)
+t [s]
+0 1 2 3 4 5 6 
+-5 
+0
+5
+-5 
+0
+5
+-5 
+0
+5
+0
+1
+2
+3
+0
+2
+4
+6
+8
+10 
+q4(t)q4(1)(t)q4(2)(t)q4(3)(t)q4(4)(t)
+t [s]
+(a) (b)
+Figure 7: Proﬁles of position, velocity, acceleration, jerk and snap of the trajectories No.
+4 obtained with a cascade of four rectangular smoothers with the p arameters reported in
+Tab. 3 (a) and in Tab. 4 (b).
+rameters Ti that do not satisfy (3) for i = 3. Moreover, min {T2,T 3} < T4.
+Accordingly, both the jerk and the acceleration attain and maintain for a
+certain interval constant values smaller than the given bounds. Ad ditionally,
+the snap proﬁle overcomes the corresponding limit, see Fig. 7(a). T he opti-
+mization procedure solves the three above mentioned problems, bu t in this
+case, the compliance with the given constraints requires a little incre ase of
+the trajectory duration (+1 . 31%). The ﬁnal trajectory is shown in Fig. 7(b).
+Note that all the motion proﬁles are now compliant with the kinematic
+21
+
+PAGE 22
+bounds and that at each time instant one of them exactly equals the re-
+lated limit. As a consequence the trajectory is time-optimal.
+Note that in the last two examples the two algorithms for the kinemat ic
+optimization of the trajectories, which are reported in Appendix A a nd
+Appendix B respectively, provide exactly the same results.
+5. Multi-segment polynomial trajectories with vibration s uppres-
+sion capabilities
+Multi-segment trajectories are generally deﬁned on the basis of a s et of
+kinematic constraints. However, as shown in Biagiotti and Melchiorr i (2012)
+the rectangular smoothers composing the proposed trajectory generator can
+be designed with the purpose of suppressing residual vibrations. I n this way,
+it is possible to incorporate such a capability into the planned traject ory
+avoiding the use of further actions on the reference trajectory , like for instance
+the use of input shapers, which represent a sort of standard ﬁlte ring technique
+for residual vibration suppression, see Singer and Seering (1990) ; Singhose
+et al. (1995); Singer et al. (1999).
+In order to eliminate the oscillations caused by a poorly damped ( δ ≈ 0)
+resonant mode at frequency ω n,i, it is suﬃcient to add to the trajectory
+generator a ﬁlter like (1) whose characteristic parameter is compu ted as
+Tω,i = 2π
+ω n,i
+. (11)
+In this way, the frequency response of the ﬁlter assumes the sha pe shown in
+Fig. 8(a). In particular, its magnitude is null for ω =ω n,i and, accordingly,
+the ﬁlter does not excite the resonant mode at this frequency. In the same
+22
+
+PAGE 23
+0 1 2 3 4 5
+1
+0.2
+0.4
+0.6
+0.8
+ω/ω n,i
+|H(jω )|
+Mi(s)
+ZV i(s)
+M 2
+i (s)
+10.4 0.6 0.8 1.2 1.4 1.6
+0
+5
+10
+15
+20
+25
+30
+35
+40
+ω/ω n,i
+V%(ω ) (PR V)
+Mi(s)
+ZV i(s)
+M 2
+i (s)
+(a) (b)
+Figure 8: Frequency response (a) and Percent residual vibration (b) of a rectangular
+smoother M (s) compared with those of a Zero Vibration Input Shaper ZV (s) and a
+double rectangular smoother M 2(s), as a function of the normalized frequency ω/ ˆω n.
+ﬁgure, the frequency response of a Zero Vibration ( ZV i(s)) input shaper is
+reported, i.e. the simplest input shaper and, above all, the input sha per of
+minimum duration,Tzv,i = π
+ωn,i
+. At a ﬁrst glance, the main diﬀerence between
+the two ﬁlters is the low-pass characteristic of the rectangular sm oother that
+allows it to reduce also the possible vibrations due to higher frequenc y modes.
+Note that, except for the a constant factor 100, the frequenc y response coin-
+cides with the sensitivity function of the ﬁlter with respect to variat ions of
+the resonant frequency of the plant, that is the Percent Residua l Vibration
+(PR V) caused by the ﬁlter which is used to quantify its robustness [K ozak
+et al. (2006)]. From a close look of the PR V, shown in Fig. 8(b), it is evid ent
+that the rectangular smoother is more insensitive than the ZV Inpu t shaper
+with respect to errors in the resonant frequency estimation. Mor eover, the
+robustness of the proposed approach can be further enhanced by considering
+more than one smoother acting at the same frequency, see the PR V proﬁle
+of M 2
+i (s) in Fig. 8(b).
+23
+
+PAGE 24
+In conclusion, to suppress the vibrations due to m resonant modes of the
+plant, the chain of ﬁlters composing the trajectory generator mu st include
+at least m ﬁlters, whose parameters Tω,i are set according to (11).
+In principle, a trajectory planner, that must take into account th e kinematic
+constraints on the ﬁrst n derivatives and the cancellation of the vibrations
+due tom oscillating modes, is composed by n+m ﬁlters with a total duration
+Ttot =
+n∑
+k=1
+Tk +
+m∑
+k=1
+Tω,k.
+However, as a side eﬀect the ﬁlters for vibration suppression caus e limita-
+tions on the derivatives of the trajectory and consequently some of the ﬁlters
+initially designed to meet the kinematic constraints can become redun dant.
+For this reason a procedure for taking into account only the ﬁlters that are
+strictly necessary to comply with all the constraints must be devise d. With
+this respect, it is worth noticing that the m ﬁlters characterized by the time
+constantTω,i computed with (11) are mandatory to obtain an ideal vibrations
+suppression, while some of the n ﬁlters computed according to the kinematics
+constraints can be omitted, with a consequent reduction of the to tal trajec-
+tory duration. In particular, by solving (2) with respect to q(i)
+max, it is possible
+to deduce the relation
+q(i)
+max = |h|
+i∏
+k=1
+Tk
+, i = 1,...,n (12)
+leading to the conclusion that, by increasing the value of a generic pa rameter
+Ti computed according to (2), the peak values reached by the deriva tives
+of the trajectory obtained with a displacement h are simply reduced and,
+24
+
+PAGE 25
+therefore, they are still compliant with the given limits.
+A simple way for detecting which ﬁlters are unnecessary consists in c hecking
+if for any elements Ti, i = 1,...,n , resulting from the kinematic constraints
+there exists an element of Tω,i, i = 1,...,m larger in magnitude, i.e. Tp ≤
+Tω,q. In this case, it is possible to substitute the parameter Tp with Tω,q
+without violating the kinematic constraints. A systematic way to per form
+this operation starts from the vectors T = [Ti] and T ω = [Tω,i] sorted in
+descendent order. Then, the algorithm reported in the ﬂowchart of Fig. 9
+can be applied in order to determine the vector T ⋆ composed by l elements,
+with l ≤ n +m. The number l represents the minimum number of ﬁlters
+composing the trajectory generator that complies with the all the constraints
+(2) and (11), and the elements of T ⋆ are the parameters that must be imposed
+to these ﬁlters. The Matlab code of the function implementing this alg orithm
+is reported in Appendix C.
+25
+
+PAGE 26
+T, T ω
+i = 1, j = 1
+i ≤ n ?
+(Tω,j ≥ Ti)
+and
+(j ≤ m)?
+T ⋆
+i =Tω,j
+j =j + 1
+i =i + 1
+T ⋆
+i =Ti
+no
+no
+no
+yes
+yes
+yes
+j ≤ m?
+T ⋆
+i =Tω,j
+j =j + 1
+i =i + 1
+T ⋆
+Figure 9: Algorithm for the minimization of the number of ﬁlters of a tr ajectory generator
+compliant with the constraints (2) and (11).
+6. Experimental validation of the optimization procedure o f tra-
+jectories with kinematic and frequency constraints
+6.1. Description of the experimental setup
+In order to validate the proposed method and show its advantages the
+experimental setup of Fig. 10 has been used. It is based on a thin st ainless
+26
+
+PAGE 27
+PC + I/O board servo controller 
+current 
+control 
+motor 
+position 
+control 
+current
+control
+motor 
+position 
+control
+linear motor
+motor slider 
+flexible 
+beam 
+strain gauge 
+strain gauge
+monitoring
+qm
+Figure 10: Experimental setup based on a ﬂexible link.
+steel ﬂexible link directly connected to the slider of a linear motor. Th e
+side of the link connected to the motor is instrumented with a strain g auge
+that detects the local deformation of the beam. The position cont rol of the
+motor and the trajectory generation are performed by a standa rd PC with a
+Pentium IV 3 GHz processor equipped with a Sensoray 626 data acqu isition
+board and running the RTAI-Linux operating system, which guaran tees a
+sampling time Ts = 0. 0005 s. The discrete-time implementation of the ﬁlters
+is reported in Biagiotti and Melchiorri (2012).
+The plant can be modeled as in Fig. 11. The dynamics of the link subject to
+the lateral acceleration ¨x of the motor is described by a partial diﬀerential
+equation [Luo et al. (1995)]. The assumption of separability of spatia l and
+temporal variables allows to obtain a closed-form solution of the ben ding
+deformation
+w(y,t ) =
+∞∑
+i=1
+ψ i(y)qi(t) (13)
+whereψ i(y) are the mode shapes depending on the boundary conditions im-
+posed by the physical system, and qi(t) are the generalized modal coordinates,
+27
+
+PAGE 28
+X
+Y
+x
+y
+w(y,t )
+w(¯y,t )
+Strain gauge
+Figure 11: Model of the uniform cantilever beam used in the experime nts.
+oscillatory in time according to the frequency ω i [Kane et al. (1987); Bellezza
+et al. (1990)]. Even if the expression (13) takes into account inﬁnit e terms,
+in practice only few modes are meaningful for the bending of the bea m. In
+particular, the ﬂexible link used in the experiments is strongly aﬀecte d by
+two modes located at ω r1 ≈ 20. 18 rad/s and ω r2 ≈ 127. 5 rad/s, respectively,
+while additional contributions are negligible. The dynamic modes are bo th
+slightly damped. For instance, the ﬁst mode is characterized by a da mping
+coeﬃcient δ = 0. 0043. For this reason, it is possible to design the ﬁlters,
+both the smoothers and the input shapers, by assuming δ ≈ 0.
+The strain gauge, sensing the deﬂection in a speciﬁc point of the bea m,
+provides a signal Vw(t) proportional to w(¯y,t ) that is therefore a linear com-
+bination of the temporal modes according to the constant coeﬃcie ntsψ i(¯y).
+In order to quantify the level of vibrations, the output voltage Vw(t) of the
+strain gauge is directly used, see Fig. 12. Finally, with regard to Fig. 1 2, it is
+worth remarking that, within the given kinematic limits, the linear actu ator,
+represented as a simple saturation, is supposed to be able to “perf ectly” track
+the reference trajectory produced by the chain of ﬁlters, i.e. qn(t) ≈ q⋆
+n(t).
+28
+
+PAGE 29
+F (s) K1s2
+s2 +ω 2
+r1
+K2s2
+s2 +ω 2
+r2
+Flexible beamActuatorTrajectory ﬁlter
+Strain
+gauge
+qf in q⋆
+n(t) w(¯y,t ) Vw(t)qn(t)
+Figure 12: Block-scheme representation of the experimental set up, based on a ﬂexible link,
+shown in Fig. 10.
+6.2. Experiments
+In the ﬁrst example, the following speciﬁcations have been consider ed:
+h = 0. 03 m, q (1)
+max = 0. 1 m/s, q (2)
+max = 1 m/s 2. (14)
+Accordingly, the parameters of the two smoothers that generat e the second
+order optimal trajectory compliant with the given constraints, co mputed ac-
+cording to the technique illustrated in Sections 2 and 3, are T1 = 0. 3 s,
+T2 = 0. 1 s ( Ttot = 0. 4 s). The initial motion proﬁle is shown in Fig. 13 in
+black color. Its application to the experimental setup produces in t he ﬂex-
+ible link a certain level of vibrations, measured by the voltage signal Vw(t)
+of the strain gauge, see Fig. 14(a). Since signal Vw(t) is aﬀected by a high
+level of noise, an analysis in the frequency domain has been perform ed, by
+applying a Fast Fourier Transform (FFT) to the samples of Vw(t) measured
+after the end of the motion. The spectrum |Vw(jω )| in the frequency range
+of interest is shown in Fig. 14(b), where it is compared with the frequ ency
+response of the chain of ﬁlters used to plan the reference trajec tory. Note
+that the signal exhibits a peak value at the frequency ω r1, that corresponds
+to the residual vibration tied to the ﬁrst resonant mode, while the c ontribu-
+tion of the second mode is not appreciable. It is also worth noticing th at the
+29
+
+PAGE 30
+M1(s)M2(s)
+M1(s)M2(s)Mω1(s)
+M1(s)M2(s)Mω1(s)Mω2(s)
+M1(s)M2(s)
+M1(s)M2(s)ZV 1(s)
+M1(s)M2(s)ZV 1(s)ZV 2(s)
+M1(s)M2(s)
+M ⋆
+1 (s)M ⋆
+2 (s)
+M ⋆⋆
+1 (s)M ⋆⋆
+2 (s)M ⋆⋆
+3 (s)
+0 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8
+-1
+-0.5
+0
+0.5
+1
+0
+0.02
+0.04
+0.06
+0.08
+0.1
+0
+0.01
+0.02
+0.03
+q(t)q(1)(t)q(2)(t)
+t [s]
+0 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8
+-1
+-0.5
+0
+0.5
+1
+0
+0.02
+0.04
+0.06
+0.08
+0.1
+0
+0.01
+0.02
+0.03
+q(t)q(1)(t)q(2)(t)
+t [s]
+0 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8
+-1
+-0.5
+0
+0.5
+1
+0
+0.02
+0.04
+0.06
+0.08
+0.1
+0
+0.01
+0.02
+0.03
+q(t)q(1)(t)q(2)(t)
+t [s]
+(a) (b) (c)
+Figure 13: Proﬁles of position, velocity and acceleration of the traj ectory used in the ﬁrst
+test on the ﬂexible link. In all the ﬁgures, the solid black line denotes t he initial trajectory.
+Additional smoothers for vibration reduction are considered in (a) , input shapers in (b)
+and the optimization procedure proposed in Sec. 5 in (c).
+frequency spectrum of the trajectory generator has a zero ve ry close to ω r1.
+In order to highlight the advantages of the proposed optimization p roce-
+dure, several techniques, aiming at a reduction of the residual vib ration, have
+been compared. In particular, the following approaches have been tested.
+(a) A smoother Mω,1(s) with Tω1 = 2π
+ωr1
+= 0. 3114 s is simply added to
+the initial chain (accordingly the duration of the trajectory becom es
+Ttot = T1 +T2 +Tω,1 = 0. 7114 s, that is +77 . 85% with respect to its
+initial value). The resulting trajectory is shown in Fig. 13(a) (blue
+line).
+(b) A second smoother Mω,2(s) with Tω2 = 2π
+ωr2
+= 0. 0493 s is added to
+the chain including Mω,1(s) (Ttot = T1 +T2 +Tω1 +Tω2 = 0. 7606 s,
+30
+
+PAGE 31
+0 0.5 1 1.5 2 2.5 3 3.5 4 4.5 5
+-0.1
+-0.05
+0
+0.05
+0.10
+0.01
+0.02
+0.03
+0.04
+Motor position
+Reference trajectory
+q(t) [mm]Vw(t) [V]
+t [s]
+(a)
+0 50 100 150
+0
+0.01
+0.02
+0.03
+peak =0.022922 FFT
+Frequency Response
+ω [rad/s]
+|Vw(jω )| [V]
+(b)
+Figure 14: Initial motion proﬁle, based on kinematic constraints (14 ), applied to the
+ﬂexible link in the ﬁrst experiment and measurement of the link deﬂect ion via the strain
+gauge (a). Magnitude of the frequency spectrum of the strain ga uge output signals Vw(t)
+and comparison with the frequency response of the trajectory g enerator (b).
++90. 15%). The resulting trajectory is shown in Fig. 13(a) (red line).
+(c) An input shaper ZV 1(s) with Tzv1 = π
+ωr1
+= 0. 1557 s is used in lie of the
+smoother after the chain M1(s)M2(s) (Ttot =T1 +T2 +Tzv1 = 0. 5557 s,
++38. 92%). The resulting trajectory is shown in Fig. 13(b) (blue line).
+(d) A second input shaper ZV 2(s) with Tzv2 = π
+ωr2
+= 0. 0246 s is considered
+(Ttot = T1 +T2 +Tzv1 +Tzv2 = 0. 5803 s, +45 . 07%). The resulting
+trajectory is shown in Fig. 13(b) (red line).
+(e) The optimization procedure proposed in Sec. 5 is applied to the ch ain
+31
+
+PAGE 32
+of smoothers composed by M1(s)M2(s) and Mω,1(s) obtaining a ﬁl-
+ter of the second order M ⋆
+1 (s)M ⋆
+2 (s) with T ⋆
+1 = Tω1 and T ⋆
+2 = T2
+(Ttot = 0 . 4114 s, +2 . 85%), therefore M ⋆
+1 (s)M ⋆
+2 (s) = Mω,1(s)M2(s).
+The resulting trajectory is shown in Fig. 13(c) (blue line).
+(f) The optimization procedure is applied to the chain of smoothers c om-
+posed by M1(s)M2(s) and Mω,1(s)Mω,2(s) obtaining a third order ﬁlter
+M ⋆⋆
+1 (s)M ⋆⋆
+2 (s)M ⋆⋆
+3 (s) with T ⋆⋆
+1 =Tω1, T ⋆⋆
+2 =T2 and T ⋆⋆
+3 =Tω2 (Ttot =
+0. 4606 s, +15. 15%), i.e. M ⋆⋆
+1 (s)M ⋆⋆
+2 (s)M ⋆⋆
+3 (s) = Mω,1(s)M2(s)Mω,2(s).
+The resulting trajectory is shown in Fig. 13(c) (red line).
+The original trajectory is modiﬁed by the above methods as shown in Fig. 13.
+The kinematic constraints are met in any case. The additional smoot hers in-
+crease the continuity level of the motion proﬁle, see Fig. 13(a), wh ile with
+the input shapers the continuity level remains unchanged, see Fig. 13(b).
+The optimization procedure leads to a trajectory generator whos e order is
+not smaller than the order of the initial ﬁlter only based on the kinema tic
+constraints. The major advantage of the optimization procedure is the little
+increment of the trajectory duration, if compared with the insert ion of addi-
+tional elements, either smoothers or input shapers, for vibration suppression.
+As regard as the eﬀectiveness of the diﬀerent methods in vibration reduction,
+the results are illustrated in Fig. 15 in the time domain and in Fig. 16 in the
+frequency domain. In particular, the FFT analysis shows that the v ibration
+levels obtained by the diﬀerent methods are similar. As a matter of fa ct,
+the magnitude of the frequency component at ω r1 is 0. 0098552 ( − 57. 00%
+of the initial value) in case (a), 0 . 0075938 ( − 66. 87%) in case (b), 0 . 010274
+(− 55. 18%) in case (c), 0 . 010076 ( − 56. 04%) in case (d), 0 . 010816 ( − 52. 81%)
+32
+
+PAGE 33
+in case (e), 0 . 010257 ( − 55. 25%) in case (f). The ﬁrst ﬁlter designed on the
+basis of ω r1 leads to a reduction of the residual vibration of about 50%, while
+the application of the second ﬁlter slightly inﬂuences the level of vibr ation at
+ω r1. In general, the three diﬀerent approaches are equivalent, but t he very
+limited increase in duration of the trajectory based on the optimized com-
+bination of kinematic and frequency constraints makes this techniq ue highly
+preferable.
+33
+
+PAGE 34
+0 0.5 1 1.5 2 2.5 3 3.5 4 4.5 5
+-0.1
+-0.05
+0
+0.05
+0.10
+0.01
+0.02
+0.03
+0.04
+Motor position
+Reference trajectory
+q(t) [mm]Vw(t) [V]
+t [s]
+0 0.5 1 1.5 2 2.5 3 3.5 4 4.5 5
+-0.1
+-0.05
+0
+0.05
+0.10
+0.01
+0.02
+0.03
+0.04
+Motor position
+Reference trajectory
+q(t) [mm]Vw(t) [V]
+t [s]
+(a) M1(s)M2(s)Mω1 (s) (b) M1(s)M2(s)Mω1(s)Mω2 (s)
+0 0.5 1 1.5 2 2.5 3 3.5 4 4.5 5
+-0.1
+-0.05
+0
+0.05
+0.10
+0.01
+0.02
+0.03
+0.04
+Motor position
+Reference trajectory
+q(t) [mm]Vw(t) [V]
+t [s]
+0 0.5 1 1.5 2 2.5 3 3.5 4 4.5 5
+-0.1
+-0.05
+0
+0.05
+0.10
+0.01
+0.02
+0.03
+0.04
+Motor position
+Reference trajectory
+q(t) [mm]Vw(t) [V]
+t [s]
+(c) M1(s)M2(s)ZV 1(s) (d) M1(s)M2(s)ZV 1(s)ZV 2(s)
+0 0.5 1 1.5 2 2.5 3 3.5 4 4.5 5
+-0.1
+-0.05
+0
+0.05
+0.10
+0.01
+0.02
+0.03
+0.04
+Motor position
+Reference trajectory
+q(t) [mm]Vw(t) [V]
+t [s]
+0 0.5 1 1.5 2 2.5 3 3.5 4 4.5 5
+-0.1
+-0.05
+0
+0.05
+0.10
+0.01
+0.02
+0.03
+0.04
+Motor position
+Reference trajectory
+q(t) [mm]Vw(t) [V]
+t [s]
+(e) M ⋆
+1 (s)M ⋆
+2 (s) (f) M ⋆⋆
+1 (s)M ⋆⋆
+2 (s)M ⋆⋆
+3 (s)
+Figure 15: Motions applied to the ﬂexible link in the ﬁrst test and measu rement Vw(t) of
+the produced vibrations. The letters denoting the diﬀerent subﬁg ures are consistent with
+the list in the text.
+34
+
+PAGE 35
+0 50 100 150
+0
+0.01
+0.02
+0.03
+peak =0.0098552 
+FFT 
+Frequency Response
+|Vw(jω )| [V]
+0 50 100 150
+0
+0.01
+0.02
+0.03
+peak =0.0075938 
+FFT 
+Frequency Response
+|Vw(jω )| [V]
+(a) M1(s)M2(s)Mω,1(s) (b) M1(s)M2(s)Mω,1(s)Mω,2(s)
+0 50 100 150
+0
+0.01
+0.02
+0.03
+peak =0.010274 
+FFT 
+Frequency Response
+|Vw(jω )| [V]
+0 50 100 150
+0
+0.01
+0.02
+0.03
+peak =0.010076 
+FFT 
+Frequency Response
+|Vw(jω )| [V]
+(c) M1(s)M2(s)ZV 1(s) (d) M1(s)M2(s)ZV 1(s)ZV 2(s)
+0 50 100 150
+0
+0.01
+0.02
+0.03
+peak =0.010816 
+FFT 
+Frequency Response
+|Vw(jω )| [V]
+0 50 100 150
+0
+0.01
+0.02
+0.03
+peak =0.010257 
+FFT 
+Frequency Response
+|Vw(jω )| [V]
+(e) M ⋆
+1 (s)M ⋆
+2 (s) (f) M ⋆⋆
+1 (s)M ⋆⋆
+2 (s)M ⋆⋆
+3 (s)
+Figure 16: Magnitude of the frequency spectrum of the strain gau ge output signals Vw(t)
+reported in Fig. 15 and comparison with the frequency response of the ﬁlters generating
+the reference position.
+35
+
+PAGE 36
+In a second experiment, a third order trajectory ﬁlter, compliant with the
+speciﬁcations
+h = 0. 04 m, q (1)
+max = 0. 1 m/s, q (2)
+max = 0. 5 m/s 2, q (3)
+max = 12 m/s 3, (15)
+is initially considered. The parameters of the three smoothers comp osing
+the trajectory generator are T1 = 0 . 4 s, T2 = 0 . 2 s and T3 = 0 . 0417 s
+(Ttot = 0. 6417 s).
+The original motion proﬁle and the measurement of the produced re sidual
+vibrations are shown in Fig. 17 and Fig. 18, respectively. Note that, despite
+the higher order of the trajectory, the level of vibrations is grea ter than the
+level obtained in the ﬁrst experiment. This eﬀect can be explained by consid-
+ering the frequency response of the trajectory ﬁlter, reporte d in Fig. 18(b),
+whose magnitude is rather large in the range of frequencies center ed around
+ω r1. Moreover, the initial motion proﬁle considered in this experiment, t ends
+to excite also the resonant mode at ω n2, as highlighted by the frequency anal-
+ysis in Fig. 18(b).
+The same tests performed in the ﬁrst experiment have been repea ted start-
+ing from this diﬀerent trajectory. Besides the diﬀerent structur e of the ini-
+tial trajectory ﬁlter (composed by three smoothers) and the diﬀ erent pa-
+rameters values, the main diﬀerence with respect to the ﬁrst expe riment
+concerns the result of the optimization procedure. In case (e), t he opti-
+mal ﬁlter is composed by three smoothers M ⋆
+1 (s)M ⋆
+2 (s)M ⋆
+3 (s) characterized
+by T ⋆
+1 = T1 = 0. 4 s, T ⋆
+2 = Tω1 = 0. 3114 s and T ⋆
+3 = T3 = 0. 0417 s, i.e.
+M ⋆
+1 (s)M ⋆
+2 (s)M ⋆
+3 (s) = M1(s)Mω,1(s)M3(s). In case (f), the optimal ﬁlter is
+again a combination of three smoothers M ⋆⋆
+1 (s)M ⋆⋆
+2 (s)M ⋆⋆
+3 (s), whose param-
+eters are T ⋆⋆
+1 =T1 = 0. 4 s, T ⋆⋆
+2 =Tω1 = 0. 3114 s and T ⋆⋆
+3 =Tω2 = 0. 0493 s,
+36
+
+PAGE 37
+M1(s)M2(s)M3(s)
+M1(s)M2(s)M3(s)Mω,1(s)
+M1(s)M2(s)M3(s)Mω,1(s)Mω,2(s)
+M1(s)M2(s)
+M1(s)M2(s)M3(s)ZV 1(s)
+M1(s)M2(s)M3(s)ZV 1(s)ZV 2(s)
+M1(s)M2(s)
+M ⋆
+1 (s)M ⋆
+2 (s)M ⋆
+3 (s)
+M ⋆⋆
+1 (s)M ⋆⋆
+2 (s)M ⋆⋆
+3 (s)
+0 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1
+-10
+-5
+0
+5
+10
+-0.5
+0
+0.5
+0
+0.02
+0.04
+0.06
+0.08
+0.1
+0
+0.01
+0.02
+0.03
+0.04
+q(t)q(1)(t)q(2)(t)q(3)(t)
+t [s]
+0 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1
+-10
+-5
+0
+5
+10
+-0.5
+0
+0.5
+0
+0.02
+0.04
+0.06
+0.08
+0.1
+0
+0.01
+0.02
+0.03
+0.04
+q(t)q(1)(t)q(2)(t)q(3)(t)
+t [s]
+0 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 1
+-10
+-5
+0
+5
+10
+-0.5
+0
+0.5
+0
+0.02
+0.04
+0.06
+0.08
+0.1
+0
+0.01
+0.02
+0.03
+0.04
+q(t)q(1)(t)q(2)(t)q(3)(t)
+t [s]
+(a) (b) (c)
+Figure 17: Proﬁles of position, velocity and acceleration of the traj ectory used in the second
+test on the ﬂexible link. In all the ﬁgures, the solid black line denotes t he initial trajectory.
+Additional smoothers for vibration reduction are considered in (a) , input shapers in (b)
+and the optimization procedure proposed in Sec. 5 in (c).
+i.e. M ⋆
+1 (s)M ⋆
+2 (s)M ⋆
+3 (s) = M1(s)Mω,1(s)Mω,2(s).
+The motion proﬁles, achieved with the diﬀerent techniques, are sho wn
+in Fig. 17, proving that the given kinematic constraints are still met. The
+residual vibrations produced in the ﬂexible link by each motion proﬁle a re
+shown in Fig. 18, and then analyzed in the frequency domain, see Fig. 20.
+Table 5 summarizes the achieved results in terms of both trajector y duration
+and residual vibrations reduction. In both cases the percentage variation
+with respect to the original trajectory is computed.
+Like in the ﬁrst experiment, the diﬀerent ﬁltering techniques show s imi-
+37
+
+PAGE 38
+0 0.5 1 1.5 2 2.5 3 3.5 4 4.5 5
+-0.1
+-0.05
+0
+0.05
+0.1-0.02
+0
+0.02
+0.04
+0.06
+Motor position
+Reference trajectory
+q(t) [mm]Vw(t) [V]
+t [s]
+(a)
+0 50 100 150
+0
+0.01
+0.02
+0.03
+0.04
+0.05 peak =0.04372
+ω [rad/s]
+|Vw(jω )| [V]
+(b)
+Figure 18: Initial motion proﬁle, based on kinematic constraints (15 ), applied to the
+ﬂexible link in the second experiment and measurement of the link deﬂe ction via the
+strain gauge (a). Magnitude of the frequency spectrum of the st rain gauge output signals
+Vw(t) and comparison with the frequency response of the trajectory generator (b).
+lar performances in terms of vibrations reduction. Note that the ﬁ rst ﬁlter,
+based on ω r1, also contributes to reduce the residual vibrations at ω r2, while
+the second one, which is tuned by considering ω r2, slightly improves the vi-
+bration suppression at ω r1.
+The proposed optimization procedure based on a proper combinatio n of rect-
+angular smoothers is characterized by the shortest duration amo ng the tested
+methods, leading to the conclusion that an integrated design of the trajec-
+tory planner, taking into account both the kinematic limits imposed by the
+actuator/application and the resonant frequencies of the plant, provides the
+38
+
+PAGE 39
+(a) (b) (c) (d) (e) (f)
+Ttot [s] 0.9530 1.0023 0.7973 0.8220 0.7530 0.7606
+∆Ttot% 48.52 56.20 24.25 28.10 17.35 18.53
+V [mV] 22.278 13.744 21.143 14.649 18.536 15.851
+∆V % -49.04 -68.56 -51.64 -66.49 -57.60 -63.74
+Table 5: Duration and residual vibration level associated with the diﬀ erent trajectory
+ﬁlters obtained by modifying the original generator based on the kin ematic constraints
+(15). Symbol V denotes the magnitude of the spectral component at ω r1.
+best results in terms of motion duration and residual vibration redu ction.
+39
+
+PAGE 40
+0 0.5 1 1.5 2 2.5 3 3.5 4 4.5 5
+-0.1
+-0.05
+0
+0.05
+0.1-0.02
+0
+0.02
+0.04
+0.06
+Motor position
+Reference trajectory
+q(t) [mm]Vw(t) [V]
+t [s]
+0 0.5 1 1.5 2 2.5 3 3.5 4 4.5 5
+-0.1
+-0.05
+0
+0.05
+0.1-0.02
+0
+0.02
+0.04
+0.06
+Motor position
+Reference trajectory
+q(t) [mm]Vw(t) [V]
+t [s]
+(a) M1(s)M2(s)M3(s)Mω,1(s) (b) M1(s)M2(s)M3(s)Mω,1(s)Mω,2(s)
+0 0.5 1 1.5 2 2.5 3 3.5 4 4.5 5
+-0.1
+-0.05
+0
+0.05
+0.1-0.02
+0
+0.02
+0.04
+0.06
+Motor position
+Reference trajectory
+q(t) [mm]Vw(t) [V]
+t [s]
+0 0.5 1 1.5 2 2.5 3 3.5 4 4.5 5
+-0.1
+-0.05
+0
+0.05
+0.1-0.02
+0
+0.02
+0.04
+0.06
+Motor position
+Reference trajectory
+q(t) [mm]Vw(t) [V]
+t [s]
+(c) M1(s)M2(s)M3(s)ZV 1(s) (d) M1(s)M2(s)M3(s)ZV 1(s)ZV 2(s)
+0 0.5 1 1.5 2 2.5 3 3.5 4 4.5 5
+-0.1
+-0.05
+0
+0.05
+0.1-0.02
+0
+0.02
+0.04
+0.06
+Motor position
+Reference trajectory
+q(t) [mm]Vw(t) [V]
+t [s]
+0 0.5 1 1.5 2 2.5 3 3.5 4 4.5 5
+-0.1
+-0.05
+0
+0.05
+0.1-0.02
+0
+0.02
+0.04
+0.06
+Motor position
+Reference trajectory
+q(t) [mm]Vw(t) [V]
+t [s]
+(e) M ⋆
+1 (s)M ⋆
+2 (s)M ⋆
+3 (s) (f) M ⋆⋆
+1 (s)M ⋆⋆
+2 (s)M ⋆⋆
+3 (s)
+Figure 19: Motions applied to the ﬂexible link in the second experimenta l test and mea-
+surement Vw(t) of the produced vibrations.
+40
+
+PAGE 41
+0 50 100 150
+0
+0.01
+0.02
+0.03
+0.04
+0.05
+peak =0.022278 
+|Vw(jω )| [V]
+0 50 100 150
+0
+0.01
+0.02
+0.03
+0.04
+0.05
+peak =0.013744 
+|Vw(jω )| [V]
+(a) M1(s)M2(s)M3(s)Mω,1(s) (b) M1(s)M2(s)M3(s)Mω,1(s)Mω,(s)
+0 50 100 150
+0
+0.01
+0.02
+0.03
+0.04
+0.05
+peak =0.021143 
+|Vw(jω )| [V]
+0 50 100 150
+0
+0.01
+0.02
+0.03
+0.04
+0.05
+peak =0.014649 
+|Vw(jω )| [V]
+(c) M1(s)M2(s)M3(s)ZV 1(s) (d) M1(s)M2(s)M3(s)ZV 1(s)ZV 2(s)
+0 50 100 150
+0
+0.01
+0.02
+0.03
+0.04
+0.05
+peak =0.018536 
+|Vw(jω )| [V]
+0 50 100 150
+0
+0.01
+0.02
+0.03
+0.04
+0.05
+peak =0.015851 
+|Vw(jω )| [V]
+(e) M ⋆
+1 (s)M ⋆
+2 (s)M ⋆
+3 (s) (f) M ⋆⋆
+1 (s)M ⋆⋆
+2 (s)M ⋆⋆
+3 (s)
+Figure 20: Magnitude of the frequency spectrum of the strain gau ge output signals Vw(t)
+reported in Fig. 18 and comparison with the frequency response of the ﬁlters generating
+the reference position.
+41
+
+PAGE 42
+7. Conclusions
+In this paper, a complete framework for the (online) generation of opti-
+mal rest-to-rest trajectories subject to kinematic and freque ncy constraints
+is presented. The key point of the proposed approach is the use of a chain of
+rectangular smoothers for the design of computationally eﬃcient t rajectory
+planners of any order. Several attempts of designing generic n-th order trajec-
+tories of minimum duration under kinematic constraints have been pr oposed
+in the literature but, to the best of our knowledge, only the use of s moothers
+together with the tools proposed in this paper for the calculation of their
+parameters allow (for the ﬁrst time) a true optimization of the traj ectory,
+even if limited to the rest-to-rest case.
+Additionally, a second procedure allows to minimize the trajectory du ra-
+tion when also frequency speciﬁcations, tied to the suppression of residual vi-
+brations, are considered. The experimental tests conﬁrm that t he integrated
+design of the trajectory leads to a duration of the motion consider ably smaller
+than the simple application of ﬁltering techniques, like input shapers, to the
+initial trajectory compliant with the kinematic bounds. On the other hand,
+the capability of the optimized trajectory of reducing the residual vibrations
+are similar to the use of an additional ﬁlter.
+Appendix A. Procedure for the veriﬁcation and optimization of
+parameters Ti
+The following is an example implementation in the Matlab programming
+language of the algorithm of Fig. 2 for the optimization of parameter s Ti,
+42
+
+PAGE 43
+i = 1,...,n deﬁning the n-th order multi-segment trajectory of minimum
+duration under kinematic constraints.
+f u n c t i o n [ Tout ] = C h e c k C o n s t r a i n t s T ( Tin )
+amax = 0 . 9 9 9 9 9 9 ;
+amin = 0 . 9 5 ;
+n = l e n g t h ( Tin ) ;
+Tout=Tin ;
+f o r i=n − 1: − 1:1
+i f Tout ( i ) < sum ( Tout ( i +1: end ) )
+a = − sum ( Tout ( i +2: end ) ) /2/ Tout ( i +1)+s q r t ( ( sum ( Tout ( i +2: e nd ) ) /2/ Tout ( i +1) ) ˆ2+Tout
+( i ) / Tout ( i +1) ) ;
+a = min ( [ max ( [ a amin ] ) , amax ] ) ;
+Tout ( i ) = Tout ( i ) / a ;
+Tout ( i +1) = Tout ( i +1) * a ;
+Tout = C h e c k C o n s t r a i n t s T ( Tout ) ;
+end
+end
+end
+The input vector Tin contains the initial guess of the parameters Ti computed
+according to (2), while Tout is the vector of the optimal parameters.
+Appendix B. Procedure for the optimization of parameters Ti avoid-
+ing unwanted oscillations in the trajectory proﬁles
+Matlab function for the optimization of parameters Ti, i = 1, . . . , n deﬁning the
+n-th order multi-segment trajectory of minimum duration und er kinematic con-
+straints that solves the problem of unwanted oscillations o f trajectory derivatives
+from their max/min value to zero and again to the max/min valu e (see example
+in Fig. 4).
+f u n c t i o n [ Tout ] = C h e c k C o n s t r a i n t s T 1 ( Tin )
+amax = 0 . 9 9 9 9 9 9 ;
+amin = 0 . 9 5 ;
+n = l e n g t h ( Tin ) ;
+Tout=Tin ;
+i f ( Tout ( n − 1) < Tout ( n ) )
+Tout ( n ) = s q r t ( Tout ( n − 1) * Tout ( n ) ) ;
+Tout ( n − 1) = Tout ( n ) ;
+end
+f o r i=n − 2: − 1:1
+43
+
+PAGE 44
+i f ( Tout ( i ) < Tout ( i +1) + Tout ( i +2) )
+a = − Tout ( i +2) /2/ Tout ( i +1)+s q r t ( ( Tout ( i +2) /2/ Tout ( i +1) ) ˆ 2+Tout ( i ) / Tout ( i +1) ) ;
+a = min ( [ max ( [ a amin ] ) , amax ] ) ;
+Tout ( i ) = Tout ( i ) / a ;
+Tout ( i +1) = Tout ( i +1) * a ;
+Tout = C h e c k C o n s t r a i n t s T 1 ( Tout ) ;
+end
+end
+end
+The input vector Tin contains the initial guess of the parameters Ti computed
+according to (2), while Tout is the vector of the optimal parameters.
+This function has been used in the Matlab/Simulink toolbox m entioned in the in-
+troduction (see Biagiotti (2019)) for the automatic design of trajectory generators
+compliant with kinematic and frequency constraints.
+Appendix C. Procedure for the optimization of a trajectory u nder
+kinematic and frequency constraints
+Implementation in the Matlab programming language of the al gorithm of Fig. 9
+for the optimization of the number of ﬁlters, and the related parameters, deﬁn-
+ing a multi-segment trajectory of minimum duration complia nt with n kinematic
+constraints and m frequency constraints.
+f u n c t i o n [ T s t a r ] = M e r g e C o n s t r a i n t s T ( T, T w )
+n = l e n g t h (T) ;
+m = l e n g t h (T w) ;
+j = 1 ;
+T s t a r = [ ] ;
+f o r i = 1 : n
+i f ( j <= m) & (T w( j ) >= T( i ) )
+T s t a r ( i ) = T w( j ) ;
+j = j + 1 ;
+e l s e
+T s t a r ( i ) = T( i ) ;
+end
+end
+T s t a r = [ T s t a r T w( j : end ) ] ;
+44
+
+PAGE 45
+The input vectors T and Tw contain the parameter Ti computed according to
+the kinematic constraints and the parameters Tω,i obtained with (11). The output
+vector Tstar is composed by the minimum number of parameters that allow th e
+trajectory to be compliant with all the initial constraints .
+References
+Bellezza, F., Lanari, L., Ulivi, G., 1990. Exact modeling of the ﬂexible slewing link,
+in: Proceedings., IEEE International Conference on Roboti cs and Automation,
+pp. 734–739.
+Besset, P., Bearee, R., 2017. Fir ﬁlter-based online jerk-c onstrained trajectory
+generation. Control Engineering Practice 66, 169 – 180.
+Biagiotti, L., 2019. Automatic design of an optimal traject ory genera-
+tor in matlab/simulink. URL: http://www.dii.unimore.it/~lbiagiotti/
+BuildTrajectoryGenerator.zip.
+Biagiotti, L., Melchiorri, C., 2008. Trajectory Planning f or Automatic Machines
+and Robots. Springer Berlin Heidelberg.
+Biagiotti, L., Melchiorri, C., 2011. Input shaping via b-sp line ﬁlters for 3-d tra-
+jectory planning, in: 2011 IEEE/RSJ International Confere nce on Intelligent
+Robots and Systems, pp. 3899–3904.
+Biagiotti, L., Melchiorri, C., 2012. Fir ﬁlters for online t rajectory planning with
+time- and frequency-domain speciﬁcations. Control Engine ering Practice 20,
+1385 – 1399.
+Biagiotti, L., Melchiorri, C., 2013. Online trajectory pla nning and ﬁltering for
+45
+
+PAGE 46
+robotic applications via b-spline smoothing ﬁlters, in: 20 13 IEEE/RSJ Interna-
+tional Conference on Intelligent Robots and Systems, pp. 56 68–5673.
+Biagiotti, L., Zanasi, R., 2010. Time-optimal regulation o f a chain of integra-
+tors with saturated input and internal variables: an applic ation to trajectory
+planning. IF AC Proceedings Volumes 43.
+Bianco, C.G.L., Ghilardelli, F., 2014. A discrete-time ﬁlt er for the generation of
+signals with asymmetric and variable bounds on velocity, ac celeration, and jerk.
+IEEE Transactions on Industrial Electronics 61, 4115–4125 .
+Chen, C.S., Lee, A.C., 1998. Design of acceleration/decele ration proﬁles in motion
+control based on digital ﬁr ﬁlters. International Journal o f Machine Tools and
+Manufacture 38, 799 – 825.
+Erkorkmaz, K., Altintas, Y., 2001. High speed cnc system des ign. part i: Jerk
+limited trajectory generation and quintic spline interpol ation 41, 1323–1345.
+Ezair, B., Tassa, T., Shiller, Z., 2014. Planning high order trajectories with general
+initial and ﬁnal conditions and asymmetric bounds. The Inte rnational Journal
+of Robotics Research 33, 898–916.
+Jeon, J.W., Ha, Y.Y., 2000. A generalized approach for the ac celeration and
+deceleration of industrial robots and cnc machine tools. IE EE Transactions on
+Industrial Electronics 74, no 1, 133–139.
+Kane, T.R., Ryan, R., Banerjee, A.K., 1987. Dynamics of a can tilever beam
+attached to a moving base. Journal of Guidance, Control, and Dynamics 10,
+139–151.
+Kim, D.I., Jeon, J.W., Kim, S., 1994. Software acceleration /deceleration methods
+for industrial robots and cnc machine tools. Mechatronics 4 , 37–53.
+46
+
+PAGE 47
+Knierim, K.L., Sawodny, O., 2012. Real-time trajectory gen eration for three-times
+continuous trajectories, in: 2012 7th IEEE Conference on In dustrial Electronics
+and Applications (ICIEA), pp. 1462–1467.
+Kozak, K., Singhose, W., Ebert-Uphoﬀ, I., 2006. Performance measures for input
+shaping and command generation. Journal of Dynamic Systems Measurement
+and Control 128, 731–736.
+Kroger, T., Tomiczek, A., Wahl, F.M., 2006. Towards on-line trajectory compu-
+tation, in: 2006 IEEE/RSJ International Conference on Inte lligent Robots and
+Systems, pp. 736–741.
+Kroger, T., Wahl, F.M., 2010. Online trajectory generation : Basic concepts for
+instantaneous reactions to unforeseen events. IEEE Transa ctions on Robotics
+26, 94–111.
+Lambrechts, P., Boerlage, M., Steinbuch, M., 2005. Traject ory planning and feed-
+forward design for electromechanical motion systems. Cont rol Engineering Prac-
+tice 13, 145–157.
+Luo, Z.H., Kitamura, N., Guo, B.Z., 1995. Shear force feedba ck control of ﬂexible
+robot arms. IEEE Transactions on Robotics and Automation 11 , 760–765.
+Nguyen, K.D., Ng, T.C., Chen, I.M., 2008. On algorithms for p lanning s-curve
+motion proﬁles. International Journal of Advanced Robotic Systems 5, 11.
+Nozawa, R., Kawamura, H., Sasaki, T., 1985. Acceleration/d ecelaration circuit.
+Sencer, B., Ishizaki, K., Shamoto, E., 2015. High speed corn ering strategy with
+conﬁned contour error and vibration suppression for cnc mac hine tools. CIRP
+Annals 64, 369 – 372.
+47
+
+PAGE 48
+Singer, N., Singhose, W., Seering, W., 1999. Comparison of ﬁ ltering methods for
+reducing residual vibration. European Journal of Control 5 , 208–218.
+Singer, N.C., Seering, W.P., 1990. Preshaping command inpu ts to reduce system
+vibration. ASME Journal of Dynamic Systems, Measurement, a nd Control 112,
+76–82.
+Singhose, W., Singer, N., Seering, W., 1995. Comparison of c ommand shaping
+methods for reducing residual vibration, in: Third Europea n Control Conf, pp.
+1126–1131.
+Tajima, S., Sencer, B., Shamoto, E., 2018. Accurate interpo lation of machining
+tool-paths based on ﬁr ﬁltering. Precision Engineering 52, 332 – 344.
+Zanasi, R., Bianco, C.G.L., Tonielli, A., 2000. Nonlinear ﬁ lter for the generation
+of smooth trajectories. Automatica 36, 439–448.
+Zanasi, R., Morselli, R., 2003. Discrete minimum time track ing problem for a
+chain of three integrators with bounded input. Automatica 3 9 (9), 1643–1649.
+Zheng, C., Su, Y., Muller, P., 2009. Simple online smooth tra jectory generations
+for industrial systems. Mechatronics 19, 571–576.
+48

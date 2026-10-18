@@ -57,6 +57,7 @@ with tempfile.TemporaryDirectory(prefix='matrix-units-fresh-',dir=B/'cache') as 
  for m in MODS:run('kernel-'+m,[str(Path(lean).with_name('leanchecker')),m,'-v'],t)
  client='''import OrderControls
 import BasisActions
+noncomputable section
 open HyperbolicSpinor GUClifford
 example (I J T : Finset (Fin 7)) :
     splitAction (matrixUnitElement I J) (spinBasis T) = if J=T then spinBasis I else 0 := by

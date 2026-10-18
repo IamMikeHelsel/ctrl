@@ -1,0 +1,36 @@
+MINIMUM-SUCCESSOR CHECK — coordinator gate, 18 October 2026
+
+Falsifiable target
+Replace the existing all-pairs acceleration check with the same exact all-future
+acceptance property. For each rational guard point L, select the minimum guard
+point strictly greater than L, if any. Only that consecutive interval needs its
+affine-jerk zero checked, and only when the zero lies inside the interval.
+Keep endpoints, current time, repeated roots, queued events and signed increments.
+
+Correctness must be proved, not inferred from a numerical comparison. Use the
+existing positive-width and nonnegative-limit contract. Prove both directions
+to the real all-future acceleration bound. An empty or constant-jerk interval
+must not create a division-by-zero obligation. All old proof files stay frozen.
+
+This implementation uses List.min? on the strictly-greater filter. It does not
+trust an external sorter. It is expected to use quadratically many elementary
+list/comparison/event operations, rather than the previous repeated all-pairs
+critical evaluations. No bit-complexity or execution-time bound is claimed.
+
+Verification
+Fresh local closure, standard-axiom audit, separate kernel replay. Include
+interior acceleration maximum, zero-jerk nonzero-acceleration plateau, repeated
+knots, current time inside a cell, expired and queued events, and invalid h.
+Independent review must challenge the new proof and compare exact decisions.
+
+Cost study after source freeze
+Use the same inputs and Lean --run timing convention as checker-cost-02:
+1,2,4,8,16,32 events; event i at i/100, alternating increments +/-1/1000;
+h=1/5, A=1/2, current=0. Run three processes per count. Report all values,
+including rejection or failure. The saved old timings are a reference on the
+same shared host, not a simultaneous controlled hardware benchmark. If a new
+paired run is needed, freeze its protocol separately before execution.
+
+Stop this builder gate at 08:15 UTC. Freeze a useful partial result or a clear
+failure if the equivalence does not close. Do not spend the whole night on a
+sorting API. No real-time, native production or Franka timing claim is allowed.

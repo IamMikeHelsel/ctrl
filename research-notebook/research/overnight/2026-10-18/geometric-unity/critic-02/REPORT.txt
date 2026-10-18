@@ -1,0 +1,94 @@
+Independent review: actual real split Clifford matrix equivalence
+18 October 2026 UTC
+
+Decision: ACCEPT the bounded gate (A for this verification gate).
+The actual map splitMatrix is proved to be an algebra equivalence from Cl(7,7)
+to the real matrix algebra indexed by the 128 subsets of Fin 7. This closes the
+faithfulness gap in analyst-01. It does not establish the complex adjoint,
+signature, unitary Lie-algebra identification or any physical GU claim.
+
+Logical audit
+The proof constructs creation and contraction on the actual exterior algebra.
+It does not assume their operator laws. Their Clifford preimages use the correct
+halves: creator=(gamma_positive+gamma_negative)/2 and
+annihilator=(gamma_positive-gamma_negative)/2. Every one of the seven coordinates
+is covered. No surjectivity of splitLinear is assumed or needed.
+
+The ordered basis is Mathlib's exterior basis, linked to the increasing word by
+basis_word. Insertion and erasure use the length of the ordered prefix for the
+sign. Present creation and absent annihilation give zero. The proofs of the
+exact basis formulas include the ordering and membership conditions explicitly.
+
+The vacuum product uses annihilation after creation. Its proof covers all basis
+vectors: the empty basis vector is preserved and every nonempty one is killed.
+It is idempotent. Reversing each factor gives a different operator; the finite
+control shows that opposite product selects the fully occupied word instead.
+
+For all I,J,T, matrixUnit I J sends b_T to b_I when J=T and to zero otherwise.
+The annihilator product is reversed so its application follows increasing J.
+The actual Clifford matrixUnitElement has that exact action. The double finite
+sum preimage reconstructs every endomorphism from its basis coordinates. This
+proves surjectivity of splitAction and splitMatrix without a dimension argument.
+
+Only after surjectivity is proved does RealEquivalence use the equal dimension
+16384 to prove injectivity. AlgEquiv.ofBijective packages this same splitMatrix.
+There is no hidden faithfulness assumption or unrelated representation swap.
+The statements have no unproved projector, basis-action or matrix-unit premises.
+
+Independent proof checks
+The complete 13-module local closure was freshly built. All 142 public
+declarations were audited. The only axioms are propext, Classical.choice and
+Quot.sound. Separate leanchecker replay covers all 13 modules plus the reviewer
+client. The eight named reviewer theorems received their own axiom audit.
+The pinned Lean version is 4.35.0; Mathlib is
+56a005855ea17e0b0958f73ec801ae140b0a1679. Pinned prebuilt Mathlib is reused.
+This is a second proof-checking pass, not a second implementation of the kernel.
+
+The 16-statement independent client proves both inverse round trips, the actual
+matrix-unit entry formula, the matrix-unit multiplication law inside Cl(7,7),
+the vacuum element's identity with its empty matrix unit, and sign/order/factor
+controls using nonadjacent indices. Four deliberately false clients are rejected.
+The positive client also proves inequalities that rule out the wrong insertion
+sign, wrong contraction order and missing one-half factor.
+
+Exact finite cross-check
+review_units.py uses ordered tuples and integers, without importing builder code.
+It checks 4480 operator cases, all 2097152 triples I,J,T for the matrix units, and
+all 128 columns of a nonsymmetric dense integer endomorphism reconstructed by the
+double coefficient sum. It detects reversed annihilator order, wrong insertion
+and erasure signs, reversed vacuum factors and the missing one-half factor.
+This computation checks conventions; the general theorem is the Lean proof.
+
+Failure preservation
+The builder's Client-noncomputable-01 source and log remain unchanged. That
+failure was a value-level example missing a noncomputable section. It was not
+a false algebraic statement. The builder corrected only the harness and reran.
+The reviewer also retained its own client simplification failures. The final
+complete run is recorded in lean-review.json. No failed source is used as proof.
+
+Source scope and continuation
+This formalizes standard split Clifford mathematics and checks the real matrix
+claim in equation (3.18) of the author's April 2021 draft. It establishes neither
+new mathematical physics nor publication novelty. The next 60-minute gate in
+NEXT-GATE.txt targets the actual real matrix-adjoint bridge. Complex scalar
+extension and the explicit signature proof must remain separately checked.
+
+critic-01/ERRATA.txt and QUESTIONS-FOR-AUTHOR.txt remain authoritative. The
+complex adjoint must conjugate scalar i. The full vector-skew premise is stronger
+than Spin invariance. The prior iKD witness still rules out the weaker uniqueness
+claim. The draft already supplies action (9.4); Phi selection and the complete
+variational setup remain separate source questions. No new theory input was
+chosen in this review.
+
+Integrity and boundary
+Five frozen manifests and every listed file were checked before and after the
+review: builder-02, analyst-01, critic-01, the accepted Clifford contraction gate
+03 and the accepted complex adjoint gate 04. The four inherited Lean sources
+match analyst-01 byte-for-byte. See lean-review.json for all digests and counts.
+No builder source, shared paper, Git state or earlier evidence was changed.
+No submission, human contact, paid service or physical experiment occurred.
+
+Primary source
+https://geometricunity.nyc3.digitaloceanspaces.com/Geometric_Unity-Draft-April-1st-2021.pdf
+The frozen draft hash is recorded in analyst-01 and critic-01. This review does
+not replace the earlier source audit or an external subject-matter review.

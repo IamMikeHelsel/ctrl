@@ -1,0 +1,100 @@
+Independent review of constant-bias settling
+Decision: ACCEPT the bounded constant-bias theorem. CONTINUE to next-test.txt.
+
+Scope
+The bounded claim is about one unchanged scalar continuous-state controller.
+It permits a pointwise changing actuator rate and a constant acceleration-target
+bias. It is not a theorem about arbitrary changing disturbance, sampled control,
+hardware, or publication novelty.
+
+Frozen builder artifact manifest:
+42bcd5ab1e0da2e6901fc7f707e9cde658f7019a92402a4c87dd6dbd7b585199.
+Frozen source manifest:
+27de85c9a3c7a9d940fe93bd60cea94007d1bd743fcf667587d18a6857fd71a3.
+
+The controller and coordinate shift
+The original commanded goal remains c. The original physical input is
+u+b, where u=-8 sigma^2(x-c)-6 sigma v-a/2. The constant analysis offset is
+delta=b/(8 sigma^2). The exact identity is u(c)+b=u(c+delta). The proof rewrites
+equal inputs for the same f and r; it does not construct a new physical state
+or alter the controller. The positive sign is required. The bias can be unknown
+to the controller because this is an analysis translation, not compensation.
+
+Each transformed coordinate shifts by -delta. An original cube of radius R
+therefore gives a cube of radius R+|delta| about the analysis equilibrium.
+The adverse initial cube sign makes this enlargement exact in a reviewer
+witness; keeping radius R can be false. The original endpoint is retained.
+
+The zero-disturbance settling theorem then applies to the same trajectory,
+about c+delta. The true-goal position bound adds |delta| back. Speed and
+acceleration need no equilibrium offset. The effective target u+b decays with
+the transient bound, while the original command u retains an added |b| term.
+At biased rest, u=-b and u+b=0. The theorem and report distinguish them correctly.
+
+Units and time
+The bias b has units of acceleration, sigma has units 1/s, and delta has units
+of position. The transient exponent is -2 sigma t/5 in physical seconds.
+At sigma=10, R=1/5000 m, |b|<=1/100 m/s^2 and t>=2 hold seconds, the checked
+arithmetic is |delta|<=1/80000 m, R*<=17/80000 m, E*<=17/16384000 m. Thus
+true-goal error<=1109/81920000 m, speed<=17/204800 m/s, and acceleration
+<=17/2560 m/s^2. These match the stated decimal approximations and tight bands.
+
+The concrete theorem requires H>=2. Its endpoint theorem explicitly evaluates
+t=2. The original DirectPlant supplies the endpoint cube; no new initial cube
+is assumed. Two hold seconds correspond to global time 3.5 seconds. The earlier
+motion retains its varying-disturbance assumptions; only this new hold has
+constant bias. This does not establish the shorter moving-goal deadlines.
+
+Non-vacuity and false controls
+The independent review constructs the exact eight-phase reference at r=96/s,
+w=0. Its exact endpoint starts a new hold at r=80/s with b=0.01 m/s^2. A closed
+form step response satisfies the original physical ODE, preserves position,
+velocity and acceleration at the join, and exercises the full composed theorem
+at H=2. The nonzero-bias composition therefore has an actual nonempty witness.
+Its velocity is still nonzero at t=2; the result concerns a finite tolerance.
+
+The builder's different witness begins with velocity -4 mm/s. The review checks
+that it retains that state and reaches the certified tolerance. It does not
+claim that this particular state was produced by the preceding eight phases.
+
+The five rejected false controls test the wrong offset sign, changed commanded
+goal with double bias, omitted true-goal position offset, omitted original
+command offset, and omitted initial cube enlargement. Their accepted exact
+counterexamples appear in the builder or reviewer theorem sources.
+
+Proof boundary
+Continuity on the closed hold interval and the ODE on the open interior are
+assumptions on a supplied trajectory. Existence for arbitrary discontinuous
+rate functions is not claimed. The inherited shrinking-box proof supplies
+decay; the new theorem does not assume it. Full physical state feedback remains
+an assumption. No sensor error, actuator saturation, joint coupling, contact,
+Franka interface, or physical experiment is covered.
+
+Verification
+All 44 local source modules rebuilt from fresh copies. All 628 public local
+theorems passed the axiom audit with only propext, Classical.choice and
+Quot.sound. Nine frozen modules passed separate leanchecker replay. The review
+adds 14 checked theorems; their module passed its own kernel replay and public
+axiom audit. All five false controls failed with explicit unsolved False goals,
+without a timeout, missing import, or missing identifier. These counts include
+inherited results; they are audit coverage, not a novelty measure.
+
+The reviewer's first step-response fixture needed pointwise function equality
+before polynomial normalization. Adding funext repaired that fixture. The
+failed attempt is preserved under review-attempt-01 and in verification.json.
+All 44 frozen modules, their axiom audit and all nine frozen kernel replays had
+already passed. Only the reviewer fixture and its dependent checks were rerun.
+The completed result is in final-verification.json. No builder proof changed.
+
+All 73 frozen builder artifacts and all 46 source-manifest entries matched.
+Final checks confirmed the builder artifacts and all 44 closure sources remain
+unchanged. Lean is 4.35.0; Mathlib is clean at revision
+56a005855ea17e0b0958f73ec801ae140b0a1679. The independent verifier excludes the
+old project build directory and reuses only the pinned library cache. It does
+not import the builder's Python helpers.
+
+Next step
+CONTINUE to the single falsifiable scout in next-test.txt. Test stronger output
+bounds under both changing r and changing w before adding regularity assumptions.
+The constant-rate gain calculation is motivation only. No next-gate experiment
+was run during this review.

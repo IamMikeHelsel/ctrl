@@ -1,5 +1,5 @@
 {
-  "passed": false,
+  "passed": true,
   "scope": "Every local source in closure compiled fresh; cached pinned Mathlib reused. Every public local theorem audited. Target modules and inherited plant bridge receive separate leanchecker replay.",
   "toolchain": "Lean (version 4.35.0, arm64-apple-darwin24.6.0, commit eb6cafb7290e8bd5f2937522d8d804f58f02bafc, Release)",
   "lean_toolchain_file": "leanprover/lean4:v4.35.0",
@@ -1209,6 +1209,54 @@
       "expected": "success",
       "seconds": 11.530701957992278,
       "log_sha256": "8a3ea2457a0ec13383ede52343b75f489c54937d31334010aa25b4ce435f9c2b"
+    },
+    {
+      "label": "kernel-BiasFixtures",
+      "exit_code": 0,
+      "passed": true,
+      "expected": "success",
+      "seconds": 21.423970792035107,
+      "log_sha256": "f6b80ebcb16d439f540bcdb656f648b6cdacc8f6d161796e59786822a53907a7"
+    },
+    {
+      "label": "kernel-DirectBias",
+      "exit_code": 0,
+      "passed": true,
+      "expected": "success",
+      "seconds": 20.8276502090157,
+      "log_sha256": "50b5476da0274fb30e9152b1db2b7f7d7050d72ad07ece75058a9d9a332972a6"
+    },
+    {
+      "label": "kernel-BiasWitness",
+      "exit_code": 0,
+      "passed": true,
+      "expected": "success",
+      "seconds": 17.762074875005055,
+      "log_sha256": "748df61d3483c21fd12697a95be915aea541ef0a310a969926c138922d73c004"
+    },
+    {
+      "label": "reject-wrong-sign",
+      "exit_code": 1,
+      "passed": true,
+      "expected": "rejection",
+      "seconds": 3.369827082962729,
+      "log_sha256": "d5f7fb9cc6b41c128a236b471624fc60353902d3fe08231d6439344cb127ed2d"
+    },
+    {
+      "label": "reject-double-count-bias",
+      "exit_code": 1,
+      "passed": true,
+      "expected": "rejection",
+      "seconds": 3.8053729999810457,
+      "log_sha256": "017926c98967e7c2f8e514ed09042d1330e0cc41d8ffb0bb3de8ddc035bbc70e"
+    },
+    {
+      "label": "reject-drop-position-offset",
+      "exit_code": 1,
+      "passed": true,
+      "expected": "rejection",
+      "seconds": 4.075182542030234,
+      "log_sha256": "bc8d25b6f469402f989246093e2d30d6c50a5f44bff14454ad3a001087772873"
     }
   ],
   "axioms": {
@@ -4352,5 +4400,13 @@
       "Quot.sound",
       "propext"
     ]
+  },
+  "source_unchanged": true,
+  "public_local_statement_count": 628,
+  "fresh_local_module_count": 44,
+  "negative_controls": {
+    "wrong_sign": "The actual controller-plus-bias field requires the positive analysis offset.",
+    "double_count": "Changing the actual goal to the analysis equilibrium produces derivative 4/5 rather than zero at the true equilibrium.",
+    "missing_offset": "A real constant-bias resting trajectory violates the proposed position transient bound when its goal offset is omitted."
   }
 }

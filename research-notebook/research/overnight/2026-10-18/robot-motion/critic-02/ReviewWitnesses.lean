@@ -17,8 +17,8 @@ theorem shifted_continuous (e : ℝ) : Continuous (shifted e) := by
   have hc := referenceState_continuous 0 (1/5) (realEvents deferredReturn)
   fin_cases i
   · exact ((continuous_apply 0).comp hc).add continuous_const
-  · simpa [shifted,q] using (continuous_apply 1).comp hc
-  · simpa [shifted,q] using (continuous_apply 2).comp hc
+  · simpa [shifted,q,Function.comp_def] using (continuous_apply 1).comp hc
+  · simpa [shifted,q,Function.comp_def] using (continuous_apply 2).comp hc
 
 /-- An actual nonconstant trajectory exists for these inputs: it is exactly
 the reference with a constant position offset. No ODE existence axiom is used. -/

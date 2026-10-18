@@ -1,5 +1,5 @@
 CLAIMS AND EVIDENCE — living coordinator index
-Updated 18 October 2026, 07:27 UTC. Read state.json for later gate decisions.
+Updated 18 October 2026, 07:51 UTC. Read state.json for later gate decisions.
 
 Purpose
 Keep the paper focused on one claim: a finite motion history can carry a
@@ -24,17 +24,17 @@ jerk and reference-rest deadline conditions. Rejection covers only the supplied
 candidate list. It is not a proof of continuous-time infeasibility. The generic
 rule has no velocity guard; the concrete return has a separate velocity proof.
 
-Pending independent review: actual position arrival during a return
+Accepted: actual position arrival during a return
 robot-motion/builder-02/PhysicalArrival.lean
   delayed_return_physical_position
 robot-motion/builder-02/verification-02.json
-robot-motion/critic-02/ [review in progress]
+robot-motion/critic-02/report.txt [independently accepted]
 The proposed composition starts at physical time zero. It carries the state
 through the revision without resetting it. It bounds position tracking,
 initial progress and position arrival. Actual speed and acceleration settling
 are not proved by this statement. Keep the trajectory-existence assumption.
 
-Pending independent replay: stronger comparison
+Accepted numerical evidence: stronger comparison
 robot-motion/builder-02/runtime-replay-02/
 robot-motion/builder-02/canonical-evidence.json
 The current numerical result is a repair, not a performance win. Native fast
@@ -42,6 +42,8 @@ passes both deadline tasks. The checked FIR passes the generous task and
 rejects the tight revision. The old jerk-only FIR violates acceleration.
 All rejected authoritative requests remain task failures. Different physical
 states at revision confound a direct jerk-energy comparison.
+The independent replay covers all 96 traces. Builder-03 now tests suffixes
+from the same reference prefix and the same actual revision state.
 
 Accepted: actual-state terminal residuals
 controls/builder-01/Settling.lean and DirectSettling.lean
@@ -51,27 +53,36 @@ The final hold retains the inherited endpoint state. A bounded arbitrary
 disturbance leaves a floor in this certificate. That floor is not a lower bound
 on actual motion. Exact finite rest and meeting finite tolerances are different.
 
-In development: constant-bias extension
-controls/builder-02/
-The proposed equilibrium shift is for analysis only. The commanded goal and
+Accepted: constant-bias extension
+controls/builder-02/ and controls/critic-02/review.txt
+The equilibrium shift is for analysis only. The commanded goal and
 controller stay fixed. A true-goal position bound must include the offset.
 Constant bias is narrower than arbitrary time-varying disturbance. Integrate
 this result with the motion paper only after an actual same-task composition.
+The reviewer constructed a nonzero-bias trajectory from the exact inherited
+DirectPlant endpoint. Builder-03 now challenges tighter finite settling targets
+with both rate and disturbance changing. That search is not a universal proof.
 
-Accepted bounded GU algebra; larger equivalence pending review
+Accepted bounded GU algebra and actual real matrix equivalence
 geometric-unity/analyst-01/ and critic-01/
-geometric-unity/builder-02/ [verification in progress]
-The accepted result is the actual split Clifford action and its dimensions.
-The new candidate constructs matrix units and an inverse. Equal dimensions
-alone did not prove faithfulness. This is standard mathematical structure,
+geometric-unity/builder-02/ and critic-02/REPORT.txt
+The accepted result includes the actual split Clifford action, matrix units,
+and an explicit arbitrary-matrix preimage. Surjectivity precedes the dimension
+argument for injectivity. This is standard mathematical structure,
 not physical validation or a new theory. Keep the source errata authoritative.
+Builder-03 now tackles the real matrix-adjoint bridge. Complex extension,
+signature, and the missing Phi selection remain distinct open gates.
 
 Practical implementation gaps
-The current all-pairs acceleration checker takes about 22.5 seconds at 32
+The old all-pairs acceleration checker takes about 22.5 seconds at 32
 events in the recorded shared-host Lean --run harness. This is a measured
 implementation limitation, not a bound on an optimized native implementation.
-history-pruning-01/ is a candidate future-reference equivalence, not yet reviewed.
+history-pruning-01/ is an independently accepted future-reference equivalence.
 It removes completed tails, but does not reduce the cost of many active events.
+successor-check-01/ proves the same acceleration acceptance using consecutive
+intervals. Its builder checks passed; independent review is pending. The new
+32-event median is 0.220 seconds. The runs were not simultaneous and do not
+establish real-time suitability or a worst-case execution bound.
 Actual dispatch time, timestamp error, sensors, saturation, coupled dynamics,
 contact and hardware acceptance still need separate assumptions and evidence.
 

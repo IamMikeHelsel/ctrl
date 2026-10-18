@@ -1,0 +1,67 @@
+One falsifiable next test: adverse changing response and disturbance
+Recommendation only. No scout or numerical experiment was run in this review.
+
+Decision
+Test the stronger arbitrary-bounded-disturbance target before adding a bias-rate
+or disturbance-decay assumption. Builder-02/next-gate.txt and critic-01's earlier
+constant-rate calculation agree on this direction. The constant-rate calculation
+does not bound a changing-rate system; it only makes the target worth testing.
+
+Frozen question
+For the original hold controller, sigma=10/s, r(t) in [80,120]/s,
+|w(t)|<=0.01 m/s^2, and the inherited coordinate cube R=0.0002 m, can a supplied
+admissible trajectory violate either |v|<=0.001 m/s or |a|<=0.02 m/s^2 at a
+hold time t in [2,4] seconds? Keep the commanded goal fixed. Do not retarget it.
+
+Search class
+Use bounded continuous piecewise-linear r and w on [0,4]. Predeclare control
+knots every 0.01 second, then permit one predeclared refinement to 0.002 second
+around the strongest candidate. Use exact rational knot times and values in the
+saved candidate. Interpolation stays within the input bounds and gives a
+classical solution. These knot restrictions define only the search class; they
+must not appear as an unstated regularity assumption in a claimed theorem.
+
+Include all eight initial cube vertices. Convert them to physical states with
+e=z0, v=4 sigma(z1-z0), a=16 sigma^2(z2-2z1+z0), where z_i is plus or minus R.
+Also include the zero state as a baseline. A cube-vertex failure refutes the
+general cube-based hold target. It does not establish reachability from the
+specific eight-phase reference. Store that distinction with every result.
+
+Use one objective: maximize max(|v|/0.001,|a|/0.02) over hold times [2,4].
+Search both r and w. Merely sweeping sinusoidal w with constant r is too weak.
+Start with output probes every 0.001 second. Refine a candidate peak locally,
+then freeze a rational candidate time for replay. Probes do not cover every time.
+For a fixed r schedule and one output/time, the output is affine in the initial
+state and in the knot values of w. Thus an adjoint or linear sensitivity pass
+can choose adverse w knot signs and initial cube signs. This is a way to find
+strong candidates, not an all-time or changing-r proof. The outer r search is
+nonconvex. Retain failed searches and repeated seeds as evidence, not coverage.
+
+Bound the first scout by 60 minutes and a declared evaluation budget. Freeze the
+best candidate before independent replay. Save exact input knots, interpolation
+rule, initial state, output, time, solver settings, and the margin above or below
+each limit. Keep the limits and the two-second entry time fixed.
+
+Acceptance rule
+If the scout finds a violation, replay the same continuous inputs independently
+with higher precision and time refinement. Numerical agreement alone remains
+numerical evidence. To call it a mathematically verified counterexample, bound
+the trajectory error at the claimed violating time by interval integration or
+a checked residual bound, with the entire error interval beyond the limit.
+One such witness refutes this universal target. It does not refute a later
+entry time or a different limit.
+
+If no violation is found, report the largest observed normalized output and
+the tested class. Do not report a universal pass. The next proof candidate is
+an output-aware robust invariant polytope plus a transient entry argument.
+Its face checks must cover rate/disturbance endpoint pairs and all relevant
+state-face vertices. A rectangular input extremum follows from the multi-affine
+vector field; that fact still needs proof in the certificate. A steady invariant
+set by itself does not prove entry from the inherited initial cube by t=2.
+
+Stop/redirect rule
+If an admissible violation is verified, extract the input feature that causes
+it before weakening the disturbance model. If the search has no failure and no
+credible exact certificate after the bounded gate, report the remaining gain
+or entry-time inequality. Only then assess a separate bounded bias-rate model.
+Do not let the already accepted constant-bias result substitute for this test.

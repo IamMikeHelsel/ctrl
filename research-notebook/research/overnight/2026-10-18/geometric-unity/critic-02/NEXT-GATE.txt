@@ -1,0 +1,64 @@
+Next GU mathematics gate: 60 minutes on the actual matrix adjoint
+
+The real matrix-equivalence gate is the input. Work in a new builder folder and
+keep all accepted files unchanged. Do not choose Phi or alter the accepted bar.
+
+Primary target
+For the actual splitMatrix, define G_i^+ and G_i^- from the fourteen real
+generators. Define K as the ordered product of its seven negative generators.
+Prove in Lean:
+  K^T=K, K*K=I,
+  splitMatrix(star x)=K*(splitMatrix x)^T*K for every real Clifford element x.
+The source convention is Clifford conjugation: reverse products and negate each
+real vector generator. This is Mathlib's real Clifford star in the accepted gate.
+
+Acceptance path
+1. Prove from the actual exterior-basis formulas that the creation matrix's
+   transpose equals the annihilation matrix. Do not postulate a new adjoint law.
+   Hence each G_i^+ is symmetric and each G_i^- is skew-symmetric.
+   Reuse one decomposition ordered(T)=A++i::B for both entries. The proved
+   ordered_erase_of_split gives ordered(T.erase i)=A++B, so creation and
+   contraction have the same prefix sign without a new sign-count convention.
+2. Use the actual Clifford relations to prove K^2=I, K^T=K, anticommutation with
+   each positive generator and commutation with each negative generator.
+3. Prove the real star bridge on scalars and generators, then extend it to every
+   Clifford element. State the theorem for the existing splitMatrixEquiv map.
+
+If this closes before the deadline, begin the complex bridge, but report its
+status separately. Use the accepted CCl = C tensor_R Cl and GUComplex.bar.
+Construct rho with
+  rho(z tensor a)=z * ofReal(splitMatrix(a)),
+and prove
+  rho(bar z)=K*conjugateTranspose(rho z)*K.
+Complex scalar conjugation is required: bar(i)=-i. The plain-transpose variant
+must fail on iI. Do not identify the complex skew space with a full matrix real
+form until the complex map is also proved bijective.
+
+Signature is the following gate, unless it fits without weakening this target.
+The earlier exact congruence is only a guide. Link K to complement pairs in the
+actual ordered exterior basis. Prove an explicit invertible congruence to a
+diagonal matrix with 64 positive and 64 negative entries. No floating-point
+eigenvalues or unrelated matrix model can replace that theorem.
+
+Required controls
+- Ordinary Euclidean transpose skewness fails for a positive generator.
+- Substituting creation+annihilation for a negative generator must fail its square.
+- Omitting a K factor must fail a required vector-adjoint identity. Reversing the
+  seven-factor order changes K to -K, which leaves the adjoint bridge unchanged;
+  do not label that harmless overall scale a counterexample to the bridge.
+- Complex transpose without scalar conjugation fails on iI.
+- Keep the exact iKD witness showing that Spin/bivector invariance alone does
+  not select a unique compatible Hermitian form. Full vector skewness is the
+  stronger premise used by the prior uniqueness calculation.
+
+At 60 minutes, freeze the proved statements, attempts and exact missing lemma.
+Return for independent review. A partial transpose or real bridge is useful, but
+must not be called a completed complex adjoint or signature proof.
+
+Source boundary
+This advances the algebraic claims near (3.18) and (3.27) of the 2021 draft. The
+grade pattern in (3.27) supports the conjugate-linear convention, while the
+nearby prose does not explicitly say that scalars are conjugated. Keep that
+clarification in the author questions. Equation (9.4) already supplies an action;
+Phi selection and the complete variational setup remain separate unresolved
+source questions. No new physics or full GU consistency claim follows.

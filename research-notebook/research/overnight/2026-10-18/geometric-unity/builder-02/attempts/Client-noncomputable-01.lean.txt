@@ -1,0 +1,20 @@
+import OrderControls
+import BasisActions
+open HyperbolicSpinor GUClifford
+example (I J T : Finset (Fin 7)) :
+    splitAction (matrixUnitElement I J) (spinBasis T) = if J=T then spinBasis I else 0 := by
+  rw [matrixUnit_image, matrixUnit_basis]
+example (T : Finset (Fin 7)) : splitAction vacuumElement (spinBasis T) = if T=∅ then 1 else 0 := by
+  rw [vacuum_image, vacuum_basis]
+example : vacuum * vacuum = vacuum := vacuum_idempotent
+example (f : Module.End ℝ S7) : splitAction (preimage f) = f := preimage_image f
+example : Function.Bijective splitMatrix := ⟨splitMatrix_injective, splitMatrix_surjective⟩
+example : Cl ≃ₐ[ℝ] Matrix (Finset (Fin 7)) (Finset (Fin 7)) ℝ := splitMatrixEquiv
+example (i : J) (T : Finset J) (h : i ∉ T) :
+    ∃ A B : List J, ordered (insert i T) = A++i::B ∧ ordered T=A++B ∧
+    create i (spinBasis T) = (-1 : ℝ)^A.length • spinBasis (insert i T) := create_basis_absent_exact i T h
+example (i : J) (T : Finset J) (h : i ∈ T) :
+    ∃ A B : List J, ordered T=A++i::B ∧
+    annihilate i (spinBasis T) = (-1 : ℝ)^A.length • spinBasis (T.erase i) := annihilate_basis_present_exact i T h
+example : vacuum (annihilators [0,1] (word [0,1])) = (1 : S7) := correctTwoOrder
+example : vacuum ((annihilate 0 * annihilate 1) (word [0,1])) = (-1 : S7) := wrongTwoOrder

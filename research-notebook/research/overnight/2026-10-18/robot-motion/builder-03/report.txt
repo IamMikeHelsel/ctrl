@@ -1,0 +1,141 @@
+COMMON STARTING MOTION, DIFFERENT RETURN POLICIES
+Builder result. Independent acceptance is pending.
+
+The matched-state comparison exposes a tradeoff. Retained FIR has a lower
+integral of squared actual jerk, but it moves much farther away from the revised
+goal before it returns. Native fast alone meets the tight deadline. The result
+does not support a general claim that FIR is a better motion planner.
+
+What was held equal
+
+All three methods execute the same FIR prefix through 0.52 s. Their serialized
+reference and physical prefixes are identical for each plant case and sample
+grid. The common reference state at revision availability is exactly
+(77/19200 m, 23/480 m/s, 5/16 m/s^2). Native input rounds each value once to a
+binary double. The actual x/v/a state is carried continuously from time zero.
+There is no physical reset at revision or at the later FIR event.
+
+The retained FIR waits from 0.52 to 0.62 s, then adds the checked return event.
+Its reference finishes at 1.42 s. Native fast starts at 0.52 s and finishes at
+1.0407646852 s. Native matched also starts at 0.52 s. Its requested minimum
+trajectory duration is 0.90 s. The library returns exactly 0.90 s, so its
+reference arrival matches the FIR arrival at 1.42 s. The actual paths differ.
+
+The protocol, inputs, runtime and comparison implementation were frozen before
+native planning or physical integration. Two deadlines, three methods, six
+constant plant cases and two output grids produced 72 traces. The canonical
+physical runtime is Python3.14.0, NumPy2.3.4 and SciPy1.16.2. The inherited
+scalar plant and direct controller were unchanged. No parameter tuning followed
+the results. See protocol.txt for all pass conditions and clock conventions.
+
+Results
+
+Fine-grid task passes, each cell contains six plant cases:
+                         deadline 1.70 s       deadline 1.30 s
+Retained FIR                   6/6                    0/6
+Native fast                    6/6                    6/6
+Native matched                 6/6                    0/6
+
+The task requires initial progress, request acceptance, reference limits,
+tracking, and sampled position/speed/acceleration bands from deadline through
+2.50 s. All cases make at least 3.1119 mm progress by 0.50 s, exceeding the
+1 mm requirement. Tight FIR rejects both supplied execution candidates and
+continues to the old 20 mm goal. This counts as task failure. Native matched
+accepts the request but misses the tight position, speed and acceleration bands.
+Native fast meets them. Rejection is not an impossibility proof.
+
+Generous task, suffix from 0.52 to 2.50 s, ranges across six plant cases:
+                         Retained FIR      Native fast       Native matched
+Integral j^2 dt
+  (m^2/s^5)              6.067–6.121       17.307–17.494     15.171–15.250
+Command total variation
+  (m/s^2)                1.973–1.978        2.771–2.881       2.610–2.780
+Extra forward excursion
+  after revision (mm)   14.315–14.331       6.851–6.872       6.851–6.872
+Suffix path length
+  (mm)                  32.650–32.669      17.734–17.763     17.723–17.770
+Whole-run peak actual
+  jerk (m/s^3)           5.000–5.002        7.770–9.390       8.000–11.392
+
+In each paired plant case, FIR's integral of squared jerk is about 0.398–0.402
+of native matched's value. Its extra forward excursion is about 2.085–2.090
+of native matched's value. These are descriptive ratios of this fixed experiment,
+not confidence scores or a robust theorem. Lower squared jerk remains after
+matching the starting state and reference arrival, but it comes with more
+excursion and path length. The paired figure gives both effects equal space.
+
+Squared jerk is a smoothness proxy. It is not mechanical energy, power, fatigue
+or actuator effort. No torque, inertia or power model is present. Command total
+variation is a separate signal metric. Native minimum_duration is not a
+minimum-jerk or minimum-energy objective. This experiment does not compare FIR
+against an optimal smooth trajectory with the same state and arrival time.
+
+All saved tracking errors stay below 0.2 mm. Worst whole-run error in the
+generous cases is 22.97 micrometres for FIR, 30.25 for native fast and 29.05 for
+native matched. The reference acceleration limit is 0.5 m/s^2. This is not an
+actual acceleration limit: sampled actual acceleration reaches about 0.5089
+m/s^2 for the native methods. Actual speed and acceleration remain separate
+reported quantities; no reference-limit claim is transferred to the plant.
+
+Numerical checks
+
+All 72 serialized prefixes match through the left side of 0.52 s. Every event
+has zero actual-state jump. Native reference q/v/a jumps are only roundoff:
+maxima are about 3.47e-18 m, 1.39e-17 m/s and 3.40e-16 m/s^2. Native jerk jumps
+and the resulting command/actual-jerk jumps are retained, including the handoff.
+No smoothing or impulse-energy convention was added after the results.
+
+Fresh native frontends use pinned Ruckig revision
+99751e6ebc7c963bb80e99fbbe66f2c279d1db57. The 101 source-file hashes and the
+static-library hash match the previous provenance. No cloud call, source patch
+or dependency upgrade was used. Both native plans pass reconstruction checks.
+The separate native query frontend checks 3,961 elapsed-time queries per plan.
+There are no jerk-branch mismatches; q/v/a differences are at roundoff scale.
+This is a native implementation check, not an independent physical integration.
+
+The builder audit checks 271,884 state rows and 1,356 event rows. All formula,
+state-continuity and manifest checks pass. Twenty-four native trace pairs are
+byte-identical across deadlines. The 1 ms and 0.5 ms grids produce the same task
+decisions. Largest grid change in suffix squared-jerk integral is 0.002236
+m^2/s^5; in forward excursion it is 5.43e-8 m; in reported settling time it is
+0.0005 s. These changes do not establish continuous-time error bounds.
+
+The three negative controls reject tight FIR service, tight matched-native
+position completion and a zero-state reset at the handoff. The common carried
+state is nonzero. These tests are checks of this experiment's scoring and
+continuity, not new Lean counterexamples. The inherited exact FIR admission
+checks remain tied to earlier reviewed Lean results. No new Lean theorem was
+needed or claimed in this numerical batch.
+
+Preserved limitations and failures
+
+The native execution origin is exact rational 0.52 s, plus exported binary
+cumulative phase offsets. This is an explicit suffix experiment convention,
+not the earlier absolute-double-clock experiment. All native elapsed queries
+use the same convention. The metrics field named reference_exact_extrema
+contains floating critical-point values; the name does not turn them into an
+exact theorem. Exact FIR fractions are retained in the schedule metadata.
+
+The finite horizon and two grids cannot rule out every between-sample violation.
+Rates and disturbances are constant within each of six cases; no new theorem
+for arbitrary changing response follows. The matched baseline controls state
+and arrival but does not control path, reversal time or a jerk-energy objective.
+The model is scalar and idealized. There is no physical robot or Franka result.
+
+The first plotting attempt failed because canonical Python has no matplotlib.
+The saved numerical data were then rendered with the existing Franka-simulation
+Python environment; no numerical experiment or metric calculation was rerun in
+that environment. Its separate figure-runtime.json records this. The first
+render had an overlapping footer; its files remain in figure-attempt-01/.
+The final render corrects only spacing. No planning or physical run failed.
+
+Next decision
+
+This closes the unequal-starting-state objection for this one comparison.
+It does not close the competitive smooth-baseline objection. A useful next
+experiment would predeclare a smooth competing return planner or a native
+jerk-limit/duration tradeoff, then compare path excursion, task failure and
+squared jerk together. Do not tune that baseline inside this frozen experiment.
+The formal reference-admission contract can remain useful even when faster or
+smoother motion planners exist. This batch is evidence for a bounded tradeoff,
+not evidence of publication novelty or proof that robot tremor is solved.

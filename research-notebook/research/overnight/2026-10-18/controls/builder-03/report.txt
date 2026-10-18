@@ -1,0 +1,87 @@
+Changing response and disturbance: no violation found in a bounded scout
+Builder result. Independent review and acceptance remain open.
+
+Outcome
+The strongest saved case reaches acceleration 0.01315390944069874 m/s^2 at
+t=3.998177 s. This is a ratio 0.657695472034937 of the frozen 0.02 m/s^2
+limit. The strongest observed velocity across the search traces was about
+0.0002730313 m/s, below the 0.001 m/s limit. The search did not find a failure.
+It does not prove the limits for all continuous inputs, all initial states,
+or every time. No mathematical counterexample was claimed or certified.
+
+Model and scope
+The controller and commanded goal remain unchanged:
+  x'=v, v'=a, a'=r[-800(x-c)-60v-1.5a+w].
+Both r and w vary continuously and piecewise linearly. Exact saved knots obey
+80<=r<=120 per second and |w|<=0.01 m/s^2. Initial transformed coordinates
+z=(x-c, x-c+v/40, x-c+v/20+a/1600) range over the eight vertices of the cube
+[-0.0002,0.0002]^3; each input is also replayed from zero.
+A failure from this cube would not prove reachability from the particular
+eight-phase DirectPlant. No Franka, sampled controller, saturation, sensor error,
+joint coupling, contact or hardware result is included.
+
+Search performed
+The protocol was frozen before execution; its SHA-256 is
+20e19c6a1b1d59ef1201752ca2cf6adb6be2bd6d348bd90d44e4c4fd588c6ae2.
+The search used the specified three seeds, two target times (2 and 4 seconds),
+both outputs, and 0.01-second input knots. A linear adjoint selected adverse
+disturbance-knot signs and initial-cube signs for each rate schedule.
+L-BFGS-B varied the rate parameters. Twenty fixed constant-rate controls and
+twelve optimized candidates were replayed. One local input refinement inserted
+0.002-second knots around the strongest peak, for 33 candidates in total.
+Every candidate was replayed from all eight cube vertices and zero, with output
+probes every 0.001 second on [2,4]. The final peak time was locally refined and
+frozen as the rational 3998177/1000000 seconds. This is sampled optimization,
+not an all-time supremum calculation. The outer search is nonconvex.
+
+There were 11,698 rate-objective evaluations. One original search and the local
+refinement reached their evaluation budgets; their failed convergence statuses
+and complete objective histories are preserved. No extra search was added after
+those budgets. The final candidate has 528 exact rational input knots. Its
+initial physical state is x-c=-0.0002 m, v=0 and a=0. Disturbance and rate both
+change. The result is not a constant-bias case in disguise.
+
+Declared search deviation
+The protocol said the rate prefix before the last second would be constant.
+The decoder instead linearly interpolated between its time-zero rate and the
+first knot of the last second. The actual prefix is therefore a linear ramp.
+This was found in the final audit. All actual inputs still belong to the declared
+bounded continuous piecewise-linear class. The frozen candidate and replay remain
+valid numerical evidence, but the intended constant-prefix parameterization was
+not executed as written. The source, protocol and run are preserved unchanged.
+No correction run or additional search was made. Review must assess this stated
+deviation rather than assume perfect protocol compliance.
+
+Replay and controls
+The exploratory compiled RK4 integration used step at most 0.001 second. Its
+final ratio was 0.657695072839217; the higher-accuracy replay differs by about
+0.0000003992. SciPy DOP853 was written separately, split at every input knot,
+and replayed all nine initial states. A separate 60-digit power-series method
+used the exact rational knots and integrated 526 intervals to the frozen time.
+Its orders 100 and 120 agreed at the working precision. DOP853 and this replay
+differed by about 1.69e-14 m/s^2 in acceleration. Neither solver is a rigorous
+interval enclosure. Agreement is numerical evidence, not a proof certificate.
+
+Twelve constant-rate adjoint controls were checked against independent matrix
+exponential sensitivities. Halving RK4's step reduced every support-value error.
+Exact rational checks passed for knot ordering, input bounds, initial cube and
+target time. Zero input and zero state stayed zero. Constant-bias controls
+approached the expected position offset. A deliberately tighter diagnostic
+acceleration limit of 0.013 was detected as violated by the saved candidate;
+this control did not replace or relax the actual 0.02 target. The candidate
+also refutes exact rest at its target time while satisfying the finite limits.
+
+Next step
+next-test.txt gives one small rational ellipsoid certificate to attempt, with
+an explicit transient term from the inherited cube. A steady invariant set
+alone will not establish entry by two seconds. The proposed certificate has
+not been constructed or proved in this batch. No stronger disturbance assumption
+is needed merely to explain why the existing box bound was conservative.
+
+Reproduction and ownership
+scout.py and scout_kernel.cpp contain the frozen search. replay.py,
+replay_high_precision.py and validate.py provide separate replay and controls.
+Search runtime: Python 3.14.0, NumPy 2.3.4, SciPy 1.16.2. High precision uses
+the existing research-python environment with mpmath 1.3.0. No package or
+toolchain pins were changed. The root agent owns Git sync and acceptance.
+Read reproduction.txt for commands. The artifact manifest is the freeze boundary.

@@ -1,0 +1,30 @@
+INDEPENDENT REVIEW REQUEST
+
+Check the actual fixed comparison, not the prose alone.
+
+1. Verify all three freezes and inherited source hashes. Check canonical runtime.
+2. Recompute exact FIR q/v/a at 0.52 s. Check the native inputs are those values
+   rounded once. Check only the prefix reference is replaced by a native suffix;
+   the actual state must never reset. Verify serialized prefixes and event sides.
+3. Independently replay the physical ODE from time zero for all 72 traces, using
+   a different integration construction if practical. Prior critic-02's exact
+   polynomial particular solution plus 80-digit 3x3 exponential is suitable.
+4. Check the native exported duration is 0.90 s for the matched request, and
+   fast has no minimum-duration constraint. Rebuild/query the pinned library.
+   The origin is rational 0.52 s, not binary absolute time subtraction.
+5. Check causal packet information and the FIR candidate rejection. Deadline
+   information appears only in the second packet. Tight FIR must still fail
+   against authoritative target zero, although it retains old target 20 mm.
+6. Recompute reference extrema, full task decisions, both grid comparisons,
+   squared-jerk integrals, command variation including handoff jumps, suffix
+   path length and extra forward excursion. Check tight failures accompany the
+   generous curve. All actual-state jumps must be zero.
+7. Challenge the comparison's limits: minimum_duration Ruckig is not an optimal
+   smoothness baseline; path is not matched; lower squared jerk is not physical
+   energy; scalar numerical cases are not arbitrary-response or Franka claims.
+8. Inspect final PNG/SVG and their saved input hashes. The figure uses r=100/s,
+   w=.01; ranges include all six cases. An earlier footer-layout failure and
+   missing-matplotlib attempt are preserved, not numerical evidence changes.
+
+Do not treat a builder self-check as independent acceptance. Record a final
+scope decision and one productive next test or exact obstruction.

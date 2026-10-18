@@ -1,0 +1,75 @@
+Changing response and disturbance: bounded numerical scout
+Frozen before numerical search. Builder deadline: 2026-10-18 08:46 UTC.
+
+Question
+Use x'=v, v'=a, a'=r(-800(x-c)-60v-1.5a+w), with fixed c=0,
+80<=r<=120 per second and |w|<=0.01 m/s^2. The normalized initial
+coordinates z0=x, z1=x+v/40, z2=x+v/20+a/1600 belong to the cube
+[-0.0002,0.0002]^3. The target is |v|<=0.001 m/s and
+|a|<=0.02 m/s^2 for every t in [2,4] seconds.
+
+The search input class is continuous piecewise-linear r and w on [0,4].
+The initial grid is 0.01 seconds. Search outputs are numerical evidence.
+A failure from this cube does not show reachability from the particular
+eight-phase DirectPlant endpoint. The fixed goal and limits will not change.
+
+Search budget and seeds
+Use seeds 2026101801, 2026101802 and 2026101803. Search both terminal
+outputs (normalized velocity and acceleration), at times 2 and 4 seconds.
+For each of these four target pairs and each seed, allow no more than 1200
+rate-objective calls. Each call chooses adverse initial cube signs and all
+disturbance knot signs from the corresponding linear adjoint sensitivities.
+The outer rate search is bounded L-BFGS-B. Its variables are the rate knots
+in the last one second before the target, at spacing 0.05, plus the common
+prefix rate. Values are interpolated onto the 0.01-second grid. After the
+target, keep the last rate and disturbance constant for the full trace.
+Seeds start with: a constant rate 80; a constant rate 120; and uniform random
+bounded rates from the stated seed. The optimizer can change both constant
+starts. No convergence or global-optimum claim follows from this search.
+Also test constant-rate 80,90,100,110,120 adjoint candidates for each target
+pair, and zero-disturbance/zero-state and constant-bias controls. These are
+separate fixed controls, not added optimizer starts.
+
+Each saved candidate will be rounded to exact rational rate values with
+denominator 10^6, with clipping to [80,120]. Disturbance knots are exactly
+plus or minus 1/100 (zero sensitivity chooses zero). Times are exact rational
+grid values. Recompute after rounding. For each final search candidate,
+replay all eight cube vertices and zero with the same inputs. Probe both
+normalized outputs every 0.001 second on [2,4]. The one scalar objective is
+the maximum of these two absolute normalized outputs.
+
+One refinement
+Choose the strongest probe result. Refine its output peak locally with a
+bounded scalar search within 0.002 second of that probe. Freeze the target
+time on the nearest 0.000001-second rational grid. Insert 0.002-second input
+knots in [target-0.25,target+0.05], clipped to [0,4], retaining the original
+grid. Optimize the rate values at these inserted/local knots, with one
+L-BFGS-B run and at most 3000 additional objective calls. Other rate knots
+stay fixed. Rechoose disturbance signs from the refined adjoint. This is
+the only input-grid refinement. Replay all initial vertices and zero,
+probe at 0.001 second, then perform the same local peak-time refinement.
+
+Numerical methods
+The exploratory adjoint and forward integration use a compiled classical
+RK4 method, splitting at every input knot, with step at most 0.001 second.
+This is a search approximation, not an error certificate. Check the frozen
+strongest candidate using independent SciPy DOP853, split at every input
+knot, rtol 2e-12 and atol 2e-15 in scaled state (x,v/40,a/1600).
+Replay the frozen target time at 60 decimal digits by a separate power-series
+method for the polynomial vector field on each linear-input interval.
+Preserve solver failures and retries. High-precision agreement is still
+numerical evidence. Do not call a violation a certified counterexample
+without a rigorous trajectory-error enclosure entirely outside a limit.
+
+Stop and interpretation
+Stop optimizations at the declared budget or by 08:30 UTC, whichever comes
+first. Use the remaining time for replay, report, exact next test and freeze.
+If no violation is observed, report the largest observed ratio and tested
+input class. Do not claim universal safety. If a violation appears, preserve
+it and try a bounded rigorous residual/interval certificate before the
+deadline. Do not add disturbance regularity assumptions to rescue this test.
+
+Implementation details may be repaired after a failed run, but preserve the
+failed source and logs and disclose the change. Do not alter this protocol
+or the limits after seeing search results. Root and a separate critic own
+acceptance and repository integration.

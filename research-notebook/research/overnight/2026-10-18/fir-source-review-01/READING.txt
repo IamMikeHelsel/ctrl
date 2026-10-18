@@ -1,0 +1,45 @@
+FIR SOURCE GAP RECHECK — 18 October 2026 UTC
+
+Access
+The author-hosted 2012 and 2019 PDFs are now retrieved. The first Python
+fetch failed certificate validation. System curl succeeded with its normal
+certificate checks. Both attempts and exact PDF hashes are saved. Earlier
+inaccessible-source reports remain historical records, not current access status.
+
+2012 — relevant method read: Sections 3 and 4.1, pp25-34
+The paper derives discrete moving-average implementations and states that they
+approximate the continuous trajectories. Its online multi-point example covers
+early direction reversals. Overlapping contributions can double acceleration;
+waiting avoids that case. It also discusses changing the first filter's tap
+count while preserving its state. Pages33-34 were checked visually.
+Source: https://web.ing.unimo.it/~lbiagiotti/Papers/FIR%20filters%20for%20online%20trajectory%20planning%20with%20time-%20and%20frequency-domain%20specifications.pdf
+
+2019 — relevant method read: Sections2,3,5 and AppendicesA-C
+The method adjusts individual filter durations to meet kinematic limits and
+combines them with frequency constraints. Its main optimization scope is
+rest-to-rest motion. The paper includes recursive parameter adjustment and
+an extension intended to avoid unwanted derivative oscillation. It compares
+integrated filter design with additional vibration filters. This read does
+not independently verify its optimality claims or reproduce its experiments.
+Source: https://web.ing.unimo.it/~lbiagiotti/Papers/Trajectory%20Generation%20via%20FIR%20Filters%20%20a%20Procedure%20for%20Time-Optimization.pdf
+
+Consequence for our paper — coordinator assessment
+The reversal-limit failure is prior art. Treat our example as a checked
+regression case. Fixed equal-width filtering is a design choice, not a new
+trajectory family or a time-optimal method. The narrower candidate contribution
+is an exact list-parametric rational admission test, its real-time-domain
+meaning, retained execution commitments, and a separate uncertain-plant bound.
+These source reads do not establish novelty of that combination. The earlier
+governor and ModelPlex audit still applies. Human specialist review remains open.
+
+Implementation boundary
+A fast reference evaluator and an all-future admission check are different
+operations. Do not compare their runtimes as though they solve the same task.
+Our current theorem covers an analytic continuous reference. It does not
+certify a sampled moving-average implementation by naming both of them FIR.
+
+Scope
+These are focused relevant-method readings, not a claim to have audited every
+argument in either paper. No author was contacted. No downloaded source is
+new work by this project. Retain source attribution and review reuse rights
+before any public artifact release.

@@ -1,0 +1,56 @@
+MINIMUM-SUCCESSOR ACCELERATION CHECK — frozen builder report
+18 October 2026. Independent review pending; root cannot accept its own proof.
+
+Result
+SuccessorGuard.lean proves that the new rational check accepts exactly when h
+is positive, A is nonnegative, and reference acceleration stays within A at
+all real times at or after current. It also proves the same true/false
+acceptance as the accepted all-pairs checker. No knots are sorted by external
+code. A minimum strictly later point defines each consecutive interval.
+
+The new algorithm checks all guard-point accelerations. For each point it also
+checks an interior zero of affine jerk, when one exists in its next interval.
+A flat jerk interval needs no division or interior candidate. Current time,
+queued events, repeated knots and signed increments stay in the contract.
+
+Verification
+Seven local modules rebuilt from saved source. Standard axiom audit covered
+231 local declarations. Five separate kernel replays passed. Four deliberately
+false acceptance/successor statements were rejected. Fixtures include a
+nonzero acceleration plateau with zero jerk, a strict interior maximum,
+current time inside a cell, expired/queued events, cancellation, invalid h/A,
+and the original failed and repaired return. Earlier development failures
+remain in dev-run-01.log. No proof source changed after the saved freeze.
+
+Cost evidence
+All 18 predeclared runs completed and accepted the fixed inputs. Times below
+are milliseconds inside Lean --run, including the result print. Process
+startup and elaboration are outside this timer. These runs and the old runs
+occurred at different times on a shared active host. They are exploratory
+implementation measurements, not a controlled hardware speedup or deadline.
+
+ n    new median       new min       new max    old median
+ 1      1.787875      1.086959      2.112875      1.474792
+ 2      1.815500      1.757875      1.907875      6.333125
+ 4      4.252459      4.125792      4.524375     44.965583
+ 8     14.481458     14.440625     14.627042    352.685916
+16     54.988875     54.365208     55.374250   2764.119375
+32    219.647875    212.162958    220.703167  22520.810667
+
+The 32-event median fell from about 22.52 seconds in the saved old run to
+0.220 seconds here. This supports further implementation work. It does not
+establish real-time suitability, worst-case execution time, native-code cost,
+or a Franka control-loop budget. The first-event run is slightly slower than
+the old median. No event count or tuning changed after results were seen.
+
+Limits
+This is the declared scalar reference acceleration bound. It is not physical
+arm acceleration, a velocity contract, dispatch latency, or a hardware test.
+The proof does not establish bit complexity or runtime bounds. Completed-tail
+pruning is an independently accepted separate equivalence. Many active events
+can still be expensive. The benchmark did not combine pruning with this check.
+
+Next gate
+Independent critic: read the equivalence statements, fresh-build and replay,
+challenge exact decisions with an independent rational oracle, and inspect
+both timing protocols and all rows. Preserve this folder byte-for-byte.

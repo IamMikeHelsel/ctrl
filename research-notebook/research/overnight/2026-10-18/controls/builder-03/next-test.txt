@@ -1,0 +1,64 @@
+Next proof gate: uniform varying-response output bounds with entry by t=2
+Recommendation only. No certificate search was run in this batch.
+
+Keep the original controller, original goal, r(t) in [80,120]/s and arbitrary
+continuous |w(t)|<=0.01 m/s^2. Do not add a disturbance-rate assumption.
+The numerical scout found no failure, but provides no universal bound.
+
+One tractable exact certificate template
+Set e0=1/80000 m, d=w/0.01, and
+  q=((x-c), v/40, a/1600)/e0.
+Then q'=A(r)q+B(r)d, with
+  A(r) = [[0,40,0], [0,0,40], [-r/2,-3r/2,-3r/2]],
+  B(r) = [0,0,r/2]^T,  |d|<=1.
+The components of q are dimensionless; A has units 1/s and B has units 1/s.
+Physical outputs are v=0.0005 q1 m/s and a=0.02 q2 m/s^2.
+
+Seek one symmetric positive-definite rational 3 by 3 matrix Q and a positive
+rational rate alpha such that, at each of r=80 and r=120,
+  [[A Q + Q A^T + alpha Q, B], [B^T, -alpha]] <= 0.
+Also require Q11<=9/4 and Q22<=81/100 (zero-based component indices).
+The block matrix is affine in r. Exact endpoint negativity therefore covers
+every r in the interval, without a bound on r'. A rational LDL or exact
+principal-minor certificate can discharge the small matrix inequalities.
+The inequality implies invariance of q^T Q^(-1)q<=1 under every |d|<=1.
+It bounds the forced response from zero by |v|<=0.00075 m/s and
+|a|<=0.018 m/s^2. This is a proposed template; feasibility is not known.
+
+The required initial-state entry argument
+A steady invariant ellipsoid is insufficient. Split the actual trajectory into
+a zero-initial-state forced response and a homogeneous response with the SAME
+time-varying r. Prove existence of the forced response for continuous inputs
+and then the exact decomposition, or use an equivalent time-varying Minkowski
+set proof directly. Do not silently assume a physical state reset or assume
+that the initial cube lies inside the small ellipsoid.
+
+The accepted homogeneous cube theorem gives
+  E(t)=(1/4000) exp(-4t) m,
+  |v_h|<=80 E, |a_h|<=6400 E.
+Strengthen its elementary exponential estimate to exp(8)>=2048. For example,
+the first five terms give exp(2)>=7, so exp(8)>=2401>=2048.
+Then at every t>=2,
+  E<=1/8192000 m,
+  |v_h|<=1/102400 m/s,
+  |a_h|<=1/1280 m/s^2.
+Adding these homogeneous bounds to the proposed forced bounds gives
+  |v|<=3/4000+1/102400 = 0.000759765625 m/s < 0.001,
+  |a|<=9/500+1/1280 = 0.01878125 m/s^2 < 0.02.
+This gives a uniform all-later-time claim if each certificate and decomposition
+step is proved. The current scout establishes none of those new proof steps.
+
+Bound the next numerical certificate construction before running it. Keep the
+matrix coefficients rational for final checking. If this common quadratic
+template is infeasible, record that template failure; it does not refute the
+target. A polytope is a justified fallback: enclose zero, bound |q1|<=3/2 and
+|q2|<=9/10, and check all state-face vertices at the four endpoint input pairs
+(r,d) in {80,120} x {-1,1}. Prove the multi-affine endpoint reduction. Retain
+the same homogeneous entry argument. Do not claim entry from invariance alone.
+
+Separate reachability question
+The inherited cube is the current theorem premise. A cube counterexample, if
+found later, would not automatically show that the particular eight-phase
+DirectPlant can reach that initial state. Conversely, a uniform cube proof
+would cover its already-certified endpoint cube without constructing a new
+endpoint trajectory.

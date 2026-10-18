@@ -1,0 +1,84 @@
+COMMON-PREFIX SUFFIX COMPARISON — frozen before native planning and plant runs
+
+Question: after equal reference and actual motion through revision availability,
+does retained FIR improve motion quality against native fast and native duration-
+matched replanning, without hiding missed deadlines or extra excursion?
+
+Scope is one scalar plant, synthetic commands and constant parameter cases.
+No hardware, Franka, generic planner superiority or new Lean theorem is claimed.
+
+All methods share one four-box FIR reference, h = 0.2 s, with a +0.02 m target
+increment at 0.22 s. Initial reference and actual x/v/a are zero. First issue is
+0.20 s. Revision to target zero is issued at 0.50 s and available at 0.52 s.
+No method knows the revision or its deadline before this packet. Each method
+must make at least 1 mm actual progress by 0.50 s. The common prefix lasts
+through the left side of 0.52 s. One identical actual state enters each suffix;
+there is no physical reset. Native suffix initial q/v/a are the exact rational
+FIR derivatives at 0.52 s, rounded once to the native binary input format.
+
+Methods:
+- Retained FIR: keep the original event. Try return events only at [0.52,0.62] s
+  using the frozen builder-02 exact rational jerk/acceleration/deadline rules.
+  Reject a revision if neither candidate passes. Continue the original motion.
+- Native fast: at 0.52 s call pinned native Ruckig from common reference q/v/a
+  to target zero, zero target velocity/acceleration, without minimum_duration.
+- Native matched: same call with minimum_duration = 0.90 s. This is the fixed
+  difference 1.42 - 0.52, using the previously declared FIR completion time.
+  Export the native duration. A duration differing from 0.90 by >1e-12 s is
+  labeled unmatched; do not silently retime or change the request. Native
+  minimum_duration is a lower bound, not an assumed exact-duration promise.
+
+Native planning failure is recorded as rejection and falls back to the shared
+old FIR reference. No retry or parameter tuning is allowed. A generated native
+plan is executed even when its reference arrival exceeds the task deadline;
+that service is marked infeasible at the reference level and still scored by
+physical completion. Both native requests are unchanged across deadlines.
+
+Common reference limits: V=.1 m/s, A=.5 m/s^2, J=7.5 m/s^3. Numerical conformity
+allowance is 1e-10 SI. Every one-sided reference jump is retained. In particular,
+native jerk may jump at the handoff. q/v/a jumps may only reflect stated binary
+roundoff, and their actual values are reported. No hidden smoothing is added.
+Native origin is the exact rational 0.52 s; phase offsets are the exact rationals
+represented by exported binary cumulative phase boundaries. Native at_time
+replay queries use elapsed times relative to this origin. This convention is
+explicit and differs from the earlier absolute native clock experiment.
+
+Tasks: generous deadline 1.70 s and tight deadline 1.30 s. Both remain at target
+zero through horizon 2.50 s. From deadline through horizon, require sampled
+|x|<=.0002 m, |v|<=.001 m/s and |a|<=.02 m/s^2, including event sides. Also require
+all authoritative requests accepted, initial progress, and reference conformity.
+A rejection is a task failure even if a later state happens to be near target.
+Tracking band: sampled |x-q|<=.0002 m over the whole run, scored separately and
+included in full task success. This is a numerical check, not an all-time proof.
+
+Plant: x'=v, v'=a, a'=r*(u+w-a), with unchanged direct controller
+u=-800*x-60*v-.5*a+800*q+60*qv+1.5*qa+qjerk/96.
+Rates: 80,100,120 /s. Constant w: 0,.01 m/s^2. Saved grids: .001,.0005 s.
+Two tasks x three methods x six plant cases x two grids = 72 traces. Carry
+actual state from time zero. Propagate each polynomial piece with the inherited
+9x9 augmented matrix exponential. Include every event side and exact phase end.
+Canonical runtime is Python3.14.0, NumPy2.3.4, SciPy1.16.2. Verify before freeze.
+
+Metrics, reported together:
+- Shared actual and reference state at 0.52 s; exact binary equality across
+  methods is required for the actual state, per plant case and output grid.
+- Request acceptance, selected execution, wait after availability, planned
+  reference arrival, matched-duration status, deadline and sustained task score.
+- Initial progress, reference extrema, tracking error, actual speed/acceleration/
+  jerk peaks, settling through the finite horizon, and command peak.
+- Suffix integral of actual jerk squared from 0.52 to 2.50 s and suffix command
+  total variation: trapezoidal integral of |u'| plus all one-sided jumps, including
+  the jump at 0.52. Also report the same suffix metrics through 1.42 s to expose
+  horizon effects; do not claim an exact integral.
+- Suffix path length integral |v|; excess path length over direct distance from
+  actual x at 0.52 to zero; maximum forward excursion beyond that initial x;
+  maximum overshoot beyond zero. These are saved-sample/quadrature metrics.
+- All reference and actual event jumps, including rejection. No impulse energy
+  is assigned to a jerk jump; jerk squared has ordinary piecewise values.
+
+Freeze protocol, inputs, runtime, implementation and inherited source hashes
+before planning. Freeze exported schedules and native-query gate before plant
+runs. Save all failures. Do not tune after results. Independent review must
+check the actual data before acceptance. Tight-case results stay beside the
+comparison. The matched native baseline controls initial state and reference
+arrival; paths and jerk policies can still differ.

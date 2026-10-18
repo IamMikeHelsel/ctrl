@@ -1,0 +1,19 @@
+Run from the workspace root. Search output files are frozen evidence; replay
+in a copied folder if you need to rerun without replacing the original files.
+
+Compile the exploratory kernel (cache is not part of the proof/evidence claim):
+  mkdir -p research/overnight/2026-10-18/controls/builder-03/.cache
+  clang++ -O3 -std=c++17 -dynamiclib research/overnight/2026-10-18/controls/builder-03/scout_kernel.cpp -o research/overnight/2026-10-18/controls/builder-03/.cache/scout_kernel.dylib
+
+Original search command (contains the original 08:30 UTC optimization guard):
+  python3 research/overnight/2026-10-18/controls/builder-03/scout.py
+Do not silently change the historical time guard and call that an exact replay.
+The saved candidate can be replayed without running the search again:
+  python3 research/overnight/2026-10-18/controls/builder-03/replay.py
+  .tools/research-python/bin/python research/overnight/2026-10-18/controls/builder-03/replay_high_precision.py
+  python3 research/overnight/2026-10-18/controls/builder-03/validate.py
+  .tools/travel-plot-python/bin/python research/overnight/2026-10-18/controls/builder-03/plot.py
+
+Runtime details and source hashes are in pre-run-freeze.json and the replay
+JSON files. The compiled cache is excluded from the artifact manifest. No Lean
+claim is made by this numerical scout. Independent review is a separate gate.
