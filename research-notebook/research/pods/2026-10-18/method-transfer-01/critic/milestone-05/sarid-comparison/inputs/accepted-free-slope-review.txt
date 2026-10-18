@@ -1,0 +1,59 @@
+INDEPENDENT FREE-SLOPE STATEMENT GATE
+18 October 2026. Accepted as a sufficient criterion only.
+
+Verdict
+The root card's identities and expectation implication are correct for every
+real L. The interpolation formulas are correct. This accepts no new graph
+constant, parameter cover, optimality claim or numerical search conclusion.
+The source snapshots in inputs/ bind the exact card and accepted E4 setup.
+
+Argument checked
+Use R>0, y>1/2, b=y-1/2, mu=2j/y, K=4R+1>0 and a=(j-R)/b.
+Let L0=8R(y-mu)-2mu and C=j-4R(y-mu)^2-mu^2.
+For the low branch phi=j-4R(y-d)^2-d^2, and for the high branch
+phi=a*d-d^2. Exact completion of squares gives the two identities on the
+root card. check_identities.py expands their denominator-cleared forms in
+Q[R,y,j,mu,d,L,a,theta]. It also checks both interpolation identities.
+These are generic polynomial identities, not evaluations on a grid.
+
+For any L with A(L)<=0 and H(L)<=0, nonnegative squares imply
+phi(d)<=L(d-mu) on both branches. The E4 graph setup has E[d]=mu and
+E[s]=E[d^2], with positive finite vertex weights. If every neighborhood
+profile cost exceeds R, then s is strictly below its branch threshold at
+every vertex. Therefore E[phi]>0. Taking expectation of the affine bound
+gives E[phi]<=L(E[d]-mu)=0, a contradiction. The low branch includes d=0;
+the two formulas agree at d=b. No distribution optimization, strong duality,
+interior moment, indicator objective or SDP assumption enters this argument.
+Triangle-free neighborhood independence remains required for the costs.
+
+Set L1=a-2mu and D2=(L1-L0)^2. For theta in [0,1],
+A=C+theta^2*D2/(4K), H=a*mu-mu^2+(1-theta)^2*D2/4.
+Thus A is nondecreasing and H is nonincreasing on this interval, including
+the constant case D2=0. A proposed rational theta must pass both exact tests.
+These monotonicities alone do not prove a parameter cover.
+
+Independent local control
+At R=1/40, c=13/16, j=28/705:
+ C=-499139/839972250;
+ H(L0)=37343401/1209560040000>0;
+ L1=-221/1692;
+ A(L1)=-4107043/10644128352<0;
+ H(L1)=-1183/5964300<0.
+These reproduce the recorded exact Fraction control. The separate negative
+control evaluates the fixed-slope high branch at d=(a-L0)/2, which lies in
+that branch. Its affine gap is H(L0)>0. Thus the fixed low-branch test alone
+cannot replace the two-branch criterion.
+
+Evidence and limits
+Run python3 check_identities.py. It regenerates identity-results.json.
+Four generic identities, one exact repair and one exact missing-condition
+negative passed. The 193041-point binary64 scout is preserved as an input;
+I did not rerun or accept that screen as universal evidence. Its source hash
+matches the recorded source_sha256. No new Lean theorem is claimed.
+
+A(L) and H(L) bound complete quadratics on the whole real line. Actual
+branches use restricted degree domains. Failure of these sufficient square
+bounds is not automatically failure of every affine bound on those domains,
+a graph counterexample, or an impossibility result for other profiles.
+E5 must separately cover all parameter cells, boundaries and exteriors, and
+retain E4's actual profiles, BCL input, parity, transport and rounding chain.

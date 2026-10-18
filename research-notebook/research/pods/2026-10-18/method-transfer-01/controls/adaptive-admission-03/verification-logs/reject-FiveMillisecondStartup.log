@@ -1,0 +1,92 @@
+/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/pods/2026-10-18/method-transfer-01/controls/adaptive-admission-03/negative-controls/FiveMillisecondStartup.lean:49:0: warning: automatically included section variable(s) unused in theorem `LeanControls.AdaptiveAdmission.initial_bounds`:
+  ex
+  hD
+  hDH
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit ex hD hDH in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/pods/2026-10-18/method-transfer-01/controls/adaptive-admission-03/negative-controls/FiveMillisecondStartup.lean:124:2: error: linarith failed to find a contradiction
+m : State
+H D : ℝ
+f : ℝ → State
+r d stamp : Bool → ℝ → ℝ
+read : Bool → ℝ → State
+ex : Execution H D m f r d stamp read
+hD : 0 ≤ D
+hDH : D ≤ H
+hi : Admitted m f
+hc : ContinuousOn (fun t => f t 1) (Icc 0 D)
+hd : ∀ t ∈ Ico 0 D, HasDerivWithinAt (fun s => f s 1) (f t 2) (Ici t) t
+t : ℝ
+ht : t ∈ Icc 0 D
+hm : |f t 1 - f 0 1| ≤ 13 / 10 * (t - 0)
+hh : |f t 1 - f 0 1 - -f 0 1| ≤ |f t 1 - f 0 1| + |(-f 0 1)|
+hv : |f 0 1| ≤ 3 / 100
+htri : |f t 1| ≤ |f t 1 - f 0 1| + |f 0 1|
+hlim : D ≤ 1 / 200
+a✝ : 613 / 20000 < |f t 1|
+⊢ False
+failed
+/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/pods/2026-10-18/method-transfer-01/controls/adaptive-admission-03/negative-controls/FiveMillisecondStartup.lean:163:42: error: linarith failed to find a contradiction
+case «2».left
+m : State
+H D : ℝ
+f : ℝ → State
+r d stamp : Bool → ℝ → ℝ
+read : Bool → ℝ → State
+ex : Execution H D m f r d stamp read
+hD : 0 ≤ D
+hDH : D ≤ H
+hi : Admitted m f
+t : ℝ
+ht : t ∈ Icc 0 D
+hh :
+  |f t 0 - m 0| ≤ 1 / 1000 + 613 / 20000 * t ∧
+    |f t 1 - m 1| ≤ 1 / 100 + 13 / 10 * t ∧ |f t 2 - m 2| ≤ 1 / 20 + 756 / 25 * t
+h0 : -(1 / 1000 + 613 / 20000 * t) ≤ f t 0 - m 0 ∧ f t 0 - m 0 ≤ 1 / 1000 + 613 / 20000 * t
+h1 : -(1 / 100 + 13 / 10 * t) ≤ f t 1 - m 1 ∧ f t 1 - m 1 ≤ 1 / 100 + 13 / 10 * t
+h2 : -(1 / 20 + 756 / 25 * t) ≤ f t 2 - m 2 ∧ f t 2 - m 2 ≤ 1 / 20 + 756 / 25 * t
+hmv : -(1 / 50) ≤ m 1 ∧ m 1 ≤ 1 / 50
+hma : -(5 / 4) ≤ m 2 ∧ m 2 ≤ 5 / 4
+hlim : D ≤ 1 / 200
+a✝ : f t 0 - (m 0 + m 1 / 4 + m 2 / 32) + f t 1 / 2 + f t 2 / 16 < -(2221 / 40000)
+⊢ False
+failed
+/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/pods/2026-10-18/method-transfer-01/controls/adaptive-admission-03/negative-controls/FiveMillisecondStartup.lean:163:42: error: linarith failed to find a contradiction
+case «2».right
+m : State
+H D : ℝ
+f : ℝ → State
+r d stamp : Bool → ℝ → ℝ
+read : Bool → ℝ → State
+ex : Execution H D m f r d stamp read
+hD : 0 ≤ D
+hDH : D ≤ H
+hi : Admitted m f
+t : ℝ
+ht : t ∈ Icc 0 D
+hh :
+  |f t 0 - m 0| ≤ 1 / 1000 + 613 / 20000 * t ∧
+    |f t 1 - m 1| ≤ 1 / 100 + 13 / 10 * t ∧ |f t 2 - m 2| ≤ 1 / 20 + 756 / 25 * t
+h0 : -(1 / 1000 + 613 / 20000 * t) ≤ f t 0 - m 0 ∧ f t 0 - m 0 ≤ 1 / 1000 + 613 / 20000 * t
+h1 : -(1 / 100 + 13 / 10 * t) ≤ f t 1 - m 1 ∧ f t 1 - m 1 ≤ 1 / 100 + 13 / 10 * t
+h2 : -(1 / 20 + 756 / 25 * t) ≤ f t 2 - m 2 ∧ f t 2 - m 2 ≤ 1 / 20 + 756 / 25 * t
+hmv : -(1 / 50) ≤ m 1 ∧ m 1 ≤ 1 / 50
+hma : -(5 / 4) ≤ m 2 ∧ m 2 ≤ 5 / 4
+hlim : D ≤ 1 / 200
+a✝ : 2221 / 40000 < f t 0 - (m 0 + m 1 / 4 + m 2 / 32) + f t 1 / 2 + f t 2 / 16
+⊢ False
+failed
+/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/pods/2026-10-18/method-transfer-01/controls/adaptive-admission-03/negative-controls/FiveMillisecondStartup.lean:197:8: warning: `if_pos` has been deprecated: Use `ite_eq_left` instead
+
+Hint: Replace the deprecated name:
+  i̵f̵_̵p̵o̵s̵i̲t̲e̲_̲e̲q̲_̲l̲e̲f̲t̲
+/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/pods/2026-10-18/method-transfer-01/controls/adaptive-admission-03/negative-controls/FiveMillisecondStartup.lean:523:24: warning: `if_pos` has been deprecated: Use `ite_eq_left` instead
+
+Hint: Replace the deprecated name:
+  i̵f̵_̵p̵o̵s̵i̲t̲e̲_̲e̲q̲_̲l̲e̲f̲t̲
+/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/pods/2026-10-18/method-transfer-01/controls/adaptive-admission-03/negative-controls/FiveMillisecondStartup.lean:527:24: warning: `if_neg` has been deprecated: Use `ite_eq_right` instead
+
+Hint: Replace the deprecated name:
+  i̵f̵_̵n̵e̵g̵i̲t̲e̲_̲e̲q̲_̲r̲i̲g̲h̲t̲

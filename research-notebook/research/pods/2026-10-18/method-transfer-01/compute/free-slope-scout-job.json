@@ -1,0 +1,25 @@
+{
+  "job": "free-slope-scout-01",
+  "source_sha256": "3ae93c0b7268397cb7e47b820a58917d8f99fabcb672bc33ecef9a86dafb2189",
+  "host": "sparky.local",
+  "remote_directory": "/home/mike/research-method-transfer-20261018/free-slope-scout-3ae93c0b7268",
+  "command_argv": [
+    "ssh",
+    "-o",
+    "BatchMode=yes",
+    "-o",
+    "ConnectTimeout=8",
+    "sparky.local",
+    "cd /home/mike/research-method-transfer-20261018/free-slope-scout-3ae93c0b7268 && echo $$ > runner.pid && exec timeout --signal=TERM --kill-after=5s 45s python3 free_slope_scout.py"
+  ],
+  "resource_cap": "one CPU process,45second runtime plus5second termination grace,no GPU",
+  "remote_process_identity": "runner.pid in unique source-hash directory; exec replaces shell with timeout supervisor",
+  "termination": "GNU timeout sends TERM at45seconds and KILL5seconds later; do not terminate unrelated processes",
+  "started_utc": "2026-10-18T17:19:32.108669+00:00",
+  "status": "completed",
+  "scope": "numerical scalar proposal screen only",
+  "exit_code": 0,
+  "completed_utc": "2026-10-18T17:19:38.380503+00:00",
+  "remote_python_pid": 2425421,
+  "output_sha256": "94d9fab866a7cac371fa857b368a1249e9e27fe88697fbb729612bef00f336e6"
+}

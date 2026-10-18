@@ -1,0 +1,59 @@
+C3 ANALYTIC PREFLIGHT — 18 October 2026, 17:23 UTC
+
+Selected guard
+For the first measured state m, choose c=m0+m1/4+m2/32.
+Require |m1|<=.02 m/s and |m2|<=1.25 m/s^2. There is no absolute-position
+guard. The center and certified position tube translate with the reading.
+The state, timestamp, pending command -1.21, startup cap .5 ms, total age
+1 ms, sensor errors, clipping and rate range [8,12] remain explicit.
+
+Exact startup budgets
+The sensor box gives initial |v|<=.03 and |a|<=1.30. The pending ODE keeps
+|a|<=1.30. Over at most .5 ms it gives |v|<=.03065 and |a'|<=30.24.
+Relative to the original measured state at timestamp zero:
+  |x-m0|<=.001+.03065*t;
+  |v-m1|<=.01+1.30*t;
+  |a-m2|<=.05+30.24*t.
+Measured transformed coordinates are (-m1/4-m2/32, -m2/32, m1/4+m2/32).
+At the startup cap, conservative absolute coordinate bounds are
+  .045077825, .042740325, .054472825.
+All fit R=.055525. The smallest exact margin is 42087/40000000=.001052175.
+The pending-feedback slope bound is at most 7.7252, so the old slope budget
+8 remains valid. Its mixed-history residual budget stays .111, below
+2R=.11105 by .00005. The formal proof must derive these facts, not assume them.
+
+Sensor sub-band
+If |true v|<=.01 and |true a|<=1.20, every reading within the sensor bounds
+meets the guard. This gives a nonzero-width physical acceptance band. It
+does not prove a sampled detector observes that band or that a stopping
+trajectory reaches it under the unchanged rate/timing contract.
+
+Fair baseline and cost
+The old fixed reading is (.14,-.01,-1.17), with fixed c=.088125. Its proven
+position interval is [.0326,.14365]. The selected adaptive center for the
+same reading is .1009375, giving [.0454125,.1564625]. The new interface
+removes the absolute-position admission obstruction at the cost of a different,
+wider-forward tube. It does not preserve .15 m clearance or close C1's
+floor-only-rate stopping-to-holding gap.
+
+First candidate retained
+Initially c=m0+m2/32 with |m1|<=.01 and |m2|<=1.25 passed the startup cube
+screen, with budgets .040072825,.045235325,.054467825. But its measured-speed
+threshold equals the sensor-error allowance and supplies no positive-width
+physical speed sub-band. Root proposed the selected velocity-balanced center.
+It permits the wider measured-speed guard while keeping all startup budgets.
+For the old reading the first candidate's upper tube was .1589625.
+
+Falsifiers
+Translation must change center and position bounds by exactly the same amount,
+while leaving the guard, transformed coordinates, command and dynamics intact.
+The first reading must still expire at global age 1 ms. Widened velocity or
+acceleration guards must not inherit the certificate without new arithmetic.
+The nominal nonconstant witness must retain its old measured state at delayed
+dispatch, even though the physical state has changed.
+
+Route
+Adapt the accepted BrakingDelayedHold proof to a measured guard. Reuse the
+same mixed pending/digital history argument. No source corpus theorem is
+needed for this symmetry-based interface repair. General existence, detector
+liveness, stop-to-hold composition, hardware and novelty remain open.

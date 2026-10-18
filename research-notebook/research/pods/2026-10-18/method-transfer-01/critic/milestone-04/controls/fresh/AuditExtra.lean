@@ -1,0 +1,2 @@
+import LateBoxScope
+#print axioms CriticLateBox.weighted_box_allows_motion

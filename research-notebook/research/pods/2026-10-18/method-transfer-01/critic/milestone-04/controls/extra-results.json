@@ -1,0 +1,70 @@
+{
+  "passed": true,
+  "main_result_sha256": "e400d98323008817ab7c6adc0c44ee83326515bd3af4b0ea5c5501699ddcedaa",
+  "runner_sha256": "d0bb9ce1012cf66be31bf93975525d05662b5ecca457b51c19de52c4b5a408f6",
+  "steps": [
+    {
+      "label": "build-late-box",
+      "command": [
+        "/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/.tools/elan/toolchains/leanprover--lean4---v4.35.0/bin/lean",
+        "--root=/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/pods/2026-10-18/method-transfer-01/critic/milestone-04/controls/fresh",
+        "-o",
+        "/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/pods/2026-10-18/method-transfer-01/critic/milestone-04/controls/fresh/LateBoxScope.olean",
+        "/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/pods/2026-10-18/method-transfer-01/critic/milestone-04/controls/fresh/LateBoxScope.lean"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "expected": "success",
+      "seconds": 9.5893,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "audit-late-box",
+      "command": [
+        "/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/.tools/elan/toolchains/leanprover--lean4---v4.35.0/bin/lean",
+        "/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/pods/2026-10-18/method-transfer-01/critic/milestone-04/controls/fresh/AuditExtra.lean"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "expected": "success",
+      "seconds": 8.0113,
+      "log_sha256": "a08834b47ac450cd8f2b837b786035edac97b603fdb0703f68e990e2be10bc79"
+    },
+    {
+      "label": "kernel-late-box",
+      "command": [
+        "/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/.tools/elan/toolchains/leanprover--lean4---v4.35.0/bin/leanchecker",
+        "LateBoxScope",
+        "-v"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "expected": "success",
+      "seconds": 15.7104,
+      "log_sha256": "d3f8ce56608846b08a187fb8293e9e9526ccdbd9faec4825574ad91fe4173f8d"
+    },
+    {
+      "label": "reject-false-rest",
+      "command": [
+        "/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/.tools/elan/toolchains/leanprover--lean4---v4.35.0/bin/lean",
+        "/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/pods/2026-10-18/method-transfer-01/critic/milestone-04/controls/fresh/FalseRest.lean"
+      ],
+      "exit_code": 1,
+      "passed": true,
+      "expected": "semantic rejection",
+      "seconds": 5.8624,
+      "log_sha256": "6ae3ddbc0009bd20bb951567a2ac19915ede891bf340d76cc7c77b76c17f760f"
+    }
+  ],
+  "axioms": {
+    "CriticLateBox.weighted_box_allows_motion": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ]
+  },
+  "sources": {
+    "LateBoxScope.lean": "925fbf40c04f4d238c636b94fec37322164d8bf7a69b623087641df00939faf3",
+    "FalseRest.lean": "1eb9b61b40bd4726009b217688588f049cc88757d258daacf780376602acdbcd"
+  }
+}

@@ -1,0 +1,65 @@
+E5 CANDIDATE — LET THE MOMENT CERTIFICATE CHOOSE ITS SLOPE
+18 October 2026. Root proposal; not independently accepted.
+
+Question and value
+Can the same graph construction and same BCL input beat .0252 by changing
+only the separating affine function? E4 fixes its slope to minimize one
+branch. That need not minimize the maximum of both branches. This is one
+continuation of E1/E4, not an independent method-selection success.
+
+Source mechanism and reading depth
+Bertsimas and Popescu, Optimal inequalities in probability theory: a convex
+optimization approach, SIAM J. Optim.15(3),780-804 (2005), section2, Theorem2.1.
+Primary author PDF:
+https://web.mit.edu/dbertsim/www/papers/MomentProblems/Optimal-inequalities-in-probability-theory-A-convex-optimization-approach-SIAM15.pdf
+Read the primal/dual statements and weak-duality proof on pages784-785.
+Its relevant mechanism is pointwise domination followed by expectation under
+known moments. We use only that elementary argument. No strong duality,
+interior-moment assumption, optimality, SDP solver or source theorem about
+indicator functions is silently applied to our different objective.
+The recent corpus's moment/lift papers prompted the lens; this older source
+provides the direct mechanism. Source discovery is not novelty evidence.
+
+Objects and sufficient certificate
+Use the accepted E4 graph/moment setup without alteration. Let R>0,
+y=1/(2c)>.5, b=y-.5, mu=2j/y, K=4R+1, a=(j-R)/b.
+Under the opposing assumption that every neighborhood profile costs >R,
+the two branch functions phi satisfy E[phi(d)]>0, and E[d]=mu.
+
+For ANY real L, complete squares:
+ phi_low(d) = A(L)+L(d-mu)-K*(d-(8R*y-L)/(2K))^2,
+ phi_high(d)= H(L)+L(d-mu)-(d-(a-L)/2)^2,
+ A(L)=C+(L-L0)^2/(4K),
+ H(L)=(a-L)^2/4+L*mu,
+ L0=8R(y-mu)-2mu,
+ C=j-4R(y-mu)^2-mu^2.
+Thus A(L)<=0 and H(L)<=0 imply E[phi(d)]<=0, a contradiction.
+These are global quadratic bounds; applying them on smaller branch domains
+is conservative. Do not claim that failure proves the graph conclusion false.
+All masses, triangle-free hypotheses, profile endpoints, rounding/parity,
+BCL transport and exterior cases remain the E4 obligations.
+
+Proposal search
+Let L1=a-2mu, Hmin=a*mu-mu^2, D2=(L1-L0)^2.
+For L=L0+theta*(L1-L0), theta in[0,1],
+ A=C+theta^2*D2/(4K), H=Hmin+(1-theta)^2*D2/4.
+The first increases and second decreases with theta. A numerical crossing
+can propose a rational theta. Only an exact complete certificate may accept
+it. A small menu theta=k/16 could keep later verification simple.
+Use the old uniform/completion envelope as a matched baseline. Do not use
+the stronger unaccepted external cut premise or cubic-saving result here.
+
+Falsifiers and cap
+Check identities exactly. Reproduce a fixed-L failure at R=1/40,c=13/16,
+j=28/705; a rational theta must repair both inequalities at that same point.
+Require every rational cell and every exterior and boundary to be covered.
+Reject deleted cells, wrong target/slope and missing triangle-free premise.
+Any result that changes BCL or assumes graph optimum from scalar data fails.
+One45-60minute exact-cover milestone follows the bounded scout. Choose one
+conservative target; stop constant chasing when its cover passes or fails.
+A failure point may only obstruct this sufficient certificate.
+
+Numerical scout
+compute/free_slope_scout.py and its recorded existing-Sparky job provide a
+193041-point proposal screen plus one exact Fraction control. No graph is
+constructed by that screen. No sampled success is a universal theorem.

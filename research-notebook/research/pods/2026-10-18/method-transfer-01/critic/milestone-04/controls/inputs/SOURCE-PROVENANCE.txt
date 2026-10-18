@@ -1,0 +1,52 @@
+C2 SOURCE AND METHOD PROVENANCE
+
+Formal dependency
+inputs/DigitalHold.lean is a byte-for-byte copy of the accepted source:
+  research/pods/2026-10-18/digital-hold-01/builder/DigitalHold.lean
+  SHA256 aa91b649affc0906c79dd7a017b34d6f729d1c16f50117ab87daaa1ed2fadc03
+INPUTS.json records this copy. No frozen source was edited.
+The complete local build order is DigitalHold, WeightedEntry, EntryWitness.
+WeightedEntry imports DigitalHold; EntryWitness imports WeightedEntry.
+DigitalHold imports only Mathlib. There is no C1/recovery proof dependency.
+Pinned toolchain, package revisions, executable hashes and paths are recorded
+in verification.json. Existing external package products were reused.
+
+Recent source that suggested the transfer
+openai/math commit 1581d4cbdd69a0faf34b2089614fe2a814316a6a.
+Family 149, Uniform Permanence in Weakly Reversible Mass-Action Systems,
+5 October 2026, section 3, Lemma "Trapping and finite entry" (lem:trapping).
+Primary source:
+https://github.com/openai/math/blob/1581d4cbdd69a0faf34b2089614fe2a814316a6a/preprints/Uniform-Permanence-in-Weakly-Reversible-Mass-Action-Systems-October-5-2026/build/sections/trapping.tex
+Local selected-source copy: ../sources/149-trapping.tex
+SHA256 c076318b4fd3ef4b310a74d6302c5a1bd382e2ba180d439f0201c7e7daba97cd
+
+The source proof uses active branches of a finite affine minimum. Uniform
+positive drift outside a plateau yields finite entry. Its chemical drift
+proof uses positive concentrations, weak reversibility, positive constant
+reaction rates and stoichiometric classes. Those assumptions do not fit our
+signed sampled lag state. Its solution-continuation conclusion is not reused.
+
+Generic formal statement inspected, not imported or executed:
+OAI.Problem326.monotoneOn_finset_inf'_of_active_right_deriv_nonneg in
+https://github.com/openai/math/blob/1581d4cbdd69a0faf34b2089614fe2a814316a6a/lean/OAI/Analysis/MassAction/FiniteMinimum.lean
+Local copy: ../sources/FiniteMinimum.lean
+SHA256 035f902e256da3f4806a4825186c0c974ba6edd35899d6a2fbbd768f41e35721
+The source's formal scope note concerns the September boundedness/persistence
+result. It does not certify every October permanence claim.
+
+Our reconstruction
+Negative weighted radius is a finite affine minimum. We implement its
+finite-entry consequence with six moving signed faces and the existing
+DigitalHold.finite_prefix_barrier. That uses left derivatives at first contact,
+rather than importing the source's right-minimum theorem. Our own exact robust
+face inequalities discharge the drift requirements, including dispatch times.
+The family source guided the proof target; generic weighted polyhedral
+Lyapunov/comparison mathematics is older standard work. Neither a new method
+nor novelty of this controls corollary is claimed.
+
+Preservation
+The verifier checks the complete 25-file shortlist freeze, the complete
+153-file C1 freeze, the accepted DigitalHold source and its input copy.
+It checks the toolchain against C1's recorded pin solely for provenance;
+C1's theorem or acceptance is not a premise. Downloaded corpus code is not
+in the Lean import path. No new external source or code was fetched in C2.

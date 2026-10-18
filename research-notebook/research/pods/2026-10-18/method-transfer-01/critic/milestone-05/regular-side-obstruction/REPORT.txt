@@ -1,0 +1,62 @@
+INDEPENDENT REVIEW: REGULAR-SIDE OBSTRUCTION
+18 October 2026. Accepted at the restricted-side scope below.
+
+Verdict
+The root packet gives an actual finite simple triangle-free graph and a cut
+with internal mass 2/47. The exact optimum over fractional halves supported
+in its larger side Y is 3763/150400=1/40+3/150400. Its global half optimum
+is zero. This is a real limitation of that chosen side, not just a scalar
+moment-law example. It is not a global sparse-half obstruction and does not
+survive a requirement that the supplied cut be locally maximal.
+
+Frozen input
+root-review/regular-side-obstruction/manifest.json:
+b3f97ba484a806437375b427c581b35aa43a5d7c937784283d4223879f1c80cc.
+All three listed source/evidence hashes match. inputs/ preserves them.
+I executed the copied check.py only in replay/. Its result is byte-identical
+to the frozen result. independent_check.py also checks the parameters and
+a separate fractional deletion example, plus a regularity negative.
+
+Counting argument
+For each side with 2m vertices and integer degree d<=m, the shifts
+0,...,d-1 define a simple bipartite regular circulant. There are d distinct
+neighbors at each vertex and no same-class edges. Disjoint union gives the
+specified X and Y, no cross edges and a triangle-free graph. The stated
+orders and degrees satisfy all divisibility, positivity and degree bounds.
+For Y, y=80/133, j=71/1880, mu=d_Y/N=9443/75200 and b=y-1/2=27/266.
+X has q=9/1880, so j+q=2/47. The cut itself has no crossing edges.
+
+Let each original vertex mass be w=1/N. For a fractional half z in Y,
+put t=w-z. Then t>=0 and sum t=b. Expanding each unordered edge once gives
+ e(z)=j-sum_v t_v*(sum_neighbors w)+e(t)=j-b*mu+e(t).
+Regularity supplies the same mu at every vertex. Nonnegative masses give
+e(t)>=0. Since b<=y/2, all removed mass can lie in one independent
+bipartition class. Then e(t)=0. The specified N also permits an integral
+removal of exactly 107611200 vertices, so this lower bound is attained.
+Every neighborhood profile has d=mu>b and s=mu^2 and attains this value.
+The supplied uniform and completion upper envelopes exceed 1/40 as claimed;
+this says nothing about optimality of the completion construction itself.
+
+The union of the left classes of X and Y is an independent set of N/2
+vertices, so the global optimum is exactly zero. Every positive-degree
+vertex can improve the supplied cut by moving to the other side. A maximum
+cut has internal cost zero. Therefore this example cannot refute a claim
+whose input includes local or global cut optimality. Finite improving moves
+from any BCL-admitted cut preserve its internal-cost upper bound, but that
+fact alone proves no stronger sparse-half result.
+
+Independent missing-hypothesis control
+A 6-vertex star Y with two isolated X vertices, all masses 1/8, has a half
+consisting of four leaves with cost zero. Replacing its degrees by their
+average in the regular lower-bound formula predicts 5/192>0. Thus the
+regularity condition cannot be omitted. This is a real small graph example.
+The other independent control expands the exact deletion identity for
+fractional removed masses on a 6-cycle; it passes.
+
+Limits and replay
+Run python3 replay/check.py, then python3 independent_check.py. The first
+regenerates the copied arithmetic output; the second checks the output match
+and independent controls. No billion-vertex adjacency matrix was allocated.
+The general finite construction and optimization argument are written
+mathematics, not a new Lean endpoint. This packet neither accepts E5's .0251
+cover nor asserts a best-known constant, novelty or a .025 universal barrier.

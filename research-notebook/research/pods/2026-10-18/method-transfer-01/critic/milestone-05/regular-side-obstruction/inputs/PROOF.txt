@@ -1,0 +1,68 @@
+AN ACTUAL GRAPH EXPLAINS THE NEXT CERTIFICATE LIMIT
+Root diagnostic,18 October2026. Written proof pending independent review.
+
+Claim
+At c=133/160 and j=71/1880, the obstruction to target R=1/40 is not
+only an artificial degree distribution. There is a finite simple triangle-free
+graph and a cut (X,Y), with q+j=2/47, for which every fractional half supported
+inside Y costs at least3763/150400>1/40. Yet the whole graph has an independent
+half. This is a limitation of the chosen side, not a counterexample to Erdos128.
+
+Construction
+All vertices have mass1/N. Take N=1060169600. Let Y have637696000 vertices,
+degree133127414, and X have422473600 vertices, degree25472160. Construct each
+side as a regular bipartite circulant: for2m vertices, split into two parts
+indexed by Z/mZ and join left i to right i+s for0<=s<d. Since d<=m, all
+neighbors are distinct, the graph is simple, and every vertex has degree d.
+There are no edges between X and Y. No adjacency matrix is materialized.
+This defines a finite graph directly; the large order is a denominator cost.
+
+The exact check.py verifies both integer degrees, side sizes, and
+ y=80/133, x=53/133, j=e(Y)/N^2=71/1880,
+ q=e(X)/N^2=9/1880, q+j=2/47,
+ mu=d_Y/N=9443/75200, b=y-1/2=27/266, mu>b.
+These are exact rational equalities. The graph is bipartite and triangle-free.
+
+All halves confined to Y
+For any fractional selected masses0<=z_v<=1/N in Y with sum z_v=1/2,
+set t_v=1/N-z_v. Their removed mass is b. Expanding each edge product gives
+ e(z)=j-sum_v t_v*mu+e(t)=j-b*mu+e(t)>=j-b*mu,
+since t_v>=0 and all edge coefficients are nonnegative. This is valid for
+fractional selections, not just integral vertex subsets.
+Because b<=y/2, choose the removed mass entirely in one bipartition class of
+Y. It is independent, so e(t)=0 and equality is attained. The chosen integer
+order also makes an integral removal possible: remove107611200 vertices.
+Therefore the exact restricted-half optimum is
+ j-b*mu=3763/150400=1/40+3/150400.
+Every single-neighborhood profile is in the high branch, since all degrees
+are mu>b, and s_v=mu^2. It attains exactly the same restricted optimum.
+The scalar uniform and completion envelopes also exceed1/40 at these cut
+parameters; check.py records their exact values. The completion envelope
+is an upper bound, not the optimum of its underlying construction.
+
+The full graph is easy
+Take the union of the left bipartition classes of X and Y. It has exactly
+N/2 vertices and no edges, so the actual global half optimum is0. The cut
+(X,Y) used above is deliberately poor: its cut edges are0. A maximum cut
+has all edges crossing and internal cost0. Every vertex with positive degree
+can improve (X,Y) by a single move, so even local cut optimality excludes it.
+
+Meaning for the next test
+No better distributional estimate can force a half supported inside this Y
+to meet .025. We must change the construction, use the other side, or exploit
+a better cut. This does NOT prove that every graph needs a stronger approach,
+that .025 is the optimal universal coefficient, or that the moment mechanism
+has no other value. E5's .0251 cover is a separate universal conditional result.
+
+One justified next hypothesis is to require a locally maximal cut while
+preserving the BCL internal-cost upper bound. Starting from any admitted cut,
+finite improving vertex moves never increase its internal cost. Such a cut
+satisfies internal degree<=external degree at each vertex. This excludes the
+diagnostic but does not yet imply a useful half bound. A later test must find
+an actual construction and a complete inequality, or a new exact obstruction.
+
+Validation limits
+check.py checks all parameters and a10-vertex circulant/deletion control.
+It does not enumerate this billion-vertex graph or prove a Lean endpoint.
+The finite construction and counting argument above require independent
+statement review. No new source theorem, hardware or novelty claim is made.

@@ -1,0 +1,79 @@
+FOCUSED SOURCE COMPARISON: SARID AND THE FREE-SLOPE CRITERION
+18 October 2026. Source-defined overlap review; no priority verdict.
+
+Finding
+The neighborhood construction is already Sarid's construction. The general
+idea of bounding a function by an affine function and then taking expectation
+is standard, and Sarid's displayed cubic proof itself uses that idea. The
+reviewed source does not state the particular threshold-dependent two-branch
+criterion A(L)<=0, H(L)<=0 or optimize its free slope. That difference does
+not establish novelty. The present step is best described as a new analysis
+of a known endpoint construction within this project. Any new graph constant
+requires its own complete certificate and wider prior-art comparison.
+
+Source and reading scope
+Amir Sarid, Sparse halves in triangle-free graphs: a bound of 131/5000.
+Repository https://github.com/aimir/erdos-128-sparse-halves
+Pinned revision ba85f319ebb33ec2194ef4c2929a12916329e1e7.
+Primary TeX SHA256 a6b34d505a6cfaae4482d17a017afb35f04558b2a8be521ba1ca448592f3b8e3.
+I read the neighborhood perturbation and cut construction, TeX lines 411-613,
+and checked the opening theorem/scope and the source README. The local source
+and pin record are copied into inputs/. This is one source comparison, not an
+exhaustive survey. Earlier root E3 replay accepted the weighted saving lemma;
+this review does not repeat that Lean replay or extend its formal endpoint.
+
+Exact construction match
+Normalize the Y weights by y. Sarid's constant profile is alpha=1/(2y),
+normalized degree delta=d/y, and direction 1_N-delta. Its negative endpoint
+is alpha-t_minus*(1_N-delta), with
+ t_minus=min(alpha/(1-delta),(1-alpha)/delta).
+If d<=b=y-1/2, this endpoint is zero on N and 1/[2(y-d)] elsewhere.
+If d>=b, it is 1-b/d on N and one elsewhere.
+These are exactly the E4/E5 profiles. At d=b the formulas agree; d=0 uses
+the low formula without division by d. Triangle-free neighborhood independence
+gives costs (j-s)/[4(y-d)^2] and j-(b/d)*s. This is reuse, not a new profile.
+
+Different displayed estimates
+Sarid defines normalized edge mass m=sum_edges w_u*w_v, degrees delta_v and
+neighbor degree sums e_v. It proves that some v has
+ delta_v*(e_v-m*delta_v)>=4*m^3.
+The proof normalizes degrees by 2m, uses the harmonic-arithmetic mean
+inequality on neighborhoods, and averages with degree-weighted vertex mass.
+The final pointwise inequality is
+ 2r^3/(r^2+1)>=(2r-1),
+whose difference is (r-1)^2/(r^2+1). This is already an affine-expectation
+argument. Thus a claim that the present project introduced that general
+mechanism into the neighborhood proof would be wrong.
+
+Sarid then averages BOTH feasible perturbation endpoints. Their barycentric
+weights cancel every linear term, including an arbitrary external objective.
+The saving is the product of the two radii times the cubic neighborhood
+quantity. It bounds the radius product below by a function of alpha alone.
+After a BCL cut, it applies that saving to two baseline profiles and maximizes
+the resulting scalar envelope. The source's second baseline is c on Y; its
+first includes X and a constant on Y. This is not our deletion-completion Q
+baseline, although both arguments use the same BCL input.
+
+Our checked criterion keeps the negative endpoint's exact degree dependence.
+Assuming all its costs exceed a threshold R gives a piecewise quadratic
+phi after using E[s]=E[d^2]. It bounds both quadratics by the same line
+L(d-mu), with mu=E[d]=2j/y, and can choose L. The accepted gate needs only
+this double-counting identity and weak pointwise domination. It does not
+invoke Sarid's cubic saving, strong duality or an SDP optimizer.
+The displayed source does not perform this particular optimization. I have
+not proved that no algebraic reformulation of its estimates implies it.
+
+Notation warning
+Our mu is the mean AMBIENT degree 2j/y. Sarid's m (called mu in the source)
+is the NORMALIZED edge mass j/y^2. Our L is a freely chosen affine slope.
+Sarid's L(alpha) is a lower bound on the product of feasible radii. They are
+different objects. Conflating them would create a false theorem transfer.
+
+Value and unresolved claims
+The accepted E4 result is a written conditional .0252 graph bound with exact
+coverage, not a new Lean graph endpoint. E5's .0251 candidate remains subject
+to independent review. No source here proves a best-known or newness claim.
+The separate stronger-cut source would conditionally give .02491, but its
+cut premise remains unaccepted. This review neither uses nor refutes it.
+The appropriate next gate is complete E5 mathematics, then a fair comparison
+under matched assumptions. It is not another broad method-discovery story.

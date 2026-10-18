@@ -1,0 +1,45 @@
+C2 REPLAY AND NEGATIVE CONTROLS
+
+Builder verification is complete. See verification.json for exact commands,
+hashes, versions, package pins, import graph, durations and exit codes.
+The recorded verifier is verify.py. It writes only below this C2 directory,
+requires an empty fresh-replay directory, and refuses to reuse prior local
+proof products. Do not rerun it over the frozen evidence.
+
+For an independent replay, use a new reviewer-owned directory. Copy exactly
+inputs/DigitalHold.lean, WeightedEntry.lean and EntryWitness.lean there.
+Check their hashes against verification.json. Set LEAN_PATH to that new
+directory followed only by the recorded pinned external package paths.
+Do not include lean-controls/.lake/build/lib/lean or other local proof caches.
+Run the pinned lean binary in the recorded order, changing only output/root
+paths to the review directory. Recreate Audit.lean there from the recorded
+source, and run the pinned leanchecker separately on all three modules.
+Copy negative controls to another reviewer-owned directory and repeat the
+recorded rejection commands. Preserve new logs separately from this freeze.
+
+Executed checks
+  3 fresh local builds, all successful.
+  46 theorem-closure audits, only propext, Classical.choice and Quot.sound.
+  3 separate kernel replays, all successful.
+  6 negative controls, all semantically rejected as intended.
+  Source/input/old-freeze preservation checks, all successful.
+Build caches and external package artifacts are excluded from the freeze.
+
+Negative-control interpretation
+EarlierDeadline: change 7157/1200 to 5. The claimed plateau no longer follows
+  from the retained envelope; the proof fails. Not a physical lower-time bound.
+LargerResidual: change the budget to .12. The robust face proof fails.
+FiveMillisecondAge: weaken the accepted age premise from .001 to .005.
+  The copied accepted mismatch/invariance proof fails. No universal physical
+  impossibility claim follows from failure of this proof mutation.
+UnweightedStrictDrift: assert negative first-face drift at the exact equal-
+  weight zero-drift state. Rejected; the opposite is proved in WeightedEntry.
+ImmediateSmallBox: assert that the explicit old-cube initial witness is
+  already inside the target weighted box. Rejected by an exact strict opposite.
+SmallerPlateau: assert nonpositive third-face drift at the .04 extreme
+  residual witness. Rejected by the exact outward derivative. This is an
+  aggregate-enclosure witness, not a demonstrated sampled sensor history.
+
+The guard rejects missing-module, unknown-identifier and missing-file failures
+as negative-control evidence. Harmless linter/deprecation warnings are retained.
+All jobs launched by this verification have exited. No remote work was used.
