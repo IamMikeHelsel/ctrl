@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# ctrl spark solve NNN SCRIPT [args...]
+# erdos spark solve NNN SCRIPT [args...]
 # Runs ~/lean-work/ctrl/work/NNN/SCRIPT with ~/venvs/solve's python, solvers (~/opt/bin) on PATH,
 # cwd = the job's outputs/ dir, inside tmux. Prints {"job": ID} and exits.
 # Env: SOLVE_TIMEOUT_MIN (default 0 = no limit).
@@ -12,7 +12,7 @@ source "$here/env.sh"
 nnn="$1"; script="$2"; shift 2
 [[ "$script" != /* && "$script" != *..* ]] || { echo "SCRIPT must be a path inside work/$nnn/" >&2; exit 2; }
 path="$CTRL_REPO/work/$nnn/$script"
-[[ -f "$path" ]] || { echo "no $path; run ctrl spark sync" >&2; exit 1; }
+[[ -f "$path" ]] || { echo "no $path; run erdos spark sync" >&2; exit 1; }
 [[ -x "$SOLVE_PY" ]] || { echo "no solver venv at $SOLVE_PY" >&2; exit 1; }
 command -v tmux >/dev/null || { echo "tmux missing" >&2; exit 1; }
 timeout_min="${SOLVE_TIMEOUT_MIN:-0}"

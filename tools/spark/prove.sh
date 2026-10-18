@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# ctrl spark prove NNN [--minutes M] [--model leanstral] [--attempts K]
+# erdos spark prove NNN [--minutes M] [--model leanstral] [--attempts K]
 # Env: PROVE_REASONING=high|none (Leanstral thinking, default high), PROVE_MAX_TURNS (default 150).
 # Sets up a job (scratch copy of the repo, shared Lake packages), starts prove-run.sh in tmux,
 # prints {"job": ID} and exits. The job keeps going in tmux session "ctrl-ID".
@@ -25,7 +25,7 @@ done
 
 src="$CTRL_REPO/erdos"
 sol="ErdosLab/Erdos$nnn.lean"
-[[ -f "$src/$sol" ]] || { echo "no $sol in $src; run ctrl spark sync" >&2; exit 1; }
+[[ -f "$src/$sol" ]] || { echo "no $sol in $src; run erdos spark sync" >&2; exit 1; }
 [[ -f "$src/Challenge/Erdos$nnn.lean" ]] || { echo "no Challenge/Erdos$nnn.lean in $src" >&2; exit 1; }
 [[ -d "$src/.lake/packages" ]] || { echo "no $src/.lake/packages; run lake exe cache get there" >&2; exit 1; }
 command -v tmux >/dev/null || { echo "tmux missing" >&2; exit 1; }

@@ -3,10 +3,10 @@
 - **D1. Pin Formal Conjectures, don't fork it.** The `erdos/` project requires FC at commit
   `d9ce556` (Lean/Mathlib v4.33.1). Challenge statements are copied *verbatim* from FC with
   attribution, so the wording is the community-reviewed one. Bump the pin deliberately with
-  `lake update` and re-run `ctrl check --all`.
+  `lake update` and re-run `erdos check --all`.
 - **D2. Bind solutions to a `Prop`, not to a restated theorem.** `def statement : Prop` in Challenge
   and `theorem solution : statement` in ErdosLab. That makes the solution's statement correct by
-  construction, and `ctrl check` only has to confirm the type and the hash.
+  construction, and `erdos check` only has to confirm the type and the hash.
 - **D3. Two axiom tiers.** The default tier allows only `propext`, `Classical.choice` and `Quot.sound`.
   The `reduceBool` tier also allows `Lean.ofReduceBool`, which `bv_decide`/`lrat_proof` need for
   large SAT certificates. It is opt-in per problem in status.json and disclosed in disclosure.md.
@@ -22,7 +22,7 @@
   until FC bumps, binding is checked by our own elaborated script (architecture.md, check 4).
 
 ## CLI decisions (v0.1)
-- **D8. `ctrl new` copies statements with a scanner, not a Lean parser.** It strips comments, finds
+- **D8. `erdos new` copies statements with a scanner, not a Lean parser.** It strips comments, finds
   the depth-0 `:=` that ends the signature, turns binders into `∀ binders, type`, and keeps the text
   verbatim apart from indentation. The `open` lines in scope (and `open ErdosNNN`) are emitted *before*
   `namespace Challenge.ErdosNNN`, because inside it `open ErdosNNN` resolves to the challenge namespace.
@@ -30,7 +30,7 @@
   FC file become review warnings. The shape is pinned byte-for-byte against the build-verified
   `erdos/Challenge/Erdos834.lean` (tests/fixtures/golden).
 - **D9. Which FC theorem.** Candidates are the theorems named `erdos_NNN…` (helper/test theorems are
-  ignored unless there are no others). With more than one, `ctrl new` exits 2 (`BAD_USAGE`) listing
+  ignored unless there are no others). With more than one, `erdos new` exits 2 (`BAD_USAGE`) listing
   them in `data.fc_theorems`; `--part` takes the full name or a unique suffix (`parts.ii`, `eighteen`).
   It never guesses, even when a plain `erdos_NNN` exists.
 - **D10. Unknown answers.** The pinned FC no longer writes `answer(sorry)`; it writes
@@ -39,15 +39,15 @@
 - **D11. Approval.** `--by` missing → `NOT_APPROVED`, exit 3 (approval is a human act, not a usage
   slip). The hash is taken after the `-- approved-by:` line is written. Re-approving an unchanged
   approved challenge is a no-op; approving after drift re-records line and hash and clears old check
-  results. `ctrl new --force` refuses an approved challenge (`EXISTS`, exit 3); for drafts it rewrites
+  results. `erdos new --force` refuses an approved challenge (`EXISTS`, exit 3); for drafts it rewrites
   the challenge, the solution skeleton and status.json but keeps an existing plan.md/log.md.
 - **D12. Check aggregation.** A failed check 1–4 or hash drift → exit 4 with the first failing code in
   CHECKS order (build, tokens, axioms, binding, hash); only-unapproved → exit 3 `NOT_APPROVED`. A field
   missing from check.sh's report counts as failed. Output that isn't JSON counts as a failed build.
   check.sh exit 1 → `TOOL_MISSING`, exit 2 → `BAD_USAGE`. The result goes to status.json `last_check`
-  (with the solution's sha256, so `ctrl status` can tell when a pass is stale). Phase: a full pass on an
+  (with the solution's sha256, so `erdos status` can tell when a pass is stale). Phase: a full pass on an
   approved challenge → `checked`, anything else (including `--fast`) → `proving`; `draft` is never
-  moved. `ctrl spark check` records `last_spark_check` and does not move the phase.
+  moved. `erdos spark check` records `last_spark_check` and does not move the phase.
 - **D13. Spark plumbing.** Scripts go to the Spark as `ssh … bash -s` on stdin, so the remote login
   shell (zsh) doesn't matter. rsync targets `lean-work/ctrl/` relative to the remote home and creates it
   with `--rsync-path`. `lake exe cache get` runs when `erdos/lake-manifest.json` is in rsync's itemized
@@ -60,16 +60,16 @@
   `work/NNN/candidates/JOB/` (a directory, since a job produces several files; the proof candidate
   is `final.lean`), with NNN from the job's `meta.json`. `spark log -f` streams raw text, so it refuses
   `--json`.
-- **D15. Defaults.** `ctrl doctor` checks the Spark by default (`--no-remote` skips it), as the README's
-  quick start implies. `ctrl targets` defaults to `--tab open`; `--max-difficulty` filters on
+- **D15. Defaults.** `erdos doctor` checks the Spark by default (`--no-remote` skips it), as the README's
+  quick start implies. `erdos targets` defaults to `--tab open`; `--max-difficulty` filters on
   `difficulty_1to5` (open) or `formalization_effort_1to5` (formalize); `--min-fit` on `ai_lean_fit_1to5`
   (open) or `priority_1to5` (formalize). The envelope has exactly the six documented keys (no
   `exit_code`); `next` is a list of command strings.
 - **D16. Sync guard.** Before rsync, one ssh call reads `tools/spark/jobs.sh` and the remote
   manifest's sha256. If a prove job is `running`/`starting` and the remote manifest differs from the
-  local one, sync refuses with `JOB_RUNNING`, exit 3 (`--force` on `ctrl spark sync` overrides). Syncs
+  local one, sync refuses with `JOB_RUNNING`, exit 3 (`--force` on `erdos spark sync` overrides). Syncs
   that don't touch the manifest are allowed under a running job: prove works in its own scratch copy.
-- **D17. Promotion.** `ctrl promote NNN JOB` needs an approved, undrifted challenge, the job's
+- **D17. Promotion.** `erdos promote NNN JOB` needs an approved, undrifted challenge, the job's
   `final.lean`, and at least one `attempt-*/challenge.diff`, all empty (no diff file means "can't
   tell", which is refused as `CHALLENGE_DRIFT`). It copies `final.lean` over the solution, runs the
   `--fast` check and restores the previous file on any failure, including a crash. Only `final.lean`
@@ -77,3 +77,8 @@
 - **D18. Remote knobs.** `--reasoning`/`--max-turns` (prove) and `--timeout-min` (solve) become
   `PROVE_REASONING`, `PROVE_MAX_TURNS` and `SOLVE_TIMEOUT_MIN` env prefixes on the remote command,
   and are passed only when given.
+- **D19. The CLI is `erdos`, not `ctrl` (2026-10-18).** main gained its own `./ctrl` (tools/ctrl_cli:
+  check/scratch/search/triage/loop for ControlsLean). To avoid two tools with one name, this
+  package is `erdos-lab` (`src/erdos_lab`) and its console script is `erdos`; env vars are
+  `ERDOS_JSON`, `ERDOS_AGENT`, `ERDOS_ROOT`, `ERDOS_FC_DIR`. Spark-side internals keep their names
+  (`~/lean-work/ctrl` is the repo copy; `CTRL_REPO`/`CTRL_JOBS` in tools/spark/env.sh; tmux `ctrl-JOB`).

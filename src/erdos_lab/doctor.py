@@ -5,8 +5,8 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from ctrl import proc, spark
-from ctrl.repo import Repo
+from erdos_lab import proc, spark
+from erdos_lab.repo import Repo
 
 ELAN_DIRS = ("~/.elan/bin",)
 
@@ -83,13 +83,13 @@ def local(repo: Repo) -> list[dict]:
     )
     for tool in ("ssh", "rsync"):
         p = proc.which(tool)
-        out.append(_check(tool, p, p or "not found (needed for ctrl spark)"))
+        out.append(_check(tool, p, p or "not found (needed for erdos spark)"))
     return out
 
 
 REMOTE_SCRIPT = r"""
 # Non-login ssh shells lack ~/.local/bin and elan: use the repo copy's env.sh when it exists,
-# and put the same dirs on PATH ourselves for a first run (before any `ctrl spark sync`).
+# and put the same dirs on PATH ourselves for a first run (before any `erdos spark sync`).
 export PATH="$HOME/.local/bin:$HOME/opt/bin:$HOME/.elan/bin:$PATH"
 [ -f "$HOME/__REPO__/tools/spark/env.sh" ] && source "$HOME/__REPO__/tools/spark/env.sh" >/dev/null 2>&1
 c() { printf '{"name":"%s","ok":%s,"detail":"%s"}\n' "$1" "$2" \
@@ -106,10 +106,10 @@ if [ -x "$d/bin/lean" ]; then c toolchain true "$tc"; else c toolchain false "$t
 p=$(tool uv); if [ -n "$p" ]; then c uv true "$(ver "$p" --version)"; else c uv false "not found"; fi
 if [ -d "$HOME/__REPO__/erdos/.lake/packages/mathlib" ]; then
   c "lean packages" true "~/__REPO__/erdos/.lake/packages/mathlib"
-else c "lean packages" false "no ~/__REPO__/erdos/.lake/packages/mathlib (ctrl spark sync)"; fi
+else c "lean packages" false "no ~/__REPO__/erdos/.lake/packages/mathlib (erdos spark sync)"; fi
 if [ -d "$HOME/__REPO__/erdos/.lake/packages/mathlib/.lake/build/lib" ]; then
   c "lean cache" true "Mathlib oleans present"
-else c "lean cache" false "no Mathlib build in ~/__REPO__/erdos (ctrl spark sync)"; fi
+else c "lean cache" false "no Mathlib build in ~/__REPO__/erdos (erdos spark sync)"; fi
 if v kissat; then c kissat true "$(ver kissat --version)"; else c kissat false "not found"; fi
 if v cadical; then c cadical true "$(ver cadical --version)"; else c cadical false "not found"; fi
 if [ -x "$HOME/venvs/solve/bin/python" ]; then

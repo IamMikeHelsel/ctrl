@@ -67,5 +67,5 @@ def from_exception(exc: BaseException) -> CtrlError:
     return CtrlError(
         "INTERNAL",
         f"{type(exc).__name__}: {exc}",
-        hint="this is a bug in ctrl; report it with the command you ran",
+        hint="this is a bug in the erdos CLI; report it with the command you ran",
     )

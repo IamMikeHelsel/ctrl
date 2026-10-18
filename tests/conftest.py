@@ -9,8 +9,8 @@ from pathlib import Path
 
 import pytest
 
-from ctrl import proc
-from ctrl.cli import main
+from erdos_lab import proc
+from erdos_lab.cli import main
 
 FIXTURES = Path(__file__).parent / "fixtures"
 REAL = Path(__file__).resolve().parents[1]
@@ -53,10 +53,10 @@ def repo(tmp_path, monkeypatch):
     (root / "erdos" / "scripts" / "check.sh").write_text("#!/usr/bin/env bash\n")
     for name in ("open.csv", "formalize.csv"):
         shutil.copy(REAL / "data" / "erdos" / name, root / "data" / "erdos" / name)
-    for k in ("CLAUDECODE", "CLAUDE_CODE", "CTRL_AGENT", "CTRL_JSON", "SPARK_SSH_HOST"):
+    for k in ("CLAUDECODE", "CLAUDE_CODE", "ERDOS_AGENT", "ERDOS_JSON", "SPARK_SSH_HOST"):
         monkeypatch.delenv(k, raising=False)
-    monkeypatch.setenv("CTRL_ROOT", str(root))
-    monkeypatch.setenv("CTRL_FC_DIR", str(FIXTURES))
+    monkeypatch.setenv("ERDOS_ROOT", str(root))
+    monkeypatch.setenv("ERDOS_FC_DIR", str(FIXTURES))
     monkeypatch.setenv("HOME", str(tmp_path / "home"))
     monkeypatch.chdir(root)
     return root

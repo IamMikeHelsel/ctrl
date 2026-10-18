@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# ctrl spark jobs: print every job's meta.json as one JSON array, newest first.
+# erdos spark jobs: print every job's meta.json as one JSON array, newest first.
 # A job whose meta says "running" but whose tmux session is gone is reported as "lost".
 set -euo pipefail
 here="$(cd "$(dirname "$0")" && pwd)"

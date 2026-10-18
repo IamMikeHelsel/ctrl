@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# ctrl spark log JOB [-f] [-n LINES]: print a job's log.txt (last 200 lines by default).
+# erdos spark log JOB [-f] [-n LINES]: print a job's log.txt (last 200 lines by default).
 # -f follows until the job leaves the running state. Exit 5 if the job does not exist.
 set -uo pipefail
 here="$(cd "$(dirname "$0")" && pwd)"

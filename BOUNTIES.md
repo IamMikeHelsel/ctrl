@@ -76,10 +76,10 @@ upstream Formal Conjectures update.
    and confirm the JSP problem bank lists it (`problems/` in the JSP repo).
 3. Check JSP PRs and issues for existing formalizations of that problem ID. Skip any that
    are already recorded.
-4. Formalize the problem in the Erdős lab: run `uv run ctrl new NNN`, which copies the FC statement
-   verbatim and pins the commit. A human approves the statement (`ctrl approve NNN --by NAME`); then
-   prove it and gate with `ctrl check NNN` and `ctrl spark check NNN`. See
+4. Formalize the problem in the Erdős lab: run `uv run erdos new NNN`, which copies the FC statement
+   verbatim and pins the commit. A human approves the statement (`erdos approve NNN --by NAME`); then
+   prove it and gate with `erdos check NNN` and `erdos spark check NNN`. See
    [docs/erdos-lab/loop.md](docs/erdos-lab/loop.md). The scored target lists are in `data/erdos/`
-   (`uv run ctrl targets --tab formalize`).
+   (`uv run erdos targets --tab formalize`).
 5. Push to a **public** repo immediately to fix priority. Then run JSP `lean-verify`, open the
    PR, and add a Palomar submission if the result clears the research-interest floor.

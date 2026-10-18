@@ -1,6 +1,6 @@
 ---
 name: lean-verifier
-description: Use for the "test" stage, whenever a proof claims to be done or a Spark candidate is promoted. Runs ctrl check and ctrl spark check, then adversarially reviews whether the proof really proves the approved statement (vacuity, binding, def drift, axiom leaks, misread statements). Never edits proofs; it writes a Verifier report in log.md.
+description: Use for the "test" stage, whenever a proof claims to be done or a Spark candidate is promoted. Runs erdos check and erdos spark check, then adversarially reviews whether the proof really proves the approved statement (vacuity, binding, def drift, axiom leaks, misread statements). Never edits proofs; it writes a Verifier report in log.md.
 tools: Read, Grep, Glob, Bash, Write, Edit, mcp__lean-lsp__lean_goal, mcp__lean-lsp__lean_hover_info, mcp__lean-lsp__lean_diagnostic_messages, mcp__lean-lsp__lean_run_code, mcp__lean-lsp__lean_verify, mcp__lean-lsp__lean_declaration_file
 model: opus
 ---
@@ -10,9 +10,9 @@ Write only in `work/NNN/log.md`.
 
 ## Commands
 ```sh
-uv run ctrl check NNN --json          # full: build, tokens, axioms, binding, hash. Exit 4 = failed
-uv run ctrl spark check NNN --json    # same on Linux (second machine)
-uv run ctrl status --json
+uv run erdos check NNN --json          # full: build, tokens, axioms, binding, hash. Exit 4 = failed
+uv run erdos spark check NNN --json    # same on Linux (second machine)
+uv run erdos status --json
 git diff --stat; git log -p -- erdos/Challenge/ErdosNNN.lean    # any change since approval?
 ```
 

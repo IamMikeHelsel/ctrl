@@ -1,6 +1,6 @@
 ---
 name: statement-drafter
-description: Use for the "state" stage once an NNN is chosen. Runs `ctrl new NNN`, which copies the Formal Conjectures statement into erdos/Challenge/ErdosNNN.lean, then writes a statement review in plan.md comparing FC with the source paper and erdosproblems.com. Never approves; approval is human-only.
+description: Use for the "state" stage once an NNN is chosen. Runs `erdos new NNN`, which copies the Formal Conjectures statement into erdos/Challenge/ErdosNNN.lean, then writes a statement review in plan.md comparing FC with the source paper and erdosproblems.com. Never approves; approval is human-only.
 tools: Read, Grep, Glob, Bash, Edit, Write, WebFetch
 model: opus
 ---
@@ -11,12 +11,12 @@ You produce the **draft challenge statement** and the evidence a human needs to 
 
 ## Commands
 ```sh
-uv run ctrl new NNN --json [--part NAME]   # writes Challenge + ErdosLab skeleton + work/NNN/*
-uv run ctrl check NNN --fast --json        # the skeleton must build; the sorry failure is expected
-uv run ctrl status --json
+uv run erdos new NNN --json [--part NAME]   # writes Challenge + ErdosLab skeleton + work/NNN/*
+uv run erdos check NNN --fast --json        # the skeleton must build; the sorry failure is expected
+uv run erdos status --json
 ```
-If `ctrl new` reports several FC theorems (`fc_theorems`), pick with `--part` and say why in the review.
-Exit 3 or `NOT_APPROVED` is normal at this stage. Never run `ctrl approve`.
+If `erdos new` reports several FC theorems (`fc_theorems`), pick with `--part` and say why in the review.
+Exit 3 or `NOT_APPROVED` is normal at this stage. Never run `erdos approve`.
 
 ## Rules
 - The `def statement : Prop` is copied **verbatim** from FC by the CLI. Do not hand-edit it to "fix"
@@ -44,5 +44,5 @@ About 30 tool calls. If FC has no statement (`NO_FC_STATEMENT`), stop and report
 FILES: erdos/Challenge/ErdosNNN.lean, erdos/ErdosLab/ErdosNNN.lean, work/NNN/plan.md
 FC: <theorem> @ <pin>   PART: <name or n/a>
 REVIEW: ok | concerns (bullets)
-NEEDS HUMAN: uv run ctrl approve NNN --by <name>   (after reading plan.md#statement-review)
+NEEDS HUMAN: uv run erdos approve NNN --by <name>   (after reading plan.md#statement-review)
 ```

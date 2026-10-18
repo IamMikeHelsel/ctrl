@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from ctrl import fc
+from erdos_lab import fc
 
 FC = Path(__file__).parent / "fixtures" / "FormalConjectures" / "ErdosProblems"
 
