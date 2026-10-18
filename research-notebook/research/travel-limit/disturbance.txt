@@ -1,0 +1,66 @@
+EXACT HELD-DISTURBANCE ENERGY BOUND — 17 October 2026
+
+VERIFIED RESULT
+LeanControls/TravelDisturbance.lean builds cleanly under Lean 4.35.0.
+All 15 public theorem closures use only propext, Classical.choice, Quot.sound.
+SHA-256: 68838e4153b087e24bfba10fd7b636dabb98bf603b065e5e3ef1f98ef90c4214
+Evidence: disturbance-axioms.log and disturbance-verification.json.
+No aggregate or existing source was edited. The new module imports the final
+SaturatedLag.response API and Generated.TravelQuarterLower.P directly.
+
+For every real w and 0<=t<=1/5,
+  energy P (w • SaturatedLag.response t) <= 13*t^2*w^2.
+Theorem: LeanControls.TravelDisturbance.disturbance_energy_bound.
+For a prescribed absolute bound |w|<=W,
+  energy P (w • SaturatedLag.response t) <= 13*t^2*W^2.
+Theorem: LeanControls.TravelDisturbance.disturbance_energy_of_abs_le.
+Both include t=0. response_zero and disturbance_zero prove the exact zero
+state/error at that endpoint, suitable for StepScaledRobustness's hzero premise.
+
+FIXED OBJECTS
+P = [[38/5,257/25,5],[257/25,1319/50,769/50],[5,769/50,278/25]].
+response(t) = [t^2/2-t+1-exp(-t), t-1+exp(-t), 1-exp(-t)].
+This is the exact response of x'=v, v'=a, a'=-a+u to a constant additive
+input w, from zero initial state, with normalized lag time constant one.
+SaturatedLag.heldSegment_add_input supplies the exact superposition identity.
+The model-specific interpretation is a held disturbance, not a claim that
+an arbitrary time-varying disturbance equals w(t) times this response.
+
+PROOF
+ActuatorLag.exp_interpolation provides theta in [0,1] satisfying
+  exp(-t)=(1-theta)(1-t)+theta(1-t+t^2).
+Substitution into the exact response gives
+  response(t)=(1-theta) • (t • lowerNormalized(t))
+                +theta • (t • upperNormalized(t)),
+  lowerNormalized(t)=[t/2,0,1],
+  upperNormalized(t)=[-t/2,t,1-t].
+No division by t is performed, so this exact identity works at t=0.
+
+Both normalized vectors are affine in t. On [0,1/5], each is the convex
+combination of its values at 0 and 1/5 with weight 5*t. Exact rational
+endpoint energies are:
+  lowerNormalized(0):   278/25 = 11.12,
+  upperNormalized(0):   278/25 = 11.12,
+  lowerNormalized(1/5): 3049/250 = 12.196,
+  upperNormalized(1/5): 7474/625 = 11.9584.
+Every value is below 13. VertexCertificate.shared_bound and P_psd therefore
+bound both normalized energies by 13 at every t in the interval.
+Quadratic scaling gives E(t*z)=t^2*E(z). A second convexity application
+bounds the exact exponential response energy by 13*t^2. Scaling by arbitrary
+real w gives the displayed result; no positivity assumption on w is used.
+For |w|<=W, the checked product (W-w)(W+w)>=0 proves w^2<=W^2.
+
+SCOPE AND INTEGRATION
+The constant 13 is a sufficient exact bound, not an asserted optimal constant.
+The proof uses no floating-point exponential evaluation or sampled time grid.
+The time interval, P and actual exponential response are unchanged.
+W need not be separately assumed nonnegative because |w|<=W already implies it.
+The positive-time error estimate is exactly the C=13 input expected by the
+step-scaled Young argument; its error vanishes quadratically in elapsed time.
+For the parent's chosen W=1/100, H=1/5 and eta=5/451, the additive rate is
+  D=13*(H+1/eta)*W^2=1469/12500,
+which is below eta*12=60/451. These last substitutions are explanatory here;
+the parent composes and checks the numeric invariance and travel-limit theorem.
+Energy-to-position coercivity, actuator-sector validity, sampled recurrence,
+and every-intersample-time safety belong to the parent TravelSafety/geometry
+composition. This file proves only the exact disturbance energy ingredient.

@@ -1,0 +1,121 @@
+SOURCE ATTRIBUTION — INDEPENDENT CHALLENGE
+17 October 2026. Review only; no experiment or proof source edits.
+
+Early model review
+The supplied model is a static real, signed-phase synthetic problem. Its joint
+relation q=lambda*d is meaningful: the same source and leakage must explain
+the baseline, separating and held-out conditions. Splitting d by sign can
+represent the bounded-lambda relation exactly. No statistical independence
+assumption is needed for exact bounded-error feasibility.
+
+Wheel gain is exactly1 in this contract before any data are considered. The
+trial mass therefore demonstrates redundant/consistent evidence here; it does
+not identify an unknown gain, much less the baseline wheel imbalance. A later
+unknown-gain model would have additional joint constraints and ambiguity.
+
+Concrete attribution counterexample
+At condition1, y=Uw+Ud. A unit wheel trial identifies sensitivity1 but cannot
+distinguish (Uw,Ud)=(1,0) from(0,1), both giving baseline y=1. A wheel correction
+c=-1 cancels condition1 for both. At condition2, y=Uw-Ud, the corrected outputs
+are0 and-2 respectively. In the second case the amplitude worsens from1 to2.
+Thus cancellation at the original sensor/condition is not source attribution
+or safe correction under other conditions. This is a synthetic counterexample;
+its negative transfer ratio lies outside the present model's rho in[0,1].
+
+Required implementation checks
+1. Empty feasible sets must block action acceptance. A universal bound over an
+   empty set is vacuous. Inconsistent held-out data can refute the evidence/model
+   combination; they must not turn every action into a safe one.
+2. A duplicate bounded observation with the same error must leave the exact
+   set unchanged. Repetition does not create independent information.
+3. Preserve baseline/trial transfer and nuisance assumptions. Subtraction does
+   not cancel nuisance forcing that changed during the intervention. Shared
+   calibration can cancel when the same error is justified; arbitrary errors
+   generally cannot. A Cartesian outer approximation is conservative and may
+   lose decisions, but is not itself an unsound independence assumption.
+4. Check every uncertainty-sign branch and both ends of rho in[0,1] for the
+   affine response before taking absolute values. The action limit is uniform
+   only over this declared transfer interval and static model.
+5. Separate held-out compatibility from universal validation. The current
+   post-separation prediction w+q/2 ranges approximately [.492857,.61875],
+   wider than the good observation's interval [.5375,.5875]. A nonempty
+   intersection supports compatibility, not that all retained tuples predict
+   that measurement or that the physical model is valid.
+
+Application boundaries
+The exact half-leakage relation in the held-out row is an assumption. It is not
+established by the trial mass. The proposed correction leaves drivetrain source
+and transfer parameters unchanged by assumption. Test changes in support/load,
+phase convention and speed before transferring that claim to a mechanism.
+This single-phase scalar model gives no bound on an unmeasured quadrature
+component, full vector imbalance, spin-up transient, actuator force or stability.
+It does not instantiate the actuator-lag stopping theorem.
+
+Final code/results and claimed conclusions remain to be reviewed. This is an
+identifiability and bounded-action illustration, not a novel source-separation
+method or evidence about the user's real wheel/drivetrain.
+
+Final fixed-artifact audit, 17 October 2026
+Reviewed model.json, experiment.py, results.json, check.py and readme.txt. I ran
+the independent certificate checker successfully: 56 exact endpoint bound
+certificates, one infeasibility certificate and eight action evaluations. Each
+endpoint has a feasible witness and a nonnegative dual combination. Thus the
+claimed bounds do not depend on exhaustive vertex enumeration being trusted.
+Python/Fraction and the checker implementation remain trusted; this is not a
+Lean kernel result.
+
+Confirmed conclusions under the fixed model:
+- Baseline, duplicate and selected trial readings give exactly the same set.
+  Possible wheel contribution remains [-11/10,2]. Trial subtraction does not
+  identify it. Known wheel sensitivity is assumed before the trial.
+- The separating reading reduces the exact wheel range to [27/70,47/80].
+  Correction -1/2 has worst wheel residual 4/35 and mixed-response bound 3/5
+  uniformly over all retained tuples and rho in [0,1]. These meet the stated
+  limits 1/8 and 3/4. Correction -1 fails the wheel criterion with a retained
+  explicit witness, even though cancelling the nominal baseline seems useful.
+- The sign split represents q=lambda*d exactly, including d=0. It preserves
+  the same nuisance coefficient across the readings; no independence trick
+  or unjustified cancellation is used.
+- The held-out interval [43/80,47/80] intersects prediction [69/140,99/160].
+  This establishes existential compatibility only. Here just one convex sign
+  branch survives, so interval intersection really does imply a feasible scalar
+  prediction. A hull intersection would not suffice for an arbitrary disjoint
+  union. The inconsistent interval [31/40,33/40] is rejected.
+
+Issues found and resolved during review:
+The first checker did not require every stage and sign branch to be present;
+omissions could produce a narrower accepted domain. It also did not verify the
+held-out summaries. The revised checker enforces complete stage, branch,
+objective and action sets, checks the summaries, rejects an empty feasible set,
+pins the predeclared model hash, and disallows Python -O. The pinned model also
+prevents a user from silently changing a declared prior while retaining fixed
+objective assumptions. This is a checker for this fixed demonstration, not a
+general configurable model language.
+
+I independently tested five in-memory corruptions, without changing artifacts:
+missing stage, missing sign branch, missing action, changed held-out result,
+and changed correction decision. Each was rejected. No remaining blocking
+mathematical or claim-scope defect was found for the fixed saved result.
+
+Audited hashes:
+  model.json: 9f2ff239496551e75477405e91048a69d91eb3759d949a94501e3ebc13d9b867
+  experiment.py: 6267a0c14045322d8fee0d65f582c066568265e2f410cc7ea7057f58cb08c966
+  results.json: c0b2106d964e92931108fd1178fd0c1fdca497cbe26a8b0147dc6e44186a252a
+  check.py: 33e2021e49f95c9b2ea433db7814681458f2c575ea17243b2f4ab58780b8f400
+  readme.txt: f7ed30db59d8e5c47a5c4ebbfe73bff85c3977afe2cee5f719e407575b043f8f
+
+Publication/application judgment
+This is a clear exact illustration of established identifiability and robust
+decision principles, not a new attribution method. It can support an explanation
+or a future checked measurement-to-action workflow. It is not a meaningful
+standalone robotics result yet. The strongest next evidence is a separating
+condition with independently justified leakage/error bounds and a correction
+test across withheld operating conditions. Changed support transfer, source
+amplitude or phase must be represented, not assumed away after a failed test.
+
+No link from this static scalar uncertainty set to the stopping plant has been
+proved. It supplies neither the acceleration-target bound nor the response-rate
+bound used by the stopping theorem. A real connection requires a dynamic model
+of the intervention, sensor uncertainty and actuator response, including the
+unobserved quadrature component where relevant. The current README states the
+static, synthetic, known-gain and held-out-compatibility limits clearly.

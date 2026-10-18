@@ -1,0 +1,59 @@
+Proximity / Better Codes feasibility assessment
+2026-10-17. Bounded independent spike; no submission, account, purchase, global installation, or change to our controls project.
+
+Judgment
+This is a real fit for Lean proof engineering, but the current frontier is not a cheap constants exercise. We can deliver a reproducible audit and a parameterized version of an existing upper-bound construction in 1-2 weeks, subject to obtaining the pinned build environment. A new leaderboard record is not currently supported by evidence. The smaller upper-bound route is a more sensible entry point than the 14 MB lower-bound proof. A publishable result would need a new construction/counting theorem, a significant reusable formalization, or a clearly useful verified algorithm; a replay of the current winner is not a new mathematical result.
+
+Frozen source and current frontier
+- Clone: research/opportunity-assessment/proximity, unmodified shallow checkout.
+- https://github.com/proximity-prize/proximity-prize
+- Live main and the supplied pinned ed2b68c agree exactly: ed2b68c4a330d76dc4ab6693eec81b685b493270, commit date 2026-10-01 13:34:21 UTC. Confirmed by fresh git ls-remote.
+- https://better.codes/ showed 81 promoted submissions, 22 solvers, current 68.15-bit lower /116.13-bit upper interval; newest lower record Oct1. Several latest gains were only 0.01-0.02 bits. These are site-reported rankings, not freshly replayed by us.
+- Main already contains those two winning candidates. README's 53/128 baseline table is stale relative to its actual submission source. README also mentions verifier v10, while challenges.json pins lower v17 and upper v15. Use executable configuration, not prose, for reproduction.
+- Lower theorem: ProtocolClaim 6815 331366399 1073741824.
+- Upper theorem: ProtocolClaimUpper 11613 122369, radius 122369/262144.
+- Lower source root: 155 files, 14,667,396 bytes, largest file 1,753,271 bytes. Upper: 7 files, 93,781 bytes, largest 32,853 bytes. This size difference matters for onboarding.
+
+Exact target and mathematical scope
+IRSProfile fixes a 2^18-point multiplicative NTT domain over the base KoalaBear field, embedded in its degree-six extension, 8 interleaved rows, total message dimension 2^20, base polynomial dimension 2^17, rate 1/2, 128 repetitions. Relative minimum distance is 131073/262144.
+At a safe radius delta, lower requires the executable IRS extractor's certified combination-round error <=2^-128 and (1-delta)^128 <= 2^(-B/100). Upper requires the worst-case winning-set density >2^-128 for EVERY admissible radius at least its selected grid point, plus the opposite score inequality. Upper cannot merely exhibit one bad radius. No monotonicity of winning-set density is assumed.
+The reported bits are a spot-check term induced by the radius, not -log2 of winning-set density and not a complete SNARK or zkVM security guarantee. The upper source explicitly does not construct an end-to-end attacking prover; the formal library supplies one direction of the game coupling rather than the converse equality to minimal game error.
+Primary context: https://proximityprize.org/ and https://eprint.iacr.org/2026/680 (Arnon, Boneh, Fenzi; July2026 revision). Full PDF retrieval returned403 in this spike, so no claim of complete paper review. The grand challenges and their peer-review prize route are distinct from this companion scoreboard.
+
+Correctness and trust surface inspected
+Read repository AGENTS.md, protected Targets, IRSProfile, both candidate entrypoints, upper OrbitPencil and PrescribedTop, lower final assembly/closure/arithmetic, setup and benchmark scripts.
+The intended checker binds score/radius files to the exact candidate theorem type and permits only propext, Classical.choice, Quot.sound. Separate imports per track; no cross-track helpers. Protected-target axiom audit and module-prefix checks exist. Source policies forbid build-time environment manipulation and metaprogramming bypasses; both existing submission roots passed the local source-policy script in this spike.
+The Comparator patch rechecks all untrusted submission modules using leanchecker against already audited imports; it does not freshly replay every trusted dependency into an empty environment. Nanoda is disabled. Thus the trust boundary includes pinned imported artifacts and their prior audit, Lean's kernel, and the surrounding parser/type-binding/sandbox machinery. This inspection is not a security audit or a fresh kernel replay of the full candidates.
+The renderer's generated reference theorem contains sorry to express the expected theorem type; candidate axiom closure must still exclude sorryAx. No sorry/custom-axiom declaration was found by the narrow source scan of actual ProximityPrize sources. That scan is not a replacement for collectAxioms.
+
+Setup outcome, separated from new checked work
+Pinned requirement is Lean4.32.2, ArkLib e65197892890b8fd9b0dc05b8980273cf1d595cc, CompPoly 641694629e4557520a1539b272ec338c9f3044c7, mathlib905b95818eb32af7874a58b427f50c1711a5e96c. Available local toolchains are4.30.0-rc2,4.33.1,4.35.0, so existing caches cannot be reused as a valid baseline replay. I did not install all dependencies or invoke setup.sh: it can install tools and pull/build a large closure. Full baseline remains NOT locally replayed. macOS smoke runs are explicitly unranked; authoritative scoring requires independent Linux verifier acceptance of the exact commit.
+Repository AGENTS reports24GiB RAM, four-hour build ceiling, four verifier cores,31.9GiB output filesystem,1000 files and16MiB source budget. These are repository-reported operational limits, not freshly fetched service policy. A controlled Linux VM with32GiB RAM and substantially more scratch disk is a sensible reproduction environment; no GPU is needed for these symbolic/counting tasks. Our small probes ran on the existing laptop.
+
+Actual bounded probe: score rounding and construction-count saturation
+Reproducible code: proximity_probe.py; output proximity-probe.json. Decisions use exact Python integers; decimal logs are explanatory only. The complete run took about14 seconds.
+1. Existing lower radius has68.1505647953 induced bits. Even its current Hamming-cell supremum80900/262144 gives only68.1505650441. Replacing6815 by6816 is impossible at those radii. The first grid numerator capable of68.16 from score alone is80910. This does not certify the reduction error there; the coding-theory argument would have to extend into new Hamming cells.
+2. Current upper radius has116.1284071163 induced bits:11613 is the correct centibit ceiling;11612 fails. Merely changing metadata cannot improve it.
+3. The current lower proof's MCA budget274980718452113030 plus list budget9659282057 exactly equals floor(p^6/2^128), p=2130706433. There is zero remaining INTEGER allocation slack in that final split. Better component estimates or a new radius argument are necessary; this does not prove the mathematical bound itself is optimal.
+4. The ordinary full-domain prescribed-top pigeonhole count C(262144,131072+r)>p^r*2^59 holds at r8431 and fails at8432. The existing PrescribedTop uses exactly8431, so simply increasing that parameter is unavailable with the same inequality.
+5. OrbitPencil uses512 fibres,272 selected,14 prescribed top coefficients plus a product key. Its exact count passes. Adding one selected fibre requires15 coefficients to retain the current degree argument and FAILS the same count by a factor about349,941,548 (28.38bits). This is not a rounding-sized gap.
+6. A bounded exact feasibility sweep of analogous powers-of-two fibre counts16 through262144 gives no score improvement over the existing512/272 case. The sweep checks counting, degree-budget arithmetic, and a sufficient collision-avoidance inequality. It DOES NOT prove a generalized construction or exhaustive optimality: we did not search arbitrary fibre partitions, higher-order pencils, correlated signatures, different combinatorial estimates, or every possible family size. These are exclusions for a specified template only.
+
+New Lean-checked artifact (not a competition result)
+proximity-scratch/ScoreProbe.lean was compiled successfully with the already installed Lean4.35.0. It proves three exact Nat inequalities excluding the next centibit at the lower radius, lower cell endpoint, and upper radius. All three have empty axiom closures; log retained. This is genuine locally kernel-checked arithmetic progress. It is not compiled against the competition's4.32.2 target and does not prove a new IRS reduction bound. The elementary real-power/monotonicity interpretation is explained above, not encoded as an additional universal theorem in the scratch file.
+
+A defensible 1-2 week deliverable
+Days1-2: provision a version-pinned environment; independently replay upper candidate and protected-target/candidate axiom audits, record timing/memory, and map every hypothesis to the fixed protocol. Stop if pinned reproduction is unreliable until corrected.
+Days3-6: parameterize the existing OrbitPencil construction over compatible fibre size, selected-fibre count and coefficient budget; prove a small exact certificate interface and reproduce116.13. This yields understandable reusable mathematics and a reliable search/check separation, even if no improvement is found.
+Days7-10: investigate ONE mathematically motivated refinement: tighter counting of attainable coefficient/product signatures, or a justified richer pencil construction. First derive an independently checkable integer inequality and show strict gain over the current frontier; only then spend formalization effort. Literature/competitor review must precede novelty claims.
+Days11-14: either kernel-check the improvement and document its relation to prior work, or package the reusable formalization with an honest negative parameter-search report. Whether that package merits a paper depends on a specialist's assessment of generality and novelty, not passing compilation alone.
+
+Kill criteria / decision gates
+- Stop score-only tuning now: the exact probes already exclude it.
+- Do not attempt a blind lower-proof rewrite:155 files of specialized multivariate polynomial/factor geometry exceeds a sensible first spike.
+- If after2-3 focused days the proposed upper refinement supplies no inequality better than the frozen frontier, stop that refinement; adding compute cannot repair the missing mathematical premise.
+- If a proposed improvement depends on changing the protected code, radius quantifiers, axiom policy, or score interpretation, it is not an admissible improvement.
+- If the best result duplicates a live submission or only rechecks an existing result, label it reproduction/tooling and reconsider publication scope.
+
+Niche assessment
+The fit is real: search outside Lean, translate a compact exact certificate, prove the certificate's mathematical implication, and independently replay it. This competition demonstrates active use of that workflow, but its22-solvers leaderboard means it is not an untouched niche. Our controls project is currently much closer to a coherent original application; Proximity would be a separate coding-theory apprenticeship with a bounded useful formalization deliverable. No numerical probability of winning or solving is justified by this spike.

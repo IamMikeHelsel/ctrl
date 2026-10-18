@@ -1,0 +1,145 @@
+COMPOSITION AND RESEARCH-STATUS REVIEW
+17 October 2026. Independent AI-agent source review, not human peer review.
+No proof source or paper was edited. No external publication occurred.
+
+PilotContinuation
+Reviewed SHA256:
+  5ca492bfa2eedef45059c3b91b0afd960ab54a45ec48b4c93db55341633774fa
+Related reviewed sources:
+  FiniteHandoff a96f6da98cdbb7605245a720592c0c5ab1ce76a318cdd04e2e2a8e7556d67750
+  BetweenSample 816b2a8854e4f92e3ea49e117e2cc2bf8eca8dc0b8c087b3d26bee76904453fe
+  PilotPath 9579f1ff859dadccb3c771ba61d6ea4b5b2e996074e04602f66d28582abf23c7
+
+No semantic blocker found. samples_congr_prefix transfers the baseline
+recurrence through sample25 using equal holds/errors only at indices n<25.
+The path proof uses this equality at each departing prefix sample, with its
+zero errors and closed elapsed-time interval. The terminal proof uses the
+same equality at sample25. Tail hold/error bounds start inclusively at25.
+They do not constrain earlier samples, and the zero-prefix hypotheses do not
+constrain future errors. Existence supplies an actual continuous execution
+under the same global h/e/d sequences. No safety or terminal-energy premise
+remains in the concrete PilotContinuation.actual_safe statement.
+
+Thus the old global-zero-error restriction is resolved for this continuation.
+The fixed unknown r, positive global dwell lower bound and own-state feedback
+remain. The model has one rate for the full run. The prefix has25 holds of.05,
+so its terminal sample occurs at1.25. Post-clamp error is handled by the tail
+invariant; the prefix path proof uses d=0 and does not assume that all future
+commands remain within[-1,1]. There is no reset at the boundary.
+
+This is still a pilot for x in[.99,.995],v in[.49,.495],a in[-.01,-.005],
+r in[.9,.9125]. It is not the full original box/rate covering, not the refined
+family comparison, and not a hardware result. Current compilation prints
+only propext, Classical.choice and Quot.sound for both continuation closures.
+The reviewer did not independently perform a fresh rebuild of this new chain;
+a final source-copy replay and manifest update remain separate evidence.
+
+Naming and dependency boundary
+FiniteHandoff is finite-prefix safety composition for the existing sampled
+saturated-feedback law. Its global IsExecution predicate fixes that law before
+and after sampleN. Unrestricted prefix errors do not make it an implemented
+arbitrary prefix controller. Calling it a general controller-switching theorem
+would exceed its contract. A controller-independent handoff interface can be
+added, but it must state how the actual prefix is specified and validated.
+
+The reusable chain is now: sound coefficient/interval step -> finite trace ->
+actual sampled endpoints -> whole-hold path -> terminal invariant -> tail.
+The pilot demonstrates this chain on one closed parameter cell. Efficiently
+accepting a complete parameter covering is the next comparison gap. It is not
+necessary to label the basic composition principle new control theory.
+
+Research status: what was publicly posed?
+The exact actuator model, initial boxes, numerical P, fixed-duration brake and
+comparison family were constructed in this workspace. No primary source has
+been identified that poses this exact instance as a named unsolved problem.
+It is not an identified prize challenge. Do not describe completion as solving
+a public open problem, and do not attribute a prize or award to it.
+
+Established public work supplies the research context, not an assertion that
+our exact benchmark was open. The backup-control literature already uses a
+backup flow and terminal invariant to establish safety; robust variants
+already account for disturbances under their own assumptions. Prior formal
+control-envelope pipelines also exist. These primary sources were inspected
+in the earlier bounded literature review:
+  https://arxiv.org/abs/2104.11332
+  https://arxiv.org/abs/2409.07700
+  https://logic.kastel.kit.edu/ap/pub/zonotope-proofs.pdf
+No new broad literature search was conducted for this pass.
+
+The potential contribution is a reusable, checked verification artifact and
+an informative matched case study. Its novelty and publication value are not
+established merely by correctness, a new Lean implementation, or theorem count.
+A benchmark can be useful without being a formerly unsolved problem, but that
+use needs evidence: independent consumption, a meaningful comparison, or a
+new supported assumption tied to an application. The current local proof is
+not a public release merely because its dependencies and related work are public.
+
+A precise answer to the public-problem question is:
+"This is our locally constructed verification benchmark. It tests established
+control ideas. We have proved concrete parts in Lean and are testing whether
+the reusable checker and comparison are a useful formal-methods contribution.
+We have not established that this is a named open problem or a novel solution."
+
+Documentation update needed after replay
+The current interval-checker README describes the older endpoint-only pilot
+and says errors are zero globally and no continuous path or robust tail is
+claimed. Those statements become stale for the new continuation module once
+its full chain is verified. Update the module list and counts from the final
+manifest, while retaining the one-cell coverage and physical-model limits.
+
+GeneralHandoff review
+The new module was not yet present at this checkpoint. Any assessment of that
+interface will be appended separately and tied to its source hash.
+
+GeneralHandoff final semantic pass — 2026-10-17
+Source SHA256:
+  ad7f7e19e1f4e0a8c4f83b676508149a660c241e0641b15f700a71eebe66d663
+PilotContinuation remains at the hash recorded above. The GeneralHandoff
+manifest matches the inspected source. Its existing check log lists eight
+theorem closures using propext, Classical.choice and Quot.sound. The manifest
+reports exit code 0 and reuse of compiled dependencies. I did not run a build
+or independently replay those dependencies in this review.
+
+Result: no blocking mathematical or contract mismatch found in this pass.
+IsContinuation has full-state continuity on nonnegative time and the actual
+own-state feedback ODE on each open tail hold. Its first tail sample is f(T).
+Translation preserves that feedback and obtains the old execution contract;
+uniqueness then identifies the actual tail with the analytic state. Safety
+requires T>=0, fixed r in[.9,1.1], positive lower dwell, holds<=.2, and the
+combined held command-error budget<=1/90. The prefix safety and terminal
+V(f(T))<=12 conditions are separate visible premises. They are not hidden in
+the execution definition or the existence theorem.
+
+The splice construction agrees with the supplied prefix through T, including
+all three state components. Its tail starts from p(T), with no state reset.
+Derivatives are required inside holds; the command can change at the handoff
+and sample boundaries. This does not assert differentiability across those
+boundaries. The construction for negative T is mathematically harmless; the
+safety and shifted-execution theorems explicitly require nonnegative T.
+
+The source and its scope note correctly disclose the central boundary:
+an arbitrary continuous prefix is not necessarily a plant trajectory. For
+example, the constant state curve p(t)=(0,1,0) is continuous but violates
+x'=v. This is not a counterexample to the theorem; it shows why the existence
+theorem must not be called existence of a physical whole-run execution.
+A caller must separately establish prefix dynamics and any plant-parameter
+consistency. The module also proves tail uniqueness from a common terminal
+state, not uniqueness of arbitrary prefixes. It does not certify a switching
+guard, repeated mode changes, state-estimation errors, switch-time uncertainty,
+time-varying lag, or hardware conformance.
+
+Naming: "general prefix handoff to the fixed sampled controller" is accurate.
+"General hybrid safety controller" or "arbitrary controller safety" would
+overstate it. FiniteHandoff/PilotContinuation remain the more specific result:
+finite sampled-feedback prefix composition, with all-time actual-execution
+safety for one positive-volume initial cell and one fixed-rate cell. The two
+interfaces are complementary, not evidence of a new backup-control principle.
+
+Next proof with the clearest research payoff: cover the complete preselected
+direct-feedback parameter box using the checked interval/path/terminal chain,
+then report matched verification cost and admitted regions. This would replace
+the trusted-Python comparison with the relevant Lean result. The next physical
+payoff is a nonzero prefix error and timing contract; the present zero-error
+pilot does not establish robustness during its first25 holds. An adapter from
+an already checked physical prefix into GeneralHandoff is useful integration,
+but does not by itself resolve either gap or establish publication novelty.

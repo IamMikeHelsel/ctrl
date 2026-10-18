@@ -1,0 +1,142 @@
+{
+  "schema_version": 1,
+  "benchmark_id": "sampled-clipped-axis-fixed-lag-v1",
+  "status": "Human-readable structured mathematical benchmark; this JSON is not itself a formal semantics parser or proof.",
+  "exact_numbers": "Fraction strings are exact rational numbers; illustrative decimal quantities are explicitly separated.",
+  "state_order": [
+    "x",
+    "v",
+    "a"
+  ],
+  "time_domain": "all real t>=0",
+  "sample_clock": {
+    "t0": "0",
+    "recurrence": "t[n+1]=t[n]+h[n]",
+    "durations": "arbitrary prescribed sequence",
+    "uniform_lower_bound": "exists hmin>0, forall n, hmin<=h[n]",
+    "upper_bound": "1/5"
+  },
+  "rate": {
+    "symbol": "r",
+    "min": "9/10",
+    "max": "11/10",
+    "variation": "One unknown fixed value for the entire execution."
+  },
+  "controller": {
+    "sample_state": "the trajectory itself evaluated at t[n]",
+    "request_coefficients": [
+      "-1",
+      "-3",
+      "-2"
+    ],
+    "request": "k(z[n])=-x[n]-3*v[n]-2*a[n]",
+    "held_drive": "clip(k(z[n])+e[n],-1,1)+d[n]",
+    "clamp_min": "-1",
+    "clamp_max": "1",
+    "errors": {
+      "e": "pre-clamp scalar request error",
+      "d": "post-clamp scalar drive error, INSIDE rate multiplier",
+      "time_variation": "constant on each hold; arbitrary prescribed sequences across holds",
+      "joint_budget": "abs(e[n])+abs(d[n])<=1/100"
+    }
+  },
+  "ode_on_each_open_interval": {
+    "x_dot": "v",
+    "v_dot": "a",
+    "a_dot": "r*(clip(-x[n]-3*v[n]-2*a[n]+e[n],-1,1)+d[n]-a)"
+  },
+  "execution": {
+    "continuity": "all three coordinates continuous on [0,infinity), including sample boundaries",
+    "initial": "f(0)=z0",
+    "derivatives": "pointwise classical derivatives on every OPEN hold interval; none imposed at switches",
+    "same_sequences_for_uniqueness": true
+  },
+  "initial_set": {
+    "kind": "ellipsoid",
+    "expression": "z0^T*P*z0<=12",
+    "P": [
+      [
+        "38/5",
+        "257/25",
+        "5"
+      ],
+      [
+        "257/25",
+        "1319/50",
+        "769/50"
+      ],
+      [
+        "5",
+        "769/50",
+        "278/25"
+      ]
+    ],
+    "radius_squared": "12",
+    "condition_is_not_position_only": true
+  },
+  "acceptance_properties": [
+    {
+      "name": "existence",
+      "statement": "There exists an execution for each admitted parameter and sequence choice."
+    },
+    {
+      "name": "uniqueness",
+      "statement": "Any two executions for the same fixed parameters, sequences and initial state agree for all t>=0."
+    },
+    {
+      "name": "energy_invariance",
+      "statement": "For every execution and t>=0, f(t)^T*P*f(t)<=12."
+    },
+    {
+      "name": "position_envelope",
+      "statement": "For every execution and t>=0, abs(x(t))<=2."
+    }
+  ],
+  "physical_mapping": {
+    "positive_parameters": [
+      "tau0",
+      "tau",
+      "U"
+    ],
+    "normalized_time": "t=T/tau0",
+    "normalized_state": [
+      "X/(U*tau0^2)",
+      "V/(U*tau0)",
+      "A/U"
+    ],
+    "rate": "r=tau0/tau",
+    "controller_request": "-X[n]/tau0^2-3*V[n]/tau0-2*A[n]",
+    "actual_actuator_equation": "tau*A_dot=-A+clip(q[n]+epsilon[n],-U,U)+Delta[n]",
+    "duration_upper_bound": "tau0/5",
+    "joint_error_budget": "abs(epsilon[n])+abs(Delta[n])<=U/100",
+    "time_constant_ratio": [
+      "10/11",
+      "10/9"
+    ],
+    "position_envelope": "abs(X(T))<=2*U*tau0^2"
+  },
+  "illustrative_instance": {
+    "not_measured": true,
+    "tau0_seconds": "1/10",
+    "U_metres_per_second_squared": "2",
+    "position_bound_metres": "1/25",
+    "maximum_sample_seconds": "1/50",
+    "combined_error_metres_per_second_squared": "1/50"
+  },
+  "nonclaims": [
+    "No time-varying rate",
+    "No within-hold varying error",
+    "No external additive jerk outside rate",
+    "No hardware/IEEE arithmetic correspondence",
+    "No globally shortest or optimal envelope claim",
+    "No state-dependent quantizer uniqueness claim"
+  ],
+  "formal_source_sha256": {
+    "LeanControls/UncertainLag.lean": "629b947db34c8936329f3f5ff6694ff1548cc30d1d44f03840700a7dd6942c1f",
+    "LeanControls/UncertainTravel.lean": "525cbd5baf7d33d8d691ee412e9325d2467c8496ca06883a952156f1e57833a5",
+    "LeanControls/ExecutionUniqueness.lean": "06e8c5882c41f015942b39410fb0a4bf380a471f9358a7d8554728e23708d2c7",
+    "LeanControls/PhysicalExecutionUniqueness.lean": "b229aebac50e973aa5dd782ca9bad9fb480047ec83d88c3ed16e8e444944d07d"
+  },
+  "frozen_source_snapshot": "e503d89549551368abf4982ee679e5c00470b1ff94bdeb3cb7c8024d9cf07ede",
+  "source_archive": "../robust-final-fresh-replay.sources.tar.gz"
+}

@@ -1,0 +1,203 @@
+Human steadiness: evidence that can guide a robot proof
+Research date: 2026-10-17
+
+The useful target is a bounded tool error under stated disturbances, sensing errors,
+delays and replans. Human evidence supports several ways to reach that target. It
+does not support one cause of tremor, or a method that makes any arm perfectly still.
+
+Eight primary studies guide the engineering work. Two further studies distinguish
+pathological tremor from ordinary movement variability. These are experiments and
+their limits, not medical advice. None of the proposed robot theorems below has been
+proved in this note. Their novelty has not been established.
+
+Evidence map
+
+1. A peak in motion need not be a peak in the command.
+Vernooij, Lakie and Reynolds (2015) applied random mechanical inputs to a relaxed
+finger and random electrical inputs to its extensor muscle. Both common finger
+tremor frequency ranges could be reproduced. Two people without normal afferent
+feedback also showed the artificial spectrum. Thus, mechanical resonance can create
+these peaks without a rhythmic neural input or intact stretch reflex. This does not
+show that neural input never contributes to natural tremor.
+Robot lesson: identify the arm, tool and contact resonances before blaming the
+planner. Do not infer a neural oscillator from an output spectrum alone.
+https://journals.physiology.org/doi/full/10.1152/jn.00519.2014
+
+2. Shared motor input also contributes.
+Halliday et al. (1999) recorded finger acceleration, surface EMG and pairs of motor
+units in 13 people, with and without added mass. They found load-independent
+contributions associated with motor-unit synchrony in 1–12 Hz and 15–30 Hz bands.
+Coherence identifies a shared timing relation; it does not, by itself, identify a
+unique brain source or establish that this source causes every observed oscillation.
+Robot lesson: separate correlated commands, shared sensor errors and physical
+coupling. Several sensors seeing the same oscillation are not independent evidence.
+https://discovery.ucl.ac.uk/id/eprint/10217777/
+
+3. Force variability can grow with the requested force.
+Jones, Hamilton and Wolpert (2002) compared voluntary thumb contractions with
+electrically induced contractions in five people. Force standard deviation grew
+roughly linearly with mean force during voluntary contraction, but stayed nearly
+constant during stimulation over the tested range. Their motor-unit model showed
+that recruitment structure can produce this scaling. The experiment does not prove
+that all noise originates in a noisy high-level neural command.
+Robot lesson: test whether actuator, friction or estimator errors grow with effort.
+A fixed additive-noise bound may be too optimistic at high control effort.
+https://journals.physiology.org/doi/full/10.1152/jn.2002.88.3.1533
+
+4. More stiffness can make pointing worse.
+Morrison and Newell (2000) asked people to minimize finger motion while increasing
+voluntary arm co-contraction. Higher stiffness generally increased the power of
+lower-frequency tremor components and increased finger tremor. It also reduced
+compensatory motion between limb segments. This is a counterexample to a universal
+“stiffen every joint” rule, not a claim that stiffness is always harmful.
+Robot lesson: minimize tool error. Do not require every joint to be motionless if
+small, coordinated joint motions keep the tool steady.
+https://pubmed.ncbi.nlm.nih.gov/10900057/
+
+5. Selective stiffness can stabilize an unstable task.
+Burdet et al. (2001) used a robotic interface to create an unstable force field during
+arm movement. Participants learned to change the magnitude and orientation of arm
+impedance to resist the instability. This supports task-specific impedance, rather
+than uniform stiffening. The task was controlled planar reaching. It does not prove
+stability for arbitrary contacts, loads or delays.
+Robot lesson: reserve stiffness for task directions that need it. Certify damping,
+effort limits and the effect of changing stiffness as well.
+https://www.nature.com/articles/35106566
+
+6. Prediction and impedance solve different parts of the task.
+Osu et al. (2003) compared a velocity-dependent stable force field with a divergent,
+unstable field. Error patterns and EMG differed between the fields. A rotated
+divergent field supported a combination of learned compensation for consistent
+forces and impedance for instability. The internal-model explanation is supported
+by behavior and EMG; the experiment does not directly read a complete neural model.
+Robot lesson: compensate predictable forces, then use feedback and a robust margin
+for the remaining error. Replanning alone cannot remove an unstable interaction.
+https://pubmed.ncbi.nlm.nih.gov/14615431/
+
+7. Arm and grip corrections can be coordinated quickly.
+Crevecoeur et al. (2016) tested 16 healthy participants. A robot pushed the arm toward
+or away from a goal, including a task where the hand held an instrumented object.
+Goal-dependent hand and shoulder muscle responses appeared together at about 60 ms.
+This challenges a strictly serial “correct the arm, then compute grip” explanation.
+The authors leave the sensory contributions and detailed finger-contact mechanics
+open. The result does not establish a fixed human replan interval.
+Robot lesson: one fast feedback policy can coordinate arm motion and grip force
+beneath the slower planner. Grip feasibility must be checked along with motion.
+https://pmc.ncbi.nlm.nih.gov/articles/PMC4785384/
+
+8. Sensor weights depend on direction and precision.
+Van Beers, Sittig and Denier van der Gon (1999) tested hand localization with vision,
+proprioception, and both, including prism shifts. Ten participants' combined estimates
+supported direction-dependent weighting related to the precision of each sense.
+This is a perceptual experiment, not a proof that a controller is robust to sensor
+bias, drift, correlation or delay.
+Robot lesson: use calibrated, direction-dependent state uncertainty. Do not treat
+an average or a covariance estimate as a hard error bound without further evidence.
+https://journals.physiology.org/doi/abs/10.1152/jn.1999.81.3.1355
+
+Why “the neurology of tremor” is not one mechanism
+
+Ordinary physiological motion can contain mechanical resonance, common neural
+drive, feedback effects and force variability at the same time. Reflex feedback can
+interact with the moving limb, but study 1 shows that an intact reflex is not needed
+to reproduce its tested artificial spectra. Different limbs, loads, tasks and
+measurement methods can emphasize different components. Studies 1 and 2 therefore
+do not license a universal “all mechanical” or “all neural” claim.
+
+Essential tremor and Parkinsonian resting tremor must not be merged into this
+account as one failed servo. In a double-blind study of 11 participants with
+essential tremor, phase-locked stimulation near the cerebellum changed tremor
+amplitude. Effective phases differed between people and days. This supports a role
+for timing in that intervention. It does not identify one cause of all essential
+tremor; the proposed detailed circuit mechanism also uses modelling.
+Schreglmann et al. (2021):
+https://www.nature.com/articles/s41467-020-20581-7
+
+Helmich et al. (2011) studied 21 tremor-dominant Parkinson patients, 23 without tremor,
+and 36 controls, using imaging and EMG. Basal-ganglia activity tracked transitions
+into tremor; cerebellothalamic activity tracked amplitude. The paper proposes an
+interaction between circuits. Its authors explicitly say that fMRI is correlational
+and that a response could be reactive rather than causal. This is a useful warning
+against fitting one oscillator and declaring the biological mechanism solved.
+https://pubmed.ncbi.nlm.nih.gov/21387372/
+https://onlinelibrary.wiley.com/doi/full/10.1002/ana.22361
+
+Three mathematical mechanisms worth transferring
+
+A. A replan must not spend more physical energy than the controller can dissipate.
+
+Use a local error model M e'' + B e' + K(t)e = w. Here e is tool or joint error,
+M is constant positive-definite inertia, B is damping, K is symmetric stiffness,
+and w includes model error and reference acceleration effects. Define
+
+  E = (e'^T M e' + e^T K e) / 2.
+  E' = -e'^T B e' + e'^T w + e^T K' e / 2.
+
+This identity exposes a gap that a jerk bound cannot close: changing stiffness can
+add energy even when position, velocity and acceleration are continuous. At a gain
+switch with continuous physical state and unchanged reference,
+
+  E_after - E_before = e^T (K_after - K_before) e / 2.
+
+Candidate certificate: admit a reference and impedance update only when the
+controller has enough verified dissipation or stored energy budget to pay for it.
+Keep a certified stop/hold continuation available. Smooth reference handoff is one
+premise of this result; physical tracking is another. This draws on established
+passivity and impedance ideas. No novelty claim follows from the human analogy.
+
+Important proof limit: this plain E identity dissipates velocity, not all position
+error. It alone does not prove exponential convergence or a uniform position tube.
+Use a suitable cross term/common quadratic storage, or prove the missing argument.
+Time-varying inertia and changing contact add terms that also need to be bounded.
+
+B. Certify the residual motion, including every replan.
+
+For z = (e,e'), seek a positive quadratic V and constants alpha > 0, c >= 0 such
+that the actual closed-loop model gives V' <= -alpha V + c*delta^2 between updates.
+Assume disturbances and state-estimation errors meet the certified bounds. At each
+update, require V_after <= V_before + J_i. Then target the bound
+
+  V(t) <= exp(-alpha*t)*V(0)
+          + c*delta^2/alpha * (1-exp(-alpha*t))
+          + sum over t_i <= t of exp(-alpha*(t-t_i))*J_i.
+
+This makes “steady” measurable. A nonzero disturbance gives a nonzero residual bound.
+The sum also shows why arbitrarily many individually small replans can matter.
+An update gate can enforce J_i <= 0, or cap their accumulated effect. It should also
+track delay, actuator saturation and grip constraints. A minimum wait alone does
+not establish the derivative inequality or a valid switching bound.
+
+C. Set gains from task error, noise and resonance; do not maximize them.
+
+A simple robot counterexample is a damped mode
+  m*x'' + c*x' + k*x = F*cos(omega*t).
+Its steady periodic amplitude is
+  |F| / sqrt((k-m*omega^2)^2 + (c*omega)^2).
+With fixed positive m, c and omega, raising k toward m*omega^2 increases this
+amplitude. Thus higher stiffness can worsen disturbance rejection at a selected
+frequency even when the system remains stable. This is an elementary engineering
+example, not a fitted model of the experiments above.
+
+Task-space certificates should allow harmless joint motion and constrain the tool
+position, orientation and contact force. A pose bound also needs a bound on the
+kinematic Jacobian and its variation over the certified region. Flexible tools and
+unobserved contact forces need extra state or explicit uncertainty.
+
+What the next experiment should distinguish
+
+Use the same arm and goal with (1) planner switching disabled, (2) scripted bounded
+replans, and (3) VLA replans. Inject separately a periodic load, sensor noise, command
+delay and a contact change. Compare tool error and force, not joint quietness alone.
+Compare fixed minimum-wait smoothing against continuous handoff, an energy gate and
+a certified tracking bound. Keep accepted and rejected replans in the record.
+
+This can reveal whether the dominant problem is command switching, resonance,
+observation error or contact dynamics. A low-pass filter can reduce one oscillation
+while adding lag; its tracking and safety cost must be measured and bounded too.
+
+Evidence boundary
+
+Human studies motivate the design. They do not supply robot parameter bounds or a
+Lean proof. A Lean proof would validate the stated mathematical implication. Physical
+tests must justify the model and bounds. Unmodelled disturbances, saturation and
+contact changes remain outside a certificate unless it covers them explicitly.

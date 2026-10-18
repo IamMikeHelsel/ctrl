@@ -1,0 +1,267 @@
+RECOVERY/HANDOFF — ADVERSARIAL REVIEW
+17 October 2026. Independent AI-agent review, not human refereeing.
+
+Status at initial pass
+
+The handoff diagnostic is coherent and independently replays. The new Lean
+recovery files were not yet present at this pass, so no new Lean theorem is
+confirmed by this initial section. Subsequent inspections will be appended below.
+Only this review file is edited by this reviewer.
+
+Diagnostic findings
+
+Read handoff-probe/check.py, README.txt and review.txt, plus the frozen exact-flow,
+execution-uniqueness, sampled-invariant and continuity interfaces. Replayed the
+checker while replacing its results.json write with equality against the stored
+record. All640 corner/rate-cell checks passed and exactly matched the stored JSON.
+No diagnostic source or result was changed.
+
+The model is x'=v, v'=a, a'=r*(-1-a) during backup, with one fixed r in[.9,1.1],
+zero backup disturbance and duration5/4. The exact flow is affine in initial
+state; the frozen quadratic form is PSD. Thus convexity in initial state permits
+the eight-corner maximum, provided the formal proof actually supplies those
+facts. The80 adjacent rate cells cover the entire continuous rate interval.
+Rational interval operations and even/odd Taylor bounds give containing bounds;
+they do not merely sample the exponential.
+
+The full box x in[.99,1.01], v in[.49,.51], a in[-.01,.01] has energy bounded
+below by23.498378>12, so the proposed recovery is not a renamed application of the
+old initial-set theorem. During backup, -1<=a<=.01 gives the separate position
+enclosure[657/800,5297/3200], strictly within[-2,2]. The exact terminal interval
+energy bound is below11.235<12. These remain diagnostic/analytic findings until
+their premises and arithmetic are checked in the new Lean theorem.
+
+Required adversarial proof gates
+
+1. The final box theorem must derive terminal energy and the exponential/interval
+   bounds; it cannot assume those conclusions. An abstract composition theorem
+   may assume a terminal certificate, but cannot be advertised as this concrete
+   box recovery until that certificate is instantiated without added axioms.
+2. The backup is longer than the old h<=1/5 controller cap. Prove its safety
+   separately from the held ODE; apply the old cap only to the subsequent
+   sampled-controller durations. The backup command is -1, not frozen feedback
+   from the old controller evaluated on the initial box.
+3. One fixed r must be shared across backup and tail in the claimed model.
+   Do not interchange a proof for each fixed r with time-varying-r dynamics.
+4. All three state coordinates must be continuous at5/4. The tail must start
+   from the actual endpoint, without zeroing velocity or acceleration. A switch
+   derivative need not exist, but a jump in state cannot be silently allowed.
+5. Tail sample times must be5/4+t_n; feedback must use the global trajectory at
+   those times. A proof about a time-shifted constructed curve is insufficient
+   for a claim about every arbitrary trajectory unless correspondence is proved.
+6. Distinguish zero errors during backup from the tail's combined held-error
+   budget. Delayed switching, uncertain initial measurement, finite arithmetic
+   and within-hold varying disturbance are not free corollaries.
+7. For the initial box, prove genuine interval coverage and affine/convex
+   interpolation, not only640 inequalities. Taylor order/sign and denominator
+   positivity must be justified at the actual q range up to11/8.
+8. Prove or exhibit a nonempty initial condition and a permitted tail schedule
+   so the final combined execution specification is inhabited. Never hide safety
+   or equality to the desired curve inside the execution predicate.
+
+Publication interpretation of the proposed capability
+
+A successful proof would establish a useful, bounded extension: verified
+negative-command recovery from a nondegenerate box outside the previous invariant
+set into that set, followed by indefinite robust sampled safety. The endpoint
+need not be at rest. This is stronger than an isolated stopping-distance trace,
+and correctly uses full-state terminal energy to prevent the v=0/negative-a trap.
+
+It would still be a fixed-duration offline recovery policy from a small selected
+region. It is not yet an arbitrary-request guard, an online backup-CBF filter,
+a general stopping envelope, an optimal recoverable set, or a measured robot
+safety result. The zero-error backup stage is materially weaker than the robust
+tail and should appear in the headline contract, not only in limitations.
+
+Closest inspected primary literature already supplies backup/tube safety under
+disturbances (van Wijk et al., arxiv2409.07700) and sampled-data backup safety with
+state uncertainty and specified input delay (Singletary et al., arxiv2005.06418).
+Both differ in architecture/assumptions; neither comparison has been run here.
+Therefore the distinguishing candidate is the exact checked recovery/terminal/
+arbitrary-execution composition and usable artifact, not the invention of backup
+control or intersample safety. A fixed-time recover-then-control construction is
+established control reasoning. Absence of a found identical Lean theorem does
+not establish scientific novelty.
+
+For a stronger submission, expose the reusable recovery contract and this exact
+model as an independently runnable benchmark; compare region coverage and proof
+obligations against a matched baseline, with the same zero-error backup, fixed
+rate interval, duration and tail semantics. A different disturbance budget or
+missing intersample condition makes a purported superiority comparison invalid.
+The parent novelty-review.txt records source access limitations. No new browsing
+was needed for this pass.
+
+Sources used for the bounded comparison:
+https://arxiv.org/html/2409.07700v2
+https://arxiv.org/pdf/2005.06418
+
+FINAL SOURCE REVIEW — 17 October 2026, 12:40 PDT
+
+This addendum supersedes the initial provisional status. I read the new Lean
+execution, path, terminal, concrete normalized and concrete physical modules.
+No blocking mathematical/model-contract mismatch was found in the current
+concrete result. This is an independent AI-agent source review, not a human
+review or an independent implementation. I did not run a full Lean rebuild.
+
+Exact reviewed source SHA256 values:
+RecoveryHandoff.lean
+  2146a541ff3a1944a8c1c8f6cd645960e63074163f8f39797874276a66d7a1f0
+RecoveryPath.lean
+  b2876d3b2e4b7256004e5e59f470322c6179c98df9c3ca7423e512b3120890dc
+TerminalBase.lean
+  10b9f7246036be36281b16d7690496f4e2d26151c87f4dcbf1b51d00d5cab390
+TerminalCells.lean
+  4430b81066803eb50d57736b0c0cf78947511014d71df8b847a5eb7860b6ea66
+RecoveryBox.lean
+  21f9641fc0c6b35ce81cbff0fe2ca6367c74873685840e86c7822fcc33efa56e
+PhysicalRecovery.lean
+  798023eb3951f4ffcea7104702a588e654f7e66ccb336a96f0d99a55a2b66165
+PhysicalRecoveryBox.lean
+  b5cd07e1ec706ab4f64948f96e467337b1d33a888c9f89946d4ce020e9927e41
+
+Evidence inspected
+
+The handoff and physical-recovery manifests match their current source hashes
+and report successful compilation, respectively nine and four named theorem
+closures, with only propext, Classical.choice and Quot.sound. The path manifest
+matches its source, reports eight such theorem closures, and successful
+single-module leanchecker replay. Current terminal-check.log prints only those
+three axioms for terminal_energy. Current box-check.log and
+physical-box-check.log print only those three axioms for the five normalized
+and three physical final theorems. The latest sources contain no sorry, added
+axiom, native_decide, or native interval arithmetic. The initially encountered
+module-import and negative-rational normalization errors were repaired; they
+are not current proof failures.
+
+These compile records use existing pinned dependencies. RecoveryHandoff-kernel.log
+and PhysicalRecovery-kernel.log also record single-module replays. A new,
+complete source-copy replay and its source/hash manifest were not complete at
+this review checkpoint; the parent owns that integration check. Do not describe
+this review as independently rebuilding the entire dependency graph.
+
+What is now confirmed, and why the original proof gates close
+
+1. The concrete RecoveryBox.travel_limit assumes only the stated rate, initial
+   box, timing/error sequences, actual execution predicate, and nonnegative
+   observation time. It derives both backup path safety and terminal energy.
+   The abstract hbackup/hterminal premises remain only in reusable generic
+   theorems; neither is an extra premise of the concrete result.
+
+2. RecoveryPath bounds acceleration, integrates velocity and position using
+   derivative bounds, and proves the whole backup interval lies within
+   [657/800,5297/3200]. This does not apply the old 1/5 sample-hold limit to the
+   5/4 backup. The old limit begins with the sampled tail.
+
+3. IsRecoveryExecution uses the same fixed r in both phases. Its only execution
+   fields are full-state continuity on nonnegative time, initial state, backup
+   ODE on (0,T), and sampled ODE on shifted open intervals. It contains neither
+   an invariant nor equality to a proposed safe curve. The backup command is
+   exactly -1; the tail command uses the actual global state at T+t_n, with
+   pre-clamp e_n and post-clamp d_n inside the actuator equation.
+
+4. backup_eq proves equality to the analytic held solution on the closed backup
+   interval. shifted_isExecution obtains the old execution contract starting
+   at the actual f(T). All three state coordinates survive the handoff.
+   Continuity supplies the endpoint condition; a derivative at the switch is
+   correctly unnecessary. Lower-bounded positive tail durations exclude Zeno
+   accumulation and allow all nonnegative times to be covered.
+
+5. TerminalBase uses Mathlib's proved exponential remainder bound on q/2,
+   then a proved squaring identity. Each of the 33 rational endpoint bounds is
+   checked by norm_num. Positive denominators and reciprocal interval bounds
+   are proved explicitly. TerminalCells has 32 adjacent closed rate cells,
+   covering [9/10,11/10], and a complete case split including boundaries.
+   Each cell directly bounds the full initial box using the exact held flow
+   and an exact LDL identity for the quadratic form. dyadic_interval has
+   native := false. Thus the new Lean proof does not require the diagnostic's
+   eight-corner convexity argument at all: it is a direct whole-box proof.
+   Rational casts and finite decimal constants are exact Lean real values.
+
+6. RecoveryBox.actual_terminal_entry applies the analytic certificate to the
+   actual f(5/4). initial_outside proves the initial box is outside V<=12.
+   The formal terminal claim is V<=12. The earlier diagnostic upper bound
+   below 11.235 is not the stronger conclusion of this Lean theorem and must
+   not be attributed to it. No stopping-at-zero-velocity shortcut is used.
+
+7. The explicitly glued trajectory satisfies the actual execution predicate
+   without safety or terminal assumptions; uniqueness is proved. The concrete
+   exists_safe_execution theorem combines this witness with all-time safety.
+   The initial box is nonempty (for example (1,1/2,0)); permitted schedules
+   also exist (for example constant 1/10 with zero errors). Consequently the
+   universal safety statement is not vacuous.
+
+8. PhysicalRecovery normalizes the actual physical equations with
+   r=tau0/tau, physical switch tau0*T, command -U, and nominal-tau0 feedback.
+   PhysicalRecoveryBox supplies the concrete normalized box certificates,
+   proves |X(s)|<=2*U*tau0^2, transfers the actual terminal state, and exhibits
+   a continuous physical execution. Normalization is a unit/model theorem;
+   it does not establish measured actuator parameters or implementation
+   conformance.
+
+Remaining boundaries of the proved claim
+
+The backup has zero command, measurement, disturbance and switch-time error.
+The tail permits per-hold combined error |e_n|+|d_n|<=1/90 (physical U/90).
+Those errors enter the acceleration command inside the lag; they are not
+arbitrary external forces on position/velocity. The lag is uncertain but fixed
+for the whole run. The theorem does not cover within-hold variation, reaction
+latency before backup, uncertain state admission, a delayed handoff, finite-word
+controller code, a changing target, multiple coupled axes, or hardware. These
+are substantive model restrictions, not flaws in the current theorem.
+
+The initial box has positive volume but is very small and selected offline.
+The theorem extends the artifact's certified starting states; it does not
+prove that the original feedback fails on this box, nor enlarge the original
+controller's maximal safe set. It certifies a different two-stage policy from
+additional states. It is not a generally applicable online safety filter.
+
+Comparison audit
+
+Read experiment.py and experiment-results.json. Reviewed experiment source:
+  6734ae0289b698640d4a54552d8b040a7b15abe9f6ba523e50e7d2300c1d88f4
+The comparison is honestly labeled floating-point analytic-flow illustration,
+with zero errors, 8 initial corners, 3 fixed rates, and a finite horizon of 20.
+It is not a validated interval experiment or robust/infinite-horizon proof.
+Numerical root bisection checks position extrema within held segments; energy
+peaks remain sampled. Step refinement giving no changed observed peak is not
+an error bound. I inspected, but did not independently rerun, this experiment.
+
+Both policies have zero observed travel violations for holds .05, .1 and .2;
+the direct controller also has terminal V below 12 at T in every tested case.
+At default hold .1, backup-minus-direct peak travel changes by roughly
+-.00222 to -.00109, while terminal-energy differences have both signs. Backup
+has greater command total variation in the default summary. Thus the data do
+not establish a compelling performance advantage or a necessity for backup.
+Restarting the feedback clock at T is also part of the policy: with .1/.2
+holds, T does not align with the direct controller's original clock. The
+metadata exposes this, and the .05 case provides an aligned-clock check.
+Neither method has an independent competitor implementation in this artifact.
+
+Publication judgment
+
+The local proof capability has advanced substantially: there is now a concrete
+full-box recovery, terminal entry, arbitrary-ODE correspondence, explicit
+existence, and indefinite robust sampled tail, including physical scaling.
+That is a coherent formal-methods case study with reusable proof obligations.
+It is stronger than the initial isolated diagnostic or a conditional handoff
+lemma. No theorem blocker remains from this source review, subject to the
+pending fresh-source replay and unchanged reviewed hashes.
+
+It is still not a new control-theoretic recovery principle. The closest backup
+CBF papers already establish related backup/invariant safety with assumptions
+such as disturbances, state uncertainty and known delays that this backup
+phase does not support. A matched comparison must retain identical model,
+error placement, fixed-rate uncertainty, timing, intersample and terminal
+conditions; comparing this exact backup against a more demanding robust method
+without equalizing assumptions would be misleading.
+
+Credible framing: a checked, inspectable recovery-to-invariant benchmark and
+experience report, with honest model limits and reproducible certificate
+construction. Weak framing: a novel robust braking shield, a superior recovery
+controller, or deployment-ready robot safety. The present evidence supports
+only the former. It may be useful for an ARCH-style benchmark/tool/experience
+submission, but does not establish acceptance likelihood or strong research
+novelty. Human review, independent reuse or matched external comparison, a
+chosen redistribution license, and an explanation of why this selected box is
+useful remain substantive publication work. If no external consumer or richer
+use case materializes, keep the scope as a small formalization case study.

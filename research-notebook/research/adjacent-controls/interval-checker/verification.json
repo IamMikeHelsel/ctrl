@@ -1,0 +1,790 @@
+{
+  "scope": "fresh checker, path and continuation modules plus recovery TerminalBase dependency; individual kernel replay; frozen base and pinned mathlib artifacts reused",
+  "toolchain": "Lean (version 4.35.0, arm64-apple-darwin24.6.0, commit eb6cafb7290e8bd5f2937522d8d804f58f02bafc, Release)",
+  "source_sha256": {
+    "TerminalBase.lean": "10b9f7246036be36281b16d7690496f4e2d26151c87f4dcbf1b51d00d5cab390",
+    "IntervalChecker.lean": "797fa6ca45395e106ed3ad0b87b279b06a16b5d207bd1acd210ba4845fb38168",
+    "CoefficientBounds.lean": "2bbe1729e069807a86630e49506c2e4caa17660f7172f907b9aa898de26f66a7",
+    "CoefficientCells.lean": "bac591d78589ec22a9c70cfd1af6ad730beeca744a315ed21bfeea33e8b2cdd2",
+    "TraceExecution.lean": "77c53e0db5be7103d2623659c9873311ba2e19b6b0b77fb0f7dcb31ed65900ac",
+    "IntervalPilot.lean": "09e037f003aa6a39b8e12e5aefdbdf590d42c3c0d7e5957461ccf976e4f069a8",
+    "IntervalPilotActual.lean": "944c564ef29be4995706576ca715e12abc830dbdde7416f993db392123562e0b",
+    "PilotSafety.lean": "2aba381fb3c4e23f50474134bd16e7445f80882f3b73e9d889bdd4207a99f7d5",
+    "BetweenSample.lean": "816b2a8854e4f92e3ea49e117e2cc2bf8eca8dc0b8c087b3d26bee76904453fe",
+    "PilotPath.lean": "9579f1ff859dadccb3c771ba61d6ea4b5b2e996074e04602f66d28582abf23c7",
+    "FiniteHandoff.lean": "a96f6da98cdbb7605245a720592c0c5ab1ce76a318cdd04e2e2a8e7556d67750",
+    "PilotContinuation.lean": "5ca492bfa2eedef45059c3b91b0afd960ab54a45ec48b4c93db55341633774fa",
+    "GeneralHandoff.lean": "ad7f7e19e1f4e0a8c4f83b676508149a660c241e0641b15f700a71eebe66d663"
+  },
+  "verifier_sha256": "81755394310068ddbbbd88b31888c4998d18af1800d951ec9bc2bd55f5e90ae9",
+  "mathlib_commit": "56a005855ea17e0b0958f73ec801ae140b0a1679",
+  "steps": [
+    {
+      "label": "regenerate-coefficients",
+      "exit_code": 0,
+      "expected": "success",
+      "passed": true,
+      "command": [
+        "/Library/Frameworks/Python.framework/Versions/3.14/bin/python3",
+        "/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/adjacent-controls/interval-checker/generate_coefficients.py",
+        "--check"
+      ],
+      "cwd": "/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/adjacent-controls/interval-checker",
+      "seconds": 0.030102332995738834,
+      "log_sha256": "5cdfbbf714ce3b828decc108f6b2dfddba96ee44c818978ae7a09c98dc6c3745"
+    },
+    {
+      "label": "build-TerminalBase",
+      "exit_code": 0,
+      "expected": "success",
+      "passed": true,
+      "command": [
+        "/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/.tools/elan/toolchains/leanprover--lean4---v4.35.0/bin/lean",
+        "--root=/var/folders/my/gvpc8lhn61b07vzgm7fxmnmh0000gn/T/recovery-lean-xr_hn7jm",
+        "-o",
+        "/var/folders/my/gvpc8lhn61b07vzgm7fxmnmh0000gn/T/recovery-lean-xr_hn7jm/TerminalBase.olean",
+        "/var/folders/my/gvpc8lhn61b07vzgm7fxmnmh0000gn/T/recovery-lean-xr_hn7jm/TerminalBase.lean"
+      ],
+      "cwd": "/var/folders/my/gvpc8lhn61b07vzgm7fxmnmh0000gn/T/recovery-lean-xr_hn7jm",
+      "seconds": 2.1850714170141146,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "build-IntervalChecker",
+      "exit_code": 0,
+      "expected": "success",
+      "passed": true,
+      "command": [
+        "/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/.tools/elan/toolchains/leanprover--lean4---v4.35.0/bin/lean",
+        "--root=/var/folders/my/gvpc8lhn61b07vzgm7fxmnmh0000gn/T/recovery-lean-xr_hn7jm",
+        "-o",
+        "/var/folders/my/gvpc8lhn61b07vzgm7fxmnmh0000gn/T/recovery-lean-xr_hn7jm/IntervalChecker.olean",
+        "/var/folders/my/gvpc8lhn61b07vzgm7fxmnmh0000gn/T/recovery-lean-xr_hn7jm/IntervalChecker.lean"
+      ],
+      "cwd": "/var/folders/my/gvpc8lhn61b07vzgm7fxmnmh0000gn/T/recovery-lean-xr_hn7jm",
+      "seconds": 2.756284333008807,
+      "log_sha256": "369eb5d8f3eeb3b1d4a7c7cd794a17b7b5195f271f73821814554803c1620f3b"
+    },
+    {
+      "label": "build-CoefficientBounds",
+      "exit_code": 0,
+      "expected": "success",
+      "passed": true,
+      "command": [
+        "/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/.tools/elan/toolchains/leanprover--lean4---v4.35.0/bin/lean",
+        "--root=/var/folders/my/gvpc8lhn61b07vzgm7fxmnmh0000gn/T/recovery-lean-xr_hn7jm",
+        "-o",
+        "/var/folders/my/gvpc8lhn61b07vzgm7fxmnmh0000gn/T/recovery-lean-xr_hn7jm/CoefficientBounds.olean",
+        "/var/folders/my/gvpc8lhn61b07vzgm7fxmnmh0000gn/T/recovery-lean-xr_hn7jm/CoefficientBounds.lean"
+      ],
+      "cwd": "/var/folders/my/gvpc8lhn61b07vzgm7fxmnmh0000gn/T/recovery-lean-xr_hn7jm",
+      "seconds": 3.162719458981883,
+      "log_sha256": "0d7ae73f997a6651e891d75640ce2829ced10a98533a113c923334dd29d2f9f1"
+    },
+    {
+      "label": "build-CoefficientCells",
+      "exit_code": 0,
+      "expected": "success",
+      "passed": true,
+      "command": [
+        "/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/.tools/elan/toolchains/leanprover--lean4---v4.35.0/bin/lean",
+        "--root=/var/folders/my/gvpc8lhn61b07vzgm7fxmnmh0000gn/T/recovery-lean-xr_hn7jm",
+        "-o",
+        "/var/folders/my/gvpc8lhn61b07vzgm7fxmnmh0000gn/T/recovery-lean-xr_hn7jm/CoefficientCells.olean",
+        "/var/folders/my/gvpc8lhn61b07vzgm7fxmnmh0000gn/T/recovery-lean-xr_hn7jm/CoefficientCells.lean"
+      ],
+      "cwd": "/var/folders/my/gvpc8lhn61b07vzgm7fxmnmh0000gn/T/recovery-lean-xr_hn7jm",
+      "seconds": 4.19705579202855,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "build-TraceExecution",
+      "exit_code": 0,
+      "expected": "success",
+      "passed": true,
+      "command": [
+        "/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/.tools/elan/toolchains/leanprover--lean4---v4.35.0/bin/lean",
+        "--root=/var/folders/my/gvpc8lhn61b07vzgm7fxmnmh0000gn/T/recovery-lean-xr_hn7jm",
+        "-o",
+        "/var/folders/my/gvpc8lhn61b07vzgm7fxmnmh0000gn/T/recovery-lean-xr_hn7jm/TraceExecution.olean",
+        "/var/folders/my/gvpc8lhn61b07vzgm7fxmnmh0000gn/T/recovery-lean-xr_hn7jm/TraceExecution.lean"
+      ],
+      "cwd": "/var/folders/my/gvpc8lhn61b07vzgm7fxmnmh0000gn/T/recovery-lean-xr_hn7jm",
+      "seconds": 1.881319625012111,
+      "log_sha256": "ddb6b8d8899ad36dd8ef76dea404cdc06f417e69d1d40ed4eaa101e58aaaaf45"
+    },
+    {
+      "label": "build-IntervalPilot",
+      "exit_code": 0,
+      "expected": "success",
+      "passed": true,
+      "command": [
+        "/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/.tools/elan/toolchains/leanprover--lean4---v4.35.0/bin/lean",
+        "--root=/var/folders/my/gvpc8lhn61b07vzgm7fxmnmh0000gn/T/recovery-lean-xr_hn7jm",
+        "-o",
+        "/var/folders/my/gvpc8lhn61b07vzgm7fxmnmh0000gn/T/recovery-lean-xr_hn7jm/IntervalPilot.olean",
+        "/var/folders/my/gvpc8lhn61b07vzgm7fxmnmh0000gn/T/recovery-lean-xr_hn7jm/IntervalPilot.lean"
+      ],
+      "cwd": "/var/folders/my/gvpc8lhn61b07vzgm7fxmnmh0000gn/T/recovery-lean-xr_hn7jm",
+      "seconds": 31.35703450004803,
+      "log_sha256": "26bec1e9a60fe79d6d7e19661e73a05669524eacf41f98e7ab0057890fbc76df"
+    },
+    {
+      "label": "build-IntervalPilotActual",
+      "exit_code": 0,
+      "expected": "success",
+      "passed": true,
+      "command": [
+        "/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/.tools/elan/toolchains/leanprover--lean4---v4.35.0/bin/lean",
+        "--root=/var/folders/my/gvpc8lhn61b07vzgm7fxmnmh0000gn/T/recovery-lean-xr_hn7jm",
+        "-o",
+        "/var/folders/my/gvpc8lhn61b07vzgm7fxmnmh0000gn/T/recovery-lean-xr_hn7jm/IntervalPilotActual.olean",
+        "/var/folders/my/gvpc8lhn61b07vzgm7fxmnmh0000gn/T/recovery-lean-xr_hn7jm/IntervalPilotActual.lean"
+      ],
+      "cwd": "/var/folders/my/gvpc8lhn61b07vzgm7fxmnmh0000gn/T/recovery-lean-xr_hn7jm",
+      "seconds": 1.9974337500170805,
+      "log_sha256": "9f2687a4ce5507ecc13415638e023ecabb557cd1e5336da9a9e6335cdbe39157"
+    },
+    {
+      "label": "build-PilotSafety",
+      "exit_code": 0,
+      "expected": "success",
+      "passed": true,
+      "command": [
+        "/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/.tools/elan/toolchains/leanprover--lean4---v4.35.0/bin/lean",
+        "--root=/var/folders/my/gvpc8lhn61b07vzgm7fxmnmh0000gn/T/recovery-lean-xr_hn7jm",
+        "-o",
+        "/var/folders/my/gvpc8lhn61b07vzgm7fxmnmh0000gn/T/recovery-lean-xr_hn7jm/PilotSafety.olean",
+        "/var/folders/my/gvpc8lhn61b07vzgm7fxmnmh0000gn/T/recovery-lean-xr_hn7jm/PilotSafety.lean"
+      ],
+      "cwd": "/var/folders/my/gvpc8lhn61b07vzgm7fxmnmh0000gn/T/recovery-lean-xr_hn7jm",
+      "seconds": 1.9217462909873575,
+      "log_sha256": "ba287486aaa0ecb2de2d7f3f578822d7cb8b37d4a7a5d8bc18ed7fb1532d5ff4"
+    },
+    {
+      "label": "build-BetweenSample",
+      "exit_code": 0,
+      "expected": "success",
+      "passed": true,
+      "command": [
+        "/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/.tools/elan/toolchains/leanprover--lean4---v4.35.0/bin/lean",
+        "--root=/var/folders/my/gvpc8lhn61b07vzgm7fxmnmh0000gn/T/recovery-lean-xr_hn7jm",
+        "-o",
+        "/var/folders/my/gvpc8lhn61b07vzgm7fxmnmh0000gn/T/recovery-lean-xr_hn7jm/BetweenSample.olean",
+        "/var/folders/my/gvpc8lhn61b07vzgm7fxmnmh0000gn/T/recovery-lean-xr_hn7jm/BetweenSample.lean"
+      ],
+      "cwd": "/var/folders/my/gvpc8lhn61b07vzgm7fxmnmh0000gn/T/recovery-lean-xr_hn7jm",
+      "seconds": 2.071189125010278,
+      "log_sha256": "19c4b9372affdc8aaff34b51da8d218fd8ef29d870c4e0d4c04314201feee45f"
+    },
+    {
+      "label": "build-PilotPath",
+      "exit_code": 0,
+      "expected": "success",
+      "passed": true,
+      "command": [
+        "/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/.tools/elan/toolchains/leanprover--lean4---v4.35.0/bin/lean",
+        "--root=/var/folders/my/gvpc8lhn61b07vzgm7fxmnmh0000gn/T/recovery-lean-xr_hn7jm",
+        "-o",
+        "/var/folders/my/gvpc8lhn61b07vzgm7fxmnmh0000gn/T/recovery-lean-xr_hn7jm/PilotPath.olean",
+        "/var/folders/my/gvpc8lhn61b07vzgm7fxmnmh0000gn/T/recovery-lean-xr_hn7jm/PilotPath.lean"
+      ],
+      "cwd": "/var/folders/my/gvpc8lhn61b07vzgm7fxmnmh0000gn/T/recovery-lean-xr_hn7jm",
+      "seconds": 5.278466374962591,
+      "log_sha256": "a9db2bdf8200885513a01bc4362993669b317bd33e8e00ffa533b4d7bedd6838"
+    },
+    {
+      "label": "build-FiniteHandoff",
+      "exit_code": 0,
+      "expected": "success",
+      "passed": true,
+      "command": [
+        "/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/.tools/elan/toolchains/leanprover--lean4---v4.35.0/bin/lean",
+        "--root=/var/folders/my/gvpc8lhn61b07vzgm7fxmnmh0000gn/T/recovery-lean-xr_hn7jm",
+        "-o",
+        "/var/folders/my/gvpc8lhn61b07vzgm7fxmnmh0000gn/T/recovery-lean-xr_hn7jm/FiniteHandoff.olean",
+        "/var/folders/my/gvpc8lhn61b07vzgm7fxmnmh0000gn/T/recovery-lean-xr_hn7jm/FiniteHandoff.lean"
+      ],
+      "cwd": "/var/folders/my/gvpc8lhn61b07vzgm7fxmnmh0000gn/T/recovery-lean-xr_hn7jm",
+      "seconds": 1.955724665953312,
+      "log_sha256": "81f7da417d8465d1a9a594eb75d7b901b43628d8e6e155c232b33cea04cc85e8"
+    },
+    {
+      "label": "build-PilotContinuation",
+      "exit_code": 0,
+      "expected": "success",
+      "passed": true,
+      "command": [
+        "/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/.tools/elan/toolchains/leanprover--lean4---v4.35.0/bin/lean",
+        "--root=/var/folders/my/gvpc8lhn61b07vzgm7fxmnmh0000gn/T/recovery-lean-xr_hn7jm",
+        "-o",
+        "/var/folders/my/gvpc8lhn61b07vzgm7fxmnmh0000gn/T/recovery-lean-xr_hn7jm/PilotContinuation.olean",
+        "/var/folders/my/gvpc8lhn61b07vzgm7fxmnmh0000gn/T/recovery-lean-xr_hn7jm/PilotContinuation.lean"
+      ],
+      "cwd": "/var/folders/my/gvpc8lhn61b07vzgm7fxmnmh0000gn/T/recovery-lean-xr_hn7jm",
+      "seconds": 1.9089092910289764,
+      "log_sha256": "cbe30003133cab87e97404527bbc77d2ea1ecb503e6b31a59bbb7b71ac143018"
+    },
+    {
+      "label": "build-GeneralHandoff",
+      "exit_code": 0,
+      "expected": "success",
+      "passed": true,
+      "command": [
+        "/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/.tools/elan/toolchains/leanprover--lean4---v4.35.0/bin/lean",
+        "--root=/var/folders/my/gvpc8lhn61b07vzgm7fxmnmh0000gn/T/recovery-lean-xr_hn7jm",
+        "-o",
+        "/var/folders/my/gvpc8lhn61b07vzgm7fxmnmh0000gn/T/recovery-lean-xr_hn7jm/GeneralHandoff.olean",
+        "/var/folders/my/gvpc8lhn61b07vzgm7fxmnmh0000gn/T/recovery-lean-xr_hn7jm/GeneralHandoff.lean"
+      ],
+      "cwd": "/var/folders/my/gvpc8lhn61b07vzgm7fxmnmh0000gn/T/recovery-lean-xr_hn7jm",
+      "seconds": 1.896833292033989,
+      "log_sha256": "f9e538e306a9ea7e68f071141eeafdc1fde37089278d769c9fb00fec51eecdfc"
+    },
+    {
+      "label": "axiom-audit",
+      "exit_code": 0,
+      "expected": "success",
+      "passed": true,
+      "command": [
+        "/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/.tools/elan/toolchains/leanprover--lean4---v4.35.0/bin/lean",
+        "/var/folders/my/gvpc8lhn61b07vzgm7fxmnmh0000gn/T/recovery-lean-xr_hn7jm/Audit.lean"
+      ],
+      "cwd": "/var/folders/my/gvpc8lhn61b07vzgm7fxmnmh0000gn/T/recovery-lean-xr_hn7jm",
+      "seconds": 3.0268952079932205,
+      "log_sha256": "a1c922c019f79662f0a93039ea15465af1412675b0b3352de97555a006b8524d"
+    },
+    {
+      "label": "kernel-TerminalBase",
+      "exit_code": 0,
+      "expected": "success",
+      "passed": true,
+      "command": [
+        "/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/.tools/elan/toolchains/leanprover--lean4---v4.35.0/bin/leanchecker",
+        "TerminalBase",
+        "-v"
+      ],
+      "cwd": "/var/folders/my/gvpc8lhn61b07vzgm7fxmnmh0000gn/T/recovery-lean-xr_hn7jm",
+      "seconds": 7.2025629580020905,
+      "log_sha256": "4de51e16df46c5954b8d2fa8293ba3936203770ecb219363355c23a43c31965d"
+    },
+    {
+      "label": "kernel-IntervalChecker",
+      "exit_code": 0,
+      "expected": "success",
+      "passed": true,
+      "command": [
+        "/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/.tools/elan/toolchains/leanprover--lean4---v4.35.0/bin/leanchecker",
+        "IntervalChecker",
+        "-v"
+      ],
+      "cwd": "/var/folders/my/gvpc8lhn61b07vzgm7fxmnmh0000gn/T/recovery-lean-xr_hn7jm",
+      "seconds": 8.261908582993783,
+      "log_sha256": "f7af8e217b1bb3e64d4a81140f7862e6c56d67787afcedb21dab979568157089"
+    },
+    {
+      "label": "kernel-CoefficientBounds",
+      "exit_code": 0,
+      "expected": "success",
+      "passed": true,
+      "command": [
+        "/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/.tools/elan/toolchains/leanprover--lean4---v4.35.0/bin/leanchecker",
+        "CoefficientBounds",
+        "-v"
+      ],
+      "cwd": "/var/folders/my/gvpc8lhn61b07vzgm7fxmnmh0000gn/T/recovery-lean-xr_hn7jm",
+      "seconds": 7.667591167031787,
+      "log_sha256": "9257443bf26e7b24460b246b0919bd6e6fe218ca305873bb6e62cbf9f3ac7d1a"
+    },
+    {
+      "label": "kernel-CoefficientCells",
+      "exit_code": 0,
+      "expected": "success",
+      "passed": true,
+      "command": [
+        "/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/.tools/elan/toolchains/leanprover--lean4---v4.35.0/bin/leanchecker",
+        "CoefficientCells",
+        "-v"
+      ],
+      "cwd": "/var/folders/my/gvpc8lhn61b07vzgm7fxmnmh0000gn/T/recovery-lean-xr_hn7jm",
+      "seconds": 7.91743845801102,
+      "log_sha256": "596c49ff3ad7f6c5697cc3910c3b939e6040f230b0640ee4e80aadad42e170e0"
+    },
+    {
+      "label": "kernel-TraceExecution",
+      "exit_code": 0,
+      "expected": "success",
+      "passed": true,
+      "command": [
+        "/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/.tools/elan/toolchains/leanprover--lean4---v4.35.0/bin/leanchecker",
+        "TraceExecution",
+        "-v"
+      ],
+      "cwd": "/var/folders/my/gvpc8lhn61b07vzgm7fxmnmh0000gn/T/recovery-lean-xr_hn7jm",
+      "seconds": 7.187113791005686,
+      "log_sha256": "34579b42d29f6b4a111620b00451eee517de010f797bb032149ad38ffeb5795f"
+    },
+    {
+      "label": "kernel-IntervalPilot",
+      "exit_code": 0,
+      "expected": "success",
+      "passed": true,
+      "command": [
+        "/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/.tools/elan/toolchains/leanprover--lean4---v4.35.0/bin/leanchecker",
+        "IntervalPilot",
+        "-v"
+      ],
+      "cwd": "/var/folders/my/gvpc8lhn61b07vzgm7fxmnmh0000gn/T/recovery-lean-xr_hn7jm",
+      "seconds": 6.596275583025999,
+      "log_sha256": "09322df19b5bf8ddd97cc53d243cd238219e8bbcbf5d951c2aade5fcbebeb12f"
+    },
+    {
+      "label": "kernel-IntervalPilotActual",
+      "exit_code": 0,
+      "expected": "success",
+      "passed": true,
+      "command": [
+        "/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/.tools/elan/toolchains/leanprover--lean4---v4.35.0/bin/leanchecker",
+        "IntervalPilotActual",
+        "-v"
+      ],
+      "cwd": "/var/folders/my/gvpc8lhn61b07vzgm7fxmnmh0000gn/T/recovery-lean-xr_hn7jm",
+      "seconds": 5.990308417007327,
+      "log_sha256": "597121afcb0b3d071a0810e8dc96db469d11337094888e7a69d2abed1f913e5f"
+    },
+    {
+      "label": "kernel-PilotSafety",
+      "exit_code": 0,
+      "expected": "success",
+      "passed": true,
+      "command": [
+        "/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/.tools/elan/toolchains/leanprover--lean4---v4.35.0/bin/leanchecker",
+        "PilotSafety",
+        "-v"
+      ],
+      "cwd": "/var/folders/my/gvpc8lhn61b07vzgm7fxmnmh0000gn/T/recovery-lean-xr_hn7jm",
+      "seconds": 6.528076791961212,
+      "log_sha256": "51564580072c0e8c82a84b082367e136d7b0324d5f37fc79ebbcd8af8ebd42bc"
+    },
+    {
+      "label": "kernel-BetweenSample",
+      "exit_code": 0,
+      "expected": "success",
+      "passed": true,
+      "command": [
+        "/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/.tools/elan/toolchains/leanprover--lean4---v4.35.0/bin/leanchecker",
+        "BetweenSample",
+        "-v"
+      ],
+      "cwd": "/var/folders/my/gvpc8lhn61b07vzgm7fxmnmh0000gn/T/recovery-lean-xr_hn7jm",
+      "seconds": 5.9932222090428695,
+      "log_sha256": "6860449abd483e8e7354cb9f8abc23e04396dce8e2a97c46fe48455b762b3a41"
+    },
+    {
+      "label": "kernel-PilotPath",
+      "exit_code": 0,
+      "expected": "success",
+      "passed": true,
+      "command": [
+        "/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/.tools/elan/toolchains/leanprover--lean4---v4.35.0/bin/leanchecker",
+        "PilotPath",
+        "-v"
+      ],
+      "cwd": "/var/folders/my/gvpc8lhn61b07vzgm7fxmnmh0000gn/T/recovery-lean-xr_hn7jm",
+      "seconds": 6.05530737497611,
+      "log_sha256": "3218f739745ec64b2be4f52be8f9ae70cc64480fc0aadb7fac353d44d67b2752"
+    },
+    {
+      "label": "kernel-FiniteHandoff",
+      "exit_code": 0,
+      "expected": "success",
+      "passed": true,
+      "command": [
+        "/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/.tools/elan/toolchains/leanprover--lean4---v4.35.0/bin/leanchecker",
+        "FiniteHandoff",
+        "-v"
+      ],
+      "cwd": "/var/folders/my/gvpc8lhn61b07vzgm7fxmnmh0000gn/T/recovery-lean-xr_hn7jm",
+      "seconds": 6.324727041996084,
+      "log_sha256": "d715ed873379c146e8e15d16763ab7c68f528305334e72b974d6b787118c7255"
+    },
+    {
+      "label": "kernel-PilotContinuation",
+      "exit_code": 0,
+      "expected": "success",
+      "passed": true,
+      "command": [
+        "/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/.tools/elan/toolchains/leanprover--lean4---v4.35.0/bin/leanchecker",
+        "PilotContinuation",
+        "-v"
+      ],
+      "cwd": "/var/folders/my/gvpc8lhn61b07vzgm7fxmnmh0000gn/T/recovery-lean-xr_hn7jm",
+      "seconds": 6.387181167025119,
+      "log_sha256": "d557f607e9fb89767a93d874dc1bc7cddc5b9f8433b427bc1d2c39728d2a0b98"
+    },
+    {
+      "label": "kernel-GeneralHandoff",
+      "exit_code": 0,
+      "expected": "success",
+      "passed": true,
+      "command": [
+        "/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/.tools/elan/toolchains/leanprover--lean4---v4.35.0/bin/leanchecker",
+        "GeneralHandoff",
+        "-v"
+      ],
+      "cwd": "/var/folders/my/gvpc8lhn61b07vzgm7fxmnmh0000gn/T/recovery-lean-xr_hn7jm",
+      "seconds": 5.966837415995542,
+      "log_sha256": "41aeb0b8d56ec25066841e1c8fe70bf629981d7d2a043316550f65abaaa788b6"
+    },
+    {
+      "label": "reject-false-terminal-energy",
+      "exit_code": 1,
+      "expected": "rejection",
+      "passed": true,
+      "command": [
+        "/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/.tools/elan/toolchains/leanprover--lean4---v4.35.0/bin/lean",
+        "/var/folders/my/gvpc8lhn61b07vzgm7fxmnmh0000gn/T/recovery-lean-xr_hn7jm/FalseTerminalEnergy.lean"
+      ],
+      "cwd": "/var/folders/my/gvpc8lhn61b07vzgm7fxmnmh0000gn/T/recovery-lean-xr_hn7jm",
+      "seconds": 1.8888685000129044,
+      "log_sha256": "4b6bc1c5dd542e66f5846a1032d0843451ecb416fe7a70423a1d2b635c0d8422"
+    }
+  ],
+  "axioms": {
+    "LeanControls.RecoveryTerminal.exp_point": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "LeanControls.RecoveryTerminal.energy_ldl": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "LeanControls.IntervalChecker.point_mem": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "LeanControls.IntervalChecker.add_mem": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "LeanControls.IntervalChecker.neg_mem": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "LeanControls.IntervalChecker.sub_mem": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "LeanControls.IntervalChecker.mul_mem": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "LeanControls.IntervalChecker.clip1_mem": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "LeanControls.IntervalChecker.heldBox_sound": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "LeanControls.IntervalChecker.commandBox_sound": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "LeanControls.IntervalChecker.sampledBox_sound": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "LeanControls.IntervalChecker.trace_sound": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "LeanControls.IntervalChecker.subset_mem": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "LeanControls.IntervalChecker.certificate_trace_sound": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "LeanControls.CoefficientBounds.shared_remainder": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "LeanControls.CoefficientCells.expPoly_expanded": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "LeanControls.CoefficientCells.velocityPoly_expanded": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "LeanControls.CoefficientCells.positionPoly_expanded": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "LeanControls.CoefficientCells.cell_0": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "LeanControls.CoefficientCells.cell_1": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "LeanControls.CoefficientCells.cell_2": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "LeanControls.CoefficientCells.cell_3": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "LeanControls.CoefficientCells.cell_4": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "LeanControls.CoefficientCells.cell_5": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "LeanControls.CoefficientCells.cell_6": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "LeanControls.CoefficientCells.cell_7": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "LeanControls.CoefficientCells.cell_8": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "LeanControls.CoefficientCells.cell_9": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "LeanControls.CoefficientCells.cell_10": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "LeanControls.CoefficientCells.cell_11": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "LeanControls.CoefficientCells.cell_12": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "LeanControls.CoefficientCells.cell_13": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "LeanControls.CoefficientCells.cell_14": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "LeanControls.CoefficientCells.cell_15": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "LeanControls.TraceExecution.stateTrace_eq_samples": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "LeanControls.TraceExecution.actual_samples_enclosed": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "LeanControls.IntervalPilot.checked_steps": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "LeanControls.IntervalPilot.endpoints": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "LeanControls.IntervalPilotActual.coeff_sound": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "LeanControls.IntervalPilotActual.endpoints": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "LeanControls.PilotSafety.terminal_box_energy": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "LeanControls.PilotSafety.terminal_sample_energy": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "LeanControls.PilotSafety.sample_time": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "LeanControls.PilotSafety.actual_terminal_entry": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "LeanControls.PilotSafety.exists_actual_entry": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "LeanControls.BetweenSample.command_abs_bound": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "LeanControls.BetweenSample.position_bound": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "LeanControls.BetweenSample.short_hold_safe": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "LeanControls.PilotPath.boxes_coarse": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "LeanControls.PilotPath.coarse_bounds": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "LeanControls.PilotPath.segment_safe": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "LeanControls.PilotPath.actual_segment_safe": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "LeanControls.FiniteHandoff.samples_congr_prefix": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "LeanControls.FiniteHandoff.samples_invariant_from": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "LeanControls.FiniteHandoff.actual_all_time_safe": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "LeanControls.FiniteHandoff.exists_safe_execution": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "LeanControls.PilotContinuation.actual_safe": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "LeanControls.PilotContinuation.exists_safe": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "LeanControls.GeneralHandoff.shifted_isExecution": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "LeanControls.GeneralHandoff.tail_eq_state": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "LeanControls.GeneralHandoff.actual_all_time_safe": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "LeanControls.GeneralHandoff.continuation_eq_prefix": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "LeanControls.GeneralHandoff.continuation_eq_tail": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "LeanControls.GeneralHandoff.continuation_continuousOn": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "LeanControls.GeneralHandoff.constructed_isContinuation": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "LeanControls.GeneralHandoff.exists_continuation": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ]
+  },
+  "passed": true,
+  "false_terminal_energy_rejection": true,
+  "source_unchanged": true,
+  "theorem_count": 66,
+  "new_theorem_count": 64
+}

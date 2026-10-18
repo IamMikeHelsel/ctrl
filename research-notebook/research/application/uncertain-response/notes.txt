@@ -1,0 +1,37 @@
+Uniform uncertainty-response bound, 2026-10-17
+Source: lean-controls/LeanControls/UncertainResponse.lean
+
+normalizedResponse(r,h,theta) = [(.5-theta)h, theta*r*h, r-theta*r²*h].
+P is exactly Generated.TravelQuarterLower.P.
+Assumptions: .9≤r≤1.1, 0≤theta≤1, 0≤h≤.2.
+Conclusion: E(normalizedResponse)≤16; E(h•normalizedResponse)≤16*h².
+For held amplitude w, E(w•(h•normalizedResponse))≤16*h²*w², and if |w|≤W,
+the final w² can be replaced by W². No separate W≥0 assumption is needed:
+it follows from |w|≤W. The h=0 case is included and the scaled response is zero.
+
+The proof is a full tensor-box convexity argument, not sampled verification.
+For rate q=5r-9/2, q∈[0,1]. Quadratic Bernstein control pairs for (r,r²)
+are (.9,.81), (1,.99), (1.1,1.21). Nested de Casteljau interpolation proves
+an exact vector identity. Each control vector is affine in theta and time;
+two further convex interpolations reduce the proof to the12 rational endpoint
+vectors from the feasibility JSON (with duplicate time-zero vertices handled
+together). All endpoint energies are evaluated exactly by norm_num, and
+quadratic convexity uses the checked positive-semidefiniteness of P.
+
+Integration boundary: this module bounds the polynomial response enclosure.
+The exact uncertain exponential response equals h•normalizedResponse for an
+appropriate theta by UncertainLag.response_polynomial_enclosure, authored
+separately. Combining that equality with the theorem is the remaining interface
+step; this module does not assert a complete uncertain trajectory theorem.
+
+Public interface (namespace LeanControls.UncertainResponse):
+- normalizedResponse (r h theta : Real) : Fin3 -> Real
+- normalized_energy_bound hr0 hr1 htheta0 htheta1 hh0 hh1
+- scaled_response_energy_bound hr0 hr1 htheta0 htheta1 hh0 hh1
+- disturbance_energy_bound hr0 hr1 htheta0 htheta1 hh0 hh1 w
+- disturbance_energy_of_abs_le hr0 hr1 htheta0 htheta1 hh0 hh1 hw
+- scaled_response_zero r theta
+
+Compilation: lake env lean checked cleanly; lake build LeanControls.UncertainResponse
+succeeded (3266 jobs; new module8.1s). No source or aggregate outside the owned new
+module was edited. Separate axiom audit covers all13 theorems.

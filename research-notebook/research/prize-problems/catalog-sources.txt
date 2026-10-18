@@ -1,0 +1,125 @@
+Erdos catalog sources and completeness audit — 2026-10-17
+
+PRIMARY RESULT
+The retained snapshot contains every one of the 1,221 entries in the current
+linked community metadata catalog, at revision
+fe3bb2675f8e04ad3ffe4fb1e97ce9ac35dbb0ed (commit 2026-10-17 15:36:39 UTC;
+retrieved beginning 15:38:39 UTC). This is NOT all historical Erdos questions,
+not 1,221 verified open problems, and not a complete collection of statements.
+The official homepage independently reports the same total. We have not
+individually reconciled every official problem page against the YAML.
+
+VERIFIED SOURCE MAP
+1. Official curated website and scope/reward explanation:
+   https://www.erdosproblems.com/
+   https://www.erdosproblems.com/faq
+   The FAQ explicitly disclaims historical completeness and fully current
+   statuses, and asks researchers to check original sources and literature.
+   It also includes questions repeated by Erdos but originating with others.
+2. Official-linked community metadata repository:
+   https://github.com/teorth/erdosproblems
+   The external-database link is directly present on the official #647 page.
+   Canonical machine-readable data (repository's own source of truth):
+   https://raw.githubusercontent.com/teorth/erdosproblems/fe3bb2675f8e04ad3ffe4fb1e97ce9ac35dbb0ed/data/problems.yaml
+   Schema and field semantics at the same revision:
+   https://github.com/teorth/erdosproblems/blob/fe3bb2675f8e04ad3ffe4fb1e97ce9ac35dbb0ed/schema/problems.schema.json
+   https://github.com/teorth/erdosproblems/blob/fe3bb2675f8e04ad3ffe4fb1e97ce9ac35dbb0ed/CONTRIBUTING.md
+   Interactive view: https://teorth.github.io/erdosproblems/
+3. Live official prize display:
+   https://www.erdosproblems.com/prizes
+   All 12 nonzero amount pages were read and retained, yielding 114 unique
+   IDs and reproducing its display total $59,733. This is not available cash:
+   it includes solved questions, converted historical currencies, and at
+   least one value which the site's own narrative says was not an offer.
+4. Individual statements/context and their HTML LaTeX source pages:
+   https://www.erdosproblems.com/647
+   https://www.erdosproblems.com/latex/647
+   The latter is a website HTML page with statement, commentary and references,
+   not a documented bulk JSON API. YAML has metadata, not mathematical text.
+   A future statement corpus requires additional controlled retrieval and
+   provenance. No claim of complete statement retrieval is made here.
+5. Linked formal statements:
+   https://github.com/google-deepmind/formal-conjectures/tree/main/FormalConjectures/ErdosProblems
+   The snapshot reports 868 entries with statements there. This repository
+   was not cloned or proof-audited in this task. Its 'main' URLs must be pinned
+   separately before relying on exact formal definitions.
+
+CURRENT POLICY CHANGE
+https://www.erdosproblems.com/forum/thread/blog:9
+The October 6, 2026 announcement removes displayed status labels from the
+curated site; the community data still carries them. Its README also says the
+AI-contribution wiki is frozen at June 30 and progress plot at October 6.
+Therefore old search snippets showing OPEN/PROVED or an old progress graph
+must not be treated as current authoritative state. The retained direct HTML
+captures are newer than the web search cache used for initial discovery.
+
+COUNTS RECOMPUTED FROM PINNED DATA
+1221 unique IDs, exactly strings 1 through 1221. Informal labels:
+  open 593; falsifiable 25; verifiable 7; decidable 8;
+  proved 336; disproved 139; solved 101;
+  not provable 3; not disprovable 6; independent 3.
+The ordinary unresolved union (first four labels) is 633, with the set-theory
+categories separate. Formal solution labels: Lean 317, unformalized 904.
+Formalized statements: yes 868, no 353.
+The four entries 390, 522, 550 and 1112 are 'open (Lean)': do not classify these
+as untouched research opportunities or assume the alleged proof was audited.
+
+Community monetary entries: 106. Exactly-'open' among these: 47.
+Ordinary unresolved among community monetary entries: 54.
+Live official monetary entries: 114. Exactly-'open' using community labels: 51.
+Ordinary unresolved among official monetary entries: 59.
+The eight official-only monetary IDs are 7,18,32,159,182,548,552,1071.
+All community monetary IDs appear in the official monetary index.
+These are screening counts, NOT verified unresolved/payout-eligible counts.
+
+PRIZE AND STATUS PITFALLS FOUND IN THIS LIMITED REVIEW
+- #647 preserves the historical offer as GBP25 in YAML; the official display
+  uses $44, explicitly based on a historical conversion. INR and other GBP
+  entries also exist. Preserve raw currency and display dollars separately.
+- #1135 (Collatz) displays $500, but its narrative explicitly says this was
+  Erdos's difficulty valuation rather than an offered prize.
+  https://www.erdosproblems.com/1135
+- #711 is still globally 'open' for its multi-part question, while the official
+  narrative credits an affirmative answer to one part and says the historical
+  offer was for either. Overall openness does not establish reward eligibility.
+  https://www.erdosproblems.com/711
+- #97 remains community 'falsifiable/unformalized', while the live official
+  narrative says it is false and links a formal proof. #143 likewise links a
+  candidate formal disproof despite older community metadata. These proofs
+  have NOT been independently reviewed here. Retain source-specific claims.
+  https://www.erdosproblems.com/97
+  https://www.erdosproblems.com/143
+- The official FAQ says publication in a reputable journal plus documentary
+  evidence of the original offer is required and identifies an administrator.
+  We did not independently verify current funding, payment terms, eligibility
+  or administrator authority. Every manifest payment_verified field is null.
+  Do not describe the displayed amounts as prizes currently guaranteed to pay.
+
+DATA CONTRACT AND REPRODUCTION
+- erdos-problems.yaml is the complete unmodified metadata source. License,
+  schema, README, CONTRIBUTING and statistics at the exact revision accompany it.
+- erdos-provenance.json records source URLs, SHA-256, bytes and retrieval time.
+  Official HTML snapshots have separate source/time/hash provenance files.
+- erdos-manifest.json is lossless: it retains every raw community entry as well
+  as explicit screening fields. erdos-manifest.csv is a flattened view.
+- erdos-counts.json contains the recomputed counts. erdos-official-prizes.json
+  reconciles all official prize-page IDs without silently editing community data.
+- erdos_build_manifest.py validates the upstream Draft2020-12 JSON schema,
+  formats, duplicate keys and IDs, and source hashes before creating outputs.
+  Replay: .tools/research-python/bin/python3 research/prize-problems/erdos_build_manifest.py
+  Dependencies used: PyYAML 6.0.3 and jsonschema 4.26.0 in workspace-local venv.
+- Null means unknown/absent; CSV empty cells retain that meaning. Literal 'no'
+  is a source assertion, not unknown. No foreign exchange rate was invented.
+
+RECOMMENDED SCREENING SCHEMA / NEXT GATE
+Keep separate: source-ID/revision/time; mathematical statement and original
+publication; informal human status; solution formalization status/link/axioms;
+statement formalization; exact prize scope/currency/offer evidence; current
+payment confirmation; literature-reviewed date; claim conflicts; and our
+bounded next experiment. Topic tags and historical amount are ranking inputs,
+not difficulty estimates. Before substantial work, read original source,
+updated discussion, proof-claim tab, recent papers, and any linked Lean proof.
+A catalog 'Lean' label may allow conditional reliance on published results;
+it does not imply our standard-axioms-only audit has passed.
+
+No proof submission, contact, prize claim, or broad solving attempt occurred.

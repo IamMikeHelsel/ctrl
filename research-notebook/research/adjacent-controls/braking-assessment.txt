@@ -1,0 +1,191 @@
+Backup stopping under actuator lag: bounded assessment
+2026-10-17. Analytical derivation and numerical diagnostic, NOT a Lean proof.
+No current paper, controls source or upstream repository was changed.
+
+RECOMMENDATION
+Good adjacent theorem target: a velocity- AND acceleration-dependent forward
+travel guard for a bounded first-order actuator, followed by a separately
+certified handoff into the existing invariant ellipsoid. This would address
+an actual limitation of a fixed initial ellipsoid: available clearance and
+motion toward the boundary can be used directly, while inadmissible states
+can be identified by a necessary stopping-distance condition.
+The stopping formula and backup-CBF idea are established control concepts.
+The credible contribution would be a complete machine-checked composition
+of actuator semantics, reaction delay, uncertainty, saturation, guard and
+terminal handoff, with quantified conservatism. It is not new control theory
+merely because the formula is formalized.
+
+EXACT MODEL AND FIRST CANDIDATE THEOREM
+One normalized axis:
+  x'=v, v'=a, tau*a'=u-a;  U>0, tau>0, -U<=u<=U.
+For the first theorem take v0>0 and 0<=a0<=U, one upper travel limit L,
+no disturbance, no reaction delay, exact real states and constant known tau.
+Apply u=-U. Write A=a0+U. Then
+  a(t)=-U+A*exp(-t/tau),
+  v(t)=v0-U*t+A*tau*(1-exp(-t/tau)),
+  x(t)-x0=v0*t-U*t^2/2+A*tau*(t-tau*(1-exp(-t/tau))).
+There is exactly one positive zero T of v, with
+  v0/U < T < (v0+A*tau)/U.
+(The non-strict versions cover degenerate boundary cases.) Acceleration
+crosses zero once; velocity first rises then falls, and x reaches its global
+maximum at T. Define D(v0,a0,tau,U)=x(T)-x0.
+
+Candidate theorem: under these assumptions, an admissible input can keep
+x(t)<=L for every t>=0 if and only if x0+D<=L; the constant backup u=-U
+realizes the sufficient direction. This is an exact one-sided viability
+boundary, not just an arbitrary sufficient ellipsoid.
+Proof of necessity: the actuator is order preserving in its input. The
+variation-of-constants kernel is nonnegative, so every u>=-U gives
+x_u(t)>=x_brake(t) for every t. If x0+D>L, every admissible controller violates
+the upper wall no later than its position at the backup's peak time T.
+Prove this comparison explicitly; it cannot be inferred from simulations.
+
+This theorem does NOT stop and hold the axis: at T, v=0 but a<0; continuing
+u=-U moves indefinitely backward. It proves a one-sided forward-clearance
+property. A two-sided travel guarantee requires a terminal handoff or a
+separate finite-time arrest/hold maneuver. Merely switching to u=0 at T
+still leaves negative velocity as the residual acceleration decays.
+
+EXACT COUNTEREXAMPLE TO THE NAIVE GUARD
+Take x0=0,v0=a0=U=tau=1 and immediate full braking u=-1. The instantaneous-
+acceleration rule v0^2/(2U) says clearance1/2 suffices. In the actual lag model,
+  x(1)=1/2+2*exp(-1)>1/2,
+so that guard fails even with zero reaction delay and perfect measurements.
+This inequality is exact (exp(-1)>0), although not yet Lean-checked here.
+Numerical closed-form/root-bisection diagnostics give T approximately
+2.8887033562 and D approximately2.6051031723. With a0=0 the distance is still
+approximately1.1460182573. Thus accounting for positive a0 matters, and even
+zero initial acceleration does not recover instantaneous braking.
+With v0=a0=U=tau=1 and reaction delay0.2, holding u=+1 during reaction gives
+x_delta=0.22,v_delta=1.2,a_delta=1 and total distance approximately3.4251522603.
+These decimals are diagnostic only, not interval-certified bounds.
+
+BOUNDED LAG AND REACTION DELAY: CORRELATION MATTERS
+For braking from a FIXED initial state with a0>=-U, a(t) increases with tau;
+therefore the worst braking distance on tau in[tau_min,tau_max] is attained
+at tau_max. This comparison also has a direct differential-inequality form.
+
+It is invalid to carry this conclusion blindly across a reaction interval.
+When u=+U and a0<U, a smaller tau accelerates faster during that interval.
+Our numerical diagnostic found, for v0=0.5,a0=-1,U=1,delay0.2, total forward
+peak distances approximately0.26934,0.20965,0.16514,0.14338 for constant tau
+0.25,0.5,1,2 respectively. The largest-lag shortcut underestimates this case.
+This is numerical evidence against a proposed monotonic shortcut, not a
+formal theorem or an exhaustive uncertain-parameter optimum computation.
+
+A clean robust SUFFICIENT construction, initially with v0>=0 and 0<=a0<=U:
+1. During a known reaction interval delta, allow arbitrary u in[-U,U].
+   Use the upper comparison trajectory u=+U,tau=tau_min to obtain
+     a_plus=U+(a0-U)*exp(-delta/tau_min),
+     v_plus=v0+U*delta+(a0-U)*tau_min*(1-exp(-delta/tau_min)),
+     d_plus=v0*delta+U*delta^2/2+
+       (a0-U)*tau_min*(delta-tau_min*(1-exp(-delta/tau_min))).
+2. Brake with u=-U and upper comparison initial(v_plus,a_plus),tau=tau_max.
+3. Require L-x0 >= d_plus+D(v_plus,a_plus,tau_max,U).
+
+The first segment is nondecreasing in position under these initial sign
+restrictions. Both segments dominate the corresponding actual trajectory.
+This comparison is sufficient for fixed unknown tau, and allows bounded
+piecewise-continuous time-varying tau with the appropriate ODE semantics.
+For freely varying tau, the fast-reaction/slow-braking endpoint pattern is
+attainable. For a SINGLE unknown constant tau, combining the two different
+endpoints is conservative; do not label this exact worst-case stopping
+without optimizing the correlated whole trajectory over the same tau.
+A known held pre-braking command can be modeled exactly instead of replacing
+it by +U. A sampled trigger needs delta to include the worst intersample wait,
+computation, communication and actuation latency under explicit assumptions.
+
+A simpler conservative no-root bound for the braking segment is
+  D(v,a,tau,U) <= (v+(a+U)*tau)^2/(2U).
+Indeed v_brake(t)<=v+(a+U)*tau-U*t; integrate that positive line up to its
+zero, noting the true forward peak occurs earlier. It is generally quite
+conservative: the first example gives4.5 versus actual approximately2.6051.
+This polynomial bound could be a small first Lean milestone before a verified
+implicit-root enclosure. Avoid Lambert W as an unnecessary first dependency.
+
+DISTURBANCE, SENSING AND TERMINAL SET
+Do not transplant the current W=0.01 or 1/90 budget without its channel.
+For command-equivalent disturbance w inside tau*a'=u+w-a, |w|<=W<U,
+worst braking command becomes -(U-W), while the reaction upper input is U+W.
+The acceleration invariant interval and initial upper bound change too.
+For external jerk a'=(u-a)/tau+d, the equivalent command disturbance is tau*d;
+a bound D_j becomes tau_max*D_j before comparison. Those are distinct models.
+If |x-xhat|<=eps_x, etc., monotonicity supports evaluating an upper guard at
+xhat+eps_x,vhat+eps_v,ahat+eps_a within the theorem's domain. That extension
+still needs explicit proof, particularly near sign boundaries.
+
+To obtain an ALL-TIME TWO-SIDED robot-axis result, certify the whole backup
+segment and a terminal state inside the existing travel-invariant ellipsoid;
+then invoke the existing uncertain sampled controller theorem after the
+switch. A zero-velocity event alone does not imply ellipsoid membership or
+zero acceleration. The handoff guard must check the full(x,v,a) state and
+both travel boundaries. No arbitrary initial position-only claim follows.
+
+REUSE VS NEW WORK
+Reuse: exact held exponential solution/derivative lemmas, rate-to-physical-tau
+scaling, explicit disturbance-channel definitions, clipping bounds, sampling
+clock and all-real-time execution infrastructure, existing ellipsoid as a
+terminal invariant set. The current quadratic vertex certificate proves a
+particular feedback's energy decrease; it does not by itself prove extremal
+stopping under constant maximum braking.
+New proof work: input-order comparison, unique velocity-zero/max-position
+characterization, stopping-distance dependence on a and tau, reaction-phase
+comparison, sampled switching semantics, validated root bounds if used, and
+a substantive terminal-set entry/handoff proof. Two-sided exact viability
+or finite-time rest under lag is a further optimal-control problem, not a
+free corollary of the one-sided theorem.
+
+PRIMARY RELATED WORK (checked 2026-10-17)
+1. Chen, Jankovic, Santillo, Ames, "Backup Control Barrier Functions:
+   Formulation and Comparative Study" (2021).
+   https://arxiv.org/html/2104.11332v1
+   https://arxiv.org/abs/2104.11332
+   Full HTML inspected, including the double-integrator stopping-distance
+   example and backup-flow interpretation. It already presents the standard
+   v^2/(2u_max) guard for an instantaneous-input double integrator and compares
+   backup sets with Hamilton-Jacobi and SOS approaches. Our lag augmentation
+   changes the model; the underlying stopping/backup idea is not new.
+2. van Wijk, Coogan, Molnar, Majji, Hobbs, "Disturbance-Robust Backup Control
+   Barrier Functions: Safety Under Uncertain Dynamics" (2024).
+   https://arxiv.org/html/2409.07700v1
+   The robust backup literature already bounds disturbed flow around a nominal
+   backup trajectory. A claim that we invented uncertainty-aware backup
+   safety would be indefensible. Primary HTML and abstract inspected; no
+   reproduction of their simulation/controller was performed.
+3. Gacsi, Kiss, Molnar, "Braking within Barriers: Constructive Safety-Critical
+   Control for Input-Constrained Vehicles via the Backup Set Method" (2025).
+   https://arxiv.org/html/2510.15797v1
+   Full relevant setup inspected: a valid backup controller/set pair needs
+   input admissibility and forward invariance; safe finite-horizon rollout
+   must terminate in that backup set. Their ellipsoid construction provides
+   close conceptual precedent. The vehicle lateral-braking application is not
+   the same one-axis lag model, and its particular theorem was not reproduced.
+4. Singletary, Chen, Ames, "Control Barrier Functions for Sampled-Data Systems
+   with Input Delays" (2020), https://arxiv.org/abs/2005.06418
+   Primary abstract checked; sampling and delay safety are established topics.
+   Latest adjacent primary abstracts also checked:
+   https://arxiv.org/abs/2607.20842 (Robust Adaptive Backup CBFs,2026),
+   https://arxiv.org/abs/2603.24566 (Integral CBFs with Input Delay,2026).
+   These make a broad novelty claim still less plausible; this bounded screen
+   is not a priority-exhaustive literature review.
+
+NEXT EXPERIMENT / STOP GATE
+Advance only a small first theorem: known fixed tau, immediate full braking,
+exact one-sided stopping guard and the exact naive-guard counterexample.
+Then prove the conservative bounded-lag/reaction comparison and compare its
+admitted state region against the current ellipsoid on identical model and
+limits. Success needs demonstrable useful states outside the ellipsoid plus
+a valid terminal handoff for any claimed two-sided/all-time application.
+Stop or downgrade to a tutorial artifact if the extension is only the old
+v^2/(2U) identity, if safety is checked only at sample times, if the handoff
+assumes instantaneous a=0 at v=0, or if keeping constant-tau correlation and
+bounded disturbances cannot be justified. Do not start a large general CBF
+framework before this model-specific obligation is closed.
+
+PROTOTYPE EVIDENCE
+braking-probe/probe.py uses closed-form ZOH segments plus floating-point
+bisection. For negative initial acceleration the reaction segment includes
+a possible interior position maximum; cases with negative braking-handoff
+velocity are skipped. braking-probe/results.json records the observed examples and lag-
+correlation diagnostic. No ODE solver, package install or external service
+was used. Neither the prototype nor this analytic note is a compiled proof.

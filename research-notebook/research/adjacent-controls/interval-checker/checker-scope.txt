@@ -1,0 +1,42 @@
+IntervalChecker: reusable exact-rational recurrence containment (2026-10-17)
+
+The checked generic layer defines rational intervals and sound addition,
+negation, subtraction, four-corner multiplication and clipping to [-1,1].
+It uses no floating-point acceptance, sorry, custom axiom or native_decide.
+Empty intervals are representable; actual-state membership prevents their use
+as inhabited starting boxes.
+
+Coefficients.dt, halfSq, E, B, C enclose respectively h, h^2/2,
+exp(-r*h), (1-exp(-r*h))/r and h/r-(1-exp(-r*h))/r^2. CoeffMem states these
+real memberships explicitly. The generic theorem does not trust a rational
+coefficient generator or assume that approximations are correct.
+
+heldBox uses the exact factored state transition:
+  x+h*v+C*a+(h^2/2-C)*u,
+  v+B*a+(h-B)*u,
+  E*a+(1-E)*u.
+Its soundness theorem proves containment of UncertainLag.heldSolution.
+commandBox encloses the actual own-state feedback clip_1(-x-3v-2a+e)+d.
+Both errors are held command quantities; d is after clipping but inside lag.
+
+trace_sound composes steps with bounds required only for n<N.
+certificate_trace_sound instead accepts user-supplied rational boxes and checks
+that each computed next box is contained in the supplied next box. This permits
+outward rounding at each step. Subset checks are rational endpoint inequalities;
+their orientation is outward, with no state membership assumption at future
+steps. The actual state recurrence is derived inductively from the initial box.
+
+The generic analytic recurrence permits per-step r,h values, including values
+outside the physical scope. A physical use must impose fixed/held positive
+rates and valid positive sample times. Endpoint containment alone is not an
+intersample safety proof. No termination, energy or handoff claim is implicit.
+In particular, a generic post-clamp error can make |u| exceed1; any path bound
+using |a|<=1 must require d=0 or prove an appropriately wider acceleration bound.
+
+The separate 25-step rational pilot and its real coefficient bridge now pass.
+IntervalPilotActual.endpoints covers one positive-volume starting subbox and
+every fixed rate in [9/10,73/80]. It assumes no coefficient certificate: those
+are discharged through CoefficientCells.cell_0. All-path and terminal-energy
+goals remain separate. See pilot-manifest.json and both pilot check logs.
+No full1024-cell proof was launched. One25-step arithmetic compile took about
+36.5seconds; naive full-cover replication would be too costly for this block.

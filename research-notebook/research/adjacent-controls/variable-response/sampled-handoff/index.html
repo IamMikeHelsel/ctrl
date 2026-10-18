@@ -1,0 +1,54 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Plan often. Switch safely.</title>
+<style>*{box-sizing:border-box}body{margin:0;background:#eef1ec;color:#19372e;font:17px/1.6 system-ui,sans-serif}main{max-width:1080px;margin:28px auto;padding:38px 46px;background:#fffef9;border-radius:12px}h1{font-size:42px;line-height:1.15;letter-spacing:-1px}h2{font-size:25px;margin-top:32px}.small{font-size:14px;color:#58685f}.card{padding:18px 22px;background:#e3eee4;border-left:4px solid #307155;margin:22px 0}.note{background:#fff0de;border-color:#b67730}a{color:#17684b}.links{display:flex;gap:12px;flex-wrap:wrap}.links a{background:#214e3b;color:white;padding:9px 14px;border-radius:5px;text-decoration:none}video,img{width:100%;height:auto;border-radius:8px;margin-top:22px}video{background:#101820}.scroll{overflow:auto}table{border-collapse:collapse;width:100%;font-size:15px}td,th{padding:12px;text-align:left;border-bottom:1px solid #d0ddd2;vertical-align:top}th{background:#eaf0e7}.math{padding:16px;background:#eef1e8;font:15px/1.7 ui-monospace,monospace;overflow:auto}footer{border-top:1px solid #cdd9ce;margin-top:35px;padding-top:18px}@media(max-width:700px){main{margin:0;padding:24px 20px}h1{font-size:32px}table{min-width:640px}}</style>
+</head><body><main>
+<p class="small">17 October 2026 · checked mathematics · synthetic examples</p>
+<h1>Plan often. Switch safely.</h1>
+<div class="card"><strong>New: <a href="../../steady-motion/index.html">Steady enough to move</a>.</strong> Human steadiness research, a checked bounded-noise target gate, and its direct connection to the physical holding proof. Includes a target-only comparison and a Manim explanation. Precision motion under changing targets remains open.</div>
+<p>We now have two useful controls pieces: a proof for switching from a noisy state reading into bounded-position holding, and a separate proof for smooth motion-plan replacements. The connection between them remains open.</p>
+<div class="card"><strong>Holding result:</strong> the illustrative reading passes an exact admission test with up to 5 ms of command delay. After the full-state handoff, the feedback law keeps position between <strong>3.26 cm and 14.365 cm</strong>, while response rate and target error vary within the declared bounds.</div>
+<div class="links"><a href="animation/holding.mp4">Watch the holding explanation</a><a href="README.txt">Proof, assumptions and reproduction</a><a href="verification.json">Verification record</a><a href="challenge.txt">Independent review</a></div>
+<video controls preload="metadata" playsinline poster="animation/motion-frame.png"><source src="animation/holding.mp4" type="video/mp4">Download the <a href="animation/holding.mp4">holding video</a>.</video>
+<p class="small">Manim Community animation. Curves are numerical illustrations; the bounded-position result has a separate Lean proof. The shaded region is the certified holding tube.</p>
+
+<h2>Why zero speed is not enough</h2>
+<p>The actuator can still have nonzero acceleration when velocity reaches zero. Setting the target to zero lets that acceleration decay, but the axis can acquire a lasting backward velocity. Lean checks an actual trajectory that eventually crosses any finite rear limit, even with exactly zero initial velocity.</p>
+<p>The safer handoff checks position, velocity and acceleration together. It preserves the actual state at the switch. It then uses a feedback law whose position bounds have been proved for changing response.</p>
+
+<h2>The accepted reading and the resulting motion</h2>
+<div class="scroll"><table><tr><th>Quantity</th><th>Value</th></tr>
+<tr><td>Position reading and error</td><td>14 cm ± 1 mm</td></tr>
+<tr><td>Velocity reading and error</td><td>−0.01 ± 0.01 m/s</td></tr>
+<tr><td>Acceleration reading and error</td><td>−1.17 ± 0.05 m/s²</td></tr>
+<tr><td>Command delay</td><td>Any duration from 0 to 5 ms; acceleration magnitude ≤2 m/s² and jerk magnitude ≤48 m/s³ during that delay</td></tr>
+<tr><td>Holding reference</td><td>8.8125 cm. The controller can move backward toward this reference.</td></tr>
+<tr><td>Certified position region</td><td>[3.26, 14.365] cm, inside the original [0, 15] cm range</td></tr>
+<tr><td>Response and error during holding</td><td>Rate 8–12 per second; additive acceleration-target error magnitude ≤0.11105 m/s²</td></tr>
+<tr><td>Required effective-target authority</td><td>Magnitude ≤1.44365 m/s², within the illustrative ±2 m/s² capability</td></tr>
+</table></div>
+<div class="math">u = −8(x−c) − 6v − a/2<br>a′ = r(t)[u + w(t) − a]<br>c: holding reference &nbsp; w: acceleration-target error</div>
+<p>The proof transforms the physical state into three coordinates and shows that none can leave a fixed cube. The physical differential equations imply the transformed equations. The safety conclusion is derived; it is not included as an assumption.</p>
+<p>The same reading with a 20 ms delay fails the exact rational admission test. Its proposed region extends beyond the travel interval and requires more target authority. This is a rejected sufficient certificate, not a proof that every such trajectory is unsafe.</p>
+<img src="comparison.svg" alt="Fixed-response and changing-response holding remain inside a region while zero-target release drifts backward">
+<p class="small">The existing weak/slow brake flow reaches a state consistent with this reading at 0.53 seconds. That reachability check and the plotted simulations are numerical. <a href="results.json">Results</a> · <a href="experiment.py">Experiment source</a>.</p>
+<div class="card note"><strong>Scope:</strong> this is bounded-position holding, not precision rest at 14 cm. The new theorem starts at the reading. The full proof from the original stop request through a guaranteed sample trigger is still open. The holding law uses continuous state feedback; a digital implementation needs its errors tied to the stated error bound.</div>
+<p>Twenty new theorem statements pass fresh source compilation, standard-axiom audits and individual kernel replays. The check also rejects a false 14 cm tube claim. <a href="Handoff.lean">Final handoff theorem</a> · <a href="RobustHold.lean">Holding proof</a> · <a href="Capture.lean">Measurement and delay proof</a> · <a href="ReleaseCounterexample.lean">Release counterexample</a>.</p>
+
+<h2>For VLA motion: thinking and switching are separate decisions</h2>
+<p>A minimum wait between replans does not guarantee smooth motion. The next command can still jump in acceleration. The new VLA mathematics checks a stronger rule: join the currently executed position, velocity and acceleration, then certify the limits over the whole new segment.</p>
+<p>Lean proves that matching replacements preserve a fixed jerk bound through any finite certified replacement history, with no minimum dwell assumption. Jerk is the rate of acceleration change. It may change abruptly; acceleration remains continuous. The report makes scheduling and finite-history limits explicit.</p>
+<p>One example accepts successive 20 ms segments under a jerk limit of 10 m/s³. A proposed 2.5 mm endpoint over the first 20 ms would require 375 m/s³ in this construction, so the same test rejects it. Twenty-four theorem statements passed compilation, axiom audit and kernel replay.</p>
+<video controls preload="metadata" playsinline poster="../../vla-smooth-replanning/animation/switch-frame.png"><source src="../../vla-smooth-replanning/animation/smooth-replanning.mp4" type="video/mp4">Download the <a href="../../vla-smooth-replanning/animation/smooth-replanning.mp4">smooth-replanning video</a>.</video>
+<p class="small">A 27-second Manim explanation of the scalar command proof. The example is a constant-jerk construction, not a general planner comparison or a physical robot test. <a href="../../vla-smooth-replanning/animation/README.txt">Animation scope and reproduction</a>.</p>
+<p><a href="../../vla-smooth-replanning/report.txt">Read the VLA result and seven primary-source comparisons</a> · <a href="../../vla-smooth-replanning/SmoothReplan.lean">Lean proof</a> · <a href="../../vla-smooth-replanning/verification.json">Verification</a>.</p>
+<p>This checks scalar commanded motion. Physical tracking, orientation, contact force, grasp stability and task progress remain open. Bounded jerk can still permit repeated reversals and indecision. A progress rule or mode hysteresis may help, but it needs a task-specific definition of progress.</p>
+
+<h2>The connection worth testing next</h2>
+<p>Accept a new plan only when it joins the executed motion smoothly, fits the physical uncertainty, and leaves a certified stopping or holding fallback. This could connect the VLA admission proof to the actuator proof. We have not proved that combined contract.</p>
+<p>The next comparison should feed the same delayed, changing target stream to raw replacement, minimum dwell, established continuation methods, a jerk-limited generator and our checked admission rule. Compare actual constraint violations, response delay, task completion and fallback use. Existing methods already address much of this space; a new publication claim needs that comparison and a useful difference.</p>
+
+<h2>Geometric Unity continues as a separate mathematics track</h2>
+<p>The agent added a checked sign audit and a finite coefficient construction. Twenty-six theorem statements pass compilation, axiom audit and kernel replay. An independent reviewer confirmed the local scope.</p>
+<p>The printed sign conventions produce an extra term; two local repairs are checked. This is a convention mismatch already foreshadowed by the author's warning, not a general obstruction to the theory. The coefficient construction derives a conjugation law. Connecting those coefficients to the actual exterior product, Hodge star and invariant tensors remains open.</p>
+<p><a href="../../../weinstein-lean/operator-audit/report.txt">Geometric Unity report</a> · <a href="../../../weinstein-lean/operator-audit/independent-review.txt">Independent source and proof review</a>. Missing library code is being implemented where the mathematical construction is precise.</p>
+<footer class="small">Local research; nothing submitted or published. No hardware validation, PL d/e rating or established novelty claim. <a href="../index.html">Earlier changing-response stopping result</a> · <a href="../../adjacency-review/index.html">Wider literature review</a>.</footer>
+</main></body></html>

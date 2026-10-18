@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Steady enough to move</title>
+<style>
+:root{color-scheme:light;--ink:#172a3a;--muted:#536575;--line:#d5dfe6;--blue:#245bb2;--green:#137b67;--paper:#f5f7fa}*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:17px/1.6 system-ui,-apple-system,sans-serif}main{max-width:1040px;margin:auto;padding:44px 24px 70px}h1{font-size:clamp(36px,6vw,62px);line-height:1.1;letter-spacing:-.04em;margin:12px 0 20px}h2{font-size:25px;margin:34px 0 12px}h3{font-size:19px}p{max-width:850px}a{color:var(--blue)}.eyebrow{color:var(--green);font-size:13px;letter-spacing:.1em;text-transform:uppercase}.lead{font-size:23px;line-height:1.4}.box{background:white;border:1px solid var(--line);border-radius:14px;padding:20px 24px;margin:20px 0}.equation{font:23px/1.7 Georgia,serif;padding:16px 20px;background:#edf2fa;border-radius:8px;overflow:auto}.muted,figcaption{color:var(--muted);font-size:14px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}.grid .box{margin:0}table{border-collapse:collapse;width:100%;background:white;font-size:15px}td,th{padding:12px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line)}th{background:#eaf0f5}img,video{width:100%;height:auto;border-radius:10px}figure{margin:20px 0}.flow{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.flow span{padding:12px;background:#e8f0ee;border:1px solid #bcd5cd;border-radius:8px;font-weight:600}.tag{font-weight:650;color:var(--green)}code{font-size:.88em}li{margin-bottom:9px}footer{border-top:1px solid var(--line);margin-top:40px;padding-top:20px}
+</style>
+<main>
+<div class="eyebrow">Controls research · 17 October 2026 · checked mathematics, open engineering</div>
+<h1>Steady enough to move</h1>
+<p class="lead">Keep the tool within a useful error bound. Let it respond when the task really changes.</p>
+<p>Human steadiness gives us a useful design direction: coordinate fast corrections, use stiffness where the task needs it, and separate intended motion from disturbance. It does not give us one rule that makes every arm perfectly still.</p>
+<div class="box"><strong>New result.</strong> A Lean proof links a bounded-noise target gate to our existing physical holding model. No number of valid noisy proposals can move the held reference. The actual model stays inside its stated position tube. A separate result bounds the total change of accepted targets. <strong>These results do not establish zero vibration, a working VLA error bound, or publication novelty.</strong></div>
+
+<h2>What the human experiments suggest</h2>
+<table><thead><tr><th>Evidence</th><th>Design lesson</th><th>Limit</th></tr></thead><tbody>
+<tr><td>Voluntary stiffening increased finger tremor during a pointing task. <a href="https://pubmed.ncbi.nlm.nih.gov/10900057/">Morrison &amp; Newell, 2000</a></td><td>Measure tool motion. Coordinated joint motion can help hold the tool still.</td><td>Abstract-supported, task-specific result. It does not show that stiffness is always harmful.</td></tr>
+<tr><td>People learned task-dependent arm impedance in an unstable force field. <a href="https://www.nature.com/articles/35106566">Burdet et al., 2001</a></td><td>Choose stiffness by direction and task. Account for damping and effort.</td><td>Controlled planar task; accessible abstract, figures and supplement.</td></tr>
+<tr><td>Hand and shoulder muscles showed coordinated, goal-dependent responses around 60 ms after a disturbance. <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC4785384/">Crevecoeur et al., 2016</a></td><td>Coordinate arm and grip in a fast feedback loop beneath the planner.</td><td>Sixteen participants; methods and results inspected. This does not identify a fixed human replan period.</td></tr>
+</tbody></table>
+<p>Mechanical resonance and shared neural input can both contribute to physiological tremor. Several sensors can report one shared disturbance. Their agreement is not automatically independent evidence. The <a href="neuroscience.txt">evidence review</a> separates these mechanisms and the studies of essential and Parkinsonian tremor.</p>
+
+<h2>The first contract: a reason to change target</h2>
+<p>Let <em>p</em> be the intended target, <em>y</em> a proposed target, and <em>c</em> the retained target. The proposal error must be bounded by ε at decision time. The gate replaces <em>c</em> with <em>y</em> only when their distance exceeds <em>H</em>.</p>
+<div class="equation">|y − p| ≤ ε &nbsp;&nbsp; and &nbsp;&nbsp; change target only if |y − c| &gt; H</div>
+<div class="grid">
+<div class="box"><h3>Reject noise</h3><p>If the intended target stays fixed, the initial anchor is ε-valid, and H ≥ 2ε, every noisy proposal leaves the reference unchanged.</p></div>
+<div class="box"><h3>Respond to a clear change</h3><p>If |p<sub>new</sub> − c| &gt; H + ε, the next valid proposal passes. Relative to the old true target, a sufficient step is larger than H + 2ε.</p></div>
+<div class="box"><h3>State the cost</h3><p>A rejected proposal can leave target error as large as H + ε. Smaller deliberate moves can be ignored. Passing this gate does not mean a safe motion exists.</p></div>
+</div>
+<p>For an accepted history, let <em>V</em> be true-target variation at the accepted indices, <em>S</em> accepted-target variation, and <em>n</em> the number of changes. If H &gt; 2ε, Lean checks:</p>
+<div class="equation">n ≤ V / (H − 2ε) &nbsp;&nbsp; and &nbsp;&nbsp; S ≤ H V / (H − 2ε)</div>
+<p>Thus extra planner calls cannot create unbounded accepted-target motion when true-target variation is bounded. The theorem takes a finite history with valid anchors and accepted step distances as input. Extracting that history from all proposal indices is not yet formalized. <strong>Target variation is not executed tool-path length.</strong></p>
+<p>With ε = 0.5 mm and H = 2 mm, accepted-target variation is at most twice the true-target variation. A true step above 3 mm is guaranteed to pass at the next valid proposal. The gate can ignore a deliberate 1 mm move. These are illustrative settings, not measured robot parameters.</p>
+<figure><img src="comparison.svg" alt="Target-only comparison of raw proposals, minimum dwell, low-pass filtering, and an uncertainty gate across hold, step, drift and small-move cases"><figcaption>Target selection before trajectory or physical feasibility checks. The replay includes cases where the gate loses responsiveness. See <a href="results.json">metrics and cadence sensitivity</a> and <a href="experiment.py">replay source</a>.</figcaption></figure>
+
+<h2>The physical result we can now state</h2>
+<p>The new <a href="QuietHold.lean">QuietHold theorem</a> puts the gated reference directly inside the actual plant equations. It then proves that bounded noisy replanning preserves the held reference and the existing physical bound:</p>
+<div class="equation">|x(t) − p| ≤ R + ε &nbsp;&nbsp; and &nbsp;&nbsp; |u(t) + w(t)| ≤ U</div>
+<p>This is conditional on our scalar lag model: x′ = v, v′ = a, a′ = r(t)(u + w − a), with 8 ≤ r(t) ≤ 12 and feedback u = −8(x − c) − 6v − a/2. The initial transformed state must lie in its certified cube of radius R. The disturbance must obey |w| ≤ 2R, and authority must satisfy 26R ≤ U. The proof applies to an existing classical trajectory on any finite horizon.</p>
+<p>The feedback command can change to oppose disturbance even though its reference stays fixed. The bound permits motion inside the tube. It does not prove rest, convergence, flexible-arm dynamics, contact stability, or a sampled implementation.</p>
+<p><strong>Scale matters.</strong> Our earlier stopping-and-capture example had R = 55.525 mm. That is a travel-safety example, not precision holding. A 1 mm radius would require a much tighter initial-state certificate and |w| ≤ 0.002 m/s² in this model. Sensor errors and feedback delay consume that budget. The target gate does not remove them.</p>
+
+<h2>How the pieces fit</h2>
+<div class="flow"><span>Task evidence</span>→<span>Target gate</span>→<span>Smooth feasible motion</span>→<span>Fast physical feedback</span></div>
+<p>Every accepted motion must retain a safe stop or hold. We have separate proofs for scalar smooth splices and stopping/holding. The new fixed-target composition checks one interface. A changing-target controller that preserves all these guarantees remains open.</p>
+<p>A stale proposal needs a larger uncertainty bound. If model error is ε<sub>model</sub>, target speed is at most L, and proposal age is Δ, a sufficient bound is ε<sub>model</sub> + LΔ. A VLA confidence score does not establish that bound. A downstream safety rejection also invalidates any promise that the newly selected target was adopted.</p>
+<figure><video controls preload="metadata" poster="animation/jitter-frame.png" src="animation/steady-enough.mp4"></video><figcaption>Public explanation: target selection, its benefit, and its resolution cost. <a href="animation/README.txt">Render notes</a>.</figcaption></figure>
+
+<h2>The next useful proof target</h2>
+<p>Prove a bound on physical tool error while the intended target and feedback settings change. Each update must account for the energy it adds. For a local mass–spring–damper error model with constant inertia and symmetric stiffness, changing stiffness K introduces the power term ½ eᵀK′e. Matching trajectory derivatives alone does not remove this term.</p>
+<p>A candidate bound should include decay of old error, a residual term from disturbance, and the accumulated effect of admitted updates. It must also retain actuator and stopping limits. Energy-based variable impedance, reference governors, disturbance observers, and learned continuation are existing methods. Our <a href="controls-prior.txt">controls comparison</a> names the baselines. The contribution would need to be a useful checked composition with a measured advantage.</p>
+<ol>
+<li>Test planner noise, a periodic load, feedback delay, and a contact change separately. Identify which layer causes tool motion.</li>
+<li>Derive the physical disturbance and tracking bounds, including effort, sensing and delay. Check whether the radius is useful.</li>
+<li>Connect changing targets to smooth motion and retained stopping reserve. Then compare against the named baselines under the same limits.</li>
+</ol>
+<p>Possible tasks include holding a camera view, maintaining a dispenser tip, or stabilizing a held tool during assembly. A flexible tool or a moving contact adds dynamics our present model does not cover.</p>
+
+<footer>
+<p><span class="tag">Verification</span> · <a href="verification.json">Fresh builds, axiom audit and kernel replay</a> · <a href="CommitmentGate.lean">Gate proofs</a> · <a href="QuietHold.lean">Physical composition</a> · <a href="theorem-challenge.txt">Independent challenge</a> · <a href="verify.py">Verifier</a></p>
+<p><a href="sources-neuro.json">Neuroscience source access</a> · <a href="sources-controls.json">Controls source access</a> · <a href="../variable-response/sampled-handoff/index.html">Earlier stopping, handoff and smooth-replan work</a></p>
+<p class="muted">Lean validates the stated implications. The parameter bounds, physical implementation, and novelty remain separate research obligations. No robot or VLA was run in this batch.</p>
+</footer>
+</main></html>

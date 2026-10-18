@@ -1,0 +1,213 @@
+MF-13: a tractable next step, with proof status separated
+2026-10-17
+
+Recommendation
+
+Stop treating numerically rank-four equality points as prospective strict
+counterexamples. Investigate full-rank coupled skew singular pairs, using exact
+linear elimination followed by a convex subproblem for each fixed pair. The
+important unresolved task is controlling ALL such pairs; solving one convex
+subproblem does not resolve the dimension-six question.
+
+Primary-source status
+
+Kressner and Vandereycken's August 2026 paper gives an exact dimension-seven
+counterexample and leaves dimension six open. Its numerical discussion describes
+a substantial equality ridge, which is consistent with our observations.
+https://arxiv.org/html/2608.20875v1
+
+Chen and Tian's 2015 paper proves the result through dimension five. The publisher
+preview exposes the symmetry/skew comparison lemma, but I did not obtain its full
+proof. I therefore cannot establish whether the rank-four argument below is
+identical to theirs. Treat it as independently derived standard-looking material,
+very likely already known, with no novelty claim.
+https://doi.org/10.1137/140974031
+Publisher preview read at:
+https://www.researchgate.net/publication/281997749_Note_on_On_the_Singular_Vectors_of_the_Lyapunov_Operator_by_R_Byers_and_S_Nash
+
+The PureOne dataset claims a generic nine-dimensional affine reduction, hence a
+ten-variable SDP after adding its objective. Its card explicitly labels the work
+AI-generated and unreviewed. I read the card as a lead; no code or proof was copied
+and its density or sufficiency claims are not assumed here.
+https://huggingface.co/datasets/PureOne/orison-vi-order-six-lyapunov-norm-certificates
+
+1. What our current numerical points actually say
+
+I independently reconstructed the singular input and output matrices from both
+saved searches. All figures in this paragraph are floating-point diagnostics.
+
+Original search: s(A)=0.9115441856543217, k(A)=0.9115441856543247.
+Skew input singular values are approximately
+  (0.61805445,0.61805445,0.34352394,0.34352394,2.76e-13,2.76e-13).
+Skew output singular values have their smallest pair approximately 2.44e-13.
+The normalized coupled equation residual was 1.28e-15.
+
+Structured search: s(A)=0.8652274525434559, k(A)=0.8652274525434579.
+Skew input singular values are approximately
+  (0.62652752,0.62652752,0.32781591,0.32781591,7.79e-10,7.79e-10).
+The output's smallest pair is approximately 7.58e-10.
+
+These are near rank-four witnesses, not exact rank computations and not positive
+gaps. The approximately 1e-15 norm differences are numerical noise at this scale.
+The scripts correctly distinguish this from their 1e-7 candidate threshold.
+
+2. Same-square comparison: independent hand derivation, NOT Lean-checked
+
+Write L_A(X)=AX+XA^T and E_A(X)=||L_A(X)||_F^2. If S is symmetric, K is skew, and
+S^2=-K^2, expansion gives
+
+  E_A(S)-E_A(K) = 2 tr((AS)^2 + (AK)^2).                    (1)
+
+The reason is that SS^T=KK^T, so the two terms containing A^T A cancel; the
+remaining cross terms have opposite signs for symmetric and skew inputs.
+
+Put K in real orthogonal skew canonical form diag(lambda_i J,0), where
+J=[[0,1],[-1,0]]. Choose symmetric reflections
+
+  R(theta)=[[cos(theta),sin(theta)],[sin(theta),-cos(theta)]],
+  S=diag(lambda_i R(theta_i),0).
+
+Then S^2=-K^2 and ||S||_F=||K||_F. Let B_ij be the 2x2 blocks of A on the support
+of K. Formula (1) becomes exactly
+
+  2 sum_i lambda_i^2 [tr(B_ii R_i)^2 + tr(B_ii J)^2]
+  +4 sum_{i<j} lambda_i lambda_j
+       [tr(B_ij R_j B_ji R_i)+tr(B_ij J B_ji J)].           (2)
+
+For the diagonal terms, use the 2x2 identity
+tr(M^2)=(tr M)^2-2 det M, together with det R=-1 and det J=1.
+Every diagonal contribution in (2) is nonnegative.
+
+Rank at most four: there are at most two active blocks, hence only one cross
+term. Apply a signed 2x2 SVD to B_12 using rotations U,V in SO(2). Such rotations
+preserve J. In the new coordinates B_12 is diagonal. Choose R_1=R_2=X, where
+X=[[0,1],[1,0]]. For any diagonal D and any N,
+
+  tr(D X N X) + tr(D J N J) = 0.
+
+Thus the cross term vanishes and (2) is nonnegative. For a rank-two witness there
+is no cross term. Coupling to the orthogonal complement is harmless: if
+K=diag(K_support,0) and A=[[B,C],[D,E]], then
+
+  E_A(K) = E_B(K_support)+2||D K_support||_F^2.
+
+The same-square symmetric choice has exactly the same D contribution. C and E
+do not enter either expression.
+
+Provisional conclusion, requiring peer or formal verification before use as an
+established project theorem: every real skew witness of rank at most four has a
+symmetric same-norm witness with at least its Lyapunov amplification, in ANY
+ambient dimension. This is a clear candidate for a useful Lean formalization,
+but it is not a new mathematical discovery claim.
+
+Independent numerical checks: 400 random examples in ambient dimensions 4,6,7,10
+verified the signed-SVD construction and the exact formula underlying it; the
+maximum floating-point formula residual was 1.94e-13. This checks implementation
+consistency only; it is not a proof of the universal statement.
+
+Important failed extension: the three-block same-square ansatz cannot be a
+universal proof strategy. The published 7x7 skew witness has rank six. Its support
+is six-dimensional; any same-square symmetric comparator in that support has the
+same outside-support contribution. A universal three-block same-square lemma
+would therefore contradict the published exact dimension-seven counterexample.
+The six-dimensional conjecture can still hold because a successful symmetric
+comparator is allowed to have a DIFFERENT square/covariance. Do not silently impose
+S^2=-K^2 as a lossless restriction in the rank-six problem.
+
+3. Coupled-pair reduction: algebra now checked in Lean
+
+For a positive skew singular value sigma, scale A by 1/sigma. Let K,Y be real skew
+right/left singular witnesses with equal nonzero Frobenius norm. Their equations
+are
+
+  A K + K A^T = Y,     A^T Y + Y A = K.                   (3)
+
+If the provisional rank-four exclusion is confirmed, a strict dimension-six
+counterexample must have both K and Y invertible. For Y this applies the same
+argument to the adjoint operator L_(A^T), whose symmetric and skew restricted
+norms equal those for A. This explains why rank deficiency is a useful diagnostic.
+
+Assume K invertible. Define H=A K-Y/2. From the first equation in (3), H^T=H, and
+
+  A=(H+Y/2) K^{-1}.
+
+Substitution of this expression into the second equation and multiplication on
+the left and right by K gives the LINEAR equation in H
+
+  (K Y) H - H (Y K) = K^3 -(Y^2 K+K Y^2)/2.              (4)
+
+This derivation is reversible for invertible K. However, our current Lean file
+formalizes the forward polynomial identity, not the full inverse/iff statement.
+For division-free statements it uses B=2H=A K-K A^T:
+
+  (K Y) B - B (Y K) = 2 K^3 -Y^2 K-K Y^2.              (5)
+
+New file: lean-controls/LeanControls/CoupledLyapunov.lean
+Six theorem declarations compile without warnings. Each was independently
+axiom-audited; only propext, Classical.choice, Quot.sound occur.
+
+Checked results: B is symmetric when K is skew; B+Y=2AK from the first equation;
+the elimination identity (5); the commutator identity below; and its trace moments
+for every natural j.
+
+  [Y K,A^T]=Y^2-K^2,
+  tr((Y K)^j (Y^2-K^2))=0 for every j>=0.                 (6)
+
+No claim that three moments suffice is made. No generic-density argument, generic
+rank theorem, or spectral multiplicity assertion has been imported from the lead.
+
+4. A fixed-pair convex subproblem and exact calibration
+
+For fixed K,Y, solve (4) exactly as a linear system in the 21 independent entries
+of H. If consistent, write H=H0+sum z_i H_i. The symmetric restricted operator
+matrix B_S(A(H)) is affine in z. Its spectral norm is at most t exactly when
+
+  [[t I_21, B_S], [B_S^T, t I_21]] is positive semidefinite.
+
+This yields a convex problem for EACH fixed pair. A validated feasible t<1 gives
+a strict counterexample, because (3) already provides skew gain 1. An exact dual
+lower bound >=1 excludes just that pair. A numerical infeasibility or lower bound
+is insufficient without a certificate. The continuum of compatible K,Y, including
+degeneracies, is the unresolved global problem.
+
+Use K=Y=diag(J,2J,3J) as a nonempty exact calibration. In this case the compatible
+A are exactly block diagonal, with each 2x2 block having trace one. To see why,
+write the off-diagonal equations for M=A_ij and N=A_ji^T, with distinct nonzero
+weights a,b:
+
+  b M J+a J N=0,    b N J+a J M=0.
+
+Eliminating N yields (a^2-b^2) J M=0, hence M=N=0. On a diagonal block either
+coupled equation is simply tr(A_ii)=1. Therefore the affine dimension is 3*3=9.
+
+Parametrize A_ii=[[p_i,q_i],[r_i,1-p_i]]. The symmetric input I provides
+
+  ||I||_F^2=6,
+  ||A+A^T||_F^2=6+2 sum_i [(2p_i-1)^2+(q_i+r_i)^2] >=6.  (7)
+
+Thus the normalized symmetric gain is at least one throughout this family. The
+choice A=I/2 attains one, so the fixed-pair optimum is exactly one. This is a
+calibration family, not an unresolved result or a universal dimension-six proof.
+
+Reproducible independent checker: research/coupled_pair_check.py
+Output: research/coupled-pair-check.json
+The checker uses only exact Python Fraction arithmetic. It verifies rank 27 for
+the 30x36 coupled constraint matrix (and augmented rank 27), rank 12 for the
+15x21 symmetric-parameter system, and a nontrivial rational instance of (7).
+The general formula (7) has the displayed elementary polynomial derivation; the
+Python instance check itself does not quantify all real parameters.
+
+5. Suggested next bounded experiment
+
+First formalize the rank-four same-square exclusion, preferably with an
+independent review of the signed-SVD step. Next formalize the invertible-K converse
+of (4). Then implement a small exact linear-system generator for arbitrary rational
+K,Y, retaining all 21 symmetric variables until the rank has actually been checked.
+Use the calibration family above to test primal and dual certificate verification.
+
+Only after those checks should we sample compatible full-rank pairs or perturb
+singular pairs from a search. Normalize their common Frobenius norm, record the
+smallest singular values of both witnesses, and avoid confusing near-rank-four
+equalities with progress toward a strict gap. A barrier against small singular
+values is a search heuristic; it does not certify coverage or exclude tiny gaps
+near the boundary. Do not announce novelty or a resolution from these reductions.

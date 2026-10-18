@@ -1,0 +1,96 @@
+{
+  "passed": true,
+  "scope": "Fresh build, axiom audit and kernel replay of the release counterexample.\n\nThis does NOT check the Python interval trace or prove direct-feedback safety.\nPinned LeanControls and mathlib build artifacts are retained as dependencies.\n",
+  "source_sha256": "36f6fdc6600b36330fee6d9ebad9bd50318b6c4df2ff5028504d63dcba14fbea",
+  "verifier_sha256": "f3097f3f34053e7f835e3ae33209dec8fe00a0cc626b7f04db33bb4b9f266885",
+  "toolchain": "Lean (version 4.35.0, arm64-apple-darwin24.6.0, commit eb6cafb7290e8bd5f2937522d8d804f58f02bafc, Release)",
+  "steps": [
+    {
+      "label": "fresh-build",
+      "command": [
+        "/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/.tools/elan/toolchains/leanprover--lean4---v4.35.0/bin/lean",
+        "--root=/var/folders/my/gvpc8lhn61b07vzgm7fxmnmh0000gn/T/direct-switch-_3hksuuh",
+        "-o",
+        "/var/folders/my/gvpc8lhn61b07vzgm7fxmnmh0000gn/T/direct-switch-_3hksuuh/DirectSwitch.olean",
+        "/var/folders/my/gvpc8lhn61b07vzgm7fxmnmh0000gn/T/direct-switch-_3hksuuh/DirectSwitch.lean"
+      ],
+      "exit_code": 0,
+      "seconds": 2.079178416985087,
+      "log_sha256": "c324c31eb1ea8455e8501e8781d988ac66a6e8b15b4181078bd3748b8d159856"
+    },
+    {
+      "label": "axiom-audit",
+      "command": [
+        "/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/.tools/elan/toolchains/leanprover--lean4---v4.35.0/bin/lean",
+        "/var/folders/my/gvpc8lhn61b07vzgm7fxmnmh0000gn/T/direct-switch-_3hksuuh/Audit.lean"
+      ],
+      "exit_code": 0,
+      "seconds": 6.774973916995805,
+      "log_sha256": "c324c31eb1ea8455e8501e8781d988ac66a6e8b15b4181078bd3748b8d159856"
+    },
+    {
+      "label": "kernel-replay",
+      "command": [
+        "/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/.tools/elan/toolchains/leanprover--lean4---v4.35.0/bin/leanchecker",
+        "DirectSwitch",
+        "-v"
+      ],
+      "exit_code": 0,
+      "seconds": 8.427075500017963,
+      "log_sha256": "c772ecc6e08eeb8de88a8323c3da7fb575c130f981f826cf89b5415b02e75bef"
+    }
+  ],
+  "axioms": {
+    "LeanControls.DirectSwitch.request_polynomial": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "LeanControls.DirectSwitch.request_before_switch": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "LeanControls.DirectSwitch.request_at_switch": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "LeanControls.DirectSwitch.command_at_switch": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "LeanControls.DirectSwitch.energy_at_switch": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "LeanControls.DirectSwitch.outside_at_switch": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "LeanControls.DirectSwitch.brake_add": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "LeanControls.DirectSwitch.command_before_switch": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "LeanControls.DirectSwitch.samples_before_switch": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "LeanControls.DirectSwitch.sampled_release_outside": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ]
+  },
+  "theorem_count": 10
+}

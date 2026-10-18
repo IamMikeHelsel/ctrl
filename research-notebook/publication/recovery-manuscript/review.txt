@@ -1,0 +1,165 @@
+RECOVERY MANUSCRIPT — ADVERSARIAL SOURCE REVIEW
+17 October 2026. Independent AI-agent review; human review remains pending.
+
+Reviewed main.tex SHA256:
+709026c6ee597a833cf56526bed24aae9dd689d480619178b4b541166187c68b
+Reviewed the current seven recovery modules, their existing compile/axiom logs,
+verify.py, experiment.py/results/review, and the relevant frozen invariant
+interfaces. Detailed proof-source hashes are in:
+research/adjacent-controls/recovery-proof/adversarial-review.txt
+No TeX or proof source was edited. This review does not assess rendered layout
+and did not independently run a full proof build or the floating-point experiment.
+
+VERDICT
+The core mathematical claim and its stated limitations match the sources.
+No new theorem/model mismatch was found. Physical conversions and experiment
+numbers are correct. The paper consistently makes proof-domain extension its
+contribution and explicitly reports the benign direct-controller baseline.
+This is a credible bounded formal-verification case-study draft, not evidence
+of a novel backup principle or a superior controller. The corrections below
+are needed before describing the paper and artifact as submission-ready.
+
+REQUIRED LOCAL CORRECTIONS
+
+R1 — Public-artifact claim (line 196)
+"A public animation illustrates the mechanism" is premature. The animation
+is being constructed locally and no public release or URL is established.
+Use "A local explanatory animation ..." only after a real render exists and
+has been inspected, call it planned while unfinished, or remove the sentence.
+A completed local render is not a public artifact. The accompanying statement
+that animation cannot validate the assumptions is correct and should remain.
+
+R2 — Provenance location (line 189)
+The sentence says the full mathlib revision, commands, logs and audit counts
+are in the verification manifest. The inspected verify.py report stores the
+toolchain, recovery source hashes, step labels/exit codes/timings/log hashes,
+axioms and count, but does not store the mathlib commit, full executed commands,
+working directories or resolved LEAN_PATH. Correct the attribution to the
+actual script/log/base-manifest locations, or add these fields to the final
+manifest. A script is reproducible evidence of its command construction, but
+is not the same as an execution record listing the exact commands and paths.
+The disclosed reuse of pinned base/mathlib artifacts is accurate.
+
+R3 — Completed verification evidence and runnable entry point (lines 185--189)
+The new source-copy replay is still running at this review checkpoint. The
+current prose describes what verify.py does rather than explicitly claiming
+that the whole run passed; keep that distinction until the final manifest is
+passed=true and source_unchanged=true. Before release, record the final named
+theorem count, complete build/audit/kernel outcomes, and rejection of the
+negative test. Confirm that the mutation fails for the changed formula rather
+than an unrelated import or setup error. Do not conflate a single-module
+kernel check, fresh seven-module replay, frozen-base replay, and an independent
+bootstrap of Lean.
+
+Add an exact invocation from a stated artifact root, for example
+  python3 research/adjacent-controls/recovery-proof/verify.py
+and the experiment command. The bundle must include its pinned base project,
+toolchain instructions and certificate producer. The paper currently names a
+script but gives no directly runnable entry point or discoverable artifact
+location. A local-working-draft placeholder is acceptable now; a stable access
+location and redistribution license remain release work.
+
+SCOPE CLARIFICATION RECOMMENDED
+
+Line 69 combines operation on S with recovery on B. This is a mathematically
+valid informal consequence of two existing contracts, since B is disjoint
+from S. However, the inspected Lean artifact does not define or verify a
+unified mode-selection implementation that recognizes S union B. Prefer:
+"Together with the existing invariant theorem, this permits a one-time choice
+of direct control on S or recovery on B." Explicitly leave initial-state
+measurement, admission decisions and an implemented selector outside scope.
+The current prohibition on repeated switching/general runtime shielding is
+correct. This is a wording clarification, not a missing proof of the stated
+concrete B theorem.
+
+MATHEMATICAL AND SEMANTIC CHECKS THAT PASSED
+
+* Equation (1) and the error placement agree with the source. The same fixed
+  rate is used in both phases. The tail command is clipped feedback plus d;
+  d enters inside r, so physical actuation need not stay inside [-U,U]. This
+  is accurately disclosed. The backup has exactly zero such errors.
+* The box, quadratic form, 23.498378 lower bound, T=5/4, tail h<=1/5 and 1/90
+  combined error budget match the concrete proofs. The terminal conclusion
+  is V<=12, with no terminal-safety premise left in the concrete theorem.
+* The state is continuous in every coordinate; feedback evaluates the same
+  trajectory at shifted times T+t_n. Derivatives are required on open hold
+  intervals only. Commands may jump at the switch/samples while state does
+  not. This distinction is correctly expressed. Positive minimum dwell
+  prevents Zeno accumulation. No velocity or acceleration reset is hidden.
+* The held-flow formulas, independent long-backup position bounds, 32 cells
+  of width 1/160 and 33 endpoint bounds agree with the code. The exponential
+  bound is for the degree-nine half-argument polynomial, followed by positive
+  squaring. Direct whole-box interval checks replace the exploratory corner
+  reduction. The LDL identity is exact. The separate tighter diagnostic
+  number is correctly excluded from the formal theorem's exported bound.
+* The old nominal-decrease coefficient 3/2, sector [2/5,1], 12 matrix vertices,
+  response coefficient 16 and 1/90 invariant budget agree with the frozen
+  UncertainLag and UncertainTravel sources. These are model facts, not new
+  evidence that the backup tolerates disturbances.
+* Both generic and concrete execution existence are present, and uniqueness
+  is for the same initial state, rate, durations and held error sequences.
+  The execution predicate does not contain safety or equality to a selected
+  curve. Thus the theorem is not vacuous.
+
+PHYSICAL SCALE AND LINEAR-MODEL CHECK
+
+Scaling by (U*tau0^2,U*tau0,U) and t=s/tau0 gives r=tau0/tau.
+The controller remains -X/tau0^2-3V/tau0-2A, so it is not retuned to actual tau.
+The physical switch is 5*tau0/4, post-handoff hold cap tau0/5, error budget U/90,
+and envelope 2*U*tau0^2. Physical existence, uniqueness and actual endpoint
+normalization are formalized.
+
+For tau0=.1 s and U=2 m/s^2, position scale=.02 m, velocity scale=.2 m/s,
+acceleration scale=2 m/s^2. All table entries check:
+  initial X=1.98--2.02 cm; V=.098--.102 m/s; A=+/-.02 m/s^2;
+  T=125 ms; envelope=+/-4 cm; later hold<=20 ms;
+  path=(657/800)*.02 to (5297/3200)*.02 m
+      =1.6425--3.310625 cm.
+This is a dimensionally consistent assumed linear actuator model. There is
+no derivation or measured error bound showing that a real robot linearizes
+to this model. The manuscript correctly labels the numbers illustrative and
+uncalibrated; retain that boundary in any animation or presentation.
+
+EXPERIMENT CHECKS THAT PASSED
+
+The table matches experiment-results.json after the stated rounding. Recounted
+paired terminal-energy signs: 13 improvements, 11 degradations. Command total
+variation increases in every pair. Direct feedback reaches V<=12 before T in
+all tested cases; both methods show zero observed position violations. The
+text reports these adverse results rather than implying the baseline is unsafe.
+The .05 aligned-clock case and .1/.2 clock-phase differences are accurately
+explained. Peak travel is obtained numerically from held-segment extrema;
+energy is sampled. Neither supports whole-box or all-time inference. Zero
+errors, three rates, corners and finite horizon are disclosed.
+
+Calling the runs "matched pairs" means same initial state, rate, period and
+horizon, not identical update clocks. The manuscript immediately gives the
+clock distinction, which is sufficient. Keep the experimental baseline separate
+from a formal direct-controller prefix: that prefix is not proved here.
+
+NOVELTY AND PUBLICATION ASSESSMENT
+
+The three related-work paragraphs make bounded claims and explicitly concede
+established backup control and earlier proof pipelines. Live primary metadata
+checks on 17 October 2026 confirmed the titles/authors/year for Chen et al.
+(arXiv 2104.11332) and van Wijk et al. (arXiv 2409.07700v2, with the cited IEEE
+DOI). The abstract descriptions support the brief related-work characterizations:
+https://arxiv.org/abs/2104.11332
+https://arxiv.org/abs/2409.07700
+The earlier source review inspected the Hellwig primary paper at
+https://logic.kastel.kit.edu/ap/pub/zonotope-proofs.pdf
+No new systematic novelty search or competing-tool evaluation was performed.
+
+The manuscript now has a specific demonstrable capability: a complete checked
+route from a nondegenerate box outside an earlier certificate through a long
+backup segment into a robust sampled invariant, for arbitrary actual continuous
+ODE executions. That is stronger than a conditional composition lemma.
+Nevertheless the selected box is small, the backup is exact, the baseline
+already succeeds empirically, and no independent user or matched verification
+comparison demonstrates broader value. Another proof assistant and theorem
+counts alone are not novelty. The current case-study framing is appropriate;
+strong control-research novelty or deployment readiness would be unsupported.
+
+Human mathematical review, authorship/affiliation, venue formatting, artifact
+licensing and independent reuse remain open. This review is not acceptance
+prediction and does not convert local proof checks into human peer review.

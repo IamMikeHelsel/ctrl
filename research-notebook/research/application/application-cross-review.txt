@@ -1,0 +1,91 @@
+Independent source review: MeasuredTravel and TravelScope
+=======================================================
+
+Outcome: no blocking logical, mathematical, or model-mismatch finding.
+This review read the actual definitions and theorem hypotheses, including the
+supporting clock, geometry, held-response and robustness interfaces. Both
+reviewed sources separately elaborated successfully with lake env lean using
+the existing pinned dependency/project import cache. This was not another
+fresh-toolchain replay. No proof source was edited.
+
+Reviewed snapshot
+-----------------
+MeasuredTravel.lean: 27 public theorems
+SHA256 c916addd0377d644235c882facf11d649e541504dd88b7c37bb37b62f151fe59
+TravelScope.lean: 5 public theorems (two budget comparisons were added during
+the review and were included in the final read)
+SHA256 c31e402b3e942843d90f961e8945d2bd1d8c6b3deceef1ee5b64f9952a329b32
+
+Measured execution: soundness and nonvacuity
+-------------------------------------------
+1. segment uses the actual command clip(input(z)+e)+d. e enters before the
+   clamp and d enters after it. The comparison with nominal clipped feedback
+   is an exact equality, not an assumption that either request is unclipped.
+   Clamp nonexpansiveness supplies the bound |effectiveDisturbance|<=|e|+|d|.
+
+2. samples is recursively defined from this actual segment. effectiveErrors
+   is subsequently computed from those already defined samples, so the
+   equality bridge to TravelSafety is not circular and assumes no unproved
+   recurrence. State-dependent effective disturbances are permitted by the
+   existing universally quantified disturbance-sequence theorem.
+
+3. The all-real-time theorem requires a positive minimum dwell time. It uses
+   the clock selector's coverage theorem and bounds the elapsed time inside
+   its containing interval. It is therefore stronger than a sample-only
+   statement. The initial energy-region hypothesis is retained throughout.
+
+4. The actual measured execution has explicit global continuity and interior
+   ODE theorems. The ODE's held command is reconstructed as clip(input+e)+d;
+   it does not silently become continuously recomputed feedback. The clamp
+   bounds only its own output, not the output plus the post-clamp disturbance.
+
+5. Nonvacuity is concrete: h_n=1/10, e_n=d_n=1/200, z0=[0,0,1] satisfy the
+   hypotheses. Initial energy is 278/25<12, the erroneous request is -399/200,
+   and the command clips to -1. active_example_travel certifies the whole
+   resulting run. Thus both an actual clipping event and nonzero admitted
+   request error/disturbance are present in a certified trajectory.
+
+6. The separate-grid wrapper recomputes errors from its own recursive actual
+   sample states. Its error budget dx/2+3*dv/2+da follows the controller gains
+   [-1,-3,-2] and each ideal nearest-grid error <=half a grid step. Positive
+   grid resolutions and the shared disturbance budget are explicit. An
+   independent W>=0 premise is unnecessary because |d_n|<=W already entails
+   it for any admissible execution.
+
+TravelScope: correct counterexample and limited ablation meaning
+---------------------------------------------------------------
+The initial state [19/10,1,0] lies strictly within the position strip and
+requests -49/10, so its held command is -1 with zero disturbance. At t=1/5,
+position equals 32/25+exp(-1/5). The checked lower exponential bound already
+gives position>=52/25>2. Its energy is 2322/25>12. This correctly refutes
+replacing the ellipsoid hypothesis by a position-only initial bound. It does
+not say every initial state outside the ellipsoid is unsafe or that the
+ellipsoid is a maximal safe set.
+
+The two additional inequalities correctly compare the scalar sufficient
+Young budgets at fixed H=1/5, eta=5/451, W=1/100, R=12: C=9471/200 fails and
+C=13 passes. They do not assert a physically unsafe trajectory for the failed
+budget. Nor do these two arithmetic declarations themselves prove that the
+coarse C is a valid response-energy bound. The refined C=13 has a separate
+checked response-energy derivation in TravelDisturbance.
+
+Paper wording boundaries (not source defects)
+---------------------------------------------
+- rounded_active_example uses positive grids but its initial state lies
+  exactly on them, so its initial rounding error is zero. It is evidence of
+  clipping with an admissible nonzero-resolution budget, not evidence of a
+  nonzero realized rounding error at that sample. Use active_initial for the
+  distinct abstract-error witness with nonzero e and d.
+- roundedState has direct all-real-time safety and sample-agreement theorems.
+  The explicit global continuity/interior-ODE transfer in this module is for
+  state, the abstract held request-error execution. A theorem identifying
+  roundedState with such an execution is not present in this snapshot. Do not
+  describe that particular formal transfer as already delivered.
+- The rounding is ideal real arithmetic and unlimited integer rounding. The
+  proof does not include IEEE operations, finite registers, sensor overflow,
+  delays, or continuously varying disturbances. e and d are held per interval.
+- A failed sufficient budget is an inconclusive certificate calculation,
+  not instability or a counterexample. Attribute the coarse/refined
+  comparison to these fixed constants; it is not an optimality result.
+
+No source change is required for the claims actually stated by these files.

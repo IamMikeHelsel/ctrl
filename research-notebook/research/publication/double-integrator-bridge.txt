@@ -1,0 +1,79 @@
+Double-integrator semantics bridge
+==================================
+Source: lean-controls/LeanControls/DoubleIntegratorBridge.lean
+Imports: Generated.DoubleIntegrator, Generated.DoubleIntegratorWide, SampledPD.
+
+What was closed
+---------------
+The generated matrix polynomial and energy are now identified with the original held-input model by checked Lean equalities, not by matching their names or visually comparing coefficients.
+
+For every real h,x,v:
+  generated.transition(h) * [x,v]
+    = [SampledPD.position(h,x,v), SampledPD.velocity(h,x,v)].
+For every real two-coordinate vector z:
+  BernsteinCertificate.energy(generated.P,z)
+    = PD.energy(z_0,z_1).
+
+Both equalities are proved for the normal and wide generated modules. The normal and wide certificate files use the same transition and energy matrices; they differ in interval and decay margin. The scalar energy is named PD.energy in the original source, while SampledPD supplies the exact held position/velocity model.
+
+This connects the generated certificate to
+  u=-2x-3v,
+  x(t)=x+t*v+(t^2/2)*u,
+  v(t)=v+t*u,
+which the existing SampledPD derivative theorems verify against the normalized double-integrator differential equations during one held interval.
+
+Transferred results
+-------------------
+normal_decrease, for 0<=h<=1/2:
+  V(x(h),v(h)) <= V(x,v)-h*(x^2+v^2).
+
+wide_decrease, for 0<=h<=33/50:
+  V(x(h),v(h)) <= V(x,v)-(h/100)*(x^2+v^2).
+
+wide_contraction:
+  V(x(h),v(h)) <= (1-h/600)*V(x,v).
+
+wide_jitter:
+  For arbitrary nominal trajectories satisfying the held-step recurrence and
+  0<=hmin<=h_n<=33/50,
+    V_n <= (1-hmin/600)^n * V_0.
+  Strictly positive hmin is needed to interpret this as a decaying geometric
+  envelope. The stated theorem permits hmin=0, which yields a nonexpansion bound.
+
+wide_intersample_bound:
+  Every elapsed time 0<=t<=h<=33/50 satisfies V(x(t),v(t))<=V(x,v), where (x,v)
+  is the state at the START of the held interval.
+
+wide_trajectory_intersample:
+  On every nominal held segment n and for every 0<=t<=h_n,
+    V(x_n(t),v_n(t)) <= (1-hmin/600)^n * V_0.
+  This joins the generated sample-index theorem to a bound at every intermediate
+  point of the exact nominal held dynamics.
+
+A distinction that matters
+--------------------------
+The intersample result is a bound relative to the energy at the start of the sample. It does not say energy is nonincreasing between any two arbitrary intermediate times while the same control remains held.
+
+The new intersample_not_monotone theorem proves an exact counterexample:
+  initial state (x,v)=(0,1), held control u=-3;
+  0<=1/2<3/5<=33/50;
+  V(x(1/2),v(1/2))=13/64;
+  V(x(3/5),v(3/5))=281/500;
+  13/64<281/500.
+Energy rises over these two intermediate times while both values remain below the initial energy 1. Report language should therefore say "bounded by the energy at the start of the interval" or "no overshoot relative to the sample," not "monotone throughout the interval."
+
+Verification
+------------
+  lake build LeanControls.DoubleIntegratorBridge: succeeded, including both generated imports.
+  Twelve public theorem declarations individually checked with #print axioms.
+  Every result depends only on propext, Classical.choice, Quot.sound.
+  No sorry, custom axiom, native_decide, or numerical tolerance is used.
+
+Recheck from lean-controls:
+  ELAN_HOME="$PWD/../.tools/elan" ../.tools/elan/bin/lake build LeanControls.DoubleIntegratorBridge
+  #print axioms LeanControls.DoubleIntegratorBridge.wide_trajectory_intersample
+  #print axioms LeanControls.DoubleIntegratorBridge.intersample_not_monotone
+
+Limits
+------
+The transferred wide-interval results are nominal: no rounding, clipping, or disturbance is present in these trajectories. They do not widen the separately proved robust rounded-controller sample interval beyond 1/2. The normalized ideal double-integrator model, exact real arithmetic, and held control assumptions remain explicit. Physical model fidelity and machine arithmetic are separate obligations. The interval 33/50 is certified sufficient, not claimed maximal.

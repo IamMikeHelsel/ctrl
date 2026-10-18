@@ -1,0 +1,259 @@
+CONTRIBUTION REVIEW — 17 October 2026
+
+Decision: develop a focused formal-methods case study or benchmark paper around
+the saturated actuator travel theorem. The existing checked result is coherent
+and nonvacuous. The current broad manuscript obscures it and does not yet
+establish the significance expected of a general new-method paper. Acceptance
+cannot be predicted from a successful build or theorem count.
+
+This review inspected the existing main.tex, the travel proof chain, the fresh
+40-module/464-declaration replay, existing SOS comparison records, and primary
+literature/official venue scopes. Sensor-error and physical-scaling extensions
+are in progress; they are recommendations below, not claimed completed here.
+
+1. ONE SENTENCE THAT THE PAPER SHOULD DEFEND
+
+We provide a reproducible Lean certificate connecting an exact sampled
+actuator-lag model with genuinely active command saturation to a continuous,
+all-real-time travel bound under explicit timing and held-error budgets.
+
+The known mathematical techniques are the means. The contribution to evaluate
+is a complete, inspectable chain whose final assumptions and physical meanings
+remain visible. Say what that chain contains rather than implying that using
+Lean makes an otherwise routine controller novel.
+
+Three concrete contribution statements are supportable:
+  (a) An explicit held execution, continuity and interior-ODE proof, and a
+      region-wide all-time travel theorem that includes an actively clipped
+      initial state. The theorem has a positive disturbance budget and arbitrary
+      sampling sequences in the stated interval.
+  (b) Reusable exact certificate and composition interfaces: rational interval
+      matrix positivity; common-energy convex enclosure; and elapsed-time-scaled
+      quadratic perturbation. Their benefit must be shown by reuse and evaluation.
+  (c) A reproducible artifact binding input data, generated witnesses, source,
+      semantic bridges, and axiom audits to the final theorem, with a measured
+      account of conservatism and clearly scoped application corollaries.
+
+Do not claim: first formal control proof; first formal sampled-data safety;
+first rational proof certificate; a new saturation criterion; an optimal safe
+region; a general nonlinear-control verifier; physical acceptance; or 464 new
+research theorems. Also avoid an unsupported claim that no existing framework
+can express this exact benchmark. Our search establishes close overlap, not
+the absence of all prior equivalent instances.
+
+2. WHY A REVIEWER COULD REJECT THIS VERSION
+
+R1. "This is a simple three-state LTI plant with clipping, checked by textbook
+    inequalities. Why is the formalization scientifically interesting?"
+Response needed: identify the reusable interfaces and the semantic obligations
+that were easy to get wrong, then measure them. List concrete outcomes: exact
+exponential remainder retained, same gain held across the segment, positive
+error budget valid down to zero elapsed time, continuous clock-assembled
+execution, and a clipped witness in the SAME invariant set. Do not inflate
+these obligations into new control theory.
+
+R2. "KeYmaera and existing Lean/SOS projects already do the hard parts."
+Response needed: compare contracts, representations, and assumptions explicitly.
+The Lean ecosystem integration and a compact certificate format may be useful;
+a language port alone may not justify a full research paper. A small, well
+evaluated case study is more credible than a broad framework claim here.
+
+R3. "The example is hand picked; the constants are arbitrary and conservative."
+Response needed: a same-plant study varying H, sector range, partitioning, and
+error budget while preserving the full invariant-set constraints. Explain why
+P was selected and which relaxation limits the result. Show failures as well
+as successes. Merely adding more unrelated elementary plants will not fix this.
+
+R4. "The physical relevance is undefined."
+Response needed: checked dimensional scaling, an explicit engineering checklist
+for when the model applies, and sensor-error corollaries with honest budgets.
+No specific hardware is required for an academic case study, but an assumed
+time constant, acceleration-command scale, and initial-set geometry must have
+clear meanings. Scaling the same theorem is not an independent benchmark or
+parameter-uncertainty proof. A held command-channel error is not every load force.
+
+R5. "The evaluation compares different goals and toolchains."
+Response needed: treat the existing double-integrator SOS experiment as
+shared-witness interoperability, not evidence of superiority for this travel
+problem. A search failure in two configurations says nothing about infeasibility.
+Do not compare a single polynomial replay time with the whole project build.
+
+R6. "The paper reads like a development diary."
+Response needed: remove the separate matrix conjecture, old nominal P, two-state
+rounding/inactive-clipping detour, 26-step recovery episode, and detailed baseline
+catalog from the main story. They may remain in the repository or supplement.
+Replace repeated statements that novelty remains under review with one accurate
+contribution paragraph and one limitations section. The submission should make
+a modest affirmative claim, not ask reviewers to discover the claim for us.
+
+3. CLOSEST PRIMARY PRIOR ART
+
+[P1] Hellwig, Schafer, Qian, Platzer, Althoff, From Zonotopes to Proof
+Certificates: A Formal Pipeline for Safe Control Envelopes, iFM 2025,
+proceedings 2026, pp. 248-267. Primary full paper inspected.
+https://logic.kastel.kit.edu/ap/pub/zonotope-proofs.pdf
+https://doi.org/10.1007/978-3-032-10794-7_13
+This is the closest methodological comparator. It connects numerical witnesses
+to KeYmaera X proofs, and separates one-step invariance, within-step safety, and
+control admissibility. Its displayed system uses a fixed sample period and a
+control envelope; our target is a specified clipped controller under variable
+sampling with a quadratic ellipsoid. Its Taylor-model/zonotope machinery is
+broader than our explicit single-exponential enclosure. We have not executed
+their artifact or established a performance/generalization advantage over it.
+
+[P2] Arechiga, Loos, Platzer, Krogh, Using Theorem Provers to Guarantee
+Closed-Loop System Properties, ACC 2012, DOI 10.1109/ACC.2012.6315388.
+https://logic.kastel.kit.edu/ap/pub/TPgenloop.pdf
+Primary full paper inspected. It already treats nondeterministic held updates,
+sampling variation, and continuous closed-loop safety through theorem proving.
+Jitter and a model-to-closed-loop guarantee are established concepts. Use this
+to frame the problem, not as an unexecuted tool-performance comparison.
+
+[P3] Doll and Shames, Foundations of Machine-Checked Control Theory in Lean,
+arXiv:2607.19727v1. Primary paper inspected.
+https://arxiv.org/html/2607.19727v1
+Lyapunov and small-gain foundations are already formalized in Lean, with a
+framework spanning continuous, discrete, and hybrid settings. Our exact held
+instance and producer interface should be positioned as complementary. State
+whether the artifact reuses their library; currently it does not depend on it.
+
+[P4] leanprover/sos and lean-matrix-sos. Primary repositories inspected;
+the local baseline SOS frozen witness was executed, MatrixSOS was not built.
+https://github.com/leanprover/sos
+https://github.com/selpoG/lean-matrix-sos
+Rational certificate replay and interval matrix positivity are already present.
+Our Bernstein test is sufficient and may reject a positive polynomial; MatrixSOS
+has a stronger general interval characterization. The contribution is neither
+new positivity mathematics nor verified numerical search.
+
+[P5] Palmeira et al., Sampled-data control under magnitude and rate saturating
+actuators, International Journal of Robust and Nonlinear Control 26 (2016),
+3232-3252. Publisher abstract inspected; their numerical experiments not replayed.
+https://onlinelibrary.wiley.com/doi/10.1002/rnc.3503
+Actuator dynamics, saturation sectors, quadratic/functional certificates, and
+aperiodic sampling have established control-theoretic treatments. Our normalized
+lag application is deliberately simpler. A control-theory venue would need a
+substantial new design/performance result beyond this formal composition.
+
+Optional nearby background, not a required new bibliography branch: CESAR
+already synthesizes provably safe control envelopes for hybrid systems. Its
+objective is controller-envelope synthesis rather than checking this fixed
+clipped controller. Primary author paper and publisher metadata inspected.
+https://www.cs.cmu.edu/~jlaurent/pdf/papers/tacas24-cesar.pdf
+https://doi.org/10.1007/978-3-031-57246-3_9
+
+4. MINIMUM EVALUATION WORTH DOING NOW
+
+E1. SAME-PLANT CONSERVATISM TABLE — highest priority; parent owns execution.
+Keep the saturated lag model and explicit final safety specification fixed.
+Record P, c, H, kappa, R, travel L, response C, Young eta, and error budget.
+For every variant, check BOTH geometric requirements and the disturbance
+budget; an improved vertex interval is not automatically an improved travel
+theorem. Distinguish a producer's exact witness success from a full Lean replay
+and from numerical diagnostics.
+
+Use a small justified grid, not an opaque optimization sweep. Useful contrasts:
+  * one interval versus finer Bernstein partitions;
+  * broad kappa=1/4 sector versus a tighter sector still valid on the SAME region;
+  * crude norm response bound versus the checked C=13 response bound;
+  * trace-based energy bound versus a tighter rational PSD bound, if implemented.
+One revealing ablation is already exact: the coarse response bound
+B=9471/200 cannot certify W=1/100 at R=12, whereas C=13 can. It demonstrates
+that a specific checked refinement enables the stated application budget.
+Numeric sampling of the true exponential can indicate conservatism, but a
+failure-free grid is not a proof of the true maximal H or safe region.
+
+E2. SENSOR/SCALING COROLLARIES — agents are implementing these now.
+For measured z+error before clipping, use clamp nonexpansiveness and the actual
+gain to bound the resulting held command error. Prove the budget for the actual
+new recurrence, rather than vaguely declaring all errors interchangeable.
+Ideal nearest-grid rounding is a useful mathematical instance; finite-width
+evaluation, overflow, or hardware ADC behavior remain separate. Verify an
+actively clipped state remains admitted under the new theorem.
+Physical scaling should give algebraic conditions and units for arbitrary
+positive scales. Two illustrative scale choices help interpretation but are
+not measured hardware or two independent dynamical benchmarks.
+
+E3. FOCUSED REPLAY AND CLAIM MAP — feasible this turn.
+Freeze and replay the final source including the added corollaries. Retain
+the previous 464-declaration checkpoint. Give a table mapping each paper claim
+to a public theorem and its assumptions. Report the main travel dependency
+closure separately from the repository's exploratory theorem count, if easy.
+Existing mutation checks are useful; one bridge-level mutation of a feedback
+coefficient with the old generated transition would be a particularly clear
+demonstration that the semantic identity is checked. Mutation rejection is
+artifact testing, not an additional formal theorem.
+
+E4. MATCHED COMPARISON — useful next, bounded scope this turn if cheap.
+Translate one or all FOUR travel residuals, with identical P,c,H, into frozen
+SOS witnesses using the installed comparison toolchain. Each cubic Bernstein
+matrix residual converts into weighted rational squares of state polynomials.
+Record source/certificate size and fresh-process replay time with the same
+import/audit boundary. This is shared-witness interoperability, not independent
+discovery or a complete second proof of travel safety. If it is not run, leave
+the existing double-integrator comparison in the supplement and say why it does
+not evaluate the new application. Do not force a rushed KeYmaera port.
+
+E5. ONE EXPLANATORY FIGURE — already substantially present.
+Show the admitted active-clipping trajectory with command, travel envelope,
+and energy. Caption it as an illustration, since the theorem quantifies all
+admitted sequences. A second figure should show the certified budget frontier
+or ablation, not another attractive simulation of the same easy trajectory.
+
+5. WHAT REALLY STRENGTHENS THE PAPER
+
+Useful: quantified conservatism; genuine reuse in the sensor-error proof;
+engineering scaling that can be checked by a reader; a stable artifact that
+replays outside its author directory; a precise nearest-prior-work comparison;
+and a short account of the model/proof boundaries exposed by formalization.
+
+Weak substitutes: more helper lemmas, a larger theorem count, unrelated matrix
+identities, wider claims of generality, screenshots of compilation, many random
+simulations, or putting AI assistance itself at the center of the contribution.
+
+For a workshop/case-study paper, a genuinely new general theorem is unnecessary
+if the application, artifact, and lessons are useful. For a stronger full-paper
+claim, require evidence that others can reuse the interface on a meaningful
+new model or specification without recreating most of the proof by hand.
+
+6. PLAUSIBLE PUBLICATION ROUTES — OFFICIAL SCOPES CHECKED
+
+Best current fit to assess: ARCH benchmark/tool/experience paper. The official
+call currently advertises ARCH 2027 online on 2 June 2027, a 1 April 2027
+submission deadline, and papers ideally 3-8 pages. Academic small benchmarks
+are allowed, with clarity, relevance, and verification value central criteria.
+Our artifact could be a benchmark plus verified reference solution if the model
+and scope are well explained. This is a fit judgment, not an acceptance forecast.
+Recheck the live call before making a submission plan.
+https://cps-vo.org/group/ARCH/Call-for-Submissions
+
+Lean/ITP route: an ITP short paper or proof pearl is plausible if the reusable
+formalization architecture is the main technical lesson. The official ITP 2026
+call allowed short papers for ongoing work and requested formalization artifacts.
+That edition is past; no future ITP deadline is asserted here. A regular paper
+needs a stronger significance/reuse argument than the current single case.
+https://itp-conference-2026.github.io/cfp.html
+
+Lean Together is a good source of technical feedback, not equivalent to an
+archival peer-reviewed paper. Its official 2026 page describes an open community
+meeting and abstract-selected talks. That edition is past; no new submission
+window is asserted. A talk can precede a later archival case study.
+https://leanprover-community.github.io/lt2026/
+
+TACAS-style case study is a higher bar. Its official 2026 scope asks for a
+practically important problem, modeling discussion, detailed comparative results,
+and conclusions useful beyond the tool community. The present normalized case
+has not yet demonstrated that practical importance. Artifact evaluation supports
+a paper; it does not replace novelty/significance. No current TACAS deadline is
+asserted and no submission is recommended today.
+https://etaps.org/2026/conferences/tacas/
+
+7. READY/NOT-READY BOUNDARY
+
+Ready now: a defensible checked mathematical application and a reproducible
+reference artifact, with a clear active-saturation safety theorem.
+Not ready now: a general novel control method, a practically validated actuator
+solution, or a submission claiming broad comparative advantage.
+Target for this turn: one focused draft, evaluated same-plant tradeoffs, checked
+sensor/scaling corollaries if they complete, and refreshed immutable evidence.
+Then obtain human domain/framing review before selecting the precise paper type.

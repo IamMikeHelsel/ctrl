@@ -1,0 +1,211 @@
+CONTROLS FEASIBILITY SPIKE — 2026-10-17
+
+Recommendation: pursue one bounded extension in fixed-controller robustness to
+actuator-rate uncertainty. This is a credible engineering/formal-methods increment,
+not evidence of new control theory or a stand-alone publishable breakthrough.
+Technical continuation grade: 4/5. Publication differentiation grade: 2/5 until
+there is a reusable uncertainty interface and a matched comparison. These grades
+are judgments, not estimated acceptance probabilities.
+
+The frozen 43-module/516-declaration application and paper are unchanged. All
+new work is under research/opportunity-assessment/scratch-lag-uncertainty/.
+
+EXACT PROPOSED NEXT THEOREM — NOT YET FULLY ASSEMBLED
+
+Use the SAME fixed feedback request q(z)=-x-3v-2a, clamp magnitude 1, quadratic
+P, region z^T P z <=12, maximum sample duration 1/5, and position envelope 2.
+Let a single unknown constant rate r satisfy 9/10 <= r <= 11/10. On each
+sampling interval [T_n,T_(n+1)), use the actual held command
+  c_n = clamp_1(q(z_n)+e_n)+d_n
+and the plant
+  x'=v, v'=a, a'=r*(c_n-a).
+Assume hmin>0, hmin<=h_n<=1/5, |e_n|+|d_n|<=1/100, and z_0^T P z_0<=12.
+Define the execution by the exact held solution and the existing sampling clock.
+Target conclusion: every t>=0 satisfies z(t)^T P z(t)<=12 and |x(t)|<=2,
+with continuity, sample agreement, and the stated ODE between samples.
+
+No gain depends on the unknown r. Constant unknown rate is the first target.
+The same local certificates may later support r_n chosen independently and held
+on each interval, but neither that trajectory theorem nor continuously varying
+r(t) is proved by this spike. A time-varying rate inside an interval changes the
+solution and cannot be substituted into exp(-r*t).
+
+Physical interpretation uses a FIXED nominal tau0 and command scale U. Normalize
+t=T/tau0 and z=(X/(U*tau0^2), V/(U*tau0), A/U). Then r=tau0/tau_actual, so
+  r in [9/10,11/10] means tau_actual/tau0 in [10/11,10/9].
+This is +/-10% RATE, approximately -9.09%/+11.11% time constant, NOT +/-10% tau.
+The fixed physical request is -X_n/tau0^2-3V_n/tau0-2A_n. Proposed assumptions:
+physical h_n<=tau0/5, error sum<=U/100, normalized initial ellipsoid. Proposed
+position conclusion: |X(T)|<=2*U*tau0^2. The existing PhysicalTravel theorem
+instead uses the true known tau in the gains; it does not imply this robustness.
+No measured actuator, calibration, arbitrary load force, or delay is assumed.
+
+WHAT THE SPIKE ESTABLISHED
+
+1. A useful failed attempt and its cause.
+The old certificate covers all frozen gains alpha in [1/4,1]. Reusing that
+range with r in [9/10,11/10] fails even after lowering the decay margin to1/2:
+2 of12 exact producer checks reject negative LDL pivots. This is not merely
+floating-point noise. At r=9/10, alpha=1/4, the continuous infinitesimal matrix
+D0=-(M^T P+P M) has leading 2x2 determinant -510841/4000000, and
+z=(-1529/2000,-9/4,0) gives z^T D0 z=-4597569/16000000.
+The rational arithmetic is retained in broad-sector-obstruction.json. This is
+an obstruction to that common-P sector condition, NOT a counterexample to the
+actual clipped controller or its travel safety. The artificial low sector gain
+need not occur at that state. Reducing H or refining the h partition cannot
+repair a negative infinitesimal residual for the same P and broad sector.
+
+2. Tightening a true assumption, without shrinking the region or changing gains.
+The existing geometry proves q(z)^2 <= V(z)/2, hence |q(z)|<=sqrt(6) on V<=12.
+Consequently (2/5)*|q(z)|<=1. The scratch Lean theorem tighter_sector proves
+this exact statement. The reusable clamp-sector theorem can therefore use
+alpha in [2/5,1]. Active clipping still occurs at z=(0,0,1), whose request is
+-2 and energy is278/25<12. The valid tighter sector removes spurious models
+introduced by the previous 1/4 lower endpoint.
+
+3. All12 new polynomial vertex inequalities were checked by Lean.
+Use exp(-r*h)=1-r*h+theta*r^2*h^2 with theta in[0,1]. The exact held state is
+  x_h=x+h*v+u*h^2/2+(a-u)*theta*h^2,
+  v_h=v+u*h+(a-u)*(h-theta*r*h^2),
+  a_h=u+(a-u)*(1-r*h+theta*r^2*h^2).
+For u=-alpha*[1,3,2]z this is affine separately in alpha and theta, and quadratic
+in r. Endpoint interpolation for alpha and theta plus degree-two Bernstein
+interpolation over r gives 2*2*3=12 polynomial-in-h matrices. The middle rate
+Bernstein coefficient is generally NOT the actual matrix at the midpoint.
+
+Every one of those12 matrices passes the existing rational producer on [0,1/5]
+with the unchanged P and decay c=3/2. Each emitted source was separately compiled
+against the frozen cached imports, and its certified_decrease closure audited:
+all12 pass, only propext/Classical.choice/Quot.sound. Each certifies
+  V(A_vertex(h)z) <= V(z) - (3/2)*h*||z||^2.
+Evidence: vertex-replay.json, tight-sector/*.lean, *.input.json,
+*.certificate.json, and *.verification.log. The manifest records source hashes.
+This is kernel-checked vertex mathematics; the full12-way plant-to-certificate
+composition is a remaining obligation, not silently assumed complete.
+
+4. A checked analytic bridge and exact budget arithmetic.
+RateEnclosure.lean checks the initial state, exact exponential-to-polynomial
+identity, one common theta for all state components/held inputs, the whole rate
+box side condition, the quadratic Bernstein rate identity, nonnegative weights
+summing to1, the tighter sector and proposed disturbance-budget arithmetic.
+It additionally checks the exact held ODE x'=v, v'=a, a'=r*(u-a).
+No unsafe elaboration shortcut, custom axiom, or admitted proof is used in the
+accepted scratch results. This is still a local bridge, not a global execution.
+
+5. Exact rational response candidates and positive error budget.
+The response to a unit held command divided by elapsed time is
+  [(1/2-theta)*h, theta*r*h, r-theta*r^2*h].
+Its h/theta/r tensor Bernstein coefficients give12 rational vectors. Exact
+SymPy arithmetic verifies each has P-energy <=16; the largest is18289/1250.
+That vector check and reconstruction are untrusted preparation until their
+convex-energy bridge is added to Lean. They are not a sampled approximation.
+With trace(P)=451/10 and c=3/2, use eta=15/902. The invariant budget holds:
+  (1/5 + 1/eta)*16*(1/100)^2 =181/1875 <=90/451 =eta*12.
+This last rational inequality IS separately checked by Lean. Thus there is no
+apparent need to reduce the original .01 held error budget for this interval.
+
+Measurement-error semantics: use the sector for the NOMINAL q(z), then define
+the held effective disturbance
+  w_eff=clamp_1(q(z)+e)-clamp_1(q(z))+d.
+Existing clamp nonexpansiveness gives |w_eff|<=|e|+|d|. Do not instead apply
+the nominal sector claim directly to q(z)+e without checking its new bound.
+The effective-error recurrence must be linked to actual uncertain samples,
+as MeasuredTravel already does for the known-rate model.
+
+Disturbance placement is essential: d above is a command-equivalent error
+INSIDE r*(clamp(q+e)+d-a), exactly the kind of error handled by the original
+known-rate theorem. It is not an additive jerk outside the rate multiplier.
+For the DISTINCT model a'=r*(clamp(q+e)-a)+j, rewrite j as command error j/r.
+If |e|+|j|<=1/100 and r>=9/10, the effective budget is at most1/90.
+Scratch Lean separately checks that scalar bound and that W=1/90 still satisfies
+  (1/5+1/eta)*16*W^2 =724/6075 <=90/451.
+This is conditional budget evidence for an external-jerk variant, not a completed
+proof of that model. Neither interpretation covers a force added directly to v'.
+
+6. Numerical diagnostics are explicitly not proofs.
+Each of five rate intervals used a25-rate,41-time,2-sector-endpoint grid.
+With the valid tighter sector the smallest sampled exact-exponential divided
+energy margins were approximately1.761 on[.9,1.1], .639 on[.8,1.2], and -3.591
+on[.7,1.3]. These are diagnostics only; they neither certify the larger interval
+nor locate the maximal robustness boundary. The broad-sector grid already
+became negative on[.95,1.05], explaining the certificate problem. Grids use h
+down to .0001 and are subject to floating-point cancellation at small h.
+
+REMAINING PROOF / ENGINEERING WORK
+
+* Bind every generated matrix to the exact coefficient expression and add the
+  finite convex-energy composition. The scalar/rate identity is checked but
+  the12 concrete generated identities and final theorem are not connected yet.
+* Prove the response energy bound16 in Lean from its exact tensor coefficients.
+* Define uncertain-rate actual samples/state, then transfer invariance,
+  all-real-time coverage, continuity, and the physical reference-tau0 scaling.
+* Transfer held pre-clamp measurement error via the actual recurrence, with
+  explicit alias-free names for rate, acceleration state, and sector gain.
+* Add statement mutations: change the controller/rate model while retaining old
+  certificates; demonstrate bridge rejection. Preserve a genuine clipped witness.
+* Run an independent complete replay and semantic review of the new chain.
+
+NEXT RESEARCH BLOCK AND STOP CRITERIA
+
+Allocate one focused4–6hour block for the model/12-vertex/response composition,
+global theorem transfer, and independent review. This is an estimate, not a
+promise; it uses the demonstrated exact feasibility and existing abstractions.
+Reserve another block for a meaningful same-specification comparison and one
+second actuator model only after the first block succeeds.
+
+Stop or narrow the claim if the generated identities fail to match the exact
+plant, rate must be known to the controller, the error budget cannot survive the
+full invariant proof, or only an inactive-clipping subregion remains. Do not
+erase the tested interval or quietly weaken the final safety specification to
+make a producer pass. If a general uncertainty interface cannot be reused beyond
+this one closed-form lag, present this as a case-study extension, not a general
+verification framework. If matched prior work already provides the same chain
+with comparable assumptions and checkable artifacts, emphasize interoperability
+or contribute upstream instead of claiming a new method.
+
+REPEATABLE NICHE AND NOVELTY BOUNDARY
+
+A plausible niche is auditable controller contracts: numerical/exact search
+produces finite witnesses; the prover checks uncertainty enclosure, sampling,
+clipping, sensing assumptions and continuous safety for the actual execution.
+Repeated useful work could target calibration intervals, delayed held updates,
+or coupled axes, with one explicit plant and failure case per contract. Merely
+changing numerical constants or porting textbook inequalities is not a durable
+publication program. The present spike shows useful reuse: parameter uncertainty
+reveals a real conservative abstraction, and tightening that abstraction restores
+the original region/timing/error specification without retuning the controller.
+
+Primary related-work checks on2026-10-17:
+
+[1] Oliveira et al., Sampled-Data Control of LPV Systems With Magnitude and Rate
+Saturating Actuators, IEEE Control Systems Letters9(2025),1165–1170,
+DOI10.1109/LCSYS.2025.3580489. Publisher abstract explicitly includes aperiodic
+LPV control, saturation, and a robust design when parameters are unavailable.
+Thus uncertain actuators plus sampling/saturation are established topics.
+https://ieeexplore.ieee.org/document/11037951/
+Question: compare the identical fixed gains, region, timing and disturbance
+specification; does their method give a stronger certificate and can we check
+its witness instead of claiming a competing control-design advance?
+
+[2] Hellwig et al., From Zonotopes to Proof Certificates: A Formal Pipeline for
+Safe Control Envelopes. Primary paper inspected. This already connects numerical
+witnesses with formal continuous safety obligations; parameter/initial-state
+uncertainty and Taylor enclosures are part of the surrounding reachability story.
+https://logic.kastel.kit.edu/ap/pub/zonotope-proofs.pdf
+Question: can the uncertain fixed clipped controller be expressed and replayed
+with equivalent contracts, and what additional manual semantic obligations does
+each pipeline require? No comparative execution was done in this spike.
+
+[3] Palmeira et al., Sampled-data control under magnitude and rate saturating
+actuators, IJ Robust Nonlinear Control26(2016),3232–3252. Existing primary-source
+review in publication/contribution-review.txt already identifies actuator dynamics,
+sector conditions and aperiodic sampling as prior art.
+https://doi.org/10.1002/rnc.3503
+Question: which part of a full implementation-level guarantee remains outside the
+mathematical certificate, and is a checked assumption-transfer interface useful
+to its intended users? Do not equate no machine proof in a paper with novelty of
+its control mathematics.
+
+Reproduction commands and tool boundaries are in scratch README.txt and the
+verification manifests. No dependency installation was needed; numeric search
+used existing NumPy and SymPy caches. Neither frozen sources nor paper were edited.

@@ -1,0 +1,14 @@
+ActualStop.lean — checked scope
+
+The generic delay lemma derives position and velocity upper polynomials from actual continuous state coordinates, x'=v and v'=a in the open delay interval, and an acceleration upper bound on the closed delay interval. It requires no acceleration ODE during delay.
+
+The concrete theorem delayed_actual_first_stop admits delay D in [0,.05], initial position <=.001, initial velocity in [0,.41], and pending acceleration <=.1. The SAME globally continuous state then satisfies the changing-response model on the whole .5 seconds following D, with continuous rate in [8,12] and acceleration target <=-1.2. It proves an earliest velocity zero by D+.5<=.55 and position <=.15 at every time up to that zero. A zero during delay or initially is allowed. The stated .40+/- .01 initial-velocity example is a subset of this generic hypothesis.
+
+Position is relative to the estimated reference. It is not displacement from the unknown true initial position. No lower position boundary, physical parameter identification, friction-brake law, maintained rest, safety-category rating, or behavior after first zero is certified. In this module, the braking ODE itself is assumed for the full post-engagement half-second, including any part after a first zero. EventStop.lean, if successfully completed separately, removes that last requirement with an event guard.
+
+The explicit constant_response_example instantiates the complete contract with initial state (0,.4,0), rate 8, target -1.2, and declared engagement boundary .05. This flow brakes immediately and hence is an allowed faster response; it does not witness a physical .05-second onset lag or achieve the worst engagement box. The class is nonempty, but there is no existence theorem for every rough bounded target signal.
+
+Six theorem closures compiled successfully with only propext, Classical.choice and Quot.sound. Source hash and closure names are in actual-stop-manifest.json. One harmless unused-simp-argument warning remains.
+
+Build from lean-controls:
+ELAN_HOME="$PWD/../.tools/elan" LEAN_PATH="$PWD/../research/adjacent-controls/variable-response" ../.tools/elan/bin/lake env lean --root=../research/adjacent-controls/variable-response -o ../research/adjacent-controls/variable-response/ActualStop.olean ../research/adjacent-controls/variable-response/ActualStop.lean

@@ -1,0 +1,173 @@
+FOCUSED PAPER OUTLINE — 17 October 2026
+
+Working title:
+  Lean-Checked Travel Safety for a Sampled Actuator with Saturation
+Optional subtitle:
+  Exact certificates, bounded held errors, and continuous execution
+
+Audience and scale: a 6-8-page formalization/benchmark case study plus a
+reproducible source artifact. Adapt length and supplementary-material rules
+only after choosing a venue. The existing generic library remains in the
+repository; the paper need not explain every development branch.
+
+THESIS
+
+For one explicit saturated sampled actuator model, an untrusted exact producer
+can supply witnesses that Lean connects all the way to a continuous execution
+and a position bound at every real time. This is a complete application contract
+and reusable formal composition, with measured conservatism. The underlying
+control inequalities and certificate methods are established.
+
+ABSTRACT — about 150-180 words
+
+1. State the modeling challenge in one sentence: endpoint or approximate
+   certificates alone do not state continuous-time safety of a clipped held loop.
+2. State the concrete result: ellipsoid E_P<=12, |u|<=1, H=1/5, positive
+   minimum dwell time, held error budget 1/100, |x(t)|<=2 for all t>=0.
+3. State the exact active witness: z0=(0,0,1) requests -2 and applies -1.
+4. State how it is checked: exact exponential semantics, four polynomial
+   vertices, rational certificates, scaled perturbation, and clock assembly.
+5. Add sensor/physical corollaries only after their final statements compile
+   and are reviewed. Give one measured evaluation outcome when available.
+6. Conclude with scope: a reproducible formal application, not hardware validation.
+Avoid the broad plant catalog, theorem counts, unrelated conjecture, and repeated
+phrases saying the paper's contribution is still being decided.
+
+1. PROBLEM, MODEL, AND CONTRIBUTIONS — about 1 page
+
+Open with the actuator axis and the requested position envelope. Show the
+sampled clipped feedback, the first-order lag ODE, and the location of error.
+One small diagram can distinguish sampled state, clamp, held drive, lag, and
+continuous position. Define command bound versus post-clamp drive bound.
+
+List three concrete contributions: complete exact execution/safety theorem;
+reusable certificate/enclosure/error interfaces; evaluated reproducible artifact.
+Use one paragraph to position these against existing formal control work.
+State normalized units and full-state initial conditions here, not only in a
+closing disclaimer. Explain that a later scaling corollary gives physical units.
+
+2. MAIN SAFETY CONTRACT AND EXECUTION — about 1 page
+
+Display P and S={z:E_P(z)<=12}. State the main theorem with all quantifiers:
+every z0 in S, every h sequence in [hmin,1/5], every admitted held error
+sequence, and every real t>=0. Show the active witness directly after it.
+
+Define samples recursively and the real-time trajectory by its containing
+half-open interval. Summarize the exact solution, initial identity, continuity,
+and ODE on interval interiors. Explain positive dwell time and the boundary
+convention. General ODE uniqueness is not needed for this defined execution
+and is not claimed. Defer routine clock proof algebra to artifact documentation.
+
+3. FROM THE EXACT PLANT TO RATIONAL CERTIFICATES — about 1.5 pages
+
+Explain the held sector gain alpha, fixed from the initial sample. Show the
+single shared exponential e=exp(-s), F0(s,e), and g(s,e). State the proved
+enclosure 1-s<=e<=1-s+s^2 and multi-affine four-vertex interpolation.
+
+Introduce only the certificate facts needed here:
+  P-A(s)^T P A(s)-s*c*I = s*R(s),
+  Bernstein representation of R on each rational partition,
+  rational LDL factors with nonnegative diagonal,
+  common P and positive energy bounds.
+Give the generic vertex-energy implication. Make the untrusted producer and
+checked model-to-transition identity visibly separate obligations.
+
+This is the appropriate place for one compact proof-dependency diagram:
+  exact ODE solution -> enclosure and clamp sector -> four vertex certificates
+    -> nominal segment decrease -> perturbation budget -> segment invariant
+    -> recursive samples and clock coverage -> continuous all-time travel.
+
+4. HELD ERRORS, SENSOR COROLLARY, AND SCALING — about 1.25 pages
+
+Prove the logical step that makes the result work at arbitrarily small offsets:
+  E(gw)<=13*s^2*w^2,
+  Young parameter theta=s*eta,
+  E(next)<= (1-s*eta)E(start)+s*D,
+  D<=eta*R.
+Give exact final rational constants and the explicit s=0 treatment. Avoid
+re-deriving the separate fixed-theta two-state ISS development.
+
+If completed, add the actual pre-clamp sensor-error recurrence and its checked
+conversion to a held command error through nonexpansiveness. State the combined
+budget once. Ideal rounding gets one short corollary with its exact semantics;
+do not call it floating-point or fixed-width verification.
+
+If completed, provide the physical scaling relation, dimensions, resulting
+controller gains, interval bound, travel distance, and initial ellipsoid. Use
+one or two illustrative parameter sets labeled assumptions. They demonstrate
+how to apply the theorem, not calibration or uncertainty robustness.
+
+5. EVALUATION AND REPLAY — about 1.25 pages
+
+Organize around questions, not repository history:
+  Q1. Does the certificate enable the stated clipping/error/travel combination?
+      Exact constants, witness, and one explanatory trajectory figure.
+  Q2. Which relaxations limit the certified budget?
+      Same-plant partition/sector/response/energy-bound study, including failures.
+  Q3. What does replay cost and trust?
+      Frozen source, exact pins, source hashes, fresh project build, axiom audit,
+      producer/bridge rejection tests, and clear cached-dependency timing scope.
+
+Suggested table columns:
+  variant | valid region/sector | H | C | error budget | partition count |
+  certificate size | generated-proof check time | evidence status.
+Every row must identify whether only a witness was produced, Lean accepted it,
+or the complete final model theorem was checked. Keep numerical diagnostics
+visually separate from certified rows. One row must be the exact headline case.
+
+Use a second compact table mapping main claims to theorem names. A global helper
+declaration count belongs in artifact metadata, not the abstract or contribution.
+If the existing SOS comparison is retained, explain that it is a different
+double-integrator instance and only shared-witness interoperability. Prefer a
+matched travel residual if that bounded comparison is completed.
+
+6. RELATED WORK AND LIMITATIONS — about 0.75 page
+
+Lead with the nearest formal safety pipeline, Hellwig et al. [1], then the older
+nondeterministic sampled-control work [2]. Explain representation and contract
+differences, without claiming superiority. Mention Lean control foundations [3]
+and existing rational/SOS and interval matrix-certificate tools [4-5]. Cite
+established sampled saturated actuator analysis [6] for the control ingredients.
+
+Limits: normalized one-axis model; chosen P/controller; conservative sufficient
+conditions; held error assumptions; explicit rather than arbitrary-ODE execution;
+no hardware acceptance or machine arithmetic. Scaling is not parameter uncertainty.
+If sensor-error proof completes, remove the obsolete blanket statement that
+sensor error is absent, while retaining its exact budget/holding restrictions.
+
+7. CLOSING — a short paragraph
+
+State the checked application outcome and what the evaluation taught us.
+Name one concrete next step, such as a calibrated model or same-object external
+comparison. Do not end with a list of unrelated mathematical ambitions.
+
+MOVE OUT OF THE MAIN PAPER
+
+* Order-six matrix conjecture and diagonal/orthogonal/coupled matrix results.
+* Full double-integrator, jerk, and planar derivations and large benchmark catalog.
+* Nominal lag example with the older, different P.
+* Detailed inactive-clipping limitation and 26-step recovery episode.
+* Earlier 248/307 checkpoint history and all old timing tables.
+* Full alternate-tool discovery failure logs and initial setup/namespace failures.
+Preserve these in artifact directories; do not delete useful evidence. The
+semantic lessons can motivate one concise paragraph without retelling the work.
+
+PRIMARY REFERENCES FOR THIS NARRATIVE
+
+[1] Hellwig et al., From Zonotopes to Proof Certificates, iFM 2025/2026.
+https://logic.kastel.kit.edu/ap/pub/zonotope-proofs.pdf
+[2] Arechiga et al., Using Theorem Provers to Guarantee Closed-Loop System
+Properties, ACC 2012. https://logic.kastel.kit.edu/ap/pub/TPgenloop.pdf
+[3] Doll and Shames, Foundations of Machine-Checked Control Theory in Lean.
+https://arxiv.org/abs/2607.19727
+[4] leanprover/sos. https://github.com/leanprover/sos
+[5] lean-matrix-sos. https://github.com/selpoG/lean-matrix-sos
+[6] Palmeira et al., Sampled-data control under magnitude and rate saturating
+actuators. https://doi.org/10.1002/rnc.3503
+
+EDITORIAL ACCEPTANCE CHECK
+
+A reader should be able to state the plant, quantified disturbances, sampling
+assumptions, initial set, travel result, and evidence boundary after the first
+two pages. Every later section should help justify, apply, or evaluate exactly
+that statement. If a paragraph does none of those, move it to the supplement.

@@ -1,0 +1,69 @@
+PAPER FIGURES - 17 OCTOBER 2026
+
+Delivered under publication/recovery-manuscript/images/:
+  carriage-model.png
+  nominal-handoff.png
+  paper_figures.py
+  figure-manifest.json
+
+Both PNGs are 3200 x 1700 pixels, white background, rendered by Manim
+Community v0.22.0. At 6.5-inch full text width this is about 492 pixels/inch.
+Use full text width; shrinking to a single narrow column makes annotations
+too small. The second figure is regenerated from the same model.state and
+model.energy functions as the existing recovery animation, imported through
+a read-only /animation mount. It is not a newly fitted or independently
+integrated numerical model. No existing animation or manuscript source was
+edited. No new packages, accounts, or network services were used.
+
+Suggested Figure 1 caption:
+Normalized one-axis carriage and control structure. The command u drives
+first-order actuator lag, a'=r(u-a); acceleration and velocity determine
+v'=a and x'=v. The backup holds u=-1 until T, then the sampled controller
+uses the current state and holds clip(-x-3v-2a) between updates. Travel
+limits x=+-2 are normalized model constraints. The cartoon is a possible
+interpretation of the model, not a drawing of calibrated hardware.
+
+Suggested Figure 2 caption:
+Nominal trajectory from the Manim explanation: r=1, z(0)=(1,0.5,0),
+backup duration T=1.25, subsequent sample hold h=0.1, and zero errors.
+Orange shows the backup and teal the sampled feedback. Vertical dashed
+lines mark handoff, the red lines mark position limits, and the teal
+horizontal line marks V=12. V drops from 24.475 to about 10.092 at handoff.
+The state is continuous and is not at rest: v(T) is about -0.037 and
+a(T) about -0.713. This floating-point illustration does not establish the
+all-box theorem; the theorem and its assumptions are checked separately.
+
+Scope and visual choices:
+- The nominal plot uses h=.1 to match the existing animation. The interval
+  comparison family elsewhere uses h=.05. Do not describe them as the same
+  experiment or use the image as evidence for the family bounds.
+- The feedback bus represents the state tuple (x,v,a), not three electrical
+  wires tied together. It is schematic software data flow.
+- The controller box describes a time-triggered switch. It is not a claim
+  that a physical brake engages or that v=0 is a stable terminal state.
+- In the diagram r is the normalized actuator rate. No mass, force, motor
+  current, physical distance, sensor architecture, friction, or hard-stop
+  mechanics is inferred from the cartoon.
+- The energy axis is the mathematical quadratic V=z^T P z, not mechanical
+  energy in joules.
+
+Reproduction from workspace root:
+docker run --rm --network none \
+  -v "$PWD/publication/recovery-manuscript/images:/manim" \
+  -v "$PWD/research/adjacent-controls/recovery-animation:/animation:ro" \
+  manimcommunity/manim@sha256:3c3ce944c09d6fa73de59fe1e7a95e334e193ae9c2275d65937054e675f87b03 \
+  manim -s --resolution 3200,1700 --disable_caching \
+  paper_figures.py CarriageModel NominalTrace
+
+Manim writes the two frames below images/media/images/paper_figures/.
+The delivered PNGs are unchanged copies with short filenames. Source and
+PNG hashes, renderer digest, version, and dimensions are in figure-manifest.json.
+
+Validation performed:
+- Renderer exited 0 for both final scenes.
+- Viewed both images; corrected a label collision and controller-box text
+  overflow in the first draft. Viewed the corrected carriage diagram.
+- Both final delivered PNGs were viewed; their hashes are recorded.
+- PNG header dimensions checked as 3200 x 1700.
+- The paper author still needs to check legibility after embedding at the
+  final printed width and verify figure numbering/captions in the PDF.

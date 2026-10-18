@@ -1,0 +1,200 @@
+ERDOS #708 / #128: OPPORTUNITY ASSESSMENT
+17 October 2026; bounded source audit, not a new mathematical result.
+
+Decision
+--------
+These remain research leads, not tractable prize opportunities established by
+our investigation. Downgrade #708 as an independent immediate project: its
+obvious next formalization is already actively under way. For #128 there is a
+specific missing graph-to-scalar bridge in a newer claimed improvement. That
+is a credible bounded formalization experiment, but its full mathematical
+argument still requires review, and neither this bridge nor the improvement
+settles the prize problem. The controls artifact remains our most concrete
+publication project.
+
+Scope of this audit
+-------------------
+Read prior local candidate/discussion/claim captures dated today. Direct web
+requests to the Erdős pages returned 403 in this pass, so their current
+discussion state was not independently refreshed. Retrieved three primary
+proof repositories afresh, inspected their actual Lean endpoints, and read
+the relevant published BCL theorem. No finite graph/divisibility search was
+repeated. No claim, submission, account, purchase or outreach was made.
+
+Fresh source snapshots under sources/:
+  erdos708: dc150fd723184cc4e6f367aac6e7a8c9c7890f34
+    last commit 2026-10-12T00:25:13Z
+    https://github.com/chy4pro/erdos-708-explicit-upper-bounds
+  erdos128: ba85f319ebb33ec2194ef4c2929a12916329e1e7
+    last commit 2026-08-07T17:20:40-07:00
+    https://github.com/aimir/erdos-128-sparse-halves
+  erdos128-extension: 2193a4a06a4ec288a53ae986cdca5c1082abf1bb
+    last commit 2026-09-09T23:38:49+02:00
+    https://github.com/pma1999/erdos-128-sparse-halves
+
+#708: what is actually established in the inspected source
+--------------------------------------------------------
+The reference proposition g_le c is:
+  for every finite A of natural numbers >=2, a maximum M belonging to A,
+  and every natural x, some B subset [x+1,x+M] satisfies
+  |B| <= c |A| and product(A) divides product(B).
+Thus A is nonempty and the interval is positive, with exactly M integers.
+The bounded-cardinality convention avoids the known exact-cardinality wording
+problem in the catalog. It is not a statement about arbitrary integer starts;
+reflection would be needed for negative intervals, and intervals containing
+zero have different trivial divisibility behavior. No such extension was
+checked here.
+https://github.com/chy4pro/erdos-708-explicit-upper-bounds/blob/dc150fd723184cc4e6f367aac6e7a8c9c7890f34/lean/Erdos708/Statement.lean
+
+reference_g_le_12 closes that proposition using Erdos708H97.g_le_12n.
+FinalCheck freezes its expected axiom closure to propext, Classical.choice,
+Quot.sound. Static import traversal found 193 reachable project modules and
+no missing project imports; source screening found no unfinished proof or
+custom axiom in that closure. Historical planning files DO contain sorry,
+but were outside the traced closure. The repository's CI log records successful
+baseline and later incremental runs; I did not independently replay this
+large development or fetch/validate the CI logs. Report this as a source-audited
+and upstream-reported kernel result, not our fresh build.
+https://github.com/chy4pro/erdos-708-explicit-upper-bounds/blob/dc150fd723184cc4e6f367aac6e7a8c9c7890f34/lean/Erdos708/FinalCheck.lean
+https://github.com/chy4pro/erdos-708-explicit-upper-bounds/blob/dc150fd723184cc4e6f367aac6e7a8c9c7890f34/lean/CI_LOG.md
+Local evidence: 708-static-import-closure.json.
+
+The proposed 11n extension is already an active upstream effort. Hinge883 is a
+definition, not a theorem: it asserts the threshold-56501/6400 hinge inequality
+for every real-weight prime-power AtomSystem, every m>=1 and natural x. The
+current endpoint g_le_11n_of_hinge takes that whole proposition as a hypothesis.
+Its standard axiom list does not discharge that hypothesis. Knapsack and
+finite prime-density cards have been implemented; analytic prime-density,
+carrier/rounding layers, window/pointwise estimates and 57 exact scales remain.
+https://github.com/chy4pro/erdos-708-explicit-upper-bounds/blob/dc150fd723184cc4e6f367aac6e7a8c9c7890f34/lean/Erdos708/H883/Statement.lean
+https://github.com/chy4pro/erdos-708-explicit-upper-bounds/blob/dc150fd723184cc4e6f367aac6e7a8c9c7890f34/lean/Erdos708/H883/Bound.lean
+
+Consequence: do not advertise formalizing 11n, its finite certificates, or its
+conditional reduction as an untouched idea. A separately useful analytic
+prime-counting lemma might be possible, but no specific small unclaimed lemma
+was established in this audit. Constant tuning alone also has a barrier:
+the paper claims its hinge inequality fails below threshold 2; the current
+(c+2)n reduction would therefore still stop at 4n even at that ideal threshold.
+I did not independently verify the barrier construction. An attack on 2n
+needs a new argument, not more computation on the present constants.
+https://github.com/chy4pro/erdos-708-explicit-upper-bounds/blob/dc150fd723184cc4e6f367aac6e7a8c9c7890f34/paper/main.tex
+
+#128: two different formal proof scopes
+-------------------------------------
+Sarid's graph-level endpoint proves the 131/5000 = 0.0262 sparse-half bound
+CONDITIONAL on BCLEventual. Its exact extra hypothesis is:
+  there exists N such that every finite triangle-free graph H with >=N vertices
+  has a cut X whose two internal edge counts sum to <= (2/47)|V(H)|^2.
+The proof does remove the largeness requirement by balanced blow-ups. Its
+target half has exactly floor(n/2) vertices. The four-cycle certificate is
+proved inside the package; BCL is not. Axiom reporting only the three standard
+axioms is entirely compatible with this explicit mathematical hypothesis.
+Inspected source, not freshly rebuilt in this pass.
+https://github.com/aimir/erdos-128-sparse-halves/blob/ba85f319ebb33ec2194ef4c2929a12916329e1e7/lean/Erdos128/ModuloBCL.lean
+https://github.com/aimir/erdos-128-sparse-halves/blob/ba85f319ebb33ec2194ef4c2929a12916329e1e7/lean/Erdos128/ExternalInputs.lean
+
+The BCL input is a published mathematical theorem, not a conjecture invented
+to plug the gap. Its original extended abstract states n sufficiently large
+and uses flag-algebra/local-cut machinery. Closing this formal gap means
+formalizing a substantive theorem and its certificate semantics. The existing
+Sarid repository already has rooted-cut expectation and blow-up bridges, so
+proposing those bridges alone would duplicate work. I did not locate a complete
+formal proof of BCL in this bounded search; absence from search is not proof
+that nobody has one.
+https://arxiv.org/abs/2103.14179v1 (25 March 2021)
+https://arxiv.org/html/2103.14179v1
+https://github.com/aimir/erdos-128-sparse-halves/blob/ba85f319ebb33ec2194ef4c2929a12916329e1e7/lean/Erdos128/BCLCertificate/Bridge.lean
+
+A NEWER LEAD: Argudo's 9 September note claims 2587/100000 = 0.02587, still
+above 1/50. It combines a max-cut with deleting edges inside one side, an
+independent-set completion bound extending Razborov, and restoration cost.
+The author explicitly leaves priority and specialist review unsettled.
+His 17 Lean theorems only establish rational scalar identities/inequalities,
+not any graph theorem. The source says graph construction, rounding and BCL
+are unformalized. The same argument's limiting value is about 0.0258691;
+even a hypothetical perfect 1/25 max-cut input does not reach 0.02 by this
+route. Do not present this as an accepted new best theorem on our authority.
+https://github.com/pma1999/erdos-128-sparse-halves/blob/2193a4a06a4ec288a53ae986cdca5c1082abf1bb/outputs/cut-independent.tex
+https://github.com/pma1999/erdos-128-sparse-halves/blob/2193a4a06a4ec288a53ae986cdca5c1082abf1bb/NEXT.md
+
+Actual fresh reproduction: copied Scalar.lean into our separate scalar-replay/
+directory, compiled it with installed Lean4.33.1, audited all 17 declarations,
+and replayed Scalar using that version's leanchecker. Both final commands
+exited zero. Every printed axiom set was exactly propext, Classical.choice,
+Quot.sound. No upstream project olean was reused; bundled Std was trusted.
+The initial leanchecker run resolved default4.35 Std and failed with an
+incompatible header; explicitly selecting4.33.1 in PATH fixed the environment.
+Logs, exact source hash and audit: scalar-replay/verification.json,
+scalar-build.log and scalar-replay.log. This fresh success proves only the
+conditional scalar result. In particular scalar_envelope assumes hcap, hmid,
+hu: the three bounds the missing graph argument must supply.
+https://github.com/pma1999/erdos-128-sparse-halves/blob/2193a4a06a4ec288a53ae986cdca5c1082abf1bb/formal/Scalar.lean
+
+Specific bounded contribution and next experiment
+------------------------------------------------
+Best candidate within these two leads: formalize the cut/deletion/completion
+composition behind 0.02587, reusing existing rounding and blow-up APIs. This
+is not claimed implemented in the inspected repositories. It is a formalization
+gap, not our mathematical discovery and not globally certified unclaimed work.
+
+First bounded milestone: for an arbitrary supplied cut X,Y and completion
+envelope f, prove the two actual graph-profile bounds
+  beta_*(G) <= c^2 j,
+  beta_*(G) <= f(1-1/(2c)) + q   when c>=3/4,
+where c=n/(2|Y|), q=e(X)/n^2, j=e(Y)/n^2, |X|<=|Y|.
+The second bound must construct G with X-internal edges removed, preserve
+triangle-freeness, lift a fractional half back, and bound restoration by q.
+Then derive (1+c^2)beta_* <= c^2(I+f(...)) from q+j<=I.
+No graph result may be hidden as an axiom. Initially make the completion
+theorem explicit; subsequently prove its graph construction (the longer
+Razborov Case 2), not just its polynomial identity. This gives a concrete
+interface and one meaningful checkpoint before committing to the full chain.
+
+Success condition for the first block: this graph-level composition compiles
+with stated hypotheses, and a precise list of remaining completion lemmas is
+small enough to plan. Final useful outcome would be a theorem about EVERY
+finite triangle-free graph conditional only on the independently stated BCL
+theorem, with the 0.02587 conclusion and exact floor convention. Removing BCL
+is a separate, larger project. A reusable graph deletion/fractional-profile
+library plus the completed chain could support a formalization contribution;
+one glue lemma alone is unlikely to support a strong standalone paper.
+
+Kill criteria: stop if the graph extension already exists, its claimed analytic
+completion step fails review, or a short inspection reveals a large missing
+combinatorics library exceeding the intended block. Do not continue by putting
+the hard graph claim into an assumption and calling the result complete. For
+new mathematics, stop constant optimization once it reproduces the known
+route ceiling; a relation between optimal-cut imbalance and edge density is
+a speculative new ingredient, not an established attainable target.
+
+Economics and the niche
+----------------------
+Yes, reliable translation from actual mathematical/engineering semantics to
+kernel-checked certificates is specialized work. The scarce part is selecting
+the right theorem, supplying the missing bridge and validating scope/novelty;
+the repositories above demonstrate substantial competition in automated proof
+production. A niche does not by itself establish buyer demand or income.
+
+Neither partial #708 nor #128 milestone qualifies for the original full-problem
+prize on the evidence found. The historical displays are only $100 and $250;
+current payability remains unverified. Even at certainty of payment, $250 for
+100 hours is $2.50/hour before compute; this arithmetic is an illustration,
+not an estimate of completion time or success probability. Expected prize
+income cannot responsibly be projected without those unknowns. Current
+formalization platforms also impose priority, scope and payment conditions;
+some reject first Lean formalizations of already-proved mathematics.
+See ../prize-problems/formalization-bounty-screen.txt for current primary rules.
+
+Treat prizes as an occasional upside. Publications, reusable formal libraries,
+and engineering credibility are the realistic outputs to optimize. Paid
+verification work may be a possible business route, but no customer or price
+has been validated here. For this user, controls semantics and certificate
+infrastructure use existing robotics expertise more directly than a race on
+small historical Erdős rewards. No numerical probability of a research success
+or repeatable income is justified by this audit.
+
+Assessment grades (judgment, not probabilities): #708 independent near-term
+contribution C; #128 graph-bridge experiment B-; either original prize as an
+income plan D. Confidence high on the inspected proof-scope distinctions,
+moderate on novelty screening, low on any claim that the full problems are
+within reach.

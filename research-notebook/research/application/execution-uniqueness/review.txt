@@ -1,0 +1,54 @@
+Independent semantic review of the uncertainty ablations, producer replay, and manuscript
+Date: 2026-10-17
+Scope: read-only review; no Lean sources changed and no full project check rerun.
+
+Verdict
+No blocking mathematical or claim-fidelity issue found in the reviewed snapshot. The normalized and physical execution contracts are not vacuous wrappers: they impose continuity, an initial value, and each trajectory's OWN sampled-feedback ODE, rather than equality to the analytic construction. Existence and uniqueness are proved separately. This review does not establish novelty, physical validity, or completeness of every possible software negative test.
+
+1. Exact sector obstruction
+Independently recomputed with rational SymPy arithmetic:
+  v^T[-(PA+A^TP)]v = -4597569/16000000,
+  r=9/10, alpha=1/4, v=(-1529/2000,-9/4,0).
+The Lean generator matches the vector field at the initial sample; its negative quadratic value refutes a nonnegative common dissipation margin for this P over the independent broad-sector family. It does NOT exhibit failure of the actual saturated feedback. In fact V(v)=1733564179/10000000 and k(v)=15029/2000; the witness is outside V<=12, and alpha=1/4 is impossible for nominal clipped feedback within that region since |k|<=sqrt(6)<4. Source and manuscript explicitly preserve this distinction. No fix required.
+
+2. Response ablation
+Independent exact evaluation of the 12 endpoint/control vectors (three rate Bernstein coefficients, two times, two remainder endpoints) gives squared norms:
+  rate coefficient0: 81/100,81/100,41/50,146761/250000;
+  rate coefficient1: 1,1,101/100,173301/250000;
+  rate coefficient2: 121/100,121/100,61/50,198641/250000.
+Ordering within each group: (h,theta)=(0,0),(0,1),(1/5,0),(1/5,1).
+Thus max=61/50, attained by (1/10,0,11/10). Convex interpolation supplies a norm upper bound for the full response enclosure, and trace(P)*(61/50)=27511/500. This is a correct arithmetic diagnostic. Lean's UncertaintyScope checks the budget comparisons; it does not contain a formal coarse norm theorem. Manuscript lines193-204 already say so. Retain that qualification; do not relabel the whole coarse-bound derivation as Lean checked.
+Exact budget values:
+  coarse, W=1/100: D=4979491/15000000 > 90/451;
+  direct, W=1/100: D=181/1875 < 90/451;
+  direct, W=1/90: D=724/6075 < 90/451.
+The displayed decimal table agrees. Failure of the coarse sufficient inequality is not plant unsafety or proof of optimality; current wording is correct.
+
+3. Regeneration and model-boundary tests
+Read derive() and the general producer. Its F-g*alpha*K equals the checked polynomial held solution, with the same P, fixed K=(1,3,2), rate[.9,1.1], sector[.4,1], theta[0,1], time[0,.2], margin1.5. The degree-two Bernstein conversion is correct, including its middle coefficient. The installed-source comparison plus independently compiled vertex_identity supplies the model connection; untrusted derivation alone would not.
+Current uncertainty-artifact/verification.json is passed: 12 regenerated modules, 216 printed theorem axiom closures, no dependencies beyond propext/Classical.choice/Quot.sound. All 12 installed source hashes and the specification, bridge, and deriver hashes match the report at review time.
+Read both negative logs. Midpoint replacement fails at vertex_identity line227 (also at interpolation line288); deleting r from the vector field fails at heldSegment_ode line149. These are meaningful failures of changed models paired with old proofs. They are not verified unsafe-model counterexamples, as both script and manuscript correctly state.
+Limits: this script freshly checks the generated files but reuses imported compiled modules; by itself it is not a complete fresh-source replay. It is specialized to this fixed benchmark, with hard-coded dimension/degrees/endpoints and assertions, not a general malformed-model input validator. The descriptive JSON 'model' string is metadata, not a parsed/formal semantics definition. None of these limits invalidate the frozen benchmark checks. The aggregate verifier separately checks/hashes the full project and was observed verified at830 theorem declarations during this review.
+
+4. Manuscript against the actual contracts
+No mismatch found in the reviewed main.tex:
+- r is one fixed unknown value, not time varying or sample varying.
+- All three state coordinates are continuous, including switches. Interior derivatives are pointwise classical derivatives; no derivative at a switch is required.
+- Feedback uses f(t_n) itself. h,e,d are prescribed sequences; uniqueness compares the SAME sequences and does not claim state-dependent quantizer uniqueness.
+- Combined error budget is |e_n|+|d_n|<=.01, not .01 per channel. Post-clamp d is inside r(u-a); an outside-rate jerk is excluded from this contract.
+- Existence and correspondence need positive dwell and r!=0; the narrower physical theorem uses positive tau,tau0,U. The uncertainty box, ellipsoid, upper dwell bound and error budget are safety hypotheses, not hidden existence hypotheses.
+- Manuscript's arbitrary-execution energy invariant is a valid direct composition of ExecutionUniqueness.execution_eq_state with UncertainTravel.state_invariant; it is not a separately named theorem in ExecutionUniqueness. Travel is directly exposed there. The weaker .01 budget follows from the formal1/90 result.
+- Physical controller uses nominal tau0 while dynamics use actual tau. Its normalization and own-sample feedback commute as proved. Rate[.9,1.1] means tau/tau0 in[10/11,10/9]. The illustrative4cm,20ms,.02m/s^2 figures are correct and labeled illustrative.
+- Active clipping example and position-only initial-condition warning are accurately limited. The energy decrease is relative to the sampled initial state, not pairwise monotonicity between interior times.
+- No novelty or general synthesis claim is inferred from proof counts. Hardware, delay, varying lag, nonheld disturbances and uncertain quantizer execution are excluded.
+
+Release gate / minor suggested clarification
+main.tex line213 says the final verification manifest and fresh-source replay accompany this draft. Before packaging, ensure the fresh replay is for the NEW63-module/830-theorem snapshot, not the older uncertainty snapshot. Regeneration alone does not fulfill that sentence. Optional reproducibility improvement: retain the 12-value coarse norm diagnostic above or its short exact script so the unformalized diagnostic is easy to replay. No source/theorem change requested.
+
+Reviewed source SHA256
+UncertaintyScope.lean df93ee5609994ce17967d8bcb42eaef9b64db88efcc18a93ced4fd7b3ee06a6f
+verify_uncertainty_artifact.py 7165769afb0fcbf0336d0ee978468d8c2475b083a3ef31b986d51f20cd3133ea
+benchmarks/uncertain-lag.json 2d3903a22d1744df100f3f87005b26500b6e622e1599e16689343e8088c736f5
+ExecutionUniqueness.lean 06e8c5882c41f015942b39410fb0a4bf380a471f9358a7d8554728e23708d2c7
+PhysicalExecutionUniqueness.lean b229aebac50e973aa5dd782ca9bad9fb480047ec83d88c3ed16e8e444944d07d
+publication/robust-manuscript/main.tex e98abf3fecc9154f7e05422cddf3dcd46d70fb443e116f886f5da74c624083c1

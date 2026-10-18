@@ -1,0 +1,105 @@
+Independent review: exact interval certificate producer and semantic boundary
+============================================================================
+Reviewed implementations:
+  lean-controls/scripts/generate_interval_certificate.py
+  lean-controls/LeanControls/BernsteinCertificate.lean
+Tests owned by reviewer:
+  lean-controls/scripts/test_certificate_producer.py
+Additional checked limitation:
+  lean-controls/LeanControls/SaturationBoundary.lean
+
+Disposition
+-----------
+The certificate architecture is mathematically sound in the reviewed scope. It has a deliberate untrusted producer / checked Lean proof boundary. The producer's successful exit does not establish a verified theorem. Its CLI correctly reports "UNVERIFIED: run Lean". Exact rational arithmetic and successful Python reconstruction are useful preparation, not replacements for Lean checking plus an axiom audit.
+
+One substantive semantic issue was found and fixed during review: the original producer checked P symmetric but not positive definite. The unstable scalar transition A(h)=1+h with P=-1 and c=1 passed because the signed energy -x^2 decreases. The original emitted decrease statement was true; interpreting it as a Lyapunov stability certificate would have been false. The updated producer rejects non-positive LDL pivots of P, emits positive lower/upper constants, and produces checked LDL proofs of P-lower*I PSD and upper*I-P PSD. The negative-P regression now passes.
+
+A second substantive limitation was proved, not merely suspected: the current full rounded-feedback invariant budget forces clipping to be inactive. This affects scope/novelty, not correctness of the proved safety theorem. See the separate section below.
+
+Mathematical inspection
+-----------------------
+1. The normalized interval map h=a+(b-a)t is correct. The Lean theorem requires a<b and derives 0<=t<=1 from a<=h<=b. There is no sampled-grid substitution for an all-interval conclusion.
+2. Bernstein weights are nonnegative throughout [0,1]. Positive-semidefinite coefficient matrices therefore imply a PSD combination. Their partition-of-unity identity is proved separately but is not needed merely to establish nonnegativity.
+3. A rational LDL witness C=L diag(d) L^T with d_i>=0 proves PSD without computing eigenvalues. The producer accepts zero pivots only if all associated residuals vanish, which handles singular PSD coefficients. Negative pivots and zero pivots with nonzero residuals fail closed.
+4. The producer's power-to-Bernstein conversion uses sum_{k<=j} power[k] choose(j,k)/choose(degree,k), the correct conversion formula. The resulting exact matrix polynomial identity is regenerated and checked by Lean.
+5. The divided residual is ((P-A(h)^T P A(h))/h)-cI. A(0)=I makes the symbolic division polynomial; the actual Lean residual identity multiplies back by h and holds for all real h, including h=0. The interval starts nonnegative so h times a PSD residual is PSD.
+6. The Lean step_decrease statement connects the residual matrix inequality to the exact transition used in the theorem. The coordinate norm is the sum of squares and energy is x^T P x. No transpose/dimension mismatch was found.
+7. The updated lower/upper matrix witnesses support real norm-energy bounds. The contraction and jitter statements explicitly track the upper energy constant. A jitter statement with hmin=0 only gives the stated nonexpansion bound; it is not a positive exponential-rate theorem.
+8. Positive Bernstein coefficients are a sufficient certificate, not a complete interval positivity decision procedure. A rejected input may still describe a stable system, or may admit a finer partition/different P/different decay margin. The current comments correctly state this limitation.
+
+Executed adversarial tests
+--------------------------
+Command, from workspace:
+  .tools/research-python/bin/python lean-controls/scripts/test_certificate_producer.py --lean
+
+Result: all 14 Python test methods passed. Their subcases cover:
+  - Valid exact rational scalar input and expected endpoint coefficients.
+  - The negative-energy unstable example, now rejected.
+  - Singular P rejection.
+  - Floating, boolean, expression, zero-denominator and malformed rational inputs.
+  - Non-square/mismatched matrix shapes and nonsymmetric P.
+  - Empty, singleton, decreasing, repeated and negative-start partitions.
+  - Nonpositive or nonexact decay margins.
+  - Missing A(0)=I.
+  - Negative interval residual examples.
+  - Negative LDL pivots and zero pivots with nonzero residuals.
+  - Valid singular PSD LDL witnesses.
+  - Namespace injection strings.
+  - CLI generation status explicitly unverified.
+
+Three Lean boundary checks also passed:
+  - Valid generated scalar proof: accepted by Lean.
+  - A residual coefficient changed from +1 to -1 with the old LDL witness: rejected by Lean.
+  - The transition changed from 1-h to 1+h with the old certificate: rejected by Lean.
+
+These are meaningful corruption tests of the trusted boundary. They do not exhaustively verify the Python producer, nor is exhaustive verification of that producer needed for theorem soundness. Each generated theorem still needs successful Lean checking and its dependencies audited.
+
+Implementation limitations and improvement suggestions
+-----------------------------------------------------
+No remaining mathematical soundness error was found in the reviewed implementation. The following are nonblocking engineering limitations:
+  - The CLI status is explicit, but the certificate sidecar does not itself carry an unverified/verified state. Add a state field to prevent consumers treating JSON witness generation as completed verification.
+  - Malformed/missing top-level keys may raise KeyError/TypeError rather than a friendly schema error. This rejects the request, rather than admitting an invalid certificate, but diagnostics could improve.
+  - A failed generation leaves any previous output path untouched. Automation must check the producer's exit status and bind subsequent checking to the newly generated source/input digests; it must not treat a stale artifact as this run's result.
+  - The JSON source digest records the parsed model input; a final verification manifest should also include generated Lean source hash, Lean/mathlib revision, checked declaration names, axiom results, and exact verification command/exit status.
+  - The proof checks the transition polynomial supplied in JSON. Connecting that polynomial to a physical model, discretization formula, feedback law, or machine implementation remains a separate semantics obligation. Changing the generated transition without changing the certificate fails, but supplying the wrong intended model consistently is not something the kernel can infer.
+
+Formal active-clipping limitation
+--------------------------------
+New checked theorem:
+  LeanControls.SaturationBoundary.budget_forces_clipping_inactive
+
+It assumes exactly the relevant full-budget conditions:
+  theta>0, delta>0, W>=0, U>=0, hmin<=1/2,
+  V(x,v)<=R, 10R<=U^2,
+  qR+b<=R,
+where q=(1+theta)(1-hmin/6), D=5delta/2+W,
+      b=6(1+1/theta)(3D/5)^2.
+It proves the STRICT inequality
+  |control(quantize(delta,x), quantize(delta,v))| < U.
+Thus the rounded request is inside the actuator range, and clipping cannot be active at any sample for which this full certificate applies.
+
+Proof mechanism:
+  - D>0 and b>0 force R>0 and q<1.
+  - hmin<=1/2 gives q>=(11/12)(1+theta), so theta<=1/11.
+  - Therefore theta^{-1}>=11, b>=25D^2, and the budget gives D^2<=R/300.
+  - Sharpen the nominal input inequality to u^2<=37V/4, using the exact nonnegative remainder (13x+v)^2/4.
+  - Rounded input error e satisfies e^2<=D^2.
+  - Weighted Young with parameter 1/20 yields
+      (u+e)^2 <= (21/20)u^2+21e^2 <= (3913/400)R <10R<=U^2.
+
+The standalone clipping_error and pd_quantized_step lemmas remain valid and useful: they do not include the full invariant-budget hypothesis and can handle an actually clipped rounded request. It is the additional sufficient closed-loop budget that excludes clipping. An active-saturation publication claim therefore needs a separate, less conservative argument, such as region-dependent or sector-aware certificates; it cannot be justified by choosing a clever numerical instance of the existing full budget.
+
+Validation:
+  lake build LeanControls.SaturationBoundary: succeeded.
+  #print axioms LeanControls.SaturationBoundary.budget_forces_clipping_inactive:
+    propext, Classical.choice, Quot.sound only.
+  The earlier certificate-design.txt scope paragraph was corrected accordingly.
+
+Reviewed SHA-256 snapshots (implementation may evolve after this review)
+----------------------------------------------------------------------
+  generate_interval_certificate.py:
+    b46462d9f2d459732816455fae55010b4ad8b03aa435dca03e88f63182cd6e01
+  BernsteinCertificate.lean:
+    dc48b69387b257dabe93f13f7c72ebbed7caf26d4303da761a28ebfdcbd3cac3
+  SaturationBoundary.lean:
+    aaeb3d7fd221067c4363c8b26f316bfc41d7077343954039b113471d29eafb51

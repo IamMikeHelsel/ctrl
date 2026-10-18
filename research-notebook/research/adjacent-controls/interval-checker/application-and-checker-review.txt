@@ -1,0 +1,181 @@
+APPLICATION AND INTERVAL-CHECKER REVIEW
+17 October 2026. Independent AI-agent review, not a hardware validation.
+
+Engineering verdict
+This is a plausible low-order benchmark for a single horizontal translation
+axis with an inner acceleration servo. It is currently an idealized model,
+not a demonstrated robot application. The missing link is measured model
+conformance. A new interval checker can improve proof coverage and reuse; it
+cannot supply that link.
+
+A useful application hypothesis is a small stage moving toward a soft travel
+limit when a recovery controller takes over. The theorem handles an outward
+velocity, acceleration dynamics, both position limits and a continuous switch
+into ongoing feedback. These are meaningful properties. It does not show that
+this particular backup is necessary: the direct-feedback comparison is benign.
+
+With the illustrative tau0=.1s and U=2m/s^2, the original initial window is
+X=19.8--20.2mm, V=98--102mm/s, A=-.02--.02m/s^2. Recovery lasts125ms inside a
++/-40mm position envelope. The initial acceleration window and the certainty
+needed to admit a measured state deserve particular attention. No sensor or
+estimator has been shown to resolve that true-state box at command time.
+
+The largest physical gap
+The prefix assumes zero command, measurement, timing and model error, with a
+fixed first-order lag. Real-valued scaling does not remove that assumption.
+A fitted time constant in the allowed interval does not absorb friction,
+gravity/load changes, backlash, flexible modes, delay, gain error, asymmetric
+braking or extra actuator limits. Some effects change the model structure;
+they cannot all be represented by choosing another fixed r.
+
+The actual command is an acceleration reference, not automatically voltage,
+torque, or a motion-profile acceleration limit. Raw torque control generally
+requires a separate mechanical model. A multi-joint manipulator or contact
+problem also needs coupling and geometry that this model does not contain.
+These are engineering judgments about the model, not claims that no machine
+can approximate it.
+
+Minimal path to a physical claim
+1. Identify an axis and the exact drive interface. Measure applied command and
+   timestamped position/velocity/acceleration during safe test motions. Include
+   the intended load, speed, travel and temperature envelope. Check the stop
+   and handoff segments, not only a small nominal tracking input.
+2. Compare the response with tau*A'=u-A. Bound gain, lag, delay and residual
+   over a declared operating domain. A fitted nominal curve and its average
+   error are insufficient. Finite measurements can falsify this model and
+   support identification; they do not prove a universal bound by themselves.
+3. Add a nonzero prefix error/delay margin to the theorem where required.
+   The existing tail error is a held acceleration-command error inside the
+   lag. A varying residual force or noise signal is not automatically covered.
+   If the data require such a signal, state and prove its distinct contract.
+4. Admit the entire estimation-error set into the certified initial region,
+   with measurement age included. Prove the actual switch and sample schedule,
+   clipping order, finite-word errors and inner drive semantics meet the model.
+5. Run a physical demonstration with measured parameters and report predicted
+   versus observed envelopes. Keep that demonstration separate from proof of
+   all admitted executions and from any safety certification claim.
+
+Stop/pivot gate
+If a nonzero residual and state/timing uncertainty cannot fit within a useful
+admitted region, do not market the current result as a robot safety controller.
+Keep it as a transparent formal-methods benchmark, or extend the model. A real
+application story needs one selected axis and a measured error contract; a
+more realistic animation does not change the evidence.
+
+Primary interface checks (accessed 17 October 2026)
+ROS2 control's Kilted documentation supports acceleration references in the
+position/velocity/acceleration interface combination and says desired
+accelerations are forwarded. This establishes an interface concept, not the
+first-order response of actual hardware:
+https://control.ros.org/kilted/doc/ros2_controllers/joint_trajectory_controller/doc/userdoc.html
+Beckhoff's MC_MoveAbsolute exposes acceleration, deceleration and jerk motion
+parameters and monitors positioning. Those parameters do not assert that
+measured physical acceleration follows the ODE used here:
+https://infosys.beckhoff.com/content/1033/tcplclibmc2/458411147.html
+No manufacturer performance data or particular machine was evaluated.
+
+Checker review status
+At the first pass the new checker source was not yet present. No new checker
+theorem is confirmed by the engineering discussion above. A source-specific
+review will be appended when the module is available. Only this review file
+is edited by this reviewer.
+
+DEPENDENCIES AND DOWNSTREAM VALUE
+A coherent bundle has three layers, each with a distinct deliverable.
+
+1. Checked finite prefixes: coefficient enclosures plus a generic interval-step
+   containment theorem and a checked finite trace. This unlocks direct feedback
+   and fixed sequences of several control modes from initial boxes outside an
+   invariant. The recurrence must use its own state-dependent command. A trace
+   that only checks independent coordinates or assumes endpoint containment is
+   insufficient. Preserve correlation in the factored flow where possible;
+   arithmetic soundness does not prevent uselessly wide enclosures.
+2. Continuous handoff: connect each prefix to an actual ODE execution and pass
+   its full terminal state to the existing invariant. This turns finite-prefix
+   checks into all-future position safety under the tail's stated error/timing
+   contract. The reusable handoff work is largely present; new modes still need
+   their execution correspondence. Nothing here automatically permits varying
+   lag, repeated mode selection, or an online safety filter.
+3. Physical conformance: identify a real axis, then add the nonzero command/model
+   residual, initial-state uncertainty and switch-time tolerance its data need.
+   This is the main route from benchmark relevance to application evidence.
+   It depends on the first two layers but is not implied by them.
+
+Best effort/payoff now: finish one generic sound step and one small replayable
+prefix before expanding the family. Then connect the original direct prefix
+and report its matched verification cost. This is reusable proof machinery
+and closes the current comparison gap. Producing many larger selected-box
+certificates first has lower payoff.
+
+Best next application investment: identify the command and measurement error
+contract for one axis before selecting another robustness extension. If the
+measured mismatch is mainly varying residual input, a held-error theorem will
+not be enough. If it is switch latency, a time-uncertain prefix is the relevant
+extension. Do not bundle every possible issue into one paper without this
+selection evidence. Physical data are the dependency that chooses the next
+useful theorem.
+
+CHECKER SOURCE PASS — 17 October 2026
+Reviewed current sources:
+  IntervalChecker.lean SHA256
+  797fa6ca45395e106ed3ad0b87b279b06a16b5d207bd1acd210ba4845fb38168
+  CoefficientBounds.lean SHA256
+  2bbe1729e069807a86630e49506c2e4caa17660f7172f907b9aa898de26f66a7
+The latest checker log prints only propext, Classical.choice and Quot.sound
+for its seven selected closures, including certificate_trace_sound. Earlier
+arithmetic elaboration errors were repaired. This reviewer did not perform a
+fresh build or full named-declaration audit. CoefficientBounds has a produced
+olean; a fresh replay/audit remains an integration responsibility.
+
+No blocking semantic defect was found in the reviewed interfaces.
+- Rational addition, negation, subtraction, four-corner multiplication and
+  monotone clamp have the correct containment direction. Empty intervals are
+  permitted, but membership of an actual real value prevents their use as a
+  false witness. Concrete initial-domain nonemptiness remains a separate gate.
+- heldBox uses x+h*v+C*a+(h^2/2-C)*u, v+B*a+(h-B)*u,
+  and E*a+(1-E)*u. These identities match the exact held solution. They have
+  the same form as the audited Python prototype. Coefficient correlations
+  can be lost conservatively; that can affect tightness, not soundness.
+- commandBox uses the enclosed state's own request and adds e before clamp
+  and d afterwards. The source does not substitute the state of a selected
+  numerical trajectory or assume that its command equals the actual command.
+- certificate_trace_sound requires membership of initial state and errors,
+  exact coefficient membership, and rational inclusion of each computed next
+  box in the supplied next box. Its inclusion direction is correct. Bounds
+  are needed only for steps n<N; the conclusion covers endpoints n<=N. The
+  step condition is a checkable arithmetic obligation, not a safety premise.
+- CoefficientBounds uses polynomial degrees9,8,7 for E,B,C at h=1/20.
+  The shared remainder has correct signs: E=poly+delta,
+  B=poly-delta/r, C=poly+delta/r^2. The bound1e-18 is conservative at
+  |r/20|<=11/200. Positive r in[.9,1.1] justifies the reciprocal algebra.
+
+Precise present scope
+The generic trace theorem is analytic endpoint containment. Its r_n,h_n,e_n,d_n
+can vary by step. That does not prove the physical model has varying lag,
+continuous disturbances or arbitrary timing. The original comparison must
+specialize to one fixed r, positive h=.05 and zero prefix errors. For h/r values
+outside those conditions, the generic expression remains an algebraic function;
+it is not automatically a physical ODE solution. The held-ODE connection needs
+its positivity/nonzero-rate and time assumptions.
+
+The theorem does not yet check the full initial/rate covering, a particular
+trace, terminal energy, interior position, continuous actual-execution
+correspondence, existence or all-future handoff. CoeffMem and rational step
+inclusions must be discharged in the final certificate theorem, not left as
+extra assumptions when claiming the concrete box is safe. The coefficient
+remainder lemma alone also does not instantiate every cell's CoeffMem.
+
+Path-safety trap to avoid
+The generic checker permits post-clamp d, so it does NOT imply |u|<=1. The
+Python whole-hold path argument uses |a|<=1, based on clipped zero-error input
+and initial |a|<=1. Apply it only to the zero-d prefix, or prove a larger
+acceleration bound such as1+D under a stated d bound. Pre-clamp e alone does
+not enlarge the clipping range; post-clamp d does. A generic error-aware
+endpoint checker must not silently inherit the zero-error path invariant.
+
+Final local assessment
+The checker is a useful reusable proof layer and shows no circular safety
+assumption in this source pass. It still needs a checked concrete trace and
+continuous-path/actual-execution bridge. Its completion would strengthen the
+formal comparison, not validate the first-order physical model. The application
+and dependency gates above remain unchanged.

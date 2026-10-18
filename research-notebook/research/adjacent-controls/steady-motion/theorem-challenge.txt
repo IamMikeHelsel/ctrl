@@ -1,0 +1,256 @@
+Independent challenge: steadiness under repeated planning
+17 October 2026
+
+Scope reviewed
+SmoothReplan.lean proves command-level C2 switching and bounded jerk for a finite
+replacement history. It does not prove that the command stops oscillating.
+RobustHold.lean proves a physical invariant position tube for the stated scalar
+lag model. It does not prove exact rest, convergence, or rejection of every
+periodic disturbance. Both results are useful. Neither supports “any arm dead
+steady.” This is a mathematical review, not a neurology claim.
+
+A precise next theorem
+Let p_k be a scalar task target at observation k. Let y_k be its noisy proposal.
+Assume |y_k-p_k| <= epsilon. This is an input contract; ordinary VLA outputs do
+not acquire a deterministic error bound merely by being called predictions.
+Let c be the last committed proposal. A gate updates c to y_k only when
+|y_k-c| > H. It may also require N consecutive proposals beyond the same side.
+Use H >= 2 epsilon for noise rejection and H > 2 epsilon for a finite switch
+budget. Distinguish the candidate target from the executed trajectory.
+
+1. Noise cannot repeatedly change a fixed target.
+If p is constant and c is one observation of p, then |y_k-c| <= 2 epsilon.
+The gate never fires when H >= 2 epsilon. If c is arbitrary at initialization,
+this statement needs |c-p| <= epsilon, or it only holds after the first accepted
+observation. Equality at H is rejected by the strict gate.
+
+2. A persistent separated target is eventually admitted by the decision gate.
+If |p_new-c| > H+epsilon throughout the evidence window, each valid y lies
+beyond H on the same side of c. N consecutive observations therefore trigger
+acceptance by the Nth arrival. This is a decision-gate result. It does not say
+a safe trajectory exists to reach the target. A separate failed motion-admission
+check must not be hidden behind a claim of guaranteed acceptance.
+If observation gaps are at most Ts and total compute/handoff delay is at most
+tau, detection and commitment take at most N*Ts+tau after a change just missed
+an observation. Ts is a maximum inter-arrival time, not an average frequency.
+
+3. True-target variation pays for accepted switches.
+At two successive acceptance indices i<j, the old commitment is y_i and the
+new one is y_j. The gate gives H < |y_j-y_i|. The error contract gives
+|y_j-y_i| <= 2 epsilon + |p_j-p_i|. Thus H-2 epsilon < |p_j-p_i|.
+For M accepted targets, the disjoint intervals between those indices give
+(M-1)*(H-2 epsilon) < total variation of p, when M>=2. With a non-strict
+total-variation bound V, (M-1)*(H-2 epsilon) < V. For M=1 use the trivial
+non-strict bound instead; do not state 0<V when V may be zero.
+A weak version uses <= and covers all M. This bound is independent of how
+many proposals were evaluated. It needs H>2 epsilon to bound switch count.
+This is a stronger claim than a minimum timer. It still permits repeated
+switches if the actual task target has enough variation.
+
+4. Rejected proposals give a useful target error bound.
+For the simple one-sample gate, no update implies |y_k-c| <= H, hence
+|p_k-c| <= H+epsilon. With an N-sample evidence gate, this bound is not true
+while a separated target is awaiting sufficient evidence. Give that pending
+state a latency bound instead. Do not silently reuse the single-sample bound.
+After acceptance, |p_k-c_new| <= epsilon.
+
+5. Bounded target speed gives a useful delay price.
+If |p(t)-p(s)| <= L*|t-s| and execution uses a commitment delayed by at most
+Delta, then the target error can increase by at most L*Delta during the delay.
+This bounds target staleness, not physical tracking error. The latter requires
+a separate dynamics model or a proved tracking-error estimate.
+
+Reserve room to reject or wait safely
+A decision gate cannot delay a safety override unless a fallback reserve covers
+the wait. Suppose remaining decision/actuation delay is Delta, current forward
+speed <= V and forward acceleration <= A throughout that delay. Then extra
+forward travel <= V*Delta + A*Delta^2/2 and terminal speed <= V+A*Delta.
+Add the certified stopping distance from that terminal state. In the current
+lag model, preserve the acceleration coordinate; stopping distance depends on
+it as well as speed. Do not substitute a velocity-only bound without proof.
+If only initial acceleration A0 and jerk bound J are available, the delay
+bounds become V*Delta+A0*Delta^2/2+J*Delta^3/6 for travel,
+V+A0*Delta+J*Delta^2/2 for speed, and A0+J*Delta for acceleration.
+These are one-sided envelopes derived by integration. The initial bounds and
+nonnegative Delta must be stated. They do not cover contact impulses.
+
+Counterexamples the theorem must survive
+A. Bounded jerk can oscillate forever.
+For any A>0 and omega>0, q(t)=A sin(omega*t) has jerk magnitude at most
+A*omega^3. Choosing A*omega^3<=J satisfies a positive jerk limit while motion
+never settles. Even a fixed command can coexist with unmodelled flex motion.
+Therefore command smoothness, low switch count and physical steadiness are
+three separate properties.
+
+B. A minimum wait alone does not make a switch smooth.
+The existing dwell_alone_not_jerk_limited theorem already proves this for an
+acceleration step after any wait. A dwell limit also permits a periodic
+alternation with a period longer than the wait. Deadband and dwell do not
+rule out disturbance-driven mechanical vibration.
+
+C. Intent and artifact may be observationally identical.
+Let y(t)=A sin(omega*t) with 0<A<=epsilon. World 1 has intentional target
+p=y and zero observation error. World 2 has fixed target p=0 and error y.
+Both satisfy |y-p|<=epsilon and present identical observations. A causal
+deterministic controller receives identical histories and must produce the
+same command. It cannot both track p exactly in world 1 and hold zero exactly
+in world 2. Frequency, task intent, force sensing, a plant model, or another
+assumption is needed to distinguish them. Calling one waveform tremor does
+not supply that information.
+
+D. Exact rest cannot be robust to an unknown instantaneous acceleration force.
+At a common state and history in x''=u+d, the same causal command u must act
+in two allowed worlds d=+D and d=-D. For D>0, u+D and u-D cannot both be zero.
+This rules out a universal exact-rest claim under that information pattern.
+It does not rule out disturbance measurement, bounded error, adaptation,
+compliance control, or useful practical suppression.
+
+E. The current holding model has an explicit persistent-error floor.
+At equilibrium, v=a=0 and u=-8*(x-c). Its dynamics require u+w=0, so
+x-c=w/8. A nonzero constant target error w therefore permits a displaced
+equilibrium. Time-varying w can sustain motion. The existing invariant cube
+is a robust tube, not a theorem that the arm stops at c.
+
+Connection to the existing proofs
+For a new reference c_new=c_old+delta, every existing transformed holding
+coordinate changes by -delta at the same physical state. Thus an old cube
+of radius R_old fits a new cube of radius R_new whenever
+R_old+|delta| <= R_new. This is a direct handoff geometry check. A sharper
+check evaluates all three coordinates at the actual switch. It must not
+reset position, velocity, or acceleration.
+A command-level matched splice preserves C2 and the jerk bound. A separate
+physical handoff certificate checks the measured-state uncertainty, delay,
+control authority and reserve. Their composition must identify which signal
+is a commanded position and which signal is an acceleration target.
+
+Recommended scope
+Prove a proposal gate with noise rejection, a finite variation switch budget,
+and a quantified response delay. Show exact counterexamples for a timer-only
+policy and a smooth but oscillatory command. Then connect accepted switches
+to an actual jerk-limited segment and a braking/holding reserve. Compare
+against matched smoothing alone and a timer with the same delay budget.
+Do not call an assumed tracking-error bound a new physical tracking proof.
+Neurology can motivate the architecture; it cannot establish the robot model.
+Novelty is not established by this note.
+
+Sharper variation and detectability results
+For the single-observation gate selected for implementation, let n be the
+number of accepted switches, S the sum of accepted target step magnitudes,
+and V the true-target total variation over the same interval. Include the
+initial commitment as a valid epsilon-observation. The triangle inequality
+and gate give S<=V+2*epsilon*n and H*n<=S. Hence, when H>2*epsilon,
+  n <= V/(H-2*epsilon),
+  S <= H*V/(H-2*epsilon).
+These weak inequalities include zero switches and V=0. They give a useful
+bound on requested target motion. They do not bound the arc length of the
+executed trajectory. That needs trajectory/control properties. The factor
+diverges as H decreases to 2*epsilon, which states a real design tradeoff.
+
+A change relative to the committed estimate is not the same as a true step.
+The guaranteed response condition |p_new-c|>H+epsilon becomes the sufficient
+true-step condition |p_new-p_old|>H+2*epsilon when |c-p_old|<=epsilon.
+Keep these two statements distinct in examples and prose.
+
+There is an observation-level limit even for a more elaborate causal policy.
+For 0<=delta<=2*epsilon, the same reading y=delta/2 is epsilon-consistent with
+true target 0 and with true target delta. Construct two histories that agree
+before the change and have this common reading thereafter: one true target
+remains zero, the other steps to delta. Both obey the error bound. A causal
+gate sees identical observations. A requirement to never respond in the
+first world contradicts a requirement to always respond in the second.
+This is a witness of missing information, not a proof that every small real
+change is undetectable in practice. Additional assumptions can separate them.
+
+Tight examples for the selected scalar gate
+The no-update error H+epsilon is attained by c=0, y=H, p=H+epsilon.
+The gate rejects equality. The true-step guarantee H+2*epsilon cannot be
+lowered for this gate: p_old=0, c=epsilon, p_new=H+2*epsilon,
+y_new=H+epsilon gives |y_new-c|=H and is rejected.
+The variation amplification is a sharp supremum when epsilon>0 and H>2*epsilon.
+Take p0=0, c0=-epsilon, p1=H-2*epsilon+eta, c1=p1+epsilon with eta>0.
+Then V=H-2*epsilon+eta and S=H+eta. Their ratio tends to H/(H-2*epsilon)
+as eta decreases to zero. This is sharpness for this gate, not a claim that
+it is the best possible policy with all possible extra information.
+
+Physical handoff and data-age cautions
+Reference-shift cube inclusion must also check the new physical interval:
+c_new-R_new>=L and c_new+R_new<=U. Radius inflation alone can exceed a travel
+limit. Check command authority again for that new radius.
+For delayed proposals, the error contract must apply at admission time.
+If a stale proposal has model error epsilon_model, age at most Delta, and
+the true target moves at speed at most L, then epsilon_model+L*Delta is an
+error bound at admission. Without a target-speed or prediction-error bound,
+age alone does not supply one. A VLA confidence score is not such a bound.
+The gate argument uses only a triangle inequality and can extend to a metric
+space. Pose control needs a defined distance and consistent translation/
+rotation scales. The extension does not establish dynamics or contact safety.
+
+Source review: CommitmentGate.lean
+Reviewed all 14 theorem statements and proofs after the first compile repair.
+No mathematical defect found. The finite-history premises are valid anchors
+and accepted step lengths; they do not assume the desired variation bound.
+The file does not yet construct an accepted subhistory from the implemented
+history recursion. Its finite-variation theorem is therefore a certificate
+for histories satisfying those two input properties, not that extraction.
+The overlap theorem proves a common-observation witness. It correctly does
+not claim a formal impossibility theorem for arbitrary causal algorithms.
+The source states that the physical tracking transfer is conditional.
+
+The main integration caveat is the boundary after the proposal gate. The
+selected_target_error theorem describes the gate output. If a downstream
+safe-motion check rejects this target and keeps an older one, that retained
+target need not satisfy H+epsilon error. A composed controller must expose
+this case. Safety does not imply task progress.
+
+A useful next composition would put the gated reference directly into the
+actual plant ODE as c(t)=history y c H (sampleCount t). For a constant true
+target and uniformly valid observations, the history theorem makes c(t)=c.
+Then the existing physical hold certificate gives |x-p|<=R+epsilon without
+assuming that final target-relative bound. This would check the interface.
+It would remain a bounded-tube theorem, not an exact-rest or tremor-removal
+result. Adding only a theorem whose ODE already assumes c fixed would add
+little beyond a transparent triangle inequality.
+Reviewed source SHA-256:
+018cf604b59457567c1deadaecc2fa5e7e75d1e7b0b799e7efd6a8427b73b198
+
+Final independent semantic review
+Reviewed the frozen CommitmentGate.lean with 15 public theorem statements and
+QuietHold.lean with one public theorem. No mathematical defect found in the
+stated implications or their composition. The new changed_target_is_proposal
+lemma correctly connects an actual gate change to the proposal and strict
+threshold. It does not claim the still-unformalized accepted-index extraction.
+
+QuietHold puts the time-indexed history inside the actual trajectory ODE.
+It derives that reference is constant, invokes the existing plant invariant,
+and derives |x-p|<=R+epsilon plus the effective-target authority bound. It does
+not assume the final target-relative bound. The reference stays unchanged;
+the feedback command may change with physical state. Nonzero velocity inside
+the tube remains allowed. This is useful interface checking, not exact rest.
+
+Frozen source SHA-256:
+CommitmentGate.lean
+  dff2b250abe0243c9eff4b41782c5b53559a3f4c2f600178f4208b05b8ec5178
+QuietHold.lean
+  e8f705005b1eb9fff692e42c139ea13a2858c58bde4bd3b9ad72d92c0f0ce3a6
+The verification manifest records compilation, axiom audit and kernel replay;
+this independent review is a semantic check and does not replace that replay.
+
+Reviewed index.html and experiment.py. The report keeps target selection,
+physical tube holding and research novelty separate. It states that the old
+55.525 mm radius is a travel-safety example, not precision holding. It exposes
+ignored small intentional motion, delayed drift, and downstream safety rejection.
+The experiment includes no physical model and makes no physical-motion claim.
+Its cadence sensitivity changes the noise frequency as well as sample rate;
+this limitation and dwell aliasing are correctly disclosed.
+
+An independent Fraction-based replay reconstructed the gate from the declared
+truth cases, alternating noise and thresholds. All 12 case/cadence pairs matched
+the saved accepted counts and exact accepted-target and true-target variations.
+All count and variation inequalities held. The gate stayed within H+epsilon of
+the current true target at every sampled decision. This checks the target-layer
+examples only, not floating-point filter accuracy or real-robot behavior.
+
+Verdict: the mathematical and experiment scopes are stated candidly. The next
+substantive gap is physical error under changing targets and finite delays,
+including a useful uncertainty budget and retained stopping reserve. Elementary
+threshold lemmas and proof counts do not establish publication novelty.

@@ -1,0 +1,98 @@
+Rank-four research core: bounded formalization, 2026-10-17
+
+Result
+
+LeanControls/RankFourCore.lean contains eight checked theorem declarations. They
+formalize the local two-block algebra behind the provisional rank-four witness
+argument, directly in six dimensions and with arbitrary outside-support coupling.
+They do not establish the full rank-four exclusion theorem or the order-six
+symmetric-maximizer conjecture.
+
+Exact formal statement
+
+Use J=[[0,1],[-1,0]] and X=[[0,1],[1,0]]. For arbitrary real a,b set
+
+  K=diag(aJ,bJ,0_2),  S=diag(aX,bX,0_2).
+
+For every real 6x6 coefficient matrix A satisfying exactly
+
+  A[0,3]=0 and A[1,2]=0,
+
+Lean proves
+
+  ||L_A(S)||_F^2-||L_A(K)||_F^2
+    = 4a^2(A[0,1]^2+A[1,0]^2)
+      +4b^2(A[2,3]^2+A[3,2]^2) >= 0.
+
+Indices here are zero-based. The two assumptions mean the upper active cross
+block A[{0,1},{2,3}] is diagonal. All other 34 entries of A are unrestricted,
+including both directions of coupling to coordinates 4 and 5. The comparison
+does not assume A symmetric, normal, diagonal, or of rank four.
+
+Lean also checks K^T=-K, S^T=S, S^2=-K^2, and
+
+  ||S||_F^2=||K||_F^2=2(a^2+b^2).
+
+The zero choices of a or b are allowed. When both are zero the result is a true
+zero-witness comparison, not a statement about an amplification quotient. The
+theorem does not divide by a witness norm or assert it equals one.
+
+The conjugated_comparison theorem transports the result through any supplied
+real Q satisfying Q^T Q=I. It constructs Q S Q^T, proves its symmetry and matching
+Frobenius norm, and compares its amplification with Q K Q^T under coefficient
+matrix Q A Q^T. This uses the previously checked orthogonal covariance lemmas.
+
+What this closes and what remains
+
+The finite-matrix algebra, all factors/signs, and the cancellation of arbitrary
+outside-support couplings are now checked. The earlier random construction tests
+are no longer needed as evidence for this exact conditional statement.
+
+The theorem ASSUMES prepared coordinates. It does not prove that a general
+skew witness of rank <=4 can be put in those coordinates jointly with A.
+Remaining bridge:
+1. Produce real orthogonal skew canonical form for a supplied witness, relating
+   its rank to at most two active 2x2 blocks.
+2. Prove a signed 2x2 SVD of the active cross block using two SO(2) rotations.
+   The determinant-one condition preserves J in each active block; an arbitrary
+   O(2) factor can reverse its sign and must be tracked if used instead.
+3. Compose these transformations and invoke conjugated_comparison. Degenerate
+   rank-zero/rank-two witnesses and singular cross blocks require coverage.
+4. Only afterward derive invertibility requirements for a strict 6D singular
+   pair, using even-rank parity, singular-pair attainment, and restricted-adjoint
+   norm equality. Those analytic statements are not part of this file.
+
+Literature check and novelty boundary
+
+The primary Chen–Tian 2015 publisher page confirms the known n<=5 theorem:
+https://doi.org/10.1137/140974031
+Its full proof remained behind access control; the /epdf endpoint redirected to
+the access/abstract page. Thus I cannot establish whether this exact two-block
+identity is explicit there. No access restriction was bypassed.
+
+The freely accessible Chen–Tian 2016 generalized-operator paper explicitly uses
+skew canonical block form, singular-value decomposition, orthogonal invariance,
+and symmetric witness comparison in the proof of Theorem 2.5 (pp. 615 onward).
+Lemma 2.2 also gives the trace-based comparison criterion. This is clear prior
+art for the reduction strategy, although it is not the same two-block theorem.
+https://files.ele-math.com/articles/oam-10-35.pdf
+
+Accordingly, this is a formalized, likely known proof component. Do not advertise
+it as a new matrix theorem. The current open n=6 question concerns arbitrary
+skew witnesses, including full-rank witnesses; it remains untouched globally.
+
+Verification
+
+Command from lean-controls:
+  ELAN_HOME="$PWD/../.tools/elan" ../.tools/elan/bin/lake env lean LeanControls/RankFourCore.lean
+
+Result: exit 0, no warnings. A separate source replay appended #print axioms for
+every theorem. All eight declarations use only propext, Classical.choice, and
+Quot.sound. Raw output: research/rank-four-core-axioms.log.
+
+Source SHA-256:
+  c6ca8dbcf3633c892f28cdcae9c0faf71e8afbf6ebbfea636d647abf85b0c8bb
+
+Aggregate imports and the shared Audit.lean were not modified. Parent may import
+LeanControls.RankFourCore and enumerate its eight theorem declarations in the
+final project audit.

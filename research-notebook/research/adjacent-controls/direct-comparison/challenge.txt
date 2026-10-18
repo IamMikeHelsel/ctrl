@@ -1,0 +1,304 @@
+DIRECT-FEEDBACK COMPARISON — BOUNDED ADVERSARIAL CHALLENGE
+17 October 2026. Independent AI-agent assessment; no human review implied.
+
+Decision
+A direct-feedback certificate is the strongest immediate comparison. The
+current experiment already removes the claim that backup is needed for the
+tested cases. Prove both policies under the same assumptions, then compare
+certified region and verification effort. One more theorem on the same small
+box does not, by itself, make the result a stronger research contribution.
+
+Exact counterexample to the saturation shortcut
+Take r=1 and z0=(1,1/2,0), which is inside B. During u=-1,
+  x(t)=3t/2-t^2/2+exp(-t),
+  v(t)=3/2-t-exp(-t),
+  a(t)=-1+exp(-t).
+Thus the unclipped feedback request is exactly
+  k(t)=t^2/2+3t/2-5/2.
+It first reaches -1 at (sqrt(21)-3)/2, approximately .791288.
+For a .1-period sampled controller, every sample through .7 requests <=-1.
+The direct execution therefore equals the backup through .8. At .8 it requests
+-49/50, so its next command differs from the backup.
+
+Let E=exp(-4/5)>0. The state at .8 is
+  (22/25+E, 7/10-E, -1+E).
+Exact rational expansion gives
+  V = 61323/5000 + (997/625) E + (189/50) E^2 > 12.
+The constant term alone is 12.2646. No exponential approximation is needed.
+Numerical V is approximately 13.7445384.
+
+This refutes the general shortcut "direct feedback remains exactly -1 until
+entry into V<=12." It does NOT refute direct-feedback safety. It is also not
+itself a new controls result. A Lean proof would close an interpretation issue.
+
+Additional diagnostic, not a proof
+Imported the existing experiment.py functions without running main or writing
+results. Evaluated its 24 rate/corner combinations with the analytic held flow.
+At the first sample that requests more than -1:
+  period .05: all 24 have V>12; V range 12.76677--14.37833;
+  period .10: all 24 have V>12; V range 12.20536--14.37833;
+  period .20: 21 of 24 have V>12; V range 11.71345--13.76705.
+The continuous request crosses -1 before entry in all tested combinations.
+These floating-point results do not cover interior states or rates. The exact
+central example above is sufficient to reject the proposed universal shortcut.
+With nonzero post-clamp d during a prefix, even exact initial equality to the
+-1 backup would fail. Match error assumptions explicitly.
+
+Smallest fair formal comparison
+Use the same full B, fixed real r in [.9,1.1], P, position limit and T=5/4.
+For both policies set all prefix command/measurement/disturbance errors to zero.
+Use direct feedback with period 1/20 for its first 25 holds. T then lies on both
+sampling clocks. Backup remains the existing exact -1 command until T.
+At T, both use the same admitted sampled-feedback contract: arbitrary positive
+lower-bounded holds <=1/5 and combined held errors <=1/90. Carry all state
+coordinates through T; do not reset acceleration or velocity.
+
+For direct feedback, prove continuous position safety on [0,T] AND V(f(T))<=12
+for the whole initial box and whole rate interval. Prove correspondence to the
+actual sampled ODE and existence. Then apply the same indefinite-tail result.
+Do not compare a nominal direct prefix with an error-tolerant backup prefix or
+claim robustness from the zero-error experiments. If period 1/10 is used
+instead, either choose a common aligned endpoint, such as T=13/10 and recertify
+both policies, or explicitly compare different clock phases. The 1/20 choice
+reuses the existing backup theorem with no such phase difference.
+
+A direct prefix needs more than the backup endpoint formula. Saturation-release
+times depend on rate and initial state. A checked branch decomposition or a
+sound enclosure of clip is needed. Pointwise affine formulas do not justify
+corner reduction across changing clamp branches. Natural interval propagation
+can overestimate badly through repeated feedback. Failure of that certificate
+method is not a counterexample to safety and must not be presented as one.
+
+Strongest useful comparison within this model
+After the shared-B proof, fix a small family BEFORE comparing methods, for
+example boxes centered at (1,1/2,0), with halfwidths .01*lambda in each axis
+for lambda in {1,2,4,8}. These boxes are nested; all three widths and the domain
+volume are explicit. It is also acceptable to choose a different family for a
+stated application, before seeing which method wins. Do not tune separate
+families in favor of each policy. No claim of a maximal safe set is justified.
+
+Use the same theorem target, available arithmetic, machine, pinned toolchain
+and resource cap. Record:
+- Which full boxes are certified, and their normalized volumes.
+- Path and endpoint bounds actually exported by Lean.
+- Number of state/rate subdivisions and certificate size.
+- Certificate construction, Lean elaboration and kernel replay times separately.
+- Proof-specific manual obligations and new trusted assumptions, if any.
+- Each unsuccessful attempt as timeout, enclosure failure, or actual witness.
+
+Keep empirical peak travel, terminal energy and command variation as secondary
+behavior measures. They cannot establish certified region inclusion. Do not
+use source-line or theorem count as a proxy for verification value. With only
+two policies from this artifact, call this an internal comparison; it is not
+an independent-tool evaluation.
+
+Falsifiable publication gate
+1. Technical pass: the complete direct prefix and both actual-execution
+   compositions replay from fresh sources with only the permitted axioms;
+   all quantifiers and error/timing assumptions match. One floating-point
+   endpoint or an assumed terminal condition fails this gate.
+2. Comparative pass: the fixed region family produces an auditable result in
+   certified coverage or verification cost that a reader can use. A positive
+   or negative result is acceptable. For example, direct control may certify
+   the same/larger region with similar/lower effort; that defeats a backup
+   necessity story and supports a limited method comparison instead.
+3. Interpretation pass: state the concrete finding and its scope. A timeout
+   is not unsafe behavior. A looser enclosure is not a smaller true safe set.
+   More proof lemmas are not new control theory. Preserve the strong current
+   result that direct feedback is benign in the numerical comparison.
+4. External-value gate: before a strong research claim, obtain independent
+   reuse/review or a matched existing-method comparison, or show that a stated
+   realistic assumption changes the verified design. A local animation helps
+   explain the result; it cannot supply this evidence.
+
+Grade judgment, not acceptance probability
+Adding the saturation counterexample and a direct certificate for B alone
+leaves the work around B- as a small case study. A complete matched comparison
+with a reproducible, transferable finding can justify considering B. It need
+not favor backup. More lemmas or a polished animation alone do not justify the
+increase. If both methods certify only the same selected box and no material
+cost or assumption tradeoff is measured, keep the bounded experience-report
+claim and stop escalating the novelty language. A stronger grade needs an
+external-value result, not a claim that the baseline failed when it did not.
+
+Scope of this pass
+Read current recovery manuscript, existing experiment code/results and prior
+experiment review. Used only standard-library analytic-flow calculations plus
+exact Fraction polynomial arithmetic. No proof source, paper, or stored
+experiment result was edited. No full build, new literature search or subagent
+was used. The exact counterexample algebra is independently checked here but
+is not yet claimed as a new kernel-checked theorem by this review.
+
+PROTOTYPE AUDIT ADDENDUM — 17 October 2026
+Reviewed prototype.py SHA256:
+465db892ef77e79f9a232b166117b54483323e5e191a597c93a28de50618cf16
+No soundness defect was found in this bounded source audit.
+
+Analytic basis
+E=exp(-rh), B=int_0^h exp(-rs)ds and C=int_0^h(h-s)exp(-rs)ds
+have series sum_n (-r)^n*h^(n+k)/(n+k)! for k=0,1,2 respectively.
+For 0<=rh<=1 the absolute terms decrease. The partial sum through even n=12
+is an upper bound; adding n=13 gives a lower bound. The endpoint monotonicity
+in r is valid: E decreases, and B/C integrate decreasing exponentials against
+nonnegative weights. The implementation uses lower at the larger rate and
+upper at the smaller rate. It does not infer monotonicity of the full control
+trajectory from monotonicity of these three coefficients.
+
+The update formulas are the exact held solution:
+  a_next=E*a+(1-E)*u,
+  v_next=v+B*a+(h-B)*u,
+  x_next=x+h*v+C*a+(h^2/2-C)*u.
+The sample command uses interval arithmetic on -x-3v-2a and monotone clip.
+This encloses feedback on the actual sampled state. Reusing independent
+coefficient intervals at each step loses fixed-rate correlations, but that
+loss enlarges the enclosure and is conservative.
+
+Tick conversion rounds rational lower/upper endpoints outward. Multiplication
+uses signed floor for its lower bound and signed ceiling for its upper bound;
+this is correct for negative products too. Addition and negation are exact
+on ticks. The Cartesian rational partitions cover all initial states and
+rates, including boundaries. They do not just check original-box corners.
+
+The energy calculation maximizes an exact convex quadratic on the current
+state enclosure box. The exact LDL check proves P positive definite. Taking
+its maximum over the eight enclosure vertices is valid. This is different
+from assuming the nonlinear closed-loop trajectory is affine in its original
+state, which would be false across clip branches.
+
+The whole-hold path bound is also valid. Actual acceleration stays in [-1,1]
+by induction: the initial acceleration is in that range, clipped commands are
+in that range, and the exact actuator response is a convex combination of
+a_start and u. For every s in [0,h], the displacement lies between
+min(0,h*v_start)-h^2/2 and max(0,h*v_start)+h^2/2.
+Outward interval products supply containing endpoints. This argument does not
+require every propagated acceleration enclosure itself to lie in [-1,1].
+
+Independent small checks
+Compared 27 E/B/C rational bounds at r=.9,1,1.1 and h=.05,.1,.2 against 80-digit
+Decimal evaluations. All contained the reference values. Checked 1,000 signed
+interval products against exact Fraction endpoint products. All contained the
+products. These are implementation spot checks, not a formal proof or a replay
+of the full parameter covering. The mathematical reasoning above is the basis
+for judging the algorithm sound; the Python implementation remains trusted.
+
+The latest recorded run uses the matched period 1/20 for 25 steps, with 4^3
+initial cells and 16 rate cells: 1,024 parameter boxes. Its full-box terminal
+energy bound is approximately 11.46322514 and all whole-hold position checks
+pass. The result identifies itself as an exact-rational prototype with no Lean
+replay. That label is correct. The earlier period .1 with 13 steps is a useful
+additional result but has T=1.3, so it is not the same endpoint as the existing
+T=1.25 recovery theorem.
+
+Next technical gates, in order
+1. Prove a reusable Lean containment lemma for one sampled step, including
+   coefficient bounds, monotone clamp and outward arithmetic. Prove the
+   acceleration/path invariant separately. Do not import Python success as an
+   axiom or assume the desired endpoint energy.
+2. Check a small representative trace end to end and record proof size and
+   replay cost before generating all 25,600 box-steps. If interval correlation
+   loss or checker cost dominates, change the enclosure method and disclose
+   that change. Do not treat a failed enclosure as a safety counterexample.
+3. Check the complete closed covering and terminal energy, then relate the
+   recurrence to arbitrary actual sampled ODE executions with existence.
+   Compose the robust tail at the aligned sample T. The current prototype
+   does not yet prove this composition.
+4. Compare matched certified domains and measured verification work. The
+   Python result now makes a broad claim that backup is needed even less
+   credible. A Lean direct-prefix result would improve completeness and
+   honesty, but a grade increase still needs the comparative-value gate above.
+
+FAMILY COMPARISON ADDENDUM — 17 October 2026
+Reviewed family.py/results and the one uniform follow-up refinement.
+Source SHA256:
+  family.py
+  8cf4f040258fd435ae549f44e2d811fcadfa0509cb08e8b85ec262925e2ea8aa
+  family-refined.py
+  a4ed3d38a34ba75c7739e24b859ee50c4d9e4b50ac19fe7fc5af6f65e2fdfac9
+Refined result SHA256:
+  ec6d365654629c067d7d03f9ee8ca88d202e57afc5386e728180d5400346b485
+
+The scripts keep the same nested boxes, rate range, .05 clock, T=1.25,
+zero-error prefix, arithmetic and pass rule for both policies. The backup is
+split into the same 25 segments, although it could use one exact long segment.
+The refinement applies 8^3 state cells and 32 rate cells to both policies and
+all four boxes. This is a uniform follow-up chosen after the coarse result;
+it is correctly labeled as such, not as a preregistered refinement.
+
+Refined terminal energy upper bounds (Python-trusted):
+  lambda       direct         backup
+  1            11.379111      11.086003
+  2            12.035250      11.713111
+  4            13.466509      13.130502
+  8            16.814401      16.610416
+All whole-prefix position enclosures pass. Only the terminal condition fails.
+At this fixed enclosure budget, direct admits lambda1 and backup admits
+lambda2, whose geometric initial volume is eight times as large. This is a
+result about this enclosure method. It is NOT a proven relation between the
+true safe sets, nor an eightfold control-performance improvement. These family
+results have not been checked by Lean.
+
+A bounded point check found no lambda2 counterexample: all eight corners at
+r=.9,1,1.1 have terminal energy below12 for both policies. Direct's maximum is
+11.9331674608; backup's is11.6955872771. Both maxima occur at
+r=.9,z0=(1.02,.52,.02). Thus direct's remaining enclosure excess of .03525
+may be wrapping. These sampled points cannot establish the whole box or rate
+range. No wider search or extra refinement was performed by this reviewer.
+For lambda4, a sampled endpoint gives direct energy13.30693 and backup13.10696;
+for lambda8 the values are16.62032 and16.57612. Those observations concern
+entry by the fixed T only, not violation of position safety. They are numerical
+observations unless separately bounded/proved.
+
+Defensible comparative statement
+"Under the same fixed rational interval propagation scheme and two reported
+partition sizes, the backup prefix has a passing certificate for lambda2;
+the direct prefix remains uncertified by that scheme. No unsafe direct
+trajectory was found in the bounded lambda2 point check."
+Do not replace "uncertified by that scheme" with "cannot recover" or "unsafe."
+Equal partition counts do not mean either method has its best certificate.
+Simple boxes lose feedback correlations for direct control; the backup also
+suffers avoidable wrapping from being split into25 steps. Report both facts.
+The subsecond/coarse and refined generator runtimes are not controller runtime
+or Lean verification cost. Single-run timing differences are weak evidence.
+
+Best next bounded formal target
+For the strongest reusable comparison, the missing generic one-step interval
+containment/checker is the priority: it can turn either policy's trace into a
+checked prefix and expose where bounds are lost. Pilot a small trace before
+committing to the large family. Do not spend the remaining budget generating
+many proof terms without a measured pilot cost.
+
+For a cheaper narrow extension, lambda2 backup may reuse the long-segment
+proof through a NEW initial-corner convexity lemma. Merely widening the current
+whole-box LDL certificate is unlikely to pass: exact-rational estimates using
+its32 rate cells give upper12.89764 with no initial split,12.39738 with2^3
+initial cells, and12.16180 with4^3. By contrast, evaluating the8 initial
+corners separately gives upper11.935924 with32 rate cells (256 checks), or
+11.815787 with64 rate cells. Those estimates use the existing rational
+exponential enclosures and are not Lean results.
+
+To use that shortcut, prove that the held terminal flow is affine in the
+initial state and that its quadratic energy is convex; then prove the closed
+box reduces to its eight vertices. Also generalize the path bound and certify
+the larger initial box. The existing concrete InitialBox theorem does not
+already cover lambda2. This corner shortcut applies to constant-input backup;
+it cannot be transferred across direct feedback's changing clamp branches.
+A lambda2 backup theorem alone enlarges a selected certificate but does not
+resolve the direct-comparison or publication-value gate.
+
+DirectSwitch source update
+Read the new samples_before_switch and sampled_release_outside statements
+in DirectSwitch.lean (SHA256
+36f6fdc6600b36330fee6d9ebad9bd50318b6c4df2ff5028504d63dcba14fbea).
+They now link the release calculation to the actual zero-error sampled
+recurrence through sample8, not only to a hypothetical held-brake curve.
+The stated result matches the exact counterexample above. Fresh replay was
+still in progress at this check. This resolves a semantic issue once replay
+passes; it does not demonstrate a safe-set or performance advantage.
+
+Final judgment
+The comparative artifact now has a useful negative/conditional finding and a
+clear formalization target. Keep the grade near B- until a matched direct
+prefix or reusable checker is fully checked and the comparison yields a
+transferable result. More selected-box certificates alone should not trigger
+a higher grade. This is a judgment of the current evidence, not an acceptance
+probability. Human review and independent use remain open.

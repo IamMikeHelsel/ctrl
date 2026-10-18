@@ -1,0 +1,78 @@
+CURRENT STATUS: see FINAL-STATUS.txt for the assembled all-finite-order,
+integral theorem conditional only on the explicit published BCL input.
+This file retains the earlier checkpoint or source-inspection record.
+
+Complete even-order graph completion, 2026-10-17
+
+This supersedes the remaining-completion list in README.txt, while preserving
+that earlier 16-theorem checkpoint and all its evidence.
+
+MAIN LOCAL RESULT
+PiecewiseCompletion.independent_set_completion_even now proves:
+For every finite triangle-free simple graph G on n=2t vertices and every
+independent vertex set X with n<=3|X| and |X|<=t, there is a rational profile
+z:V->Q with 0<=z(v)<=1, sum z=t, and unordered weighted edge cost at most
+
+  F(|X|,t) = 3|X|^2/2 - 5|X|t/2 + 9t^2/8, if 4|X|<=3t;
+             |X|(t-|X|)/2, otherwise.
+
+The definition is completionEnvelope. Dividing by n^2 for n>0 gives exactly
+the paper's f(alpha), with alpha=|X|/n and threshold alpha=3/8.
+The n=0 case is included in the unnormalized theorem: the zero profile works.
+There is NO completion premise, no prescribed maximum independent set,
+no cost-bound witness premise, and no BCL premise in this theorem.
+
+PiecewiseCompletion.deletion_completion_even then proves:
+For every such G and ANY cut side X with n/3<=|X|<=n/2, there is a rational
+fractional half in G of cost <=F(|X|,t)+e_G(X).
+Here X need not be independent. Its internal edges are actually deleted;
+independence and triangle-freeness are proved for the modified graph; the
+complete theorem above constructs its profile; restoration is proved by the
+prior DeletionBridge. This is the graph construction required by the newer
+paper's second cut bound.
+
+WHAT WAS CLOSED AFTER THE FIRST CHECKPOINT
+FiniteAveraging.lean (2 theorems) proves finite variance and selection of a
+member of a finite family with cost below its concave average.
+CaseTwo.lean (1 theorem) instantiates those facts with the actual constructed
+graph profiles. It proves feasibility, sums exact graph moments, applies the
+checked Mantel bound and selects a profile with cost <=Q(R), 0<=R<=|D|/2.
+CompletionEnvelope.lean (2 theorems) proves the Case 2 scalar cap and joins
+maximum-independent-set seed, greedy extension, constructed D and both
+completion branches. Only an explicit elementary quadratic envelope remains
+as a premise of the intermediate theorem.
+PiecewiseCompletion.lean (6 theorems) discharges that scalar premise, proves
+monotonicity of the correct piecewise envelope, selects a maximum independent
+set internally, handles large-independent-set/zero-order cases and composes
+with deletion/restoration.
+Total at this checkpoint: 27 new public audited theorem closures, plus the
+separately preserved 7-theorem deletion bridge and borrowed graph definitions.
+
+EVIDENCE
+The earlier completion-verification.json is the passing 16-theorem fresh
+replay, 176.08 seconds. It is retained unchanged.
+Run python3 verify-completion.py for the extended 27-theorem snapshot. Its
+manifest is full-completion-verification.json and logs use the distinct
+full-completion-verified- prefix. It copies all eleven local source modules
+into a new directory, rebuilds them, audits theorem axioms and replays the
+modules with leanchecker. Only pinned Mathlib/package artifacts are reused;
+no original controls or bridge module artifacts are used. Consult the new
+manifest for the final success status rather than inferring it from this file.
+
+REMAINING FOR THE PAPER'S GLOBAL 2587/100000 STATEMENT
+- Combine the complementary-side constant profile and the proved deletion
+  bound with the exact rational scalar envelope. A separate CutWitness module
+  is being checked for these graph witness interfaces; it is NOT included in
+  the 27-theorem snapshot.
+- Keep the Balogh--Clemen--Lidicky max-cut theorem as an explicit published
+  input. The local completion theorem does not prove BCL.
+- Connect to the already available finite/integer rounding theorem. Our final
+  local conclusions concern fractional profiles, not yet floor(n/2) subsets.
+- Extend the current even-order construction to all finite orders, e.g. by
+  a proved blow-up and averaging reduction. No odd-order completion is claimed.
+
+This is formalization of the attributed existing argument, not a new
+extremal bound or solution of Erdos 128. The general target n^2/50 remains
+open within this work. Source commits, original URLs and the minor piecewise
+identity correction are documented in README.txt. No source upstream, main
+controls module, manuscript or previous verification evidence was modified.

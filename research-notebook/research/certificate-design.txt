@@ -1,0 +1,71 @@
+Reusable robustness certificate layer
+====================================
+Implemented file: lean-controls/LeanControls/Certificate.lean
+Namespace: LeanControls.Certificate
+Status: 14 theorem declarations checked with Lean 4.35.0 against the project's pinned mathlib. `lake build LeanControls.Certificate` succeeded. Each of the 14 theorem declarations was separately inspected with #print axioms: only propext, Classical.choice, Quot.sound. No sorry, admit, or custom axiom declarations.
+
+What is reusable
+----------------
+quadratic_add_bound works for any real module E and any QuadraticForm R E that is nonnegative everywhere. It does not require finite dimension, positive definiteness, a norm, differentiability, or a fixed matrix representation. For theta > 0:
+
+  Q(x+e) <= (1+theta) Q(x) + (1+1/theta) Q(e).
+
+robust_step turns Q(y) <= r Q(x), Q(e) <= d into an affine recurrence with q=(1+theta)r and b=(1+1/theta)d.
+
+local_invariant requires the one-step inequality only inside the proposed safe set. This matters for clipping arguments: nominal actuator feasibility is established inductively inside the safe region, not assumed globally or assumed for the unknown future trajectory.
+
+affine_envelope proves V_n <= q^n (V_0-b/(1-q)) + b/(1-q), for 0<=q<1.
+eventually_below_floor proves: for every positive eps, eventually for all later sample indices V_n < b/(1-q)+eps. It does not assert convergence to the floor or to zero under persistent disturbances.
+
+local_affine_guarantee combines safety, the transient envelope, and the ultimate bound.
+quadratic_trajectory instantiates that theorem for arbitrary nominal states and additive errors varying with time. Nominal contraction and error bounds are needed only while the state remains inside Q<=R.
+
+The controls semantics bridge
+-----------------------------
+pdForm is the existing energy V(x,v)=5x^2+2xv+v^2 as a QuadraticForm on R x R. Its equality with PD.energy and its nonnegativity are proved.
+
+pd_quantized_step, pd_quantized_invariant, and pd_quantized_guarantee extend the previously hard-coded rounded-feedback example to symbolic parameters:
+  theta > 0: Young tradeoff parameter;
+  delta > 0: common ideal nearest-grid measurement spacing;
+  U >= 0: symmetric actuator magnitude limit;
+  W: bound on held acceleration disturbance magnitude;
+  0 <= hmin <= h_n <= 1/2: variable sample intervals;
+  R: proposed energy-sublevel operating radius.
+
+The actual closed-loop recurrence is explicitly:
+  u_n = clip[-U,U](-2 round_delta(x_n) - 3 round_delta(v_n))
+  x_(n+1) = x_n + h_n v_n + (h_n^2/2)(u_n+w_n)
+  v_(n+1) = v_n + h_n(u_n+w_n).
+
+Thus clipping acts on rounded feedback, and the disturbance is held constant across each interval. The standalone one-step theorem permits the rounded request to be clipped; it requires the nominal unrounded request to fit within the actuator. The sufficient condition is 10R <= U^2. Subsequent independent review proved that the FULL invariant budget qR+b<=R is conservative enough to exclude active clipping: whenever delta>0, W>=0 and V<=R satisfy it, the rounded request is strictly inside (-U,U). See LeanControls/SaturationBoundary.lean. The full invariant theorem therefore does not provide an example with active saturation.
+
+Define
+  D = 5 delta/2 + W,
+  q = (1+theta)(1-hmin/6),
+  b = 6(1+1/theta)(3D/5)^2.
+
+The explicit design constraint is qR+b <= R. Initial energy <=R then gives energy <=R at every sample. If q<1, it also gives the affine transient and ultimate floor b/(1-q). The helper multiplier_lt_one gives the division-free feasibility condition theta(6-hmin)<hmin.
+
+example_parameters checks simultaneously:
+  theta=1/240, hmin=1/20, delta=1/10000, U=1, W=1/4000, R=1/10.
+For these constants, direct rational arithmetic yields:
+  q = 28679/28800,
+  b = 6507/50000000,
+  b/(1-q) = 58563/1890625 ~= 0.03097547107438.
+The first two formulas are definitions and the symbolic floor theorem is checked; the displayed final rational simplification here was calculated with Python Fraction, not stored as a separate Lean theorem.
+
+Scope and publication assessment
+--------------------------------
+This is a reusable artifact and semantics bridge, not a claim of a new control inequality. Weighted Young inequalities, affine ISS comparisons, rounding-error budgets, and invariant sublevel reasoning are established mathematics. Publication needs a contribution such as reusable generator-to-controller refinement with meaningful benchmarks and comparison to direct prior systems.
+
+Exact mathematical real arithmetic is assumed. Quantization is ideal nearest-grid rounding, not machine IEEE arithmetic. Sampling formulas are normalized double-integrator formulas. Parameter symbols do not establish physical units or plant correspondence. The acceleration disturbance is constant per interval. The new PD guarantees are at sample times; they do not establish a continuous-time safe-set bound between samples. Actuator feasibility is local to the stated operating region, not global stability of an arbitrary saturated controller. No liveness claim follows without a strictly contracting q; hmin=0 is intentionally permitted for mere one-step/invariance statements.
+
+Integration instructions
+------------------------
+Parent may add `public import LeanControls.Certificate` to the aggregate module and add the 14 theorem declarations to the main axiom audit. I did not modify any aggregate, existing source, or global audit file. No new library dependency beyond mathlib QuadraticForm.Basic was required.
+
+Recheck:
+  cd lean-controls
+  ELAN_HOME="$PWD/../.tools/elan" ../.tools/elan/bin/lake build LeanControls.Certificate
+  #print axioms LeanControls.Certificate.pd_quantized_guarantee
+  #print axioms LeanControls.Certificate.quadratic_trajectory

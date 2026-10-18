@@ -1,0 +1,169 @@
+Response variation across units and repeated stops
+Primary-source addendum, 2026-10-17. Assessment only; no new Lean proof.
+
+RECOMMENDATION
+The useful target is an envelope for the actual stopping response over a stated
+operating domain, not one fitted time constant. Start with a powered axis and
+extend the scalar model to permit both response-rate variation and a bounded
+effective acceleration target during each hold. This is a small mathematical
+change with a meaningful physical distinction. Do not call it a thermal friction-
+brake model until a specific brake/axis and its data support that abstraction.
+
+WHAT THE PRIMARY SOURCES ESTABLISH
+ABB's robot stopping-distance specification, revision AE (2026), explicitly
+notes variation with additional load and, for category 0 stops, individual
+brakes and friction. It also notes that acceleration during the stop delay can
+make a higher-load case stop in less distance than a lower-load case. Thus
+“test maximum payload once” and “slowest lag is always worst” are not sound
+universal shortcuts. Access limitation: the official indexed PDF text was
+available, but a subsequent direct fetch returned 403; the full document was
+not downloaded in this pass.
+https://library.e.abb.com/public/af537e5df1d84c32956ed2aea9317287/3HAC048645%20PS%20Robot%20stopping%20distances-en.pdf
+
+Universal Robots' UR30 manual publishes stopping data for stated payloads,
+motions and orientations, and describes safety-rated stopping-time/distance
+limits that adjust program speed. This establishes an existing industrial
+need and solution class. It does not give us a universal temperature law or
+permission to transfer its envelopes to another robot.
+https://www.universal-robots.com/manuals/EN/HTML/SW10_9/Content/prod-usr-man/complianceUR30/H_g5_sections/stopping_time_n_distances_g5/stoppingTimeAndDistance_UR30_en.htm
+
+NHTSA's EA15-005 investigation includes physical repeated-braking and hot-soak
+tests, including deliberately induced friction fade or fluid vaporization.
+The largest temperatures at some components occurred during hot soak, not
+necessarily during active braking. This is direct evidence that duty history
+and measurement location matter; it concerns vehicle hydraulic friction brakes,
+not the electromechanical motor lag of our current model. Do not import its
+failure thresholds or vehicle-specific conclusions into a robot-axis claim.
+https://static.nhtsa.gov/odi/inv/2015/INCLA-EA15005-6165.PDF
+
+Mayr describes brake monitoring of switching state, temperature, wear and
+magnetic force reserve, plus serial-number-linked production measurements. It
+also describes a specified cold-climate brake variant. This is evidence that
+condition and unit traceability already matter in brake engineering. It is a
+manufacturer account, not independent validation of our proposed model. An
+engagement indication alone does not establish the full dynamic braking torque
+or stopping envelope.
+https://www.mayr.com/en/news/press-releases/always-keeping-an-eye-on-the-brake~1847
+
+Reachset-conformant identification and uncertainty-aware safety control are
+already established approaches; see actuator-motion.txt and its primary papers.
+The candidate contribution here would be a useful, machine-checked envelope
+and clear evidence contract for one real mechanism. No novelty claim follows
+from adding temperature labels or changing a constant to a function.
+
+PRECISE MAPPING FROM THE CURRENT RESULT
+Current normalized dynamics are x'=v, v'=a, a'=r*(u-a), with constant unknown
+r in [0.9,1.1]. The physical relation is r=tau0/tau, hence this rate interval
+means tau/tau0 in [10/11,10/9], not +/-10% in tau.
+
+- Different units or runs may use different constant r. The theorem is uniform
+  over that choice, provided every other model assumption still holds.
+- An isolated checked spike, proof-spike/SampleVaryingRate.lean, permits r_n
+  to change at sample boundaries and be constant inside each hold. Its common
+  energy induction proves the constructed trajectory safe. It does not prove
+  arbitrary within-hold drift or a new physical execution contract.
+- Continuously varying r(t) is not already covered by the constant-r exponential
+  formula or by selecting whichever constant-r trajectory looks most adverse.
+- Varying r changes approach speed to the commanded acceleration. It does NOT
+  change the steady acceleration under a constant command. Thermal derating,
+  payload/gravity, reduced friction torque or supply constraints can change that
+  acceleration, engagement time, or the ability to hold. They need extra terms
+  or a different model, not merely a wider r interval.
+
+Motor servo deceleration and friction braking must be separated. A powered
+servo can command signed acceleration and may regenerate energy. A friction
+brake supplies direction-dependent opposing torque, can engage after a delay,
+and can stick at rest. Holding brakes, service stops and power-loss stops need
+not use the same mechanism. Constant negative command in our model eventually
+moves the axis backward; it does not reproduce frictional rest and hold.
+
+MOST FEASIBLE NEXT THEOREM: WITHIN-HOLD RESPONSE ENVELOPE
+Proposed, not yet implemented:
+  x'=v, v'=a, a'=r(t)*(b(t)-a),
+  0<r_lo<=r(t)<=r_hi, b_lo<=b(t)<=b_hi,
+  (x0,v0,a0) in a specified box, on 0<=t<=H.
+Initially require continuous r,b and a classical solution; piecewise-continuous
+or measurable signals can be a later extension with explicit solution semantics.
+Here b is the effective acceleration target. It may enclose a held request,
+gain variation and command-equivalent residual. In physical time r has units
+1/second; b has acceleration units. This is an inclusion contract, not a claim
+that every possible thermal mechanism has this form.
+
+An explicit upper comparison uses initial upper bounds (x_hi,v_hi,a_hi),
+constant target b_hi, and rate
+  R_hi = r_lo if a_hi>=b_hi, otherwise r_hi.
+A lower comparison uses (x_lo,v_lo,a_lo), target b_lo, and
+  R_lo = r_hi if a_lo>=b_lo, otherwise r_lo.
+Then each actual coordinate lies between the corresponding constant-parameter
+heldSolution coordinates for every t in [0,H]. The rate choices are justified
+by the sign of b-a: faster response can increase OR decrease acceleration.
+Scalar ODE comparison proves the acceleration bounds; integration proves the
+velocity and position bounds. This uses the existing exact held solution but
+requires a new comparison proof. No derivative bound on r is needed under the
+stated pointwise bounds and continuity assumption.
+
+This theorem directly supports a finite sequence of checked stopping envelopes
+with uncertain within-step response. A bounded external jerk j can be represented
+by b=u+j/r when a'=r*(u-a)+j, giving |b-u|<=J/r_lo if |j|<=J. Gain loss needs
+an explicit interval for b, e.g. b=g(t)*u+d(t); it is not automatically covered
+by the old small disturbance budget. A data-backed lower braking capability
+is essential for a useful stopping guarantee.
+
+Important limit: the existing feedback energy certificate proves constant-r
+segments. A box envelope for variable r does not automatically preserve that
+same ellipsoid or all-time tail theorem. First prove finite-horizon travel
+and terminal enclosure. A time-varying tail invariant, or a valid separate
+rest/hold mode, is another obligation. Likewise this envelope does not by itself
+prove the maximum position occurs at an endpoint; check the full interval.
+
+EXACT MODEL-MISMATCH EXAMPLE
+Take x0=0,v0=1,a0=-1 and request u=-1, in normalized illustrative units.
+For every possible positive r(t), the old model has a(t)=-1, so x(1)=1/2.
+If available braking changes to effective b=-1/2 with r=1, then
+  a(t)=-1/2-exp(-t)/2,
+  v(t)=1/2-t/2+exp(-t)/2,
+  x(1)=3/4-exp(-1)/2 > 1/2.
+Thus a travel wall at 1/2 is violated despite an arbitrarily broad positive
+rate interval. This is an analytic counterexample, not a newly compiled Lean
+lemma or a measurement of a particular hot brake. It isolates amplitude loss
+from response-time variation.
+
+MINIMUM DATA AND ACCEPTANCE OBLIGATIONS
+1. Select the actual stop mechanism and mode: controlled servo stop, mechanical
+   emergency braking, or holding. Record units, firmware and command processing.
+2. Record requested and applied commands with timestamps, position/velocity,
+   acceleration estimates with error bounds, payload/inertia/configuration,
+   relevant component temperatures, supply state and stop/dwell history.
+3. Challenge multiple units and repeated runs: cold start, warmed operation,
+   repeated-stop duty cycles, cooling/hot-soak periods, load/configuration changes
+   and allowed wear states. Do not assume “warm is worse” across all conditions.
+4. Fit rate AND effective-target envelopes, including engagement delay. Check
+   held-out units and complete runs; random point-level splits hide shared
+   thermal history. A good mean fit or percentile is not a deterministic bound.
+5. State exactly how between-sample behavior and measurement uncertainty are
+   bounded. Finite measurements alone do not prove all future dynamics. Retain
+   the physical conformance assumption and define an out-of-envelope response.
+
+Before a thermal-state model, use a conservative envelope over a declared
+condition domain. Temperature-conditioned narrower envelopes are a later useful
+step only if sensing uncertainty, thermal lag and movement between temperature
+bins are bounded over the whole stop. A temperature reading at stop initiation
+cannot silently freeze the brake state throughout that stop.
+
+PL d/e CONTEXT
+This theorem can support the deterministic performance argument for a specified
+safety function. It does not establish a Performance Level. IFA guidance treats
+architecture, dangerous failures, diagnostic coverage, common causes, software,
+systematic faults and validation as additional parts of ISO 13849 assessment.
+Its current resource page points to a revised 2025 German report; the English
+2017e report reflects an older standard edition. No compliance assessment or
+complete normative-standard review was performed here.
+https://www.dguv.de/ifa/praxishilfen/practical-solutions-machine-safety/sicherheit-von-maschinensteuerungen/index.jsp
+https://www.dguv.de/ifa/publikationen/reports-download/reports-2017/ifa-report-2-2017/index-2.jsp
+
+STOP GATE
+Proceed if a real axis can be enclosed by this small model with useful braking
+margin under the declared conditions. If gain loss, delay, friction sign changes
+or holding dominate and cannot be conservatively bounded, use an explicit brake
+hybrid model instead. Do not spend time proving a tighter lag theorem for a
+mechanism whose main variation is not lag.

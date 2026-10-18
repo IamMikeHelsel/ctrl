@@ -1,0 +1,74 @@
+Exact saturation sector semantics
+================================
+Source: lean-controls/LeanControls/SaturationSector.lean
+Namespace: LeanControls.SaturationSector
+
+Core result
+-----------
+exists_sector_gain proves:
+  U>0, 0<kappa<=1, kappa*|u|<=U
+  imply existence of alpha with
+  kappa<=alpha<=1 and RobustPD.saturate(U,u)=alpha*u.
+
+The request budget is division-free. exists_sector_gain_of_div provides the
+alternative assumption |u|<=U/kappa. The representation is exact, includes
+u=0 and both clipping boundaries, and handles either request sign. The proof
+chooses alpha=1 inside the actuator interval and alpha=U/|u| outside it.
+A positive kappa ensures the resulting gain is positive; the algebraic witness
+construction itself actually works for weaker lower-gain assumptions.
+
+sector_budget_necessary proves the converse budget implication for any
+representation with alpha>=kappa>0: kappa*|u|<=U. Thus the request condition is
+not an arbitrary extra restriction of this scalar representation.
+
+Genuine clipping remains possible
+---------------------------------
+active_sector_boundary proves for U>0 and 0<kappa<1 that u=U/kappa satisfies
+  u>U,
+  kappa*|u|=U,
+  saturate(U,u)=kappa*u=U.
+For example, U=1,kappa=1/2 permits u=2 and gain alpha=1/2. This sector condition
+therefore admits active clipping, unlike the previously reviewed conservative
+full local-invariance budget in SaturationBoundary. The new lemma alone does
+not assert that a proposed closed-loop invariant ellipsoid reaches this case;
+that must be established with its own feasible operating-region certificate.
+
+Additional reusable facts
+-------------------------
+clamp_abs_le: a nonnegative limit gives |saturate(U,u)|<=U.
+clamp_nonexpansive: for arbitrary requests u,v,
+  |saturate(U,u)-saturate(U,v)|<=|u-v|.
+This does not assume either request is inside the actuator range.
+clamp_perturbation specializes it to request perturbation e.
+sector_with_request_error combines the two arguments:
+  saturate(U,u+e)=alpha*u+d,
+  kappa<=alpha<=1, |d|<=|e|,
+when the sector budget holds for nominal u. This can support later quantization
+or request-error reasoning without assuming clipping inactive.
+
+Intended use and limits
+-----------------------
+At each sample, bound the nominal feedback request on the candidate invariant
+region, then instantiate the sector theorem. For a command computed once and
+held during the interval, the selected scalar alpha also represents that held
+command for the whole interval. Different samples may have different alpha.
+A common quadratic certificate over the full gain interval [kappa,1] can then
+cover these state-dependent gains.
+
+This file proves only scalar clamp semantics. It does not prove a travel limit,
+closed-loop invariance, stability, actuator-lag enclosure, sampling-clock
+coverage, robustness to disturbances, or physical calibration. Those are
+separate obligations in the parent controls proof. All arithmetic is over exact
+mathematical reals, using the existing max/min definition of saturate.
+
+Verification
+------------
+  lake build LeanControls.SaturationSector: succeeded without warnings.
+  All 8 public declarations were individually audited with #print axioms.
+  Every result uses only propext, Classical.choice, Quot.sound.
+  No sorry, custom axioms, or native_decide are used.
+
+Recheck from lean-controls:
+  ELAN_HOME="$PWD/../.tools/elan" ../.tools/elan/bin/lake build LeanControls.SaturationSector
+  #print axioms LeanControls.SaturationSector.exists_sector_gain
+  #print axioms LeanControls.SaturationSector.active_sector_boundary

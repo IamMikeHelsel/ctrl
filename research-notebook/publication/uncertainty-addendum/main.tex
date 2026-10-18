@@ -1,0 +1,192 @@
+\documentclass[10pt]{article}
+\usepackage[margin=0.9in]{geometry}
+\usepackage{amsmath,amssymb,amsthm,booktabs,tabularx,hyperref,microtype}
+\emergencystretch=1.5em
+\hypersetup{colorlinks=true,linkcolor=blue,urlcolor=blue,pdftitle={Fixed-Controller Travel Safety under Actuator-Lag Uncertainty}}
+\newtheorem{theorem}{Theorem}
+\newcommand{\R}{\mathbb R}
+\newcommand{\E}{\mathcal E}
+\newcommand{\clip}{\operatorname{clip}}
+\newcommand{\norm}[1]{\left\lVert#1\right\rVert}
+\title{Fixed-Controller Travel Safety\\under Actuator-Lag Uncertainty\\[4pt]
+\large Technical supplement to the sampled-actuator working paper}
+\author{Mike\\\small Working draft; full author details and affiliation to be confirmed}
+\date{17 October 2026}
+\begin{document}
+\maketitle
+\begin{abstract}
+We extend the accompanying nominal-actuator case study to an unknown fixed actuator rate in $[9/10,11/10]$, with unchanged controller gains, initial ellipsoid, sampling limit and combined held-error budget. The result bounds position at every nonnegative real time. The constructed execution is continuous across sampling times and satisfies the actual uncertain plant ODE inside each hold interval. Physical rescaling keeps the controller tuned to a nominal time constant while the plant uses a different actual time constant. All theorem components have checked Lean proofs. This is a formal application extension; novelty, publication acceptance and hardware validity remain separate questions.
+\end{abstract}
+
+\section{Model and guarantee}
+Write $z=(x,v,a)^\top$, $k(z)=-x-3v-2a$, and
+$\clip(s)=\max(-1,\min(1,s))$. Let $t_0=0$ and $t_{n+1}=t_n+h_n$.
+For each interval, the held command is
+\[
+ u_n=\clip(k(z_n)+e_n)+d_n,\qquad z_n=z(t_n).
+\]
+The plant rate $r$ is fixed but unknown. The exact held dynamics are
+\begin{equation}\label{eq:ode}
+ x'=v,\qquad v'=a,\qquad a'=r(u_n-a).
+\end{equation}
+Both $e_n$ and $d_n$ are in normalized command units: $e_n$ changes the request before clipping, while $d_n$ is added after clipping but inside the rate multiplier. They may vary arbitrarily between intervals subject to the budget below. An external additive jerk outside the multiplier is a different model.
+
+Use the same quadratic energy as the nominal result:
+\[
+ \E(z)=z^\top Pz,\qquad
+ P=\begin{pmatrix}
+ 38/5&257/25&5\\
+ 257/25&1319/50&769/50\\
+ 5&769/50&278/25
+ \end{pmatrix}.
+\]
+\begin{theorem}[All-time travel with uncertain fixed lag]\label{thm:main}
+Assume $9/10\le r\le11/10$ and there is $h_{\min}>0$ such that, for every $n$,
+\[
+ h_{\min}\le h_n\le1/5,\qquad |e_n|+|d_n|\le1/100.
+\]
+If $\E(z_0)\le12$, then the explicitly assembled held execution satisfies
+\[
+ \E(z(t))\le12,\qquad |x(t)|\le2\qquad\hbox{for every }t\ge0.
+\]
+The execution starts at $z_0$, agrees with its recursively defined samples, is continuous on $[0,\infty)$ and satisfies \eqref{eq:ode} on every open sampling interval.
+\end{theorem}
+The positive dwell lower bound ensures the sample clock covers all finite times.
+No lower bound on a particular numerical implementation's scheduling precision is inferred.
+The admitted initial state $(0,0,1)$ has $\E=278/25<12$ and $k=-2$, so clipping is active.
+For instance, $h_n=1/10$ and $e_n=d_n=1/200$ are admitted for every rate in the interval.
+
+\section{How the certificate reaches the plant}
+The proof does not sample the uncertainty interval. For any held command $u$,
+the exact solution is
+\begin{align*}
+ a(t)&=u+(a_0-u)e^{-rt},\\
+ v(t)&=v_0+ut+(a_0-u)(1-e^{-rt})/r,\\
+ x(t)&=x_0+v_0t+ut^2/2+(a_0-u)\bigl(t/r-(1-e^{-rt})/r^2\bigr).
+\end{align*}
+In this section $t$ denotes elapsed time within one hold, with $0\le t\le1/5$
+and $9/10\le r\le11/10$. For each such $(r,t)$, an exponential remainder gives one shared
+$\theta\in[0,1]$ such that the solution equals
+\begin{equation}\label{eq:poly}
+ \begin{pmatrix}
+ x_0+v_0t+ut^2/2+(a_0-u)\theta t^2\\
+ v_0+ut+(a_0-u)(t-\theta rt^2)\\
+ u+(a_0-u)(1-rt+\theta r^2t^2)
+ \end{pmatrix}.
+\end{equation}
+
+On $\E(z)\le12$, Lean proves $(2/5)|k(z)|\le1$.
+Thus $\clip(k(z))=\alpha k(z)$ for some $\alpha\in[2/5,1]$.
+The polynomial transition is affine separately in $\alpha$ and $\theta$ and quadratic in $r$.
+Its degree-two Bernstein representation in $r$ uses three coefficient matrices.
+The middle coefficient is
+\[
+ 2F(1)-\tfrac12\bigl(F(9/10)+F(11/10)\bigr);
+\]
+it is not the transition matrix of the midpoint plant.
+Two sector endpoints, two remainder endpoints and three rate coefficients give
+twelve rational matrix certificates. Their identities and energy bounds are
+checked in Lean; nested convexity transfers them to every admissible exact flow:
+\[
+ \E(z_{\rm nom}(t))\le\E(z_0)-\tfrac32t\norm{z_0}_2^2
+ \le(1-2\eta t)\E(z_0),\qquad \eta=15/902.
+\]
+Here $z_{\rm nom}$ uses the held sector command. The energy bound compares the
+segment to its initial state; it does not assert monotonicity between every
+pair of interior times.
+
+The exact command-response vector $g(r,t)$ obeys
+\[
+ \E(wg(r,t))\le16t^2W^2\quad\hbox{when }|w|\le W.
+\]
+Clipping nonexpansiveness gives the effective error
+\[
+ w=\clip(k(z_0)+e)-\clip(k(z_0))+d,\qquad |w|\le|e|+|d|.
+\]
+The existing step-scaled invariant lemma then applies. In fact the normalized
+proof allows $W=1/90$, since the exact sufficient-budget comparison is
+\[
+ 16(1/5+1/\eta)(1/90)^2=724/6075
+ \le12\eta=90/451.
+\]
+Theorem~\ref{thm:main} retains the original $1/100$ specification.
+Induction proves the sample invariant; the same segment bound applies to every
+elapsed time before the next sample. Separate derivative and gluing proofs
+establish the ODE and continuity.
+
+\section{Physical units with a fixed nominal controller}
+Let $\tau_0>0$ be the controller's nominal time constant, $\tau>0$ the actual
+plant time constant and $U>0$ the command limit. Set
+\[
+ t=T/\tau_0,\quad
+ z=(X/(U\tau_0^2),V/(U\tau_0),A/U)^\top,\quad r=\tau_0/\tau.
+\]
+The physical held request remains
+\[
+ q_n=-X_n/\tau_0^2-3V_n/\tau_0-2A_n
+\]
+while the actual plant satisfies
+\[
+ \dot X=V,\qquad \dot V=A,\qquad
+ \tau\dot A=-A+\clip_{[-U,U]}(q_n+\varepsilon_n)+\Delta_n.
+\]
+This keeps the controller fixed when $\tau$ changes.
+If $9/10\le\tau_0/\tau\le11/10$, physical holds satisfy
+$0<h_{\min}\le h_n\le\tau_0/5$, the errors satisfy
+$|\varepsilon_n|+|\Delta_n|\le U/100$, and the normalized initial energy is at most
+$12$, the checked physical theorem gives
+\[
+ |X(T)|\le2U\tau_0^2\quad(T\ge0).
+\]
+The rate interval implies $10/11\le\tau/\tau_0\le10/9$.
+It is not a symmetric ten-percent time-constant interval.
+
+For an illustrative $\tau_0=0.1$ s and $U=2$ m/s$^2$, the same controller covers
+actual $\tau$ between approximately $90.91$ and $111.11$ ms, with holds at most
+$20$ ms and combined held command error at most $0.02$ m/s$^2$.
+The certified travel envelope is $\pm4$ cm, provided the full-state initial
+ellipsoid condition holds. These are illustrative assumptions, not robot measurements.
+
+\section{Checked claims and remaining research}
+\begin{center}\small
+\begin{tabularx}{\linewidth}{@{}lX@{}}
+\toprule
+Lean module & Main responsibility\\\midrule
+\texttt{UncertainLag} & Exact flow/ODE, exponential enclosure, twelve matrix identities and uniform decrease.\\
+\texttt{UncertainResponse} & Uniform response-energy bound on the full parameter box.\\
+\texttt{UncertainTravel} & Measured command, recursive samples and all-time travel invariant.\\
+\texttt{UncertainExecution} & Continuous joins and interior ODE of the assembled execution.\\
+\texttt{PhysicalUncertainTravel} & Nominal-controller scaling, actual-lag physical ODE and travel limit.\\\bottomrule
+\end{tabularx}
+\end{center}
+The aggregate project now contains 60 modules and 806 inventoried public theorem
+declarations. Full project verification passed, including producer rejection
+tests, model-binding checks and benchmark verification. A fresh snapshot of 100
+source/configuration files rebuilt all 60 modules from source and rechecked all
+806 public theorem declarations. Source hashes remained unchanged. The axiom audit permits only \texttt{propext},
+\texttt{Classical.choice} and \texttt{Quot.sound}; no custom mathematical axiom or
+unfinished proof is accepted. See the accompanying verification manifests for the
+final frozen source hashes and detailed verification scope:
+\path{lean-controls/evidence/project-verification.json} and
+\path{publication/uncertainty-fresh-replay.json}.
+A fresh project-source replay reuses the pinned Lean executable and mathlib
+dependency cache; it is not an independently bootstrapped proof system.
+
+Compared with the earlier nominal paper, the substantive added obligation is
+uniform certification for the actual uncertain dynamics while preserving the
+same controller and travel specification. The mathematical techniques are
+established. This supplement does not claim a new general robustness theorem,
+an optimal uncertainty interval or a prize solution.
+It does not cover within-interval time-varying lag or disturbance, external
+additive jerk without a further model bridge, floating-point controller code,
+sensor range/overflow, physical calibration, or arbitrary ODE solutions via a
+separately proved uniqueness theorem. The nominal ideal-rounding corollary has
+not been reassembled for the uncertain execution here.
+
+The next publication gate is expert assessment of the exact contribution and
+an additional engineering use case that demonstrates meaningful reuse.
+The preceding nominal working paper, its frozen source archive and its earlier
+verification evidence remain unchanged. AI systems assisted proof construction,
+checking and drafting; human authors must review the claims and take responsibility
+for the final manuscript. This supplement has not been submitted.
+\end{document}

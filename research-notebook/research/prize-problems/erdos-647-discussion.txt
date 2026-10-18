@@ -1,0 +1,422 @@
+647 Discussion Thread | Erdős Problems
+Forum
+Inbox
+Favourites
+Tags
+More
+FAQ
+Prizes
+Problem Lists
+Definitions
+Links
+Forum
+Menu
+Inbox
+Favourites
+Tags
+FAQ
+Prizes
+Problem Lists
+Definitions
+Links
+Go
+Go
+Random
+$44
+Let $\tau(n)$ count the number of divisors of $n$. Is there some $n>24$ such that\[\max_{m<n}(m+\tau(m))\leq n+2?\]
+#647
+:
+[Er79]
+[Er79d]
+[Er80,p.107]
+[Er92e]
+[Er95c]
+number theory
+A problem of Erdős and Selfridge. This is true for $n=24$. The $n+2$ is best possible here since\[\max(\tau(n-1)+n-1,\tau(n-2)+n-2)\geq n+2.\]In
+[Er79]
+Erdős says 'it is extremely doubtful' that there are infinitely many such $n$, and in fact suggets that\[\lim_{n\to \infty}\max_{m<n}(\tau(m)+m-n)=\infty.\]In
+[Er79d]
+Erdős says it 'seems certain' that for every $k$ there are infinitely many $n$ for which\[\max_{n-k<m<n}(m+\tau(m))\leq n+2,\]but 'this is hopeless with our present methods', although it follows from Schinzel's
+Hypothesis H
+.
+In
+[Er92e]
+Erdős offered £25 for an example of such an $n>24$. He wrote 'I am being rather stingy but we old people are stingy.' (This has been converted to \$44 using approximate 1992 exchange rates.)
+Tao has observed in the comments that, since $\tau(m)$ is similar to $2^{\omega(m)}$, this problem is similar to (but slightly weaker than) the first part of
+[679]
+, but much stronger than
+[413]
+or
+[248]
+.
+See also
+[413]
+.
+Additional thanks to
+: Terence Tao
+Proof expositions (0)
+If you would like to contribute an exposition of a proof related to this problem, please
+message a moderator
+or email
+[email protected]
+No proof expositions yet.
+Comments (18)
+Proof claims (0)
+More information and links
+This page was last edited 07 April 2026.
+ (
+View history
+) (
+View the LaTeX source
+)
+When referring to this problem, please use the original sources of Erdős. If you wish to acknowledge this website, the recommended citation format is:
+T. F. Bloom, Erdős Problem #647, https://www.erdosproblems.com/647, accessed 2026-10-17
+From the
+external database
+. (You can
+help update
+this.)
+Formalised statement?
+Yes
+OEIS
+A062249
+,
+A087280
+Reactions
+Likes
+JamalAgbanwa
+,
+Ritvik_Nayak
+,
+ScottHughes
+,
+Sayan_Dutta
+,
+megahertz13
+Open to collaboration
+None
+Currently working on
+Ritvik_Nayak
+,
+pommeret
+,
+ScottHughes
+,
+will0708
+Looks difficult
+None
+Looks tractable
+None
+Could be formalisable
+None
+Working on formalising
+None
+Order by
+oldest first
+or
+newest first
+. (The most recent comments are highlighted in a red border.)
+We have verified in Lean 4 that there is no solution with $24 < n \le 10^8$. The proof is a chain of 891,554 witnesses $m$, each stored with its factorization into primes below 1024; the kernel recomputes a lower bound $t \le \tau(m)$ from each factorization and checks that the intervals $[m+1, m+t-3]$ cover $(24, 10^8]$ with no gap. The final theorem depends on exactly the three standard axioms (propext, Classical.choice, Quot.sound): no native_decide, no sorry. The statement follows the formal-conjectures formalization at a pinned commit.
+This range is much smaller than the existing searches (Idén to $10^{12}$, Hughes and bentrd to about $9.17 \times 10^{18}$); the difference is that nothing below $10^8$ depends on unverified computation.
+Repository and reproduction instructions: https://github.com/ibrahimmian36/decanus
+Formal-conjectures issue: https://github.com/google-deepmind/formal-conjectures/issues/5021
+AI-usage disclosure: Claude helped to develop the Lean proofs and the generation scripts. The generator is cross-checked by an independent implementation.
+IbbyMian
+—
+21:17 on 17 Aug 2026
+👍
+0
+📝
+0
+🤖
+0
+Kernel-checked exclusion to 10^13, building on decanus
+Following IbbyMian's decanus certificate (kernel-checked to 10^9, arXiv:2608.17880) and its suggestion to certify structure rather than length: I have a Lean 4 / Mathlib proof, checked by the kernel with axioms exactly {propext, Classical.choice, Quot.sound} and no native_decide, that no n in (24, 10^13] satisfies the condition, stated on the formal-conjectures predicate so it composes with decanus.
+Method: four modular sieve stages proved inside the kernel (2520 | n for n > 1800; 360360 | n for n > 10^5; ScottHughes's 41-class reduction on (n mod 17, n mod 19), re-derived kernel-clean; a 4,431-class survivor list mod 17·19·23·29 for n > 10^11), then one factorization witness per surviving grid point: 866,484 witnesses in about 21 MB of Lean, versus 6.7 million for the contiguous 10^9 chain. 48.8 CPU-hours on one 8-core desktop.
+Repository with source, certificates, generators, verification record and a 9-page writeup: https://github.com/fjordmindlabs/math/tree/main/erdos647-sparse
+Two notes. (1) This is a certification result, nine orders of magnitude below veljjanoski's 10^22; it does not approach the unverified frontier. (2) A cost model in the writeup suggests the kernel-checked horizon of this family of methods is about 10^17–10^18 (period walk, about one CPU-year), and that no finite table of such sieve stages can prove the statement, since the divisor budget never excludes n ≡ 0 (mod L) for any L.
+The Lean proofs and generators were written by an AI coding agent under my direction; the kernel checks them the same way. @IbbyMian: happy to open a PR adding this as a sibling library to decanus if you would like one, or to keep it as a companion repository, your call.
+eerot
+—
+14:16 on 04 Oct 2026
+👍
+1
+📝
+0
+🤖
+0
+I have verified computationally that there is no solution with $24 < n \le 10^{20}$, extending the previous frontier of $\approx 9.17 \times 10^{18}$ (Hughes, bentrd).
+Method: every solution $n > 40$ is a multiple of $2520$ (re-derived by a CRT lifting through $2^6 \cdot 3^4 \cdot 5^3 \cdot 7^3$). Candidates are further restricted to residue classes mod $2520 \cdot (11 \cdot 13 \cdot 17 \cdot 19)^2$ and then eliminated on a GPU using only two facts about $\tau$: $d \mid x \Rightarrow \tau(d) \le \tau(x)$, and multiplicativity. For a shift $k$, if a prime $p$ exactly divides $n-k$ with a cofactor $> 1$, then $\tau(n-k)$ is at least four times the divisor count of the $2520$-part of $n-k$, which exceeds $k+2$ for $k \in {1,2,3,4,5,6,8,9,10,12,18,20,24}$; these shifts are sieved as arithmetic progressions for all primes up to $1000$. Survivors (about $2.5 \cdot 10^{-5}$ of the candidates) are then checked with exact valuations for all primes below $65536$ and all shifts $k \le 64$, and finally by full factorisation. Nothing survived the second stage. Total time 1 h 54 min on an RTX 3090. This is an independent search: it does not build on the Hughes residue certificate, and it re-derives the $2520$ reduction and its own wheel.
+Validation: with the budget relaxed to $\tau(n-k) \le k+2+\delta$ the condition has many small solutions, and for $\delta = 6$ and $\delta = 12$ the pipeline reproduces the exact sieve's solution set on $[1, 2 \cdot 10^8]$ ($868$ of them found purely by the GPU stages); the 128-bit kernel path was also unit-tested against a Python replica on candidates above $2^{64}$. This is an uncertified computation, not a Lean certificate.
+Code, log and checkpoint:
+https://github.com/veljjanoski/erdos647
+AI-usage disclosure: Claude (Anthropic) was used as a coding assistant.
+veljjanoski
+—
+08:00 on 10 Sep 2026
+👍
+0
+📝
+0
+🤖
+0
+Update: the search is now complete to $10^{22}$. There is no solution with $24 < n \le 10^{22}$. Same method as above with two more wheel primes ($23$, $29$) applied inside the kernel; about 20 GPU-hours on an RTX 3090, zero survivors of the exact-valuation stage.
+Logs and checkpoint are in the repository:
+https://github.com/veljjanoski/erdos647
+. Still an uncertified computation.
+AI-usage disclosure: Claude (Anthropic) was used as a coding assistant.
+veljjanoski
+—
+06:43 on 13 Sep 2026
+👍
+0
+📝
+0
+🤖
+0
+For what it's worth (arguably not much), here's a funny observation. Use $(\ast)$ to denote the equation $\tau(n-k)\le k+2$. Using modular constraints and elementary properties of $\tau$, it's not difficult to prove the following :-
+1. If $n>5$ satisfies $(\ast)$, then $n$ is even.
+2. If $n>10$ satisfies $(\ast)$, then $4\mid n$.
+3. If $n>24$ satisfies $(\ast)$, then $6\mid n$.
+4. If $n>54$ satisfies $(\ast)$, then $5\mid n$.
+5. If $n>54$ satisfies $(\ast)$, then $7\mid n$.
+6. If $n>36$ satisfies $(\ast)$, then $8\mid n$.
+7. If $n>84$ satisfies $(\ast)$, then $9\mid n$.
+So, any $n>84$ satisfies $(\ast)$, then $n=2520N$. Now, using
+$$\tau(n-k) = \tau(k)\cdot \tau\!\left(\frac{2520N}{k}-1\right) \le k+2$$
+with $k=1,2,3,4,6,8,12,24$ also gives that $2520N-1$ is either a prime or a prime square, and $1260N-1$, $840N-1$, $630N-1$, $420N-1$, $315N-1$, $210N-1$, $105N-1$ are primes.
+Of course, all these constraints don't give any obvious contradiction by themselves.
+Sayan Dutta
+—
+13:40 on 18 Jan 2026
+👍
+4
+📝
+1
+🤖
+0
+I really like these observations.  Thanks for writing them up.
+For example, they really help when sieving for "counterexamples".  OEIS
+A087280
+says that there are no more examples "< 10^10".  With these observations, and with the big assumption of no implementation errors, I think there are no examples for several more orders of magnitude, up to $10^{16}$ or even more.
+But let me check my understanding of the claims:
+It seems to me that the second step, with $\tau(k)\cdot\tau\left(\frac{2520N}{k}-1\right)$ doesn't necessarily work for $k=8$ and $k=24$ because potentially all of the powers of $2$ have been divided out and $k$ and $\frac{2520N}{k}-1$ are not necessarily relatively prime?  It seems to me that it's possible, for example, for $105N-1$ to be four times a prime.  As a concrete case, consider $n=604517614941240$ which comes from $N=239887942437$.  I find that $\tau(n-k)\le k+2$ for $1\le k\le 13$ and also $k=24$.  However, $105N-1$ is four times a prime and $315N-1$ is twice a prime, so neither prime by themselves.  Let me know if I'm missing something about the argument.
+In the other direction, it seems to me that it's also possible to show that $11\mid n$ and $13\mid n$ with arguments as in the first part.  I just needed to do a trick like ruling out $7\pmod{11}$ by thinking of it as $18\pmod{11}$ instead.  Hopefully I was reasoning correctly there.
+Oh, and $2520N-1$ can't be a square because it's $3\bmod 4$.
+BorisAlexeev
+—
+00:50 on 19 Jan 2026
+👍
+4
+📝
+0
+🤖
+0
+Thanks for your reply - you are absolutely right about the co-primality issue. One can still salvage some constraints for $k=8,24$ by peeling off the $2$-adic valuation. For example, $315N-1 \in \{p,2p\}$ and $105N-1 \in \{p, p^2, 2p, 4p\}$ which is probably something you were also trying to hint at. About the $11\mid n$ and $13\mid n$ claims, I was also under the idea that they were true, but it just broke down into so many cases that I could not believe myself enough to claim it here.
+Also good point: since $2520N-1\equiv 3\pmod 4$, it can’t be a square - combined with the observation in my previous comment, this upgrades the $k=1$ conclusion to $2520N-1$ being a prime.
+(Everything in this comment is for large $N$)
+Sayan Dutta
+—
+17:49 on 19 Jan 2026
+👍
+2
+📝
+0
+🤖
+0
+Since $2(1260N-1)+1=2520N-1$, infinitely many $N$ satisfying this would imply that there are infinitely many Sophie Germain primes.
+megahertz13
+—
+21:15 on 02 Sep 2026
+👍
+1
+📝
+1
+🤖
+0
+Update to my earlier comment (June 13): an updated report (v2) is now available with additional results.
+Beyond the 10^12 verification, three secondary computations were carried out:
+(1) Gap-growth analysis. Logging all 132,869,538 record-setters of m ↦ m + τ(m) up to 10^10 and fitting a log-log OLS regression gives Δ(m) ≈ 0.069·(log m)^2.18. This supports the quantitative conjecture Δ(n) ≥ c·(log n)^2 for some c > 0.
+(2) Dutta's conditions. Among the 3,968,253 multiples of 2520 below 10^10, exactly 5 satisfy all 8 of Dutta's necessary conditions simultaneously. None lies in either of Hughes's prime-chain families (checked directly), confirming empirically that the two constraint sets are nearly disjoint.
+(3) Depth-record extension. Using a segmented sieve with a rolling τ-buffer, the D(n)-record table is extended from Hughes's D = 7 (up to 10^7) to D = 9 (up to 10^10): new records are D = 8 at n = 10,780,560 and D = 9 at n = 629,992,440. The full histogram #{n > 24 : D(n) ≥ D} is also reported.
+Updated report (v2): https://doi.org/10.5281/zenodo.21084248
+Note: Claude (Anthropic) was used as a coding assistant.
+— Patrik Idén, June 2026
+Patrik_Iden
+—
+21:37 on 30 Jun 2026
+👍
+3
+📝
+0
+🤖
+0
+I have consolidated my work on this problem into a single repository. It contains a Lean-verified modular reduction ($n=2520N$ in 41 residue classes mod $46189$), an elementary prime-chain reduction, the unconditional density-zero bounds these yield, the strongest being $|C(x)|\le x\exp(-(\log\log x)^{2-o(1)})$ and a short analysis locating the remaining gap to finiteness in the prime-tuples barrier rather than in density: https://github.com/scottdhughes/erdos647-proof-chain
+Separately, an exhaustive computational search of this 41-residue frontier up to $n \approx 6.16\times10^{17}$ finds no candidate (each cell is eliminated by some shift $k\le 16$); a writeup is in preparation. These are density-zero and finite-range results, not a resolution of #647.
+ScottHughes
+—
+21:21 on 08 Jun 2026
+👍
+1
+📝
+0
+🤖
+0
+I've put the finite-range part of this up as a self-contained, independently checkable certificate, $\href{https://github.com/scottdhughes/erdos647-proof-chain/tree/main/frontier-certificate}{
+frontier-certificate
+}$.
+It establishes that there is no solution with $24 < n \le 615{,}736{,}321{,}200{,}000{,}000 = 2520 \cdot 46189 \cdot 529 \cdot 10^{7} \approx 6.16 \times 10^{17}$. Every such $n$ lies in one of the $41$ open residue classes mod $46189$, and each class is ruled out one of two ways: $6549$ of the refined sub-AP classes by a fixed congruence that forces the divisor bound to fail for all $n$, and the remaining $15140$ by direct search to $u = 10^{7}$, where some shift $k \le 16$ always pushes the divisor count over budget (no survivors).
+It is all checkable on a laptop: verify.py (pure Python, no dependencies) re-derives the partition, re-proves the $6549$ congruences, and re-factors the search cells from scratch in seconds, needing neither the GPU run nor Lean.
+ScottHughes
+—
+05:38 on 15 Jun 2026
+👍
+2
+📝
+0
+🤖
+0
+I have extended the computational verification of this problem to 10^12. A segmented multiplicative sieve (complexity O(N log log N)) was used to compute τ(n) for all n ≤ 10^12, tracking the running maximum R(n) = max_{m<n}(m + τ(m)) throughout. No solution was found in (24, 10^12]. The minimum observed gap Δ(n) = R(n) − n was 224, attained near n = 10^11. This extends the previously known bound of 10^10 (OEIS A087280) by a factor of 100.
+A full report with algorithm description, gap data, and C source code is available at:
+https://doi.org/10.5281/zenodo.20677388
+Note: Claude (Anthropic) was used as a coding assistant in developing the C implementation.
+— Patrik Idén, June 2026
+Patrik_Iden
+—
+09:43 on 13 Jun 2026
+👍
+0
+📝
+0
+🤖
+0
+Thanks, KentaKitamura’s observation is correct, and it fits into a short maximal ladder.
+Write a candidate as \(n=2520N\). If \(k\) only uses the forced prime powers \(2^a3^b\) with \(a\le2\), \(b\le1\), then\[
+n-k = k r_k,\qquad (k,r_k)=1.
+\]The candidate condition gives\[
+\tau(r_k)\le \left\lfloor\frac{k+2}{\tau(k)}\right\rfloor,
+\]so \(r_k\) is prime whenever \(\tau(k)>(k+2)/3\). The allowed forced shifts are exactly\[
+k\in\{2,3,4,6,12\}.
+\]Thus Kenta’s \(k=3\) is joined by \(k=6,12\); \(k=2,4\) were already present in the prime-chain reduction.
+Combining these with the \(k=1,8\) prime-chain conditions gives two prime-7-tuples. Since \(3\mid n\), the two families become:\[
+n=8s+8,\quad s=3u+2:
+\]\[
+2u+1,\ 3u+2,\ 4u+3,\ 6u+5,\ 8u+7,\ 12u+11,\ 24u+23;
+\]\[
+n=16s+8,\quad s=3u+1:
+\]\[
+3u+1,\ 4u+1,\ 8u+3,\ 12u+5,\ 16u+7,\ 24u+11,\ 48u+23.
+\]Both seven-tuples are admissible: mod \(2,3,5,7\), the root-union sizes are \(1,2,4,6\), respectively, and for \(p>7\) seven primitive forms cover at most \(7<p\) classes. Hence Brun’s upper-bound sieve gives, unconditionally,\[
+|\mathcal C(x)|\ll \frac{x}{(\log x)^7},
+\]with an effective absolute constant.
+This improves my earlier \(x/(\log x)^4\) corollary to \(x/(\log x)^7\). It is still only a density-zero refinement, not a proof of non-existence or a resolution of #647.
+AI-usage disclosure: this strengthening was developed with assistance from AI reasoning tools and independently checked before posting.
+ScottHughes
+—
+23:17 on 29 May 2026
+👍
+3
+📝
+1
+🤖
+0
+A small additional necessary condition from ScottHughes's reduction:
+Assuming the reduction, any candidate n > 84 must also satisfy (n-3)/3 is prime.
+Equivalently, in the two prime-chain families this adds the conditions(8s+5)/3 prime and (16s+5)/3 prime, respectively.
+Reason: the candidate condition at m = n-3 gives tau(n-3) <= 5. Since the modular reduction gives n = 2520N, in particular 3 | n, write n-3 = 3r. As n > 84, r > 27. If r were composite, then tau(3r) >= 6, contradicting tau(3r) <= 5. Hence r is prime.
+AI usage disclosure: The solution were made with assistance from Codex 5.5 using xhigh reasoning, and ChatGPT 5.5 pro.
+KentaKitamura
+—
+05:30 on 29 May 2026
+👍
+2
+📝
+0
+🤖
+0
+Following partial modular observations in the comments (Dutta, Alexeev), I record two reductions of the candidate set and a quantitative consequence. The argument is elementary throughout: no GRH, no Schinzel–H.
+**Reduction 1 (modular).** Every Erdős #647 candidate $n>84$ satisfies\[
+n = 2520N
+\]with $N$ in one of **41 explicit residue classes modulo**\[
+M = 11\cdot 13\cdot 17\cdot 19 = 46189.
+\]The sieve modulo $11,13,17,19$ first leaves $96$ surviving classes; small-shift divisor-budget arguments at shifts $k$ with small $\gcd(2520,k)$ close $55$ of these classes unconditionally, leaving the explicit $41$-class open set.
+**Reduction 2 (prime-chain).** Every candidate $n>24$ lies in one of two explicit prime-chain families, obtained by applying the divisor constraint at the shifts $k\in\{1,2,4,8\}$:
+- $n=8s+8$, with $s,\,2s+1,\,4s+3,\,8s+7$ all prime; or
+- $n=16s+8$, with $s,\,4s+1,\,8s+3,\,16s+7$ all prime.
+Briefly, the conditions at $k=1$ and $k=2$ force\[
+n=2q+2
+\]with both $q$ and $2q+1$ prime. The condition at $k=4$, writing $q-1=2^a m$ with $m$ odd, forces the surviving case\[
+q=2p+1
+\]with $p,\,2p+1,\,4p+3$ prime. Finally, the condition at $k=8$, writing $p-1=2^b s$ with $s$ odd, leaves exactly the two branches $b=1$ and $b=2$ above; larger $b$ is excluded by a finite divisor-budget check.
+**Corollary.** Both quadruples are admissible $4$-tuples of linear forms in $s$. Hence the standard Brun upper-bound sieve gives\[
+|\mathcal C(x)| \ll \frac{x}{(\log x)^4},
+\]unconditionally, with an effective absolute implied constant, where $\mathcal C(x)$ denotes the number of Erdős #647 candidates $n\le x$.
+Thus the remaining candidates lie inside a prime-$4$-tuple-type exceptional set, refining the Sophie-Germain-type obstruction discussed in connection with Tao–Teräväinen’s remarks on related Erdős divisor problems. This is a density-zero result, not a non-existence result; I make no claim of resolving #647.
+ScottHughes
+—
+22:49 on 27 May 2026
+👍
+2
+📝
+0
+🤖
+0
+We claim that the inequality\[
+\max_{m<n}\bigl(m+\tau(m)\bigr)\le n+2
+\]holds precisely for\[
+n\in\{1,2,3,4,5,6,8,10,12,24\},
+\]and in particular has no solutions for \(n>24\).
+The argument is based on a domination framework using record-holders of the function\[
+m \longmapsto m+\tau(m).
+\]Each record-holder produces an explicit interval of integers \(n\) for which\[
+\max_{m<n}\bigl(m+\tau(m)\bigr)\ge n+3,
+\]and these domination intervals together cover all integers \(n>24\).
+A write-up of these results, including a Lean formalization of the main argument, is available at:
+https://zenodo.org/records/18390414
+The results were formalised in Lean.
+(AI tools like ChatGPT 5.2, Gemini and Deepseek Thinking were used.)
+JamalAgbanwa
+—
+15:18 on 28 Jan 2026
+👍
+0
+📝
+0
+🤖
+0
+The asymptotic part of the argument (treating the case $n > 69$) is far from justified, in particular the claim " the domination interval generated by $m_k$ overlaps with that of
+$m_{k+1}$" is unproven, and likely false.  The Lean formalization treats the asymptotic case as an axiom rather than proving it, and thus gives no certificate of unconditional correctness.
+You may find the advice given at
+this page of the wiki
+to be helpful.
+Also, any use of AI needs to be disclosed in the comments, as per the forum policy.
+TerenceTao
+—
+16:10 on 28 Jan 2026
+👍
+5
+📝
+0
+🤖
+0
+Since $\tau(m)$ is similar to $2^{\omega(m)}$, this problem is similar to (but slightly weaker than) the first part of
+[679]
+, but much stronger than
+[413]
+or
+[248]
+.
+(The site has been updated to address this comment.)
+TerenceTao
+—
+22:41 on 02 Oct 2025
+👍
+1
+📝
+0
+🤖
+0
+Show 6 more comments
+All comments are the responsibility of the user. Comments appearing on this page are not verified for correctness. Please keep posts mathematical and on topic.
+The ability to post new comments has been suspended.
+Back to the forum

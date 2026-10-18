@@ -1,0 +1,37 @@
+Physical uncertain-lag bridge
+
+Source: lean-controls/LeanControls/PhysicalUncertainTravel.lean
+
+The controller and coordinate normalization use one fixed nominal constant tau0.
+The actual plant uses a distinct, fixed positive tau. The normalized actuator
+rate is r=tau0/tau. In physical coordinates the verified interior ODE is
+  Xdot=V, Vdot=A,
+  tau*Adot=-A+clip_U(-Xsample/tau0^2-3*Vsample/tau0-2*Asample+e_n)+d_n.
+Thus the uncertainty result is not obtained by retuning the controller or
+renormalizing each plant using its actual time constant.
+
+Physical samples and all-time state are defined by the certified normalized
+uncertain execution, with h/tau0, e/U, d/U and coordinates
+(X/(U*tau0^2), V/(U*tau0), A/U). The checked bridge proves initial-state
+agreement, sample agreement, continuity including sample boundaries, and the
+actual-tau differential equation on every open sampling interval. It does not
+claim differentiability at a switching time.
+
+The travel theorem assumes tau0,tau,U>0, 0.9<=tau0/tau<=1.1, a strictly
+positive common lower bound on sample spacing, h_n<=tau0/5, arbitrary held
+errors with |e_n|+|d_n|<=U/100, and initial normalized quadratic energy<=12.
+It concludes |X(T)|<=2*U*tau0^2 for every T>=0. No periodicity or fixed sample
+spacing is required. The rate condition also implies
+10/11<=tau/tau0<=10/9. Saturation may remain active.
+
+Interpretation limits: tau is fixed over the trajectory; the proof does not
+cover an arbitrarily time-varying actuator rate. d is a command-equivalent
+held perturbation after clipping and before the actuator lag, not a separate
+force added after the lag. Both errors are held during each sample interval.
+The initial ellipsoid, delay-free held control, exact real arithmetic, plant
+model, positive spacing, and physical calibration remain explicit assumptions.
+This formal result is not hardware validation or a certified IEEE controller.
+
+Validation records: build.log, Audit.lean, axioms.log, verification.json.
+Only the new module was authored for this task; no aggregate imports or parent
+uncertainty/execution sources were modified.

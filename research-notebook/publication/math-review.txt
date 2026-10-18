@@ -1,0 +1,212 @@
+Independent mathematical review — 2026-10-17
+
+Disposition
+
+The reviewed Bernstein/LDL soundness layer, positive energy bounds, arbitrary
+sample-index jitter bound, and quadratic affine robustness layer are sound in
+their written formal scope. I found no false theorem in these Lean sources and
+no producer route that turns an unchecked certificate into a checked theorem.
+There are three manuscript-to-formalization gaps that should be resolved before
+submission, one of which hides a necessary sign hypothesis.
+
+This is a source-level mathematical review. I did not repeat the parent's full
+build or all benchmark tests. Successful builds and axiom audits remain separate
+evidence. Source hashes at the review snapshot are listed below.
+
+Findings requiring action
+
+1. Necessary actuator sign hypothesis is not explicit in the proposition.
+   main.tex lines 105–113 give qR+b<=R and 10R<=U^2, then conclude that the
+   rounded request has magnitude strictly below U under the "full feasible
+   budget." This phrase is not a defined list of assumptions. In particular,
+   U>=0 is essential, and does not follow from the displayed squared condition.
+   The Lean theorem correctly assumes hU: 0<=U.
+
+   Concrete exact counterexample to a reading that omits U>=0:
+     theta=1/240, hmin=1/20, delta=1/10000, W=1/4000,
+     R=1/10, U=-1, x=v=0.
+   Then q=28679/28800, b=6507/50000000, and
+     R-qR-b=260999/900000000>0; 10R=U^2.
+   All other displayed conditions hold, while the rounded request is zero and
+   the alleged conclusion 0<-1 is false.
+
+   Fix: explicitly list theta>0, delta>0, W>=0, U>=0, hmin<=1/2, V<=R,
+   qR+b<=R, and 10R<=U^2 in the proposition or a precisely defined preceding
+   certificate predicate. The Lean theorem does not require hmin>=0 for this
+   particular conclusion; the trajectory theorems do require it. Do not silently
+   interchange the hypothesis lists of the one-step, invariant, and limitation
+   theorems.
+
+2. A model bridge is claimed for every segment but is missing for the generated
+   two-state examples at this snapshot.
+   main.tex line 84 says the equality of each segment to the generated transition
+   is checked. HeldModels.Jerk.segment_eq_transition and
+   HeldModels.Planar.segment_eq_transition establish this for their generated
+   benchmarks. SampledPD proves initial conditions and derivatives for its own
+   two-state formulas, but a source search found no equality connecting those
+   formulas to Generated.DoubleIntegrator.transition or
+   Generated.DoubleIntegratorWide.transition.
+
+   Their polynomials visibly agree, so this is an easy missing formal bridge,
+   not a suspected mathematical discrepancy. Add explicit equality theorems (and
+   the vector energy correspondence if claiming the same P-energy interface),
+   or restrict line 84 to the jerk and planar examples. Reusing a mathematically
+   identical polynomial by human inspection is not yet the claimed Lean bridge.
+
+3. Robust invariance and ultimate bounds must be identified as sample-time
+   guarantees; the manuscript should not imply the same R-bound at all real times.
+   Certificate.pd_quantized_invariant and pd_quantized_guarantee quantify natural
+   sample indices. They do not assert V(segment(t,z_n))<=R for every
+   0<=t<=h_n. In particular, substituting an intermediate t<hmin into the
+   trajectory certificate's hmin-based budget is not justified.
+
+   HeldModels provides stronger nominal statements for jerk/planar: every segment
+   offset 0<=t<=h_n is bounded by the same sample-index geometric envelope. These
+   are sound and should be reported with those quantifiers. The new robustness
+   instance has no corresponding theorem. The older disturbed intersample result
+   at h<=1/6 with different budgets does not establish the newer h<=1/2 claim.
+
+   Fix: state explicitly after the robust recurrence/ultimate bound that those
+   results hold at samples, and state the separate nominal segment guarantee.
+   Keep global real-time assembly, no-Zeno coverage, and robust intersample bounds
+   as separate obligations unless proved. This is a formal coverage limitation,
+   not a claim that the desired intersample statement is false.
+
+Positive-form and interval-certificate checks
+
+- The interval substitution t=(h-a)/(b-a) uses a<b and correctly obtains
+  0<=t<=1. All interval points are quantified; no finite sample grid is used.
+- The sum of PSD Bernstein coefficients with nonnegative weights is PSD. The
+  independently proved sum-of-weights identity is unnecessary for this cone
+  argument, which is fine. Coefficients need only be semidefinite.
+- The LDL soundness theorem does not need triangular or nonsingular L. Those
+  properties are useful for finding certificates, but C=L diag(d)L^T and d>=0
+  already imply PSD. Zero diagonal entries in a coefficient witness are safe.
+- The exact identity multiplied by h connects the producer's divided residual
+  to the actual matrix P-A(h)^T P A(h)-hcI. Nonnegative h is essential when
+  scaling PSD; the generated decrease proof derives it from the partition.
+- A(0)=I makes symbolic division polynomial. At h=0 the checked identity is
+  still meaningful and the decrease becomes equality/nonexpansion; no division
+  by zero appears in the accepted theorem.
+- P is now checked positively through lowerBound>0 and the PSD witness for
+  P-lowerBound I, in addition to the producer's strict rational LDL check.
+  Thus positivity is not merely a Python assertion. Likewise the upper energy
+  witness is checked in Lean. These address the earlier negative-P loophole.
+- The choices lowerBound=1/tr(P^{-1}) and upperBound=tr(P) are conservative valid
+  bounds for positive-definite P; acceptance depends on direct checked matrix
+  witnesses, not on trusting this spectral fact or numerical eigenvalues.
+- The generic energy_bounds theorem itself permits nonpositive constants. It
+  correctly promises only the inequalities. The generated lower_pos and
+  upper_pos declarations supply the positivity needed for state control.
+- The finite coverage implementation uses ordered partition endpoints and exact
+  case splits. The generic covered_psd theorem actually permits any index type;
+  its conclusion needs only the explicit cover, not finiteness.
+
+Geometric rate, jitter, and ultimate-bound checks
+
+- contract_of_decrease uses h>=0, c>=0, upper>0, and V<=upper||x||^2. Its sign
+  manipulation is correct: subtracting hc||x||^2 gives at least the advertised
+  energy contraction. It does not by itself require V positive.
+- jitter_energy DOES require P PSD because it compares the h_n-dependent factor
+  to the hmin-dependent factor using V>=0. It also requires the final factor
+  q>=0. Generated examples prove that numerical factor condition explicitly.
+- The bound is pathwise for every sequence satisfying the interval and recurrence
+  hypotheses. No independence, distribution, smoothness of the jitter, or fixed
+  sampling period is assumed.
+- With hmin>0, c>0, upper>0 and 0<=q=1-hmin*c/upper, q<1. Combining lower energy
+  coercivity gives ||x_n||^2 <= (upper/lower) q^n ||x_0||^2. The manuscript's
+  geometric conclusion is mathematically justified. With hmin=0, only the
+  printed nonexpansion envelope follows; there is no positive decay rate.
+- Even hmin>0 is not by itself a formal global real-time theorem in the current
+  artifact. One needs sample times t_n=sum_{k<n}h_k, divergence/coverage, and
+  gluing. Upper sampling bounds and sample-index decay can then give a real-time
+  envelope, but that additional conclusion is not presently claimed in Lean.
+- The quadratic Young inequality uses nonnegativity of Q and theta>0 correctly.
+  The local induction does not assume the future invariant it is proving: the
+  current-step bound is used under the inductive sublevel hypothesis.
+- The affine transient formula is valid for 0<=q<1 even when the initial energy
+  lies below the eventual floor. The eventual epsilon statement is correctly
+  weaker than convergence to the floor, and much weaker than convergence to zero
+  with persistent disturbances. No such stronger claim should be inferred.
+- A nonnegative generic Q can be degenerate, including Q=0. Therefore the generic
+  sublevel invariant is not automatically a bounded physical state region. The
+  concrete positive PD form has separate coercivity; applications of the generic
+  API need their own state-to-energy relation.
+- Arbitrary disturbance sequences are allowed from one sample to the next, but
+  each concrete w_n is held constant over that interval. No arbitrary measurable
+  disturbance theorem or floating-point refinement is present.
+
+Producer review
+
+The producer accepts only rational literals, checks shape and P symmetry,
+rejects nonpositive energy pivots, forms exact Bernstein coefficients, and emits
+Lean reconstructions. The power-to-Bernstein formula is correct. Python assertions
+are outside the proof trust boundary; removing them would not make false emitted
+Lean identities pass. The generic mathematical theorem assumes certified PSD
+residuals, so a producer rejection only means this sufficient certificate attempt
+failed. It does not establish instability or maximality of the accepted interval.
+
+The producer consumes the rational P/A/partition/margin fields, not every descriptive
+field in the input JSON. Model prose and auxiliary metadata are not themselves
+verified plant semantics. The separately proved generated-transition equalities
+are therefore important. No source edits were made during this review.
+
+Fresh skeptical review of the provisional rank-four MF-13 argument
+
+I re-expanded the argument from its matrix definitions and did not find a sign,
+factor-of-two, or outside-support coupling error. It remains a hand derivation,
+not a completed Lean theorem and not a novelty claim.
+
+Key details that survived review:
+1. For S^T=S, K^T=-K, S^2=-K^2, the first two norm terms cancel, leaving
+     ||L_A(S)||_F^2-||L_A(K)||_F^2
+       =2 tr((AS)^2+(AK)^2).
+   The sign on the K cross term is opposite because K^T=-K.
+2. For K=diag(lambda_i J,0) and S=diag(lambda_i R_i,0), each diagonal block
+   contributes 2 lambda_i^2[(tr(B_ii R_i))^2+(tr(B_ii J))^2]. This uses the exact
+   2x2 trace/determinant identity and det(R_i)=-1, det(J)=1.
+3. With two active blocks, a signed SVD of B_12 using U,V in SO(2), not arbitrary
+   O(2), makes that block diagonal while preserving each canonical J block.
+   Choosing both reflections X=[[0,1],[1,0]] cancels the sole cross term for ANY
+   opposing B_21. Rank-one or zero B_12 is not an exception to signed SVD.
+4. For A=[[B,C],[D,E]] and supported K, the outside contribution is
+   2||D K||_F^2. The same-square S gives the same contribution. C/E are absent.
+5. The published K7 witness's leading 6x6 minor has exact determinant
+   47114175364 (independently computed with Fraction elimination). A real odd
+   skew matrix has zero determinant, so this proves rank(K7)=6. Therefore the
+   proposed universal rank-six same-square extension is genuinely obstructed by
+   the known 7D example; it is not merely a numerical warning.
+
+Formalization/review obligations before using rank-four exclusion in a paper:
+- Orthogonal real skew canonical form with rank determining the number of active
+  2x2 blocks; include rank zero and lower ambient dimensions.
+- The signed 2x2 SVD existence theorem with BOTH factors in SO(2); allowing an
+  orientation reversal without tracking the resulting J sign is a real pitfall.
+- Exact Frobenius trace identities, block decomposition, and the same-square norm
+  equality. Do not rely only on the 400 floating-point construction checks.
+- Construction of the symmetric witness under the inverse orthogonal transform,
+  preserving its norm and its gain comparison.
+- To conclude that BOTH members of a strict 6D singular pair are invertible:
+  even-rank parity for real skew matrices, existence/normalization of the top skew
+  singular pair, identification of the restricted adjoint with L_(A^T), and equality
+  of corresponding restricted operator norms. Rank<=5 alone is not rank<=4; parity
+  is an essential missing link.
+- Literature verification against the full Chen–Tian proof before any novelty
+  statement. The full proof was not accessible during this review.
+
+No MF-13 claim should be added to the controls manuscript on the strength of this
+hand derivation. Keeping the mathematical exploration separate is appropriate.
+
+Snapshot SHA-256
+main.tex:
+  6d6ef01d24507e23feeb0c4e60522398dbe30c23be2a708063548308f55ea596
+BernsteinCertificate.lean:
+  dc48b69387b257dabe93f13f7c72ebbed7caf26d4303da761a28ebfdcbd3cac3
+Certificate.lean:
+  c8e198692ba139cbeee30e3b5164e929bfb4dbdec6a84641d986c458ad7101d9
+generate_interval_certificate.py:
+  8f7eee405f4cbd3d4b92f807f2972d10f026c14314eec09106cbf19f1a35cbc1
+HeldModels.lean:
+  21a479c8443097549e49d605291ee525ebe3a49a57372b0c4817f85dad0f458a
+SaturationBoundary.lean:
+  aaeb3d7fd221067c4363c8b26f316bfc41d7077343954039b113471d29eafb51

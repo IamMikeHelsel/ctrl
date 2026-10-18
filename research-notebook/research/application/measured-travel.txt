@@ -1,0 +1,116 @@
+MEASURED REQUESTS AND CONTINUOUS-TIME TRAVEL SAFETY — 17 October 2026
+
+VERIFIED STATUS
+New module: lean-controls/LeanControls/MeasuredTravel.lean.
+Clean successful Lake build under Lean 4.35.0; 27 theorem closures audited.
+Every closure uses only propext, Classical.choice and Quot.sound.
+No sorry, custom axiom or compiler-trust axiom appears in these closures.
+SHA-256: c916addd0377d644235c882facf11d649e541504dd88b7c37bb37b62f151fe59
+Audit: measured-travel-axioms.log. Manifest: measured-travel-verification.json.
+Existing modules, root import and aggregate audit were not edited by this task.
+
+ACTUAL HELD MODEL
+State z=(position,velocity,acceleration), normalized lag time constant one.
+At sample n the nominal request is k(z_n)=-x_n-3*v_n-2*a_n.
+A held scalar request error e_n enters BEFORE clipping. A held physical input
+disturbance d_n enters AFTER clipping. The actual command driving the plant is
+  u_n = clamp_1(k(z_n)+e_n)+d_n.
+The segment is the exact analytic held solution from SaturatedLag.heldSegment.
+segment_ode proves its local ODE x'=v, v'=a, a'=-a+u_n.
+Both errors are constant within each held interval and may change at updates.
+No assumption makes the nominal or erroneous command stay inside the clamp.
+
+KEY REDUCTION
+Define
+  w_eff(z,e,d)=clamp_1(k(z)+e)-clamp_1(k(z))+d.
+Global clamp nonexpansivity gives
+  |w_eff| <= |e|+|d|.
+Exact command cancellation proves
+  MeasuredTravel.segment(t,z,e,d)
+    = SaturatedLag.segment(t,z,w_eff(z,e,d)).
+Thus the previously checked TravelSafety.segment_invariant applies whenever
+  |e|+|d|<=1/100, 0<=t<=1/5, and V(z)<=12.
+This preserves the same matrix P, region, travel bound and timing interval.
+It is not a new control-theoretic nonexpansivity result; it is a checked
+composition connecting the actual pre-clamp error placement to the existing
+held-disturbance certificate.
+
+EXECUTION AND EVERY-REAL-TIME GUARANTEE
+samples(h,e,d,z0) is defined recursively using the actual perturbed segment.
+state(h,e,d,z0,t) uses SamplingClock.segmentIndex and that recursion to evaluate
+the exact containing held segment. No recurrence-feasibility assumption is used.
+state_at_sample proves agreement at every sample boundary.
+
+MeasuredTravel.travel_limit states that for every:
+  initial state z0 with V(z0)<=12,
+  positive hmin with hmin<=h(n)<=1/5 for every n,
+  error/disturbance sequences satisfying |e(n)|+|d(n)|<=1/100 for every n,
+  nonnegative real time t,
+we have |state(h,e,d,z0,t)[0]|<=2.
+The proof supplies an energy invariant V<=12 as well.
+Positive hmin excludes infinitely many updates before a finite time. It is not
+assumed in the local segment theorem or sampled invariant, which permit h=0.
+No safety statement is made for negative t or for the selector's fallback cases.
+
+CONTINUOUS ASSEMBLY AND ODE
+An effectiveErrors sequence is defined from the already constructed actual
+sample states; there is no circular choice of a hypothetical safe trajectory.
+samples_eq_effective and state_eq_effective identify this execution with the
+existing TravelSafety execution driven by that effective sequence.
+state_continuousOn_nonnegative transfers continuity on [0,infinity).
+state_ode_interior transfers the ODE to every open sample interval, with its
+RHS simplified back to the ACTUAL clamp(k(actual_sample)+e_n)+d_n.
+The derivatives may jump at sample boundaries; no boundary derivative or
+arbitrary-time-varying-within-an-interval disturbance claim is made.
+These continuity/ODE statements require positive minimum intervals, but do
+not require the safety budget; they describe the defined execution itself.
+
+NONVACUITY WITH ACTIVE CLIPPING
+active_initial checks z0=(0,0,1), e=d=1/200:
+  V(z0)=278/25<12,
+  |e|+|d|=1/100,
+  k(z0)+e=-399/200<-1,
+  clamp_1(k(z0)+e)=-1.
+Both errors are nonzero and clipping is genuinely active.
+active_example_travel instantiates constant period 1/10 and those nonzero
+error/disturbance sequences, proving travel safety for every real t>=0.
+Only initial active clipping is asserted by this example; the theorem allows
+clipping wherever it occurs without assuming it later becomes inactive.
+
+IDEAL SENSOR ROUNDING APPLICATION
+roundedRequest(dx,dv,da,z) computes
+  -quantize(dx,x)-3*quantize(dv,v)-2*quantize(da,a),
+with Quantized.quantize(delta,x)=delta*round(x/delta), over mathematical reals.
+For independently positive grid widths dx,dv,da,
+  |roundedRequest-k(z)| <= dx/2+3*dv/2+da.
+The factor da is 2*(da/2), from the acceleration gain magnitude 2.
+roundedSegment_eq_held confirms that this rounded request is passed through
+the clamp before adding d, rather than replaced by an unclipped approximation.
+roundedSamples is a separate actual recursive execution: the sensor values
+are computed from its own current state at each sample. roundedState assembles
+these exact held segments, with checked sample-boundary agreement.
+
+rounded_travel_limit proves the same every-real-time travel bound under
+  dx>0, dv>0, da>0,
+  dx/2+3*dv/2+da+W<=1/100,
+  |d(n)|<=W for all n,
+plus the same initial region and positive-minimum jitter assumptions.
+W>=0 need not be a separate premise because any feasible absolute-value bound
+|d(n)|<=W already implies it. The rounded initial excess need not vanish for
+the general theorem.
+rounded_active_example checks the concrete positive widths
+  dx=dv=da=1/1000, W=7/1000.
+The combined budget is exactly 1/100. At z0=(0,0,1), these grids represent the
+initial coordinates exactly, so the rounded request remains -2 and clips to -1.
+The generic rounded theorem applies to all admissible held disturbances and
+jitter, not just this initial example.
+
+APPLICATION LIMITS
+This is an exact-real normalized model, with ideal nearest-grid sensing and
+exact real arithmetic thereafter. It does not certify IEEE operations,
+finite-bit registers, overflow, finite sensor range, controller scheduling,
+communication delay, unmodeled lag/plant uncertainty, or physical calibration.
+Such effects require separate request/physical-error bounds or a stronger model.
+The separate PhysicalTravel work can scale time, state, actuator limit and these
+error budgets; that dimensional transformation does not supply hardware data.
+No empirical hardware performance or publication novelty is asserted here.

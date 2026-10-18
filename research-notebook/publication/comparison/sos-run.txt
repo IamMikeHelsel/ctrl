@@ -1,0 +1,149 @@
+SAME-OBJECT SOS EXECUTION REPORT — 17 October 2026
+
+RESULT
+The exact baseline polynomial residual now has a checked frozen sos_witness
+replay in leanprover/sos. The witness was translated from our pre-existing
+Bernstein certificate. This is successful shared-witness interoperability,
+not successful independent SOS discovery. Both attempted numerical searches
+returned "search failed to find a certificate". Neither failure establishes
+infeasibility, instability, SOS incompleteness for this object, or superiority
+of Bernstein certificates. The successful replay itself demonstrates an SOS
+certificate exists for the exact target.
+
+ACCEPTED ARTIFACT
+publication/comparison/VerifiedSOSReplay.lean is a byte-identical copy of the
+successfully checked SOSSharedWitnessReplay.lean. The word "candidate" in its
+unchanged source comment records its drafting origin; acceptance evidence is
+this report and the axiom logs, not that comment.
+SHA-256: 2ceb05c18f281f9483596660bfa56bc35520ad0b4c8e6c6c235dfcc41e16c39c
+UTF-8 source size: 1805 bytes (includes comments, definition,
+one theorem and axiom query; this is not kernel proof-term size).
+Witness tactic text: 994 UTF-8 bytes, representation-specific.
+Three successful fresh Lean processes each report exactly:
+  [propext, Classical.choice, Quot.sound]
+No sorryAx or compiler-trust axiom appears in the accepted theorem closure.
+The file contains no numerical search tactic. The full SOS import still
+builds/loads the FFI library; solver-free replay here means no CSDP solve is
+invoked by sos_witness, not removal of all native dependencies.
+
+FIXED OBJECT
+A(h) = [[1-h^2, h-(3/2)h^2], [-2h, 1-3h]].
+P = [[5,1],[1,1]], c=1, H=1/2.
+The theorem is, for every real h,x,v,
+  0 <= h -> h <= 1/2 -> residual(1,h,x,v) >= 0.
+The residual is exactly the polynomial extension of
+  [x,v] ((P-A(h)^T P A(h))/h - I) [x,v]^T.
+A separate exact SymPy check against the benchmark JSON confirms the polynomial
+identity and the eight-square expansion (SOSExactIdentity.json). That symbolic
+check is supporting evidence; the accepted nonnegativity proof is Lean-checked.
+Input SHA-256: 60906bc5693c5af3dadbea02163467d4f58a47aad7e114676d20382e326597cb.
+This file proves the scalar residual claim only. Composed energy, sampling,
+held dynamics and robust-control claims remain with their separately checked
+original bridges; no new downstream conclusion is claimed here.
+
+FROZEN WITNESS DERIVATION
+Set q=1-2h. Then residual = h*sigma0 + (1/2-h)*sigma1, where
+  sigma0 = 24 [q(x+3v/16)]^2 + (389/32)(qv)^2
+           + 35 [h(x+17v/70)]^2 + (94/35)(hv)^2,
+  sigma1 = 6(qx)^2 + 6(qv)^2
+           + 112 [h(x+17v/56)]^2 + (943/28)(hv)^2.
+All eight rational weights are positive. The two multipliers are exactly the
+two interval hypotheses. The reifier atoms are h,x,v (indices 0,1,2), with
+constraint indices 0 for h and 1 for 1/2-h.
+This follows by writing the existing cubic Bernstein certificate at t=2h:
+  C0(1-t)^3 + 3C1*t(1-t)^2 + 3C2*t^2(1-t) + C3*t^3,
+then using each 2x2 coefficient's exact LDL square decomposition and grouping
+the first/third terms under (1/2-h), second/fourth under h. The resulting
+witness is independently accepted by SOS's rational checker but shares the
+original witness information; do not present it as independent discovery.
+
+PINNED ENVIRONMENT
+SOS: fb7ae417609093f04cf0608dc92e9343550c2ae4
+https://github.com/leanprover/sos/tree/fb7ae417609093f04cf0608dc92e9343550c2ae4
+Lean: leanprover/lean4:v4.33.1, installed only under workspace .tools/elan.
+Mathlib: 0df444a360eaa60ab8c11dca51a86af692955474.
+csdp-ffi: eb41f276101847dd799c703e2378a544591aebf4, vendored CSDP 6.2.0.
+Apple M4 Max, macOS 27.0.1 (26A434), arm64; Accelerate linkage confirmed with
+otool. Complete dependency revisions/configuration are in SOSMetadata.json.
+Original lean-controls toolchain and sources were not modified by this task.
+No AGENTS.md was present in the SOS or CSDP checkout. Repository README and
+native build instructions were inspected. No system-wide install was used.
+The SDK was already present. Native link warnings report a macOS 27 object
+against minimum deployment target 13; the library built and executed here.
+No portability claim for older macOS systems is made.
+
+EXECUTION AND TIMINGS (ALL ATTEMPTS DISCLOSED)
+- Toolchain installation and dependency cache download succeeded. They were
+  setup work, not measured as a clean install benchmark. 8,690 mathlib cache
+  files were downloaded; library/native build followed the cache acquisition.
+- Dependency/SOS library build after cached mathlib: 37.294902 s,
+  exit 0. SOSBuild.log and SOSBuildTiming.json.
+- Independent discovery, default config: 25.863268 s, exit 1,
+  search failure (not timeout). SOSDiscovery.log/SOSDiscoveryTiming.json.
+- Independent discovery, maxDepth=2: 81.809589 s, exit 1,
+  search failure (not timeout; timeout bound was 120 s).
+  SOSDiscoveryDepthTwo.log/SOSDiscoveryDepthTwoTiming.json.
+- Both configurations retained maxRoundingDenomLog2=66, basisStrategy=newton,
+  maxSubsetCardinality=2, maxRefutationPower=0. Default maxDepth=1.
+  IMPORTANT SOURCE/DOC DISCREPANCY: Engine.lean implements iterative deepening
+  at default depth 1; README's fixed-level description is stale at this commit.
+  Reify.lean also recognizes general a<=b hypotheses via subtraction.
+- Initial manual replay preparation failed once because the namespace CPoly
+  had not been opened (8.975434 s); the log is preserved as
+  SOSSharedWitnessNamespaceFailure.log. Adding `open CPoly` fixed the source.
+  This was an adapter elaboration error, not a certificate rejection.
+- Successful shared-witness Lake module build: 13.215154 s.
+- Fresh-process solver-free replay runs: 5.680503 s,
+  3.982271 s, 4.057065 s.
+  Median 4.057065 s; range 3.982271–5.680503 s.
+  Each command launches lake env lean on the source with its generated setup
+  JSON, after dependencies are built; each includes imports, elaboration,
+  checking, axiom query and Lake launch overhead. OS caches are warm. Ordinary
+  shared-host load was not isolated. Logs and exact commands are preserved in
+  SOSReplayResults.json and SOSReplay1/2/3.log.
+
+NO RELATIVE PERFORMANCE CONCLUSION
+Our existing 4.47 s baseline number covers a larger generated module and uses
+Lean 4.35.0; the SOS result above covers this target on Lean 4.33.1. Those
+numbers do not support a faster/slower claim. An isolated common-target
+Bernstein replay with explicitly matched timing boundaries is still needed.
+No sampling-conservatism sweep or wide-case discovery/replay was attempted.
+Only c=1,H=1/2 was executed. No hypothetical wider success is inferred.
+
+REPRODUCTION
+The pinned checkout is research/sos-comparison. With its dependencies built:
+  python3 publication/comparison/SOSReplayRunner.py
+The runner checks the source bytes, builds the module, runs three fresh checks,
+checks the expected axiom output and writes raw timings/logs. To rebuild from
+that checkout use its own Lean 4.33.1 toolchain and `lake exe cache get`, then
+`lake build SOS`; do not replace the main project's toolchain.
+Failed search sources are explicitly UNVERIFIED-SOSDiscovery*.lean in this
+comparison directory and experiments/SOSDiscovery*.lean in the SOS checkout.
+They have been removed from SOSTest so they are not accepted package tests.
+Their failure logs contain temporary elaborator sorryAx output; those are
+negative evidence, never accepted proof audit entries. The original
+UNVERIFIED-SOSComparison.lean is unchanged and includes an unexecuted wide goal.
+For rerunning discovery, copy the chosen exploratory file into SOSTest under
+its recorded module name and use the recorded `lake build` command; preserve
+the 120-second bound for depth two. No claim is made that more search effort,
+preprocessing or another solver configuration could not find a witness.
+
+PUBLICATION IMPLICATION
+This gives real equal-object evidence that the existing SOS checker accepts
+the same baseline certificate after a small explicit translation. It weakens
+any novelty argument based on existence of rational, solver-free Lean replay.
+A contribution must instead be justified by useful certificate interfaces,
+checked dynamics/composition, substantive applications or fair measured reuse
+benefits. These execution results establish neither mathematical novelty nor
+publication acceptance.
+
+PORTABILITY RECHECK
+
+The runner was updated to honor LAKE/ELAN_HOME and standard elan/PATH resolution,
+then rerun successfully without changing the accepted Lean source or witness.
+Current fresh-process times (seconds): 9.826220, 3.217290, 3.261642. Median: 3.261642.
+All three axiom reports again contain only the three allowed standard axioms.
+The original timing records quoted above are preserved in SOSReplayResults-initial.json,
+SOSReplay1-initial.log through SOSReplay3-initial.log, and
+SOSSharedWitnessBuild-initial.log. Current files contain the portability recheck.
+See REPRODUCE.txt for preparation from a source archive without bundled toolchains.

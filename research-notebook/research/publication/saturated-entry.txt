@@ -1,0 +1,58 @@
+Checked active-saturation recovery episode
+=========================================
+Source: lean-controls/LeanControls/SaturatedEntry.lean
+Main theorem: LeanControls.SaturatedEntry.recovery_guarantee
+
+Result
+------
+A genuine actively clipped trajectory is now connected to the existing robust invariant theorem. It starts at the single normalized state (x,v)=(1,0), outside the V<=0.1 local operating set. The first 26 sampling intervals are exactly h=0.1, with zero acceleration disturbance. At least the first four commands are actively clipped by the unit actuator limit. The rational trace enters V<=0.1 at sample 26. Every later sampling interval may vary arbitrarily in [0.05,0.5], and every later held acceleration disturbance may vary arbitrarily with |w|<=0.00025. The same rounded/clipped controller is used throughout.
+
+The checked conclusions are:
+  1. On commands n=0,1,2,3, the rounded request has magnitude >1 and the applied input equals -1.
+  2. V(x_n,v_n)<=5 at every sample index n.
+  3. V(x_(n+26),v_(n+26))<=0.1 for every n>=0.
+
+The finite prefix lasts normalized time 2.6. The endpoint is
+  x_26=148931/1000000,
+  v_26=-7039/50000.
+Its energy, by exact rational evaluation, is
+  17757641969/200000000000 ~= 0.088788209845.
+The first four rounded requests are exactly -2, -1.69, -1.36, and -1.01; all four are clipped to -1.
+
+What the proof actually checks
+-----------------------------
+The controller uses mathematical nearest-grid rounding with delta=1/10000, with ties toward positive infinity as defined in mathlib. The state update is
+  u_n=clip[-1,1](-2 quantize(delta,x_n)-3 quantize(delta,v_n)),
+  x_(n+1)=x_n+h_n*v_n+(h_n^2/2)*(u_n+w_n),
+  v_(n+1)=v_n+h_n*(u_n+w_n).
+
+The source defines the actual recursive trajectory run(h,w), so this is not merely a claim about a potentially nonexistent sequence. An untrusted exact Python Fraction calculation proposed the 27 rational states. Lean checks each of the 26 transitions against the actual rounded, clipped formula, including explicit round_eq_iff proofs for the intermediate rational rounding decisions. The 26 step facts are private helpers, not 26 claimed mathematical research results.
+
+run_prefix then proves by induction that any actual trajectory satisfying the prefix scheduling/disturbance hypotheses equals the checked rational witness through sample 26. prefix_bounded checks all 27 sample energies against 5, and prefix_entry checks the entry condition. tail_safe applies Quantized.safe_trajectory to the shifted actual run. recovery_guarantee composes the finite recovery episode and the infinite robust tail.
+
+Verification
+------------
+  lake build LeanControls.SaturatedEntry: succeeded.
+  Seven public theorem declarations separately audited with #print axioms:
+    prefix_step, prefix_bounded, prefix_entry, prefix_active,
+    run_prefix, tail_safe, recovery_guarantee.
+  All use only propext, Classical.choice, Quot.sound.
+  No sorry, custom axioms, native_decide, or untrusted numerical decision is used.
+
+A corruption test changed x_26 by +1/1000000 while leaving the other witness data and proof intact. Lean rejected the altered prefix_step_25 proof. The valid file remains unchanged.
+
+Recheck from lean-controls:
+  ELAN_HOME="$PWD/../.tools/elan" ../.tools/elan/bin/lake build LeanControls.SaturatedEntry
+  #print axioms LeanControls.SaturatedEntry.recovery_guarantee
+
+Scope
+-----
+This is one rigorously checked recovery episode, not a region-wide active-saturation stability theorem. The finite recovery phase has a fixed sample interval and zero disturbance. Timing jitter and disturbances are allowed only after sample 26. A neighborhood of initial states, a disturbed recovery prefix, and a general basin of attraction are not certified.
+
+The reported V bounds are at sample instants. No continuous-time intersample bound for the recovery prefix is asserted. The arithmetic is over exact mathematical reals and ideal quantization; machine floating point, sensor implementation, physical parameter correspondence, and hardware behavior are not covered.
+
+This result is consistent with SaturationBoundary.budget_forces_clipping_inactive: the finite prefix starts outside that local invariant budget and is checked separately. Once the trajectory reaches the robust set, the local theorem controls the infinite tail. This gives a truthful active-saturation example without pretending the original invariant certificate covered active clipping.
+
+Publication relevance
+---------------------
+The contribution here is compositional verification of a concrete recovery episode followed by a robust infinite-time regime, including exact quantization and saturation semantics. It is not claimed as a new control-theoretic result or an open-problem solution. A stronger paper would parameterize and automate finite-entry certificates, cover a nontrivial set of initial conditions, and compare assumptions and verification cost with prior work.

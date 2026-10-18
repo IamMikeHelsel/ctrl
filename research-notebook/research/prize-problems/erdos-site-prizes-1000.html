@@ -1,0 +1,4016 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+
+<title>Erdős Problems</title>
+<meta property="og:title" content="Erdős Problems">
+<link rel="icon" href="/static/favicon.ico">
+<link rel="stylesheet" href="/static/style.css?v=96ccfe07">
+
+<script>
+document.addEventListener('click', (e) => {
+  // Toggle reply form
+  const toggle = e.target.closest('.reply-toggle');
+  if (toggle) {
+    const id = toggle.getAttribute('data-target');
+    const form = document.getElementById(id);
+    if (form) form.classList.toggle('hidden');
+  }
+  // Reply with quote
+  const quoteBtn = e.target.closest('.reply-quote');
+  if (quoteBtn) {
+    const id = quoteBtn.getAttribute('data-target');
+    const form = document.getElementById(id);
+    if (!form) return;
+    const ta = form.querySelector('textarea');
+    const raw = quoteBtn.getAttribute('data-raw') || '';
+    const quoted = raw.split('\n').map(l => '> ' + l).join('\n') + '\n\n';
+    ta.value = quoted;
+    form.classList.remove('hidden');
+    ta.focus();
+    const len = ta.value.length;
+    ta.setSelectionRange(len, len);
+  }
+});
+</script>
+
+<!-- This creates the reference in the bibliography box. -->
+
+<script>
+function addNewBox(key, problem_id, shouldScroll = false) {
+  const local_id = 'bib-container' + String(problem_id);
+  const container = document.getElementById(local_id);
+  if (!container) return;
+
+  container.innerHTML = "";
+
+  fetch(`/bibs/${encodeURIComponent(key)}`)
+    .then(res => {
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return res.text();
+    })
+    .then(html => {
+      container.innerHTML = html;
+
+      if (shouldScroll) {
+        requestAnimationFrame(() => {
+          container.scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+          });
+        });
+      }
+    })
+    .catch(err => {
+      console.error("Failed to load bib:", err);
+      container.textContent = "Unable to load reference.";
+
+      if (shouldScroll) {
+        container.scrollIntoView({
+          behavior: "smooth",
+          block: "start"
+        });
+      }
+    });
+}
+</script>
+
+<script>
+const filledSVG = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="black" class="fav-icon">
+  <path fill-rule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.006 5.404.434c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.434 2.082-5.005Z" clip-rule="evenodd" />
+</svg>
+                `;
+const outlineSVG = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke="black" fill="white" class="fav-icon">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.610l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.840-.610l1.285-5.386a.563.563 0 0 0-.182-.557L3.041 10.385a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z" />
+</svg>
+                `;
+
+document.addEventListener("click", async (e) => {
+  const btn = e.target.closest(".fav-btn");
+  if (!btn) return;
+
+  e.preventDefault();
+  const problemId = btn.dataset.problemId;
+
+  try {
+    const res = await fetch(`/forum/toggle_favourite/${problemId}`, { method: "POST" });
+    const data = await res.json();
+
+    btn.dataset.favourited = data.favourited ? "true" : "false";
+    btn.innerHTML = data.favourited ? filledSVG : outlineSVG;
+  } catch (err) {
+    console.error("Toggle failed:", err);
+  }
+});
+</script>
+
+    
+<script>
+function addImageBox(X, problem_id, shouldScroll = true) {
+  const local_id = 'image-container' + String(problem_id);
+  const container = document.getElementById(local_id);
+  if (!container) return;
+
+  container.innerHTML = "";
+
+  const newBox = document.createElement("div");
+
+  const img = document.createElement("img");
+  img.src = `/static/${encodeURIComponent(X)}.png`;
+  img.className = "responsive-image";
+  img.alt = String(X);
+
+  newBox.appendChild(img);
+  container.appendChild(newBox);
+
+  if (shouldScroll) {
+    requestAnimationFrame(() => {
+      container.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+      });
+    });
+  }
+}
+</script>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const form = document.getElementById('searchForm');
+  if (!form) return;
+  form.addEventListener('submit', function (e) {
+    const input = form.querySelector('.searchTerm');
+    if (!input) return;
+    const value = input.value.trim();
+    if (!value) return;
+    const path = '/search/' + encodeURIComponent(value);
+    const inDual = window.location.pathname.startsWith("/dual");
+    if (inDual) {
+      e.preventDefault(); 
+      const selected = document.querySelector('input[name="targetPanel"]:checked');
+      const panel = selected ? selected.value : "left";
+      const iframe = document.getElementById(`iframe-${panel}`);
+      if (iframe) {
+        const url = path.includes("?") ? path + "&embed=1" : path + "?embed=1";
+        iframe.src = url;
+        const box = document.querySelector(`#panel-${panel} input`);
+        if (box) box.value = path;
+      } else {
+        window.location.href = path;
+      }
+    } else {
+      form.action = path;
+      form.method = "GET";
+    }
+  });
+});
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  if (window.location.pathname.startsWith("/dual")) return;
+
+  var form = document.getElementById('idsearchForm');
+  if (!form) return;
+
+  form.onsubmit = function() {
+    var input = document.querySelector('.idsearchTerm').value.trim();
+    var searchUrl;
+
+    if (/^\d+$/.test(input)) {
+        searchUrl = '/' + encodeURIComponent(input);
+    } else if (/^((\d+|end)(-(\d+|end))?\s*)+(open|solved|yes|no)?$/.test(input.toLowerCase())) {
+        let parts = input.split(/\s+/).filter(Boolean);
+        searchUrl = '/range/' + parts.map(encodeURIComponent).join('/');
+    } else {
+        alert("Enter either a single integer or a space-separated list of numbers/ranges...");
+        return false;
+    }
+    window.location.href = searchUrl;
+    return false;
+  };
+});
+</script>
+
+<script>
+  window.CURRENT_USERNAME = "";
+</script>
+
+
+<script>
+document.addEventListener("click", async (ev) => {
+  const btn = ev.target.closest(".reaction-btn");
+  if (!btn) return;
+  const you = window.CURRENT_USERNAME || "";
+  const bar = btn.closest(".reaction-bar");
+  const postId = bar?.dataset.postId;
+  const rtype = btn.dataset.type;
+  const reactUrl = bar?.dataset.reactUrl; 
+  if (!postId || !rtype || !reactUrl) return;
+
+  try {
+    const res = await fetch(reactUrl, {
+      method: "POST",
+      credentials: "same-origin",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({type: rtype})
+    });
+    const data = await res.json();
+    if (!data.ok) {
+      alert(data.error || "Could not update reaction.");
+      return;
+    }
+    const summary = data.summary;
+    
+    bar.querySelectorAll(".reaction-btn").forEach(b => {
+      const t = b.dataset.type;
+      const countSpan = bar.querySelector(`.reaction-count[data-type="${t}"]`);
+      if (countSpan && summary[t]) {
+        countSpan.textContent = summary[t].count;
+    const desc = b.dataset.desc || "";
+    const usersTitle = summary[t].users_title || "No one yet.";
+    b.title = `${desc}\n\n${usersTitle}`;
+      }
+        const iReacted = you && (summary[t].users_title || "").includes(you);
+  b.classList.toggle("active", !!iReacted);
+  b.setAttribute("aria-pressed", iReacted ? "true" : "false");
+    });
+  } catch (e) {
+    console.error(e);
+    alert("Only registered users with 5+ posts can react.");
+  }
+});
+</script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  document.body.addEventListener("click", function (e) {
+    const link = e.target.closest(".problem-reaction-link");
+    if (!link) return;
+
+    e.preventDefault();
+
+    const row = link.closest(".problem-reaction-row");
+    if (!row) return;
+
+    const form = row.querySelector(".problem-reaction-form");
+    if (!form) return;
+
+    const formData = new FormData(form);
+
+    fetch(form.action, {
+      method: "POST",
+      body: formData,
+      headers: {
+        "X-Requested-With": "XMLHttpRequest"
+      }
+    })
+      .then(resp => resp.json())
+      .then(data => {
+        if (!data.ok) {
+          console.error(data.error || "Problem reaction update failed");
+          return;
+        }
+
+        const summary = data.summary;
+
+        // Update users text for each reaction type
+        for (const [type, info] of Object.entries(summary)) {
+          const r = document.querySelector(
+            `.problem-reaction-row[data-reaction-type="${type}"]`
+          );
+          if (!r) continue;
+
+          const usersCell = r.querySelector(".problem-reaction-users");
+          if (usersCell) {
+            usersCell.textContent = info.users_title || "None yet";
+          }
+        }
+        link.classList.toggle("active");
+        if (link.classList.contains("active")) {
+          link.textContent = "(no)";
+        } else {
+          link.textContent = "(yes)";
+        }
+      })
+      .catch(err => {
+        console.error("Problem reaction AJAX error", err);
+      });
+  });
+});
+</script>
+
+
+
+
+
+
+</head>
+
+<body>
+
+<div class="topnav">
+
+  <div class="left">
+    <div class="logo">
+      <a class="dual-aware" href="/"><img src="/static/EPLogo.png" alt="Logo" height="50"></a>
+    </div>
+    <div class="links dual-aware desktop-nav">
+      <a href="/forum">Forum</a>
+      <a href="/dm">Inbox</a> 
+      <a href="/favourites">Favourites</a>
+      <a href="/tags">Tags</a> 
+      <div class="dropdown">
+        <a href="javascript:void(0)" class="dropbtn">More</a>
+        <div class="dropdown-content">
+          <a href="/faq">FAQ</a>
+          <a href="/prizes">Prizes</a>
+          <a href="/lists">Problem Lists</a>
+          <a href="/definitions">Definitions</a>
+          <a href="/links">Links</a>
+        </div>
+      </div> 
+    </div>
+    <div class="mobile-nav">
+    
+        <a class="forumlink" href="/forum">Forum</a>
+    <div class="dropdown">
+      <button class="dropbtn" id="mobileMenuButton">Menu</button>
+      <div class="dropdown-content">
+        <a href="/dm">Inbox</a> 
+        <a href="/favourites">Favourites</a>
+        <a href="/tags">Tags</a>  
+        <a href="/faq">FAQ</a>
+        <a href="/prizes">Prizes</a>
+        <a href="/lists">Problem Lists</a>
+        <a href="/definitions">Definitions</a>
+        <a href="/links">Links</a>
+      </div>
+     </div>
+    </div>
+  </div>
+
+  <div class = "middle">
+    <div class="button-container" style="max-width: 50%;">
+      <form id="idsearchForm">
+        <input required type="text" name="query" class="idsearchTerm" placeholder="# (or range #-#)" title="Enter either a single integer or a space-separated list of numbers/ranges, optionally ending with 'open' or 'solved'.">
+        <button type="submit" class="searchButton">Go</button>
+      </form>
+    </div>
+    <div class="button-container" style="max-width: 50%;">
+      <form id="searchForm">
+        <input required type="text" name="query" class="searchTerm" placeholder="Search" title="Search all problems.">
+        <button type="submit" class="searchButton">Go</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="right">
+    <a href="/random" class="split_neutral dual-aware">Random</a>
+  </div>
+
+</div>
+
+<div id="notifications-slot"></div>
+
+
+
+    
+    
+        
+            <div class="container">
+            <div class="solve_count"> 10 shown 
+            </div>
+            </div>
+        
+        
+            <div class="container">
+                <div class="problem-box">
+                
+                
+                
+<div class="problem-text" id=neutral> 
+ 
+ <div id="prize"> $1000</div>
+    
+
+
+
+    <div id="content">
+Can the smallest modulus of a covering system be arbitrarily large?
+    </div>
+
+    <div id="problem_id">
+<a href="/2">#2</a>: <a href="#bib-container2" onclick="event.preventDefault();addNewBox('Er55c', '2', true);return false;">[Er55c]</a><a href="#bib-container2" onclick="event.preventDefault();addNewBox('Er57', '2', true);return false;">[Er57]</a><a href="#bib-container2" onclick="event.preventDefault();addNewBox('Er61', '2', true);return false;">[Er61]</a><a href="#bib-container2" onclick="event.preventDefault();addNewBox('Er65', '2', true);return false;">[Er65]</a><a href="#bib-container2" onclick="event.preventDefault();addNewBox('Er65b', '2', true);return false;">[Er65b]</a><a href="#bib-container2" onclick="event.preventDefault();addNewBox('Er73', '2', true);return false;">[Er73]</a><a href="#bib-container2" onclick="event.preventDefault();addNewBox('Er77c', '2', true);return false;">[Er77c]</a><a href="#bib-container2" onclick="event.preventDefault();addNewBox('Er80', '2', true);return false;">[Er80,p.95]</a><a href="#bib-container2" onclick="event.preventDefault();addNewBox('ErGr80', '2', true);return false;">[ErGr80,p.24]</a><a href="#bib-container2" onclick="event.preventDefault();addNewBox('Er82e', '2', true);return false;">[Er82e]</a><a href="#bib-container2" onclick="event.preventDefault();addNewBox('Er85c', '2', true);return false;">[Er85c]</a><a href="#bib-container2" onclick="event.preventDefault();addNewBox('Er90', '2', true);return false;">[Er90]</a><a href="#bib-container2" onclick="event.preventDefault();addNewBox('Er95', '2', true);return false;">[Er95,p.166]</a><a href="#bib-container2" onclick="event.preventDefault();addNewBox('Er96b', '2', true);return false;">[Er96b]</a><a href="#bib-container2" onclick="event.preventDefault();addNewBox('Er97', '2', true);return false;">[Er97]</a><a href="#bib-container2" onclick="event.preventDefault();addNewBox('Er97c', '2', true);return false;">[Er97c]</a><a href="#bib-container2" onclick="event.preventDefault();addNewBox('Er97e', '2', true);return false;">[Er97e]</a><a href="#bib-container2" onclick="event.preventDefault();addNewBox('Va99', '2', true);return false;">[Va99,1.31]</a>
+    </div>
+
+ 
+    <div id="tags">
+
+<a href="/tags/number theory">number theory</a> | 
+
+<a href="/tags/covering systems">covering systems</a>
+
+    </div>
+
+</div>  
+
+<div class="problem-additional-text"> 
+
+Described by Erdős as 'perhaps my favourite problem'. Hough <a href="#bib-container2" onclick="event.preventDefault();addNewBox('Ho15', '2', true);return false;">[Ho15]</a>, building on work of Filaseta, Ford, Konyagin, Pomerance, and Yu <a href="#bib-container2" onclick="event.preventDefault();addNewBox('FFKPY07', '2', true);return false;">[FFKPY07]</a>, has shown (contrary to Erdős' expectations) that the answer is no: the smallest modulus must be at most $10^{16}$.<br><br>An alternative, simpler, proof was given by Balister, Bollobás, Morris, Sahasrabudhe, and Tiba <a href="#bib-container2" onclick="event.preventDefault();addNewBox('BBMST22', '2', true);return false;">[BBMST22]</a>, who improved the upper bound on the smallest modulus to $616000$.<br><br>The best known lower bound is a covering system whose minimum modulus is $42$, due to Owens <a href="#bib-container2" onclick="event.preventDefault();addNewBox('Ow14', '2', true);return false;">[Ow14]</a>.
+
+
+    <div id="bib-container2"></div>
+ 
+   
+    <div class="citationbox">
+        <div id="content">
+<b>Additional thanks to</b>: Alfaiz and Desmond Weisenberg
+
+        </div>
+    </div>
+
+    
+    <div class="image-container" id="image-container2"></div>
+</div>
+
+<div class="problem-info">
+
+
+
+<details class="problem-info-section">
+  <summary class="problem-info-row">
+    <span>Proof expositions (0)</span>
+  </summary>
+
+  <div class="problem-info-content problem-expositions">
+If you would like to contribute an exposition of a proof related to this problem, please <a href="https://www.erdosproblems.com/dm/with/moderator">message a moderator</a> or email <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="761304121905060419141a131b0519181a1f181336111b171f1a5815191b">[email&#160;protected]</a><p>
+
+
+    
+      <div class="problem-info-muted">
+        No proof expositions yet.
+      </div>
+    
+
+  </div>
+</details>
+
+<a class="problem-info-row problem-info-link" href="/forum/discuss/2">
+    <span>Comments (3)</span>
+  </a>
+
+  <a class="problem-info-row problem-info-link"
+     href="/forum/thread/2/proof-claims">
+    <span>Proof claims (0)</span>
+  </a>
+
+
+  <details class="problem-info-section">
+    <summary class="problem-info-row">
+      <span>More information and links</span>
+    </summary>
+
+    <div class="problem-info-content">
+
+      <div class="problem-info-small">
+
+This page was last edited 05 April 2026.
+ (<a href="/history/2">View history</a>) (<a href="/latex/2">View the LaTeX source</a>)<p>
+
+When referring to this problem, please use the original sources of Erd&#337;s. If you wish to acknowledge this website, the recommended citation format is:
+<p>
+T. F. Bloom, Erd&#337;s Problem #2, https://www.erdosproblems.com/2, accessed 2026-10-16
+</div>
+      <div class="problem-info-small">
+From the <a href="https://github.com/teorth/erdosproblems">external database</a>. (You can
+        <a href="https://github.com/teorth/erdosproblems">
+          help update
+        </a> this.)
+      </div>
+
+      
+
+        <div class="problem-info-data-row">
+          <span class="problem-info-label">Formalised statement?</span>
+          <span>
+            
+              <a href="https://github.com/google-deepmind/formal-conjectures/blob/main/FormalConjectures/ErdosProblems/2.lean">
+                Yes
+              </a>
+            
+          </span>
+        </div>
+
+        
+          <div class="problem-info-data-row">
+            <span class="problem-info-label">OEIS</span>
+
+            <span>
+              
+                
+                  
+                    <a href="https://oeis.org/A160559"
+                       target="_blank"
+                       rel="noopener noreferrer">A160559</a>
+                  
+                
+              
+            </span>
+          </div>
+        
+
+        
+
+        
+
+      
+
+    </div>
+  </details>
+
+
+  
+  
+
+  <details class="problem-info-section">
+    <summary class="problem-info-row">
+      <span>Reactions</span>
+    </summary>
+
+    <div class="problem-info-content">
+
+      
+        
+
+        <div class="problem-info-data-row problem-reaction-row"
+             data-reaction-type="like">
+
+          <span class="problem-info-label">
+            Likes
+          </span>
+
+          <span>
+            <span class="problem-reaction-users">
+              
+                
+                  <a href="/forum/user/lof310">lof310</a>, 
+                
+                  <a href="/forum/user/holyterror">holyterror</a>, 
+                
+                  <a href="/forum/user/megahertz13">megahertz13</a>
+                
+              
+            </span>
+
+            
+          </span>
+
+        </div>
+      
+        
+
+        <div class="problem-info-data-row problem-reaction-row"
+             data-reaction-type="collab">
+
+          <span class="problem-info-label">
+            Open to collaboration
+          </span>
+
+          <span>
+            <span class="problem-reaction-users">
+              
+                
+                  <a href="/forum/user/Aurelien_Col">Aurelien_Col</a>
+                
+              
+            </span>
+
+            
+          </span>
+
+        </div>
+      
+        
+
+        <div class="problem-info-data-row problem-reaction-row"
+             data-reaction-type="working_on">
+
+          <span class="problem-info-label">
+            Currently working on
+          </span>
+
+          <span>
+            <span class="problem-reaction-users">
+              
+                
+                  <a href="/forum/user/Aurelien_Col">Aurelien_Col</a>
+                
+              
+            </span>
+
+            
+          </span>
+
+        </div>
+      
+        
+
+        <div class="problem-info-data-row problem-reaction-row"
+             data-reaction-type="hard">
+
+          <span class="problem-info-label">
+            Looks difficult
+          </span>
+
+          <span>
+            <span class="problem-reaction-users">
+              
+                <span class="problem-info-muted">None</span>
+              
+            </span>
+
+            
+          </span>
+
+        </div>
+      
+        
+
+        <div class="problem-info-data-row problem-reaction-row"
+             data-reaction-type="easy">
+
+          <span class="problem-info-label">
+            Looks tractable
+          </span>
+
+          <span>
+            <span class="problem-reaction-users">
+              
+                <span class="problem-info-muted">None</span>
+              
+            </span>
+
+            
+          </span>
+
+        </div>
+      
+        
+
+        <div class="problem-info-data-row problem-reaction-row"
+             data-reaction-type="formalisable">
+
+          <span class="problem-info-label">
+            Could be formalisable
+          </span>
+
+          <span>
+            <span class="problem-reaction-users">
+              
+                <span class="problem-info-muted">None</span>
+              
+            </span>
+
+            
+          </span>
+
+        </div>
+      
+        
+
+        <div class="problem-info-data-row problem-reaction-row"
+             data-reaction-type="working_form">
+
+          <span class="problem-info-label">
+            Working on formalising
+          </span>
+
+          <span>
+            <span class="problem-reaction-users">
+              
+                
+                  <a href="/forum/user/honicky">honicky</a>
+                
+              
+            </span>
+
+            
+          </span>
+
+        </div>
+      
+
+    </div>
+  </details>
+
+</div>
+               
+
+                    
+</div></div>
+        
+            <div class="container">
+                <div class="problem-box">
+                
+                
+                
+<div class="problem-text" id=neutral> 
+ 
+ <div id="prize"> $1000</div>
+    
+
+
+
+    <div id="content">
+Let $f(n,k)$ be minimal such that every family  $\mathcal{F}$  of $n$-uniform sets with $\lvert  \mathcal{F}\rvert \geq f(n,k)$ contains a $k$-sunflower. Is it true that\[f(n,k) &lt; c_k^n\]for some constant $c_k&gt;0$?
+    </div>
+
+    <div id="problem_id">
+<a href="/20">#20</a>: <a href="#bib-container20" onclick="event.preventDefault();addNewBox('Er65b', '20', true);return false;">[Er65b]</a><a href="#bib-container20" onclick="event.preventDefault();addNewBox('Er69', '20', true);return false;">[Er69]</a><a href="#bib-container20" onclick="event.preventDefault();addNewBox('Er71', '20', true);return false;">[Er71,p.104]</a><a href="#bib-container20" onclick="event.preventDefault();addNewBox('Er73', '20', true);return false;">[Er73]</a><a href="#bib-container20" onclick="event.preventDefault();addNewBox('Er78', '20', true);return false;">[Er78,p.35]</a><a href="#bib-container20" onclick="event.preventDefault();addNewBox('Er81', '20', true);return false;">[Er81]</a><a href="#bib-container20" onclick="event.preventDefault();addNewBox('Er90', '20', true);return false;">[Er90]</a><a href="#bib-container20" onclick="event.preventDefault();addNewBox('Er95', '20', true);return false;">[Er95]</a><a href="#bib-container20" onclick="event.preventDefault();addNewBox('Er97c', '20', true);return false;">[Er97c]</a><a href="#bib-container20" onclick="event.preventDefault();addNewBox('Er97d', '20', true);return false;">[Er97d]</a><a href="#bib-container20" onclick="event.preventDefault();addNewBox('Va99', '20', true);return false;">[Va99,3.63]</a>
+    </div>
+
+ 
+    <div id="tags">
+
+<a href="/tags/combinatorics">combinatorics</a>
+
+    </div>
+
+</div>  
+
+<div class="problem-additional-text"> 
+
+Erdős and Rado <a href="#bib-container20" onclick="event.preventDefault();addNewBox('ErRa60', '20', true);return false;">[ErRa60]</a> originally proved $f(n,k)\leq (k-1)^nn!$. Kostochka <a href="#bib-container20" onclick="event.preventDefault();addNewBox('Ko97', '20', true);return false;">[Ko97]</a> improved this slightly (in particular establishing an upper bound of $o(n!)$, for which Erdős awarded him the consolation prize of \$100), but the bound stood at $n^{(1+o(1))n}$ for a long time until Alweiss, Lovett, Wu, and Zhang <a href="#bib-container20" onclick="event.preventDefault();addNewBox('ALWZ20', '20', true);return false;">[ALWZ20]</a> proved\[f(n,k) &lt; (Ck\log n\log\log n)^n\]for some constant $C&gt;1$. This was refined slightly, independently by Rao <a href="#bib-container20" onclick="event.preventDefault();addNewBox('Ra20', '20', true);return false;">[Ra20]</a>, Frankston, Kahn, Narayanan, and Park <a href="#bib-container20" onclick="event.preventDefault();addNewBox('FKNP19', '20', true);return false;">[FKNP19]</a>, and Bell, Chueluecha, and Warnke <a href="#bib-container20" onclick="event.preventDefault();addNewBox('BCW21', '20', true);return false;">[BCW21]</a>, leading to the current record of\[f(n,k) &lt; (Ck\log n)^n\]for some constant $C&gt;1$. This proof was streamlined <a href="https://theorydish.blog/2021/05/19/entropy-estimation-via-two-chains-streamlining-the-proof-of-the-sunflower-lemma/" rel="nofollow noopener noreferrer ugc" target="_blank">by Hu</a>. A constant of $C=64$ was achieved in the presentation <a href="https://mstoeckl.com/notes/research/sunflower_notes.html" rel="nofollow noopener noreferrer ugc" target="_blank">by Stoeckl</a>.<br><br>In <a href="#bib-container20" onclick="event.preventDefault();addNewBox('Er81', '20', true);return false;">[Er81]</a> Erdős offered \$1000 for a proof or disproof even just in the special case when $k=3$, which he expected 'contains the whole difficulty'. He also wrote 'I really do not see why this question is so difficult'.<br><br>The usual focus is on the regime where $k=O(1)$ is fixed (say $k=3$) and $n$ is large, although for the opposite regime Kostochka, Rödl, and Talysheva <a href="#bib-container20" onclick="event.preventDefault();addNewBox('KRT99', '20', true);return false;">[KRT99]</a> have shown\[f(n,k)=(1+O_n(k^{-1/2^n}))k^n.\]
+
+
+    <div id="bib-container20"></div>
+ 
+   
+    <div class="citationbox">
+        <div id="content">
+<b>Additional thanks to</b>: Alfaiz, Zachary Chase, Jake Mallen, and Desmond Weisenberg
+
+        </div>
+    </div>
+
+    
+    <div class="image-container" id="image-container20"></div>
+</div>
+
+<div class="problem-info">
+
+
+
+<details class="problem-info-section">
+  <summary class="problem-info-row">
+    <span>Proof expositions (0)</span>
+  </summary>
+
+  <div class="problem-info-content problem-expositions">
+If you would like to contribute an exposition of a proof related to this problem, please <a href="https://www.erdosproblems.com/dm/with/moderator">message a moderator</a> or email <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="4f2a3d2b203c3f3d202d232a223c20212326212a0f28222e2623612c2022">[email&#160;protected]</a><p>
+
+
+    
+      <div class="problem-info-muted">
+        No proof expositions yet.
+      </div>
+    
+
+  </div>
+</details>
+
+<a class="problem-info-row problem-info-link" href="/forum/discuss/20">
+    <span>Comments (13)</span>
+  </a>
+
+  <a class="problem-info-row problem-info-link"
+     href="/forum/thread/20/proof-claims">
+    <span>Proof claims (0)</span>
+  </a>
+
+
+  <details class="problem-info-section">
+    <summary class="problem-info-row">
+      <span>More information and links</span>
+    </summary>
+
+    <div class="problem-info-content">
+
+      <div class="problem-info-small">
+
+This page was last edited 07 March 2026.
+ (<a href="/history/20">View history</a>) (<a href="/latex/20">View the LaTeX source</a>)<p>
+
+When referring to this problem, please use the original sources of Erd&#337;s. If you wish to acknowledge this website, the recommended citation format is:
+<p>
+T. F. Bloom, Erd&#337;s Problem #20, https://www.erdosproblems.com/20, accessed 2026-10-16
+</div>
+      <div class="problem-info-small">
+From the <a href="https://github.com/teorth/erdosproblems">external database</a>. (You can
+        <a href="https://github.com/teorth/erdosproblems">
+          help update
+        </a> this.)
+      </div>
+
+      
+
+        <div class="problem-info-data-row">
+          <span class="problem-info-label">Formalised statement?</span>
+          <span>
+            
+              <a href="https://github.com/google-deepmind/formal-conjectures/blob/main/FormalConjectures/ErdosProblems/20.lean">
+                Yes
+              </a>
+            
+          </span>
+        </div>
+
+        
+          <div class="problem-info-data-row">
+            <span class="problem-info-label">OEIS</span>
+
+            <span>
+              
+                
+                  
+                    <a href="https://oeis.org/A332077"
+                       target="_blank"
+                       rel="noopener noreferrer">A332077</a>
+                  
+                
+              
+            </span>
+          </div>
+        
+
+        
+
+        
+
+      
+
+    </div>
+  </details>
+
+
+  
+  
+
+  <details class="problem-info-section">
+    <summary class="problem-info-row">
+      <span>Reactions</span>
+    </summary>
+
+    <div class="problem-info-content">
+
+      
+        
+
+        <div class="problem-info-data-row problem-reaction-row"
+             data-reaction-type="like">
+
+          <span class="problem-info-label">
+            Likes
+          </span>
+
+          <span>
+            <span class="problem-reaction-users">
+              
+                
+                  <a href="/forum/user/sproutseeds">sproutseeds</a>, 
+                
+                  <a href="/forum/user/Rynaldos">Rynaldos</a>, 
+                
+                  <a href="/forum/user/holyterror">holyterror</a>, 
+                
+                  <a href="/forum/user/Dogmachine">Dogmachine</a>, 
+                
+                  <a href="/forum/user/Lumantis">Lumantis</a>
+                
+              
+            </span>
+
+            
+          </span>
+
+        </div>
+      
+        
+
+        <div class="problem-info-data-row problem-reaction-row"
+             data-reaction-type="collab">
+
+          <span class="problem-info-label">
+            Open to collaboration
+          </span>
+
+          <span>
+            <span class="problem-reaction-users">
+              
+                
+                  <a href="/forum/user/sproutseeds">sproutseeds</a>, 
+                
+                  <a href="/forum/user/morluto">morluto</a>
+                
+              
+            </span>
+
+            
+          </span>
+
+        </div>
+      
+        
+
+        <div class="problem-info-data-row problem-reaction-row"
+             data-reaction-type="working_on">
+
+          <span class="problem-info-label">
+            Currently working on
+          </span>
+
+          <span>
+            <span class="problem-reaction-users">
+              
+                
+                  <a href="/forum/user/sproutseeds">sproutseeds</a>, 
+                
+                  <a href="/forum/user/Rynaldos">Rynaldos</a>, 
+                
+                  <a href="/forum/user/Lumantis">Lumantis</a>, 
+                
+                  <a href="/forum/user/morluto">morluto</a>
+                
+              
+            </span>
+
+            
+          </span>
+
+        </div>
+      
+        
+
+        <div class="problem-info-data-row problem-reaction-row"
+             data-reaction-type="hard">
+
+          <span class="problem-info-label">
+            Looks difficult
+          </span>
+
+          <span>
+            <span class="problem-reaction-users">
+              
+                
+                  <a href="/forum/user/Dogmachine">Dogmachine</a>
+                
+              
+            </span>
+
+            
+          </span>
+
+        </div>
+      
+        
+
+        <div class="problem-info-data-row problem-reaction-row"
+             data-reaction-type="easy">
+
+          <span class="problem-info-label">
+            Looks tractable
+          </span>
+
+          <span>
+            <span class="problem-reaction-users">
+              
+                <span class="problem-info-muted">None</span>
+              
+            </span>
+
+            
+          </span>
+
+        </div>
+      
+        
+
+        <div class="problem-info-data-row problem-reaction-row"
+             data-reaction-type="formalisable">
+
+          <span class="problem-info-label">
+            Could be formalisable
+          </span>
+
+          <span>
+            <span class="problem-reaction-users">
+              
+                
+                  <a href="/forum/user/sproutseeds">sproutseeds</a>
+                
+              
+            </span>
+
+            
+          </span>
+
+        </div>
+      
+        
+
+        <div class="problem-info-data-row problem-reaction-row"
+             data-reaction-type="working_form">
+
+          <span class="problem-info-label">
+            Working on formalising
+          </span>
+
+          <span>
+            <span class="problem-reaction-users">
+              
+                
+                  <a href="/forum/user/sproutseeds">sproutseeds</a>
+                
+              
+            </span>
+
+            
+          </span>
+
+        </div>
+      
+
+    </div>
+  </details>
+
+</div>
+               
+
+                    
+</div></div>
+        
+            <div class="container">
+                <div class="problem-box">
+                
+                
+                
+<div class="problem-text" id=neutral> 
+ 
+ <div id="prize"> $1000</div>
+    
+
+
+
+    <div id="content">
+Let $h(N)$ be the maximum size of a Sidon set in $\{1,\ldots,N\}$. Is it true that, for every $\epsilon&#62;0$,\[h(N) = N^{1/2}+O_\epsilon(N^\epsilon)?\]
+    </div>
+
+    <div id="problem_id">
+<a href="/30">#30</a>: <a href="#bib-container30" onclick="event.preventDefault();addNewBox('Er61', '30', true);return false;">[Er61]</a><a href="#bib-container30" onclick="event.preventDefault();addNewBox('Er69', '30', true);return false;">[Er69]</a><a href="#bib-container30" onclick="event.preventDefault();addNewBox('Er70b', '30', true);return false;">[Er70b]</a><a href="#bib-container30" onclick="event.preventDefault();addNewBox('Er70c', '30', true);return false;">[Er70c]</a><a href="#bib-container30" onclick="event.preventDefault();addNewBox('Er72', '30', true);return false;">[Er72]</a><a href="#bib-container30" onclick="event.preventDefault();addNewBox('Er73', '30', true);return false;">[Er73]</a><a href="#bib-container30" onclick="event.preventDefault();addNewBox('Er77c', '30', true);return false;">[Er77c]</a><a href="#bib-container30" onclick="event.preventDefault();addNewBox('Er80', '30', true);return false;">[Er80,p.99]</a><a href="#bib-container30" onclick="event.preventDefault();addNewBox('Er80e', '30', true);return false;">[Er80e]</a><a href="#bib-container30" onclick="event.preventDefault();addNewBox('Er81', '30', true);return false;">[Er81]</a><a href="#bib-container30" onclick="event.preventDefault();addNewBox('Er81h', '30', true);return false;">[Er81h,p.174]</a><a href="#bib-container30" onclick="event.preventDefault();addNewBox('Er91', '30', true);return false;">[Er91]</a><a href="#bib-container30" onclick="event.preventDefault();addNewBox('Er92c', '30', true);return false;">[Er92c]</a><a href="#bib-container30" onclick="event.preventDefault();addNewBox('Er94b', '30', true);return false;">[Er94b]</a><a href="#bib-container30" onclick="event.preventDefault();addNewBox('Er95', '30', true);return false;">[Er95]</a><a href="#bib-container30" onclick="event.preventDefault();addNewBox('Er97c', '30', true);return false;">[Er97c]</a><a href="#bib-container30" onclick="event.preventDefault();addNewBox('Va99', '30', true);return false;">[Va99,1.18]</a>
+    </div>
+
+ 
+    <div id="tags">
+
+<a href="/tags/number theory">number theory</a> | 
+
+<a href="/tags/sidon sets">sidon sets</a> | 
+
+<a href="/tags/additive combinatorics">additive combinatorics</a>
+
+    </div>
+
+</div>  
+
+<div class="problem-additional-text"> 
+
+A problem of Erdős and Turán. It may even be true that $h(N)=N^{1/2}+O(1)$, but Erdős remarks this is perhaps too optimistic. Erdős and Turán <a href="#bib-container30" onclick="event.preventDefault();addNewBox('ErTu41', '30', true);return false;">[ErTu41]</a> proved an upper bound of $N^{1/2}+O(N^{1/4})$, with an alternative proof by Lindström <a href="#bib-container30" onclick="event.preventDefault();addNewBox('Li69', '30', true);return false;">[Li69]</a>. Both proofs in fact give\[h(N) \leq N^{1/2}+N^{1/4}+1.\]Balogh, Füredi, and Roy <a href="#bib-container30" onclick="event.preventDefault();addNewBox('BFR21', '30', true);return false;">[BFR21]</a> improved the bound in the error term to $0.998N^{1/4}$. This was further optimised by O'Bryant <a href="#bib-container30" onclick="event.preventDefault();addNewBox('OB22', '30', true);return false;">[OB22]</a>. The current record is\[h(N)\leq N^{1/2}+0.98183N^{1/4}+O(1),\]due to Carter, Hunter, and O'Bryant <a href="#bib-container30" onclick="event.preventDefault();addNewBox('CHO25', '30', true);return false;">[CHO25]</a>.<br><br>Singer <a href="#bib-container30" onclick="event.preventDefault();addNewBox('Si38', '30', true);return false;">[Si38]</a> was the first to show that $h(N)\geq (1-o(1))N^{1/2}$ for all $N$. For a detailed survey of the literature we refer to <a href="#bib-container30" onclick="event.preventDefault();addNewBox('OB04', '30', true);return false;">[OB04]</a>.<br><br>See also <a href="/241" rel="nofollow noopener noreferrer ugc" target="_blank">[241]</a> and <a href="/840" rel="nofollow noopener noreferrer ugc" target="_blank">[840]</a>.<br><br>This problem is Problem 31 on <a href="https://people.maths.ox.ac.uk/greenbj/papers/open-problems.pdf" rel="nofollow noopener noreferrer ugc" target="_blank">Green's open problems list</a>.<br><br>This is discussed in problem C9 of Guy's collection <a href="#bib-container30" onclick="event.preventDefault();addNewBox('Gu04', '30', true);return false;">[Gu04]</a>.
+
+
+    <div id="bib-container30"></div>
+ 
+   
+    <div class="citationbox">
+        <div id="content">
+<b>Additional thanks to</b>: Zach Hunter and Desmond Weisenberg
+
+        </div>
+    </div>
+
+    
+    <div class="image-container" id="image-container30"></div>
+</div>
+
+<div class="problem-info">
+
+
+
+<details class="problem-info-section">
+  <summary class="problem-info-row">
+    <span>Proof expositions (0)</span>
+  </summary>
+
+  <div class="problem-info-content problem-expositions">
+If you would like to contribute an exposition of a proof related to this problem, please <a href="https://www.erdosproblems.com/dm/with/moderator">message a moderator</a> or email <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="117463757e6261637e737d747c627e7f7d787f7451767c70787d3f727e7c">[email&#160;protected]</a><p>
+
+
+    
+      <div class="problem-info-muted">
+        No proof expositions yet.
+      </div>
+    
+
+  </div>
+</details>
+
+<a class="problem-info-row problem-info-link" href="/forum/discuss/30">
+    <span>Comments (9)</span>
+  </a>
+
+  <a class="problem-info-row problem-info-link"
+     href="/forum/thread/30/proof-claims">
+    <span>Proof claims (1)</span>
+  </a>
+
+
+  <details class="problem-info-section">
+    <summary class="problem-info-row">
+      <span>More information and links</span>
+    </summary>
+
+    <div class="problem-info-content">
+
+      <div class="problem-info-small">
+
+This page was last edited 06 April 2026.
+ (<a href="/history/30">View history</a>) (<a href="/latex/30">View the LaTeX source</a>)<p>
+
+When referring to this problem, please use the original sources of Erd&#337;s. If you wish to acknowledge this website, the recommended citation format is:
+<p>
+T. F. Bloom, Erd&#337;s Problem #30, https://www.erdosproblems.com/30, accessed 2026-10-16
+</div>
+      <div class="problem-info-small">
+From the <a href="https://github.com/teorth/erdosproblems">external database</a>. (You can
+        <a href="https://github.com/teorth/erdosproblems">
+          help update
+        </a> this.)
+      </div>
+
+      
+
+        <div class="problem-info-data-row">
+          <span class="problem-info-label">Formalised statement?</span>
+          <span>
+            
+              <a href="https://github.com/google-deepmind/formal-conjectures/blob/main/FormalConjectures/ErdosProblems/30.lean">
+                Yes
+              </a>
+            
+          </span>
+        </div>
+
+        
+          <div class="problem-info-data-row">
+            <span class="problem-info-label">OEIS</span>
+
+            <span>
+              
+                
+                  
+                    <a href="https://oeis.org/A143824"
+                       target="_blank"
+                       rel="noopener noreferrer">A143824</a>, 
+                  
+                
+                  
+                    <a href="https://oeis.org/A227590"
+                       target="_blank"
+                       rel="noopener noreferrer">A227590</a>, 
+                  
+                
+                  
+                    <a href="https://oeis.org/A003022"
+                       target="_blank"
+                       rel="noopener noreferrer">A003022</a>
+                  
+                
+              
+            </span>
+          </div>
+        
+
+        
+
+        
+
+      
+
+    </div>
+  </details>
+
+
+  
+  
+
+  <details class="problem-info-section">
+    <summary class="problem-info-row">
+      <span>Reactions</span>
+    </summary>
+
+    <div class="problem-info-content">
+
+      
+        
+
+        <div class="problem-info-data-row problem-reaction-row"
+             data-reaction-type="like">
+
+          <span class="problem-info-label">
+            Likes
+          </span>
+
+          <span>
+            <span class="problem-reaction-users">
+              
+                
+                  <a href="/forum/user/Emmanuel_Audig%C3%A9_Y.">Emmanuel_Audigé_Y.</a>, 
+                
+                  <a href="/forum/user/Rynaldos">Rynaldos</a>, 
+                
+                  <a href="/forum/user/KMendoza">KMendoza</a>, 
+                
+                  <a href="/forum/user/holyterror">holyterror</a>, 
+                
+                  <a href="/forum/user/lbattu">lbattu</a>, 
+                
+                  <a href="/forum/user/LaiC">LaiC</a>
+                
+              
+            </span>
+
+            
+          </span>
+
+        </div>
+      
+        
+
+        <div class="problem-info-data-row problem-reaction-row"
+             data-reaction-type="collab">
+
+          <span class="problem-info-label">
+            Open to collaboration
+          </span>
+
+          <span>
+            <span class="problem-reaction-users">
+              
+                
+                  <a href="/forum/user/Emmanuel_Audig%C3%A9_Y.">Emmanuel_Audigé_Y.</a>, 
+                
+                  <a href="/forum/user/KMendoza">KMendoza</a>
+                
+              
+            </span>
+
+            
+          </span>
+
+        </div>
+      
+        
+
+        <div class="problem-info-data-row problem-reaction-row"
+             data-reaction-type="working_on">
+
+          <span class="problem-info-label">
+            Currently working on
+          </span>
+
+          <span>
+            <span class="problem-reaction-users">
+              
+                
+                  <a href="/forum/user/Emmanuel_Audig%C3%A9_Y.">Emmanuel_Audigé_Y.</a>, 
+                
+                  <a href="/forum/user/Rynaldos">Rynaldos</a>, 
+                
+                  <a href="/forum/user/TerenceTao">TerenceTao</a>, 
+                
+                  <a href="/forum/user/KMendoza">KMendoza</a>
+                
+              
+            </span>
+
+            
+          </span>
+
+        </div>
+      
+        
+
+        <div class="problem-info-data-row problem-reaction-row"
+             data-reaction-type="hard">
+
+          <span class="problem-info-label">
+            Looks difficult
+          </span>
+
+          <span>
+            <span class="problem-reaction-users">
+              
+                <span class="problem-info-muted">None</span>
+              
+            </span>
+
+            
+          </span>
+
+        </div>
+      
+        
+
+        <div class="problem-info-data-row problem-reaction-row"
+             data-reaction-type="easy">
+
+          <span class="problem-info-label">
+            Looks tractable
+          </span>
+
+          <span>
+            <span class="problem-reaction-users">
+              
+                
+                  <a href="/forum/user/Emmanuel_Audig%C3%A9_Y.">Emmanuel_Audigé_Y.</a>, 
+                
+                  <a href="/forum/user/KMendoza">KMendoza</a>
+                
+              
+            </span>
+
+            
+          </span>
+
+        </div>
+      
+        
+
+        <div class="problem-info-data-row problem-reaction-row"
+             data-reaction-type="formalisable">
+
+          <span class="problem-info-label">
+            Could be formalisable
+          </span>
+
+          <span>
+            <span class="problem-reaction-users">
+              
+                <span class="problem-info-muted">None</span>
+              
+            </span>
+
+            
+          </span>
+
+        </div>
+      
+        
+
+        <div class="problem-info-data-row problem-reaction-row"
+             data-reaction-type="working_form">
+
+          <span class="problem-info-label">
+            Working on formalising
+          </span>
+
+          <span>
+            <span class="problem-reaction-users">
+              
+                <span class="problem-info-muted">None</span>
+              
+            </span>
+
+            
+          </span>
+
+        </div>
+      
+
+    </div>
+  </details>
+
+</div>
+               
+
+                    
+</div></div>
+        
+            <div class="container">
+                <div class="problem-box">
+                
+                
+                
+<div class="problem-text" id=neutral> 
+ 
+ <div id="prize"> $1000</div>
+    
+
+
+
+    <div id="content">
+Does every finite graph with minimum degree at least 3 contain a cycle of length $2^k$ for some $k\geq 2$?
+    </div>
+
+    <div id="problem_id">
+<a href="/64">#64</a>: <a href="#bib-container64" onclick="event.preventDefault();addNewBox('Er93', '64', true);return false;">[Er93,p.343]</a><a href="#bib-container64" onclick="event.preventDefault();addNewBox('Er94b', '64', true);return false;">[Er94b]</a><a href="#bib-container64" onclick="event.preventDefault();addNewBox('Er95', '64', true);return false;">[Er95,p.174]</a><a href="#bib-container64" onclick="event.preventDefault();addNewBox('Er96', '64', true);return false;">[Er96]</a><a href="#bib-container64" onclick="event.preventDefault();addNewBox('Er97b', '64', true);return false;">[Er97b]</a><a href="#bib-container64" onclick="event.preventDefault();addNewBox('Er97c', '64', true);return false;">[Er97c]</a>
+    </div>
+
+ 
+    <div id="tags">
+
+<a href="/tags/graph theory">graph theory</a> | 
+
+<a href="/tags/cycles">cycles</a>
+
+    </div>
+
+</div>  
+
+<div class="problem-additional-text"> 
+
+Conjectured by Erdős and Gyárfás, who believed the answer must be negative, and in fact for every $r$ there must be a graph of minimum degree at least $r$ without a cycle of length $2^k$ for any $k\geq 2$.<br><br>This was solved in the affirmative if the minimum degree is larger than some absolute constant by Liu and Montgomery <a href="#bib-container64" onclick="event.preventDefault();addNewBox('LiMo20', '64', true);return false;">[LiMo20]</a> (therefore disproving the above stronger conjecture of Erdős and Gyárfás). Liu and Montgomery prove a much stronger result: if the average degree of $G$ is sufficiently large then there is some large integer $\ell$ such that for every even integer $m\in [(\log \ell)^8,\ell]$, $G$ contains a cycle of length $m$.<br><br>An infinite tree with minimum degree $3$ shows that the answer is trivially false for infinite graphs.<br><br>The conjecture has been confirmed for various families of graphs; see the comment by Alfaiz for a list.<br><br>This problem is <a href="https://mathweb.ucsd.edu/~erdosproblems/erdos/newproblems/PowerOfTwoCycles.html" rel="nofollow noopener noreferrer ugc" target="_blank">#69 in Extremal Graph Theory</a> in the graphs problem collection.
+
+
+    <div id="bib-container64"></div>
+ 
+   
+    <div class="citationbox">
+        <div id="content">
+<b>Additional thanks to</b>: Alfaiz, Desmond Weisenberg, and Yuval Wigderson
+
+        </div>
+    </div>
+
+    
+    <div class="image-container" id="image-container64"></div>
+</div>
+
+<div class="problem-info">
+
+
+
+<details class="problem-info-section">
+  <summary class="problem-info-row">
+    <span>Proof expositions (0)</span>
+  </summary>
+
+  <div class="problem-info-content problem-expositions">
+If you would like to contribute an exposition of a proof related to this problem, please <a href="https://www.erdosproblems.com/dm/with/moderator">message a moderator</a> or email <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="e38691878c9093918c818f868e908c8d8f8a8d86a3848e828a8fcd808c8e">[email&#160;protected]</a><p>
+
+
+    
+      <div class="problem-info-muted">
+        No proof expositions yet.
+      </div>
+    
+
+  </div>
+</details>
+
+<a class="problem-info-row problem-info-link" href="/forum/discuss/64">
+    <span>Comments (3)</span>
+  </a>
+
+  <a class="problem-info-row problem-info-link"
+     href="/forum/thread/64/proof-claims">
+    <span>Proof claims (3)</span>
+  </a>
+
+
+  <details class="problem-info-section">
+    <summary class="problem-info-row">
+      <span>More information and links</span>
+    </summary>
+
+    <div class="problem-info-content">
+
+      <div class="problem-info-small">
+
+This page was last edited 10 April 2026.
+ (<a href="/history/64">View history</a>) (<a href="/latex/64">View the LaTeX source</a>)<p>
+
+When referring to this problem, please use the original sources of Erd&#337;s. If you wish to acknowledge this website, the recommended citation format is:
+<p>
+T. F. Bloom, Erd&#337;s Problem #64, https://www.erdosproblems.com/64, accessed 2026-10-16
+</div>
+      <div class="problem-info-small">
+From the <a href="https://github.com/teorth/erdosproblems">external database</a>. (You can
+        <a href="https://github.com/teorth/erdosproblems">
+          help update
+        </a> this.)
+      </div>
+
+      
+
+        <div class="problem-info-data-row">
+          <span class="problem-info-label">Formalised statement?</span>
+          <span>
+            
+              <a href="https://github.com/google-deepmind/formal-conjectures/blob/main/FormalConjectures/ErdosProblems/64.lean">
+                Yes
+              </a>
+            
+          </span>
+        </div>
+
+        
+
+        
+
+        
+
+      
+
+    </div>
+  </details>
+
+
+  
+  
+
+  <details class="problem-info-section">
+    <summary class="problem-info-row">
+      <span>Reactions</span>
+    </summary>
+
+    <div class="problem-info-content">
+
+      
+        
+
+        <div class="problem-info-data-row problem-reaction-row"
+             data-reaction-type="like">
+
+          <span class="problem-info-label">
+            Likes
+          </span>
+
+          <span>
+            <span class="problem-reaction-users">
+              
+                
+                  <a href="/forum/user/Fedir">Fedir</a>, 
+                
+                  <a href="/forum/user/Chillguy">Chillguy</a>, 
+                
+                  <a href="/forum/user/Sam_Petkov">Sam_Petkov</a>, 
+                
+                  <a href="/forum/user/mattryanwatts">mattryanwatts</a>, 
+                
+                  <a href="/forum/user/ZackaryLoevseth">ZackaryLoevseth</a>, 
+                
+                  <a href="/forum/user/AndrewBisch">AndrewBisch</a>, 
+                
+                  <a href="/forum/user/guillemdb">guillemdb</a>
+                
+              
+            </span>
+
+            
+          </span>
+
+        </div>
+      
+        
+
+        <div class="problem-info-data-row problem-reaction-row"
+             data-reaction-type="collab">
+
+          <span class="problem-info-label">
+            Open to collaboration
+          </span>
+
+          <span>
+            <span class="problem-reaction-users">
+              
+                
+                  <a href="/forum/user/Sam_Petkov">Sam_Petkov</a>, 
+                
+                  <a href="/forum/user/ZackaryLoevseth">ZackaryLoevseth</a>, 
+                
+                  <a href="/forum/user/guillemdb">guillemdb</a>
+                
+              
+            </span>
+
+            
+          </span>
+
+        </div>
+      
+        
+
+        <div class="problem-info-data-row problem-reaction-row"
+             data-reaction-type="working_on">
+
+          <span class="problem-info-label">
+            Currently working on
+          </span>
+
+          <span>
+            <span class="problem-reaction-users">
+              
+                
+                  <a href="/forum/user/Sam_Petkov">Sam_Petkov</a>, 
+                
+                  <a href="/forum/user/mattryanwatts">mattryanwatts</a>, 
+                
+                  <a href="/forum/user/RajveerKapoor">RajveerKapoor</a>, 
+                
+                  <a href="/forum/user/AndrewBisch">AndrewBisch</a>, 
+                
+                  <a href="/forum/user/guillemdb">guillemdb</a>
+                
+              
+            </span>
+
+            
+          </span>
+
+        </div>
+      
+        
+
+        <div class="problem-info-data-row problem-reaction-row"
+             data-reaction-type="hard">
+
+          <span class="problem-info-label">
+            Looks difficult
+          </span>
+
+          <span>
+            <span class="problem-reaction-users">
+              
+                
+                  <a href="/forum/user/AndrewBisch">AndrewBisch</a>
+                
+              
+            </span>
+
+            
+          </span>
+
+        </div>
+      
+        
+
+        <div class="problem-info-data-row problem-reaction-row"
+             data-reaction-type="easy">
+
+          <span class="problem-info-label">
+            Looks tractable
+          </span>
+
+          <span>
+            <span class="problem-reaction-users">
+              
+                
+                  <a href="/forum/user/AndrewBisch">AndrewBisch</a>, 
+                
+                  <a href="/forum/user/guillemdb">guillemdb</a>
+                
+              
+            </span>
+
+            
+          </span>
+
+        </div>
+      
+        
+
+        <div class="problem-info-data-row problem-reaction-row"
+             data-reaction-type="formalisable">
+
+          <span class="problem-info-label">
+            Could be formalisable
+          </span>
+
+          <span>
+            <span class="problem-reaction-users">
+              
+                
+                  <a href="/forum/user/guillemdb">guillemdb</a>
+                
+              
+            </span>
+
+            
+          </span>
+
+        </div>
+      
+        
+
+        <div class="problem-info-data-row problem-reaction-row"
+             data-reaction-type="working_form">
+
+          <span class="problem-info-label">
+            Working on formalising
+          </span>
+
+          <span>
+            <span class="problem-reaction-users">
+              
+                
+                  <a href="/forum/user/guillemdb">guillemdb</a>
+                
+              
+            </span>
+
+            
+          </span>
+
+        </div>
+      
+
+    </div>
+  </details>
+
+</div>
+               
+
+                    
+</div></div>
+        
+            <div class="container">
+                <div class="problem-box">
+                
+                
+                
+<div class="problem-text" id=neutral> 
+ 
+ <div id="prize"> $1000</div>
+    
+
+
+
+    <div id="content">
+Let $r_k(N)$ be the size of the largest subset of $\{1,\ldots,N\}$ which does not contain a non-trivial $k$-term arithmetic progression. Prove that $r_k(N)=o(N)$. 
+    </div>
+
+    <div id="problem_id">
+<a href="/139">#139</a>: <a href="#bib-container139" onclick="event.preventDefault();addNewBox('Er57', '139', true);return false;">[Er57]</a><a href="#bib-container139" onclick="event.preventDefault();addNewBox('Er61', '139', true);return false;">[Er61]</a><a href="#bib-container139" onclick="event.preventDefault();addNewBox('Er65b', '139', true);return false;">[Er65b]</a><a href="#bib-container139" onclick="event.preventDefault();addNewBox('Er73', '139', true);return false;">[Er73]</a><a href="#bib-container139" onclick="event.preventDefault();addNewBox('Er75b', '139', true);return false;">[Er75b]</a><a href="#bib-container139" onclick="event.preventDefault();addNewBox('Er76g', '139', true);return false;">[Er76g]</a><a href="#bib-container139" onclick="event.preventDefault();addNewBox('Er80', '139', true);return false;">[Er80,p.91]</a><a href="#bib-container139" onclick="event.preventDefault();addNewBox('Er81', '139', true);return false;">[Er81]</a><a href="#bib-container139" onclick="event.preventDefault();addNewBox('Er82e', '139', true);return false;">[Er82e]</a><a href="#bib-container139" onclick="event.preventDefault();addNewBox('Er83c', '139', true);return false;">[Er83c]</a><a href="#bib-container139" onclick="event.preventDefault();addNewBox('Er97c', '139', true);return false;">[Er97c]</a>
+    </div>
+
+ 
+    <div id="tags">
+
+<a href="/tags/additive combinatorics">additive combinatorics</a> | 
+
+<a href="/tags/arithmetic progressions">arithmetic progressions</a>
+
+    </div>
+
+</div>  
+
+<div class="problem-additional-text"> 
+
+A conjecture of Erdős and Turán. Proved by Szemerédi <a href="#bib-container139" onclick="event.preventDefault();addNewBox('Sz75', '139', true);return false;">[Sz75]</a>. The best known bounds are due to Kelley and Meka <a href="#bib-container139" onclick="event.preventDefault();addNewBox('KeMe23', '139', true);return false;">[KeMe23]</a> for $k=3$ (with further slight improvements in <a href="#bib-container139" onclick="event.preventDefault();addNewBox('BlSi23', '139', true);return false;">[BlSi23]</a>), Green and Tao <a href="#bib-container139" onclick="event.preventDefault();addNewBox('GrTa17', '139', true);return false;">[GrTa17]</a> for $k=4$, and Leng, Sah, and Sawhney <a href="#bib-container139" onclick="event.preventDefault();addNewBox('LSS24', '139', true);return false;">[LSS24]</a> for $k\geq 5$.<br><br>In <a href="#bib-container139" onclick="event.preventDefault();addNewBox('Er80', '139', true);return false;">[Er80]</a> Erdős reports that <a href="https://en.wikipedia.org/wiki/Hildegard_Rothe-Ille" rel="nofollow noopener noreferrer ugc" target="_blank">Rothe-Ille</a> was given the problem of estimating $r_k(n)$ by Schur in the 1930s, and so 'perhaps Schur conjectured $r_k(N)=o(N)$ before Turán and myself'.<br><br>See also <a href="/3" rel="nofollow noopener noreferrer ugc" target="_blank">[3]</a>.
+
+
+    <div id="bib-container139"></div>
+ 
+   
+    <div class="citationbox">
+        <div id="content">
+<b>Additional thanks to</b>: Zachary Chase
+
+        </div>
+    </div>
+
+    
+    <div class="image-container" id="image-container139"></div>
+</div>
+
+<div class="problem-info">
+
+
+
+<details class="problem-info-section">
+  <summary class="problem-info-row">
+    <span>Proof expositions (0)</span>
+  </summary>
+
+  <div class="problem-info-content problem-expositions">
+If you would like to contribute an exposition of a proof related to this problem, please <a href="https://www.erdosproblems.com/dm/with/moderator">message a moderator</a> or email <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="610413050e1211130e030d040c120e0f0d080f0421060c00080d4f020e0c">[email&#160;protected]</a><p>
+
+
+    
+      <div class="problem-info-muted">
+        No proof expositions yet.
+      </div>
+    
+
+  </div>
+</details>
+
+<a class="problem-info-row problem-info-link" href="/forum/discuss/139">
+    <span>Comments (0)</span>
+  </a>
+
+  <a class="problem-info-row problem-info-link"
+     href="/forum/thread/139/proof-claims">
+    <span>Proof claims (0)</span>
+  </a>
+
+
+  <details class="problem-info-section">
+    <summary class="problem-info-row">
+      <span>More information and links</span>
+    </summary>
+
+    <div class="problem-info-content">
+
+      <div class="problem-info-small">
+
+This page was last edited 04 April 2026.
+ (<a href="/history/139">View history</a>) (<a href="/latex/139">View the LaTeX source</a>)<p>
+
+When referring to this problem, please use the original sources of Erd&#337;s. If you wish to acknowledge this website, the recommended citation format is:
+<p>
+T. F. Bloom, Erd&#337;s Problem #139, https://www.erdosproblems.com/139, accessed 2026-10-16
+</div>
+      <div class="problem-info-small">
+From the <a href="https://github.com/teorth/erdosproblems">external database</a>. (You can
+        <a href="https://github.com/teorth/erdosproblems">
+          help update
+        </a> this.)
+      </div>
+
+      
+
+        <div class="problem-info-data-row">
+          <span class="problem-info-label">Formalised statement?</span>
+          <span>
+            
+              <a href="https://github.com/google-deepmind/formal-conjectures/blob/main/FormalConjectures/ErdosProblems/139.lean">
+                Yes
+              </a>
+            
+          </span>
+        </div>
+
+        
+          <div class="problem-info-data-row">
+            <span class="problem-info-label">OEIS</span>
+
+            <span>
+              
+                
+                  
+                    <a href="https://oeis.org/A003002"
+                       target="_blank"
+                       rel="noopener noreferrer">A003002</a>, 
+                  
+                
+                  
+                    <a href="https://oeis.org/A003003"
+                       target="_blank"
+                       rel="noopener noreferrer">A003003</a>, 
+                  
+                
+                  
+                    <a href="https://oeis.org/A003004"
+                       target="_blank"
+                       rel="noopener noreferrer">A003004</a>, 
+                  
+                
+                  
+                    <a href="https://oeis.org/A003005"
+                       target="_blank"
+                       rel="noopener noreferrer">A003005</a>
+                  
+                
+              
+            </span>
+          </div>
+        
+
+        
+
+        
+
+      
+
+    </div>
+  </details>
+
+
+  
+  
+
+  <details class="problem-info-section">
+    <summary class="problem-info-row">
+      <span>Reactions</span>
+    </summary>
+
+    <div class="problem-info-content">
+
+      
+        
+
+        <div class="problem-info-data-row problem-reaction-row"
+             data-reaction-type="like">
+
+          <span class="problem-info-label">
+            Likes
+          </span>
+
+          <span>
+            <span class="problem-reaction-users">
+              
+                <span class="problem-info-muted">None</span>
+              
+            </span>
+
+            
+          </span>
+
+        </div>
+      
+        
+
+        <div class="problem-info-data-row problem-reaction-row"
+             data-reaction-type="collab">
+
+          <span class="problem-info-label">
+            Open to collaboration
+          </span>
+
+          <span>
+            <span class="problem-reaction-users">
+              
+                <span class="problem-info-muted">None</span>
+              
+            </span>
+
+            
+          </span>
+
+        </div>
+      
+        
+
+        <div class="problem-info-data-row problem-reaction-row"
+             data-reaction-type="working_on">
+
+          <span class="problem-info-label">
+            Currently working on
+          </span>
+
+          <span>
+            <span class="problem-reaction-users">
+              
+                <span class="problem-info-muted">None</span>
+              
+            </span>
+
+            
+          </span>
+
+        </div>
+      
+        
+
+        <div class="problem-info-data-row problem-reaction-row"
+             data-reaction-type="hard">
+
+          <span class="problem-info-label">
+            Looks difficult
+          </span>
+
+          <span>
+            <span class="problem-reaction-users">
+              
+                <span class="problem-info-muted">None</span>
+              
+            </span>
+
+            
+          </span>
+
+        </div>
+      
+        
+
+        <div class="problem-info-data-row problem-reaction-row"
+             data-reaction-type="easy">
+
+          <span class="problem-info-label">
+            Looks tractable
+          </span>
+
+          <span>
+            <span class="problem-reaction-users">
+              
+                <span class="problem-info-muted">None</span>
+              
+            </span>
+
+            
+          </span>
+
+        </div>
+      
+        
+
+        <div class="problem-info-data-row problem-reaction-row"
+             data-reaction-type="formalisable">
+
+          <span class="problem-info-label">
+            Could be formalisable
+          </span>
+
+          <span>
+            <span class="problem-reaction-users">
+              
+                <span class="problem-info-muted">None</span>
+              
+            </span>
+
+            
+          </span>
+
+        </div>
+      
+        
+
+        <div class="problem-info-data-row problem-reaction-row"
+             data-reaction-type="working_form">
+
+          <span class="problem-info-label">
+            Working on formalising
+          </span>
+
+          <span>
+            <span class="problem-reaction-users">
+              
+                <span class="problem-info-muted">None</span>
+              
+            </span>
+
+            
+          </span>
+
+        </div>
+      
+
+    </div>
+  </details>
+
+</div>
+               
+
+                    
+</div></div>
+        
+            <div class="container">
+                <div class="problem-box">
+                
+                
+                
+<div class="problem-text" id=neutral> 
+ 
+ <div id="prize"> $1000</div>
+    
+
+
+
+    <div id="content">
+Determine which countable ordinals $\beta$ have the property that, if $\alpha=\omega^{^\beta}$, then in any red/blue colouring of the edges of $K_\alpha$ there is either a red $K_\alpha$ or a blue $K_3$.
+    </div>
+
+    <div id="problem_id">
+<a href="/592">#592</a>: <a href="#bib-container592" onclick="event.preventDefault();addNewBox('Er82e', '592', true);return false;">[Er82e]</a><a href="#bib-container592" onclick="event.preventDefault();addNewBox('Er87', '592', true);return false;">[Er87]</a><a href="#bib-container592" onclick="event.preventDefault();addNewBox('Va99', '592', true);return false;">[Va99,7.82]</a>
+    </div>
+
+ 
+    <div id="tags">
+
+<a href="/tags/set theory">set theory</a> | 
+
+<a href="/tags/ramsey theory">ramsey theory</a>
+
+    </div>
+
+</div>  
+
+<div class="problem-additional-text"> 
+
+Such $\alpha$ (in other words, those such that $\alpha \to (\alpha,3)^2$) are called partition ordinals.<ul>
+<li>Specker <a href="#bib-container592" onclick="event.preventDefault();addNewBox('Sp57', '592', true);return false;">[Sp57]</a> proved this holds for $\beta=2$ and not for $3\leq \beta &lt;\omega$.</li>
+<li> Chang <a href="#bib-container592" onclick="event.preventDefault();addNewBox('Ch72', '592', true);return false;">[Ch72]</a> proved this holds for $\beta=\omega$.</li>
+<li> Galvin and Larson <a href="#bib-container592" onclick="event.preventDefault();addNewBox('GaLa74', '592', true);return false;">[GaLa74]</a> have shown that if $\beta\geq 3$ has this property then $\beta$ must be 'additively indecomposable', so that in particular $\beta=\omega^\gamma$ for some countable ordinal $\gamma$. Galvin and Larson conjecture that every $\beta\geq 3$ of this form has this property.</li>
+<li>Schipperus <a href="#bib-container592" onclick="event.preventDefault();addNewBox('Sc10', '592', true);return false;">[Sc10]</a> have proved this is holds if $\beta=\omega^\gamma$ in which $\gamma$ is a countable ordinal which is the sum of one or two indecomposable ordinals, and this fails to hold if $\gamma$ is the sum of four or more indecomposable ordinals.</li>
+</ul>The remaining open case appears to be when $\gamma$ is the sum of three indecomposable ordinals.<br><br>The case $\beta=\omega$ is the subject of <a href="/590" rel="nofollow noopener noreferrer ugc" target="_blank">[590]</a>, and $\beta=\omega^2$ is the subject of <a href="/591" rel="nofollow noopener noreferrer ugc" target="_blank">[591]</a>. See also <a href="/118" rel="nofollow noopener noreferrer ugc" target="_blank">[118]</a>, and <a href="/1169" rel="nofollow noopener noreferrer ugc" target="_blank">[1169]</a> for the case $\alpha=\omega_1^2$.
+
+
+    <div id="bib-container592"></div>
+ 
+   
+    <div class="citationbox">
+        <div id="content">
+<b>Additional thanks to</b>: Neel Somani and Andrew Xue
+
+        </div>
+    </div>
+
+    
+    <div class="image-container" id="image-container592"></div>
+</div>
+
+<div class="problem-info">
+
+
+
+<details class="problem-info-section">
+  <summary class="problem-info-row">
+    <span>Proof expositions (0)</span>
+  </summary>
+
+  <div class="problem-info-content problem-expositions">
+If you would like to contribute an exposition of a proof related to this problem, please <a href="https://www.erdosproblems.com/dm/with/moderator">message a moderator</a> or email <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="c4a1b6a0abb7b4b6aba6a8a1a9b7abaaa8adaaa184a3a9a5ada8eaa7aba9">[email&#160;protected]</a><p>
+
+
+    
+      <div class="problem-info-muted">
+        No proof expositions yet.
+      </div>
+    
+
+  </div>
+</details>
+
+<a class="problem-info-row problem-info-link" href="/forum/discuss/592">
+    <span>Comments (1)</span>
+  </a>
+
+  <a class="problem-info-row problem-info-link"
+     href="/forum/thread/592/proof-claims">
+    <span>Proof claims (0)</span>
+  </a>
+
+
+  <details class="problem-info-section">
+    <summary class="problem-info-row">
+      <span>More information and links</span>
+    </summary>
+
+    <div class="problem-info-content">
+
+      <div class="problem-info-small">
+
+This page was last edited 23 January 2026.
+ (<a href="/history/592">View history</a>) (<a href="/latex/592">View the LaTeX source</a>)<p>
+
+When referring to this problem, please use the original sources of Erd&#337;s. If you wish to acknowledge this website, the recommended citation format is:
+<p>
+T. F. Bloom, Erd&#337;s Problem #592, https://www.erdosproblems.com/592, accessed 2026-10-16
+</div>
+      <div class="problem-info-small">
+From the <a href="https://github.com/teorth/erdosproblems">external database</a>. (You can
+        <a href="https://github.com/teorth/erdosproblems">
+          help update
+        </a> this.)
+      </div>
+
+      
+
+        <div class="problem-info-data-row">
+          <span class="problem-info-label">Formalised statement?</span>
+          <span>
+            
+              <a href="https://github.com/google-deepmind/formal-conjectures/blob/main/FormalConjectures/ErdosProblems/592.lean">
+                Yes
+              </a>
+            
+          </span>
+        </div>
+
+        
+
+        
+
+        
+
+      
+
+    </div>
+  </details>
+
+
+  
+  
+
+  <details class="problem-info-section">
+    <summary class="problem-info-row">
+      <span>Reactions</span>
+    </summary>
+
+    <div class="problem-info-content">
+
+      
+        
+
+        <div class="problem-info-data-row problem-reaction-row"
+             data-reaction-type="like">
+
+          <span class="problem-info-label">
+            Likes
+          </span>
+
+          <span>
+            <span class="problem-reaction-users">
+              
+                
+                  <a href="/forum/user/LawrenceHollom">LawrenceHollom</a>
+                
+              
+            </span>
+
+            
+          </span>
+
+        </div>
+      
+        
+
+        <div class="problem-info-data-row problem-reaction-row"
+             data-reaction-type="collab">
+
+          <span class="problem-info-label">
+            Open to collaboration
+          </span>
+
+          <span>
+            <span class="problem-reaction-users">
+              
+                <span class="problem-info-muted">None</span>
+              
+            </span>
+
+            
+          </span>
+
+        </div>
+      
+        
+
+        <div class="problem-info-data-row problem-reaction-row"
+             data-reaction-type="working_on">
+
+          <span class="problem-info-label">
+            Currently working on
+          </span>
+
+          <span>
+            <span class="problem-reaction-users">
+              
+                <span class="problem-info-muted">None</span>
+              
+            </span>
+
+            
+          </span>
+
+        </div>
+      
+        
+
+        <div class="problem-info-data-row problem-reaction-row"
+             data-reaction-type="hard">
+
+          <span class="problem-info-label">
+            Looks difficult
+          </span>
+
+          <span>
+            <span class="problem-reaction-users">
+              
+                <span class="problem-info-muted">None</span>
+              
+            </span>
+
+            
+          </span>
+
+        </div>
+      
+        
+
+        <div class="problem-info-data-row problem-reaction-row"
+             data-reaction-type="easy">
+
+          <span class="problem-info-label">
+            Looks tractable
+          </span>
+
+          <span>
+            <span class="problem-reaction-users">
+              
+                <span class="problem-info-muted">None</span>
+              
+            </span>
+
+            
+          </span>
+
+        </div>
+      
+        
+
+        <div class="problem-info-data-row problem-reaction-row"
+             data-reaction-type="formalisable">
+
+          <span class="problem-info-label">
+            Could be formalisable
+          </span>
+
+          <span>
+            <span class="problem-reaction-users">
+              
+                <span class="problem-info-muted">None</span>
+              
+            </span>
+
+            
+          </span>
+
+        </div>
+      
+        
+
+        <div class="problem-info-data-row problem-reaction-row"
+             data-reaction-type="working_form">
+
+          <span class="problem-info-label">
+            Working on formalising
+          </span>
+
+          <span>
+            <span class="problem-reaction-users">
+              
+                <span class="problem-info-muted">None</span>
+              
+            </span>
+
+            
+          </span>
+
+        </div>
+      
+
+    </div>
+  </details>
+
+</div>
+               
+
+                    
+</div></div>
+        
+            <div class="container">
+                <div class="problem-box">
+                
+                
+                
+<div class="problem-text" id=neutral> 
+ 
+ <div id="prize"> $1000</div>
+    
+
+
+
+    <div id="content">
+The cochromatic number of $G$, denoted by $\zeta(G)$, is the minimum number of colours needed to colour the vertices of $G$ such that each colour class induces either a complete graph or empty graph. Let $\chi(G)$ denote the chromatic number.<br><br>If $G$ is a random graph with $n$ vertices and each edge included independently with probability $1/2$ then is it true that almost surely\[\chi(G) - \zeta(G) \to \infty\]as $n\to \infty$?
+    </div>
+
+    <div id="problem_id">
+<a href="/625">#625</a>: <a href="#bib-container625" onclick="event.preventDefault();addNewBox('ErGi93', '625', true);return false;">[ErGi93]</a>
+    </div>
+
+ 
+    <div id="tags">
+
+<a href="/tags/graph theory">graph theory</a> | 
+
+<a href="/tags/chromatic number">chromatic number</a>
+
+    </div>
+
+</div>  
+
+<div class="problem-additional-text"> 
+
+A problem of Erdős and Gimbel (see also <a href="#bib-container625" onclick="event.preventDefault();addNewBox('Gi16', '625', true);return false;">[Gi16]</a>). At a conference on random graphs in Poznan, Poland (most likely in 1989) Erdős offered \$100 for a proof that this is true, and \$1000 for a proof that this is false (although later told Gimbel that \$1000 was perhaps too much).<br><br>It is known that almost surely\[\frac{n}{2\log_2n}\leq \zeta(G)\leq \chi(G)\leq (1+o(1))\frac{n}{2\log_2n}.\](The final upper bound is due to Bollobás <a href="#bib-container625" onclick="event.preventDefault();addNewBox('Bo88', '625', true);return false;">[Bo88]</a>. The first inequality follows from the fact that almost surely $G$ has clique number and independence number $&lt; 2\log_2n$.)<br><br>Heckel <a href="#bib-container625" onclick="event.preventDefault();addNewBox('He24', '625', true);return false;">[He24]</a> and, independently, Steiner <a href="#bib-container625" onclick="event.preventDefault();addNewBox('St24b', '625', true);return false;">[St24b]</a> have shown that it is not the case that $\chi(G)-\zeta(G)$ is bounded with high probability, and in fact if $\chi(G)-\zeta(G) \leq f(n)$ with high probability then $f(n)\geq n^{1/2-o(1)}$ along an infinite sequence of $n$. Heckel conjectures that, with high probability,\[\chi(G)-\zeta(G) \asymp \frac{n}{(\log n)^3}.\]Heckel <a href="#bib-container625" onclick="event.preventDefault();addNewBox('He24c', '625', true);return false;">[He24c]</a> further proved that, for any $\epsilon&gt;0$, we have\[\chi(G) -\zeta(G) \geq n^{1-\epsilon}\]for roughly $95\%$ of all $n$.<br><br>This was <a href="https://github.com/SamPetkov/Erdos/blob/main/625/arxiv_625.pdf" rel="nofollow noopener noreferrer ugc" target="_blank">improved</a> by Petkov and GPT-5.6 (see the proof claims) to, almost surely,\[\chi(G)-\zeta(G)\gg \frac{n}{(\log n)^3}\]as Heckel predicted.
+
+
+    <div id="bib-container625"></div>
+ 
+   
+    <div class="citationbox">
+        <div id="content">
+<b>Additional thanks to</b>: John Gimbel, Zach Hunter, and David Penman
+
+        </div>
+    </div>
+
+    
+    <div class="image-container" id="image-container625"></div>
+</div>
+
+<div class="problem-info">
+
+
+
+<details class="problem-info-section">
+  <summary class="problem-info-row">
+    <span>Proof expositions (0)</span>
+  </summary>
+
+  <div class="problem-info-content problem-expositions">
+If you would like to contribute an exposition of a proof related to this problem, please <a href="https://www.erdosproblems.com/dm/with/moderator">message a moderator</a> or email <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="7e1b0c1a110d0e0c111c121b130d11101217101b3e19131f1712501d1113">[email&#160;protected]</a><p>
+
+
+    
+      <div class="problem-info-muted">
+        No proof expositions yet.
+      </div>
+    
+
+  </div>
+</details>
+
+<a class="problem-info-row problem-info-link" href="/forum/discuss/625">
+    <span>Comments (3)</span>
+  </a>
+
+  <a class="problem-info-row problem-info-link"
+     href="/forum/thread/625/proof-claims">
+    <span>Proof claims (2)</span>
+  </a>
+
+
+  <details class="problem-info-section">
+    <summary class="problem-info-row">
+      <span>More information and links</span>
+    </summary>
+
+    <div class="problem-info-content">
+
+      <div class="problem-info-small">
+
+This page was last edited 05 September 2026.
+ (<a href="/history/625">View history</a>) (<a href="/latex/625">View the LaTeX source</a>)<p>
+
+When referring to this problem, please use the original sources of Erd&#337;s. If you wish to acknowledge this website, the recommended citation format is:
+<p>
+T. F. Bloom, Erd&#337;s Problem #625, https://www.erdosproblems.com/625, accessed 2026-10-16
+</div>
+      <div class="problem-info-small">
+From the <a href="https://github.com/teorth/erdosproblems">external database</a>. (You can
+        <a href="https://github.com/teorth/erdosproblems">
+          help update
+        </a> this.)
+      </div>
+
+      
+
+        <div class="problem-info-data-row">
+          <span class="problem-info-label">Formalised statement?</span>
+          <span>
+            
+              No
+              (<a href="https://github.com/google-deepmind/formal-conjectures">create one</a>)
+            
+          </span>
+        </div>
+
+        
+
+        
+
+        
+
+      
+
+    </div>
+  </details>
+
+
+  
+  
+
+  <details class="problem-info-section">
+    <summary class="problem-info-row">
+      <span>Reactions</span>
+    </summary>
+
+    <div class="problem-info-content">
+
+      
+        
+
+        <div class="problem-info-data-row problem-reaction-row"
+             data-reaction-type="like">
+
+          <span class="problem-info-label">
+            Likes
+          </span>
+
+          <span>
+            <span class="problem-reaction-users">
+              
+                
+                  <a href="/forum/user/Sam_Petkov">Sam_Petkov</a>
+                
+              
+            </span>
+
+            
+          </span>
+
+        </div>
+      
+        
+
+        <div class="problem-info-data-row problem-reaction-row"
+             data-reaction-type="collab">
+
+          <span class="problem-info-label">
+            Open to collaboration
+          </span>
+
+          <span>
+            <span class="problem-reaction-users">
+              
+                
+                  <a href="/forum/user/zitterbewegung">zitterbewegung</a>, 
+                
+                  <a href="/forum/user/Sam_Petkov">Sam_Petkov</a>
+                
+              
+            </span>
+
+            
+          </span>
+
+        </div>
+      
+        
+
+        <div class="problem-info-data-row problem-reaction-row"
+             data-reaction-type="working_on">
+
+          <span class="problem-info-label">
+            Currently working on
+          </span>
+
+          <span>
+            <span class="problem-reaction-users">
+              
+                
+                  <a href="/forum/user/zitterbewegung">zitterbewegung</a>, 
+                
+                  <a href="/forum/user/Sam_Petkov">Sam_Petkov</a>
+                
+              
+            </span>
+
+            
+          </span>
+
+        </div>
+      
+        
+
+        <div class="problem-info-data-row problem-reaction-row"
+             data-reaction-type="hard">
+
+          <span class="problem-info-label">
+            Looks difficult
+          </span>
+
+          <span>
+            <span class="problem-reaction-users">
+              
+                <span class="problem-info-muted">None</span>
+              
+            </span>
+
+            
+          </span>
+
+        </div>
+      
+        
+
+        <div class="problem-info-data-row problem-reaction-row"
+             data-reaction-type="easy">
+
+          <span class="problem-info-label">
+            Looks tractable
+          </span>
+
+          <span>
+            <span class="problem-reaction-users">
+              
+                <span class="problem-info-muted">None</span>
+              
+            </span>
+
+            
+          </span>
+
+        </div>
+      
+        
+
+        <div class="problem-info-data-row problem-reaction-row"
+             data-reaction-type="formalisable">
+
+          <span class="problem-info-label">
+            Could be formalisable
+          </span>
+
+          <span>
+            <span class="problem-reaction-users">
+              
+                
+                  <a href="/forum/user/Sam_Petkov">Sam_Petkov</a>
+                
+              
+            </span>
+
+            
+          </span>
+
+        </div>
+      
+        
+
+        <div class="problem-info-data-row problem-reaction-row"
+             data-reaction-type="working_form">
+
+          <span class="problem-info-label">
+            Working on formalising
+          </span>
+
+          <span>
+            <span class="problem-reaction-users">
+              
+                
+                  <a href="/forum/user/Sam_Petkov">Sam_Petkov</a>
+                
+              
+            </span>
+
+            
+          </span>
+
+        </div>
+      
+
+    </div>
+  </details>
+
+</div>
+               
+
+                    
+</div></div>
+        
+            <div class="container">
+                <div class="problem-box">
+                
+                
+                
+<div class="problem-text" id=neutral> 
+ 
+ <div id="prize"> $1000</div>
+    
+
+
+
+    <div id="content">
+Let $Y(x)$ be the maximal $y$ such that there exists a choice of congruence classes $a_p$ for all primes $p\leq x$ such that every integer in $[1,y]$ is congruent to at least one of the $a_p\pmod{p}$. <br><br>Give good estimates for $Y(x)$. In particular, can one prove that $Y(x)=o(x^2)$ or even $Y(x)\ll x^{1+o(1)}$?
+    </div>
+
+    <div id="problem_id">
+<a href="/687">#687</a>: <a href="#bib-container687" onclick="event.preventDefault();addNewBox('Er79d', '687', true);return false;">[Er79d,p.79]</a><a href="#bib-container687" onclick="event.preventDefault();addNewBox('Er80', '687', true);return false;">[Er80,p.106]</a><a href="#bib-container687" onclick="event.preventDefault();addNewBox('Er96b', '687', true);return false;">[Er96b]</a>
+    </div>
+
+ 
+    <div id="tags">
+
+<a href="/tags/number theory">number theory</a>
+
+    </div>
+
+</div>  
+
+<div class="problem-additional-text"> 
+
+This function (associated with Jacobsthal) is closely related to the problem of gaps between primes (see <a href="/4" rel="nofollow noopener noreferrer ugc" target="_blank">[4]</a>). The best known upper bound is due to Iwaniec <a href="#bib-container687" onclick="event.preventDefault();addNewBox('Iw78', '687', true);return false;">[Iw78]</a>,\[Y(x) \ll x^2.\]The best lower bound is due to GPT 5.6 Pro (see <a href="/4" rel="nofollow noopener noreferrer ugc" target="_blank">[4]</a>)\[Y(x) \gg \frac{\log x}{\log\log\log x}x,\]improving on a previous bound of Ford, Green, Konyagin, Maynard, and Tao <a href="#bib-container687" onclick="event.preventDefault();addNewBox('FGKMT18', '687', true);return false;">[FGKMT18]</a>. <br><br>Maier and Pomerance have conjectured that $Y(x)\ll x(\log x)^{2+o(1)}$. <br><br>In <a href="#bib-container687" onclick="event.preventDefault();addNewBox('Er80', '687', true);return false;">[Er80]</a> he writes 'It is not clear who first formulated this problem - probably many of us did it independently. I offer the maximum of \$1000 dollars and $1/2$ my total savings for clearing up of this problem.'<br><br>In <a href="#bib-container687" onclick="event.preventDefault();addNewBox('Er80', '687', true);return false;">[Er80]</a> Erdős also asks about a weaker variant in which all except $o(y/\log y)$ of the integers in $[1,y]$ are congruent to at least one of the $a_p\pmod{p}$, and in particular asks if the answer is very different.<br><br>See also <a href="/688" rel="nofollow noopener noreferrer ugc" target="_blank">[688]</a> and <a href="/689" rel="nofollow noopener noreferrer ugc" target="_blank">[689]</a>. A more general Jacobsthal function is the focus of <a href="/970" rel="nofollow noopener noreferrer ugc" target="_blank">[970]</a>.
+
+
+    <div id="bib-container687"></div>
+ 
+   
+    <div class="citationbox">
+        <div id="content">
+<b>Additional thanks to</b>: Boris Alexeev, Stijn Cambie, Wouter van Doorn, and Desmond Weisenberg
+
+        </div>
+    </div>
+
+    
+    <div class="image-container" id="image-container687"></div>
+</div>
+
+<div class="problem-info">
+
+
+
+<details class="problem-info-section">
+  <summary class="problem-info-row">
+    <span>Proof expositions (0)</span>
+  </summary>
+
+  <div class="problem-info-content problem-expositions">
+If you would like to contribute an exposition of a proof related to this problem, please <a href="https://www.erdosproblems.com/dm/with/moderator">message a moderator</a> or email <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="b0d5c2d4dfc3c0c2dfd2dcd5ddc3dfdedcd9ded5f0d7ddd1d9dc9ed3dfdd">[email&#160;protected]</a><p>
+
+
+    
+      <div class="problem-info-muted">
+        No proof expositions yet.
+      </div>
+    
+
+  </div>
+</details>
+
+<a class="problem-info-row problem-info-link" href="/forum/discuss/687">
+    <span>Comments (1)</span>
+  </a>
+
+  <a class="problem-info-row problem-info-link"
+     href="/forum/thread/687/proof-claims">
+    <span>Proof claims (0)</span>
+  </a>
+
+
+  <details class="problem-info-section">
+    <summary class="problem-info-row">
+      <span>More information and links</span>
+    </summary>
+
+    <div class="problem-info-content">
+
+      <div class="problem-info-small">
+
+This page was last edited 31 August 2026.
+ (<a href="/history/687">View history</a>) (<a href="/latex/687">View the LaTeX source</a>)<p>
+
+When referring to this problem, please use the original sources of Erd&#337;s. If you wish to acknowledge this website, the recommended citation format is:
+<p>
+T. F. Bloom, Erd&#337;s Problem #687, https://www.erdosproblems.com/687, accessed 2026-10-16
+</div>
+      <div class="problem-info-small">
+From the <a href="https://github.com/teorth/erdosproblems">external database</a>. (You can
+        <a href="https://github.com/teorth/erdosproblems">
+          help update
+        </a> this.)
+      </div>
+
+      
+
+        <div class="problem-info-data-row">
+          <span class="problem-info-label">Formalised statement?</span>
+          <span>
+            
+              No
+              (<a href="https://github.com/google-deepmind/formal-conjectures">create one</a>)
+            
+          </span>
+        </div>
+
+        
+          <div class="problem-info-data-row">
+            <span class="problem-info-label">OEIS</span>
+
+            <span>
+              
+                
+                  
+                    <a href="https://oeis.org/A048670"
+                       target="_blank"
+                       rel="noopener noreferrer">A048670</a>, 
+                  
+                
+                  
+                    <a href="https://oeis.org/A058989"
+                       target="_blank"
+                       rel="noopener noreferrer">A058989</a>
+                  
+                
+              
+            </span>
+          </div>
+        
+
+        
+
+        
+
+      
+
+    </div>
+  </details>
+
+
+  
+  
+
+  <details class="problem-info-section">
+    <summary class="problem-info-row">
+      <span>Reactions</span>
+    </summary>
+
+    <div class="problem-info-content">
+
+      
+        
+
+        <div class="problem-info-data-row problem-reaction-row"
+             data-reaction-type="like">
+
+          <span class="problem-info-label">
+            Likes
+          </span>
+
+          <span>
+            <span class="problem-reaction-users">
+              
+                <span class="problem-info-muted">None</span>
+              
+            </span>
+
+            
+          </span>
+
+        </div>
+      
+        
+
+        <div class="problem-info-data-row problem-reaction-row"
+             data-reaction-type="collab">
+
+          <span class="problem-info-label">
+            Open to collaboration
+          </span>
+
+          <span>
+            <span class="problem-reaction-users">
+              
+                <span class="problem-info-muted">None</span>
+              
+            </span>
+
+            
+          </span>
+
+        </div>
+      
+        
+
+        <div class="problem-info-data-row problem-reaction-row"
+             data-reaction-type="working_on">
+
+          <span class="problem-info-label">
+            Currently working on
+          </span>
+
+          <span>
+            <span class="problem-reaction-users">
+              
+                <span class="problem-info-muted">None</span>
+              
+            </span>
+
+            
+          </span>
+
+        </div>
+      
+        
+
+        <div class="problem-info-data-row problem-reaction-row"
+             data-reaction-type="hard">
+
+          <span class="problem-info-label">
+            Looks difficult
+          </span>
+
+          <span>
+            <span class="problem-reaction-users">
+              
+                <span class="problem-info-muted">None</span>
+              
+            </span>
+
+            
+          </span>
+
+        </div>
+      
+        
+
+        <div class="problem-info-data-row problem-reaction-row"
+             data-reaction-type="easy">
+
+          <span class="problem-info-label">
+            Looks tractable
+          </span>
+
+          <span>
+            <span class="problem-reaction-users">
+              
+                <span class="problem-info-muted">None</span>
+              
+            </span>
+
+            
+          </span>
+
+        </div>
+      
+        
+
+        <div class="problem-info-data-row problem-reaction-row"
+             data-reaction-type="formalisable">
+
+          <span class="problem-info-label">
+            Could be formalisable
+          </span>
+
+          <span>
+            <span class="problem-reaction-users">
+              
+                <span class="problem-info-muted">None</span>
+              
+            </span>
+
+            
+          </span>
+
+        </div>
+      
+        
+
+        <div class="problem-info-data-row problem-reaction-row"
+             data-reaction-type="working_form">
+
+          <span class="problem-info-label">
+            Working on formalising
+          </span>
+
+          <span>
+            <span class="problem-reaction-users">
+              
+                <span class="problem-info-muted">None</span>
+              
+            </span>
+
+            
+          </span>
+
+        </div>
+      
+
+    </div>
+  </details>
+
+</div>
+               
+
+                    
+</div></div>
+        
+            <div class="container">
+                <div class="problem-box">
+                
+                
+                
+<div class="problem-text" id=neutral> 
+ 
+ <div id="prize"> $1000</div>
+    
+
+
+
+    <div id="content">
+Let $A\subset \mathbb{N}$ be a finite Sidon set. Is there some set $B$ with $A\subseteq B$ which is <a href="https://mathworld.wolfram.com/PerfectDifferenceSet.html" rel="nofollow noopener noreferrer ugc" target="_blank">perfect difference set</a>  modulo $p^2+p+1$ for some prime $p$?
+    </div>
+
+    <div id="problem_id">
+<a href="/707">#707</a>: <a href="#bib-container707" onclick="event.preventDefault();addNewBox('Er76b', '707', true);return false;">[Er76b,p.189]</a><a href="#bib-container707" onclick="event.preventDefault();addNewBox('Er77c', '707', true);return false;">[Er77c,p.55]</a><a href="#bib-container707" onclick="event.preventDefault();addNewBox('Er79g', '707', true);return false;">[Er79g,p.13]</a><a href="#bib-container707" onclick="event.preventDefault();addNewBox('Er80', '707', true);return false;">[Er80,p.99]</a><a href="#bib-container707" onclick="event.preventDefault();addNewBox('ErGr80', '707', true);return false;">[ErGr80,p.49]</a><a href="#bib-container707" onclick="event.preventDefault();addNewBox('Er81', '707', true);return false;">[Er81,p.5]</a><a href="#bib-container707" onclick="event.preventDefault();addNewBox('Er84b', '707', true);return false;">[Er84b,p.16]</a><a href="#bib-container707" onclick="event.preventDefault();addNewBox('Er84d', '707', true);return false;">[Er84d,p.55]</a><a href="#bib-container707" onclick="event.preventDefault();addNewBox('Er85c', '707', true);return false;">[Er85c,p.77]</a><a href="#bib-container707" onclick="event.preventDefault();addNewBox('Er91', '707', true);return false;">[Er91,p.405]</a><a href="#bib-container707" onclick="event.preventDefault();addNewBox('ErFr91', '707', true);return false;">[ErFr91,p.9]</a><a href="#bib-container707" onclick="event.preventDefault();addNewBox('GWNT91', '707', true);return false;">[GWNT91]</a><a href="#bib-container707" onclick="event.preventDefault();addNewBox('Er94c', '707', true);return false;">[Er94c,p.57]</a><a href="#bib-container707" onclick="event.preventDefault();addNewBox('Er97c', '707', true);return false;">[Er97c,p.58]</a>
+    </div>
+
+ 
+    <div id="tags">
+
+<a href="/tags/additive combinatorics">additive combinatorics</a> | 
+
+<a href="/tags/sidon sets">sidon sets</a>
+
+    </div>
+
+</div>  
+
+<div class="problem-additional-text"> 
+
+See also <a href="/44" rel="nofollow noopener noreferrer ugc" target="_blank">[44]</a> and <a href="/329" rel="nofollow noopener noreferrer ugc" target="_blank">[329]</a> (indeed a positive solution to this problem implies a positive solution to <a href="/44" rel="nofollow noopener noreferrer ugc" target="_blank">[44]</a>, and thence also to <a href="/329" rel="nofollow noopener noreferrer ugc" target="_blank">[329]</a>).<br><br>This is discussed in problems C9 and C10 of Guy's collection <a href="#bib-container707" onclick="event.preventDefault();addNewBox('Gu04', '707', true);return false;">[Gu04]</a>, and was also asked by Erdős in the <a href="https://westcoastnumbertheory.org/wp-content/uploads/2018/02/wcnt-problems-1991.pdf" rel="nofollow noopener noreferrer ugc" target="_blank">1991 problem session</a> of Great Western Number Theory. The prize of \$1000 was offered in <a href="#bib-container707" onclick="event.preventDefault();addNewBox('Er80', '707', true);return false;">[Er80]</a> for a proof or disproof of this conjecture. In some sources (such as <a href="#bib-container707" onclick="event.preventDefault();addNewBox('Er77c', '707', true);return false;">[Er77c]</a>) Erdős weakens this to whether any finite Sidon set can be contained in the perfect difference set modulo $m^2+m+1$ for some (not necessarily prime) $m$. In <a href="#bib-container707" onclick="event.preventDefault();addNewBox('Er97c', '707', true);return false;">[Er97c]</a> he admits this conjecture is 'perhaps too optimistic'.<br><br>Alexeev and Mixon <a href="#bib-container707" onclick="event.preventDefault();addNewBox('AlMi25', '707', true);return false;">[AlMi25]</a> have disproved this conjecture, proving that $\{1,2,4,8\}$ cannot be extended to a perfect difference set modulo $p^2+p+1$ for any prime $p$, and also that $\{1,2,4,8,13\}$ cannot be extended to any perfect difference set. Their proof has been formalised in Lean with the assistance of ChatGPT.<br><br>Surprisingly, they discovered that this conjecture was actually first disproved by Hall in 1947 <a href="#bib-container707" onclick="event.preventDefault();addNewBox('Ha47', '707', true);return false;">[Ha47]</a>, long before Erdős asked this question. Hall proved that $\{1,3,9,10,13\}$ cannot be extended to any perfect difference set.<br><br>It is trivial that any Sidon set of size $2$ can be extended to a perfect difference set. In <a href="https://mathoverflow.net/questions/501983/can-every-sidon-set-of-size-3-be-extended-to-a-finite-perfect-difference-set" rel="nofollow noopener noreferrer ugc" target="_blank">a discussion</a> on MathOverflow, Sawin has proved that any Sidon set of size $3$ can also be extended. It remains open whether any Sidon set of size $4$ can be extended to a perfect difference set, but in the same MathOverflow discussion Mueller has shown that $\{0,1,3,11\}$ is a candidate counterexample, in that all the known ways to construct perfect difference sets cannot succeed.
+
+
+    <div id="bib-container707"></div>
+ 
+   
+    <div class="citationbox">
+        <div id="content">
+<b>Additional thanks to</b>: Boris Alexeev and Desmond Weisenberg
+
+        </div>
+    </div>
+
+    
+    <div class="image-container" id="image-container707"></div>
+</div>
+
+<div class="problem-info">
+
+
+
+<details class="problem-info-section">
+  <summary class="problem-info-row">
+    <span>Proof expositions (0)</span>
+  </summary>
+
+  <div class="problem-info-content problem-expositions">
+If you would like to contribute an exposition of a proof related to this problem, please <a href="https://www.erdosproblems.com/dm/with/moderator">message a moderator</a> or email <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="3b5e495f54484b495459575e564854555752555e7b5c565a525715585456">[email&#160;protected]</a><p>
+
+
+    
+      <div class="problem-info-muted">
+        No proof expositions yet.
+      </div>
+    
+
+  </div>
+</details>
+
+<a class="problem-info-row problem-info-link" href="/forum/discuss/707">
+    <span>Comments (10)</span>
+  </a>
+
+  <a class="problem-info-row problem-info-link"
+     href="/forum/thread/707/proof-claims">
+    <span>Proof claims (0)</span>
+  </a>
+
+
+  <details class="problem-info-section">
+    <summary class="problem-info-row">
+      <span>More information and links</span>
+    </summary>
+
+    <div class="problem-info-content">
+
+      <div class="problem-info-small">
+
+This page was last edited 26 October 2025.
+ (<a href="/history/707">View history</a>) (<a href="/latex/707">View the LaTeX source</a>)<p>
+
+When referring to this problem, please use the original sources of Erd&#337;s. If you wish to acknowledge this website, the recommended citation format is:
+<p>
+T. F. Bloom, Erd&#337;s Problem #707, https://www.erdosproblems.com/707, accessed 2026-10-16
+</div>
+      <div class="problem-info-small">
+From the <a href="https://github.com/teorth/erdosproblems">external database</a>. (You can
+        <a href="https://github.com/teorth/erdosproblems">
+          help update
+        </a> this.)
+      </div>
+
+      
+
+        <div class="problem-info-data-row">
+          <span class="problem-info-label">Formalised statement?</span>
+          <span>
+            
+              <a href="https://github.com/google-deepmind/formal-conjectures/blob/main/FormalConjectures/ErdosProblems/707.lean">
+                Yes
+              </a>
+            
+          </span>
+        </div>
+
+        
+
+        
+
+        
+
+      
+
+    </div>
+  </details>
+
+
+  
+  
+
+  <details class="problem-info-section">
+    <summary class="problem-info-row">
+      <span>Reactions</span>
+    </summary>
+
+    <div class="problem-info-content">
+
+      
+        
+
+        <div class="problem-info-data-row problem-reaction-row"
+             data-reaction-type="like">
+
+          <span class="problem-info-label">
+            Likes
+          </span>
+
+          <span>
+            <span class="problem-reaction-users">
+              
+                <span class="problem-info-muted">None</span>
+              
+            </span>
+
+            
+          </span>
+
+        </div>
+      
+        
+
+        <div class="problem-info-data-row problem-reaction-row"
+             data-reaction-type="collab">
+
+          <span class="problem-info-label">
+            Open to collaboration
+          </span>
+
+          <span>
+            <span class="problem-reaction-users">
+              
+                <span class="problem-info-muted">None</span>
+              
+            </span>
+
+            
+          </span>
+
+        </div>
+      
+        
+
+        <div class="problem-info-data-row problem-reaction-row"
+             data-reaction-type="working_on">
+
+          <span class="problem-info-label">
+            Currently working on
+          </span>
+
+          <span>
+            <span class="problem-reaction-users">
+              
+                <span class="problem-info-muted">None</span>
+              
+            </span>
+
+            
+          </span>
+
+        </div>
+      
+        
+
+        <div class="problem-info-data-row problem-reaction-row"
+             data-reaction-type="hard">
+
+          <span class="problem-info-label">
+            Looks difficult
+          </span>
+
+          <span>
+            <span class="problem-reaction-users">
+              
+                <span class="problem-info-muted">None</span>
+              
+            </span>
+
+            
+          </span>
+
+        </div>
+      
+        
+
+        <div class="problem-info-data-row problem-reaction-row"
+             data-reaction-type="easy">
+
+          <span class="problem-info-label">
+            Looks tractable
+          </span>
+
+          <span>
+            <span class="problem-reaction-users">
+              
+                <span class="problem-info-muted">None</span>
+              
+            </span>
+
+            
+          </span>
+
+        </div>
+      
+        
+
+        <div class="problem-info-data-row problem-reaction-row"
+             data-reaction-type="formalisable">
+
+          <span class="problem-info-label">
+            Could be formalisable
+          </span>
+
+          <span>
+            <span class="problem-reaction-users">
+              
+                <span class="problem-info-muted">None</span>
+              
+            </span>
+
+            
+          </span>
+
+        </div>
+      
+        
+
+        <div class="problem-info-data-row problem-reaction-row"
+             data-reaction-type="working_form">
+
+          <span class="problem-info-label">
+            Working on formalising
+          </span>
+
+          <span>
+            <span class="problem-reaction-users">
+              
+                <span class="problem-info-muted">None</span>
+              
+            </span>
+
+            
+          </span>
+
+        </div>
+      
+
+    </div>
+  </details>
+
+</div>
+               
+
+                    
+</div></div>
+        
+            <div class="container">
+                <div class="problem-box">
+                
+                
+                
+<div class="problem-text" id=neutral> 
+ 
+ <div id="prize"> $1000</div>
+    
+
+
+
+    <div id="content">
+Let $A\subset\mathbb{N}$ be an infinite Sidon set. Is it true that\[\liminf_{x\to \infty} \frac{\lvert A\cap [1,x]\rvert}{x^{1/2}}(\log x)^{1/2}=0?\]Does there exist an infinite Sidon set $A$ such that\[\liminf_{x\to \infty} \frac{\lvert A\cap [1,x]\rvert}{x^{1/2}}(\log x)^c&#62;0\]for some $c&#62;0$?
+    </div>
+
+    <div id="problem_id">
+<a href="/1191">#1191</a>: <a href="#bib-container1191" onclick="event.preventDefault();addNewBox('Er80', '1191', true);return false;">[Er80,p.98]</a>
+    </div>
+
+ 
+    <div id="tags">
+
+<a href="/tags/additive combinatorics">additive combinatorics</a> | 
+
+<a href="/tags/sidon sets">sidon sets</a>
+
+    </div>
+
+</div>  
+
+<div class="problem-additional-text"> 
+
+Erdős proved (see for example <a href="#bib-container1191" onclick="event.preventDefault();addNewBox('HaRo66', '1191', true);return false;">[HaRo66]</a>) that if $A$ is an infinite Sidon set then\[\liminf_{x\to \infty} \frac{\lvert A\cap [1,x]\rvert}{x^{1/2}}(\log x)^{1/2}\leq c\]for some constant $c&gt;0$. In <a href="#bib-container1191" onclick="event.preventDefault();addNewBox('Er80', '1191', true);return false;">[Er80]</a> he offered \$1000 'for clearing up the problems' raised by this; he may have meant for finding the optimal function $f$ such that\[\liminf_{x\to \infty} \frac{\lvert A\cap [1,x]\rvert}{x^{1/2}}f(x)=0\]for all infinite Sidon sets $A$.<br><br>The second question is a stronger form of <a href="/39" rel="nofollow noopener noreferrer ugc" target="_blank">[39]</a>. See also <a href="/729" rel="nofollow noopener noreferrer ugc" target="_blank">[729]</a> for the behaviour of the $\limsup$. 
+
+
+    <div id="bib-container1191"></div>
+ 
+
+    
+    <div class="image-container" id="image-container1191"></div>
+</div>
+
+<div class="problem-info">
+
+
+
+<details class="problem-info-section">
+  <summary class="problem-info-row">
+    <span>Proof expositions (0)</span>
+  </summary>
+
+  <div class="problem-info-content problem-expositions">
+If you would like to contribute an exposition of a proof related to this problem, please <a href="https://www.erdosproblems.com/dm/with/moderator">message a moderator</a> or email <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="1d786f79726e6d6f727f7178706e7273717473785d7a707c7471337e7270">[email&#160;protected]</a><p>
+
+
+    
+      <div class="problem-info-muted">
+        No proof expositions yet.
+      </div>
+    
+
+  </div>
+</details>
+
+<a class="problem-info-row problem-info-link" href="/forum/discuss/1191">
+    <span>Comments (0)</span>
+  </a>
+
+  <a class="problem-info-row problem-info-link"
+     href="/forum/thread/1191/proof-claims">
+    <span>Proof claims (0)</span>
+  </a>
+
+
+  <details class="problem-info-section">
+    <summary class="problem-info-row">
+      <span>More information and links</span>
+    </summary>
+
+    <div class="problem-info-content">
+
+      <div class="problem-info-small">
+
+This page was last edited 06 April 2026.
+ (<a href="/history/1191">View history</a>) (<a href="/latex/1191">View the LaTeX source</a>)<p>
+
+When referring to this problem, please use the original sources of Erd&#337;s. If you wish to acknowledge this website, the recommended citation format is:
+<p>
+T. F. Bloom, Erd&#337;s Problem #1191, https://www.erdosproblems.com/1191, accessed 2026-10-16
+</div>
+      <div class="problem-info-small">
+From the <a href="https://github.com/teorth/erdosproblems">external database</a>. (You can
+        <a href="https://github.com/teorth/erdosproblems">
+          help update
+        </a> this.)
+      </div>
+
+      
+
+        <div class="problem-info-data-row">
+          <span class="problem-info-label">Formalised statement?</span>
+          <span>
+            
+              No
+              (<a href="https://github.com/google-deepmind/formal-conjectures">create one</a>)
+            
+          </span>
+        </div>
+
+        
+          <div class="problem-info-data-row">
+            <span class="problem-info-label">OEIS</span>
+
+            <span>
+              
+                Possible
+              
+            </span>
+          </div>
+        
+
+        
+
+        
+
+      
+
+    </div>
+  </details>
+
+
+  
+  
+
+  <details class="problem-info-section">
+    <summary class="problem-info-row">
+      <span>Reactions</span>
+    </summary>
+
+    <div class="problem-info-content">
+
+      
+        
+
+        <div class="problem-info-data-row problem-reaction-row"
+             data-reaction-type="like">
+
+          <span class="problem-info-label">
+            Likes
+          </span>
+
+          <span>
+            <span class="problem-reaction-users">
+              
+                <span class="problem-info-muted">None</span>
+              
+            </span>
+
+            
+          </span>
+
+        </div>
+      
+        
+
+        <div class="problem-info-data-row problem-reaction-row"
+             data-reaction-type="collab">
+
+          <span class="problem-info-label">
+            Open to collaboration
+          </span>
+
+          <span>
+            <span class="problem-reaction-users">
+              
+                <span class="problem-info-muted">None</span>
+              
+            </span>
+
+            
+          </span>
+
+        </div>
+      
+        
+
+        <div class="problem-info-data-row problem-reaction-row"
+             data-reaction-type="working_on">
+
+          <span class="problem-info-label">
+            Currently working on
+          </span>
+
+          <span>
+            <span class="problem-reaction-users">
+              
+                <span class="problem-info-muted">None</span>
+              
+            </span>
+
+            
+          </span>
+
+        </div>
+      
+        
+
+        <div class="problem-info-data-row problem-reaction-row"
+             data-reaction-type="hard">
+
+          <span class="problem-info-label">
+            Looks difficult
+          </span>
+
+          <span>
+            <span class="problem-reaction-users">
+              
+                <span class="problem-info-muted">None</span>
+              
+            </span>
+
+            
+          </span>
+
+        </div>
+      
+        
+
+        <div class="problem-info-data-row problem-reaction-row"
+             data-reaction-type="easy">
+
+          <span class="problem-info-label">
+            Looks tractable
+          </span>
+
+          <span>
+            <span class="problem-reaction-users">
+              
+                <span class="problem-info-muted">None</span>
+              
+            </span>
+
+            
+          </span>
+
+        </div>
+      
+        
+
+        <div class="problem-info-data-row problem-reaction-row"
+             data-reaction-type="formalisable">
+
+          <span class="problem-info-label">
+            Could be formalisable
+          </span>
+
+          <span>
+            <span class="problem-reaction-users">
+              
+                <span class="problem-info-muted">None</span>
+              
+            </span>
+
+            
+          </span>
+
+        </div>
+      
+        
+
+        <div class="problem-info-data-row problem-reaction-row"
+             data-reaction-type="working_form">
+
+          <span class="problem-info-label">
+            Working on formalising
+          </span>
+
+          <span>
+            <span class="problem-reaction-users">
+              
+                <span class="problem-info-muted">None</span>
+              
+            </span>
+
+            
+          </span>
+
+        </div>
+      
+
+    </div>
+  </details>
+
+</div>
+               
+
+                    
+</div></div>
+        
+    
+    
+
+
+
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+window.MathJax = {
+  output: {
+    font: 'mathjax-tex'
+  },
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']],
+    displayMath: [['$$', '$$'], ['\\[', '\\]']],
+    processEscapes: true
+  },
+};
+</script>
+
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@4.1.2/tex-chtml-nofont.js"></script>
+
+
+<!-- Previewing forum posts -->
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  function escapeHtml(str) {
+    return String(str).replace(/[&<>"']/g, m => ({
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#39;"
+    })[m]);
+  }
+
+  function normalizeHref(href) {
+    href = href.trim();
+    if (!/^https?:\/\//i.test(href) && !href.startsWith("/")) {
+      href = "https://" + href;
+    }
+
+    return href;
+  }
+
+  let mathJaxQueue = Promise.resolve();
+
+  function clearMathJax(element) {
+    if (window.MathJax && MathJax.typesetClear) {
+      MathJax.typesetClear([element]);
+    }
+  }
+
+  function typesetMath(element) {
+    if (!window.MathJax) return;
+
+    if (MathJax.typesetPromise) {
+      mathJaxQueue = mathJaxQueue
+        .then(() => {
+          if (MathJax.startup && MathJax.startup.promise) {
+            return MathJax.startup.promise;
+          }
+        })
+        .then(() => MathJax.typesetPromise([element]))
+        .catch(err => {
+          console.error("MathJax typeset failed:", err);
+        });
+
+      return;
+    }
+
+    if (MathJax.Hub) {
+      MathJax.Hub.Queue(["Typeset", MathJax.Hub, element]);
+    }
+  }
+
+  function renderPreview(textarea, preview, label) {
+    let raw = textarea.value;
+    const anchors = [];
+    let idx = 0;
+
+    raw = raw.replace(
+      /<a\s+href=("(?:[^"]*)"|'(?:[^']*)')\s*>([\s\S]*?)<\/a>/gi,
+      (match, qHref, labelText) => {
+        const href = qHref.slice(1, -1);
+        const token = `__A_TAG_${idx++}__`;
+
+        anchors.push({
+          token,
+          href: normalizeHref(href),
+          label: labelText
+        });
+
+        return token;
+      }
+    );
+
+    let safe = escapeHtml(raw);
+
+    anchors.forEach(a => {
+      const html = `<a href="${escapeHtml(a.href)}">${escapeHtml(a.label)}</a>`;
+      safe = safe.replace(a.token, html);
+    });
+
+    safe = safe.replace(/\{PROBLEM=(.+?)\}/g, (_, p1) =>
+      `<a href="/${escapeHtml(p1)}">[${escapeHtml(p1)}]</a>`
+    );
+
+    safe = safe.replace(/\n/g, "<br>");
+    clearMathJax(preview);
+
+    if (!safe.trim()) {
+      preview.innerHTML = "";
+      preview.classList.add("hidden");
+      label.classList.add("hidden");
+      return;
+    }
+
+    preview.innerHTML = safe;
+    preview.classList.remove("hidden");
+    label.classList.remove("hidden");
+
+    typesetMath(preview);
+  }
+
+function initialisePreview(textarea) {
+  const form = textarea.closest("form");
+  const preview = form && form.querySelector(".post-preview");
+  const label = form && form.querySelector(".preview-label");
+
+  if (!preview || !label) {
+    return;
+  }
+
+  renderPreview(textarea, preview, label);
+}
+
+document.addEventListener("input", function (event) {
+  if (!event.target.matches("form textarea")) {
+    return;
+  }
+
+  initialisePreview(event.target);
+});
+
+document.querySelectorAll("form textarea").forEach(function (textarea) {
+  initialisePreview(textarea);
+});
+});
+</script>
+
+<!-- To handle the search bar -->
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    function setFilterLink(linkId, newFilter) {
+        const link = document.getElementById(linkId);
+        if (!link) return;
+        const pathParts = window.location.pathname.split("/");
+        // Expect: /<section>/<entry> or /<section>/<entry>/<filter>
+        if (pathParts.length >= 3) {
+            const section = pathParts[1];
+            const entry = pathParts[2];
+            // Construct base: /tags/additive, /sources_bib/BL09, etc.
+            const baseUrl = "/" + section + "/" + entry;
+            link.href = baseUrl + "/" + newFilter;
+        }
+    }
+    setFilterLink("solvedLink", "solved");
+    setFilterLink("openLink", "open");
+    setFilterLink("yesLink", "yes");
+    setFilterLink("noLink", "no");
+});
+</script>
+
+<!-- Handle the dual view link -->
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const dualLink = document.getElementById("dualViewLink");
+  if (!dualLink) return;
+
+  const isInDualView = window.location.pathname.startsWith("/dual");
+  dualLink.textContent = isInDualView ? "Exit Dual View" : "Dual View";
+  dualLink.addEventListener("click", function (e) {
+    e.preventDefault();
+
+    if (isInDualView) {
+      try {
+        const leftIframe = document.getElementById("iframe-left");
+        const src = leftIframe?.src || "/";
+        let clean = src.replace(window.location.origin, "");
+        clean = clean.replace(/[?&]embed=1/, "");
+
+        window.location.href = clean;
+      } catch (err) {
+        window.location.href = "/";
+      }
+    } else {
+      const currentPath = window.location.pathname + window.location.search;
+      const rightPanelDefault = "/";
+      const hash = `#left:${encodeURIComponent(currentPath)}&right:${encodeURIComponent(rightPanelDefault)}`;
+      window.location.href = `/dual${hash}`;
+    }
+  });
+});
+</script>
+
+<!-- Redirect links and searches when in dual view mode -->
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  if (!window.location.pathname.startsWith("/dual")) return;
+
+  function getTargetPanel() {
+    const selected = document.querySelector('input[name="targetPanel"]:checked');
+    return selected ? selected.value : "left";
+  }
+
+  function loadInPanel(panel, path) {
+    if (!path) return;
+    const iframe = document.getElementById(`iframe-${panel}`);
+    if (!iframe) return;
+    const url = path.includes("?") ? path + "&embed=1" : path + "?embed=1";
+    iframe.src = url;
+    const inputBox = document.querySelector(`#panel-${panel} input`);
+    if (inputBox) inputBox.value = path;
+    console.log(`Loaded "${url}" into panel "${panel}"`);
+  }
+  
+  document.querySelectorAll(".dual-aware a[href^='/'], a.dual-aware[href^='/']").forEach(link => {
+    link.addEventListener("click", function (e) {
+      e.preventDefault();
+      const path = this.getAttribute("href");
+      loadInPanel(getTargetPanel(), path);
+    });
+  });
+
+  const idForm = document.getElementById("idsearchForm");
+  if (idForm) {
+    idForm.addEventListener("submit", function (e) {
+      e.preventDefault();
+      const input = idForm.querySelector(".idsearchTerm").value.trim();
+      if (!input) return;
+
+      let path = null;
+
+      if (/^\d+$/.test(input)) {
+        path = "/go_to/" + encodeURIComponent(input);
+      } else if (/^((\d+|end)(-(\d+|end))?\s*)+(open|solved|yes|no)?$/i.test(input)) {
+        const parts = input.split(/\s+/).filter(Boolean);
+        path = "/range/" + parts.map(encodeURIComponent).join("/");
+      } else {
+        alert("Invalid input format.");
+        return;
+      }
+
+      loadInPanel(getTargetPanel(), path);
+    });
+  }
+
+  const searchForm = document.getElementById("searchForm");
+  if (searchForm) {
+    searchForm.addEventListener("submit", function (e) {
+      e.preventDefault();
+      const input = searchForm.querySelector(".searchTerm").value.trim();
+      if (!input) return;
+
+      const path = "/search/" + encodeURIComponent(input);
+      loadInPanel(getTargetPanel(), path);
+    });
+  }
+});
+</script>
+
+<!-- Different menu on mobile -->
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const button = document.getElementById("mobileMenuButton");
+  const dropdown = document.getElementById("mobileDropdown");
+
+  if (button && dropdown) {
+    button.addEventListener("click", function () {
+      dropdown.classList.toggle("show");
+    });
+
+    document.addEventListener("click", function (e) {
+      if (!button.contains(e.target) && !dropdown.contains(e.target)) {
+        dropdown.classList.remove("show");
+      }
+    });
+  }
+});
+</script>
+
+<!-- For expanding threads -->
+
+<script>
+document.addEventListener('click', (e) => {
+  const link = e.target.closest('#toggle-posts');
+  if (!link) return;
+  e.preventDefault(); 
+
+  const box = document.getElementById('more-posts');
+  const isHidden = box.classList.toggle('hidden');
+  const expanded = !isHidden;
+
+  link.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+  box.setAttribute('aria-hidden', expanded ? 'false' : 'true');
+
+  link.textContent = expanded
+    ? 'Show only the top five comments'
+    : `Show ${link.dataset.remaining} more comments`;
+});
+</script>
+
+
+<script>
+document.addEventListener('click', (e) => {
+  const link = e.target.closest('.toggle-replies');
+  if (!link) return;
+  e.preventDefault();
+
+  const pid = link.dataset.postId;
+  const box = document.getElementById(`more-replies-${pid}`);
+  if (!box) return;
+
+  const isHidden = box.classList.toggle('hidden');
+  const expanded = !isHidden;
+
+  link.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+  box.setAttribute('aria-hidden', expanded ? 'false' : 'true');
+
+  link.textContent = expanded
+    ? 'Hide replies'
+    : `Show ${link.dataset.remaining} more replies`;
+});
+</script>
+
+
+<script>
+document.addEventListener("click", async function (event) {
+    const button = event.target.closest(".problem-status-option");
+    if (!button) return;
+
+    const widget = button.closest(".problem-status-widget");
+    if (!widget) return;
+
+    if (widget.dataset.canEdit !== "1") return;
+
+    const status = button.dataset.status;
+    const url = widget.dataset.setUrl;
+
+    widget.classList.add("is-saving");
+
+    const buttons = widget.querySelectorAll(".problem-status-option");
+    buttons.forEach(btn => btn.disabled = true);
+
+    try {
+        const response = await fetch(url, {
+            method: "POST",
+            credentials: "same-origin",
+            headers: {
+                "Content-Type": "application/json",
+                "X-Requested-With": "fetch"
+            },
+            body: JSON.stringify({ status: status })
+        });
+
+        const data = await response.json().catch(() => ({}));
+
+        if (!response.ok || !data.ok) {
+            throw new Error(data.error || "Could not update problem status.");
+        }
+
+        widget.dataset.currentStatus = data.status;
+
+        buttons.forEach(btn => {
+            const active = btn.dataset.status === data.status;
+            btn.classList.toggle("is-active", active);
+            btn.setAttribute("aria-checked", active ? "true" : "false");
+        });
+
+        const label = widget.querySelector(".js-problem-status-label");
+        const description = widget.querySelector(".js-problem-status-description");
+
+        if (label) label.textContent = data.label || button.dataset.label;
+        if (description) description.textContent = data.description || button.dataset.description;
+          widget.style.setProperty("--status-progress", button.dataset.progress);
+
+    } catch (err) {
+        alert(err.message || "Could not update problem status.");
+    } finally {
+        widget.classList.remove("is-saving");
+
+        if (widget.dataset.canEdit === "1") {
+            buttons.forEach(btn => btn.disabled = false);
+        }
+    }
+});
+</script>
+  
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4c06797da517af2',t:'MTc5MjI1MTY1Ng=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

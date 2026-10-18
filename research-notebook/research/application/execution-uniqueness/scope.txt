@@ -1,0 +1,100 @@
+Execution uniqueness and arbitrary-solution travel safety
+2026-10-17. New modules: ExecutionUniqueness and PhysicalExecutionUniqueness.
+
+What is now proved
+------------------
+The travel guarantee is no longer restricted to the explicitly constructed
+analytic trajectory. Any trajectory satisfying the independently stated ODE,
+initial condition, sampled feedback, and continuity assumptions must equal it.
+This is proved in normalized coordinates and separately transferred from the
+physical-coordinate equations. Neither specification assumes the desired
+equality, safety, or a uniqueness hypothesis.
+
+Normalized specification
+------------------------
+For a fixed real rate r, define sample times T_n = sum_{k<n} h_k. IsExecution
+requires a function f:R->R^3 that is continuous on [0,infinity), starts at z0,
+and, on every open interval (T_n,T_{n+1}), satisfies
+
+  x'=v, v'=a,
+  a'=r*(clip_1(-x(T_n)-3*v(T_n)-2*a(T_n)+e_n)+d_n-a).
+
+The sampled request uses f's own state at T_n, not the recursively constructed
+sample sequence. Errors e_n and d_n are arbitrary held scalar sequences for
+the uniqueness result. With r != 0 and h_n >= hmin > 0, execution_eq_state
+proves equality to UncertainTravel.state at every nonnegative real time.
+samples_eq_of_execution first proves agreement at all sample times by induction.
+The positive dwell time gives interval coverage without finite-time accumulation.
+There is no conclusion about negative time.
+
+The reusable held_ode_unique theorem is stronger locally: it works for every
+real r and held command u on any closed interval. Two continuous trajectories
+satisfying x'=v, v'=a, a'=r*(u-a) on the open interior and agreeing at the left
+endpoint agree everywhere on the closed interval. It does not require stability.
+The r!=0 hypothesis enters only when connecting to our existing analytic formula,
+which contains division by r.
+
+Proof mechanism and endpoint assumptions
+---------------------------------------
+For two held solutions, exp(r*t)*(a_f(t)-a_g(t)) has zero interior derivative.
+The scalar mean value theorem plus closed-interval continuity makes it constant;
+the initial equality makes it zero. Velocity and position differences then have
+zero derivative in turn. This avoids assuming derivatives at sample boundaries.
+Continuity of all three coordinates at those boundaries remains essential.
+The existing constructed trajectory is separately proved to satisfy IsExecution,
+so the result is not a vacuous wrapper around inconsistent execution conditions.
+
+Physical specification and exact transfer
+----------------------------------------
+For fixed positive nominal tau0, actual tau, and command magnitude U, the physical
+IsExecution specifies a continuous f=(X,V,A) with its own sampled feedback:
+
+  X'=V, V'=A,
+  tau*A'=-A+clip_U(-X(T_n)/tau0^2-3*V(T_n)/tau0-2*A(T_n)+e_n)+d_n.
+
+Both errors are in acceleration-command units. In particular, d is inside the
+1/tau factor; an external additive jerk is a distinct model and is not covered
+by this physical statement without the earlier appropriate conversion.
+normalize_isExecution proves that z(t)=(X(tau0*t)/(U*tau0^2),
+V(tau0*t)/(U*tau0),A(tau0*t)/U) meets the normalized specification with
+r=tau0/tau, hnorm=h/tau0, enorm=e/U, dnorm=d/U. Clipping and vector-field
+homogeneity are proved, not assumed. execution_eq_state then recovers equality
+in physical coordinates, and execution_unique compares arbitrary physical
+executions. constructed_isExecution also provides a physical existence witness.
+
+Transferred safety statement
+----------------------------
+PhysicalExecutionUniqueness.execution_travel_limit proves |X(T)|<=2*U*tau0^2
+for every T>=0 and every trajectory satisfying the physical specification if:
+  * tau0>0, tau>0, U>0;
+  * 9/10 <= tau0/tau <= 11/10, with fixed tau and tau0;
+  * 0<hmin<=h_n<=tau0/5 for every sample;
+  * |e_n|+|d_n|<=U/100 for every sample;
+  * the initial normalized quadratic energy is <=12.
+The corresponding normalized theorem admits the proved larger 1/90 combined
+error budget. The physical theorem deliberately retains the original U/100
+engineering contract. Nominal controller gains do not depend on actual tau.
+
+Boundaries of the result
+------------------------
+This closes the constructed-formula versus arbitrary continuous classical
+solution gap for the stated fixed-rate, held-error model. It does not establish
+hardware calibration, disturbances varying within an interval, delays, sampled
+measurement consistency beyond the specified error sequence, or time-varying tau.
+Uniqueness compares trajectories with the same prescribed h, e, and d sequences;
+it does not separately prove uniqueness for a sensor model that generates
+different error sequences from different candidate trajectories.
+No new mathematical novelty claim is made for affine ODE uniqueness. The value
+is a checked connection from the physical ODE specification to the existing
+certificate and all-time travel theorem.
+
+Verification
+------------
+Both new source files passed direct Lean checking without warnings. The targeted
+Lake build and audit are recorded alongside this note. The audit covers all 20
+explicit declarations (17 theorems, 2 structures, 1 definition), plus both
+structures' constructors and three field projections: 28 axiom checks total.
+See manifest.json and axioms.log for completed status and transitive axiom sets.
+Source hashes are recorded before and after the audit. This is a pinned local
+Lean4.35 build with cached dependencies, not a fresh independent toolchain replay.
+No existing proof sources, aggregate imports, or central audit files were edited.

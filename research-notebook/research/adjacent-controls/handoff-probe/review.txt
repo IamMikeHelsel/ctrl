@@ -1,0 +1,58 @@
+Independent handoff-probe review — 2026-10-17
+
+Verdict: no analytic or interval-arithmetic blocker found for this particular
+fixed-rate, zero-backup-error model. This remains an exact-rational diagnostic,
+not a Lean-checked handoff theorem or a hardware guarantee.
+
+Replay: ran check.py read-only by replacing its single results.json write with
+an assertion that the newly computed object equals the stored JSON. All640
+checks pass and the result matches exactly. No source/results file changed.
+
+Analytic/interval checks
+- terminal() is the exact held solution of x'=v, v'=a, a'=r*(-1-a), with
+  constant r>0 and u=-1. Its position, velocity and acceleration formulas
+  match UncertainLag.heldSolution at u=-1.
+- Taylor degree16 is an upper bound and degree17 a lower bound for exp(-x)
+  at every x>=0 by the signed Taylor remainder. This does not require each
+  alternating term to decrease from the first term. Monotonicity correctly
+  converts point bounds at opposite interval endpoints into an enclosure.
+- Fraction addition, signed multiplication, positive-denominator division and
+  squaring all give containing intervals. Correlation loss only enlarges the
+  bounds. All acceptance checks are rational; float is used only for display.
+- The80 closed rate cells of width1/400 exactly cover[9/10,11/10]. The eight
+  initial corners are sufficient: at each fixed r, terminal flow is affine
+  in the initial state and energy is convex because the same frozen P is PSD.
+  P literals were compared with Generated.TravelQuarterLower.P and agree.
+- The initial interval lower bound11749189/500000=23.498378 proves the WHOLE
+  initial box lies outside V<=12. This is not merely a center-point example.
+- For all times0<=t<=5/4, acceleration is between-1 and .01. Integrating
+  gives the two displayed position polynomials; concavity of the lower and
+  monotonicity of the upper justify endpoint evaluation. The bounds are
+  657/800=.82125 and5297/3200=1.6553125, strictly inside[-2,2]. The argument
+  covers the whole continuous interval, not only endpoints or sampled times.
+- Terminal energy upper11.23431669743207 is below12 with positive exact
+  margin. No appeal to the original h<=.2 closed-loop certificate is made
+  during this longer1.25 recovery interval; its separate analytic enclosure
+  is essential.
+
+Handoff meaning and remaining proof
+The terminal full state is a valid initial state for the existing uncertain
+travel theorem with the SAME fixed r in[.9,1.1]. After the switch, the original
+combined held-error budget and positive-dwell/max-gap assumptions must hold.
+A checked global theorem still needs the exact flow/interval obligations,
+continuity of all three coordinates at T, a shifted sampling clock starting
+at T, and correspondence to the piecewise backup/controller ODE. These are
+correctly listed as assumptions to formalize; the script does not prove them.
+There is no demonstrated robustness to errors during backup, changing r during
+backup, delayed switching, implementation arithmetic or physical mismatch.
+
+Do not call this a complete stop: terminal velocity can have either sign over
+the box. It is a fixed negative-command recovery into a certified terminal
+ellipsoid, not a proof of arrival at rest. The current model/status/NotClaimed
+fields otherwise avoid overstatement. The README was added during review and
+now records the analytic obligations, zero backup disturbance, and the
+negative-command recovery interpretation; the missing-document note is resolved.
+
+SHA256 at review
+check.py 42271cff7a8a2d17621cb35d4e3d150cf3bb831827a657a05930bfde39f7094a
+results.json 9dd0f2400b95a9a4167bea02d82750611b17cd4895ea69712a0e201aef0bc971

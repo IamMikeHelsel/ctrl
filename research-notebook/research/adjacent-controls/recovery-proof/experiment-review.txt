@@ -1,0 +1,122 @@
+Empirical recovery comparison: useful certification extension, modest behavior change
+2026-10-17
+
+VERDICT
+The experiment does not establish that the backup is needed for safety of
+these tested trajectories. The original saturated sampled controller also
+stayed within the travel limit and reached V<=12 in every tested case.
+The backup gives a small peak-travel reduction, mixed terminal-energy results,
+and increased command variation. Its demonstrated practical benefit is the
+new proof route from an initial region outside the old certified ellipsoid.
+Do not describe this as rescuing an unsafe baseline or uniformly improving
+control performance.
+
+REPRODUCE
+From the workspace root:
+  .tools/research-python/bin/python research/adjacent-controls/recovery-proof/experiment.py
+Only the Python standard library is used; no installation, simulator or
+service is needed. The script writes experiment-results.json, including
+source hashes, parameters, per-run metrics, paired differences and normalized
+state traces. Python 3.14 was used. All three files are outside the frozen
+proof and paper directories. No proof files were edited.
+
+MATCHED COMPARISON
+There are 24 pairs: the 8 vertices of the specified initial box, each with
+r=0.9,1.0,1.1. The controller gains remain fixed for every rate.
+Initial box: x in [.99,1.01],v in [.49,.51],a in [-.01,.01].
+Plant: x'=v,v'=a,a'=r(u-a), fixed r per run.
+Direct method: u=clip(-x-3 v-2 a,-1,1) held for 0.1, beginning at time 0.
+Recovery method: u=-1 for T=1.25, then the SAME sampled feedback with a new
+sampling clock beginning at T. State is preserved at the switch.
+Both are evaluated to normalized time 20 with zero measurement, quantization,
+disturbance, timing and command error. Actual rate affects the simulated
+plant, not the controller gains. No uncertain-model or sensor estimator is
+implemented by this experiment.
+
+Every interval uses the exact closed-form held solution evaluated in binary
+floating point, with expm1 to reduce cancellation. There is no numerical ODE
+integration. Position extrema are obtained numerically from endpoints and
+velocity-zero roots, bracketed using acceleration's possible zero and bisected
+60 times. These are numerical extrema, NOT rigorously rounded bounds.
+Energy maxima are sampled at spacing<=.005, with all segment endpoints and
+T included. Refining to .0025 changed the measured post-T peak V by 0 on these
+runs; that sensitivity check is not a rigorous error estimate.
+
+DEFAULT HOLD 0.1 RESULTS (ranges over 24 cases)
+Metric                              Direct feedback        Backup + handoff
+Initial V                           23.507642--25.463642    same states
+V at T=1.25                         9.196638--11.257759     9.603789--11.070700
+Peak absolute position              1.342292--1.428258     1.340128--1.427167
+Sampled peak V on [T,20]              9.196638--11.257759     9.603789--11.070700
+First sampled V<=12 time             .825--1.150             .820--1.130
+Held-command value changes           191--192                188
+Command total variation              1.381583--1.579723      1.545507--1.854228
+Time at full saturation              .8--.9                  1.25
+Observed travel violations          0/24                    0/24
+Observed post-T V>12 cases           0/24                    0/24
+
+In both methods the post-T sampled energy maximum occurred at T. Terminal
+energy is evaluated at exactly T even when this is inside a direct-control
+hold. V at the initial state exceeds 12 in all cases, but that fact only says
+the old initial-region theorem does not apply there. It does not show unsafe
+motion. The analytic all-box lower bound is separately proved in RecoveryPath;
+the empirical corner range above is not a replacement for that theorem.
+
+PAIRED EFFECTS AND FAIRNESS
+Backup peak |x| was lower in all 24 pairs, by 0.001090--0.002215 normalized units.
+This is small compared with the roughly 0.57 remaining travel margin in the
+worst direct case. Terminal V improved in 13 pairs and worsened in 11.
+At r=.9, backup-minus-direct terminal V ranges from-.187059 to-.118842;
+at r=1, from-.098852 to+.080151; at r=1.1, from+.105914 to+.407151.
+Command total variation increased in every pair, by .047304--.472645.
+Fewer command changes partly reflect holding a fixed command longer and
+therefore fewer feedback intervals; they are not evidence of smoother control.
+A change is counted when adjacent held values differ by more than 1 e-12;
+the unspecified pre-initial command is excluded in both methods.
+
+T=1.25 is not aligned with the baseline's 0.1 sampling clock, so the backup
+also changes the feedback phase. A small hold-sensitivity comparison is saved:
+  hold .05 (aligned): peak-travel improvement .001410--.002722;
+                     terminal-V difference-.230739--+.359250.
+  hold .10:           peak-travel improvement .001090--.002215;
+                     terminal-V difference-.187059--+.407151.
+  hold .20:           peak-travel improvement .000695--.001734;
+                     terminal-V difference-.133026--+.461230.
+No observed travel violations occurred for either method in these checks.
+Thus the modest peak reduction is not solely an alignment artifact, but
+terminal-energy dominance still fails. This remains a finite parameter check.
+
+PUBLICATION USEFULNESS
+Useful as an honest illustration accompanying a proved recovery theorem:
+- It demonstrates nonvacuous starting states outside the original certificate.
+- It shows how the actual backup and continuing controller behave without
+  replacing the mathematical proof by plots or discretized acceptance.
+- It exposes a real tradeoff: a slightly smaller forward excursion costs more
+  sustained braking and command variation, with no uniform energy benefit.
+
+A skeptical reviewer can reasonably ask whether it is simpler to certify the
+original controller's finite prefix from this same box. That is an alternative
+proof-development task, not something this experiment settles. The paper should
+frame the result as a certified recovery composition and report the benign
+baseline comparison rather than claim a superior controller.
+A stronger application evaluation would compare certified region size and
+verification effort against a matched direct-controller extension or existing
+backup method, and quantify sensor/backup-error margin. No priority claim or
+such broad comparison follows from these 48 main trajectories.
+
+BOUNDARIES
+The box corners do not establish behavior for every interior state under a
+nonlinear sampled clamp, and three rate values do not verify the whole interval.
+Finite horizon 20 does not prove all-future safety. Both phases have ZERO error
+here; this does not test the post-handoff error allowance or any disturbance
+robustness during backup. The existing formal statements, when fully composed,
+have their own explicitly stated assumptions and are the safety evidence.
+If nominal time scale is .1 s, the backup is 125 ms and horizon 20 is 2 s; this is an
+illustrative conversion only. Reported axes and states are normalized. No
+hardware data, calibrated motor model, tracking task, payload dynamics, energy
+consumption, comfort/jerk optimization, emergency-stop compliance or deployment
+acceptance was measured.
+
+No additional SVG file was produced because this task's write ownership was
+restricted to experiment.py, experiment-results.json and this review. The JSON
+contains downsampled state/energy traces for a later normalized-axis plot.

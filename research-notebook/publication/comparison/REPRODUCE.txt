@@ -1,0 +1,33 @@
+Reproduce the accepted SOS comparison
+
+The main project's ./check.sh does not build this separate comparison. It needs
+the pinned SOS repository and its own Lean 4.33.1 toolchain. It does not use the
+main project's Lean 4.35.0 dependency cache. Follow the SOS repository's native
+dependency instructions for your platform; the recorded execution was on macOS.
+
+From the package/workspace root, with elan/Lake available:
+
+  git clone --no-checkout https://github.com/leanprover/sos.git research/sos-comparison
+  git -C research/sos-comparison checkout --detach fb7ae417609093f04cf0608dc92e9343550c2ae4
+  cp publication/comparison/VerifiedSOSReplay.lean research/sos-comparison/SOSTest/SOSSharedWitnessReplay.lean
+
+From research/sos-comparison:
+
+  lake exe cache get
+  lake build SOS
+
+Then, from the package/workspace root:
+
+  python3 publication/comparison/SOSReplayRunner.py
+
+The runner honors LAKE and ELAN_HOME, prefers the optional workspace-local elan
+installation when present, and otherwise uses the standard elan/PATH resolver.
+It compares the source bytes against the supplied accepted witness, rebuilds the
+comparison module, checks three fresh Lean processes, and rejects missing or
+nonstandard axiom output. Running it overwrites the current replay timing/log
+files, so retain the supplied evidence separately if comparing runs.
+
+VerifiedSOSReplay.lean is the accepted, frozen witness. Files beginning
+UNVERIFIED are unsuccessful or unexecuted experiments and are not accepted proof
+artifacts. The wide-case target was not executed. The MatrixSOS JSON witness has
+only exact symbolic checks; its Lean adapter remains unverified.

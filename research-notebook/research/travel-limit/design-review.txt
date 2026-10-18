@@ -1,0 +1,275 @@
+TRAVEL-LIMIT DESIGN AND PRIOR-ART REVIEW — 17 October 2026
+
+Status: independent mathematical/design review, primary-source literature
+inspection, and exact rational arithmetic using SymPy/Python. This review did
+not edit Lean, build the new travel theorem, or validate physical hardware.
+The rational P below is a snapshot of verified-witness-search.json, whose name
+is not treated as proof that the composed safety result is already checked.
+
+ASSESSMENT
+
+The proposed proof architecture is sound if it preserves the sampled/held
+semantics below. Four vertices suffice despite the correlation between the
+exponential and the saturation coefficient. A useful application result would
+be a checked position envelope with positive disturbance tolerance, arbitrary
+admissible sampling, and an explicit initial state that actually clips.
+
+The control-theoretic ingredients are established. The credible prospective
+contribution is their exact, replayable composition in Lean and an honest
+application benchmark. It is not a new saturation theorem, a newly solved open
+problem, or a hardware safety validation.
+
+1. STATE THE ACTUAL SYSTEM BEFORE THE CERTIFICATE
+
+State z=(x,v,a), normalized lag time constant 1, command limit U>0,
+K=[1,3,2]. On sample interval k, freeze
+  u_k = clip_U(-K z_k),   w_k constant,   |w_k| <= W.
+The continuous dynamics on that interval are
+  x'=v, v'=a, a'=-a+u_k+w_k.
+This is different from continuously evaluating clip_U(-K z(t)). It is also
+different from putting a load disturbance in v'=a+w. The held disturbance
+enters after command clipping: U bounds u_k, not u_k+w_k or acceleration a.
+First-order lag is not itself a hard actuator rate limit.
+
+For offset s and e=exp(-s), the exact solution is
+  a(s) = e a0 + (1-e)(u_k+w_k),
+  v(s) = v0 + (1-e)a0 + (s-1+e)(u_k+w_k),
+  x(s) = x0+s v0+(s-1+e)a0+(s^2/2-s+1-e)(u_k+w_k).
+Equivalently z(s)=F(s,e,alpha)z_k+g(s,e)w_k, where
+  F0 = [[1,s,s-1+e],[0,1,1-e],[0,0,e]],
+  g  = [s^2/2-s+1-e, s-1+e, 1-e]^T,
+  F  = F0-alpha*g*K.
+Check initial values and all three component derivatives. The explicit
+solution establishes a model realization; any claim about every solution of
+an independently defined ODE additionally needs the appropriate uniqueness
+bridge or must quantify over these explicit held executions.
+
+Arbitrarily varying measurable w(t) cannot be replaced by a single held scalar
+w_k in this formula. It needs a convolution/reachable-set bound and separate
+regularity semantics. Keep the initial result explicitly piecewise constant.
+
+2. SECTOR AND FOUR-VERTEX ENCLOSURE
+
+For 0<kappa<=1, if |K z_k|<=U/kappa, there is a fixed alpha in [kappa,1]
+with clip_U(-K z_k)=-alpha K z_k. Use alpha=1 when K z_k=0; otherwise
+alpha=min(1,U/|K z_k|). This alpha stays fixed throughout the segment.
+
+For every offset 0<=s<=H<=1,
+  1-s <= exp(-s) <= 1-s+s^2.
+F is affine in e holding alpha fixed and affine in alpha holding e fixed;
+the alpha*e term is allowed. Interpolating the two e endpoints and the two
+alpha endpoints yields four nonnegative product weights summing to one.
+Use the same e in every matrix entry. The true e and alpha need not vary
+independently: proving all points of the enclosing rectangle is conservative
+and sound. It does not assert all four corners are physically realizable.
+
+At s=0 the e interval collapses. Handle this case directly, without dividing
+by s^2. At s>0, theta=(exp(-s)-(1-s))/s^2 is in [0,1]. For intermediate
+offsets use exp(-s) and vertices evaluated at s, not exp(-h_k) or vertices at
+the eventual sample duration. Common P across all four corners is essential
+for the proposed convex-energy step. Four different Lyapunov matrices cannot
+be substituted into the same argument.
+
+3. ROBUST INVARIANCE MUST WORK AS s TENDS TO ZERO
+
+Let E(z)=z^T P z, P positive definite, E(z)<=M||z||^2, and suppose the
+four checked vertices imply the nominal bound
+  E(Fz) <= E(z)-s*c*||z||^2 <= (1-lambda*s)E(z), lambda=c/M.
+Assume E(gw)<=B*s^2*W^2. A fixed positive Young parameter creates an
+energy multiplier greater than one near s=0 and does not prove the desired
+whole-segment invariant set. Choose theta=eta*s, with 0<eta<lambda.
+For s>0, quadratic Young gives
+  E(Fz+gw)
+    <= (1+eta*s)(1-lambda*s)E(z)+B*(s^2+s/eta)*W^2
+    <= [1-(lambda-eta)*s]E(z)+B*s*(H+1/eta)*W^2.
+Require lambda*H<=1 to keep the substituted nominal factor nonnegative.
+Then E(z)<=R implies E(z(s))<=R whenever
+  B*(H+1/eta)*W^2 <= (lambda-eta)*R.
+At s=0 the result is the exact initial identity. A sharper calculation can
+retain the negative eta*lambda*s^2 term; the displayed sufficient bound is
+easy to inspect and avoids claiming an optimal disturbance margin.
+
+A convenient coarse bound follows from the same exponential enclosure:
+  |g_x|<=s^2/2, |g_v|<=s^2, |g_a|<=s, for 0<=s<=H<=1.
+Thus B=M*(1+5*H^2/4) works. This deliberately does not identify the
+polynomial endpoint responses with the actual positive exponential response.
+Sharper integral bounds on g may improve the disturbance budget later.
+
+The selected application uses M=451/10, c=1, H=1/5, R=12, W=1/100,
+eta=5/451. The coarse B=9471/200 above does NOT prove this disturbance
+budget. The sharper B=13 used by the proposed calculation is independently
+supported by exact arithmetic. At the exponential endpoints,
+  g/s = r0=(s/2,0,1), or r1=(-s/2,s,1-s),
+  E(r0)=19*s^2/10+5*s+278/25 <=3049/250=12.196,
+  E(r1)=84*s^2/25+88*s/25+278/25 <=7474/625=11.9584.
+Each polynomial has positive coefficients and is increasing on [0,1/5].
+Convexity of E handles the actual exponential interpolation. This yields
+E(gw)<=13*s^2*w^2 after the corresponding equalities are checked in Lean.
+Then the selected positive-disturbance budget is
+  D=13*(H+1/eta)*W^2=1469/12500 <60/451=(lambda-eta)*R,
+with exact slack 87481/5637500. These expressions were independently
+checked with exact rational arithmetic; formal response and composition
+proofs were still being constructed when this review was written.
+
+4. NONVACUITY, CLIPPING DEPTH, AND TRAVEL GEOMETRY
+
+For rho_K=K P^-1 K^T and rho_x=(P^-1)00, support of the ellipsoid gives
+  |Kz|^2<=rho_K E(z),  |x|^2<=rho_x E(z).
+All required budgets must hold together:
+  U^2/rho_K < R <= U^2/(kappa^2*rho_K),
+  rho_x*R <= L^2,
+  the positive-disturbance invariance budget in section 3.
+The strict lower bound is what distinguishes active clipping from a theorem
+whose entire invariant set has clipping inactive. It guarantees that some
+admitted states clip, not that every trajectory clips or continues clipping.
+If tight support constants are used, L^2>U^2*rho_x/rho_K is necessary for
+this particular ellipsoid family to include an actively clipped state.
+
+For Lean, exact PSD certificates for rho_K*P-K^T*K and
+rho_x*P-e1*e1^T may be simpler than a general inverse-matrix theorem.
+An explicit rational witness should accompany the existential argument.
+Rescaling P and R together changes notation, not the physical safe set.
+
+Current rational candidate read from verified-witness-search.json:
+  P=[[38/5,257/25,5],[257/25,1319/50,769/50],[5,769/50,278/25]],
+  kappa=1/4, H=1/5, c=1,
+  rho_K=4133475/11131832, rho_x=3550075/11131832.
+SELECTED APPLICATION: U=1, L=2, R=12, W=1/100, H=1/5, kappa=1/4.
+The sector and travel budgets are
+  rho_K*12=12400425/2782958=4.455843... <16=U^2/kappa^2,
+  rho_x*12=10650225/2782958=3.826944... <4=L^2.
+An especially simple rational active witness is
+  z=(0,0,1), E(z)=278/25=11.12<12, Kz=2>1,
+  requested input=-2, clipped input=-1, alpha=1/2.
+These equalities were independently checked with exact rational arithmetic.
+This is substantive clipping at an admitted initial state, while W remains
+strictly positive and all geometric budgets hold together.
+
+The largest request over this ellipsoid is
+  sqrt(12400425/2782958)=2.1108868720...,
+so the true attenuation coefficient is alpha>=0.4737345298.... Do not
+describe kappa=1/4 as evidence of 75 percent attenuation in this particular
+travel-two region. The explicit witness establishes 50 percent attenuation.
+The tight position bound is sqrt(10650225/2782958)=1.9562577049...<2.
+All units are normalized. L=2 does not mean two meters or a calibrated track.
+
+For comparison, the earlier travel-one R=3 candidate admitted only mild
+clipping (max request about 1.05544). The selected R=12 case fixes that
+application weakness without changing P. It still makes no claim that every
+initial state or every interval clips.
+
+The old jerk/lag P is not a useful route to strong attenuation at c=1:
+its continuous-limit residual Q_alpha-I has determinant
+  -3*(227*alpha^2-1918*alpha+1547)/16,
+with smaller zero approximately 0.9030953856. Shrinking H cannot repair a
+negative determinant at s=0. This symbolic diagnostic motivated changing P;
+it does not establish instability of the actual saturated system.
+
+5. EXECUTION AND CLAIM QUANTIFIERS
+
+Recommended theorem shape: for every initial state E(z0)<=R, every sequence
+h_k in [hmin,H] with hmin>0, and every held disturbance sequence |w_k|<=W,
+define the clipped held executions explicitly; then for all k and all
+0<=s<=h_k, E(z_k(s))<=R and |x_k(s)|<=L, with |u_k|<=U.
+Induction uses the endpoint as the next initial state. Common P and the sector
+condition are re-established at each sample by invariance, rather than being
+assumed for the entire future without proof.
+
+For a claim quantified over every real time t>=0, connect these intervals
+to a sampling clock and prove coverage. An upper bound on h_k alone allows
+Zeno behavior. Local certificates can allow s=0 even though the global clock
+requires positive progress. At sample boundaries define the input convention;
+state continuity is enough, and differentiability of acceleration need not
+hold across a command jump.
+
+The initial ellipsoid constrains position, velocity, and acceleration jointly.
+This is not safety for every state satisfying merely |x|<=L. The travel limit
+is symmetric around the regulation origin; a physical track needs a coordinate
+shift and dimensions. Hard-stop contact, friction, sensor errors, unmodeled
+delays, machine arithmetic, and parameter uncertainty are outside this model.
+With persistent nonzero disturbances, invariant travel is a reasonable claim;
+convergence to the origin is not established by this argument.
+
+6. PRIMARY PRIOR ART AND WHAT IT RULES OUT
+
+[A] A. H. K. Palmeira, J. M. Gomes da Silva Jr., S. Tarbouriech,
+I. M. F. Ghiggi (2016), Sampled-data control under magnitude and rate
+saturating actuators. International Journal of Robust and Nonlinear Control
+26:3232-3252. Publisher abstract and bibliographic details inspected.
+https://onlinelibrary.wiley.com/doi/10.1002/rnc.3503
+The paper already combines actuator modeling, magnitude/rate saturation,
+quadratic Lyapunov analysis, sector conditions, and aperiodic sampling. It
+optimizes regional/global stability and sampling bounds. Our normalized lag
+plus command saturation is a simpler physical model; those concepts are not
+a new theoretical contribution here. This review did not replay their LMIs.
+
+[B] Alexandre Seuret and Joao M. Gomes da Silva Jr. (2012), Taking into
+account period variations and actuator saturation in sampled-data systems.
+Systems & Control Letters 61:1286-1293. Publisher abstract/preview inspected.
+https://www.sciencedirect.com/science/article/abs/pii/S016769111200182X
+https://doi.org/10.1016/j.sysconle.2012.09.003
+Generalized sectors, quadratic sample-time decrease, asynchronous sampling,
+and region-of-attraction/jitter optimization are established here. A sampled
+saturation Lyapunov certificate by itself is not a novelty claim.
+
+[C] Daniel Denardi Huff, Mirko Fiacchini, Joao Manoel Gomes da Silva Jr.
+(2022), Polyhedral estimates of the region of attraction of the origin of
+linear systems under aperiodic sampling and input saturation. Automatica
+144:110490. Author-hosted PDF abstract and publisher preview inspected.
+https://www.gipsa-lab.grenoble-inp.fr/~mirko.fiacchini/files/22_huffAUT22_polyhedral.pdf
+https://doi.org/10.1016/j.automatica.2022.110490
+This uses convex embeddings, sampling-interval partitions, and contractive
+sets to establish continuous-plant attraction under sampled saturated control.
+Convex embeddings and certified safe regions are therefore established ideas;
+our ellipsoid may be substantially more conservative than polyhedral methods.
+
+[D] Khanh Hieu Nguyen and Sung Hyun Kim (2023), Peak-to-Peak Stabilization
+of Sampled-Data Systems Subject to Actuator Saturation and Its Practical
+Application to an Inverted Pendulum. Mathematics 11(22):4592.
+Publisher search-indexed abstract inspected; direct page returned HTTP 429.
+https://www.mdpi.com/2227-7390/11/22/4592
+https://doi.org/10.3390/math11224592
+This combines saturation, peak-bounded disturbances, sampled-data conditions,
+and an output performance objective, with reported pendulum experiments.
+Output/travel bounds under bounded disturbance are not new simply because
+we combine them with saturation. The reported experiments were not replayed.
+
+[E] Hellwig et al., From Zonotopes to Proof Certificates: A Formal Pipeline
+for Safe Control Envelopes, iFM 2025 proceedings (2026). Primary paper was
+inspected in the preceding publication review; tool/artifact not executed.
+https://logic.kastel.kit.edu/ap/pub/zonotope-proofs.pdf
+https://doi.org/10.1007/978-3-032-10794-7_13
+The formal certificate-to-safety bridge already exists in KeYmaera X, with
+distinct one-step invariance, intersample safety, and input-admissibility
+obligations. Our contribution must be compared on actual model/specification,
+certificate representation, and replay evidence rather than a broad first claim.
+
+7. CONCRETE PUBLICATION TARGET AND REJECTION CRITERIA
+
+Defensible prospective result: a fully replayable Lean application certificate
+for position travel of a sampled, genuinely clipping, first-order actuator-lag
+system under specified held disturbances and sampling bounds. Numerical design
+remains untrusted; exact rational certificates, exponential enclosure, saturation
+semantics, clock coverage, and the final quantified travel statement are checked.
+
+Strengthen the artifact with: an assumption-to-theorem map; positive rational W;
+the active witness above; one same-object numerical comparator with identical
+P, K, H, R, disturbance channel and initial set; replay time/certificate size;
+and a conservatism report. Physical calibration is a later application step.
+A simulated trajectory can illustrate the witness but cannot prove the bound.
+
+Reject or narrow the proposed claim if any of these happens:
+  * The final admissible set forces |Kz|<=U, or the clipping witness lies outside it.
+  * Only sample endpoints are safe; no universal offset or clock bridge exists.
+  * Polynomial vertices silently replace the true exponential plant.
+  * The theorem assumes arbitrary varying disturbances but proves only held ones.
+  * The invariant set or disturbance budget is empty/zero despite broader prose.
+  * Different P matrices are mixed without a valid multiple-Lyapunov argument.
+  * A failed common-P/Bernstein search is presented as physical infeasibility.
+  * Routine control ingredients are presented as new theory or first formal safety.
+
+Readiness: the selected design is coherent and merits implementation. Its exact
+initial witness exercises 50 percent command attenuation, with positive held
+disturbance tolerance and a strict position margin. No comparative or physical
+advantage has been established. Publication potential rests on a clean formal
+integration and measured evidence, not on this controller's mathematical novelty.

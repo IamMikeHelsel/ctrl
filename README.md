@@ -158,3 +158,11 @@ The repository includes pre-flight safeguards to protect local build caches (~7.
 - **Lake Cache Safeguard (`scripts/ensure_cache.sh`)**: When creating new Git worktrees or fresh clones, `.lake` is not cloned by Git. The safeguard automatically detects populated sibling caches (in the worktree parent or `ControlsLean/.lake`) and auto-symlinks `.lake`, preventing catastrophic re-compilation of Mathlib from scratch.
 - **Git Ignore**: `.lake` and `/.lake` are excluded so that symlinked build directories are never staged to Git. Scratch directories (`scratch/`, `scratch_*`) and binary/hash artifacts (`*.olean`, `*.ilean`, `*.c`, `*.hash`) are completely ignored.
 - **Detailed Documentation**: See [docs/INNER_LOOP.md](docs/INNER_LOOP.md) for complete details on the inner loop experience, scratch testing, and Loogle usage.
+
+## Research notebook
+
+The [controls and mathematics notebook](research-notebook/README.md) preserves the independent
+controls, Erdős, and Geometric Unity work: proof sources, paper drafts, source research,
+verification logs, comparisons, and Manim explanations. It keeps its original toolchain pins and
+proof scope separate from the root library. A [hash-checked sync tool](tools/sync_research_notebook.py)
+keeps later work from remaining only in a chat workspace.

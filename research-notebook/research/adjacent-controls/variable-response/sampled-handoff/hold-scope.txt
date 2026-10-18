@@ -1,0 +1,58 @@
+ROBUST HOLD: FORMAL SCOPE
+
+Result
+For every finite horizon H >= 0, every actual classical trajectory of
+  x' = v, v' = a,
+  a' = r(t) [ -8(x-c) - 6v - a/2 + w(t) - a ]
+stays in the coordinate cube below if it starts there:
+  z0 = x-c,
+  z1 = x-c + v/4,
+  z2 = x-c + v/2 + a/16,
+  |z_i| <= R, R >= 0.
+Assumptions on the actual response: 8 <= r(t) <= 12 and |w(t)| <= 2R.
+The radius-zero case is included. The time horizon is arbitrary.
+
+The coordinate equations follow from the actual ODE. The proof does not
+assume that the path is safe or that it equals a constant-rate formula.
+It uses first contact with expanding barriers R + epsilon(1+t), then lets
+epsilon tend to zero. This handles tangent contact without a uniqueness
+assumption. The first-contact lemma checks the left derivative at an
+interior first contact. An explicit constant equilibrium supplies one
+nonvacuous trajectory.
+
+Physical consequences
+  |x-c| <= R, |v| <= 8R, |a| <= 64R.
+  Nominal command magnitude <= 24R.
+  Command plus target error magnitude <= 26R.
+At an actual zero-velocity state, choose c = x-R. If -32R <= a <= 0,
+the state is in the cube. Thus its front edge is the current position.
+These are real-time bounds, not just sample-time checks.
+
+Units
+The equations use fixed numerical SI gains. For x in metres, v in m/s,
+and a,w,command in m/s^2: r is in 1/s; feedback gains are 8/s^2, 6/s,
+and 1/2; the coordinate factors are 1/4 s, 1/2 s, and 1/16 s^2.
+The disturbance gain in |w| <= 2R is 2/s^2. Lean uses real numbers and
+does not encode physical dimensions as separate types.
+
+Boundary
+This is a bounded-position holding result. It does not assert exact rest,
+convergence, friction contact, recovery of shoe grip, a hardware response
+envelope, or a performance level under ISO 13849.
+The feedback uses the actual continuous state. Sampling, measurement
+error, delay, or saturation need their own bridge into the target error
+bound. The command bounds can show that saturation is inactive when
+sufficient actuator authority is provided; that actuator model is not
+included in this module.
+A classical trajectory is assumed to exist and to obey the ODE. Rate
+continuity is not needed by this invariant theorem. No general existence
+or uniqueness theorem is proved here. The constant equilibrium witness
+is not an existence proof for every disturbance or initial state.
+
+Evidence
+RobustHold.lean: 9 public theorem closures compiled with the frozen
+Lean 4.35.0 / mathlib environment. Each uses only propext,
+Classical.choice, and Quot.sound. See hold-build.log and the integrated
+sampled-handoff verifier for the separate kernel replay result.
+No novelty, publication, hardware, or exact-rest claim follows from this
+module alone.

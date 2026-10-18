@@ -1,0 +1,225 @@
+MANUSCRIPT REVIEW — 17 October 2026
+
+Scope: read-only review of publication/manuscript/main.tex, checked against the
+current Lean source and the fresh generated-benchmark verification manifest.
+This is a separate AI-agent review, not external human peer review. No manuscript
+or proof source was edited for this review.
+
+Snapshot identifiers:
+main.tex SHA256 6d6ef01d24507e23feeb0c4e60522398dbe30c23be2a708063548308f55ea596
+verification.json SHA256 403caae3a191c4d8d1647cc304890fceef4661c95c9595d76976f4b6bd983251
+HeldModels.lean SHA256 21a479c8443097549e49d605291ee525ebe3a49a57372b0c4817f85dad0f458a
+Line numbers below refer to this manuscript snapshot.
+
+ASSESSMENT
+
+The draft is a credible internal technical report after the concrete corrections
+below. It is not submission-ready. Its central formulas match the checked
+certificate interface, and its separation of nominal higher-dimensional proofs,
+two-state robustness, exact arithmetic, and physical validation is sound. No new
+control theorem or solved open problem is claimed. The strongest remaining
+publication gap is evidence of a distinct contribution: a small collection of
+known ingredients plus three elementary plants does not yet establish novelty.
+
+Confidence is high in the specific source/text discrepancies reported here,
+moderate in the novelty assessment, and intentionally unspecified for acceptance
+at any venue. The literature review is bounded, not proof that no prior artifact
+does the same thing. Author details are appropriately deferred to the user.
+
+CORRECTIONS BEFORE SHARING AS A TECHNICAL REPORT
+
+1. Qualify or complete the double-integrator model-to-generated bridge.
+   Location: lines 66–84, especially "equality of each segment to the generated
+   transition" at line 84.
+   HeldModels.Jerk.segment_eq_transition and HeldModels.Planar.segment_eq_transition
+   establish the exact bridges for those two models. SampledPD.lean proves the
+   double-integrator initial and derivative equations, but the reviewed source
+   does not contain a bridge to Generated.DoubleIntegrator.transition. The
+   hand-written double-integrator analysis and the generated matrix are plainly
+   compatible, but that is weaker than a checked equality between them.
+   Fix: add that small Lean bridge and audit it, or say explicitly that the
+   generated-transition bridges presently cover jerk and planar models.
+
+2. Correct the verification-manifest claim.
+   Location: line 134.
+   verification.json records input/source hashes, producer hash, toolchain,
+   mathlib revision, dimensions/degrees/partitions, energy constants, times,
+   theorem names, axiom lists, and exit codes. It does not record exact commands.
+   scripts/verify_benchmarks.py contains the invocation, including creation of a
+   temporary source with appended axiom queries.
+   Fix: say "the verification script records the procedure; the manifest records
+   ...", or extend the manifest before claiming that it records commands.
+   The supplied manifest supports fresh checking of generated modules. Give a
+   separate reference for the unified audit of handwritten dynamics/robustness;
+   do not silently broaden this particular manifest's coverage.
+
+3. Make the actuator limitation proposition self-contained.
+   Location: lines 104–114.
+   "Under the full feasible budget" leaves critical assumptions implicit.
+   SaturationBoundary.budget_forces_clipping_inactive assumes theta > 0,
+   delta > 0, W >= 0, U >= 0, hmin <= 1/2, 10R <= U^2, E(x,v) <= R,
+   and qR + b <= R. State these explicitly in or immediately before the
+   proposition. In particular, positivity of theta and nonnegativity of U are
+   mathematical assumptions, not editorial details. The theorem does not need
+   hmin >= 0, although the intended sampling application supplies it.
+
+4. Describe the review accurately and distinguish interpretation from proof.
+   Location: abstract, line 17; regression discussion, line 138.
+   "Independent review" could be read as external expert or peer review. Use
+   "a separate-agent semantic review" unless an external human review occurs.
+   The signed quadratic decrease theorem was true; only interpreting it as
+   stability was unsound. Calling both findings "scope errors" in the abstract
+   is defensible but imprecise. Prefer "two limitations in interpreting the
+   certificates" and retain the clear explanation at line 138. No kernel or
+   proof-checker error was found.
+
+5. Define the residual at zero explicitly.
+   Location: lines 28–33.
+   The quotient has a polynomial continuation, but the displayed division
+   formula itself is not a definition at h=0 in ordinary mathematical notation.
+   Define R as the unique polynomial satisfying
+       h R(h) = P - A(h)^T P A(h) - h c I,
+   or state that the displayed quotient is used for h != 0 and extended by its
+   polynomial value at zero. This matches the formal reconstruction interface.
+
+6. Correct and complete bibliography entries.
+   Location: lines 156–160.
+   (a) The zonotope paper's first author is Jonathan Hellwig, hence J. Hellwig,
+       not M. Hellwig. Other authors: Lukas Schäfer, Long Qian, André Platzer,
+       Matthias Althoff. The iFM 2025 / 2026 proceedings distinction is supported
+       by the institutional record; the DOI in the draft is correct.
+       Primary institutional record:
+       https://publikationen.bibliothek.kit.edu/1000188296
+       Author preprint: https://arxiv.org/abs/2509.20301
+       DOI: https://doi.org/10.1007/978-3-032-10794-7_13
+   (b) Add the closed-loop paper's authors and venue:
+       Nikos Aréchiga, Sarah M. Loos, André Platzer, Bruce H. Krogh.
+       American Control Conference, 2012.
+       DOI: https://doi.org/10.1109/ACC.2012.6315388
+       Primary author PDF: https://logic.kastel.kit.edu/ap/pub/TPgenloop.pdf
+   (c) Replace vague software attribution such as "Lean community" with the
+       repository's supported citation/maintainer attribution. Pin immutable
+       revisions for all software comparisons, and distinguish source inspection
+       from successful replay. The earlier research inspected matrix-SOS and
+       Sparkle source; it did not independently validate all their claims.
+
+RESULTS THE DRAFT CURRENTLY UNDERREPORTS
+
+7. Include the nominal intersample result already proved in HeldModels.
+   Location: after line 84, or as a short proposition adjoining the sample bound.
+   Jerk.intersample_energy and Planar.intersample_energy establish
+       E(segment(t,z)) <= E(z)  for 0 <= t <= 1/2.
+   Their sampled_segment_bound theorems then establish, for the actual held-step
+   recurrence z_(n+1) = segment(h_n,z_n), hmin >= 0 and
+   hmin <= h_n <= 1/2,
+       E(segment(t,z_n)) <= (1 - hmin/M)^n E(z_0)
+   for every n and every 0 <= t <= h_n. Here c=1, M=24 for jerk, and
+   M=1422684/95123 for planar. This is a useful formal conclusion beyond sample
+   states alone. Preserve its scope: it is indexed by sample and local elapsed
+   time. HeldModels does not yet prove uniqueness of arbitrary ODE solutions,
+   global real-time stitching, or non-Zeno coverage. There is no higher-dimensional
+   perturbed/rounded version of this theorem.
+
+8. Reconcile the new active-saturation example before freezing the manuscript.
+   Location: line 149 currently proposes an active-saturation transient as future
+   work. SaturatedEntry.lean now contains recovery_guarantee, which is absent
+   from this draft. This review read its statement but did not newly build or
+   audit that module; include it only after the parent verification confirms it.
+   Its exact scope is one initial state (x,v)=(1,0), delta=1/10000, U=1,
+   h_n=1/10 and w_n=0 for the first 26 steps. Clipping is active for the first
+   four commands. All sampled energies are <=5; from sample 26 onward they are
+   <=1/10 for arbitrary future h_n in [1/20,1/2] and |w_n| <=1/4000.
+   This is a useful checked finite-prefix-to-invariant-tail composition, not a
+   regional saturated basin, not jitter-robust recovery during the prefix, and
+   not an intersample safety theorem for the active-saturation episode.
+   It does not invalidate the existing budget-forces-inactivity result: the
+   recovery starts outside that small certified invariant region.
+
+PUBLICATION CONTRIBUTION GAPS
+
+9. Replace a list of related-work citations with a feature-level comparison.
+   Location: line 23 and publication plan at line 149.
+   Explain what each closest artifact already provides and what this work adds.
+   The important comparison objects are matrix polynomial interval positivity,
+   untrusted producer plus checked rational witnesses, model-to-transition
+   semantics, sample/intersample composition, and a local robustness instance.
+   Existing safe-envelope certificate pipelines already defeat a broad novelty
+   claim about combining numerical generation and formal checking. Existing
+   matrix-SOS tooling is a particularly close comparison for interval matrix
+   positivity. A difference in proof assistant alone is a weak contribution.
+   Relevant primary artifacts already identified:
+   https://github.com/leanprover/sos
+   https://github.com/selpoG/lean-matrix-sos/tree/02cfe73de3d3535c867eacae5a715036466cab92
+   https://github.com/Verilean/sparkle/tree/1614cee83ac586ca9a0626cd4af13bfef7347c3a
+   https://arxiv.org/abs/2607.19727
+   https://arxiv.org/abs/2509.20301
+   Do not claim these tools lack a feature merely because it was not found in
+   the bounded inspection. Separate confirmed overlap from unresolved coverage.
+
+10. Evaluate a concrete advantage on the same certification objects.
+   Current timings demonstrate feasibility, not superiority or scalability.
+   A useful next experiment compares direct polynomial tactics and the proposed
+   reusable certificate method on the same residual matrices, then compares an
+   applicable existing interval certificate framework. Report successful and
+   failed cases, proof/certificate size, interval partitions, degree/state-size
+   growth, generation and replay time separately, and sampling-bound conservatism.
+   Do not compare unlike safety properties or use unsupported competing-tool
+   failures as evidence of an advantage.
+   Current manifest data can already add generated-source sizes of 6682, 6910,
+   9586, and 16671 bytes, with partition counts 1,1,1,2. These are source sizes,
+   not proof-term or binary sizes. Record hardware and Python/SymPy versions if
+   reporting reproducible performance. The existing single-run disclaimer is good.
+
+11. State the model-class limitation of the current benchmarks.
+   All three nominal plants have nilpotent open-loop dynamics, making their
+   zero-order-hold transition exactly polynomial. The coupled gain matrices do
+   exercise off-diagonal reasoning, but do not add a nonnilpotent plant mode.
+   A motor lag, damped oscillator, or other nonnilpotent plant generally needs
+   matrix-exponential semantics or a rigorously bounded polynomial remainder.
+   The current arbitrary-polynomial certificate interface alone supplies neither.
+   A meaningful application inside the exact-polynomial class could be enough
+   for a focused artifact paper; a broader controls claim needs this distinction.
+
+12. Provide a claim-to-theorem and artifact-replay map.
+   Add a compact appendix/table linking paper claims to named Lean declarations,
+   input JSON, generated modules, and validation scripts. Distinguish generic
+   library statements from generated instances and explicit model bridges.
+   Bind all sources to the archive/commit used for the report, give a clean replay
+   command and dependencies, and obtain an independent clean-environment replay.
+   The current manifest proves a particular local run; it does not alone prove
+   that a distributed source archive contains every necessary dependency.
+
+EDITORIAL IMPROVEMENTS
+
+13. "Continuous sampling intervals" in the abstract is ambiguous; use
+    "continuous ranges of admissible sampling periods." Distinguish "sampled
+    state safety" from "intersample safety" whenever a safety conclusion appears.
+
+14. The unrelated matrix-conjecture paragraph (line 25) distracts from the
+    control-certificate paper. Prefer omitting it. If retained, say that the cited
+    paper leaves the order-six case open; a bounded search is weaker than an
+    exhaustive claim about current open status. Keep this separate mathematical
+    investigation out of the present paper's contribution count.
+
+15. Replace manuscript-development commentary with a concrete contribution
+    statement when ready for submission. The present candid status language is
+    appropriate for an internal draft. A final abstract should report what was
+    achieved, its scope, and the evidence; it need not repeatedly announce that
+    publication suitability is undecided. This is an editorial stage change,
+    not permission to strengthen the mathematical claims.
+
+SUGGESTED ORDER OF WORK
+
+A. Fix the bridge wording/proof, manifest sentence, proposition assumptions,
+   reviewer description, residual-at-zero definition, and bibliographic errors.
+B. Add the already checked intersample result and, after audit, the precisely
+   scoped active-saturation prefix result. Freeze a claim-to-theorem map.
+C. Complete a clean source-archive replay and meaningful same-object comparison.
+D. Choose the main technical contribution and one application with the user's
+   domain expertise; seek an external controls/formal-methods review before
+   selecting a submission venue.
+
+The artifact should be described as a working formally checked prototype with
+specific verified bounds. Its present results support that description; they do
+not yet establish a new control method, a broadly validated implementation,
+physical safety, or publication novelty.

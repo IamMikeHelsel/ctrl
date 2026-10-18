@@ -1,0 +1,127 @@
+HAGER REVERSE-MARKOV PRIZE: STATUS SCREEN
+17 October 2026. Primary-source literature screen, not a new proof claim.
+
+Decision
+--------
+REMOVE the original 10,000-yen problem from the open-prize shortlist. Hager's
+own later paper explicitly identifies it as solved in 2017. A still-accessible
+2015 prize PDF and a 2026 site-migration listing do not establish that a prize
+remains open or payable. The sharper Gauss bound is a separate status question;
+this screen did not locate its resolution, but also did not establish that it
+is currently open or carries a reward. No sponsor was contacted.
+
+Decisive primary evidence
+------------------------
+1. W. Chen, W. Du, W. W. Hager, L. Yang, Bounds for integration matrices that
+   arise in Gauss and Radau collocation, Computational Optimization and
+   Applications 74 (2019), 259-273, DOI 10.1007/s10589-019-00099-5.
+   Primary manuscript: https://par.nsf.gov/servlets/purl/10093307
+   Journal p.262, Historical Note, identifies property P1 as Hager's 2015 prize
+   problem and states: "it was first solved in 2017 [11]".
+   It says that proof in fact bounds |p(t)| by 2 throughout [-1,1]. This paper
+   also proves the weighted Euclidean bounds and their adjoint counterparts.
+   The listed reference [11] is the 2018 SIAM paper below; 2017 is the authors'
+   stated solution year, not its journal publication year.
+
+2. W. W. Hager, J. Liu, S. Mohapatra, A. V. Rao, X.-S. Wang, Convergence rate
+   for a Gauss collocation method applied to constrained optimal control,
+   SIAM Journal on Control and Optimization 56 (2018), 1386-1411.
+   Author-hosted primary paper:
+   https://people.clas.ufl.edu/hager/files/gaussconstraints-1.pdf
+   Appendix 1, Proposition 9.1 (pp.1407-1408) proves the continuous-interval
+   bound for Gauss nodes. Corollary 9.2 (pp.1408-1409) proves the corresponding
+   bound for the right-endpoint Radau nodes. The appendix derives the inverse
+   differentiation-matrix interpretation and uses polynomial interpolation,
+   orthogonality, and Cauchy-Schwarz. Thus both branches of the original
+   constant-2 assertion have an explicit published proof, not merely a later
+   unsupported claim that someone solved it.
+
+What the historical offer actually asks
+--------------------------------------
+The dated statement is 2 September 2015:
+https://people.clas.ufl.edu/hager/files/prize.pdf
+For degree at most n, p(-1)=0 and bounded derivative samples at Gauss nodes,
+or right-endpoint Radau nodes, it asks for nodal |p| <= 2; it additionally
+states the sharper Gauss target 1+tau_n. The linear polynomial 1+t supplies
+the appropriate extremal value. The offer is first-correct-solution only.
+There is a harmless introductory endpoint typo: the opening strict tau_n<1
+does not apply to the subsequent Radau definition tau_n=1.
+
+The current official migration inventory still lists prize.pdf, but it is an
+accessibility/migration record, not a mathematical status update:
+https://people.clas.ufl.edu/hager/content-removed/
+The inventory says the links were redirected on 19 March 2026. A third-party
+ledger still labeling this open is contradicted by the coauthor's historical
+note and the actual published proofs. Do not use that ledger as status evidence.
+
+Exact matrix equivalence
+------------------------
+Let ell_j be the degree-(n-1) cardinal polynomials at the n derivative nodes.
+Define B_ij = integral from -1 to tau_i of ell_j(s) ds. For any nodal vector y,
+q=sum_j y_j ell_j has degree <= n-1; its anchored antiderivative p has degree
+<= n, p(-1)=0, and derivative data y. Hence p_nodes = B y. If Dbar is the
+square differentiation block obtained by deleting the initial-state column,
+then B=Dbar^{-1}.
+
+For each row i, the exact worst value over |y_j|<=1 is sum_j |B_ij|: choose
+y_j equal to the sign of B_ij to attain it. Thus the original nodal statement
+is precisely ||B||_infinity <= 2. The sharp Gauss target is precisely
+||B||_infinity <= 1+tau_n. This equivalence is established in the cited
+literature; it is not a new reduction of ours.
+
+Useful independent sanity check of the constant-2 result
+-------------------------------------------------------
+This short calculation explains why the historical result is believable.
+Positive Gauss/Radau quadrature is exact for q^2 when deg(q)<=n-1, so the
+derivative hypothesis gives integral[-1,1] q^2 = sum w_j q(tau_j)^2 <= 2.
+For -1<=t<=1, Cauchy-Schwarz then gives
+  |p(t)|^2 = |integral[-1,t] q|^2
+           <= (1+t) integral[-1,t] q^2 <= 2(1+t) <= 4.
+This is a restatement/check of established mathematics, not an original
+solution and not a basis for claiming the historical reward. It does not
+establish the sharper Gauss constant at the largest node.
+
+Sharper Gauss statement: status remains unverified here
+------------------------------------------------------
+W. Gautschi, A Discrete Top-Down Markov Problem in Approximation Theory,
+Frontiers in Orthogonal Polynomials and q-Series (2018), pp.267-289,
+author-hosted reprint in Selected Works vol.4:
+https://www.cs.purdue.edu/homes/wxg/SelectedWorks/WGvol4.pdf
+The chapter's Theorem 2.1 gives the absolute-integral-sum extremal formula.
+Sections 2 and 4 investigate the canonical sign pattern and monotonicity of
+these sharp row maxima computationally. It discusses 1+tau_n explicitly.
+Those numerical observations must not be promoted to all-degree proofs.
+The 2019 weighted-row theorems settle P1-P4, but their stated norm bounds do
+not by themselves prove the sharp 1+tau_n inequality. A bounded primary-source
+search did not find a later sharp-bound resolution. This is an absence of
+located evidence, not a certified open-problem status.
+
+One bounded follow-up, only if the sharp variant is independently confirmed open
+-------------------------------------------------------------------------------
+A focused analytic target is positivity of the LAST Gauss integration row:
+  integral[-1,tau_n] ell_j(s) ds >= 0 for every j and n.
+If proved, its absolute row sum equals the ordinary row sum 1+tau_n.
+For earlier rows, the simple Cauchy-Schwarz estimate above suffices whenever
+  2(1+tau_{n-1}) <= (1+tau_n)^2  (n>=2).
+Thus a bounded session can check the literature for these two precise lemmas,
+then attempt only the last-row positivity lemma, using a Legendre-kernel or
+quadrature argument. Handle n=1 separately. Do not attempt a general new
+collocation convergence theory or assume the full canonical sign pattern.
+If the two lemmas are unavailable after a short targeted pass, stop and record
+the gap; small-degree algebra or high-precision samples would only be scouting.
+
+This is a proposed sufficient route, not a verified proof of the sharp result.
+The original constant-2 theorem would make a reasonable Lean learning target,
+but its formalization alone is neither an open-problem solution nor evidence
+of prize eligibility. Given the status correction, it has lower priority than
+the active application paper unless the sharp variant acquires a clear status
+and relevance argument.
+
+Access and evidence notes
+-------------------------
+The NSF PDF was fetched through curl after the web extraction service returned
+502; the complete local PDF text was read, including the Historical Note and
+reference list. The 2018 author PDF was read through the web PDF extraction.
+The Gautschi author-hosted volume was downloaded, and the relevant chapter was
+read locally. Primary dates come from the documents, not search-engine crawl
+dates. No broad computational experiment or Lean proof was run in this screen.

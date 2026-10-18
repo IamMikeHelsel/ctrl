@@ -1,0 +1,61 @@
+Independent semantic review: exact actuator lag and convex vertices
+===================================================================
+Reviewed only:
+  lean-controls/LeanControls/ActuatorLag.lean
+  lean-controls/LeanControls/VertexCertificate.lean
+
+Disposition
+-----------
+No semantic or mathematical mismatch was found in the two reviewed source files. The exact exponential plant, enclosing polynomial vertices, shared quadratic energy, and time quantifiers are distinguished correctly. This was a read-only semantic review, not a fresh compilation or axiom audit of the extension. The frozen 25-module/248-declaration replay does not cover these later files.
+
+Exact plant and held controller
+-------------------------------
+State order is (position, velocity, acceleration). input(z)=-x0-3v0-2a0 is computed from the initial sample state and held during the segment. The explicit formulas are:
+  a(t)=u+(a0-u)exp(-t),
+  v(t)=v0+u*t+(a0-u)(1-exp(-t)),
+  x(t)=x0+t*v0+u*t^2/2+(a0-u)(t-1+exp(-t)).
+
+These formulas give x'=v, v'=a, a'=-a+u, with a normalized actuator lag time constant tau=1. The derivative proofs use the held initial input(z), not continuously recomputed feedback from the evolving segment state. segment_initial identifies the initial value, and segment_ode checks all three coordinate equations. No calibrated motor or general tau claim is made.
+
+Exponential enclosure and vertex correspondence
+----------------------------------------------
+For 0<=h<=1, exp_enclosure proves
+  1-h <= exp(-h) <= 1-h+h^2.
+This retains the exponential remainder as a verified enclosure; it does not replace the plant by a Taylor truncation and silently drop the remainder.
+
+segmentInExp is affine in the same scalar exponential parameter across all three coordinates. lower_vertex and upper_vertex identify the two parameter endpoints with the generated polynomial transition matrices. Thus the enclosure preserves the correlation among coordinates; it is not an unsupported coordinatewise box argument.
+
+exp_interpolation treats h=0 explicitly and uses division by h^2 only in the nonzero branch. Its interpolation weight lies in [0,1]. segment_enclosed then gives the exact exponential state as a convex combination of the two generated endpoint states. The proof uses a weight determined by h; no independence assumption about coordinate uncertainties is introduced.
+
+Shared quadratic certificate
+----------------------------
+vertex_energy_eq checks that both generated vertices use exactly the same P. The shared-bound argument would not be justified with unrelated Lyapunov matrices; the explicit equality closes that obligation.
+
+VertexCertificate proves the quadratic mixture identity and removes the nonnegative remainder t(1-t)V(x-y) using P.PosSemidef. Both endpoint energy bounds therefore imply the same bound for every convexly interpolated state. Positive semidefiniteness is required at the bound theorem, even though the algebraic identity itself holds without it.
+
+segment_energy_decrease applies this argument to the actual exponential trajectory on 0<=h<=1/5 and obtains
+  V(segment(h,z)) <= V(z)-h*sum_i z_i^2.
+The generated upper energy bound then yields the stated contraction factor 1-h/24. No step in the inspected proof treats the polynomial vertices as the actual plant.
+
+Quantifiers and limits
+----------------------
+The source statements are honest within their declared scope:
+  - Segment derivative identities are for the explicit held-input solution.
+  - Energy certification requires elapsed time h in [0,1/5]. The wider [0,1]
+    exponential enclosure alone is not advertised as a stability interval.
+  - jitter_energy_bound permits arbitrary nominal sample intervals satisfying
+    hmin<=h_k<=1/5 and the exact segment recurrence.
+  - hmin is allowed to be zero, in which case the factor is 1 and no geometric
+    decay or positive sampling-clock growth follows.
+  - intersample_energy bounds energy relative to the START of a held interval;
+    it does not assert pairwise monotonicity between arbitrary elapsed times.
+  - sampled_segment_bound covers every index n and offset 0<=t<=h_n. It does
+    not by itself establish coverage of every nonnegative global real time.
+    That extension needs a positive lower interval bound and the sampling-clock
+    coverage theorem, plus a defined assembled lag trajectory.
+  - No global switching-point derivative, continuity, uniqueness, disturbed,
+    rounded, saturated, floating-point, or physical-hardware result is asserted.
+
+Follow-up worth keeping explicit
+--------------------------------
+The current extension is an exact nominal actuator-lag certificate with jitter and per-segment bounds. Connecting it to the generic SamplingClock would support an every-real-time assembled-trajectory statement when hmin>0. Disturbance, quantization, and active saturation require additional proofs; they should not be inherited rhetorically from the separate double-integrator examples.

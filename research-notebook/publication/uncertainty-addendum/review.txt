@@ -1,0 +1,74 @@
+Mathematical source review: uncertainty addendum
+Reviewed UTC: 2026-10-17T17:58:18.720503+00:00
+Reviewed main.tex SHA256: cf48a88224908e3544bbdb9e5051290c908a0a2047b69674cb3ca06dc1c7c49d
+Read-only review; no Lean source or manuscript edits.
+
+Verdict: no blocking mathematical error found in the current saved draft.
+The two previously corrected drafting slips are not present in the formulas
+reviewed here. Two narrow statement-precision changes are advisable:
+
+1. Lines 66-99: explicitly say that t is elapsed time in one held segment,
+   0 <= t <= 1/5, with r in [9/10,11/10]. In Theorem 1, t instead denotes
+   arbitrary global time. The nominal decrease and response-energy inequalities
+   have ht0/hthi hypotheses in UncertainLag.nominal_energy_decrease,
+   nominal_contraction and disturbance_energy_of_abs_le. Without the local-time
+   restriction, those displayed inequalities are false in general. The later
+   sentence about elapsed time before the next sample conveys the intended
+   interpretation, but should not carry the whole quantifier restriction.
+   Minimal fix: introduce these segment-domain assumptions at the beginning
+   of Section 2 and distinguish local elapsed time from global time.
+
+2. Line 78: use 'affine separately in alpha and theta' (or 'multi-affine in
+   alpha and theta'), not an unqualified jointly affine reading. Substituting
+   u=alpha*k(z) creates alpha*theta terms, visible in polynomialHeld.
+   For z=(0,0,1), the first coordinate includes
+   [-alpha+(1+2*alpha)*theta]*t^2. The actual Lean proof correctly uses
+   polynomial_gain_interpolation and polynomial_remainder_interpolation
+   sequentially; there is no proof defect.
+
+Checked claims that match the source:
+- Exact held solution matches UncertainLag.heldSolution. The single shared
+  remainder is exp(-r*t)=1-r*t+theta*r^2*t^2. Substitution gives exactly all
+  three polynomial coordinates printed, including the x-coordinate theta*t^2
+  and the velocity factor t-theta*r*t^2.
+- The sector [2/5,1], midpoint Bernstein control
+  2F(1)-(F(.9)+F(1.1))/2, twelve identities, uniform 3/2 decrease,
+  P entries, and eta=15/902 match the checked statements.
+- E<=451/10*||z||^2 gives 2*eta=15/451 as printed. Exact rational re-evaluation
+  confirms 16*(1/5+1/eta)*(1/90)^2=724/6075 <= 90/451=12*eta.
+- The response bound is transferred to the actual exponential response, not
+  merely checked at vertices; the effective error uses clipping
+  nonexpansiveness. The original combined 1/100 budget is preserved.
+- UncertainTravel.state_invariant and travel_limit, plus sample agreement and
+  UncertainExecution continuity/interior ODE, support the assembled-execution
+  theorem for every real nonnegative time. The smaller original budget follows
+  by weakening the stronger 1/90 hypothesis. No uniqueness claim is smuggled in.
+- The active initial state and constant-error/jitter example match
+  active_example_travel; active clipping is not excluded.
+- Physical normalization and feedback use tau0, while vectorField and ODE use
+  actual tau. r=tau0/tau, the asymmetric actual-tau interval, physical sample
+  upper bound, error units and travel scale are correct.
+- Example arithmetic is correct: tau in [1/11,1/9] seconds, maximal hold 1/50 s,
+  error 1/50 m/s^2 and travel 1/25 m.
+- Fixed rate, held errors, explicit initial ellipsoid, real arithmetic,
+  interval-interior ODE, no separately established uniqueness, no hardware
+  validation and no uncertain rounding corollary are stated with appropriate
+  limits. The post-clamp error is correctly inside the actuator-rate multiplier.
+
+Evidence boundary:
+The current inventory log agrees with 60 modules / 806 named public theorem
+declarations. Individual new modules have compiled; this review did not rerun
+the whole project, audit all 806 declarations, or verify archived-manuscript
+immutability. At review time the fresh uncertainty replay had only its inventory
+line and source archive, so the final full-project/replay outcome and frozen
+manifest references at lines 160-166 must be finalized only after successful
+completion. Reusing the pinned executable/dependency cache is correctly disclosed.
+
+Reviewed sources: UncertainLag, UncertainResponse, UncertainTravel,
+UncertainExecution, PhysicalUncertainTravel, Generated.TravelQuarterLower,
+TravelGeometry, TravelSafety; current uncertainty-fresh-replay inventory.
+This is a scoped mathematical statement review, not an independent proof-kernel
+implementation audit, originality assessment, or publication acceptance review.
+
+Parent resolution: both requested clarifications are applied. All project checks and fresh-source replay subsequently passed. Final source SHA256: 5a95863beb48eec03914ba7556267a1eb9b586b5302467740c4cce5647fe500f
+All three PDF pages were rendered and visually inspected after the final edits; no clipping, overlap or missing symbols was observed. Tectonic and the desktop compiler both succeeded.

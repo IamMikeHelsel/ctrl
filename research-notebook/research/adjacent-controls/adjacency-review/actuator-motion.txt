@@ -1,0 +1,194 @@
+Actuator-aware stopping and safe robot motion: bounded adjacency review
+Checked 2026-10-17. Primary sources only. No proof or benchmark expansion.
+
+RECOMMENDATION
+Do not make a wider initial box the main research claim. The current model
+proof is a useful component, but safe braking, fallback composition, sampling,
+input delay, uncertain actuation, and checked ODE numerics all have substantial
+prior work. The strongest next target is a small, auditable contract between a
+motion planner and one physical axis: accept a proposed motion only when its
+actual actuator response, sensing uncertainty, command age, and fallback remain
+inside a travel limit. This is a candidate artifact contribution, not an
+established open control-theory problem or a claim of first formalization.
+
+Practical question: “May this axis execute one more commanded step, given its
+current velocity AND acceleration, stale measurements, lag uncertainty, and
+remaining clearance, while retaining a safe continuation?” This is broader and
+more useful than certifying another particular feedback trajectory. A single
+axis can represent a carriage or a conservative joint-coordinate subproblem.
+It does not by itself guarantee manipulator collision avoidance, contact safety,
+or autonomous-road-vehicle safety.
+
+WHAT THE CLOSEST WORK ALREADY DOES
+
+1. Motion generation and stopping are mature.
+Berscheid/Kroeger, Ruckig (RSS 2021), generates synchronized jerk-limited
+trajectories with arbitrary position, velocity and acceleration targets.
+Its paper reports large random testing and real-world applications. The current
+official tutorial supports stopping through its velocity interface and exposes
+position extrema; it also documents positional-limit failure results. These are
+kinematic trajectory guarantees, not evidence that our uncertain physical lag
+plant tracks an arbitrary output trajectory. A useful comparison must use the
+same plant and limits, with an explicit tracking-error contract. We should not
+portray Ruckig as unaware of acceleration or stopping.
+https://www.roboticsproceedings.org/rss17/p015.html
+https://www.roboticsproceedings.org/rss17/p015.pdf
+https://docs.ruckig.com/tutorial.html
+
+Lange/Suppa (ICRA 2015) already addresses path-accurate acceleration/jerk-limited
+stopping, including avoidance of rebound at zero velocity, with KUKA hardware
+experiments. Our recovery handoff can retain nonzero velocity/acceleration; it
+must not be sold as an improved stop-and-rest algorithm.
+https://elib.dlr.de/96525/
+
+2. A proposed step plus a verified fallback is established architecture.
+ARMTD (RSS 2020) constructs reachable sets for manipulator trajectories that
+include braking, with six-DoF Fetch hardware examples. This already answers the
+broad “safe motion with a backup when planning fails” question.
+https://roboticsproceedings.org/rss16/p100.pdf
+
+SARA shield (TRO 2026; inspected arXiv v2 and official repository) combines an
+intended step with a stopping fallback and checks reachable occupancies/contact
+energy. Its Section III-D explicitly assumes bounded tracking error, joint
+motion limits, sensing error and delay. Its physical study uses a Schunk LWA 4P
+at 166.7 Hz. The official deployment instructions ask users to provide a
+conservative tracking margin, for example through reachset-conformance
+identification. This gives a concrete integration boundary for a smaller
+verified actuator model; it does not establish that their method lacks such
+modeling or that our artifact would improve their performance. We have not
+reproduced their implementation or hardware experiments.
+https://arxiv.org/html/2412.10180v2
+https://github.com/TUMcps/sara-shield
+
+3. Sampling, delay, uncertainty and model monitoring are not new ingredients.
+Singletary/Chen/Ames (2020) develops sampled backup CBFs with state uncertainty
+and known input delay. Its delay construction uses an input history, an integer
+multiple of the sample period, and a safe startup condition. Evaluation is a
+high-fidelity Segway simulation, not a hardware experiment in that paper.
+Its robust prediction interface is close to the command-history enclosure we
+would need. A claim of newly handling delayed sampled backups would be false.
+https://arxiv.org/html/2005.06418v1
+
+Seiler/Jankovic/Hellstrom (2021) handles unmodeled plant-input dynamics via
+integral quadratic constraints, explicitly including first-order actuators and
+delay. The input perturbation is dynamically correlated with past commands;
+the example uses a point-mass simulation. This rules out a broad claim that
+actuator-aware safety is missing. It also warns against treating all actuator
+mismatch as an independently chosen small constant error.
+https://arxiv.org/pdf/2108.10491
+
+ModelPlex work already derives sound runtime monitors with sensor uncertainty,
+actuator disturbance and fallback controllers. Isabelle/HOL's ODE development
+already includes verified numerical enclosures using Runge-Kutta and affine
+arithmetic. A Lean implementation or exact interval arithmetic alone is not a
+new conceptual assurance architecture.
+https://arxiv.org/abs/1811.06502
+https://isa-afp.org/entries/Ordinary_Differential_Equations.html
+
+4. Hardware conformance is an existing research field, and remains our gap.
+Liu/Schuermann/Althoff (2021) combines reachset-conformant identification with
+controller synthesis and robot experiments. Luetzow/Althoff (2024) extends
+identification across nonlinear and input-output models, with simulated and
+real-world data. These are comparison and method sources, not authority to
+assume our first-order lag matches a robot. Containing finite recorded behavior
+does not, by itself, prove every future physical trajectory satisfies an ODE
+and uncertainty bound. Our theorem must keep that assumption visible.
+https://arxiv.org/abs/2103.01626
+https://arxiv.org/abs/2407.11692
+
+Manufacturer evidence supports inspecting the actual command path. Franka's
+FCI documentation describes a first-order command filter and derivative rate
+limiting; the API can alter the requested signal before the robot executes it.
+The narrative overview and current API reference differ about the rate-limiter
+default, so an experiment must pin the library version and explicitly set both
+options. Neither document implies that the entire joint is our acceleration-lag
+plant. Packet losses, filtering and rate limiting cannot simply be folded into
+our current nominal-tau symbol without a model argument.
+https://frankarobotics.github.io/docs/doc/libfranka/docs/overview.html
+https://frankarobotics.github.io/libfranka/latest/classfranka_1_1Robot.html
+
+EXACT BOUNDED TARGET AND WHAT IS STILL MISSING
+
+Proposed target (not proved by this review): a certificate-acceptance theorem
+for x'=v, v'=a, a'=r(u-a)+j(t), with one fixed unknown positive r in a specified
+interval. Commands u are piecewise held after explicitly timed actuator updates.
+The initial state lies in a measured box; measurements have timestamps and
+bounded errors. A supplied command history encloses the state at the actual
+update time. A certificate encloses every point of each accepted segment and
+places its terminal box in the already verified tail region. Then every
+continuous/appropriate absolutely-continuous execution satisfying that contract
+respects both travel limits through the prefix and the robust tail.
+
+Crucial new obligations:
+- Disturbance must have the declared channel. Current held error d enters
+  r*(u+d-a); external jerk j enters outside r. A continuously varying bounded
+  j(t) needs an integral/comparison enclosure, not the existing exact constant-
+  command formula with a convenient nominal d substituted.
+- A delayed command has old-command and new-command subintervals. Account for
+  both and the same fixed r; do not treat delayed delivery as merely a longer
+  hold of a fresh command. Packet order/expiry policy and startup history need
+  explicit semantics.
+- The monitor needs a previously certified fallback during computation or
+  rejection. Detection after an unsafe interval is not preventive assurance.
+- Measurement membership, including acceleration uncertainty, must be supplied
+  or derived from an observer contract. An acceleration estimate is not exact
+  merely because it is present in a log.
+- A reusable prefix certificate must not assume the very path-safety conclusion
+  it is meant to establish. The existing general handoff only composes supplied
+  prefix safety and terminal membership; it does not establish arbitrary prefix
+  dynamics or safety.
+
+Reusable now: exact exponential held flow and uniqueness; clipping; rational
+coefficient and finite-trace checking; intersample position estimates; fixed-
+unknown-rate feedback safety; continuous handoff and physical-coordinate
+scaling. These are a substantial base. The proposed disturbance, delay/history,
+and monitor decision contracts are not already proved by those components.
+
+A reasoned order of work:
+A. First deliver a reusable accepted/rejected motion certificate for bounded
+   nonzero prefix error and explicit measurement boxes, using fixed timed holds.
+   Evaluate a family parameterized by clearance, speed, acceleration and lag;
+   avoid choosing the original tiny box as the only favorable example.
+B. Add bounded command age with an explicit two-part hold and pending-command
+   history. Produce a useful nonzero age margin and a rejected over-age case.
+C. Only then expose an executable online acceptance interface or integrate with
+   an existing planner. Current Lean certificate compilation is offline evidence,
+   not a demonstrated real-time monitor. A fast runtime table/decision routine
+   needs its own proved lookup/arithmetic semantics and measured worst-case cost.
+
+This remains a focused one-axis artifact. Multi-axis collision geometry,
+configuration-dependent torque limits, coupling, elasticity, friction and
+contact dynamics are separate work. They make a full manipulator theorem much
+larger than multiplying three independent axis proofs.
+
+COMPARISON AND STOP GATES
+Use identical model, input limits, disturbance channel and timing for every
+comparison. Compare (i) instantaneous-braking approximation, (ii) a properly
+lag-aware numerical reachability baseline, and (iii) the checked certificate.
+Ruckig can supply planned kinematic profiles, but only through an explicit
+tracking model; its kinematic result must not be scored as a physical violation.
+Report admitted region, clearance margin, rejection causes, offline proof cost,
+and runtime cost separately. Include failure from stale state, underestimated
+lag, nonzero disturbance, and velocity-zero with residual acceleration.
+
+For a hardware-facing result, obtain traces of applied commands, update times,
+position and velocity, and an identified acceleration/error envelope on a
+restricted operating domain. Use held-out trajectories and parameter/load
+changes to challenge that envelope. Record empirical conformance separately
+from the conditional mathematical theorem. No hardware is selected or validated
+in the current work.
+
+Advance only if one nonzero error/age contract remains useful on a declared
+axis/task and the artifact eliminates a real unchecked numerical or semantic
+assumption in that workflow. If robust margins collapse, if first-order lag
+fails the intended data, or if the only differentiation is a new proof language
+and more certified boxes, retain this as an educational/reproducibility artifact
+and choose a different problem. The present sources do not justify claiming an
+unsolved general stopping problem, a new backup-control method, or superiority
+to the cited systems. A systematic novelty check remains open.
+
+LOCAL STATUS
+No EnergyCenter.lean was created. Parent paused that proof and full-cover
+expansion before implementation. The centered-energy numerical probe is not
+upgraded to a theorem by this review. GeneralHandoff's independent source audit
+reported no blocker; its prefix-model and safety obligations remain explicit.

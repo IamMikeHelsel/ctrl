@@ -1,0 +1,50 @@
+Orthogonal Lyapunov reduction notes
+
+Scope: standard mathematical groundwork, not a novel theorem and not a resolution of the six-dimensional question.
+
+File: lean-controls/LeanControls/OrthogonalLyapunov.lean
+Lean version: 4.35.0; mathlib pinned by the workspace manifest.
+Verification: direct Lean elaboration/kernel checking completed with exit 0 and no warnings. All twelve theorem declarations were individually axiom-audited via #print axioms; only propext, Classical.choice, Quot.sound occur.
+
+Results:
+1. Squared Frobenius norm equals trace(X transpose * X).
+2. Orthogonal conjugation Q X Q transpose preserves symmetry and squared Frobenius norm, and has inverse conjugation by Q transpose.
+3. Lyapunov action A X + X A transpose is covariant under simultaneous orthogonal conjugation.
+4. The existence of a symmetric unit input dominating every unit input is equivalent for A and Q A Q transpose.
+5. The previous diagonal-case proof transports to an orthogonal diagonalization.
+6. Every real symmetric A in a nonempty finite dimension has such a symmetric maximizer, using mathlib spectral diagonalization and a maximum-absolute-eigenvalue witness.
+
+Assumption review:
+- Index type is finite with decidable equality. The last theorem additionally assumes Nonempty so that a unit input exists.
+- Orthogonal transport is explicit about both Q transpose * Q = I and Q * Q transpose = I.
+- HasSymmetricMaximizer quantifies all real unit matrices, not only symmetric inputs; the selected witness itself must be symmetric and unit.
+- Frobenius squared is the exact sum of real entry squares. No imported operator-norm instance is used accidentally.
+- The spectral corollary assumes A transpose = A. Arbitrary real non-symmetric matrices cannot be diagonalized this way. Thus the main open problem remains entirely open.
+
+Next productive formal step: use the orthogonal iff to reduce arbitrary A to real Schur/block-triangular form; derive the symmetric/skew subspace comparison explicitly. Proving the comparison in dimension six would require new mathematics beyond this reduction.
+
+Audit output:
+'LeanControls.OrthogonalLyapunov.frobeniusSquared_eq_trace' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LeanControls.OrthogonalLyapunov.conjugate_transpose' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LeanControls.OrthogonalLyapunov.conjugate_symmetric' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LeanControls.OrthogonalLyapunov.conjugate_inverse' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LeanControls.OrthogonalLyapunov.frobeniusSquared_conjugate' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LeanControls.OrthogonalLyapunov.lyapunov_conjugate' depends on axioms: [propext, Classical.choice, Quot.sound]
+'LeanControls.OrthogonalLyapunov.lyapunov_frobeniusSquared_conjugate' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'LeanControls.OrthogonalLyapunov.hasSymmetricMaximizer_conjugate' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'LeanControls.OrthogonalLyapunov.hasSymmetricMaximizer_conjugate_iff' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'LeanControls.OrthogonalLyapunov.diagonal_hasSymmetricMaximizer' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'LeanControls.OrthogonalLyapunov.orthogonally_diagonalized_hasSymmetricMaximizer' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'LeanControls.OrthogonalLyapunov.symmetric_hasSymmetricMaximizer' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]

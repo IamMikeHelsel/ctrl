@@ -1,0 +1,233 @@
+RELATED WORK AND A SAME-OBJECT COMPARISON — 17 October 2026
+
+Scope: primary-source inspection and existing local verification evidence.
+No external SOS, MatrixSOS, Sparkle, or KeYmaera build was run for this review.
+No manuscript or lean-controls source was changed. Optional comparison inputs
+are isolated under publication/comparison/ and explicitly marked UNVERIFIED.
+
+CONCLUSION
+
+The broad ingredients already exist: Lean control foundations, rational SOS
+replay, interval matrix-positivity certificates, quantized-controller bounds, and
+numerical-witness-to-hybrid-safety pipelines. The strongest defensible prospective
+contribution is a small, reusable and evaluated connection from exported exact
+polynomial transitions to explicitly held dynamics and scoped sample/intersample
+bounds. A claim that Bernstein/LDL is a stronger positivity method is unsupported.
+
+Indeed, the baseline cubic Bernstein witness converts directly to the odd
+Markov–Lukács Gram representation already exposed by lean-matrix-sos. The exact
+conversion below is useful for interoperability and comparison; it is also a
+reason to avoid presenting this certificate class as a new mathematical result.
+
+EVIDENCE LEGEND
+
+V = local successful execution/build evidence exists and was inspected.
+S = theorem or implementation source inspected, not independently built here.
+D = primary paper/documentation inspected; reported validation not replayed.
+ND = not demonstrated in the inspected material; not an assertion of absence.
+The scope of a row is the listed revision/files, not every feature of a project.
+
+FEATURE TABLE
+
+Artifact | Polynomial/certificate capability | Dynamics and sampling | Arithmetic, disturbance, actuators | Evidence used | Implication for our contribution
+--- | --- | --- | --- | --- | ---
+Our Bernstein/LDL artifact [O] | Rational polynomial matrices; sufficient interval PSD via Bernstein coefficients and LDL; positive P bounds; explicit finite partitions | Exact polynomial held segments for integrator-chain/planar examples; jitter and nominal intersample envelopes | Generic quadratic perturbation composition; separate ideal-rounded two-state instance; no machine arithmetic | V: four generated cases in manifest; HeldModels separately built/audited | Candidate integration artifact; no comparative advantage established; robust higher-dimensional composition remains separate
+LeanForControl [L1–L3] | General Lyapunov and discrete Lyapunov-equation theory; exported Bernstein/SOS producer ND | Continuous/discrete system APIs; integral-form trajectories admit discontinuous held inputs; existence theory | General control/stability foundations; these files are not an arithmetic implementation certificate | V: existing full local build and five theorem-closure audits; S: pinned source | Do not claim Lean lacked control semantics or stability theory; reuse/integrate instead of treating it as a competing certificate generator
+leanprover/sos [S1–S2] | CSDP search, rational recovery and LDL; constrained scalar polynomial goals; frozen sos_witness replay without search | Dynamics supplied by the user; no held-model interface established in inspected files | Rational witnesses; variable constraints supported; machine execution is outside the polynomial claim | S/D: pinned README, examples, checker design; no local execution | Closest executable same-object comparator; numerical search followed by rational Lean checking and solver-free replay are already present
+lean-matrix-sos [M1–M3] | Interval PSD iff bounded even/odd Markov–Lukács SOS/Gram certificates, over real polynomial matrices | Positivity layer; closed-loop/model composition ND in inspected files | Certificate existence/soundness; rational search producer ND | S: public theorem signatures, certificate definitions and guarded axiom queries; no local build | Stronger general positivity characterization than the sufficient Bernstein test; compare checker representation and downstream composition, not mathematical novelty of interval PSD
+Sparkle control example [K1–K2] | Exact quadratic contraction with LDL-derived square hints for quantized gains | Fixed-step discrete two-state recurrence; inspected update is not our exact double-integrator ZOH transition | Quantized gains, disturbance/ultimate bounds; integer/fixed-point bridges documented with explicit remaining limits | S: QuantizedGains proofs; D: control-precision chapter; no local replay | Lean quantized-control/ISS claims already exist; its machine-arithmetic direction exceeds our ideal-real rounding, while its inspected sampling equation differs
+Zonotope/KeYmaera line [Z1–Z2] | Numerical containment witnesses checked in a deductive pipeline; Taylor-model bounds | Held sampled-data hybrid semantics; separates one-step invariance, within-step safety and input admissibility | Safe control-envelope constraints; not the same fixed-P decay specification | D: primary papers, no tool/artifact execution | Closest methodological prior work; broad certificate-to-closed-loop safety is established, with a different representation and specification
+
+IMPORTANT QUALIFICATIONS
+
+* LeanForControl's inspected exponential Lyapunov theorem is for an autonomous
+  discrete map (its hypothesis removes time dependence). Its broader system API
+  does not by itself prove our jitter result. Conversely, its integral trajectory
+  definitions are broader than our explicit local polynomial segments. These are
+  complementary abstractions, not evidence that one project subsumes the other.
+* MatrixSOS's equivalence is a theorem about existence of real certificates.
+  It does not, by that statement alone, provide a rational search procedure or
+  an executable exporter. Our rational coefficient checker is sufficient and
+  may reject a positive polynomial. Neither a failed search nor a rejected
+  Bernstein witness proves instability.
+* Sparkle's actual source uses x1_next=x1+dt*x2, with fixed dt=1/16, and the
+  quantized feedback in x2_next. Our exact held double integrator includes
+  h^2*u/2 in position. Comparing the two directly would change the plant map.
+  Its chapter reports integer-step transport, but still identifies a Signal-level
+  circuit-to-pure-step bridge as simulation-based. Do not flatten its distinct
+  evidence layers into either "fully verified hardware" or "only real arithmetic."
+* The 2026 zonotope paper uses a fixed sampling period in its displayed model.
+  The older KeYmaera line already treats nondeterministic update timing. It would
+  be misleading to claim jitter itself as a new formal-verification idea.
+* Our source evidence currently proves nominal local segments and their
+  sample-index envelopes. A globally stitched real-time solution, uniqueness,
+  and physical correspondence are different claims. Newly added saturated-prefix
+  work must be cited with its own audit and its one-initial-state quantifiers.
+
+ONE CONCRETE SAME-OBJECT EXPERIMENT
+
+Benchmark object (exactly benchmarks/double-integrator.json):
+
+  A(h) = [[1-h^2, h-(3/2)h^2], [-2h, 1-3h]],
+  P = [[5,1],[1,1]], c=1, h in [0,1/2].
+
+  R(h) = (P-A(h)^T P A(h))/h - I, polynomially extended at zero,
+       = [[-5h^3-4h^2+6h+3, -(15/2)h^3-h^2+(9/2)h],
+          [-(15/2)h^3-h^2+(9/2)h, -(45/4)h^3+6h^2-5h+3]].
+
+The COMMON TARGET is forall h,x,v, 0<=h<=1/2 implies
+  [x,v] R(h) [x,v]^T >= 0.
+Via the same checked polynomial identity, this gives
+  E_P(A(h)z) <= E_P(z)-h*(x^2+v^2).
+Use the same P bounds and same held-model bridge for downstream conclusions.
+Do not quietly alter P, the controller, c, or the period interval in one arm.
+
+Arm A: existing generated Bernstein/LDL certificate.
+  Its residual_psd theorem already checks this object. The manifest records
+  6682 bytes and 4.47 seconds for the ENTIRE baseline generated module plus axiom
+  output in one local run. That is not yet a fair time for the common target
+  alone: the module also proves energy bounds and composed results.
+
+Arm B: leanprover/sos on the scalar residual.
+  publication/comparison/UNVERIFIED-SOSComparison.lean gives the exact goal.
+  Use its own pinned checkout/toolchain, run sos? once for discovery, freeze the
+  returned sos_witness, and then measure replay separately. The file has not
+  been elaborated, so no success, failure, or timing result is asserted.
+  A second goal uses the existing wide case, with the SAME A and P, c=1/100,
+  and h<=33/50. Treat this as a second paired benchmark, not a changed baseline.
+
+Arm C (useful optional checker comparison): MatrixSOS odd Gram certificate.
+  Normalize t=2h, let Z(t)=[I;tI] and use the four existing Bernstein coefficients:
+    C0=[[3,0],[0,3]], C1=[[4,3/4],[3/4,13/6]],
+    C2=[[14/3,17/12],[17/12,11/6]],
+    C3=[[35/8,17/16],[17/16,19/32]].
+  Then the SAME residual satisfies
+    R(t/2) = t Z(t)^T G_left Z(t) + (1-t) Z(t)^T G_right Z(t),
+    G_left = [[3C1,-3C1],[-3C1,3C1+C3]],
+    G_right = [[C0,-C0],[-C0,C0+3C2]].
+  The rational LDL pivots are respectively
+    (12,389/64,35/8,47/140), and (3,3,14,943/224), all positive.
+  Exact SymPy reconstruction and LDL checks passed. Data and derivation live in
+  comparison/UNVERIFIED-matrix-gram.json and comparison/derive_same_object.py.
+  A Lean adapter into IccLukacsGramCertificateBoundedOdd d=1,a=0,b=1 is still
+  UNVERIFIED. Check its GramIdx basis order and then use the reverse implication
+  of posSemidefOn_Icc_iff_lukacsGram_odd. Do not invoke that theorem's forward
+  implication using OUR positivity theorem and present the result as independent
+  certification. This arm compares replay representations with shared witness
+  information; it does not compare independent certificate discovery.
+
+Minimal fair protocol:
+  1. Pin source, toolchains, solver version/configuration, CPU/OS, and dependencies.
+     Freeze the exact common target and exact input hash before testing.
+  2. Record discovery, dependency build, target proof replay, and full-system
+     composition separately. Use the same axiom policy for Lean conclusions.
+  3. Measure repeated fresh target-file checks after dependencies are built;
+     report all runs or median/range, not a selected fastest run. Keep search
+     timeout, resource exhaustion, elaboration incompatibility and proof failure
+     as distinct outcomes. An incompatible toolchain is not a mathematical loss.
+  4. Compare source/witness size, required custom proof code, time, and failures.
+     Name the counted representation: source bytes are not kernel proof-term size.
+  5. If evaluating sampling conservatism, sweep paired H values with A,P,c fixed
+     and publish the complete prespecified grid. The currently different c values
+     at H=1/2 and H=33/50 cannot establish a superiority claim.
+
+STRONGEST DEFENSIBLE PROSPECTIVE CONTRIBUTION
+
+"An evaluated Lean interface that accepts exact rational polynomial transition
+certificates, checks interval-wide quadratic decay and coercivity, and connects
+those certificates to explicitly specified zero-order-held models and composable
+sample/intersample bounds, with solver-independent replay and documented semantic
+limits."
+
+This is a prospective methods/artifact contribution, not demonstrated novelty.
+Its case would rest on useful reuse and measured reduction in manual adaptation
+or checking cost, or on a substantive assurance/composition capability established
+relative to close prior work. The positive-energy requirement and proved
+clipping-inactivity limitation are useful semantic-audit lessons, not by themselves
+new control theory. An application selected and reviewed with the user's robotics
+expertise is more valuable than multiplying closely related integrator examples.
+
+REJECTION / REDIRECTION CRITERIA
+
+1. If an existing package supplies the same certificate-to-held-system contract
+   through a small routine adapter, reject a standalone novelty claim and prefer
+   integration, an upstream contribution, or a focused case-study report.
+2. If equal-object evaluation finds no useful improvement in reuse, proof effort,
+   replay, or assurance scope, do not claim a new certification method merely
+   because the implementation is different or written in Lean.
+3. If superiority requires changing P, dynamics, margin, period domain, axiom
+   policy, or timing boundaries, reject that comparison. Publish comparable
+   negative results and diagnose the difference instead.
+4. If model bridges, coercivity, nonvacuous assumptions, or clean replay fail,
+   withhold the affected system-level claim even if a matrix inequality checks.
+5. If broader applicability relies on approximating nonnilpotent dynamics without
+   a checked error bound, keep the claim restricted to exact polynomial models.
+6. If the only evidence remains a few normalized toy systems and a table of
+   successful builds, regard it as a working prototype, not established research
+   significance. Seek a substantive application or formalization insight.
+
+PRIMARY SOURCES AND LOCAL EVIDENCE
+
+[O] lean-controls/evidence/benchmarks/verification.json (local status verified;
+    completed 2026-10-17T13:55:03.657309+00:00); generated benchmark modules;
+    LeanControls/BernsteinCertificate.lean; LeanControls/HeldModels.lean;
+    research/publication/model-semantics.txt. No external performance comparison.
+
+[L1] LeanForControl revision 1436289121c7480b4213bff7b8b319cd4ce4bdcb:
+https://github.com/AnandGokhale/LeanForControl/tree/1436289121c7480b4213bff7b8b319cd4ce4bdcb
+[L2] Continuous trajectory definitions and their stated scope:
+https://github.com/AnandGokhale/LeanForControl/blob/1436289121c7480b4213bff7b8b319cd4ce4bdcb/LeanForControl/Systems/Continuous.lean
+[L3] Discrete Lyapunov theorem and equation theorem source:
+https://github.com/AnandGokhale/LeanForControl/blob/1436289121c7480b4213bff7b8b319cd4ce4bdcb/LeanForControl/Stability/Discrete/LyapunovTheorems.lean
+https://github.com/AnandGokhale/LeanForControl/blob/1436289121c7480b4213bff7b8b319cd4ce4bdcb/LeanForControl/LinearSystems/Stability/Discrete/LyapunovEquation.lean
+    Local research/leanforcontrol-build.log ends with 3007 successful jobs;
+    research/LeanForControlAudit.lean and leanforcontrol-axioms.log record five
+    selected closures with only propext, Classical.choice, Quot.sound. This is
+    existing session evidence, not a new full build or a full-repository audit.
+
+[S1] leanprover/sos pinned README (head resolved during this review):
+https://github.com/leanprover/sos/blob/fb7ae417609093f04cf0608dc92e9343550c2ae4/README.md
+[S2] Pinned public examples:
+https://github.com/leanprover/sos/blob/fb7ae417609093f04cf0608dc92e9343550c2ae4/SOSTest/Showcase.lean
+    The README describes kernel-checked rational coefficients, constrained
+    certificates and frozen replay. These claims are not a local successful run.
+
+[M1] MatrixSOS public interval theorem statements:
+https://github.com/selpoG/lean-matrix-sos/blob/02cfe73de3d3535c867eacae5a715036466cab92/MatrixSOS/Certificates/Interval.lean
+[M2] Certificate definitions, including odd bounded Gram form:
+https://github.com/selpoG/lean-matrix-sos/blob/02cfe73de3d3535c867eacae5a715036466cab92/MatrixSOS/Proof/Interval/Certificates.lean
+[M3] Guarded axiom audits in source, not replayed here:
+https://github.com/selpoG/lean-matrix-sos/blob/02cfe73de3d3535c867eacae5a715036466cab92/MatrixSOS/Audit.lean
+
+[K1] Sparkle quantized-gain contraction, ISS step and ultimate bound:
+https://github.com/Verilean/sparkle/blob/1614cee83ac586ca9a0626cd4af13bfef7347c3a/proofs/SparkleProofs/Control/QuantizedGains.lean
+[K2] Control-precision chapter, especially its final assurance-limit discussion:
+https://github.com/Verilean/sparkle/blob/1614cee83ac586ca9a0626cd4af13bfef7347c3a/docs/tutorial/md/Ch12_ControlPrecision.md
+
+[Z1] Jonathan Hellwig, Lukas Schäfer, Long Qian, André Platzer, Matthias Althoff.
+    From Zonotopes to Proof Certificates: A Formal Pipeline for Safe Control
+    Envelopes. iFM 2025 proceedings, 2026. Definitions 1–2 and Section 3 separate
+    within-step safety, sample invariance and control admissibility.
+https://logic.kastel.kit.edu/ap/pub/zonotope-proofs.pdf
+https://doi.org/10.1007/978-3-032-10794-7_13
+[Z2] Nikos Aréchiga, Sarah M. Loos, André Platzer, Bruce H. Krogh.
+    Using Theorem Provers to Guarantee Closed-Loop System Properties. ACC 2012.
+https://logic.kastel.kit.edu/ap/pub/TPgenloop.pdf
+https://doi.org/10.1109/ACC.2012.6315388
+
+This comparison identifies overlap and a testable research question. It does not
+establish a first-of-its-kind result, completeness of the literature survey,
+competitive performance, or publication acceptance.
+
+SUBSEQUENT CHECKED EXTENSION (after the comparison snapshot)
+
+ActuatorLag.lean now covers a normalized first-order lag with exact exponential
+segments, held u=-x0-3v0-2a0, and a proved correlated scalar enclosure
+1-h <= exp(-h) <= 1-h+h^2. Two generated polynomial vertices share P and certify
+energy decrease through h=1/5. VertexCertificate transfers their bound by checked
+quadratic convexity. This removes the all-nilpotent limitation of the original
+benchmark set; it does not establish a general exponential-matrix enclosure
+algorithm, a new positivity class, uncertainty robustness for the lag plant,
+or a calibrated motor model. Current verification evidence supersedes the old
+benchmark timings and counts above. The same-object SOS experiment is recorded
+separately in comparison/sos-run.txt if completed.

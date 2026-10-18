@@ -1,0 +1,10 @@
+import LeanControls.PhysicalUncertainTravel
+
+#print axioms LeanControls.PhysicalUncertainTravel.samples_zero
+#print axioms LeanControls.PhysicalUncertainTravel.state_at_sample
+#print axioms LeanControls.PhysicalUncertainTravel.state_zero
+#print axioms LeanControls.PhysicalUncertainTravel.travel_limit
+#print axioms LeanControls.PhysicalUncertainTravel.time_constant_interval
+#print axioms LeanControls.PhysicalUncertainTravel.vectorField_rescale
+#print axioms LeanControls.PhysicalUncertainTravel.state_continuousOn_nonnegative
+#print axioms LeanControls.PhysicalUncertainTravel.state_ode_interior
