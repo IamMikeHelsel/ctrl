@@ -1,0 +1,100 @@
+{
+  "date": "2026-10-17",
+  "scope": "Six official robot-specific sources; no CNC or standalone-drive feature transfer; no hardware testing or proprietary algorithm claim.",
+  "direct_quotation_words": 0,
+  "sources": [
+    {
+      "id": "S1",
+      "vendor": "FANUC",
+      "title": "Robot Software catalog",
+      "url": "https://www.fanucamerica.com/products/software/robot",
+      "type": "Official robot product catalog",
+      "inspected": "Advanced Constant Path Control, Spline Motion, RMI and Stream Motion entries",
+      "supports": [
+        "Corner distance/radius and approach/retract controls",
+        "Spline motion",
+        "RMI instruction generation differs from external trajectory streaming"
+      ],
+      "limits": "No proprietary interpolation algorithm, quantitative jerk guarantee, or target-update latency stated."
+    },
+    {
+      "id": "S2",
+      "vendor": "FANUC CORPORATION / FANUC America",
+      "title": "FANUC ROS 2 Driver Documentation v2.2.0: How to Configure 1kHz Mode",
+      "url": "https://fanuc-corporation.github.io/fanuc_driver_doc/v2.2.0/docs/fanuc_driver/how_to_configure_1khz_mode.html",
+      "type": "Official versioned API/driver documentation",
+      "inspected": "System requirements, limitations, configuration notes",
+      "supports": [
+        "R-50iA plus S647 requirements and compatibility limitations",
+        "PC jitter may cause drift or vibration",
+        "Buffering and lower update rate are stated remedies",
+        "Collaborative speed clamping adds latency"
+      ],
+      "limits": "Configuration-specific; no universal update-rate or worst-case-latency claim."
+    },
+    {
+      "id": "S3",
+      "vendor": "FANUC America",
+      "title": "FANUC Demonstrates High-Speed Aluminum Spot Welding Applications at IMTS 2016",
+      "date": "2016-09-12",
+      "url": "https://www.fanucamerica.com/press-releases/fanuc-demonstrates-high-speed-aluminum-spot-welding-applications-at-imts-2016",
+      "type": "Official dated robot demonstration announcement",
+      "inspected": "LVC robot, wireless sensor and learned programmed-path description",
+      "supports": [
+        "Robot-specific Learning Vibration Control prior practice"
+      ],
+      "limits": "Vendor demonstration; not independent comparative data or evidence of performance on arbitrary newly generated paths."
+    },
+    {
+      "id": "S4",
+      "vendor": "Yaskawa Motoman",
+      "title": "Explanation of Different Remote-Motion-Control API's",
+      "updated": "2024-11-14",
+      "url": "https://knowledge.motoman.com/hc/en-us/articles/20684798540951-Explanation-of-Different-Remote-Motion-Control-API-s",
+      "type": "Official robot API guidance",
+      "inspected": "YMConnect, MotoPlus point-to-point, buffered, incremental and correction modes",
+      "supports": [
+        "Buffered targets use native INFORM planner",
+        "Dense target points may impair velocity profile",
+        "Motion interface requires YRC1000 or newer",
+        "Point-to-point calls stop between requests",
+        "mpExRcsIncrementMove requires default 4ms-clock increments, external kinematics/planning and waiting INFORM job",
+        "mpMeiPutCorrPath applies small correction offsets"
+      ],
+      "limits": "Guide explicitly is not a full API manual; no safety-rated property inferred."
+    },
+    {
+      "id": "S5",
+      "vendor": "Yaskawa Motoman",
+      "title": "SMOOTH Function Overview",
+      "updated": "2023-07-28",
+      "url": "https://knowledge.motoman.com/hc/en-us/articles/16313283895191-SMOOTH-Function-Overview",
+      "type": "Official robot function guide with vendor traces",
+      "inspected": "Introduction, important notes, results, manual pointers",
+      "supports": [
+        "Motion-filter ratio reduces vibration",
+        "Acceleration/torque/cycle-time tradeoff",
+        "More corner rounding can occur",
+        "SMOOTH stops momentarily and excludes multiple control groups",
+        "Software-version and restart-setting restrictions"
+      ],
+      "limits": "Vendor illustrative traces; no hard jerk or force guarantee, internal filter law not disclosed."
+    },
+    {
+      "id": "S6",
+      "vendor": "Yaskawa Motoman",
+      "title": "What to Check if your Job is Running Slow",
+      "updated": "2021-08-27",
+      "url": "https://knowledge.motoman.com/hc/en-us/articles/4406123495959-What-to-Check-if-your-Job-is-Running-Slow",
+      "type": "Official robot application guidance",
+      "inspected": "Tool data, PL, ACC/DEC, ahead calculation and cycle-time discussion",
+      "supports": [
+        "Missing tool data defaults to heaviest load and slows motion",
+        "PL=0 adds deceleration",
+        "ACC/DEC, timers and point structure affect performance",
+        "Planner computes several steps ahead"
+      ],
+      "limits": "No servo gains, bandwidth, or physical tracking guarantee provided."
+    }
+  ]
+}

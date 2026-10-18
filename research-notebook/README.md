@@ -7,6 +7,7 @@ and final animations. Start with the reports below.
 | Area | Start here |
 |---|---|
 | Finished tracking through finite replans | [Five-page note](publication/tracking-note/main.pdf), [proof scope](research/adjacent-controls/tracking-replans/README.txt), [Manim video](research/adjacent-controls/tracking-replans/animation/changing-plans.mp4) |
+| Motion continuity when plans change | [Next proof](research/adjacent-controls/tracking-replans/trajectory-damper-next-step.txt), [industrial baselines](research/adjacent-controls/tracking-replans/industrial-motion-baselines.txt), [seven further checked statements](research/adjacent-controls/tracking-replans/smoothing-verification.json) |
 | Tonight's closure across tracks | [Status](research/tonight-closure/README.txt), [Erdős conditional formalization note](research/tonight-closure/erdos-formalization-note.txt) |
 | Human steadiness and VLA target decisions | [Report](research/adjacent-controls/steady-motion/index.html), [proof scope](research/adjacent-controls/steady-motion/README.txt), [Manim video](research/adjacent-controls/steady-motion/animation/steady-enough.mp4) |
 | Changing response, stopping, and holding | [Report](research/adjacent-controls/variable-response/sampled-handoff/index.html), [proof scope](research/adjacent-controls/variable-response/README.txt) |
@@ -28,7 +29,9 @@ the root library currently uses a different pin. Keep the notebook's `lake-manif
 them part of the root build or its CI coverage.
 
 The tracking package contains 34 checked statements, including helper lemmas, plus a 144-case
-numerical comparison and independent critique. The earlier steadiness package contains 16 checked
+numerical comparison and independent critique. A separate seven-statement followup checks the
+cost of bounded command-filter error and limits on continuity at replans. It does not yet prove
+a filter keeps that error bound. The earlier steadiness package contains 16 checked
 theorem statements. Each package preserves its verifier, source hashes, axiom audit,
 kernel replay logs, and rejected false mutations.
 Other folders have their own scopes and verification records. Some contain incomplete attempts

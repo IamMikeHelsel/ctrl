@@ -1,0 +1,147 @@
+TRAJECTORY DAMPERS: EXISTING BASELINES AND THE NEXT PROOF GAP
+Primary-source check — 17 October 2026
+
+A stateful trajectory damper is a useful component, and close versions already
+exist. It is not missing from all generated motion. The stronger research question
+is what a damper can guarantee when new plans keep arriving, the physical response
+is uncertain, and a safe stop must remain possible. This check does not establish
+that nobody has solved that combined problem.
+
+FOUR PRIMARY BASELINES
+
+1. Critically damped target dynamics and dynamic movement primitives (DMPs).
+Ijspeert, Nakanishi, Hoffmann, Pastor and Schaal, 2013, Dynamical Movement
+Primitives: Learning Attractor Models for Motor Behaviors, Neural Computation.
+
+Section 2.1.1 starts with a second-order spring attractor and chooses critical
+damping. A learned forcing term adds movement shape. Section 2.1.8 is especially
+close: changing the goal can create an acceleration jump. Equation 2.15 filters
+the new goal through a first-order state, tau*g_dot=alpha_g*(g0-g), so g remains
+continuous. This is prior work on the proposed stateful motion layer. Basic DMP
+attractor behavior does not itself supply our hard actuator, travel, contact-force
+or uncertain-plant certificate. Section 3.4 also discusses generalization problems,
+including motions that risk joint limits.
+Primary paper, sections 2.1.1, 2.1.8 and 3.4:
+https://www.pure.ed.ac.uk/ws/portalfiles/portal/7874487/NECO_a_00393.pdf
+
+2. Acceleration- and jerk-limited online generation: Ruckig.
+Berscheid and Kroeger, 2021, Jerk-limited Real-time Trajectory Generation with
+Arbitrary Target States, Robotics: Science and Systems.
+
+Ruckig computes synchronized motion from complete initial states to target
+position, velocity and acceleration, subject to velocity, acceleration and jerk
+limits. Its model is explicitly kinematic. Section VI demonstrates online reactions
+and robot use. The maintained API carries the current generated state forward
+with pass_to_input; a changed input can trigger a new trajectory. It is a strong
+baseline for repeated target changes, not just a fixed offline curve. Its listed
+kinematic guarantees do not by themselves prove bounded physical tracking error,
+contact force or safe progress under arbitrary target reversals.
+Primary paper, sections III and VI:
+https://roboticsproceedings.org/rss17/p015.pdf
+Author-maintained implementation, control-loop usage:
+https://github.com/pantor/ruckig
+
+3. Reference filters and command-filtered control.
+Farrell, Polycarpou, Sharma and Dong, 2008 conference paper; 2009 journal paper,
+Command Filtered Backstepping.
+
+The conference introduction already treats bounded, possibly discontinuous
+planner output as input to a stable stateful prefilter. Its states provide smooth
+reference derivatives; bandwidth sets a response tradeoff. The paper then studies
+filters inside a feedback design, including compensation for filter error. The
+journal paper analyzes stability and performance. Thus adding a low-pass filter
+is established, and treating its lag as harmless is not justified. A filter at the
+reference input and a filter on the actuator command change different equations.
+Primary conference paper, introduction and filter analysis:
+https://skoge.folk.ntnu.no/prost/proceedings/acc08/data/papers/0104.pdf
+Primary journal abstract and metadata:
+https://doi.org/10.1109/TAC.2009.2015562
+
+4. Physical interaction: impedance control.
+Hogan, 1985, Impedance Control: An Approach to Manipulation, Part I: Theory.
+
+Impedance control regulates the dynamic relation between motion and interaction
+force. The paper separates motion control from impedance and explains why position
+or force alone is insufficient for manipulation. It is not equivalent to filtering
+a target path. A virtual spring in a reference generator becomes an interaction
+law only when a controller and plant implement that relation at the contact port.
+Primary author-lab copy, abstract and introduction inspected:
+https://newmanlab.mit.edu/wp-content/uploads/2017/09/1985-impedance-control-an-approach-to-manipulation-part-I-theory.pdf
+DOI: 10.1115/1.3140702
+
+THE IMPORTANT DISTINCTIONS
+
+The following points are deductions for our proposed model, not novelty claims
+attributed to those papers.
+
+A simple target damper may have
+  q_ddot + 2*omega*q_dot + omega^2*(q-g) = 0.
+It retains position and velocity when g changes. But a goal step changes q_ddot
+by omega^2*Delta_g. Critical damping alone does not prevent that acceleration
+jump. It also does not promise monotone motion from every moving initial state.
+Filtering g, using more state, or using a constrained generator changes the
+regularity and response time. Those costs must appear in the comparison.
+
+Our present matched-segment result retains q, q_dot and q_ddot. Reference jerk
+may jump. In the controller u=q_ddot+feedback+kappa*j, a jerk jump produces
+Delta_u=kappa*Delta_j when the matched reference and physical state are fixed.
+If r and w remain continuous, actual jerk a_dot=r*(u+w-a) can then jump by
+r*kappa*Delta_j. A bound on jerk is different from continuity of jerk; a bounded
+snap or continuous jerk contract is a stronger request. Snap is the rate of jerk
+change. The existing bound must not be described as jerk continuity.
+
+Filtering u could remove that particular command jump. It also adds controller
+state and tracking lag, so the current error-cube proof no longer applies without
+an augmented-system argument. Further, bounds on r and w alone allow jumps in
+those inputs. Even a continuous u cannot guarantee continuous actual jerk under
+that broader disturbance contract. The desired regularity needs corresponding
+assumptions on the physical response and disturbance.
+
+The current scalar plant has no contact-force output. For a fixed free-space
+mass, net force equals mass times acceleration. Contact force is a different
+quantity and needs a contact, load and sensing model. We cannot infer safe or
+smooth contact force from the current reference jerk bound.
+
+A PLAUSIBLE NEXT CONTRACT
+
+Use an existing generator as the proposer. Retain a stateful execution layer and
+prove a small, explicit interface:
+
+- New proposals can arrive at each declared servo update. Replacement retains
+  the required reference and filter states. A failed proposal leaves a valid
+  motion or stop available.
+- Reference and command limits imply a conditional physical tracking tube for
+  the uncertain actuator model, including the added filter state. State the
+  command-authority, sampling and delay assumptions.
+- State the precise physical smoothness target: bounded acceleration, bounded
+  jerk, continuous jerk, or bounded snap. Do not use one as a synonym for another.
+- Tighten the travel corridor by the tracking tube and reserve a feasible stop.
+  Show that executing the admitted prefix preserves the conditions for the next
+  decision. This is stronger than testing a single safe segment.
+- Make progress conditional on a feasible goal that persists long enough, or on
+  a declared bound on target motion. Arbitrary repeated reversals cannot support
+  an unconditional arrival guarantee. A latency or settling bound is needed to
+  show that the damper does more than make the robot slow.
+
+This is a candidate composition and verification problem. Neither VLA branding
+nor putting an existing damper into Lean establishes control novelty. A useful
+artifact could prove the exact interface, give a replayable checker, and expose
+when smoothness, response time and stopping reserve are incompatible.
+
+FAIR NEXT COMPARISON
+
+Use the same initial states, repeated target stream, plant uncertainty, physical
+limits and final goal across: a critically damped target filter; a goal-filtered
+DMP or equivalent attractor; Ruckig; and our proposed stateful checked layer.
+Do not change bandwidth or limits separately after seeing the result. Compare
+held-goal noise, a sustained new goal, slow intended motion, rapid reversals and
+a travel-boundary stop. Report physical position error, actual acceleration and
+jerk, command jumps, arrival time, rejected updates and remaining stop margin.
+Contact force needs a separate model and experiment. The prior numerical
+comparison remains frozen and is not evidence for these new baselines.
+
+Scope: focused primary-source check, not a complete literature review. No new
+implementation, empirical test or formal proof was made for this note. The cited
+DMP, Ruckig and filter texts were inspected directly. The Hogan author-lab abstract
+and introduction were available through indexed primary text; direct PDF fetch
+failed. No undocumented full-paper claim rests on that fetch.

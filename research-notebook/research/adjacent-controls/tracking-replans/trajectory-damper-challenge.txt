@@ -1,0 +1,156 @@
+Trajectory damper: independent mathematical challenge
+17 October 2026
+
+The useful claim
+A stateful command smoother can remove jumps in the requested acceleration
+target. It does not automatically remove physical jerk, tracking lag, or
+oscillation. The next contract should state which signal becomes smoother,
+what uncertainty regularity is required, and how much tracking budget is spent.
+This note proposes mathematics. It does not alter the frozen tracking proof.
+
+Signals and the exact jump condition
+The current plant is x'=v, v'=a, a'=r(t)(u+w-a). Write b=u+w-a and physical
+jerk j_a=a'=r*b. A filter state u with u'=nu and |nu|<=L_u is continuous and
+Lipschitz. At a switch where u and a are continuous and one-sided limits exist,
+  jump(j_a) = (r_plus-r_minus)*(u+w_minus-a)
+              + r_plus*(w_plus-w_minus).
+Thus continuous u alone cannot ensure continuous physical jerk. The exact
+no-jump condition is r_plus*(u+w_plus-a)=r_minus*(u+w_minus-a).
+Continuous r and w are sufficient, but not individually necessary: their
+changes could cancel. A useful uncertainty contract must say how this product
+is controlled rather than assuming continuity of the desired jerk conclusion.
+
+A full counterexample under the present piecewise-classical scope
+Take u=0 and r=8. Before time zero, take w=a=v=x=0. After zero, let w=1 and
+  a(t)=1-exp(-8t),
+  v(t)=t-(1-exp(-8t))/8,
+  x(t)=t^2/2-t/8+(1-exp(-8t))/64.
+The physical state is continuous at zero and solves the ODE on both open
+sides. The command is perfectly smooth. One-sided physical jerk changes from
+0 to 8. This is an admissible finite switch under a magnitude-only disturbance
+contract. A single globally classical ODE at that switch would exclude the
+example by assumption; the current finite-segment semantics do not.
+Changing r from 8 to 12 while b is a nonzero constant at a switch gives the
+same issue without a disturbance jump: jerk changes by 4*b.
+
+Three levels of useful regularity
+1. Bounded jerk magnitude. Given |r|<=r_max and |u+w-a|<=B, the ODE gives
+|j_a|<=r_max*B. No continuity of r or w is needed on open segment interiors.
+A possible explicit B is U+W+A when |u|<=U, |w|<=W and |a|<=A. With a
+nonnegative rate and a bounded effective target, ordinary lag comparison can
+use A=max(|a(0)|,U+W). This magnitude result does not bound jerk jumps or snap.
+
+2. Continuous jerk. Continuous u, r, w and a give continuous r*(u+w-a).
+For matching piecewise trajectories, this extends a' continuously across the
+switch. Position then has a continuous third derivative. A clipped derivative
+nu may jump, so the fourth derivative need not be continuous.
+
+3. Bounded jerk variation. Suppose r, u and w are Lipschitz, with constants
+L_r, L_u and L_w, and the above bounds r_max and B hold. Bounded jerk implies
+that a is Lipschitz with constant J_a=r_max*B. The product inequality gives
+  |j_a(t)-j_a(s)| <= S*|t-s|,
+  S = L_r*B + r_max*(L_u+L_w+r_max*B).
+This bounds snap wherever the derivatives exist; for Lipschitz signals that
+means almost everywhere. If the signals are differentiable at the time of
+interest, the identity is
+  a''=r'*(u+w-a)+r*(u'+w'-a').
+Continuity alone supplies no numerical values for L_r or L_w. The filter's
+slew limit supplies L_u only.
+
+A weaker finite-variation contract is also possible. If r and w have bounded
+total variation on a time interval of length T, then
+  TV(j_a) <= B*TV(r)+r_max*(L_u*T+TV(w)+r_max*B*T).
+This permits jumps and bounds their accumulated magnitude. It does not bound
+instantaneous snap or make jerk continuous. It may fit switching uncertainty
+better than assuming bounded derivatives everywhere.
+
+Smooth bounded disturbances still defeat any universal snap bound
+Take u=0, constant r>0, a(0)=0, and w(t)=W*sin(omega*t), W>0.
+The exact smooth acceleration is
+  a(t)=r*W/(r^2+omega^2)*
+       (r*sin(omega*t)-omega*cos(omega*t)+omega*exp(-r*t)).
+It satisfies a'(0)=0 and a''(0)=r*W*omega. Increasing omega makes snap
+arbitrarily large without changing the disturbance magnitude W. Thus even
+smoothness of each individual signal does not give a uniform snap bound over
+the allowed family. Quantitative frequency, derivative, or variation bounds
+are needed. This counterexample is mathematical here, not Lean-formalized.
+
+The filter changes the proved controller
+Let u_star be the already proved feedback/feedforward target and let the plant
+receive a continuous filtered u. Then d=u-u_star acts as another additive
+target error. The old tracking proof can be reused only if a justified bound
+|d|<=D is charged to its budget:
+  W+D+J/(48*sigma) <= 2*sigma^2*R.
+Assuming small d would not prove the filter safe. A standalone conditional
+composition is useful, but it must expose that unresolved premise.
+
+For the un-clipped first-order filter tau*u'=u_star-u, tau>0, suppose u_star
+has derivative magnitude at most L between finitely many known jumps.
+Starting after any initial jump, the error formula gives
+  |d(t)| <= exp(-t/tau)*|d(0)| + tau*L*(1-exp(-t/tau))
+            + sum_k exp(-(t-t_k)/tau)*|jump(u_star,t_k)|,
+where the sum includes positive switch times t_k<=t. This is a transient bound.
+It requires a justified L. In feedback, u_star depends on the physical state,
+so using an assumed tracking cube to obtain L can be circular. An augmented
+invariant or a closed bootstrap argument must resolve that dependence.
+A clipped slew limiter has different error dynamics; the same exponential
+formula cannot be silently reused once clipping is active.
+
+A state-dependent replan admission rule
+When physical state and reference position, velocity and acceleration match
+at a switch, u_star changes only by kappa*Delta(j). A continuous filter state
+therefore gives the exact mismatch transfer
+  d_plus=d_minus-kappa*Delta(j).
+A new jerk can be admitted only when the chosen mismatch budget still holds:
+|d_minus-kappa*Delta(j)|<=D. Admissibility on both sides necessarily requires
+|kappa*Delta(j)|<=2D. This is a state-dependent feasibility test, not a timer.
+It does not prove that |d|<=D is maintained between switches.
+
+The existing precision example exposes the cost
+For sigma=10, R=0.2 mm, W=0.01 m/s^2 and J=10 m/s^3,
+  D_max=1/25-1/100-1/48=11/1200 m/s^2.
+The jerk coefficient is kappa=1/96 s. A flip from -10 to +10 m/s^3 changes
+u_star by 5/24 m/s^2. This exceeds 2D_max=11/600 m/s^2.
+No continuous filter state can lie within D_max of both one-sided targets.
+The best instantaneous centering still requires mismatch at least 5/48 m/s^2.
+The same pointwise sufficient tube certificate therefore cannot pass through
+this filter unchanged. This does not prove that physical position leaves the
+tube. A transient-aware certificate may allow brief, larger mismatch.
+
+Which kind of smoothness is being tested?
+A smooth time trace can still oscillate indefinitely. A jerk limit alone does
+not identify unwanted motion or prove useful progress. A geometric path can
+look straight while its speed changes sharply; smooth timing and path shape
+are different properties. A small sampled RMS error is also different from a
+uniform worst-case bound. Report the reference, filtered input, actual motion,
+tracking lag, jerk magnitude and jerk variation separately.
+The scalar model has no flexible modes or contact impulses. It also does not
+represent a free-floating base and arm as a coupled mechanical system. Those
+contexts require additional dynamics, even if a common smoothing architecture
+is useful. No universal arm, human-neurology, or new-method claim follows here.
+
+Independent source review: CommandSmoothing.lean
+Reviewed all seven public statements at SHA-256
+61578bb87c2b9dbb27c1e20c1b3c5ebebe25c3219f2012f7e63e749c6c03111e.
+No mathematical defect found in the stated implications.
+tracking_under_bounded_filter_error replaces the physical input exactly and
+charges the mismatch to W+D. Its hfilter premise explicitly assumes the
+all-time mismatch bound; no filter dynamics, invariance or continuity result
+is claimed. The target-jump and mismatch-transfer identities preserve one
+common filter state while matching actual and reference triples separately.
+The necessary two-sided span bound, exact illustrative budget equivalence,
+and incompatible 5/24 jump are correct. The last theorem is an exact RHS jump
+identity, not a formal construction of a complete discontinuous-jerk trajectory.
+The conditional composition and negative certificate result are useful and
+candid. They do not yet establish a functioning trajectory damper or the
+smallest physical tracking tube. Fresh compilation/kernel evidence belongs
+in the separate smoothing-verification.json report.
+
+The separate smoothing verification report now records passed=true,
+source_unchanged=true and seven audited public statements. Five local
+dependencies and the new target compiled, the axiom audit and independent
+kernel replay passed, and a doubled-filter-allowance mutation was rejected.
+Report SHA-256 at this review:
+ebb490ff9cd9f687434ff420cf27f268573d861cd0d9090ec5aaa4f134ead8a3
+These checks validate the conditional statements and the negative example;
+they do not discharge the all-time filter-mismatch premise.

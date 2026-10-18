@@ -1,0 +1,165 @@
+INDUSTRIAL MOTION AS THE PRACTICAL BASELINE
+FANUC and Yaskawa primary-source check — 17 October 2026
+
+FANUC and Yaskawa are useful comparison targets. Their public robot documents
+show path shaping, motion filtering, buffered planning and external motion
+interfaces. Smooth synthetic motion is already an industrial capability. The
+sources also expose costs and failure modes at the external-planner interface.
+They do not establish that either brand outperforms every research platform.
+
+This focused check uses six official sources. Product descriptions establish
+available features, not independent performance. Controller generation, options,
+robot model, tool configuration and execution interface all matter.
+
+S1. FANUC ROBOT SOFTWARE CATALOG: SHAPING THE PATH
+https://www.fanucamerica.com/products/software/robot
+
+Advanced Constant Path Control exposes cornering distance, corner radius,
+process speed, and linear approach/retract distance. Spline Motion shapes a
+smooth path through taught motion points. The same catalog distinguishes RMI,
+which builds and executes TP instructions from external input, from Stream
+Motion, which accepts externally generated trajectory data. These are robot
+features. This page does not publish a general jerk bound, exact blend algorithm,
+lookahead depth, or guaranteed response time for a newly changed target.
+
+Benchmark implication: a native, properly blended program is a required baseline.
+Do not compare our smoothing layer only against repeated stop-at-point commands.
+The exact interpretation of CNT settings needs the target controller's manual;
+this note does not infer a geometric tolerance from a CNT percentage.
+
+S2. FANUC OFFICIAL DRIVER: TIMING AND BUFFERING CAN AFFECT MOTION
+FANUC ROS 2 Driver Documentation v2.2.0, How to Configure 1kHz Mode
+https://fanuc-corporation.github.io/fanuc_driver_doc/v2.2.0/docs/fanuc_driver/how_to_configure_1khz_mode.html
+
+This documented mode needs an R-50iA controller and option S647. Some robot
+models and other installed options are incompatible. The page says a real-time
+kernel or sufficiently capable PC is needed for stable operation. It explicitly
+warns that PC timing jitter can cause drift or vibration, and recommends a larger
+command buffer or lower update rate in that case. It also identifies added
+latency from collaborative-robot speed clamping. These are configuration-specific
+conditions; 1 kHz is not a universal FANUC capability or a latency guarantee.
+
+Benchmark implication: measure command age, network timing, buffer depth and
+actual response. A higher update rate alone is not proof of better motion.
+No controller setting or protective function was changed for this research.
+
+S3. FANUC LEARNING VIBRATION CONTROL: REPEATED PATHS MATTER
+FANUC Demonstrates High-Speed Aluminum Spot Welding Applications at IMTS 2016
+https://www.fanucamerica.com/press-releases/fanuc-demonstrates-high-speed-aluminum-spot-welding-applications-at-imts-2016
+
+This dated vendor demonstration describes a wireless Learning Vibration Control
+sensor on an R-2000iC/210F. It says the system learns characteristics of programmed
+paths to improve speed while retaining path and motion quality. This establishes
+robot-specific vibration-control prior practice. It is not a public algorithm,
+an independent benchmark, or evidence that the learned benefit transfers to every
+new path produced by a VLA. Current availability for a proposed test robot remains
+to be checked against that robot's controller and options.
+
+Benchmark implication: distinguish a fixed repeated path from an unseen changed
+path. Do not credit or penalize a method for prior repetitions without reporting
+them. We do not guess whether LVC uses a particular input shaper or internal model.
+
+S4. YASKAWA REMOTE MOTION API GUIDE: THE INTERFACE CHANGES THE RESULT
+Explanation of Different Remote-Motion-Control API's, updated 14 November 2024
+https://knowledge.motoman.com/hc/en-us/articles/20684798540951-Explanation-of-Different-Remote-Motion-Control-API-s
+
+YMConnect queues targets for the same motion planner used by INFORM. It can
+produce continuing smooth motion while targets remain in the buffer. Yaskawa
+warns that very dense points can cause velocity-profile problems. Its motion
+interface requires YRC1000 or newer, despite broader monitoring support.
+
+MotoPlus offers distinct paths. The mpMOVJ/mpMOVL point-to-point calls require
+complete deceleration before the next request. The buffered mpMotTargetSend path
+uses the YMConnect-style planner. Incremental mpExRcsIncrementMove instead needs
+joint increments at the interpolation clock, normally 4 ms, with external
+kinematics and path planning; an INFORM job must be waiting. mpMeiPutCorrPath
+applies small offsets to a preprogrammed path at that clock. These are different
+contracts, not interchangeable ways to send an arbitrary new target.
+
+Benchmark implication: record whether the native planner or an external planner
+owns interpolation. Report underflow behavior and interruption latency. An
+unfavorable point-to-point test would not measure the best buffered baseline.
+
+S5. YASKAWA SMOOTH: A DOCUMENTED FILTER WITH VISIBLE COSTS
+SMOOTH Function Overview, updated 28 July 2023
+https://knowledge.motoman.com/hc/en-us/articles/16313283895191-SMOOTH-Function-Overview
+
+SMOOTH changes the manipulator motion filter ratio to reduce vibration. The
+article identifies minimum software versions and presents HC30PL traces. It
+reports effects on acceleration, torque and cycle time, including later arrival
+at the commanded speed with stronger filtering. It warns of increased inward
+corner rounding. Executing SMOOTH briefly stops motion; multi-control-group jobs
+are excluded, and stopping/restarting a job clears the applied setting. The
+page points to the robot operator manuals for the detailed function.
+
+Benchmark implication: smoothness must be scored with path error, response time
+and cycle time. Treat SMOOTH as a documented robot motion filter, not proof of a
+specific jerk-limited law or direct access to the underlying servo controller.
+
+S6. YASKAWA TOOL DATA, LOOKAHEAD AND MOTION SETTINGS
+What to Check if your Job is Running Slow, updated 27 August 2021
+https://knowledge.motoman.com/hc/en-us/articles/4406123495959-What-to-Check-if-your-Job-is-Running-Slow
+
+The guide says missing tool data makes the controller assume its heaviest load,
+which slows motion. It identifies ACC/DEC tags, PL settings, timers and extra
+points as possible cycle-time costs, and says the controller calculates several
+steps ahead. PL=0 adds deceleration. These are public facts about native robot
+planning and setup. They do not reveal servo gains or establish a general
+physical tracking bound. The article's qualitative path-accuracy description
+must not be read as zero physical error.
+
+Benchmark implication: identify the tool and load correctly, hold path settings
+fixed, and report them. Test within approved load configurations. Do not create
+a weak baseline through missing tool data or unintended intermediate stops.
+
+WHAT THIS DOES AND DOES NOT TRIANGULATE
+
+The plausible boundary is now more specific: preserve good industrial execution
+when the upstream planner repeatedly revises the motion. Target noise, target
+reversals, point density, command timing and committed buffer contents can each
+create a different problem. A physical plant, calibration and contact conditions
+can add others. The source set does not show that one new filter solves them all.
+
+Our proposed contribution should state an interface contract: which command and
+filter states survive a replan; which future commands are already committed;
+how latency and uncertainty enter the tracking bound; what happens if a proposal
+is rejected or late; and which stop remains feasible. Progress needs a persistent
+feasible goal or another stated restriction on how the target may change.
+This is a research direction, not an established absence of competing work.
+
+Robot, CNC and standalone drive documentation must stay separate. This review
+uses robot-specific pages. FANUC CNC jerk-control descriptions and Yaskawa
+standalone servo-drive tuning claims were not used as evidence that an arbitrary
+robot controller exposes the same functions. We have not established the
+proprietary servo tuning, damping models, internal filter orders or gain schedules
+used by either vendor. Public motion-filter settings are not those internal laws.
+
+A FAIR PRACTICAL COMPARISON
+
+First compare execution paths on the same industrial arm. Use a calibrated tool,
+a documented load, the same geometric task, and declared speed/acceleration limits.
+Record controller software and options. Compare a native blended program,
+buffered external targets, and supported incremental/correction control. Then
+add our admission/smoothing layer to the relevant external interface. Treat
+cross-arm results as system comparisons, not isolated algorithm comparisons.
+
+Use four tests:
+
+1. A repeated fixed path, with a final precision hold. Record any learning runs.
+2. An unseen safe target change during motion, including a required reversal.
+3. The same path encoded with sparse and dense targets, plus declared timing
+   jitter, delayed updates and buffer depletion. Use a simulator or test fixture
+   with a validated stop path before any hardware run.
+4. A travel-boundary approach with a late/rejected replan and a controlled stop.
+
+Report actual TCP path error, endpoint settling time, measured vibration,
+acceleration, jerk, arrival/cycle time, command age, buffer occupancy, rejected
+updates and stop margin. Define measurement bandwidth and derivative estimation;
+encoder differentiation alone can turn noise into apparent jerk. Report torque
+or contact force only when the sensing and plant model support that quantity.
+Never replace actual measurements with the smoothness of the commanded path.
+
+No hardware tests, installations or parameter changes were made. The current
+scalar Lean theorem is not a model of either industrial robot. The existing
+comparison files remain unchanged. This note supplies a better baseline and
+an experiment boundary; it does not certify an industrial integration.

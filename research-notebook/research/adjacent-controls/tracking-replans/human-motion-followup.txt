@@ -1,0 +1,112 @@
+Human arms on Earth and in weightlessness
+Research date: 2026-10-17
+
+The useful idea is continuity of action while conditions change. Human reaching
+remains useful in weightlessness, but its timing, posture, and accuracy can change.
+The studies below support adaptive control. They do not identify a single neural
+trajectory damper that works independently of gravity. [H1, H2]
+
+Five primary studies
+
+H1. Papaxanthis, Pozzo and McIntyre (1998), Arm end-point trajectories under normal
+and micro-gravity environments. Acta Astronautica 43, 153–161.
+Two cosmonauts made upward and downward arm movements on Earth and in space.
+Path curvature and the relative time to peak speed changed in flight. The latter
+returned to pre-flight values after 18 days. This is evidence of retained movement
+organization and adaptation, with a very small sample. It does not show identical
+motion in both environments or establish a universal jerk bound.
+Access: complete primary abstract; full methods not inspected in this pass.
+https://doi.org/10.1016/S0094-5765(98)00151-9
+https://pubmed.ncbi.nlm.nih.gov/11541921/
+
+H2. Macaluso et al. (2017), Sensorimotor Reorganizations of Arm Kinematics and
+Postural Strategy for Functional Whole-Body Reaching Movements in Microgravity.
+Frontiers in Physiology 8:821.
+Seven people reached toward nearby or distant targets during parabolic flight,
+with their feet secured. Mean movement speed was retained. Success was about 95%
+in microgravity and 100% on Earth; that difference was not statistically significant.
+Braking took a greater fraction of the motion. Large-target endpoints were farther
+from the center in microgravity. The authors infer predictive adjustment; they did
+not measure a distinct neural smoothing layer. This was brief weightlessness, with
+prior exposure before recorded trials. Different sampling rates and filter cutoffs
+also limit any claim of equal high-frequency smoothness. It was not a jerk study.
+Access: full publisher methods, results, and discussion inspected.
+https://www.frontiersin.org/journals/physiology/articles/10.3389/fphys.2017.00821/full
+
+H3. Flash and Hogan (1985), The coordination of arm movements: an experimentally
+confirmed mathematical model. Journal of Neuroscience 5, 1688–1703.
+A model minimizing the time integral of squared hand jerk predicted several
+features of horizontal reaching: near-straight paths, bell-shaped speed, and slower
+motion at sharp bends. Jerk is the rate of change of acceleration. The model was
+kinematic; it did not model muscle forces or identify a neural implementation.
+A successful fit therefore supports a useful description or design objective.
+It does not prove that the brain literally solves that optimization on every update.
+Access: primary abstract and the indexed first page of the author-hosted PDF.
+The complete PDF could not be opened in this pass.
+https://doi.org/10.1523/JNEUROSCI.05-07-01688.1985
+https://newmanlab.mit.edu/wp-content/uploads/2017/09/1985-the-coordination-of-arm-movements-an-experimentally-confirmed-mathematical-model.pdf
+
+H4. Burdet et al. (2001), The central nervous system stabilizes unstable dynamics
+by learning optimal impedance. Nature 414, 446–449.
+People learned to reach through a robot-generated force field that amplified
+sideways error. Endpoint stiffness increased mainly in the unstable direction.
+Nine people participated; the learning analysis used five initially naive people.
+This supports learned, directional resistance to disturbance. It does not reduce
+smoothness to passive muscle damping. Stiffness was estimated from the restoring
+response 120–180 ms after a perturbation; that interval does not isolate intrinsic
+muscle mechanics from neural responses. Nor does the experiment show that raising
+stiffness in every direction improves motion.
+Access: full article, including methods, inspected from a research-project PDF.
+This improves on the restricted access recorded in the earlier neuroscience note.
+https://doi.org/10.1038/35106566
+https://summerschool.stiff-project.org/uploads/tx_sibibtex/Burdet_Osu_Franklin_Milner_Kawato_-_The_central_nervous_system_stabilizes_unstable_dynamics_by_learning_optimal_impedance_-__Science_2001.pdf
+
+H5. Crevecoeur et al. (2016), Long-Latency Feedback Coordinates Upper-Limb and
+Hand Muscles during Object Manipulation Tasks. eNeuro 3(1), ENEURO.0129-15.2016.
+In 16 people, a robot disturbed the arm while participants held an object.
+Goal-dependent hand and shoulder muscle responses appeared together at about 60 ms.
+This supports coordinated feedback beneath deliberate action selection. It challenges
+a simple serial account in which an arm correction must first finish its computation
+before grip compensation starts. Prediction remains relevant, but this study does
+not identify one complete circuit or a fixed human planning rate.
+Access: primary methods and discussion excerpts checked again; the full article
+was inspected for the preceding steady-motion/neuroscience.txt report.
+https://www.eneuro.org/content/3/1/ENEURO.0129-15.2016
+https://pmc.ncbi.nlm.nih.gov/articles/PMC4785384/
+
+What transfers to the robot work
+
+The following are engineering hypotheses, not findings about a neural circuit.
+
+1. Keep a motion state between decisions. A new goal should change the future
+motion without resetting the current position, velocity, or acceleration. This is
+compatible with our finite handoff theorem. It still needs a rule that turns a goal
+change into an admissible next segment.
+
+2. Separate command smoothing from physical damping. A filter can make a requested
+path smooth. A feedback controller must make the actual tool follow it despite load
+and model error. Physical damping concerns energy loss in the motion. These are
+related design choices, but one does not establish the other.
+
+3. State precisely which derivative is continuous. For the example filter
+  q'' + 2 omega q' + omega^2(q - target) = 0,
+retaining q and q' through a target step still allows q'' to jump. A design that
+retains acceleration as state, or enforces bounded jerk during the transition,
+can address that specific gap. Its bounds, lag, and actuator demands need proof.
+Critical damping for a fixed target does not by itself settle arbitrary replans.
+
+4. Let the load model change while the continuity rule stays the same. A candidate
+architecture could use the same state-preserving interface on Earth and in orbit,
+with different gravity compensation and uncertainty bounds. This is an engineering
+separation of responsibilities. It is not evidence that the biological controller
+contains such a separate component.
+
+The testable target is: bounded tracking error and bounded changes in motion under
+stated target updates, loads, delays, and actuator limits. A comparison should use
+the same tasks and plant, then vary the target filter and load estimate separately.
+Measure actual tool jerk, tracking error, delay, effort, and stopping reserve.
+
+These five human studies do not establish that every synthetic controller lacks a
+trajectory damper. They also do not supply a physical robot model or its parameters.
+The analogy is useful for choosing a contract to test and prove. It is not a novelty
+claim or a proof that human arms are always smooth.
