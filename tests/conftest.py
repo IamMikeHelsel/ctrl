@@ -64,6 +64,16 @@ def repo(tmp_path, monkeypatch):
 def fake(monkeypatch):
     f = FakeProc()
     monkeypatch.setattr(proc, "run", f)
+    # ssh/rsync are only ever "run" through the fake, so tests must not depend on the host having
+    # them (the clean-room container doesn't).
+    real_which = proc.which
+    monkeypatch.setattr(
+        proc,
+        "which",
+        lambda name, *extra: (
+            f"/fake/bin/{name}" if name in ("ssh", "rsync") else real_which(name, *extra)
+        ),
+    )
     return f
 
 

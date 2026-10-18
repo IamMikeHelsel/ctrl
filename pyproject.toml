@@ -29,8 +29,9 @@ addopts = "-m 'not integration'"
 markers = ["integration: touches real Lean or SSH (run with -m integration)"]
 
 [tool.ruff]
+# The image has no .git, so .gitignore can't keep ruff out of Lake package checkouts.
 line-length = 100
-extend-exclude = ["lean", "tools"]
+extend-exclude = [".lake", "**/.lake", "tools"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "B", "UP"]

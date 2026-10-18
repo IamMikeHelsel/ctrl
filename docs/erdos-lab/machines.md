@@ -99,9 +99,11 @@ and `lean_leansearch` are remote and rate-limited (about 3 per 30 s), so the pro
   target `[self-hosted, ARM64, ctrl-local]`, which is the `ctrl-local-sparky-arm64` runner in
   `~/actions-runners/` on the Spark: a user systemd service that comes up with the machine. Manage
   it with `~/actions-runners/add-runner.sh ctrl [count]`.
-- **`.github/workflows/erdos-lab.yml` is check-only.** It runs ruff, pytest, `lake exe cache get` and
-  `erdos check --all`. Checkout uses `clean: false`, so the gitignored `erdos/.lake` (Mathlib) stays
-  in the runner's work dir between runs.
+- **`.github/workflows/erdos-lab.yml` is check-only.** It builds `docker/erdos-lab.Dockerfile` on the
+  runner (the Mathlib cache is a cached image layer), then runs ruff, pytest and `erdos check --all`
+  inside it with `--network none`, as a non-root user, and without the host `$HOME`. So jobs, including
+  agent-written proofs, can't leave state behind for later jobs. Trust boundary: the repo is private and
+  non-fork, and the runner user is in the `docker` group (root-equivalent), so only collaborators may push.
 - **`.github/workflows/lean_action_ci.yml`** builds ControlsLean on the same runner. It is
   check-only now; the Pages deploy was removed.
 - **`docker/erdos-lab.Dockerfile`** is a clean environment: Ubuntu 24.04, elan pinned by
