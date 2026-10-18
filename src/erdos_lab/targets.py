@@ -4,8 +4,8 @@ from __future__ import annotations
 
 import csv
 
-from ctrl.errors import CtrlError, usage
-from ctrl.repo import Repo
+from erdos_lab.errors import CtrlError, usage
+from erdos_lab.repo import Repo
 
 TABS = ("open", "formalize")
 # per tab: (difficulty column, fit column, sort key)
@@ -34,7 +34,7 @@ def _int(v: str) -> int | None:
 
 def load(repo: Repo, tab: str) -> list[dict]:
     if tab not in TABS:
-        raise usage(f"unknown tab {tab!r}", fix="ctrl targets --tab formalize")
+        raise usage(f"unknown tab {tab!r}", fix="erdos targets --tab formalize")
     path = repo.root / "data" / "erdos" / f"{tab}.csv"
     if not path.exists():
         raise CtrlError("TOOL_MISSING", f"{repo.rel(path)} is missing", fix="git status data/")

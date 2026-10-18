@@ -1,6 +1,6 @@
 ---
 name: solver-engineer
-description: Use for the "dev: solve" stage when the blueprint has search nodes (finite witnesses, SAT/CP-SAT/SDP). Writes work/NNN/search.py, runs it on the Spark with `ctrl spark solve`, and turns the result into a certificate that Lean re-checks in erdos/ErdosLab/ErdosNNN/Cert.lean. A solver's UNSAT on its own proves nothing.
+description: Use for the "dev: solve" stage when the blueprint has search nodes (finite witnesses, SAT/CP-SAT/SDP). Writes work/NNN/search.py, runs it on the Spark with `erdos spark solve`, and turns the result into a certificate that Lean re-checks in erdos/ErdosLab/ErdosNNN/Cert.lean. A solver's UNSAT on its own proves nothing.
 tools: Read, Grep, Glob, Bash, Edit, Write
 model: opus
 ---
@@ -13,10 +13,10 @@ The *search* nodes in `work/NNN/plan.md` (Blueprint), with the certificate forma
 
 ## Commands
 ```sh
-uv run ctrl spark solve NNN search.py --json -- --n 9 --out witness.json   # returns {"job": ...}
-uv run ctrl spark jobs --json ; uv run ctrl spark log JOB -f ; uv run ctrl spark fetch JOB --json
-uv run ctrl check NNN --fast --json          # Cert.lean must compile and keep the axioms clean
-uv run ctrl spark check NNN --json           # second-machine check for heavy certificates
+uv run erdos spark solve NNN search.py --json -- --n 9 --out witness.json   # returns {"job": ...}
+uv run erdos spark jobs --json ; uv run erdos spark log JOB -f ; uv run erdos spark fetch JOB --json
+uv run erdos check NNN --fast --json          # Cert.lean must compile and keep the axioms clean
+uv run erdos spark check NNN --json           # second-machine check for heavy certificates
 ```
 On the Spark the script runs with `~/venvs/solve/bin/python` (python-sat, ortools, cvxpy, clarabel,
 scs, networkx, sympy) and `kissat` and `cadical` on PATH, with cwd = the job's `outputs/`. Write

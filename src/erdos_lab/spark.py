@@ -14,9 +14,9 @@ import re
 import shlex
 import subprocess
 
-from ctrl import proc
-from ctrl.errors import EXIT_NEEDS_HUMAN, EXIT_REMOTE, CtrlError, usage
-from ctrl.repo import Repo
+from erdos_lab import proc
+from erdos_lab.errors import EXIT_NEEDS_HUMAN, EXIT_REMOTE, CtrlError, usage
+from erdos_lab.repo import Repo
 
 SSH_OPTS = ["-o", "BatchMode=yes", "-o", "ConnectTimeout=8"]
 REMOTE_REPO = "lean-work/ctrl"  # relative to the remote home
@@ -59,7 +59,7 @@ def ssh(script: str, *, capture: bool = True) -> subprocess.CompletedProcess:
 
 def check_job_id(job: str) -> str:
     if not JOB_RE.fullmatch(job):
-        raise usage(f"not a job id: {job!r}", fix="ctrl spark jobs")
+        raise usage(f"not a job id: {job!r}", fix="erdos spark jobs")
     return job
 
 
@@ -68,7 +68,7 @@ def job_not_found(job: str) -> CtrlError:
         "JOB_NOT_FOUND",
         f"no job {job} on {host()}",
         hint=f"looked in ~/{REMOTE_JOBS}/{job}/",
-        fix="ctrl spark jobs",
+        fix="erdos spark jobs",
         exit_code=EXIT_REMOTE,
     )
 
@@ -135,7 +135,7 @@ def sync(repo: Repo, *, force: bool = False) -> dict:
                 f"prove job(s) running on {host()} ({ids}) and this sync would change "
                 "erdos/lake-manifest.json",
                 hint="prove jobs share the repo copy's .lake/packages; wait for them, or pass --force",
-                fix="ctrl spark jobs",
+                fix="erdos spark jobs",
                 exit_code=EXIT_NEEDS_HUMAN,
             )
     cp = proc.run(rsync_cmd(repo))
@@ -180,7 +180,7 @@ def run_script(
             "TOOL_MISSING",
             f"tools/spark/{name}.sh is missing on the Spark",
             hint=(cp.stderr or "").strip(),
-            fix="ctrl spark sync",
+            fix="erdos spark sync",
         )
     return cp
 
@@ -202,7 +202,7 @@ def remote_failed(name: str, cp: subprocess.CompletedProcess) -> CtrlError:
         "REMOTE_FAILED",
         f"tools/spark/{name}.sh failed on the Spark (exit {cp.returncode})",
         hint=" | ".join(tail) or "no output",
-        fix="ctrl doctor --remote",
+        fix="erdos doctor --remote",
     )
 
 
@@ -298,7 +298,7 @@ def fetch(job: str, dest) -> list[str]:
                 "JOB_NOT_FOUND",
                 f"job {job} has no outputs/ yet",
                 hint=(cp.stderr or "").strip().splitlines()[-1],
-                fix=f"ctrl spark log {job}",
+                fix=f"erdos spark log {job}",
                 exit_code=EXIT_REMOTE,
             )
         raise unreachable(cp.stderr or f"rsync exited {cp.returncode}")

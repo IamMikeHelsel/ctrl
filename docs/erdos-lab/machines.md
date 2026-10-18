@@ -1,6 +1,6 @@
 # Machines
 
-As set up on 2026-10-17. `ctrl doctor` verifies all of this.
+As set up on 2026-10-17. `erdos doctor` verifies all of this.
 
 ## Mac: MacBook Pro M4 Max, 64 GB
 - `elan` in `~/.elan` (on PATH via `~/.zprofile`; non-login shells need `source ~/.elan/env`). The
@@ -21,7 +21,7 @@ There is no sudo, so everything is user-level.
 | Solver venv | `~/venvs/solve` | `uv venv ~/venvs/solve && uv pip install python-sat ortools networkx numpy scipy sympy cvxpy clarabel scs` |
 | Claude Code 2.1.x | `~/.local/bin/claude` | `curl -fsSL https://claude.ai/install.sh \| bash` |
 | lean-lsp-mcp | `~/.local/bin/lean-lsp-mcp` | `uv tool install lean-lsp-mcp` |
-| Repo copy | `~/lean-work/ctrl` | `ctrl spark sync` |
+| Repo copy | `~/lean-work/ctrl` | `erdos spark sync` |
 | Leanstral GGUF | `~/models/leanstral/` | `uvx --from 'huggingface_hub[hf_xet]' hf download GZGavinZhao/Leanstral-1.5-119B-A6B-GGUF Leanstral-1.5-119B-A6B-Q4_K_M.gguf --local-dir ~/models/leanstral`. Ollama's own `hf.co/` pull fails on the xet CDN redirect. |
 | Ollama model `leanstral` | Ollama 0.34.2 | `bash tools/spark/build-leanstral.sh` (patches the chat template, then `ollama create`; see Spark prover) |
 
@@ -33,7 +33,7 @@ Other Ollama models already on the Spark: `spark-fast` (Qwen3.6 35B MoE), `spark
 `~/Dev/spark-tools/spark-ai` on the Mac tunnels Ollama to `127.0.0.1:11435`.
 
 ## Spark prover (tools/spark)
-`ctrl spark …` runs these over SSH; each also works by hand on the Spark (`bash ~/lean-work/ctrl/tools/spark/X.sh`).
+`erdos spark …` runs these over SSH; each also works by hand on the Spark (`bash ~/lean-work/ctrl/tools/spark/X.sh`).
 Non-login SSH shells lack `~/.local/bin` and elan, so every script sources `tools/spark/env.sh` first.
 
 | Script | What it does |
@@ -65,7 +65,7 @@ on the Skill tool. Optional env for prove.sh: `PROVE_REASONING=high|none`, `PROV
 After each attempt the job runs `check.sh NNN --fast` in the scratch, rejects any change under
 `Challenge/`, and writes `outputs/attempt-K/{ErdosNNN.lean, diff.patch, check.json, check.exit,
 transcript.jsonl, claude.json, prompt.md}`. At the end it writes `outputs/final.lean` and
-`outputs/final.patch` (always, even on failure). `ctrl spark fetch` copies `outputs/` to
+`outputs/final.patch` (always, even on failure). `erdos spark fetch` copies `outputs/` to
 `work/NNN/candidates/JOB/`.
 
 **Leanstral in Ollama.** The GGUF (arch `mistral4`) works in Ollama 0.34.2, whose llama-server backend

@@ -45,8 +45,8 @@ Formal Conjectures' toolchain, not in `ControlsLean/`. Its rules are in
 [docs/erdos-lab/rules.md](docs/erdos-lab/rules.md). The key ones:
 - Never edit an approved `erdos/Challenge/ErdosNNN.lean`.
 - Solutions prove `Challenge.ErdosNNN.statement` itself.
-- Gate with `uv run ctrl check NNN`.
-- Spark output stays untrusted until `ctrl promote`.
+- Gate with `uv run erdos check NNN`.
+- Spark output stays untrusted until `erdos promote`.
 
 Its dev → test → improve loop and subagents are described in
 [docs/erdos-lab/loop.md](docs/erdos-lab/loop.md).

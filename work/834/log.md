@@ -12,7 +12,7 @@
   binding all ok. Phase stays `draft` until a human approves the statement.
 
 ## Verifier report 2026-10-17
-Checks: mac pass except NOT_APPROVED (`ctrl check 834 --json` exit 3: build ok, tokens ok, axioms ok, binding ok, hash "challenge not approved"); spark pass except NOT_APPROVED (`ctrl spark check 834 --json` on sparky.local, exit 3, same five results). Exit 3 is expected while the challenge is a draft.
+Checks: mac pass except NOT_APPROVED (`erdos check 834 --json` exit 3: build ok, tokens ok, axioms ok, binding ok, hash "challenge not approved"); spark pass except NOT_APPROVED (`erdos spark check 834 --json` on sparky.local, exit 3, same five results). Exit 3 is expected while the challenge is a draft.
 Checklist:
 1 binding: pass. `#check @Challenge.Erdos834.solution` gives `Challenge.Erdos834.statement`. The CLI reports binding "(Expr.const), statement : Prop". `solution` is a term proof of `statement` itself, not a restatement.
 2 def drift: pass. The Challenge body is identical to FC `erdos_834.parts.ii` @ d9ce556 (checked against .lake/packages/formal_conjectures, HEAD d9ce556af8). A grep of ErdosLab/Erdos834.lean for instance|notation|macro|elab|attribute|@[simp|set_option|local finds no hits; the only match, on "axiom", is in the docstring. Only private defs (liH, edgeWit, vertWit) and lemmas were added, and none of them is a statement dependency. The hash cannot be checked until approval. git log shows the Challenge file has one commit (4a94d15).
@@ -26,7 +26,7 @@ Checklist:
    - `IsUniform r`: every edge has card r.
    Vertex deletion is modelled by `filter (v ∉ ·)`, which colours all of Fin n. That is equivalent, because v is then isolated. The degree bound ranges over all of Fin n, which is stronger than the paper's δ ≥ 7. The proof proves part ii only (chromatic reading), and plan.md flags this for the approver.
 6 certificates: pass. Every finite fact is closed by `decide +kernel` in Lean; no solver output is trusted. As a cross-check I wrote my own Python brute force (/tmp/v834.py), separate from the prover's. It found 22 distinct edges, degrees [10,7,7,7,7,7,7,7,7], not 2-colourable, 3-colourable, and every edge deletion and every vertex deletion 2-colourable.
-7 env: pass. It builds on mac (lake, about 47 s) and on sparky.local. Note: `ctrl spark sync` also pushed another agent's in-progress src/ctrl/tests files, but the 834 result does not depend on them.
-Verdict: VERIFIED (proof is sound and binds to the draft statement; the statement still needs human approval, `ctrl approve 834 --by <name>`)
+7 env: pass. It builds on mac (lake, about 47 s) and on sparky.local. Note: `erdos spark sync` also pushed another agent's in-progress src/ctrl/tests files, but the 834 result does not depend on them.
+Verdict: VERIFIED (proof is sound and binds to the draft statement; the statement still needs human approval, `erdos approve 834 --by <name>`)
 Failure: none. The only open item is NOT_APPROVED, which is a human step: the statement review in plan.md has to be accepted, including the part-ii-only interpretation caveat.
-- 2026-10-17 `ctrl approve 834 --by mike`: sha256 c592750fcefebffb946e78c1ea032438b2ab39c02fc4258c31f000df4e24afe2
+- 2026-10-17 `erdos approve 834 --by mike`: sha256 c592750fcefebffb946e78c1ea032438b2ab39c02fc4258c31f000df4e24afe2

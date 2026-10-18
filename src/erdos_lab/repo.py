@@ -8,7 +8,7 @@ import re
 from dataclasses import dataclass
 from pathlib import Path
 
-from ctrl.errors import CtrlError, usage
+from erdos_lab.errors import CtrlError, usage
 
 FC_REL = Path("FormalConjectures") / "ErdosProblems"
 
@@ -18,8 +18,8 @@ def _is_root(d: Path) -> bool:
 
 
 def find_root(start: Path | None = None) -> Path:
-    """``CTRL_ROOT``, else walk up from cwd, else the checkout this package was installed from."""
-    env = os.environ.get("CTRL_ROOT")
+    """``ERDOS_ROOT``, else walk up from cwd, else the checkout this package was installed from."""
+    env = os.environ.get("ERDOS_ROOT")
     if env:
         return Path(env).expanduser().resolve()
     here = Path(start or Path.cwd()).resolve()
@@ -31,8 +31,8 @@ def find_root(start: Path | None = None) -> Path:
         return pkg
     raise CtrlError(
         "TOOL_MISSING",
-        f"no ctrl repo (erdos/lakefile.toml) in {here} or its parents",
-        hint="run ctrl from inside the ctrl checkout, or set CTRL_ROOT",
+        f"no Erdős lab (erdos/lakefile.toml) in {here} or its parents",
+        hint="run erdos from inside the ctrl checkout, or set ERDOS_ROOT",
         fix="cd ~/Dev/ctrl",
     )
 
@@ -103,7 +103,7 @@ class Repo:
         candidates = [
             self.lean / ".lake" / "packages" / "formal_conjectures" / FC_REL / f"{nnn}.lean",
         ]
-        alt = os.environ.get("CTRL_FC_DIR") or str(Path.home() / "Dev" / "formal-conjectures")
+        alt = os.environ.get("ERDOS_FC_DIR") or str(Path.home() / "Dev" / "formal-conjectures")
         candidates.append(Path(alt).expanduser() / FC_REL / f"{nnn}.lean")
         for c in candidates:
             if c.is_file():

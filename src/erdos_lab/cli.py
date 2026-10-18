@@ -14,10 +14,10 @@ import typer
 from rich.console import Group
 from rich.text import Text
 
-from ctrl import __version__, check, fc, spark, state
-from ctrl import doctor as doctor_mod
-from ctrl import targets as targets_mod
-from ctrl.errors import (
+from erdos_lab import __version__, check, fc, spark, state
+from erdos_lab import doctor as doctor_mod
+from erdos_lab import targets as targets_mod
+from erdos_lab.errors import (
     EXIT_ERROR,
     EXIT_FAILED_CHECK,
     EXIT_NEEDS_HUMAN,
@@ -25,8 +25,8 @@ from ctrl.errors import (
     from_exception,
     usage,
 )
-from ctrl.repo import Repo, nnn_of
-from ctrl.ui import (
+from erdos_lab.repo import Repo, nnn_of
+from erdos_lab.ui import (
     ACCENT,
     DIM,
     configure,
@@ -52,9 +52,9 @@ app = typer.Typer(
     no_args_is_help=True,
     rich_markup_mode="rich",
     context_settings={"help_option_names": ["-h", "--help"]},
-    help="[bold]ctrl[/] — machine-checked Lean proofs of Erdős problems, and the evidence that "
+    help="[bold]erdos[/] — machine-checked Lean proofs of Erdős problems, and the evidence that "
     "they prove the right statement.\n\nGlobal: [cyan]--json[/] (agents/CI) · [cyan]--plain[/]. "
-    "Start with [cyan]ctrl doctor[/] and [cyan]ctrl targets[/]; ask [cyan]ctrl status[/] any time.",
+    "Start with [cyan]erdos doctor[/] and [cyan]erdos targets[/]; ask [cyan]erdos status[/] any time.",
 )
 spark_app = typer.Typer(
     no_args_is_help=True, help="Run work on the Spark (sparky.local) through tools/spark/."
@@ -85,7 +85,7 @@ def command(name: str, target=app, **kwargs):
 def version_cb(value: bool) -> None:
     if value:
         ui.command = "version"
-        finish({"version": __version__}, lambda d: Text(f"ctrl {d['version']}"))
+        finish({"version": __version__}, lambda d: Text(f"erdos {d['version']}"))
         raise typer.Exit()
 
 
@@ -135,7 +135,7 @@ def doctor(
             fix=_fix_from(first["detail"]),
             exit_code=EXIT_ERROR,
         )
-    nxt = ["ctrl targets --tab formalize --top 10", "ctrl status"] if not bad else []
+    nxt = ["erdos targets --tab formalize --top 10", "erdos status"] if not bad else []
     if err is not None and err.fix:
         nxt = [err.fix]
 
@@ -178,7 +178,7 @@ def targets(
     )
     started = set(repo.problems())
     first_fc = next((r for r in picked if r["has_fc"] and str(r["erdos_no"]) not in started), None)
-    nxt = [f"ctrl new {first_fc['erdos_no']}"] if first_fc else []
+    nxt = [f"erdos new {first_fc['erdos_no']}"] if first_fc else []
     warnings = [] if picked else ["no rows match these filters"]
 
     def render(d):
@@ -240,7 +240,7 @@ def new(
             f"Formal Conjectures has no file for Erdős problem {nnn}",
             hint="looked in erdos/.lake/packages/formal_conjectures and ~/Dev/formal-conjectures; "
             "the targets column FC says whether a statement exists",
-            fix="ctrl targets --tab formalize --top 10",
+            fix="erdos targets --tab formalize --top 10",
         )
     warnings: list[str] = []
     if "/.lake/packages/" not in str(src_path):
@@ -252,7 +252,7 @@ def new(
         raise CtrlError(
             "NO_FC_STATEMENT",
             f"no theorem found in {src_path.name}",
-            hint="the FC file has no `theorem` declarations ctrl can read",
+            hint="the FC file has no `theorem` declarations erdos can read",
             fix=f"$EDITOR {src_path}",
         )
     if part:
@@ -261,7 +261,7 @@ def new(
             err = usage(
                 f"no FC theorem {part!r} for {nnn}",
                 hint="choose one of: " + ", ".join(t.name for t in theorems),
-                fix=f"ctrl new {nnn} --part {theorems[0].name}",
+                fix=f"erdos new {nnn} --part {theorems[0].name}",
             )
             finish({"nnn": nnn, "fc_theorems": listing}, _render_theorems, error=err)
     elif len(theorems) == 1:
@@ -270,7 +270,7 @@ def new(
         err = usage(
             f"Formal Conjectures has {len(theorems)} theorems for {nnn}; pick one with --part",
             hint="; ".join(f"{t.name} ({t.category or '?'})" for t in theorems),
-            fix=f"ctrl new {nnn} --part {theorems[0].name}",
+            fix=f"erdos new {nnn} --part {theorems[0].name}",
         )
         finish({"nnn": nnn, "fc_theorems": listing}, _render_theorems, error=err)
     if thm.needs_answer:
@@ -288,7 +288,7 @@ def new(
     if chal.exists() and fc.is_approved_line(fc.approval_line(chal.read_text())):
         raise CtrlError(
             "EXISTS",
-            f"{repo.rel(chal)} is approved; ctrl will not rewrite it",
+            f"{repo.rel(chal)} is approved; erdos will not rewrite it",
             hint="approved challenges are frozen (docs/erdos-lab/rules.md); changing one is a human decision",
             fix=f"git diff {repo.rel(chal)}",
             exit_code=EXIT_NEEDS_HUMAN,
@@ -298,8 +298,8 @@ def new(
         raise CtrlError(
             "EXISTS",
             f"{repo.rel(existing[0])} already exists",
-            hint="ctrl new only writes fresh drafts",
-            fix=f"ctrl new {nnn} --force" + (f" --part {part}" if part else ""),
+            hint="erdos new only writes fresh drafts",
+            fix=f"erdos new {nnn} --force" + (f" --part {part}" if part else ""),
         )
     if existing:
         warnings.append("overwrote " + ", ".join(repo.rel(p) for p in existing))
@@ -329,7 +329,7 @@ def new(
         if not p.exists():
             p.write_text(text, encoding="utf-8")
             written.append(p)
-    _log(repo, nnn, f"{today} `ctrl new {nnn}`: drafted challenge from FC `{thm.full_name}`")
+    _log(repo, nnn, f"{today} `erdos new {nnn}`: drafted challenge from FC `{thm.full_name}`")
     status = {
         "nnn": nnn,
         "phase": "draft",
@@ -359,7 +359,7 @@ def new(
     warnings.append(
         f"a human must compare {repo.rel(chal)} with erdosproblems.com/{nnn} before approving"
     )
-    finish(data, render, next=[f"ctrl approve {nnn} --by <name>"], warnings=warnings)
+    finish(data, render, next=[f"erdos approve {nnn} --by <name>"], warnings=warnings)
 
 
 def _render_theorems(d):
@@ -379,7 +379,7 @@ def _plan_md(nnn: str, thm: fc.Theorem, pin: str) -> str:
 ## Statement review
 <!-- statement-drafter: compare the challenge with the source paper and erdosproblems.com/{nnn}.
 Is it faithful? Vacuous? Off by one? Missing hypotheses? Then a human runs
-`ctrl approve {nnn} --by <name>`. -->
+`erdos approve {nnn} --by <name>`. -->
 
 ## Blueprint
 <!-- proof-planner: lemma DAG. Each node stated in Lean (as sorry) and tagged
@@ -414,15 +414,15 @@ def approve(
             "approve needs --by NAME",
             hint="approval is a human's signature after reviewing the statement; "
             "agents must not approve on their own",
-            fix=f"ctrl approve {nnn} --by <name>",
+            fix=f"erdos approve {nnn} --by <name>",
             exit_code=EXIT_NEEDS_HUMAN,
         )
     by = by.strip()
     if not re.fullmatch(r"[\w .@'-]{1,64}", by):
-        raise usage(f"--by {by!r}: use a plain name", fix=f"ctrl approve {nnn} --by <name>")
+        raise usage(f"--by {by!r}: use a plain name", fix=f"erdos approve {nnn} --by <name>")
     chal = repo.challenge(nnn)
     if not chal.exists():
-        raise usage(f"{repo.rel(chal)} does not exist", fix=f"ctrl new {nnn}")
+        raise usage(f"{repo.rel(chal)} does not exist", fix=f"erdos new {nnn}")
     if state.has_sorry(chal):
         raise CtrlError(
             "NEEDS_ANSWER",
@@ -450,7 +450,7 @@ def approve(
         st.pop("last_check", None)
         st.pop("last_spark_check", None)
         state.save(repo, nnn, st)
-        _log(repo, nnn, f"{today} `ctrl approve {nnn} --by {by}`: sha256 {st['challenge_sha256']}")
+        _log(repo, nnn, f"{today} `erdos approve {nnn} --by {by}`: sha256 {st['challenge_sha256']}")
     data = {
         "nnn": nnn,
         "file": repo.rel(chal),
@@ -461,7 +461,7 @@ def approve(
     finish(
         data,
         lambda d: Group(header(f"approve {nnn}", d["line"]), kv([("sha256", d["hash"])])),
-        next=[f"ctrl check {nnn} --fast", f"ctrl spark prove {nnn}"],
+        next=[f"erdos check {nnn} --fast", f"erdos spark prove {nnn}"],
         warnings=warnings,
     )
 
@@ -489,19 +489,19 @@ def check_cmd(
     """Build, audit tokens and axioms, check the binding and the challenge hash."""
     repo = Repo.find()
     if bool(nnn) == bool(all_):
-        raise usage("give one problem number or --all", fix="ctrl check --all")
+        raise usage("give one problem number or --all", fix="erdos check --all")
     nnns = [nnn_of(nnn)] if nnn else repo.problems()
     rows, warnings = _check_rows(repo, nnns, fast=fast, skip_missing=all_)
     err = check.error_for(rows)
     if err:
         nxt = [err.fix]
     elif fast:
-        nxt = [f"ctrl check {r['nnn']}" for r in rows]
+        nxt = [f"erdos check {r['nnn']}" for r in rows]
     else:
-        nxt = [f"ctrl spark check {r['nnn']}" for r in rows]
+        nxt = [f"erdos spark check {r['nnn']}" for r in rows]
     if all_ and not rows:
         warnings.append("no problems under work/")
-        nxt = ["ctrl status"]
+        nxt = ["erdos status"]
     finish({"results": rows}, _render_results, next=nxt, warnings=warnings, error=err)
 
 
@@ -515,7 +515,7 @@ def _check_rows(
             if skip_missing:
                 warnings.append(f"{n}: no erdos/ErdosLab/Erdos{n}.lean, skipped")
                 continue
-            raise usage(f"erdos/ErdosLab/Erdos{n}.lean does not exist", fix=f"ctrl new {n}")
+            raise usage(f"erdos/ErdosLab/Erdos{n}.lean does not exist", fix=f"erdos new {n}")
         progress(f"checking {n}{' (fast)' if fast else ''}: erdos/scripts/check.sh")
         row = check.result(repo, n, check.run_local(repo, n, fast))
         check.record(repo, n, row, fast=fast)
@@ -531,7 +531,7 @@ def promote(
     nnn: str = typer.Argument(..., help="Erdős problem number."),
     job: str = typer.Argument(..., help="A fetched job (work/NNN/candidates/JOB/)."),
 ) -> None:
-    """Copy candidates/JOB/final.lean over the solution, then `ctrl check NNN --fast`; undo on failure."""
+    """Copy candidates/JOB/final.lean over the solution, then `erdos check NNN --fast`; undo on failure."""
     repo = Repo.find()
     nnn = nnn_of(nnn)
     job = spark.check_job_id(job)
@@ -539,7 +539,7 @@ def promote(
     cand_dir = repo.workdir(nnn) / "candidates" / job
     final = cand_dir / "final.lean"
     if not final.is_file():
-        raise usage(f"{repo.rel(final)} does not exist", fix=f"ctrl spark fetch {job}")
+        raise usage(f"{repo.rel(final)} does not exist", fix=f"erdos spark fetch {job}")
     diffs = sorted(cand_dir.glob("attempt-*/challenge.diff"))
     dirty = [d for d in diffs if d.read_text(errors="replace").strip()]
     if not diffs or dirty:
@@ -584,7 +584,7 @@ def promote(
         "restored": err is not None,
         "results": rows,
     }
-    nxt = [err.fix] if err else [f"ctrl check {nnn}", f"git diff {repo.rel(sol)}"]
+    nxt = [err.fix] if err else [f"erdos check {nnn}", f"git diff {repo.rel(sol)}"]
     finish(data, _render_results, next=nxt, warnings=warnings, error=err)
 
 
@@ -598,7 +598,7 @@ def status() -> None:
     problems = [state.summary(repo, n) for n in repo.problems()]
     nxt = [p["next"][0] for p in problems if p["next"]]
     if not problems:
-        nxt = ["ctrl targets --tab formalize --top 10"]
+        nxt = ["erdos targets --tab formalize --top 10"]
 
     def render(d):
         if not d["problems"]:
@@ -642,7 +642,7 @@ def spark_sync(
             ]
         )
 
-    finish(data, render, next=["ctrl spark check <NNN>", "ctrl spark jobs"])
+    finish(data, render, next=["erdos spark check <NNN>", "erdos spark jobs"])
 
 
 @command("check", spark_app)
@@ -658,7 +658,7 @@ def spark_check(nnn: str = typer.Argument(..., help="Erdős problem number.")) -
     row = check.result(repo, nnn, check.parse_report(cp.stdout, cp.stderr, cp.returncode))
     check.record(repo, nnn, row, fast=False, where="spark")
     err = check.error_for([row])
-    nxt = [err.fix] if err else ["ctrl status"]
+    nxt = [err.fix] if err else ["erdos status"]
     finish({"results": [row], "sync": synced}, _render_results, next=nxt, error=err)
 
 
@@ -679,7 +679,7 @@ def _require_approved(repo: Repo, nnn: str) -> dict:
         "NOT_APPROVED",
         f"{nnn}: the challenge statement is not approved",
         hint="proving an unreviewed statement wastes the budget",
-        fix=f"ctrl approve {nnn} --by <name>",
+        fix=f"erdos approve {nnn} --by <name>",
         exit_code=EXIT_NEEDS_HUMAN,
     )
 
@@ -706,13 +706,13 @@ def spark_prove(
     repo = Repo.find()
     nnn = nnn_of(nnn)
     if reasoning is not None and reasoning not in ("high", "none"):
-        raise usage(f"--reasoning {reasoning!r}: use high or none", fix=f"ctrl spark prove {nnn}")
+        raise usage(f"--reasoning {reasoning!r}: use high or none", fix=f"erdos spark prove {nnn}")
     env = {}
     if reasoning is not None:
         env["PROVE_REASONING"] = reasoning
     if max_turns is not None:
         if max_turns < 1:
-            raise usage("--max-turns must be ≥ 1", fix=f"ctrl spark prove {nnn}")
+            raise usage("--max-turns must be ≥ 1", fix=f"erdos spark prove {nnn}")
         env["PROVE_MAX_TURNS"] = str(max_turns)
     _require_approved(repo, nnn)
     progress(f"rsync → {spark.host()}")
@@ -734,7 +734,7 @@ def spark_prove(
             "env": env,
         },
         lambda d: kv([("job", d["job"]), ("model", d["model"])]),
-        next=[f"ctrl spark log {job} -f", f"ctrl spark fetch {job}"],
+        next=[f"erdos spark log {job} -f", f"erdos spark fetch {job}"],
     )
 
 
@@ -765,7 +765,7 @@ def spark_solve(
     finish(
         {"job": job, "nnn": nnn, "script": script, "args": list(args or []), "env": env},
         lambda d: kv([("job", d["job"]), ("script", d["script"])]),
-        next=[f"ctrl spark log {job} -f", f"ctrl spark fetch {job}"],
+        next=[f"erdos spark log {job} -f", f"erdos spark fetch {job}"],
     )
 
 
@@ -775,8 +775,8 @@ def spark_jobs() -> None:
     rows = spark.jobs()
     running = [r for r in rows if r.get("status") in spark.RUNNING]
     done = [r for r in rows if r.get("status") not in spark.RUNNING]
-    nxt = [f"ctrl spark log {r['job']} -f" for r in running[:1]]
-    nxt += [f"ctrl spark fetch {r['job']}" for r in done[:1]]
+    nxt = [f"erdos spark log {r['job']} -f" for r in running[:1]]
+    nxt += [f"erdos spark fetch {r['job']}" for r in done[:1]]
 
     def render(d):
         if not d["jobs"]:
@@ -799,34 +799,34 @@ def spark_jobs() -> None:
 
 @command("log", spark_app)
 def spark_log(
-    job: str = typer.Argument(..., help="Job id (ctrl spark jobs)."),
+    job: str = typer.Argument(..., help="Job id (erdos spark jobs)."),
     follow: bool = typer.Option(False, "-f", "--follow", help="Keep streaming."),
     lines: int = typer.Option(200, "-n", "--lines", help="Lines from the end."),
 ) -> None:
     """Tail a job's log.txt (tools/spark/log.sh; -f returns when the job ends)."""
     job = spark.check_job_id(job)
     if follow and ui.json:
-        raise usage("-f streams raw text; drop --json", fix=f"ctrl spark log {job} -f")
+        raise usage("-f streams raw text; drop --json", fix=f"erdos spark log {job} -f")
     cp = spark.log(job, lines, follow)
     if follow:
-        finish({"job": job}, None, next=[f"ctrl spark fetch {job}"])
+        finish({"job": job}, None, next=[f"erdos spark fetch {job}"])
         return
     finish(
         {"job": job, "log": cp.stdout or ""},
         lambda d: Text(d["log"].rstrip("\n")),
-        next=[f"ctrl spark log {job} -f", f"ctrl spark fetch {job}"],
+        next=[f"erdos spark log {job} -f", f"erdos spark fetch {job}"],
     )
 
 
 @command("fetch", spark_app)
-def spark_fetch(job: str = typer.Argument(..., help="Job id (ctrl spark jobs).")) -> None:
+def spark_fetch(job: str = typer.Argument(..., help="Job id (erdos spark jobs).")) -> None:
     """Pull a job's outputs/ into work/NNN/candidates/JOB/ (never into erdos/)."""
     repo = Repo.find()
     job = spark.check_job_id(job)
     meta = spark.meta(job)
     if "nnn" not in meta:
         raise CtrlError(
-            "REMOTE_FAILED", f"meta.json for job {job} has no nnn", fix=f"ctrl spark log {job}"
+            "REMOTE_FAILED", f"meta.json for job {job} has no nnn", fix=f"erdos spark log {job}"
         )
     nnn = nnn_of(str(meta["nnn"]))
     dest = repo.workdir(nnn) / "candidates" / job
@@ -846,13 +846,13 @@ def spark_fetch(job: str = typer.Argument(..., help="Job id (ctrl spark jobs).")
     rows = [("job", job), ("status", str(meta.get("status", "?"))), ("into", data["dest"])]
     rows += [("files", str(len(files))), ("candidate", candidate or "none (no final.lean)")]
     warnings = [
-        "candidates are untrusted: `ctrl promote` copies final.lean into erdos/ErdosLab only if "
-        "the job left Challenge/ untouched, then runs ctrl check --fast and undoes a failure"
+        "candidates are untrusted: `erdos promote` copies final.lean into erdos/ErdosLab only if "
+        "the job left Challenge/ untouched, then runs erdos check --fast and undoes a failure"
     ]
-    nxt = [f"ctrl promote {nnn} {job}", f"ctrl check {nnn} --fast"] if candidate else []
+    nxt = [f"erdos promote {nnn} {job}", f"erdos check {nnn} --fast"] if candidate else []
     if meta.get("status") in spark.RUNNING:
         warnings.append(f"job {job} is still {meta.get('status')}; fetch again when it ends")
-        nxt = [f"ctrl spark log {job} -f"] + nxt
+        nxt = [f"erdos spark log {job} -f"] + nxt
     finish(data, lambda d: kv(rows), next=nxt or [f"ls {data['dest']}"], warnings=warnings)
 
 
@@ -877,11 +877,11 @@ def main(argv: list[str] | None = None) -> None:
     words = [a for a in rest if not a.startswith("-")][:2]
     ui.command = " ".join(words if words[:1] == ["spark"] else words[:1])
     try:
-        app(args=rest, prog_name="ctrl", standalone_mode=False)
+        app(args=rest, prog_name="erdos", standalone_mode=False)
     except NoArgsIsHelpError:  # typer already printed the help
         raise SystemExit(0) from None
     except UsageError as exc:
-        fail(usage(exc.format_message(), fix="ctrl --help"))
+        fail(usage(exc.format_message(), fix="erdos --help"))
     except typer.Abort:
         raise SystemExit(130) from None
     except typer.Exit as exc:

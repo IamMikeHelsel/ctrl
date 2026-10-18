@@ -12,8 +12,8 @@ import json
 import re
 from pathlib import Path
 
-from ctrl import fc
-from ctrl.repo import Repo
+from erdos_lab import fc
+from erdos_lab.repo import Repo
 
 PHASES = ("draft", "approved", "proving", "checked", "packaged")
 
@@ -63,7 +63,7 @@ def approval(repo: Repo, nnn: str, status: dict) -> dict:
 
 
 def summary(repo: Repo, nnn: str) -> dict:
-    """One row for ``ctrl status``: the phase on disk, what the files say, and the next step."""
+    """One row for ``erdos status``: the phase on disk, what the files say, and the next step."""
     st = load(repo, nnn)
     phase = st.get("phase", "draft")
     appr = approval(repo, nnn, st)
@@ -74,31 +74,31 @@ def summary(repo: Repo, nnn: str) -> dict:
     nxt: list[str] = []
     if not repo.challenge(nnn).exists() or not sol.exists():
         notes.append("challenge or solution file missing")
-        nxt = [f"ctrl new {nnn} --force"]
+        nxt = [f"erdos new {nnn} --force"]
     elif appr["approved"] and not appr["ok"]:
         notes.append(appr["detail"])
-        nxt = [f"git diff erdos/Challenge/Erdos{nnn}.lean", f"ctrl approve {nnn} --by <name>"]
+        nxt = [f"git diff erdos/Challenge/Erdos{nnn}.lean", f"erdos approve {nnn} --by <name>"]
     elif not appr["approved"]:
         notes.append("waiting for a human to review the challenge statement")
-        nxt = [f"ctrl approve {nnn} --by <name>"]
+        nxt = [f"erdos approve {nnn} --by <name>"]
     elif phase == "checked" and not stale:
         if not st.get("last_spark_check", {}).get("ok"):
-            nxt = [f"ctrl spark check {nnn}"]
+            nxt = [f"erdos spark check {nnn}"]
         elif not (repo.workdir(nnn) / "disclosure.md").exists():
             notes.append(f"write work/{nnn}/disclosure.md")
             nxt = [f"$EDITOR work/{nnn}/disclosure.md"]
         else:
-            nxt = [f"ctrl package {nnn}"]
+            nxt = [f"erdos package {nnn}"]
     elif has_sorry(sol):
         notes.append("solution still has sorry")
-        nxt = [f"ctrl spark prove {nnn}", f"ctrl check {nnn} --fast"]
+        nxt = [f"erdos spark prove {nnn}", f"erdos check {nnn} --fast"]
     elif stale or not last:
         notes.append("solution changed since the last check" if stale else "never checked")
-        nxt = [f"ctrl check {nnn}"]
+        nxt = [f"erdos check {nnn}"]
     else:
         failed = [k for k in ("build", "tokens", "axioms", "binding", "hash") if not last.get(k)]
         notes.append("last check failed: " + ", ".join(failed) if failed else "last check failed")
-        nxt = [f"ctrl check {nnn}"]
+        nxt = [f"erdos check {nnn}"]
     return {
         "nnn": nnn,
         "phase": phase,

@@ -10,9 +10,9 @@ from __future__ import annotations
 import json
 from datetime import UTC, datetime
 
-from ctrl import proc, state
-from ctrl.errors import EXIT_FAILED_CHECK, EXIT_NEEDS_HUMAN, CtrlError
-from ctrl.repo import Repo
+from erdos_lab import proc, state
+from erdos_lab.errors import EXIT_FAILED_CHECK, EXIT_NEEDS_HUMAN, CtrlError
+from erdos_lab.repo import Repo
 
 CHECKS = (
     ("build", "LEAN_BUILD_FAILED"),
@@ -53,7 +53,7 @@ def run_local(repo: Repo, nnn: str, fast: bool) -> dict:
         raise CtrlError(
             "TOOL_MISSING",
             "erdos/scripts/check.sh is missing",
-            hint="ctrl check runs checks 1-4 through that script",
+            hint="erdos check runs checks 1-4 through that script",
             fix="git status erdos/scripts",
         )
     cmd = ["bash", "scripts/check.sh", nnn] + (["--fast"] if fast else [])
@@ -80,10 +80,10 @@ def script_errors(cp, name: str) -> None:
             "TOOL_MISSING",
             f"{name}: {detail or 'lake not found'}",
             hint="the Lean toolchain is not usable here",
-            fix="ctrl doctor --no-remote",
+            fix="erdos doctor --no-remote",
         )
     raise CtrlError(
-        "BAD_USAGE", f"{name} rejected its arguments: {detail}", exit_code=2, fix="ctrl --help"
+        "BAD_USAGE", f"{name} rejected its arguments: {detail}", exit_code=2, fix="erdos --help"
     )
 
 
@@ -143,7 +143,7 @@ def error_for(rows: list[dict]) -> CtrlError | None:
             fix = (
                 f"git diff erdos/Challenge/Erdos{nnn}.lean   # restore it, or a human re-approves"
                 if code == "CHALLENGE_DRIFT"
-                else f"ctrl check {nnn} --fast"
+                else f"erdos check {nnn} --fast"
             )
             return CtrlError(
                 code,
@@ -159,7 +159,7 @@ def error_for(rows: list[dict]) -> CtrlError | None:
                 "NOT_APPROVED",
                 f"{nnn}: the challenge statement is not approved",
                 hint="a human must review erdos/Challenge/Erdos" + nnn + ".lean first",
-                fix=f"ctrl approve {nnn} --by <name>",
+                fix=f"erdos approve {nnn} --by <name>",
                 exit_code=EXIT_NEEDS_HUMAN,
             )
     return None

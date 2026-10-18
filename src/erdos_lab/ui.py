@@ -1,9 +1,9 @@
 """Terminal UI: one result, three renderings.
 
 * **rich**: a human at a terminal. Color and tables.
-* **plain**: pipes, CI, and agents (chosen when ``CLAUDECODE`` or ``CTRL_AGENT`` is set, or
+* **plain**: pipes, CI, and agents (chosen when ``CLAUDECODE`` or ``ERDOS_AGENT`` is set, or
   stdout is not a TTY). Same content, no color, stable line-oriented layout.
-* **json**: ``--json`` or ``CTRL_JSON=1``. Exactly one envelope on stdout:
+* **json**: ``--json`` or ``ERDOS_JSON=1``. Exactly one envelope on stdout:
   ``{"ok", "command", "data", "warnings", "next", "error"}``. Progress goes to stderr.
 
 Every command ends with ``finish(data, render, next=[...])``: the exact commands that move
@@ -23,7 +23,7 @@ from rich.console import Console, Group, RenderableType
 from rich.table import Table
 from rich.text import Text
 
-from ctrl.errors import CtrlError
+from erdos_lab.errors import CtrlError
 
 ACCENT = "#5fd7d7"
 OK = "#87d787"
@@ -31,7 +31,7 @@ WARN = "#ffd75f"
 BAD = "#ff8787"
 DIM = "#808080"
 
-AGENT_ENV = ("CLAUDECODE", "CLAUDE_CODE", "CTRL_AGENT")
+AGENT_ENV = ("CLAUDECODE", "CLAUDE_CODE", "ERDOS_AGENT")
 
 
 @dataclass
@@ -55,7 +55,7 @@ ui = UIState()
 
 def configure(*, json_mode: bool = False, plain: bool = False) -> UIState:
     agent = any(os.environ.get(k) for k in AGENT_ENV)
-    if json_mode or os.environ.get("CTRL_JSON") == "1":
+    if json_mode or os.environ.get("ERDOS_JSON") == "1":
         mode = "json"
     elif plain or agent or not sys.stdout.isatty():
         mode = "plain"

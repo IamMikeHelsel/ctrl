@@ -41,7 +41,7 @@ def test_check_passes_only_when_approved_and_all_green(repo, run, fake):
     code, env = run("check", "196")
     assert code == 3 and env["error"]["code"] == "NOT_APPROVED"
     assert env["data"]["results"][0]["failed"] == ["NOT_APPROVED"]
-    assert env["next"] == ["ctrl approve 196 --by <name>"]
+    assert env["next"] == ["erdos approve 196 --by <name>"]
 
     run("approve", "196", "--by", "mike")
     code, env = run("check", "196")
@@ -49,7 +49,7 @@ def test_check_passes_only_when_approved_and_all_green(repo, run, fake):
     [row] = env["data"]["results"]
     assert set(row) >= {"nnn", "build", "tokens", "axioms", "binding", "hash"}
     assert all(row[k]["ok"] for k in ("build", "tokens", "axioms", "binding", "hash"))
-    assert env["next"] == ["ctrl spark check 196"]
+    assert env["next"] == ["erdos spark check 196"]
     cmd, kw = fake.of("bash")[-1]
     assert cmd == ["bash", "scripts/check.sh", "196"] and kw["cwd"] == repo / "erdos"
     st = status(repo)
@@ -147,7 +147,7 @@ def test_check_usage(repo, run, fake):
     code, env = run("check")
     assert code == 2 and env["error"]["code"] == "BAD_USAGE"
     code, env = run("check", "196")
-    assert code == 2 and env["error"]["fix"] == "ctrl new 196"
+    assert code == 2 and env["error"]["fix"] == "erdos new 196"
 
 
 # ---------------------------------------------------------------- new / approve
@@ -183,11 +183,11 @@ def test_new_writes_challenge_solution_work_and_imports(repo, run):
         "fc_pin": PIN,
         "axiom_tier": "default",
     }
-    assert env["next"] == ["ctrl approve 196 --by <name>"]
+    assert env["next"] == ["erdos approve 196 --by <name>"]
 
     code, env = run("new", "196")
     assert code == 1 and env["error"]["code"] == "EXISTS"
-    assert env["error"]["fix"] == "ctrl new 196 --force"
+    assert env["error"]["fix"] == "erdos new 196 --force"
     code, env = run("new", "196", "--force")
     assert code == 0
     assert (repo / "erdos/Challenge.lean").read_text().count("import Challenge.Erdos196") == 1
@@ -196,7 +196,7 @@ def test_new_writes_challenge_solution_work_and_imports(repo, run):
 def test_new_with_several_theorems_needs_part(repo, run):
     code, env = run("new", "895")
     assert code == 2 and env["error"]["code"] == "BAD_USAGE"
-    assert env["error"]["fix"] == "ctrl new 895 --part erdos_895"
+    assert env["error"]["fix"] == "erdos new 895 --part erdos_895"
     assert len(env["data"]["fc_theorems"]) == 3
     assert not (repo / "erdos/Challenge/Erdos895.lean").exists()
     code, env = run("new", "895", "--part", "eighteen")
@@ -226,7 +226,7 @@ def test_approve_records_line_then_hash(repo, run):
     run("new", "196")
     code, env = run("approve", "196")
     assert code == 3 and env["error"]["code"] == "NOT_APPROVED"
-    assert env["error"]["fix"] == "ctrl approve 196 --by <name>"
+    assert env["error"]["fix"] == "erdos approve 196 --by <name>"
 
     code, env = run("approve", "196", "--by", "mike")
     assert code == 0
@@ -238,7 +238,7 @@ def test_approve_records_line_then_hash(repo, run):
     )
     assert env["data"]["hash"] == sha(chal) == status(repo)["challenge_sha256"]
     assert status(repo)["phase"] == "approved"
-    assert env["next"][0] == "ctrl check 196 --fast"
+    assert env["next"][0] == "erdos check 196 --fast"
 
     code, env = run("approve", "196", "--by", "mike")  # idempotent
     assert code == 0 and env["data"]["hash"] == sha(chal) and env["warnings"]
@@ -274,30 +274,30 @@ def test_envelope_shape_is_stable(repo, run):
 def test_status_derives_next_steps_from_files(repo, run, fake):
     code, env = run("status")
     assert code == 0 and env["data"]["problems"] == []
-    assert env["next"] == ["ctrl targets --tab formalize --top 10"]
+    assert env["next"] == ["erdos targets --tab formalize --top 10"]
 
     run("new", "196")
     code, env = run("status")
     [p] = env["data"]["problems"]
-    assert p["phase"] == "draft" and p["next"] == ["ctrl approve 196 --by <name>"]
+    assert p["phase"] == "draft" and p["next"] == ["erdos approve 196 --by <name>"]
 
     run("approve", "196", "--by", "mike")
     [p] = run("status")[1]["data"]["problems"]
-    assert p["phase"] == "approved" and p["next"][0] == "ctrl spark prove 196"
+    assert p["phase"] == "approved" and p["next"][0] == "erdos spark prove 196"
 
     sol = repo / "erdos/ErdosLab/Erdos196.lean"
     sol.write_text(sol.read_text().replace("sorry", "exact proof_of_196"))
     [p] = run("status")[1]["data"]["problems"]
-    assert p["next"] == ["ctrl check 196"] and "never checked" in p["notes"]
+    assert p["next"] == ["erdos check 196"] and "never checked" in p["notes"]
 
     checksh(fake)
     run("check", "196")
     [p] = run("status")[1]["data"]["problems"]
-    assert p["phase"] == "checked" and p["next"] == ["ctrl spark check 196"]
+    assert p["phase"] == "checked" and p["next"] == ["erdos spark check 196"]
 
     sol.write_text(sol.read_text() + "\n-- golfed\n")
     [p] = run("status")[1]["data"]["problems"]
-    assert p["stale"] and p["next"] == ["ctrl check 196"]
+    assert p["stale"] and p["next"] == ["erdos check 196"]
 
 
 def test_targets_filter_and_sort(repo, run):
@@ -309,7 +309,7 @@ def test_targets_filter_and_sort(repo, run):
 
     code, env = run("targets", "--tab", "formalize", "--top", "3")
     assert [r["erdos_no"] for r in env["data"]["rows"]] == [834, 895, 346]
-    assert env["next"] == ["ctrl new 834"]
+    assert env["next"] == ["erdos new 834"]
 
     code, env = run("targets", "--prize", "--min-fit", "4", "--top", "5")
     rows = env["data"]["rows"]
@@ -387,8 +387,8 @@ def test_prove_needs_approval_then_returns_job(repo, run, fake):
     st = status(repo)
     assert st["phase"] == "proving" and st["jobs"][0]["job"] == "20261017-196-prove-1"
     assert env["next"] == [
-        "ctrl spark log 20261017-196-prove-1 -f",
-        "ctrl spark fetch 20261017-196-prove-1",
+        "erdos spark log 20261017-196-prove-1 -f",
+        "erdos spark fetch 20261017-196-prove-1",
     ]
 
 
@@ -484,7 +484,7 @@ def test_jobs_log_fetch(repo, run, fake):
     spark_ok(fake, itemized=">f+++++++++ final.lean\n", ssh=remote(jobs=jobs, meta=meta))
     code, env = run("spark", "jobs")
     assert code == 0 and [r["job"] for r in env["data"]["jobs"]] == ["j2", "j1"]
-    assert env["next"] == ["ctrl spark log j2 -f", "ctrl spark fetch j1"]
+    assert env["next"] == ["erdos spark log j2 -f", "erdos spark fetch j1"]
 
     code, env = run("spark", "log", "j1", "-n", "50")
     assert code == 0 and env["data"]["log"] == "line1\n"
@@ -504,7 +504,7 @@ def test_jobs_log_fetch(repo, run, fake):
     assert code == 0 and env["data"]["dest"] == "work/196/candidates/j1"
     assert env["data"]["files"] == ["final.lean"]
     assert env["data"]["candidate"] == "work/196/candidates/j1/final.lean"
-    assert env["next"] == ["ctrl promote 196 j1", "ctrl check 196 --fast"]
+    assert env["next"] == ["erdos promote 196 j1", "erdos check 196 --fast"]
     cmd, _ = fake.of("rsync")[-1]
     assert cmd[-2:] == ["sparky.local:lean-work/jobs/j1/outputs/", f"{dest}/"]
     assert "fetched job `j1`" in (repo / "work/196/log.md").read_text()
@@ -533,7 +533,7 @@ def test_promote_copies_then_checks(repo, run, fake):
     sol = (repo / "erdos/ErdosLab/Erdos196.lean").read_text()
     assert "decide" in sol
     assert fake.of("bash")[-1][0] == ["bash", "scripts/check.sh", "196", "--fast"]
-    assert env["next"][0] == "ctrl check 196"
+    assert env["next"][0] == "erdos check 196"
 
 
 def test_promote_restores_on_failed_check(repo, run, fake):
@@ -557,7 +557,7 @@ def test_promote_refuses_challenge_edits_and_missing_files(repo, run, fake):
     assert sol.read_text() == before and not fake.of("bash")
     candidate(repo, "nofinal", final=None)
     code, env = run("promote", "196", "nofinal")
-    assert code == 2 and env["error"]["fix"] == "ctrl spark fetch nofinal"
+    assert code == 2 and env["error"]["fix"] == "erdos spark fetch nofinal"
 
 
 # ---------------------------------------------------------------- doctor
@@ -582,7 +582,7 @@ def _fake_home(repo, tmp_path):
 def test_doctor_local_and_remote(repo, run, fake, tmp_path, monkeypatch):
     fake.handlers["elan"] = lambda cmd, kw: (0, "elan 4.1.2\n", "")
     fake.handlers["uv"] = lambda cmd, kw: (0, "uv 0.13.1\n", "")
-    monkeypatch.setattr("ctrl.proc.which", _which(tmp_path))
+    monkeypatch.setattr("erdos_lab.proc.which", _which(tmp_path))
     code, env = run("doctor", "--no-remote")
     names = {c["name"]: c for c in env["data"]["checks"]}
     assert code == 1 and env["error"]["code"] == "TOOL_MISSING"
@@ -640,7 +640,7 @@ def _which(tmp_path):
 def test_real_doctor_remote():
     import subprocess
 
-    cp = subprocess.run(["uv", "run", "ctrl", "doctor", "--json"], capture_output=True, text=True)
+    cp = subprocess.run(["uv", "run", "erdos", "doctor", "--json"], capture_output=True, text=True)
     env = json.loads(cp.stdout)
     assert set(env) == ENVELOPE_KEYS
     assert any(c["where"] == "spark" for c in env["data"]["checks"])

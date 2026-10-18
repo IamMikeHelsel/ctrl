@@ -11,7 +11,7 @@ Every declaration in `ctrl` is 100% `sorry`-free, contains zero custom axioms or
 
 ---
 
-## Erdős lab: bounty formalization pipeline (`erdos/`, `ctrl` CLI)
+## Erdős lab: bounty formalization pipeline (`erdos/`, `erdos` CLI)
 
 A separate Lake project, [`erdos/`](erdos/), holds machine-checked solutions to Erdős problems.
 It pins DeepMind's Formal Conjectures (`d9ce556`, Lean v4.33.1) so challenge statements are copied
@@ -23,10 +23,10 @@ uv-managed CLI checks the build, forbidden tokens, axioms, the `Expr.const` bind
 statement, and that the challenge hasn't changed since approval:
 
 ```sh
-uv sync && uv run ctrl doctor          # Mac + DGX Spark toolchains
-uv run ctrl targets --tab formalize    # scored targets (data/erdos/)
-uv run ctrl check 834                  # first result: Erdős #834 part ii, verified, awaiting approval
-uv run ctrl spark prove NNN            # local Leanstral prover on the Spark
+uv sync && uv run erdos doctor          # Mac + DGX Spark toolchains
+uv run erdos targets --tab formalize    # scored targets (data/erdos/)
+uv run erdos check --all               # verified so far: Erdős #261, #834 (part ii), #931
+uv run erdos spark prove NNN            # local Leanstral prover on the Spark
 ```
 
 Docs: [docs/erdos-lab/](docs/erdos-lab/README.md) covers the architecture, the CLI contract, the

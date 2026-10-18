@@ -1,4 +1,4 @@
-# Erdős lab rules (erdos/, work/, ctrl CLI)
+# Erdős lab rules (erdos/, work/, erdos CLI)
 
 ctrl produces machine-checked Lean proofs and the evidence that they prove the right statement.
 **Faithfulness is the product.** A proof of a slightly different statement is worth nothing.
@@ -6,9 +6,9 @@ ctrl produces machine-checked Lean proofs and the evidence that they prove the r
 ## Hard rules
 - **Never edit a file under `erdos/Challenge/` after it is approved.** The approval marker is the
   `-- approved-by:` line. Challenge files hold the frozen statement as a `def … : Prop`. Changing one
-  requires a human, with `ctrl approve NNN --by <name>` after review.
+  requires a human, with `erdos approve NNN --by <name>` after review.
 - Solutions prove `theorem solution : Challenge.ErdosNNN.statement` (the `Prop` itself, not a
-  restatement). `ctrl check` enforces this.
+  restatement). `erdos check` enforces this.
 - In `erdos/ErdosLab/`, never use `sorry`, `admit`, `axiom`, `opaque`, `implemented_by`, `native_decide`,
   `set_option maxHeartbeats` above 400000, or `set_option debug.*`. `#print axioms solution` must show
   only `propext`, `Classical.choice`, `Quot.sound`.
@@ -32,8 +32,8 @@ ctrl produces machine-checked Lean proofs and the evidence that they prove the r
   raise `CtrlError(code, message, hint, fix, exit_code)`. Keep JSON envelopes, error codes and exit
   codes stable. `tests/test_cli.py` pins them.
 - Per-problem state lives in files under `work/NNN/` (`plan.md`, `log.md`, `certs/`, `status.json`
-  written by the CLI). `ctrl status` derives next steps from files. Don't add hidden state.
-- Remote work goes through `ctrl spark …`, which runs the scripts in `tools/spark/` over SSH.
+  written by the CLI). `erdos status` derives next steps from files. Don't add hidden state.
+- Remote work goes through `erdos spark …`, which runs the scripts in `tools/spark/` over SSH.
   Don't hand-roll ssh in other places.
 - Order tests by how likely they are to catch a real bug: statement binding and audit first, then
   CLI contract, then plumbing. Keep the Python suite under ~5 s, and don't call Lean or SSH in unit
@@ -42,6 +42,6 @@ ctrl produces machine-checked Lean proofs and the evidence that they prove the r
 ## Before handing off
 ```sh
 uv run ruff check . && uv run ruff format --check . && uv run pytest -q
-uv run ctrl check --all        # every solution builds, audits clean, binds to its challenge
+uv run erdos check --all        # every solution builds, audits clean, binds to its challenge
 ```
 Record new default decisions in docs/erdos-lab/decisions.md.

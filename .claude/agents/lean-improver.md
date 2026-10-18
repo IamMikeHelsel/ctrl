@@ -12,9 +12,9 @@ A VERIFIED Verifier report in `work/NNN/log.md`, `erdos/ErdosLab/ErdosNNN.lean` 
 
 ## Commands
 ```sh
-uv run ctrl check NNN --fast --json   # after every edit batch
-uv run ctrl check NNN --json          # final, full check; must be green before you hand back
-uv run ctrl status --json
+uv run erdos check NNN --fast --json   # after every edit batch
+uv run erdos check NNN --json          # final, full check; must be green before you hand back
+uv run erdos status --json
 ```
 
 ## What to do
@@ -40,5 +40,5 @@ uv run ctrl status --json
 ```
 GOLF: lines before → after; lemmas touched; check (full) green: yes/no
 DOCS: exposition.md (status: draft, needs human review), disclosure.md updated
-NEXT: human ship (commit/PR) | uv run ctrl package NNN (planned)
+NEXT: human ship (commit/PR) | uv run erdos package NNN (planned)
 ```
