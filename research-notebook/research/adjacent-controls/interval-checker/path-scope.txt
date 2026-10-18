@@ -1,0 +1,30 @@
+Between-sample proof checkpoint — 2026-10-17
+
+BetweenSample.lean and PilotPath.lean compile. Their seven public theorem
+closures use only propext, Classical.choice and Quot.sound. Both .olean files
+are ready for import. Source and evidence hashes are in path-manifest.json.
+No existing source was edited. No new kernel replay or full rebuild was run.
+
+Generic result: for a held command |u|<=U and initial bounds |x|<=X, |v|<=V,
+|a|<=A, positive fixed r, elapsed s>=0 and r*s<=1,
+  |position(s)| <= X+s*V+U*s^2/2+(A+U)*s^2.
+The proof uses the existing exact exponential-to-polynomial enclosure.
+Post-clamp disturbance is explicit: |clip_1(request)+d|<=1+D when |d|<=D.
+Thus the generic lemma does not silently assume that the applied command is
+bounded by one when a nonzero disturbance follows clipping.
+
+All26 pilot endpoint boxes are checked inside x in [.9,1.5], v/a in [-1,1].
+For every initial state in the pilot box and every fixed r in [.9,.9125],
+PilotPath.segment_safe proves |position|<=2 at every elapsed real s in [0,.05]
+of every step n<25. The pilot prefix uses zero errors and clipped own-sample
+feedback. Both ends of each hold are included. Safety is derived from a new
+whole-hold estimate, not inferred merely from safe endpoints.
+
+PilotPath.actual_segment_safe transfers the result to any continuous trajectory
+satisfying the actual own-sample ODE contract, using existing uniqueness and
+closed-segment correspondence. No equality to the chosen numerical trace is
+assumed. Parent integration owns the switch to arbitrary admissible future
+sampling and held errors after the25-step prefix.
+
+Work stopped after this successful checkpoint at the shared budget boundary.
+No additional proofs, full-cover run or repeated build is pending here.

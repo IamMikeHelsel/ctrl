@@ -1,0 +1,38 @@
+CONVENTIONS — proved by the accompanying Lean modules
+
+Model: V = Fin 14 -> R, with the ordered coordinate basis b_0,...,b_13.
+Metric: B(b_i,b_j)=d_i delta_ij, with d_i=+1 for 0<=i<7 and d_i=-1 for 7<=i<14.
+Orientation: vol(b_0 wedge ... wedge b_13)=+1.
+This is a declared local mathematical model. It does not select GU Phi tensors.
+
+For a k-subset I, e_I is Mathlib's genuine exterior basis vector with its indices
+in increasing order. mu(I)=product_{i in I}d_i. eps(I) is the sign of the
+permutation formed by the increasing block I followed by its increasing complement.
+The coefficient labels use subsetIndexEquiv, a named finite equivalence. Its
+numeric enumeration is not claimed to be lexicographic.
+
+S convention: vol(alpha wedge S_k(beta)) = B_k(alpha,beta).
+H convention: B_(14-k)(H_k(alpha),beta) = vol(alpha wedge beta).
+Mathlib's exteriorPower.hodgeStar uses H. The proof defines H by that exact map.
+
+Proved formulas:
+  S_k(e_I) = eps(I) mu(I) e_(I complement)
+  H_k(e_I) = eps(I) mu(I complement) e_(I complement)
+  product_i d_i = -1
+  H_k = -S_k
+  H_12(H_2(x)) = -x for every x in Lambda^2 V
+  H_2(H_12(y)) = -y for every y in Lambda^12 V
+  S_12(S_2(x)) = -x for every x in Lambda^2 V
+
+Exact checks:
+  I={0,1}: eps=+1, mu=+1, S coefficient=+1, H coefficient=-1.
+  I={0,7}: eps=+1, mu=-1, S coefficient=-1, H coefficient=+1.
+The degree-2 form e_{0,1} is proved nonzero. Its H square is proved unequal to itself.
+
+Interface:
+  mathlibStar2 = H coefficient array.
+  conventionalStar2 = S coefficient array = -mathlibStar2.
+The frozen interface accepts both arrays by its exact existing type.
+
+No connection or torsion operation appears. These results do not choose either
+of the earlier global gauge/torsion sign repairs.

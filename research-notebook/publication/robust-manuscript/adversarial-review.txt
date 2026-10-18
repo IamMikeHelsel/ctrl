@@ -1,0 +1,274 @@
+Skeptical publication review — 17 October 2026
+
+Verdict: major revision before submission. A narrow ARCH benchmark or experience
+report is credible; the current evidence does not support a new-control-theory
+paper, a general control synthesis tool, or an engineering safety certification.
+I found no blocking mathematical/model mismatch in the inspected main theorem.
+The principal blockers are demonstrated usefulness and submission packaging.
+This is an AI-agent reviewer judgment, not an acceptance-probability estimate or
+independent human refereeing. Confidence is stronger in the inspected contract
+alignment than in novelty or eventual venue reception.
+
+Review scope and evidence
+
+Read main.tex, review.txt, both requested verification manifests, the normalized
+and physical execution-contract sources, the step-scaled perturbation interface,
+and relevant uncertainty theorem declarations. Checked live primary ARCH27 and
+related-work pages. Did not change Lean or manuscript sources and did not rerun
+a full Lean build. This file is the only written deliverable. Main-text line
+references and hash comparisons refer to the initial inspected snapshot; the
+concurrent local benchmark-contract repair is assessed at the end of this review.
+
+The reviewed manuscript SHA256 is
+e98abf3fecc9154f7e05422cddf3dcd46d70fb443e116f886f5da74c624083c1.
+Its verification record reports six pages; current TeX/PDF hashes match that
+record. All 92 source hashes in robust-project-verification.json and all 105
+snapshot-file hashes in robust-execution-fresh-replay.json match the inspected
+local project. The latter records 63 project modules, 830 audited declarations,
+exit status 0, no unexpected axioms, no original project build-product reuse,
+and 104.14 seconds for check.sh. All six listed durable replay artifacts exist
+and match their recorded hashes. Thus the earlier review's concern about replay
+of an older snapshot is resolved for this snapshot. These are verified records
+and hash bindings, not a fresh build performed by this reviewer.
+
+1. Mathematical/model claims: no identified blocker, with precise boundaries
+
+The execution statement is substantive. ExecutionUniqueness.IsExecution requires
+continuity, the initial state, and derivatives on open holds with feedback taken
+from f(sampleTime h n). It does not assume equality to the analytic construction
+or the desired invariant. constructed_isExecution and execution_eq_state supply
+existence and correspondence separately. held_ode_unique uses continuity at the
+endpoints and interior derivatives, so switching times do not hide a derivative
+assumption. The positive dwell lower bound supplies global clock coverage.
+
+The manuscript's energy conclusion follows by composing execution_eq_state with
+UncertainTravel.state_invariant; the position conclusion is exposed directly as
+execution_travel_limit. The normalized source permits a combined error of 1/90,
+so the paper's 1/100 statement is weaker. PhysicalExecutionUniqueness explicitly
+normalizes arbitrary physical trajectories, including their own sample feedback
+and time derivatives. Its final theorem uses the stated positive tau0, tau, U,
+fixed ratio interval, nominal controller gains, and U/100 error budget.
+
+Do not relax these boundaries in a revised abstract or submission summary:
+
+* One fixed r is quantified across plants. Neither sample-varying nor continuously
+  varying lag is established. Abstract line 19 says "while the actual lag varies";
+  change this to "across the admitted fixed-lag plants" to remove a temporal
+  ambiguity. The body is already explicit, so this is a wording repair rather
+  than an identified false theorem.
+* Errors are held scalars in the specified command channels, and their magnitudes
+  share one budget. A continuous-time bounded external force/jerk is not covered
+  merely by having the same numerical bound. The post-clamp error also means the
+  total drive is not constrained by the clamp's unit limit.
+* The full-state initial ellipsoid is essential. The result is not a safe-stop
+  controller for every initial position inside the travel interval.
+* Uniqueness fixes the same prescribed h, e, d sequences. This does not alone
+  prove existence/uniqueness of a controller with an arbitrary state-dependent
+  error mechanism. Universal sequence safety is still meaningful.
+* The rate interval is not a symmetric plus/minus-ten-percent time-constant
+  interval. The physical theorem and its displayed reciprocal interval are right.
+
+The sector obstruction is correctly qualified at lines 180–190. It rejects this
+P for an enlarged independent sector family; it does not show failure of the
+actual clipped controller. The proposed obstruction vector is outside the safe
+ellipsoid and alpha=1/4 cannot arise from the nominal clipping law inside it.
+Calling it a "certificate abstraction ablation" would be more exact than using
+it as evidence of plant difficulty or of an improved controller.
+
+The response ablation is also appropriately limited. The coarse norm constant's
+derivation is an arithmetic diagnostic; UncertaintyScope proves the displayed
+budget comparisons, not the entire coarse-norm argument. Preserve that sentence
+at line 204. Neither failing sufficient inequality proves unsafety, and neither
+passing constant is optimal. The response bound and step-scaled Young argument
+support a useful compositional proof, but are not themselves new control theory.
+
+2. Contribution weaknesses that can cause a rejection despite correct proofs
+
+A. Why this benchmark? The paper specifies a small synthetic third-order axis
+well, but does little to explain why its exact combination of saturation, fixed
+lag uncertainty, held errors and jitter is representative or difficult for
+existing verification methods. The physical-unit example changes units; it is
+not independent application evidence. State plainly that this is an academic
+benchmark, then identify the verification obligations it is designed to expose.
+Do not imply that numerical constants were motivated by measured robot limits.
+
+B. Reuse is asserted more than demonstrated. The generic matrix invariant and
+Bernstein interfaces are real reusable components. The twelve-vertex bridge,
+exact exponential flow and execution uniqueness development are specialized.
+A reviewer needs to know exactly what a second user supplies: P and polynomial
+matrices, rational certificates, a model identity, an error response estimate,
+and a clock/execution bridge. A list of module names and 830 theorem declarations
+does not measure this effort. Identify the manual obligations and the automation
+boundary, and show one concise invocation plus its expected checked output.
+
+C. Evaluation is mostly correctness auditing. Mutation rejection and ablations
+are useful, but they do not establish scalability, convenience, coverage or an
+advantage over a competing verifier. The paper does not need an invented race
+against another system. It does need a small reproducibility table and a concrete
+description of what another investigator can attempt with this benchmark. The
+existing records already support a 104.14-second fresh project check with cached
+pinned dependencies and a separate 56.98-second uncertainty-artifact pipeline.
+Label scopes exactly; the latter includes derivation, replay and negative tests,
+and the former excludes producer tests/regeneration and dependency bootstrap.
+These single runs are observations, not performance statistics or scaling data.
+
+D. Prior work already covers the broad narrative. Hellwig et al. develops a
+control-envelope certification pipeline with intersample safety and invariant
+reasoning. Doll and Shames supplies general Lean stability/small-gain foundations.
+Merely using Lean or proving all-time safety is therefore an insufficient novelty
+claim. The current draft avoids claiming priority, which is appropriate. Replace
+the short disclaimer-heavy positioning paragraph with a compact comparison of
+problem assumptions, certificate objects, execution semantics and demonstrated
+outputs. Do not infer a comparative advantage from different assistant names,
+and do not describe the nominal SOS replay as verification of this entire case.
+
+E. The local package has an observable documentation mismatch. The source README
+still describes the prior nominal travel/sensor/four-SOS manuscript at lines
+150–157. Its reading order omits UncertainLag, UncertainTravel, UncertainExecution,
+ExecutionUniqueness and PhysicalExecutionUniqueness. A reader following it will
+not arrive at this paper's primary result. Update the guide and release manifest
+together, rather than claiming reproducibility from the source archive alone.
+
+3. Work that can be completed locally now without new proof claims
+
+Priority 1: Choose a benchmark/experience-report framing and make its deliverable
+explicit: a fully specified academic uncertain sampled-actuator benchmark plus
+one exact Lean certificate workflow and documented lessons about model binding.
+Remove "remaining publication gates" prose from the final research narrative;
+retain the actual limitations and assistance disclosure. Fix the abstract's
+fixed-lag ambiguity. No theorem change is needed for these edits.
+
+Priority 2 (addressed by the subsequently inspected local benchmark contract;
+see addendum): Add a benchmark contract/checklist: state and units, initial
+set, fixed versus held quantities, nondeterministic sequences, safety predicate,
+known verified result, excluded phenomena and exact certificate entrypoints.
+Supply a minimal model file and instructions for alternative tools. Existing
+JSON contains certificate/model parameters but should not be presented as a
+universal executable plant semantics format without the checked Lean bridge.
+
+Priority 3: Add the scoped timing/replay table, explain which parts are handwritten,
+and expose exact theorem names for the two final guarantees. Retain a tiny exact
+script or table for the coarse response diagnostic. Give expected positive and
+negative outcomes so a reader can distinguish successful checking from a failed
+certificate attempt. Existing evidence can be summarized without another build.
+
+Priority 4: Align README, claim map, source archive and paper, then create a
+reviewer-facing package with portable relative paths and a single entry command.
+The archival records may keep author-machine absolute paths as provenance, but
+those paths must not be required to replay. Record the exact source version and
+which dependencies are cached/downloaded. Freeze a release only after the owner
+chooses a license and verifies author identity, attribution and affiliation.
+
+Priority 5: Obtain knowledgeable human control/formal-methods review of the
+framing and definitions. This is valuable intellectual review, not another
+axiom-count exercise. A new hardware experiment, a second robot, maximal-region
+optimization, and new controller theory would strengthen a broader paper but are
+not mandatory to make this particular academic benchmark report submit-ready.
+
+4. ARCH27 fit and final readiness judgment
+
+The official call, checked 17 October 2026, accepts benchmark proposals, tool
+presentations and experience reports; it allows small academic benchmarks and
+does not require the benchmark to be solved. It asks for papers ideally 3–8 pages,
+lists a 1 April 2027 deadline, and evaluates benchmark relevance, clarity and
+verification advantages. Benchmark submissions require an accompanying data zip.
+Source: https://cps-vo.org/group/ARCH/Call-for-Submissions
+
+Against those criteria: clarity is already fairly strong; verification advantage
+can credibly mean uniform, all-time certification over infinitely many admitted
+sampling/error sequences, which finite simulation does not establish; relevance
+is the weakest part and needs an explicit academic verification rationale. A
+comparison proving superiority to all other formal tools is not required.
+
+My recommendation would be major revision for a benchmark/experience report,
+with a plausible path to a defensible submission using the work above. I would
+not recommend submitting the current working draft unchanged, and I would not
+recommend marketing it as new control theory. The official venue scope makes the
+narrow framing credible; it does not establish acceptance or remove the need to
+demonstrate usefulness. No numerical acceptance odds can be justified here.
+
+Related primary sources inspected:
+https://logic.kastel.kit.edu/ap/pub/zonotope-proofs.pdf
+https://arxiv.org/abs/2607.19727
+https://arxiv.org/html/2607.19727v1
+
+Addendum: local benchmark-contract repair reviewed during this pass
+
+Read publication/robust-benchmark/model.json and README.txt, then followed the
+README's publication guide and checked its referenced files. The model records
+the exact controller, own-sample feedback ODE, joint held-error budget, full P,
+initial set, continuity/interior-derivative convention, clock quantifiers, four
+acceptance properties and physical transformation. All four listed Lean source
+hashes match. The source archive and exact response diagnostic pointers resolve.
+The artifact explicitly labels JSON as structured mathematical metadata, not an
+executable semantics parser, which is the correct boundary.
+
+This repairs the lack of a standalone benchmark contract and materially improves
+the path for an independent group to recreate the model. It is enough to support
+an academic benchmark handoff without pretending that another solver has already
+run it. The remaining reuse weakness is narrower: no demonstrated new consumer
+of the generic proof interface, and no measured manual effort for a new model.
+Independent tool comparison remains absent; it is optional evidence of value,
+not a formal ARCH eligibility requirement. Relevance and usefulness still need a
+clear manuscript argument.
+
+The parent authoring agent reports it is repairing the abstract, main project
+README and runtime/workflow explanation and will create a new final snapshot.
+Those intended edits and that future snapshot are not certified by this review's
+initial hashes. The final benchmark metadata must point to the chosen final
+archive/snapshot, and the final paper compilation record must match its final
+TeX. This is a release consistency requirement, not a request to change proofs.
+
+Final editorial follow-up — 17 October 2026
+
+Reviewed the revised files without rerunning proofs or changing the initial
+review above. This addendum supersedes the initial editorial findings only for:
+
+publication/robust-manuscript/main.tex
+SHA256 b419a8ea7470619b5534f0c0196d6a9a1ab248f9bc885d6c535d9572ad8fba08
+lean-controls/README.txt
+SHA256 8fa58e1054779ab22ced681778da9805dae015d0555593f0f73045a89805bb65
+
+Locally addressed:
+* The abstract now identifies an academic benchmark and explicitly refers to
+  the admitted fixed-lag plants. Its previous temporal ambiguity is repaired.
+* The introduction explains the deliberately small model and the distinct
+  obligations exercised by actuator memory, clipping, held errors and jitter.
+  This supplies an honest academic rationale without invented robot measurements.
+* The standalone model contract and exact workflow invocation are now discoverable
+  from the paper. The distinction between metadata and formal semantics remains.
+* The timing paragraph properly separates the full five-step workflow, its
+  uncertainty stage and fresh project-source check. The 164.54-second figure
+  rounds the sum of the recorded five command durations; 56.98 and 104.14 also
+  agree with the respective records. Provisioning/cache and concurrent-workload
+  qualifications prevent these from posing as controlled comparative benchmarks.
+* The reuse paragraph now enumerates manual model/enclosure/response/execution
+  obligations and limits automation to rational witnesses and proof emission.
+* The README now describes the robust result, separates its nominal predecessors,
+  identifies the new execution modules, and documents the fifth verification step.
+  Its former nominal-paper/four-SOS mismatch is repaired.
+* Related work and limitations replace draft-management prose in the research
+  narrative, while authorship and assistance remain explicitly provisional.
+
+No new mathematical mismatch was introduced by these editorial changes. A cheap
+comparison against all 105 original snapshot file hashes found README.txt as the
+only changed project file; the proof and script hashes remained unchanged.
+
+Still substantive: no independent consumer or matched complete-tool comparison,
+no evidence of effort required to adapt the generic interface, and no independent
+assessment of whether this example will be useful to the community. The revised
+rationale improves relevance but is not new empirical evidence. These are matters
+for specialist judgment; another complete tool comparison is not an ARCH entry
+requirement. Hardware calibration remains necessary for an engineering claim,
+not for the stated academic benchmark. Human authorship/contribution review,
+affiliation approval and a release license are still unresolved release matters.
+
+Readiness now: the editorial and local handoff objections have been substantially
+addressed. This is a defensible benchmark/experience-report candidate for human
+technical and venue review, with narrow contribution claims. Submission readiness
+still depends on that review, ownership/license decisions and final packaging.
+The ongoing robust-final-fresh-replay and revised PDF were not completed evidence
+in this editorial pass. Bind the final model metadata, archive and PDF record to
+their final hashes before calling the release complete. A minor optional wording
+cleanup remains in the physical section: "as tau changes" can be made "across
+admitted fixed values of tau" for consistency with the repaired abstract.

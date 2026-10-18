@@ -1,0 +1,160 @@
+SEMANTIC AND PROOF-SCOPE REVIEW — 17 October 2026
+
+Reviewed by an independent agent, without source edits. Scope: Quantized.lean,
+Certificate.lean, BernsteinCertificate.lean, their relevant sampling/energy
+definitions, pinned mathlib Round.lean, and the first version of
+scripts/generate_interval_certificate.py. Certificate/Bernstein/generator were
+still being developed. This is a statement/argument audit, not a fresh build or
+an assertion that generated certificates have passed Lean.
+
+RESULT
+
+No logically invalid theorem statement or contradictory assumption set was
+identified in the reviewed files. The strongest useful statements are exact-real
+sample-time bounds. Several additional claims require explicit bridges. Most
+notably: generated energy decrease is not yet a state-stability result without
+positive definiteness; the present rounded-controller operating envelope does
+not demonstrate behavior under meaningful actuator saturation; and a polynomial
+transition must be tied to exact held plant semantics before being called ZOH.
+
+1. QUANTIZATION AND HELD-INPUT SEMANTICS
+
+quantize delta x = delta * round(x/delta) is ideal nearest-grid rounding of an
+unbounded mathematical real to an unbounded integer. Pinned mathlib round breaks
+halfway ties toward POSITIVE infinity: round(1/2)=1 and round(-1/2)=0. It is not
+ties-to-even or ties-away-from-zero. rounding_error correctly requires delta>0.
+An implementation theorem must reproduce this rule or prove the same error
+bound for its own rule, including representable input range and overflow.
+
+The command is computed once from the sampled x,v, then clipped once, then held.
+The disturbance w_n is a constant acceleration over that same interval. For
+a_n = input(delta,U,x_n,v_n)+w_n the model is
+  x(t_n+s)=x_n+s*v_n+(s^2/2)*a_n,
+  v(t_n+s)=v_n+s*a_n,  0<=s<=h_n.
+The stated recurrence is exactly its endpoint. It does not model continuously
+recomputed feedback, arbitrary measurable disturbances during a hold, input
+delay, stale sensor readings, independent x/v sampling times, or actuator lag.
+These are limitations of scope, not defects in the recurrence theorem.
+
+Quantized.lean and Certificate.lean compose the endpoint algebra correctly.
+SampledPD.lean proves derivatives for the nominal held segment. To claim the
+new rounded/clipped/disturbed continuous segment itself is verified, connect its
+initial conditions and derivatives and assemble it across sampling times.
+
+2. SATURATION SCOPE — IMPORTANT FOR PAPER WORDING
+
+clipping_error is a valid projection inequality: clipping cannot increase
+distance to an in-range NOMINAL command. The hypothesis |u_nominal|<=U implies
+U>=0, so omitting a separate U>=0 hypothesis there is not a loophole.
+pd_quantized_step includes genuine clipping, and can apply even if a coarse
+rounded request is clipped. It does not claim a contracting invariant region
+under arbitrary coarse quantization.
+
+The concrete all-time instance does not exercise clipping. With
+  P=[[5,1],[1,1]], k=(-2,-3), k P^-1 k^T=37/4,
+we have |u_nominal|^2 <= (37/4)V <= 37/40.
+Adding the rounding bound 1/4000 gives a rounded request below 0.963, hence
+strictly within the +/-1 actuator limit. This calculation is an independent
+ordinary mathematical observation; it has not been added to Lean by this review.
+
+In fact the generic invariant's current conservative feasibility conditions
+also appear to exclude clipping. For any nonempty execution, R>=0 and W>=0.
+Write r=1-hmin/6, D=5delta/2+W. Then r>=11/12, D>0, and the budget reads
+  (1+theta)r R + (1+1/theta)*(54/25)D^2 <= R.
+It forces R>0, (1+theta)r<1, and theta<1/11. Consequently
+  D^2 < (25/7776)R <= (25/77760)U^2 < U^2/2500.
+Meanwhile nominal |u|<=(97/100)U follows from (37/4)R<=37U^2/40.
+Thus |rounded request| < (99/100)U. This derivation should be independently
+checked/formalized before making it a theorem, but is enough to flag that
+"we handle active saturation" is not supported by the current feasible family.
+
+Acceptable wording: a local guarantee for a controller whose definition includes
+clipping. For a substantive active-saturation benchmark, produce an admissible
+initial condition and parameters where the clamp provably changes the command,
+then prove the desired trajectory property. Tightening the actuator-region
+bound from 10R<=U^2 to (37/4)R<=U^2 could make such examples possible, but that
+change must be assessed and verified separately.
+
+3. INVARIANCE, CONVERGENCE, AND EXECUTION EXISTENCE
+
+safe_trajectory and pd_quantized_invariant conclude a bound only at n∈Nat.
+They do not yet conclude the same bound at every real time between samples.
+The older nominal intersample result concerns h<=1/6 and no rounded/disturbed
+feedback; it cannot simply be cited for the newer h<=1/2 result.
+
+The generic quadratic_trajectory theorem is appropriately conditional. A
+nonnegative quadratic form may be degenerate (including Q=0). Therefore Q<=R
+is an energy-sublevel invariant, not a bounded physical state region unless
+coercivity and containment in the desired safety region are additionally proved.
+Its epsilon ultimate-bound statement is correctly phrased: it does not assert
+convergence of the disturbed state, convergence to the floor, or a zero limit.
+
+R and W nonnegativity are implied in nonempty concrete executions by hinit,
+energy_nonneg, and hw, although exposing them in an interface would make the
+contract easier to read. example_parameters demonstrates the scalar inequalities
+are feasible. It does not itself construct x/v trajectories. Recursion on the
+deterministic rounded update can provide existence for every permitted h,w and
+initial pair, and would remove a common source of reader uncertainty.
+
+For physical all-time claims, additionally define t_n=sum_{k<n}h_k, require a
+positive lower sampling bound or prove t_n tends to infinity, and glue the held
+segments. hmin=0 is allowed in the invariance API; sample-index invariance alone
+does not rule out zero steps or Zeno sampling. The concrete hmin=1/20 avoids
+that issue once a real-time assembly theorem is provided.
+
+4. BERNSTEIN/LDL INTERFACE AND TRUST BOUNDARY
+
+The reviewed Bernstein interface is logically sound as a sufficient scheme:
+nonnegative Bernstein weights preserve PSD, exact reconstruction identifies
+the target matrix function, and an LDL identity with nonnegative diagonal is
+a valid PSD witness. L need not be triangular/invertible for this direction.
+Zero pivots may certify semidefiniteness; they do not certify strict positivity.
+The interval theorem excludes degenerate endpoints via a<b. covered_psd is
+actually valid for ANY index type and cover, not only a finite cover as its
+comment suggests. None of these points creates an unsoundness gap.
+
+The first generator validates P symmetry but not positive definiteness. Its
+generated certified_decrease theorem correspondingly proves only
+  V(A(h)x) <= V(x) - h*c*||x||^2.
+For indefinite P, energy can decrease while state norms grow. Before advertising
+stability, certify mI<=P<=MI with m>0 and link this to the state norm, then apply
+the recurrence theorem. A theorem for the exact input polynomial A(h) says
+nothing yet about whether A(h) is the plant's true held transition.
+
+The generator, SymPy, rational LDL discovery, and certificate JSON should remain
+outside the mathematical trust base: the emitted Lean identities and witness
+inequalities must be checked from source. The input-to-model correspondence
+remains a reviewed/formalized obligation. Rejecting a corrupted certificate is
+a useful implementation test, but not a substitute for the general soundness
+theorem. Build success and the axiom audit should be reported separately from
+human semantic audit, clean-environment replay, and physical/model acceptance.
+
+5. RECOMMENDED BENCHMARK SET
+
+1) Existing double integrator, state (position,velocity), held acceleration
+feedback -2x-3v. It is the transparent 2x2 baseline; exact transition degree2.
+
+2) Jerk-controlled triple integrator, state (position,velocity,acceleration),
+plant x'=v, v'=a, a'=u, held u=-(x+3v+3a). The exact transition is
+  I+hN+(h^2/2)N^2 - [h^3/6,h^2/2,h]^T [1,3,3],
+where N has ones on its superdiagonal. This exercises dimension3, degree3,
+and a nontrivial 3x3 positive quadratic form; it is not a duplicated baseline.
+
+3) Coupled planar double integrator, state (q1,q2,v1,v2), plant q'=v,v'=u,
+with held u=-Kp*q-Kd*v,
+  Kp=[[2,1/2],[1/2,1]], Kd=[[3,1/4],[1/4,2]].
+The exact transition is
+  [[I-(h^2/2)Kp, hI-(h^2/2)Kd],[-hKp,I-hKd]].
+Both gains are SPD and do not commute, so they cannot be simultaneously
+orthogonally diagonalized into two independent scalar loops. This is a useful
+4x4 coupled certificate, not a direct sum padding exercise. Componentwise
+actuator limits and different sensor scales would additionally exercise the
+generic disturbance interface, once their bound is proved.
+
+These three plants have nilpotent OPEN-LOOP state matrices, which is why exact
+held transitions are finite polynomials. The closed-loop continuous matrix need
+not be nilpotent. A damped oscillator, motor lag, or general mechanical
+linearization has nonnilpotent open-loop dynamics: its ZOH transition contains
+exp(Ah). A polynomial truncation is an approximation and needs a proved
+remainder/error enclosure. Such a plant is a valuable later boundary test,
+not a justified exact-polynomial benchmark today.

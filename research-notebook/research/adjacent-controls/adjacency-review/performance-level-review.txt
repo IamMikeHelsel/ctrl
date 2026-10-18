@@ -1,0 +1,212 @@
+PERFORMANCE LEVEL AND TRANSIENT ENVELOPE REVIEW — 17 October 2026
+Independent addendum; no compliance claim, proof edits or hardware validation
+
+The useful claim is a verified bound on the behavior of a specified stopping
+function, conditional on a justified plant and implementation contract. A Lean
+proof alone does not establish PL d or PL e. Population and repeated-condition
+variation could make a stopping-envelope study useful, but these concerns are
+already recognized in official industrial guidance.
+
+Three different questions must remain separate
+
+1. Functional behavior: once a valid stop request arrives, does the axis remain
+within its permitted displacement, reach the specified stopped condition by
+the deadline, and remain there? A mathematical transient proof can address
+this question under explicit assumptions. It must include sensing, processing,
+communication, actuation delay, braking, and the post-stop behavior relevant
+to that particular function.
+
+2. Dangerous failure frequency: how often can the implemented safety function
+fail dangerously? The published PFH bands are PL d: 10^-7 <= PFH < 10^-6 per
+hour; PL e: 10^-8 <= PFH < 10^-7 per hour. These are not percentages of trials
+that stop successfully. The frequency criterion is only part of a PL claim.
+Source: German electrotechnical standards organization DKE, functional-safety
+overview and PFH comparison table:
+https://www.dke.de/de/arbeitsfelder/core-safety/funktionale-sicherheit
+
+3. Design and validation: architecture, component reliability, diagnostic
+coverage, common-cause failures, systematic failures, software development,
+integration and validation also matter. A good transient result supplies none
+of the missing component failure data by itself. IFA Report 1/2025 explicitly
+separates the quantitative PFH aspects from software/systematic requirements.
+It lists formal mathematical/model verification as one V&V method, alongside
+other analysis and testing. Thus formal proof has a legitimate evidence role,
+but not an automatic PL assignment or exemption from the remaining work.
+Source: IFA Report 1/2025, especially Chapters 7-10, pp. 83 and 108:
+https://publikationen.dguv.de/widgets/pdf/download/article/5091
+
+ISO's current public catalog identifies ISO 13849-1:2023 as the fourth edition.
+It covers safety-related control-system design, including software, for high
+demand and continuous modes. It does not itself prescribe the safety function
+or required PL for each application. The catalog still lists ISO 13849-2:2012
+as current, with a replacement draft under development; its scope is validation
+by analysis and testing of safety functions, categories and achieved PL.
+These scope statements are not a clause-by-clause conformity assessment.
+https://www.iso.org/standard/73481.html
+https://www.iso.org/standard/53640.html
+
+An up-to-date quantitative reference is ISO/TR 13849-3:2026. Its public preview
+describes Markov-based PFH calculations using architecture, channel MTTFD,
+diagnostic coverage, common-cause factor and mission time. Our deterministic
+ODE theorem has no such failure process or reliability parameters.
+https://www.iso.org/obp/ui?_escaped_fragment_=iso:std:iso:tr:13849:-3:ed-1:v1:en
+
+The strongest disconfirming evidence for novelty
+
+DGUV Information 209-074, Industrial robots, already distinguishes reaction
+time from braking time and discusses load, speed and extension. For stop
+category 0 it explicitly adds brake temperature, wear and contamination. For
+the category-1 arrangement it describes, the mechanical brake holds the axis
+after controlled deceleration and does not determine the braking time. The
+guide also says manufacturer stopping values need validation on the real
+system. Therefore "warm brakes differ from cold brakes" and "nominal stop
+data need testing" are established engineering concerns, not research novelty.
+Source: pp. 24-26 of this older official guide; cited as prior engineering
+knowledge, not as a current robot-standard compliance checklist:
+https://publikationen.dguv.de/widgets/pdf/download/article/3150
+
+First choose the mechanism. Our present u=-1 maneuver is a powered acceleration
+command with first-order lag. It is not a friction-brake engagement model, a
+power-loss stop, or a vertical-axis load-holding model. Substituting a wider lag
+interval does not automatically capture brake slip, engagement delay, friction
+fade, gravity, loss of power or mechanical failure. The proper distinction
+depends on the actual drive/brake design, not merely the word "braking."
+
+What the local Lean results honestly support
+
+They prove bounded position, recovery into an invariant and continued bounded
+motion for a stated model. They do not prove standstill by a deadline, a
+maintained stop, fault detection, or safety after loss of power. The feedback
+tail may continue moving within the admitted region.
+
+The universal fixed-rate result can cover different units or cold/warm runs
+if each entire execution really has one fixed rate inside the proved interval
+and satisfies all other assumptions. It assigns no probability to those
+assumptions. Thermal evolution during a run, aging outside that interval and
+arbitrary within-hold forcing are not covered by declaring r "uncertain."
+The current recovery and direct pilot prefixes also assume zero command error.
+
+A future proof could support a traceable functional requirement, conservative
+distance/time margins, parameter choices and a monitor's logical detection
+property. A correct monitor can contribute to a diagnostic design, but its
+mathematical detection theorem is not the numerical DC value: fault modes,
+failure rates, test interval and the complete diagnostic path still matter.
+Code correspondence, scheduling and sensor/actuator assumptions must be linked
+to the implementation; mathematical real-number arithmetic is not deployed code.
+
+Population evidence is useful, but has a different quantifier
+
+Repeated stops on one warm unit estimate within-unit behavior under those
+conditions. They do not establish production-unit variation, cold starts,
+wear states or rare faults. Repeated observations can be correlated through
+temperature, wear, supply conditions and calibration. A fitted mean or a
+high empirical percentile is not a bound for all admissible trajectories.
+
+If a statistical tolerance envelope is proposed, state its population,
+coverage, confidence, independence assumptions and extrapolation limits.
+Keep that statistical statement separate from the conditional Lean theorem.
+Do not convert a per-stop exceedance probability to PFH without a justified
+operational/demand and failure model. Do not silently add an empirical tail
+probability to a component PFH calculation as if the units and events matched.
+
+Smallest useful and falsifiable research gate
+
+Select one actual axis and one safety function. Declare its start trigger,
+allowed travel, stopping deadline, stopped-state tolerance, hold duration and
+fault/energy conditions. Preselect a test matrix with multiple units and
+repeats spanning cold start, thermal steady state, repeated stops, declared
+load/speed, supply conditions and permitted wear. Use independently measured
+motion and timing with measurement uncertainty. Separate model fitting from
+the units/conditions used to challenge the bound.
+
+Build a conditional envelope that an engineer can use to select approach
+speed or required clearance. Give it nonzero sensing/timing/model-error margins.
+Prove whole-transient safety and the actual required stop/hold condition.
+Compare it with the manufacturer's bound and a simple conservative engineering
+bound on exactly the same conditions. The desired result is a useful certified
+design decision or a falsified inadequate model, not a claim that more repeated
+tests alone demonstrate PL e.
+
+Stop or revise if a held-out trace escapes the envelope after accounting for
+measurement uncertainty; if obtaining a valid bound removes the useful operating
+region; if warm/cold behavior requires a different mechanism than the model;
+or if the proposed decision can already be made equally well with the existing
+manufacturer bound. Before claiming diagnostic benefit, demonstrate that the
+fault is detected early enough for a proved fallback to remain available.
+
+Judgment: practical relevance of a measured transient envelope, 5/5; current
+evidence that our proof establishes PL d/e, none; research contribution runway,
+3/5 conditional on a real axis, a useful decision and a matched baseline. The
+claim should be "formal verification evidence for a specified safety function,"
+never "Lean proves this machine is PL d/e."
+
+Access limits: official ISO catalog/preview material and official DGUV/DKE
+sources were checked live. The full purchased ISO standards were not reviewed.
+Selected sections of the freely available 2025 IFA report were inspected;
+this is not a complete standards audit or a conformity assessment. No external
+communication, certification request, proof modification or test was performed.
+
+Scalar-envelope sanity check — 17 October 2026
+Reviewed transient-variation.txt SHA256:
+c1efe255967d4ce92c44ea139005f9d558d5ce6b8a216638f31971aa9c27e796
+This is a mathematical source review, not a Lean proof or novelty assessment.
+
+The proposed endpoint-rate choices are correct. Write the upper acceleration
+as U(t)=b_hi+(a_hi-b_hi)*exp(-R_hi*t). Its sign relative to b_hi never changes.
+At the comparison boundary a=U,
+  r(t)*(b(t)-U) <= r(t)*(b_hi-U) <= R_hi*(b_hi-U)=U'.
+The second inequality uses R_hi=r_lo when a_hi>=b_hi and R_hi=r_hi otherwise.
+For L(t)=b_lo+(a_lo-b_lo)*exp(-R_lo*t), the inequalities reverse with the
+stated lower-rate choices. Equality a_hi=b_hi or a_lo=b_lo is harmless.
+Comparison therefore bounds every actual acceleration, even if the actual
+acceleration crosses either target bound. The rate choice depends on the
+comparison curve's sign, not on an unjustified ordering of all actual rates.
+
+An integrating-factor proof is available: the difference a-U satisfies
+(a-U)' + r(t)*(a-U) <= 0 and starts nonpositive. The lower difference has the
+opposite inequality. No derivative bound on r or b is needed. Arbitrary
+continuous b(t) in the stated constant interval is permitted; b need not be
+held or independent of r for this pointwise comparison.
+
+Use H>=0 and ordered initial/target/rate intervals. Require full-state
+continuity on [0,H] and the three derivative equalities on (0,H), with the
+specified initial bounds. This includes H and avoids an endpoint-reset gap.
+Continuous r,b on the closed finite interval give bounded coefficients and
+the usual linear-ODE existence/uniqueness construction; if the new theorem
+claims execution existence, supply that construction separately. A conditional
+comparison theorem alone does not establish existence. The measurable-signal
+extension needs absolute continuity and almost-everywhere ODE semantics.
+
+Integrating twice preserves the order for t>=0, despite negative acceleration
+or velocity values. For each comparison rate R and endpoint data x0,v0,a0,b,
+  V(t)=v0+b*t+(a0-b)*(1-exp(-R*t))/R,
+  X(t)=x0+v0*t+b*t^2/2+(a0-b)*(t/R-(1-exp(-R*t))/R^2).
+These match the held-flow form. Use the upper initial x,v,a values together
+for the upper curve and the lower values for the lower curve. This safely
+encloses a correlated initial set by its box, but later box propagation can
+lose correlations and become conservative. Check the whole X(t) interval:
+terminal position containment alone does not bound an interior maximum.
+
+Composition needs one further distinction. A finite sequence can use these
+envelopes one hold at a time, with full-state continuity at each boundary and
+a box containing the previous terminal state. This is a piecewise classical
+execution argument; it is not a single globally C1 trajectory when targets
+or rates jump. The existing sample-invariant energy proof does not transfer
+automatically to the resulting variable-rate dynamics.
+
+The existing GeneralHandoff interface can nevertheless close a finite variable-
+rate prefix with the old fixed-rate robust tail. Required facts are: prefix
+travel safety on [0,H], V(z)<=12 for every z in the terminal box, unchanged
+actual full state at H, and the actual post-H sampled ODE with one fixed
+admissible tail rate and the old dwell/error bounds. The prefix rate need not
+equal the tail rate in that abstract interface. Persistent thermal drift or
+effective-target uncertainty in the tail must instead receive its own invariant
+proof or a separate physically justified stop/hold mode. Do not infer that
+the rate becomes fixed merely because the mathematical maneuver ends.
+
+The jerk-to-target conversion b=u+j/r is valid under r>=r_lo>0 and |j|<=J,
+giving |b-u|<=J/r_lo. The displayed amplitude-loss counterexample also checks
+algebraically: x(1)=3/4-exp(-1)/2>1/2. Neither result establishes a friction
+brake model or a maintained stop. No blocking correction to the proposed scalar
+envelope is needed; the regularity, endpoint and tail boundaries above should
+be explicit in the theorem statement and its application contract.

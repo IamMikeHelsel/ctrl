@@ -1,0 +1,225 @@
+Independent semantic review: completed even-order deletion/completion theorem
+Date: 2026-10-17
+Method: read-only source and existing-log review. No builds, proof-source edits,
+or numerical graph search performed. Fresh replay is owned by the other agent.
+
+VERDICT
+No blocking mathematical or hidden-premise issue found. The final
+PiecewiseCompletion.deletion_completion_even has the advertised graph-level
+meaning. It is a formalization of the existing completion argument, not a
+claim of new extremal mathematics or a solution of Erdos128.
+
+EXACT CONCLUSION AND GRAPH CONVENTIONS
+For a finite simple triangle-free graph G, n=2t, and a supplied vertex set X
+with 2t<=3|X| and |X|<=t, the theorem constructs rational weights p:V->Q such
+that 0<=p(v)<=1, sum_v p(v)=n/2 EXACTLY, and
+  sum_{unordered edges {u,v} of G} p(u)*p(v)
+    <= Q(|X|,t)+e_G(X).
+GraphBasics.edgeCountOn counts G.edgeFinset intersect X.sym2, so each genuine
+unordered simple-graph edge is counted once. The symmetric edgeBilin includes
+one factor1/2, and edgeCost= edgeBilin(p,p) cancels that factor correctly.
+The target is HasFractionalHalfBound, not an integral vertex half. No rounding
+result is imported into the final conclusion by implication or terminology.
+X need not be independent, maximum, a special cut, or supplied by BCL.
+
+NO HIDDEN EXISTENCE OR OBJECTIVE PREMISE
+The final theorem assumes only graph triangle-freeness, even cardinality and
+the cardinality interval for X (plus finite/decidable typeclass interfaces).
+It does not assume a low-cost profile, a completion witness, or a max-cut/BCL
+result. The intermediate helper completion_from_maximum_independent explicitly
+accepts a scalar-envelope premise; maximum_independent_completion discharges
+that premise with quadratic_le_completionEnvelope. The final proof also
+constructs a maximum independent set internally by finite maximization.
+Greedy B is a maximum-cardinality feasible extension, with A itself a feasible
+seed. If B has not reached t, the stopping condition supplies strict lower
+B-degrees outside B. The low-degree D is selected from the complement of B
+and the heavy-neighbor independent set. Its cardinality and degree upper bound
+are proved from triangle-freeness and the maximum-independent-set bound.
+
+BRANCHES, DENOMINATORS, AND MOMENTS
+Case1 selects exactly m neighbors within D. Triangle-freeness makes them
+independent; disjointness from B gives exactly |B|+m=t vertices, not merely
+at most t. Their indicator is consequently an exact fractional half.
+Case2 has B nonempty, so b=|B|>0. For each v in B,
+  r_v=|N(v) intersect D| < m <= |D|=d,
+so d-r_v>0. Thus w_v=(m-r_v)/(d-r_v) is a legitimate rational weight in[0,1],
+including w_v=1 when m=d. The profile is 1_B+1_E+w_v*1_(D\E), with disjoint
+supports as needed, and has exactly |B|+r_v+w_v(d-r_v)=|B|+m=t mass.
+The first moment sum_B r_v=sum_D deg_B is an actual incidence equality.
+The cross-cost sum_B cross(B,E_v)=sum_D deg_B^2 has the correct factor2 for
+the symmetric bilinear convention. The degree interval gives the upper
+second-moment bound; the variance identity gives sum_B r_v^2>=b*R^2 where
+R=(sum_B r_v)/b. Since the quadratic coefficient is negative, its use has the
+correct inequality direction. Finite nonempty averaging selects a real
+profile witness; the conclusion does not merely assert a scalar average.
+Mantel's contribution on D\E is derived from mathlib's triangle-free Turan
+bound on the actual induced graph, not a new unproved graph hypothesis.
+
+PARAMETER AND ZERO-CASE CHECKS
+Natural subtractions are not silently treated as integers: the composition
+establishes B.card<=t, converts m=t-B.card with Nat.cast_sub, and establishes
+D.card=2t-A.card-B.card before rational conversion. The low-level D theorem
+allows zero after natural subtraction, but the nontrivial completion branch
+has A.card<t and B.card<=t, excluding that truncation ambiguity.
+The final theorem allows n=0. Then t=|X|=0; the selected maximum independent
+set supplies the empty exact half in the t<=|A| branch, with Q(0,0)=0. It never
+enters a division branch. Empty graphs of positive even order likewise take
+an independent exact half. In Case2, m=0 or D empty is incompatible with
+B.Nonempty and r_v<m<=|D|; no zero-denominator escape is used.
+If the maximum independent set has size>=t, the proof selects exactly t of
+its vertices at zero edge cost. Otherwise it is nonempty and the completion
+construction applies. The envelope decreases from |X|>=2t/3 onward, so using
+a maximum independent set can only improve the requested X-based bound.
+Q's branch threshold 4a=3t is density a/n=3/8. Its two formulas agree there;
+the first branch is the unconstrained quadratic maximum, and the second uses
+b>=a. The explicit finite proof covers equality endpoints.
+
+RESTORATION AND LIMITS
+Deleting only edges internal to X preserves vertices and triangle-freeness
+and makes X independent. The resulting profile is unchanged on restoration,
+so exact half mass is preserved. Each restored edge contributes p(u)p(v)<=1;
+the added allowance is precisely e_G(X), with no factor2 or missing term.
+This local theorem alone does not give the claimed universal0.02587n^2 bound:
+the supplied X still needs whatever cut/edge estimates the larger argument
+requires. Odd order, an integral sparse-half theorem, global normalization and
+the final numerical bound remain separate obligations. No novelty or prize
+claim follows from this completion result.
+
+DOCUMENTATION / VERIFICATION NOTES
+The README inspected during review still described assembly, averaging and
+piecewise optimization as unfinished, and described the older16-theorem replay.
+Those statements should be updated once the new27-theorem replay finishes.
+The zero-order case is now handled by this local even-order theorem; odd-order
+or global top-level handling remains separate. This is a stale-documentation
+issue, not a defect in the final theorem.
+Existing logs for the requested three files print only propext,
+Classical.choice and Quot.sound for their public theorem closures, with harmless
+deprecation warnings. The separate fresh replay was in progress at the time
+of this review; this note does not substitute for its final hash/axiom manifest.
+
+Reviewed main source SHA256
+CaseTwo.lean
+  5ae387b00e83c3b4db497d268e67750890d0e50e16e87b7c95011a52ca7125e4
+CompletionEnvelope.lean
+  76d0531bab847c57c7ad3c62d5d560de741829b7df7fb2c2b471230b625d5e90
+PiecewiseCompletion.lean
+  0ae548355c43df2ecad15fcc47faf6b6328a2ab6937e6f013d298188e6baabbf
+
+==========================================================================
+FINAL-BRIDGE REVIEW — 2026-10-17 (separate review after completion assembly)
+==========================================================================
+Reviewed CutWitness, CutScalar, FixedCutBound, PublishedBCL, ScalarCertificate,
+and the imported GraphRational, ExternalInputs, BalancedBlowup, Rounding,
+RoundingIterate and RoundingFinal interfaces/proofs. No proof files changed
+and no builds run by this reviewer.
+
+Verdict: no remaining semantic blocker found. The final result is a checked
+implication from the explicit published BCL eventual-cut hypothesis to an
+integral floor-half bound2587/100000 for every finite triangle-free graph.
+It does NOT internally prove BCL, prove the conjectural1/50 constant, or
+establish novelty of the existing argument.
+
+1. Published input and exact conditional status
+Primary source checked: Balogh--Clemen--Lidicky, Max Cuts in Triangle-free
+Graphs, arXiv:2103.14179v1, PDF page2, Theorem2(a):
+https://arxiv.org/pdf/2103.14179v1
+The theorem gives D2(G)<=n^2/23.5 for sufficiently large orders, with no
+regularity, minimum-degree or density restriction on part(a). PDF page1
+defines D2 as the minimum deletions making the graph bipartite. The formal
+BCLEventual uses one uniform threshold N and a cut whose two internal edge
+counts sum to at most(2/47)n^2. This matches the cited statement: deleting all
+internal edges makes a cut bipartite; conversely a bipartition after any
+bipartite-making deletion has its original internal edges among those deleted.
+There is no factor2 mismatch and no balanced-cut requirement.
+
+BCLEventual is a transparent proposition, and sparse_half_2587_100000 takes
+it explicitly as hBCL. The exposed #check confirms the full input rather than
+an abbreviated theorem description. All standard-axiom closure reports apply
+to the IMPLICATION; they do not mean that the published BCL premise has a Lean
+proof. C4FlagCertificate happens to be defined in ExternalInputs but is not
+an additional hypothesis or used input in this final bridge. The explicit
+universe annotation BCLEventual.{u} aligns the input with V and its product
+blow-ups; it does not add a graph assumption.
+
+2. Cut witnesses and normalization
+BCL supplies an arbitrary cut; FixedCutBound chooses the smaller side X, so
+|X|<=t=n/2. Its complement Y has |Y|>=t>0. The first actual fractional half
+has constant weight c=t/|Y| on Y and zero elsewhere, exact mass t, and cost
+c^2 e(Y). For the second witness, when needed, deletion_completion_even gives
+Q(|X|,t)+e(X). The min lemma chooses a genuine witness for the smaller bound;
+it does not combine costs from incompatible profiles while claiming a common
+witness exists.
+
+The normalized quantities are x=|X|/n, q=e(X)/n^2, j=e(Y)/n^2 and c=t/|Y|.
+All divisions by n^2 and |Y| occur with strictly positive denominators. The
+identities2c(1-x)=1 and Q(|X|,t)=n^2 Q(x,1/2) are proved before applying the
+scalar certificate. The external cut cost becomes q+j<=2/47, with NO extra
+edge-density factor2. Combining beta<=c^2 j with beta<=Q(x,1/2)+q gives
+(1+c^2)beta<=c^2(2/47+Q(x,1/2)), exactly the checked scalar expression.
+
+For c<c0=7797/10000, the uniform-side witness alone suffices. For c>=c0,
+c0>3/4 supplies |X|>=n/3, so the completion theorem's size restriction is
+proved, not omitted. The scalar branch point c=4/5 corresponds exactly to
+x=3/8; its boundary equality is handled explicitly. The beta bound is strict
+for positive even n. Later weakening to <= is intentional, allowing a uniform
+statement including the empty graph.
+
+3. From eventual input to all orders
+For nonempty G, the eventual-BCL transport uses k=N+1 independent clones of
+each vertex; then |V|k>=N and k>0. Triangle-freeness is preserved. The imported
+internal-cut transport is a genuine theorem, not an equality assumed for
+optimal cuts: average the blow-up cut indicator in each clone class, then
+round coordinates using the affine internal-cut objective, without increasing
+cost. This gives the normalized cut bound back on G, with no additive error
+or asymptotic limit step.
+
+For the fractional half, applying the even-order construction to G's two-fold
+blow-up gives order2n. Averaging independent clone pairs yields weights in[0,1]
+and exact original mass n/2. Cost scales exactly by1/4 while graph order squared
+also scales by4; normalized edge cost is preserved. This handles odd n without
+mistaking floor(n/2) for the fractional mass n/2.
+
+The final rounding theorem transfers mass between two fractional coordinates,
+uses the nonpositive quadratic coefficient along that direction to avoid
+increasing cost, and reduces the number of fractional coordinates by finite
+induction. It leaves at most one. Keeping coordinates equal to1 and discarding
+the possible fractional remainder gives exactly floor(n/2) vertices; deleting
+nonnegative weight cannot increase edge cost. The argument is for arbitrary
+finite simple graphs, so no unmentioned graph class assumption enters here.
+
+The empty graph is handled by explicit empty/zero witnesses before any use of
+positive-order division. Nonempty order1 is covered by the two-fold blow-up
+and rounding, yielding the empty floor-half. Thus the final integer statement
+has no parity or Nonempty restriction. Fintype, decidable equality and decidable
+adjacency are the expected finite graph representation interfaces, not strong
+combinatorial hypotheses.
+
+4. Provenance and evidence boundary
+The imported ExternalInputs, GraphRational, BalancedBlowup, Rounding,
+RoundingIterate and RoundingFinal files were checked byte-for-byte against the
+pinned baseline source copies: all unchanged. The external proof attribution
+in PublishedBCL accurately distinguishes reused BCL transport lemmas from the
+new composition. This review does not audit upstream licensing or claim new
+mathematics.
+
+During review an earlier PublishedBCL.log showed two elaboration failures:
+empty-case numeric simplification and an unconstrained BCLEventual universe.
+The owning agent fixed both. The refreshed log was then inspected: no errors,
+no sorryAx, all four printed theorem closures use only propext,
+Classical.choice and Quot.sound. The final #check displays the explicit hBCL
+premise and the integral all-order conclusion. This is observed successful
+local elaboration. Independent fresh-source replay/hash coverage remained
+separately owned and pending at review completion; that final manifest is the
+release evidence, not this semantic note.
+
+Reviewed final-bridge source SHA256
+CutWitness.lean
+  b908575301b1552c8abcae1f84f876524d2c97c969528b690964d1474c365b7a
+CutScalar.lean
+  67a4d6f20035c5b9b9f1e660ffaae427ea8eace5a4f190a289cc05a5e3e02c1e
+FixedCutBound.lean
+  18cc4b54c9629b3ff8cf13cc10e67a5c13cc3dd13fac1afb1a92a2057fca1639
+PublishedBCL.lean (corrected source, including exposed final #check)
+  842f708532a1bd2d1dcffbc1532321b9d97fd7b87418af99334a13d0444b1fef
+ScalarCertificate.lean
+  1686aca3400e31020c704443a5bd71f0de58c5fbdd93ddc69dcf3cec468826df

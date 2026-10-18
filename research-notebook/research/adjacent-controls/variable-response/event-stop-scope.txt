@@ -1,0 +1,16 @@
+EventStop.lean — checked event contract
+
+The main theorem delayed_event_first_stop proves the same first-zero and one-sided position guarantee as ActualStop: D in [0,.05], initial x<=.001, initial velocity in [0,.41], and acceleration<=.1 on the entire closed delay interval imply a first velocity zero by D+.5<=.55 and x<=.15 at all times up to that zero, subject to the actual guarded braking model. Position is relative to the estimated reference, not displacement from the actual initial position.
+
+Unlike ActualStop, the braking ODE and target b<=-1.2 are required ONLY while velocity is strictly positive at every global time through the current instant. BeforeStop uses Icc, so the guard is false at the first zero itself. The actual target may switch to a hold target at that instant, and no post-zero actuator ODE or target bound is assumed. State continuity still holds on the whole horizon; r is continuous and in [8,12] there. Kinematic delay equations and the acceleration bound still cover the whole [0,D], including its endpoints even if a first zero occurs earlier.
+
+The proof first obtains either an earliest zero or positivity on the whole horizon. In the latter case, the checked upper velocity bound contradicts positivity at the deadline. For an existing first zero after delay, the envelope is used only up to that instant. Its auxiliary target bCut agrees with the actual target strictly before the endpoint and is defined as -1.2 at the endpoint. This satisfies the comparison lemma's closed bound without imposing an actual endpoint target or post-event ODE. Continuity of the actual state supplies the closed endpoint state bound. If the first zero is during delay, the already-derived delay position bound suffices.
+
+There is no path or terminal conclusion among the theorem's assumptions. The guarded flow helper uses positivity-before-endpoint only to activate the ODE; the final theorem derives that property from the first-zero construction. The full-model witness in ActualStop is also a nonempty instance of this weaker guarded contract. No generic existence for arbitrary rough bounded b is asserted.
+
+Application limits: the guard refers to TRUE velocity. A controller that switches early because of sampled/noisy velocity estimation may violate the negative-target premise while the true velocity is still positive. This module does not implement or certify event detection, maintained rest, a later holding controller, friction-brake physics, temperature/load identification, or a PL rating.
+
+Three theorem closures compiled without warnings, using only propext, Classical.choice and Quot.sound. Build log and source/closure manifest are adjacent. Sources are frozen for parent fresh replay.
+
+Build from lean-controls:
+ELAN_HOME="$PWD/../.tools/elan" LEAN_PATH="$PWD/../research/adjacent-controls/variable-response" ../.tools/elan/bin/lake env lean --root=../research/adjacent-controls/variable-response -o ../research/adjacent-controls/variable-response/EventStop.olean ../research/adjacent-controls/variable-response/EventStop.lean

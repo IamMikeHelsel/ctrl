@@ -1,0 +1,271 @@
+ADJACENT CONTROLS — SKEPTICAL NOVELTY SCREEN
+17 October 2026; bounded literature screen, not a systematic review
+
+Recommendation
+
+The strongest nearby path is a checked implementation-to-safety composition, or
+a genuine runtime safety shield with a certified backup policy. Adding delay,
+dropout, actuator uncertainty or rounding as a label is not a novelty claim:
+primary papers already address each. None of the four items below is established
+here as an unsolved control-theory problem. They are proposed formal-methods or
+application contributions whose distinct value must be demonstrated.
+
+The current manuscript's advantage is its exact held-flow/model connection and
+all-time guarantee for arbitrary admitted ODE executions. Its weakest publication
+point remains whether another person can use the artifact to answer a practical
+question. A second carefully chosen workflow is more valuable than another
+numeric uncertainty interval or another theorem count.
+
+Scores are ordinal editorial judgments, not probabilities: 1=weak, 2=limited,
+3=plausible, 4=strong, 5=very strong. "Contribution runway" means a useful bounded
+research deliverable appears available relative to the present artifact. It does
+not mean the theorem is new, easy, likely to be solved, or likely to be accepted.
+
+Problem                                        Relevance  Contribution runway
+Executable fixed-point command to all-time safety    5             4
+Lag-aware backup shield beyond the current set       5             4
+Timestamped sensing and missed-update contract       5             3
+Within-hold disturbance extension                    4             2
+
+1. A checked fixed-point command implementation feeding the safety theorem
+
+Closest overlap: Flessing, Devadze and Streif [F] already formalize fixed-point
+controller computations and overflow freedom in Minlog, including polynomial
+functions. Their paper explicitly targets the mathematical-controller/software
+gap. Therefore "first verified fixed-point controller" and "overflow-free control"
+are unavailable contribution claims. The present controller's integer gains
+also make its arithmetic unusually easy; merely proving a rounding inequality
+would be too small.
+
+Smallest differentiating deliverable: specify one concrete signed-bitvector
+program for sampling/encoding x,v,a, forming -x-3v-2a, clipping, and encoding the
+actuator command. Fix widths, scales, rounding and saturation order. Prove both
+absence of intermediate overflow and a command-error bound on the full admitted
+ellipsoid. Compose that bound with the uncertain-lag, active-clipping, all-time
+execution theorem. Include the actual state-dependent quantizer's recursive
+execution, rather than assuming its error sequence is already admissible. The
+user-visible output is a checked table of feasible sensor/output resolutions and
+word widths for one physically scaled axis.
+
+Smallest evidence that makes the composition meaningful: at least one admitted
+fixed-point format and one intentionally inadequate format that is rejected for
+a concrete overflow or error-budget reason; a runnable controller whose logical
+arithmetic is exactly the function proved; and a second-person replay of the
+format/parameter choice. Tests of emitted C do not establish C/assembly semantic
+correspondence. State the compiler boundary unless a verified translation or
+separate source-code proof closes it.
+
+Falsification/stop gate: first derive actual geometric ranges and the combined
+sensor+command error budget. Stop the proposed contribution if it reduces to
+wrapping existing ideal rounding in a new theorem name, if the claimed deployed
+code lacks semantic correspondence, or if no nontrivial format boundary can be
+shown. If the pipeline is just [F] instantiated without a new useful composition,
+frame it as replication/interoperability or change direction. New control theory
+is unlikely here; a bounded implementation/refinement case study is credible.
+
+2. A lag-aware backup shield that admits states beyond the existing ellipsoid
+
+Closest overlap: disturbance-robust backup CBFs already use tubes around nominal
+backup flows [B]. Their Assumption 1 requires a backup policy and a robustly
+invariant backup set. Sampled-data backup safety with state uncertainty and input
+delay also predates this work [D]. Input/actuator dynamics are already treated
+through IQC-based safety design [I]. Thus neither "backup braking with lag" nor
+"robust sampled safety filter" is, by itself, a new research question.
+
+Smallest differentiating deliverable: take the existing ellipsoid as a verified
+terminal set. Construct a certified backward-reachable collar under one explicit
+brake-then-stabilize backup policy. Prove that a bounded arbitrary requested
+command may be admitted for one sample only when its entire held segment stays
+inside the position limits and its endpoint remains recoverable. Otherwise use
+the backup. Prove recursive availability of a safe action and all-time safety
+with uncertain fixed lag and the specified error budget. Start with one axis and
+one boundary/direction; do not promise optimal stopping distance or full viability.
+
+Required differentiator: exhibit an open region of initial states outside the
+current ellipsoid that the shield admits, active saturation, and at least one
+requested command that is modified. A position/velocity/acceleration slice and
+comparison against the existing controller should show the added capability.
+The interesting contribution is checking the complete admission/backup/terminal
+composition, including intersample behavior and feasibility.
+
+Falsification/stop gate: before formalizing the full shield, search for a state
+in the proposed recoverable collar whose backup crosses the position boundary
+before recovery. Such a trace rejects that collar/policy; it does not disprove all
+backup methods. Stop if the certified collar is empty or wholly inside the old
+set, if safety depends on assuming feasibility of the filter, or if the final
+artifact cannot distinguish the proposed shield from existing backup frameworks.
+An exact checked implementation of an established framework may still support an
+application paper; a new control theorem would need a sharper demonstrated gap.
+
+3. Timestamped sensing with stale measurements and missed updates
+
+Closest overlap: [D] establishes sampled-data invariance with state uncertainty
+and input delay; its delay construction assumes a known integer multiple of a
+fixed controller period, with a startup safety condition. The recent weakly-hard
+paper [W] handles window-bounded failures through graph-based barrier functions.
+These are direct overlap warnings, not evidence that a particular Lean execution
+contract is already available.
+
+Smallest differentiating deliverable: define acquisition time, receive/update
+time, held output and a deterministic maximum measurement age for one axis. The
+controller must use the trajectory's state at the acquisition timestamp, not an
+independent bounded-error oracle. Derive the actual stale-feedback error from the
+lag dynamics and prove an all-time safety contract with one explicit fallback
+when freshness expires. Produce a checkable trade-off between sensor resolution,
+sample duration and admissible age. Keep sensor age, network delay and missed
+actuator updates separate in the model.
+
+Why this might matter: it turns a controller's abstract error budget into a
+testable scheduling/sensing requirement. That is stronger application evidence
+than asserting an unexplained held error. A finite miss-pattern automaton is an
+optional later extension; it should not be the first deliverable.
+
+Falsification/stop gate: if missed packets merely enlarge the time between
+successful updates while the old held input remains active, and that interval
+already satisfies h<=1/5, the current theorem already covers it. Stop calling
+that a new problem. For genuinely stale samples, stop if the error bound assumes
+the very safety invariant it is supposed to establish without a valid bootstrap
+argument, or if useful sensor age collapses to effectively zero. Before claiming
+better tolerance than [W], compare the same hold/fallback semantics and failure
+language. Otherwise this remains an engineering contract/formalization task.
+
+4. Disturbances varying during a hold, with fixed actuator rate initially
+
+Closest overlap: robust backup safety already accommodates bounded disturbances
+[B]; robust CBF treatment of time-varying nonlinear parameter uncertainty is
+established [P]. Extending the present constant-drive response formula is useful
+for its model fidelity but not evidence of a novel robustness principle.
+
+Smallest differentiating deliverable: keep r fixed in the existing interval and
+the request sampled, but permit a continuous bounded drive disturbance d(t)
+inside r*(u-a). Prove an appropriate convolution/tube energy bound, then an
+all-time invariant for every admitted forcing function. State regularity and ODE
+semantics explicitly. Continuous forcing is the smaller first target; measurable
+forcing requires an almost-everywhere/Caratheodory execution contract and should
+not be hidden under the current pointwise classical derivative assumptions.
+
+Required evidence: show the changed disturbance class, a nonzero certified bound,
+and a forcing example not represented by the old held-error theorem. Compare the
+usable budget/conservatism with the old bound. Do not assume that the constant
+input response estimate also bounds arbitrary input waveforms: cancellation
+within a constant response can conceal a larger worst-case varying response.
+
+Falsification/stop gate: use adversarial sign-varying forcing to test a proposed
+bound before investing in formal analysis. Stop if the extension produces only
+an unusably small disturbance budget or a standard integral inequality with no
+reusable interface/application evidence. Time-varying r(t) is a second problem:
+the old exponential flow/finite-vertex identity no longer applies, even when each
+instantaneous rate lies in the old box. Do not combine both extensions at once.
+
+Why not prioritize multi-axis composition now?
+
+Independent Cartesian copies with separate limits give a product theorem, which
+adds little scientific content. Coupled collision geometry, shared actuation or
+cross-axis errors could matter, but they replace the present simple geometry and
+require a concrete application plus separate literature review. The current
+bounded screen does not establish novelty there. Treat it as a later application
+test of an interface, not a fifth claimed open problem.
+
+Proposed decision order
+
+First compare [F] with an exact bitvector-to-uncertain-execution claim and obtain
+one independent artifact consumer. If that differentiator is too thin, test the
+backup collar/shield, whose added user capability is easier to display. Keep the
+freshness contract as an alternative when real timing/sensor constraints exist.
+Use within-hold forcing to remove a demonstrated modeling limitation, rather
+than selecting it solely because it is mathematically adjacent. Do not combine
+all four into a larger unreviewable paper.
+
+Practical braking refinement after the parallel primary-paper screen
+
+For a robot-facing deliverable, prioritize a braking admission guard parameterized
+by current acceleration, lag and reaction delay; it has a clearer added behavior
+than another robustness constant. Keep the complete backup shield as a later
+milestone. A small first result can be a certified sufficient stopping envelope
+and a terminal-recovery obligation, explicitly short of an implemented shield.
+
+A useful diagnostic is the nominal full-brake trajectory with U=tau=v0=a0=1.
+For held command -1, a(t)=-1+2 exp(-t), v(t)=3-t-2 exp(-t), and displacement
+at t=1 is 1/2+2/e>1/2. Thus the familiar instantaneous-braking distance v0^2/(2U)
+is already exceeded before stopping. This follows directly from the current
+held-flow formula. It demonstrates the specification error of ignoring lag; it
+is not a new control-theory result or a completed braking-safety proof.
+
+The decisive gate is terminal behavior: the first v=0 state generally has
+negative acceleration, so continuing the brake causes reverse travel. A two-sided
+travel theorem must also bound that recovery or establish entry into a verified
+terminal invariant. Reaction-delay motion, initial acceleration of either sign,
+uncertain rates, and the opposite travel boundary must be part of the acceptance
+test. Do not label a one-sided stopping-distance lemma a complete safety filter.
+
+The parent independently inspected [W]'s discrete-time zero/hold dropout models
+and [D]'s delay assumptions; those reinforce the overlap warnings. Switching r
+only between holds also appears to reuse the existing uniform local invariant
+through routine composition. It still needs an execution proof, but is unlikely
+to be a differentiating paper contribution. This is distinct from r(t) varying
+inside a hold, which invalidates the current exact-flow representation.
+
+The choice between braking and fixed-point work should reflect the target:
+braking offers the clearest new robot guard; arithmetic refinement offers a
+focused formal-methods composition. Neither should be sold as a known open
+mathematical problem or a likely acceptance without further comparison.
+
+Primary sources, inspected live 17 October 2026
+
+[F] L. Flessing, G. Devadze, S. Streif, Formal verification of a controller
+implementation in fixed-point arithmetic (2021).
+https://arxiv.org/abs/2112.01204
+https://arxiv.org/pdf/2112.01204
+Access: abstract and PDF available; inspected scope, Minlog/overflow contribution,
+related-work discussion and implementation motivation. No artifact replay here.
+
+[B] D. E. J. van Wijk et al., Disturbance-Robust Backup Control Barrier Functions:
+Safety Under Uncertain Dynamics (2024; IEEE Control Systems Letters).
+https://arxiv.org/abs/2409.07700
+https://arxiv.org/html/2409.07700v2
+https://doi.org/10.1109/LCSYS.2024.3514998
+Access: author full text available; inspected backup-set assumption and disturbed
+flow/tube approach. Publisher redirected to a bot challenge; no publisher PDF or
+software reproduction. Avoid inferring implementation guarantees from theory.
+
+[D] A. Singletary, Y. Chen, A. D. Ames, Control Barrier Functions for Sampled-Data
+Systems with Input Delays (2020).
+https://arxiv.org/abs/2005.06418
+https://arxiv.org/pdf/2005.06418
+Access: full PDF; inspected sampled-data/state-uncertainty result and delay
+Assumptions 1–2 plus buffer algorithm. Not an exhaustive comparison of all proofs.
+
+[W] M. Seidel, M. Anand, F. Allgower, Safety for Weakly-Hard Control Systems via
+Graph-Based Barrier Functions; v2 revised 28 September 2026, marked submitted TAC.
+https://arxiv.org/abs/2601.00494v2
+Access: primary abstract/version metadata checked. Full technical comparison not
+performed here; do not claim that it lacks actuator lag, intersample guarantees
+or executable-code refinement based only on this inspection.
+
+[I] P. Seiler, M. Jankovic, E. Hellstrom, Control Barrier Functions With Unmodeled
+Dynamics Using Integral Quadratic Constraints (2021).
+https://arxiv.org/abs/2108.10491
+https://arxiv.org/pdf/2108.10491
+Access: abstract and PDF available. Supports the broad overlap warning concerning
+actuator dynamics and input delays; no exact same-model quantitative comparison.
+
+[P] T. Pati, S. Z. Yong, Robust Control Barrier Functions for Uncertain
+Parameter-Varying Control Affine Systems with Set-Membership Parameter Estimation,
+IEEE Transactions on Automatic Control 70(11), 7564–7571 (2025).
+https://pmc.ncbi.nlm.nih.gov/articles/PMC12820770/
+https://doi.org/10.1109/TAC.2025.3574548
+Related conference version:
+https://doi.org/10.1016/j.ifacol.2023.10.679
+Access: journal author manuscript available in PMC; scope/abstract inspected.
+ScienceDirect conference page fetch returned403. No detailed theorem equivalence
+or implementation study; this establishes existing time-varying-uncertainty
+theory, not that the exact proposed composition is already published.
+
+Search limits and claim policy
+
+This is a restrained candidate screen using nearby primary papers, not a claim
+of comprehensive priority searching. Some initial search results were secondary
+pages; the conclusions above rely on the identified primary papers. An absent
+search hit does not establish novelty. No numerical solve or acceptance
+probabilities are justified. No source/proof files, frozen manuscript or external
+submissions were changed. Only this review was written.

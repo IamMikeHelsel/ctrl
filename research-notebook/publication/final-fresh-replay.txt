@@ -1,0 +1,78 @@
+Final fresh project-source replay: 29 modules / 307 declarations
+================================================================
+Result: PASS. All 29 project modules and the aggregate module were freshly built
+from the copied final source snapshot, including ActuatorLag, VertexCertificate,
+Generated.LagLower and Generated.LagUpper. All 307 named public declarations were
+individually checked by Lean's axiom reporting and the exact-set/allowlist audit.
+Only propext, Classical.choice and Quot.sound occur. check.sh exit code: 0.
+
+check.sh elapsed time: 44.532 seconds.
+Started UTC: 2026-10-17T14:18:27.976893+00:00
+Finished UTC: 2026-10-17T14:19:12.508933+00:00
+
+Snapshot identity
+-----------------
+SHA-256 of canonical input-file hash map:
+  3bc10964792364f833ee65bbfc20b5a363099ce041c55c22cf933f2f157b1066
+
+The copied final snapshot contains 59 source/configuration/script/input files.
+Every file matched the original snapshot when copied. Every copied input hash
+remained unchanged after execution. Copied-source hash mismatches: 0.
+Original files changed during this replay: [].
+
+Isolation
+---------
+A NEW source-only temporary project was created at:
+  /var/folders/my/gvpc8lhn61b07vzgm7fxmnmh0000gn/T/lean-controls-final-fresh-replay-3i6969xe/lean-controls
+
+No original project .lake directory, .lake/build, project .olean, or prior
+build/audit output was copied. The initial project build directory was absent,
+and the initial project .olean count was zero. The only copied evidence file was
+evidence/declarations.json, the source inventory checked by sync_audit.py --check.
+
+Pinned dependencies were reused from the earlier replay's isolated copy-on-write
+clone, through a .lake/packages symlink. This path contains only dependencies;
+the earlier replay's project build output was NOT reused. All nine dependency
+checkout HEADs matched the pinned manifest. The original dependency cache and
+original project sources/evidence were not modified by this replay.
+
+The existing pinned Lean toolchain was reused:
+  leanprover/lean4:v4.35.0
+  Lean (version 4.35.0, arm64-apple-darwin24.6.0, commit eb6cafb7290e8bd5f2937522d8d804f58f02bafc, Release)
+
+Command in the copied project:
+  ELAN_HOME=<workspace>/.tools/elan LAKE=<workspace>/.tools/elan/bin/lake ./check.sh
+
+What ran
+--------
+The unmodified copied check.sh verified the declaration/import inventory, rebuilt
+the project, ran every #print axioms request in Audit.lean, and checked that the
+result names exactly matched all 307 expected declarations with allowed axioms.
+The build log records fresh Built entries for all 29 project modules plus the
+aggregate. Its 3381 total jobs include reused dependencies and are not a count
+of fresh compilations.
+
+Durable artifacts
+-----------------
+  publication/final-fresh-replay.json
+    Compact manifest with input hashes, dependency revisions, module build
+    inventory, command/toolchain, audit summary and artifact hashes.
+  publication/final-fresh-replay.log
+    Complete new check.sh output, including all 307 axiom reports.
+  publication/final-fresh-replay.sources.tar.gz
+    Exactly the 59 frozen project inputs, excluding compiler products,
+    dependency caches, toolchain, and prior build/audit outputs.
+
+The earlier 25-module/248-declaration baseline report, manifest, log, source
+archive and temporary project remain intact. This final replay adds the exact
+actuator-lag extension to the independently rebuilt project-source evidence.
+
+Limits
+------
+This is a fresh PROJECT-SOURCE replay with cached dependencies and an existing
+pinned toolchain on the same machine. It is not a pristine toolchain bootstrap,
+full fresh mathlib build, independent kernel implementation, physical-model
+validation, or hardware test. It ran check.sh, not the benchmark and manuscript
+review workflow. The separate actuator-lag semantic review assessed the two
+new handwritten files; successful compilation alone does not establish physical
+model fidelity or mathematical novelty.

@@ -1,0 +1,37 @@
+{
+  "scope": "Exact reviewer algebra, not a new Lean theorem or transient/hardware evidence. Physical mapping sigma=10, lambda=20/s, r=100/s, j=10 m/s^3, w=0.",
+  "state": "xi=(ex,ev,ea,b=u-q2) in normalized coordinates",
+  "forcing": "g=(0,0,r*w-j,(lambda*kappa-1)*j)",
+  "constant_input_equilibrium": "ev=ea=0; b=j/r-w; ex=[w+(kappa-1/r-1/lambda)*j]/8",
+  "examples": [
+    {
+      "controller": "original",
+      "kappa_normalized": "5/48",
+      "lambda_normalized": "2",
+      "r_normalized": "10",
+      "j_normalized": "1/100",
+      "w_normalized": "0",
+      "steady_b": "1/1000",
+      "steady_position_error_m": "-119/192000",
+      "steady_position_error_mm_approx": -0.6197916666666666,
+      "forcing_fourth_coefficient": "-19/24",
+      "equilibrium_residual_exactly_zero": true
+    },
+    {
+      "controller": "lag_compensated_changed_controller",
+      "kappa_normalized": "29/48",
+      "lambda_normalized": "2",
+      "r_normalized": "10",
+      "j_normalized": "1/100",
+      "w_normalized": "0",
+      "steady_b": "1/1000",
+      "steady_position_error_m": "1/192000",
+      "steady_position_error_mm_approx": 0.005208333333333333,
+      "forcing_fourth_coefficient": "5/24",
+      "equilibrium_residual_exactly_zero": true
+    }
+  ],
+  "homogeneous_matrix_unchanged_by_kappa": true,
+  "matched_replan_coordinate_note": "Matching actual state, q0/q1/q2, and retained u keeps xi continuous despite a jerk jump. This remains an algebraic observation here; a finite forced-execution theorem is not yet proved.",
+  "caution": "An asymptotic offset is not a finite-horizon violation proof. Screen exact-segment transients before more formalization."
+}

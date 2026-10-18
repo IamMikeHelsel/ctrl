@@ -1,0 +1,123 @@
+HELD-INPUT MODEL SEMANTICS — 17 October 2026
+
+Implemented in LeanControls/HeldModels.lean, independently from the JSON
+producer's symbolic transition derivation. The source imports the generated
+JerkIntegrator and CoupledPlanar certificate modules and directly proves that
+their matrices represent the explicitly specified held ODE solutions below.
+
+CHECKED RESULT
+
+21 theorem declarations compiled with Lean 4.35.0. Every declaration was
+individually checked with #print axioms, including dependency closure, and
+reported only propext, Classical.choice, and Quot.sound. No unfinished proof,
+additional axiom, native-decide assumption, or numerical solver is used in this
+semantic bridge. The build completed successfully as target
+LeanControls.HeldModels (3221 dependencies/targets in that invocation).
+
+Reproduction from lean-controls/:
+  ELAN_HOME="$PWD/../.tools/elan" ../.tools/elan/bin/lake build LeanControls.HeldModels
+
+The parent project audit should import this module and include its declarations
+before reporting a complete project theorem count. This task did not edit the
+aggregate import file or shared audit, to preserve separate file ownership.
+
+JERK INTEGRATOR
+
+Initial state z=(x0,v0,a0), with sampled command
+  u0=-x0-3v0-3a0.
+The explicit segment is
+  x(t)=x0+t*v0+(t^2/2)*a0+(t^3/6)*u0,
+  v(t)=v0+t*a0+(t^2/2)*u0,
+  a(t)=a0+t*u0.
+
+Theorems prove the initial state, x'=v, v'=a, a'=u0, and the combined vector
+field. u0 depends on the INITIAL z and remains constant during differentiation.
+It is not recomputed as -x(t)-3v(t)-3a(t).
+
+Jerk.segment_eq_transition proves for every real h and every initial z:
+  segment(h,z) = Generated.JerkIntegrator.transition(h) * z.
+Jerk.segment_energy_decrease then imports the certificate consequence:
+  0<=h<=1/2 => V(segment(h,z)) <= V(z)-h*sum_i z_i^2.
+Jerk.intersample_energy proves V(segment(t,z))<=V(z) for 0<=t<=1/2.
+
+COUPLED PLANAR INTEGRATOR
+
+Initial state z=(q10,q20,v10,v20). The held acceleration components are
+  u10=-2q10-(1/2)q20-3v10-(1/4)v20,
+  u20=-(1/2)q10-q20-(1/4)v10-2v20.
+For j=1,2 the explicit segment is
+  qj(t)=qj0+t*vj0+(t^2/2)*uj0,
+  vj(t)=vj0+t*uj0.
+
+Theorems prove the initial state and all four differential equations. The
+vector-field statement preserves the cross-axis coupling and constant sampled
+input. Planar.segment_eq_transition proves equality to the generated four-by-
+four polynomial transition. Planar.segment_energy_decrease transfers the same
+V decrease form on 0<=h<=1/2.
+Planar.intersample_energy likewise proves the energy cannot exceed its value
+at the segment's start for any 0<=t<=1/2.
+
+EVERY-SEGMENT TRAJECTORY ENVELOPE
+
+Both namespaces also provide sampled_segment_bound. For any h_n in
+[hmin,1/2] with hmin>=0, and any sequence obeying the actual recurrence
+  z_(n+1)=segment(h_n,z_n),
+the theorem proves for every n and every 0<=t<=h_n:
+  V(segment(t,z_n)) <= (1-hmin/M)^n V(z_0),
+where M is the corresponding generated upper energy bound. Thus the energy
+envelope covers every point in every segment, not merely sample endpoints.
+hmin=0 gives a nonincreasing bound; positive hmin is required for geometric
+decay. The theorem is indexed by sample and local time, rather than using a
+single global real-time trajectory definition.
+
+WHAT THIS CLOSES
+
+The matrix certificate is now connected by Lean equalities and derivatives to
+the stated nominal held-input plant segments. This is stronger than trusting
+JSON model annotations or SymPy's F'=NF-BK check. The coordinate ordering and
+feedback signs are explicit and checked in the transition equality.
+
+WHAT REMAINS SEPARATE
+
+These are constructed exact solutions. This file does not prove uniqueness
+among arbitrary differentiable ODE solutions, construct a single global
+piecewise trajectory, establish non-Zeno sampling, model physical units, or add quantization,
+actuator saturation, disturbances, input delays, sensor delays, or motor lag.
+The derivative theorems hold for every real segment argument; the stability
+consequence is restricted to the certified nonnegative interval. A global
+real-time statement needs the piecewise-trajectory assembly and sampling-time
+coverage. The energy and norm bounds of the generated modules remain available
+for that assembly.
+
+DECLARATIONS AUDITED
+
+LeanControls.HeldModels.held_position_derivative
+LeanControls.HeldModels.held_velocity_derivative
+LeanControls.HeldModels.Jerk.segment_initial
+LeanControls.HeldModels.Jerk.position_derivative
+LeanControls.HeldModels.Jerk.velocity_derivative
+LeanControls.HeldModels.Jerk.acceleration_derivative
+LeanControls.HeldModels.Jerk.segment_ode
+LeanControls.HeldModels.Jerk.segment_eq_transition
+LeanControls.HeldModels.Jerk.segment_energy_decrease
+LeanControls.HeldModels.Jerk.intersample_energy
+LeanControls.HeldModels.Jerk.sampled_segment_bound
+LeanControls.HeldModels.Planar.segment_initial
+LeanControls.HeldModels.Planar.position1_derivative
+LeanControls.HeldModels.Planar.position2_derivative
+LeanControls.HeldModels.Planar.velocity1_derivative
+LeanControls.HeldModels.Planar.velocity2_derivative
+LeanControls.HeldModels.Planar.segment_ode
+LeanControls.HeldModels.Planar.segment_eq_transition
+LeanControls.HeldModels.Planar.segment_energy_decrease
+LeanControls.HeldModels.Planar.intersample_energy
+LeanControls.HeldModels.Planar.sampled_segment_bound
+
+SHA-256 AT SUCCESSFUL CHECK
+
+HeldModels.lean
+21a479c8443097549e49d605291ee525ebe3a49a57372b0c4817f85dad0f458a
+Generated/JerkIntegrator.lean
+7119570cd9b0d9e57c80941dd0dbe43a3ad1038b49b7798da0d9fced9c50dff1
+Generated/CoupledPlanar.lean
+bd7f9dcd90009abffc8fe42e1dc52fa5ae841ec161ce6b23caa9f09e74aff187

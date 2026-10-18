@@ -1,0 +1,74 @@
+Fresh project-source replay: frozen 25-module snapshot
+======================================================
+Result: PASS. All 25 project modules plus the aggregate module rebuilt from the copied Lean sources. The complete 248-public-declaration audit passed with only propext, Classical.choice, and Quot.sound. check.sh exited 0 in 41.023 seconds.
+
+Snapshot identifier (SHA-256 of the canonical per-file hash map):
+  1b916d2480a0320d836d9f1edba8ce1d02a98917c206ffc45fa41767e6c81e6e
+
+This replay deliberately freezes the 25-module / 248-declaration snapshot. Later original-project additions, including the parent's actuator-lag work, are NOT included. Later changes do not retroactively broaden this result.
+
+How the replay was isolated
+---------------------------
+The project was copied to:
+  /var/folders/my/gvpc8lhn61b07vzgm7fxmnmh0000gn/T/lean-controls-fresh-replay-o6r8f42v/lean-controls
+
+The copy included 50 source/configuration/script/input files. It omitted the original project's entire .lake directory, previous build/audit evidence, Python cache files, and project compiler products. The sole copied evidence file was evidence/declarations.json: this is the source declaration inventory that check.sh verifies, not prior build or proof-check results.
+
+Before execution:
+  - No project .lake/build directory existed.
+  - No project .olean files were present.
+  - Every copied input file's SHA-256 matched the original frozen snapshot.
+
+Dependencies were then copied separately with macOS `cp -cR`, an independent-path copy-on-write clone of the pinned .lake/packages cache. A representative file had different source/destination inodes and identical bytes. All nine cloned dependency checkout HEADs matched lake-manifest.json, including mathlib:
+  56a005855ea17e0b0958f73ec801ae140b0a1679
+
+The original dependency paths were not used as writable build paths. The original source tree and original evidence files were not modified by this replay.
+
+Execution
+---------
+The copied, unmodified check.sh ran with explicit paths to the existing workspace Elan/Lake installation:
+  ELAN_HOME=<workspace>/.tools/elan
+  LAKE=<workspace>/.tools/elan/bin/lake
+  ./check.sh
+
+It performed:
+  1. Source declaration/import inventory consistency check.
+  2. Lake build of the copied source project.
+  3. Lean #print axioms evaluation for every declaration in the copied Audit.lean.
+  4. Exact declaration-set and allowed-axiom checks.
+
+The build log explicitly records fresh "Built" entries for all 25 project modules and LeanControls. It reports 3359 total jobs, which includes reused dependency jobs; this number is NOT a count of fresh module compilations.
+
+After execution:
+  - All 50 frozen input-file hashes were unchanged.
+  - All 248 expected declaration names were present in the new audit output.
+  - Every audited axiom set was a subset of {propext, Classical.choice, Quot.sound}.
+  - No original build/audit output was used to satisfy the checks.
+
+Recorded toolchain:
+  leanprover/lean4:v4.35.0
+  Lean version 4.35.0, arm64-apple-darwin24.6.0
+  Lean commit eb6cafb7290e8bd5f2937522d8d804f58f02bafc, Release
+
+Timing (UTC):
+  Snapshot preparation began: 2026-10-17 14:12:03
+  check.sh began:             2026-10-17 14:13:40
+  check.sh completed:         2026-10-17 14:14:21
+
+Durable evidence
+----------------
+  publication/fresh-replay.json
+    Input-file hashes, dependency revisions, toolchain, command, fresh module
+    compilation inventory, audit summary, log and archive hashes.
+  publication/fresh-replay.log
+    Complete fresh check.sh output, including all 248 axiom reports.
+  publication/fresh-replay.sources.tar.gz
+    The 50 frozen project inputs. No toolchain, dependency cache, .olean files,
+    or prior build/audit results are included. Retains the replayed snapshot if
+    the main source tree advances or the operating system removes temp files.
+
+Limits of the evidence
+----------------------
+This is a FRESH PROJECT-SOURCE REPLAY WITH CACHED DEPENDENCIES. It is not a pristine independent-toolchain build. It reused the existing pinned Lean executable and cloned dependency source/compiled caches on the same machine. It did not bootstrap Lean, independently recompile all of mathlib, use a second kernel implementation, validate external hardware, or independently establish that all theorem statements match physical intentions.
+
+The frozen snapshot initially matched the original project exactly. The parent explicitly permitted the original project to advance while this replay ran. At final comparison, scripts/verify_benchmarks.py had changed in the original; the frozen replay copy remained unchanged. This replay ran check.sh and the full theorem/axiom audit; it did not run the later benchmark verifier or certify subsequent source extensions.

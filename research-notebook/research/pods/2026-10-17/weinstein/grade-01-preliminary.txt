@@ -1,0 +1,68 @@
+WEINSTEIN POD — PRELIMINARY INDEPENDENT SOURCE REVIEW
+2026-10-17
+
+Status: no semantic blocker found in the inspected bridge and interface sources.
+This is not a final grade. Sources are still changing. I have not independently
+compiled or replayed this snapshot. Final acceptance needs frozen hashes and a
+successful independent fresh build, axiom audit, replay, and false-square check.
+
+What the source actually defines
+HodgeBridge.lean:9-23 defines V=R^14 and B through the ordered coordinate basis
+and its dual. The unit weights are +1 at 0..6 and -1 at 7..13. B_basis_basis
+proves the diagonal entries. B_bijective follows from an actual linear
+equivalence. It does not assume nondegeneracy or the Hodge conclusion.
+
+Lines 36-48 define the volume map from the actual top exterior basis. vol_top
+proves that the ordered top wedge maps to +1. Lines 50-54 name the subset/Fin
+index equivalence and use it consistently to reindex the actual exterior basis.
+The Fin enumeration is not asserted to be lexicographic or computationally
+canonical; this is acceptable for a coordinate bridge. Reports must not imply
+that numeric array indices already have an external standard ordering.
+
+Lines 62-71 define H directly with pinned Mathlib exteriorPower.hodgeStar and
+establish its defining pairing. Lines 81-97 derive the induced metric diagonal
+on the actual exterior basis. Lines 108-127 derive the signed-complement formula
+from Mathlib's actual exterior wedge pairing and induced metric injectivity.
+This is not an arbitrary signed array relabeled as Hodge star.
+
+Lines 130-200 derive the negative total metric product, the complementary signs,
+and H12(H2(x))=-x for every real 2-form. The proof uses actual graded exterior
+multiplication to establish the 2/12 swap sign. It has no star-square assumption.
+The last extension uses basis extensionality, so it covers all real 2-forms,
+not only the two later examples.
+
+Convention review
+Lines 203-240 define S=-H, then prove S's independent characterization
+  vol(x wedge S(y)) = B_k(x,y).
+H_eq_neg_S alone would be definitional. S_pairing supplies the substantive
+bridge to the other Hodge convention. The signed-complement coefficients are
+correct for the stated metric and orientation. The general S_basis statement
+also covers degree 12. Neither definition silently changes the earlier gauge
+or torsion signs.
+
+Coordinate interface review
+Lines 242-274 define star2 from H's actual basis images, prove its finite-sum
+representation, and derive its signed-complement entries. HodgeInterface.lean
+then identifies that same sum with frozen GUOperatorAudit.linearCoeff over R.
+It supplies both H and S conventions with opposite arrays. This removes the
+arbitrary-coefficient gap for this one map. It does not instantiate or validate
+all fields of SwerveCoefficients, and makes no such claim.
+
+Pending acceptance evidence
+At inspection, HodgeChecks.lean contains ongoing proofs of eps(I01)=eps(I07)=1.
+The final actual H/S basis-value theorems, a concrete nonzero witness that refutes
+square +Id, and the verification runner/results are not yet present in this
+snapshot. Their absence is expected while the builder finishes, but final
+acceptance must check them. No result is inferred from a partial or cached build.
+
+Scope
+This is a fully declared local real (7,7) exterior-algebra model. It does not
+supply the author's Phi tensors, a Clifford/spinor realization, the u(64,64)
+real form, brackets or i factors, a global bundle operator, Weyl annihilation,
+or a Bianchi identity. Those are still distinct mathematical obligations.
+
+Inspected snapshot hashes (mutable, not final)
+HodgeBridge.lean: fbc6d72faba84f12c027a627972ba04dc217c4336512d40b8f706028cad6f760
+HodgeInterface.lean: 54caa5d69f52d1047ca5fd59cae9c389b7162116bbf9c3c8df2f30880ec1833b
+HodgeChecks.lean: a841558f1991aece0e12492a28389a775bdd7bf2213a4aee0655214f859274f8
+conventions.txt: add230ebb1b21c62d4a5d2040c5e9a6c8d8d7304c95643f2a211c28b54a46405

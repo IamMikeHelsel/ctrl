@@ -1,0 +1,37 @@
+GeneralHandoff scope — 2026-10-17
+
+GeneralHandoff.lean is a standalone extension. It compiles without warnings or
+errors. All eight public theorem closures use only the standard Lean axioms
+propext, Classical.choice and Quot.sound. Existing project/mathlib artifacts
+are reused. No frozen source was changed. This check is not a fresh dependency
+rebuild or a separate prover. See general-handoff-manifest.json for hashes.
+
+IsContinuation r T h e d f requires full-state continuity on t>=0 and the
+actual sampled own-state ODE only after T. For each tail interval the command
+is clip_1(input(f(T+sampleTime h n))+e_n)+d_n. The rate is one fixed r; both
+errors are held command quantities, with d after clipping and inside the lag.
+The tail begins from exactly f(T). No formula equality, safe-set membership,
+uniqueness hypothesis, prefix controller or prefix ODE is part of the contract.
+
+shifted_isExecution derives the existing actual-execution contract at time0
+from this shifted tail. tail_eq_state then uses the existing ODE uniqueness
+theorem. actual_all_time_safe proves |f(t)_0|<=2 for every t>=0 when:
+  T>=0; r in[.9,1.1]; 0<hmin<=h_n<=.2;
+  |e_n|+|d_n|<=1/90 for every tail indexn;
+  the prefix is safe at every t in[0,T]; and V(f(T))<=12.
+The last two conditions are explicit prefix-certificate obligations. They are
+not assumed secretly by a trajectory definition or by the ODE contract.
+
+continuation r T h e d p chooses p(t) before and atT and the exact sampled
+trajectory initialized atp(T) afterwards. The branches agree atT in position,
+velocity and acceleration. The theorem constructs continuity and the actual
+own-feedback tail ODE from only prefix continuity, nonzeror, and positive dwell.
+exists_continuation requires no prefix safety or terminal-energy assumption.
+The construction lemmas also hold for negativeT; the safety/shift theorem
+explicitly requiresT>=0, and physical prefix applications use that domain.
+
+This is intentionally independent of a prefix controller. To claim that the
+whole joined curve is a physical plant execution, a caller must separately
+prove that the supplied prefix follows the intended plant and controller.
+Continuity alone is not such a proof. For example, the checked recovery prefix
+or a finite actual-execution prefix can discharge that separate obligation.

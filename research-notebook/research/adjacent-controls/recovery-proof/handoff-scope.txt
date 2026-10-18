@@ -1,0 +1,29 @@
+RecoveryHandoff semantic scope (2026-10-17)
+
+Checked standalone module: RecoveryHandoff.lean. Nine public theorem closures use
+only propext, Classical.choice and Quot.sound. The check reuses the pinned frozen
+project and mathlib build artifacts; it is not a fresh dependency rebuild.
+
+IsRecoveryExecution specifies a continuous three-coordinate trajectory with its
+own initial state, exact held command -1 before T, and its own sampled clipped
+feedback after T. There is one fixed rate r throughout, no state reset, and no
+backup disturbance. Tail errors are held pre-clamp request error e and held
+post-clamp command error d, both inside r*(command-acceleration).
+
+The derived backup identity includes the endpoint. Shifting by T yields the
+existing IsExecution without assumed equality to an analytic state. The generic
+travel theorem requires a backup whole-path bound and an exact terminal energy
+bound; these are explicit obligations for separate concrete certificates.
+For r in [9/10,11/10], positive dwell lower bound, h<=1/5 and |e|+|d|<=1/90,
+it proves |position(t)|<=2 for every t>=0.
+
+An explicit piecewise execution satisfies this differential-equation contract
+under r!=0, T>=0 and positive dwell, without energy or safety premises. Both
+pieces agree at T in all coordinates. Any two executions with the same initial
+state, fixed rate, timing and error sequences agree for every nonnegative time.
+Thus the main result is not made vacuous by an uninhabited execution predicate.
+
+No concrete initial box, terminal certificate, physical calibration, backup
+errors, time-varying rate or guaranteed rest state is asserted in this module.
+Independent adversarial read found no endpoint, shifted-feedback or existence
+logic blocker. See handoff-manifest.json and handoff-check.log for exact evidence.

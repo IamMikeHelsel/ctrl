@@ -1,0 +1,168 @@
+Coupled wheel/driveline measurements: attribution before control
+Primary-source screen, 2026-10-17. No experiment, implementation, or claim about
+the user's particular robot. Updated for the clarification that the issue was
+wheel/tire imbalance versus contributions from other drivetrain components.
+
+Assessment
+----------
+This is a credible connection to our uncertain-transient work at the level of
+reasoning: several plausible causes can explain the measured response, and an
+action must remain safe across the causes that the evidence has not excluded.
+It is not the same plant model. Our first-order actuator-lag proof does not model
+rotating sources, suspension modes, or source attribution.
+
+The closest source found is unusually direct. SAE paper 2005-01-2307 says that
+overlapping driveline orders and wheel-order harmonics can prevent repeatable
+imbalance-sensitivity measurements. It uses small differences in wheel-roll
+speeds on a chassis dynamometer to separate rotating-component orders [1]. Thus
+the source-separation problem is established prior art, not a new discovery.
+
+Three different problems must stay separate
+------------------------------------------
+1. Source/parameter nonidentifiability: two different assignments of wheel and
+   drivetrain forcing can produce the same observations. Extra copies of those
+   observations do not distinguish the assignments. Small differences relative
+   to measurement/model error cause practical ill-conditioning even when exact
+   identifiability holds.
+2. Shared information: sensors or processed features can contain a common force,
+   reference, calibration error, prior, or filter history. Treating dependent
+   estimates as independent can overstate confidence. Correlation alone does
+   not mean a channel should be discarded; its distinct transfer path may help.
+3. Mechanical overconstraint: incompatible or redundant physical constraints
+   can create loads or alter compliance. Nothing in the user's clarification
+   establishes this diagnosis. More measurements than unknowns is an
+   overdetermined inverse problem, not necessarily mechanical overconstraint.
+
+For this account, item 1 is the main issue. Item 2 may coexist but should not be
+inferred from the word "deduplicated." Suspension is a support/transfer path;
+it need not be a rotating imbalance source itself.
+
+A small model exposes the ambiguity (our analysis, not a fitted vehicle model)
+----------------------------------------------------------------------------
+At one tracked frequency, use complex amplitude/phase observations:
+
+    y(omega) = H_w(omega, theta) U_w
+             + H_d(omega, theta) U_d + e.
+
+Here U_w and U_d denote source amplitudes under a stated convention (the usual
+speed-squared imbalance factor can be included in H); theta contains support
+and coupling parameters. If H_w and H_d are proportional across all available
+channels, only a combination of U_w and U_d is identifiable. For example, with
+H_w = H_d, replacing (U_w,U_d) by (U_w+c,U_d-c) changes no observation. Perfect
+noise-free sensing does not fix that ambiguity.
+
+An ordinary common speed sweep helps only if it changes distinguishable source
+orders or transfer-path signatures. Sources locked to the same order can stay
+confounded throughout the sweep. Phase references, load and coupling state must
+also be tracked; subtracting amplitudes without phase is not vector subtraction.
+
+A known trial mass is an intervention on one source. Under an unchanged linear
+transfer path and unchanged nuisance forcing,
+
+    delta y = H_w delta U_w.
+
+This identifies wheel sensitivity. It DOES NOT by itself identify the baseline
+wheel imbalance: y = H_w U_w + b_d still has two unknown contributions. Removing
+total measured vibration with a wheel correction could compensate another
+source at one operating condition rather than isolate the wheel's imbalance.
+An additional independent signature or intervention is needed for attribution.
+Nonlinear response or a changed support/load state can invalidate the subtraction
+assumptions [3]. This is the main trap to avoid in the proposed research.
+
+Five primary sources and the exact evidence used
+-----------------------------------------------
+[1] Braun, Meinhardt, Walter, Steyer and Voight (2005), "Driveline Imbalance
+    Sensitivity Testing Methodology," SAE 2005-01-2307.
+    https://saemobilus.sae.org/papers/driveline-imbalance-sensitivity-testing-methodology-2005-01-2307
+    https://doi.org/10.4271/2005-01-2307
+    Inspected: official publisher abstract/metadata, not paywalled full paper.
+    Direct vehicle evidence for overlapping orders, known-added-imbalance
+    sensitivity tests, and differential roll-speed separation. Its particular
+    dynamometer method is not automatically available on an on-vehicle robot.
+
+[2] I. A. Craighead (1997), "Sensing tyre pressure, damper condition and wheel
+    balance from vibration measurements," Proc. IMechE Part D 211(4), 257-265.
+    https://journals.sagepub.com/doi/10.1243/0954407971526416
+    Inspected: official publisher abstract/metadata, not full paper. Proposes
+    extracting tire, damper and wheel-balance information from wheel/axle
+    vertical vibration during driving. Supports the coupled-measurement setting;
+    the abstract does not establish uniqueness of source separation.
+
+[3] "Investigation into the influence of bearings nonlinear forces in unbalance
+    identification," Journal of Sound and Vibration 492 (2021), 115807.
+    https://doi.org/10.1016/j.jsv.2020.115807
+    https://www.sciencedirect.com/science/article/abs/pii/S0022460X20306362
+    Inspected: publisher-indexed abstract and introduction; direct open returned
+    an access error, so no full-paper claim. Discusses trial-mass influence
+    coefficients and the limits of assuming linear rotor response with nonlinear
+    bearings. Rotor/bearing research, not validation of a vehicle suspension.
+
+[4] Murat Uney, Simon J. Julier and Simon Maskell (2025), "Generalising
+    Covariance Intersection for multiple posterior densities in multi-sensor
+    fusion," IEEE SSP, DOI 10.1109/SSP64130.2025.11073391.
+    https://discovery.ucl.ac.uk/id/eprint/10217482/
+    https://discovery.ucl.ac.uk/id/eprint/10217482/1/SSP-2025-GeneralisedCovarianceIntersection-2.1.pdf
+    Inspected: author accepted manuscript, introduction and formulation. Treats
+    fusion with shared information/unknown correlations. This addresses excess
+    statistical confidence, not physical source identifiability. A covariance
+    bound is also not automatically a deterministic error bound for a Lean
+    all-trajectories safety theorem.
+
+[5] Johannes Koehler, Peter Koetting, Raffaele Soloperto, Frank Allgoewer and
+    Matthias A. Mueller (2020), "A robust adaptive model predictive control
+    framework for nonlinear uncertain systems," IJ Robust Nonlinear Control.
+    https://arxiv.org/abs/1911.02899v2
+    https://doi.org/10.1002/rnc.5147
+    Inspected: author-posted abstract and version/journal metadata. Connects
+    set-membership parameter bounds with robust constraints and recursive
+    feasibility. This establishes the broad identification-to-safe-control
+    approach as prior art; it does not certify our proposed rotating system.
+
+One falsifiable research question
+--------------------------------
+Can a small, explicitly bounded intervention distinguish wheel contribution
+from synchronous drivetrain forcing enough to certify a safe next spin/test
+action, without requiring unique estimates of every mechanical parameter?
+
+Proposed first test, not work already performed:
+- Fix a public low-order coupled model, a finite operating range, and a joint
+  bounded error model. Include at least two rotating sources, unknown support
+  stiffness/damping and an explicit phase reference. State what is measured and
+  which wheel/shaft speed ratios can actually be changed.
+- Construct an indistinguishable-source case first. A common speed sweep must
+  not produce false certainty in that case. Repeating the exact same bounded
+  observation must not shrink the feasible set.
+- Compare the same baseline data with one predeclared intervention: a known
+  small trial mass plus an independently separating operating condition, or a
+  permissible change in relative rotating speeds. Mechanical decoupling is only
+  an option if feasible; changing it also changes the transfer model.
+- Retain every source/plant/error tuple consistent with all observations.
+  Check whether its worst-case vibration/travel envelope permits a predeclared
+  next action that the baseline uncertainty set could not certify. Check the
+  envelope on held-out speed/load conditions. No arbitrary post-hoc threshold.
+
+Candidate theorem: assuming the true plant and bounded errors are in the initial
+joint set, the update preserves that tuple; an action certified for every tuple
+in the updated set respects the stated limit throughout the action and its
+specified safe termination. Duplicate constraints leave the exact set unchanged.
+The theorem must include the intervention dynamics and support-model changes,
+not merely perform an interval fit and assume it contains the real plant.
+
+Stop gates: stop or narrow the claim if two source assignments remain compatible
+but require conflicting corrections; if held-out data refute the assumed error
+or model bounds; or if safe excitation cannot provide enough separation. A
+correct outcome may be "attribution unresolved; this action remains safe" rather
+than a falsely precise wheel-imbalance estimate.
+
+What could be useful for publication
+-----------------------------------
+A reproducible benchmark that exposes same-order ambiguity, followed by a
+machine-checked bounded-attribution-to-safe-action result, could be useful.
+Source separation, trial masses, robust adaptation, and conservative fusion are
+already known. We have not established novelty for their combination.
+
+Reusable local work: exact interval acceptance, uncertainty-preserving bounds,
+continuous-segment safety, and explicit handoff obligations. New work: coupled
+oscillatory dynamics, a sound measurement/phase/error model, intervention
+identifiability and bounded source attribution. No current Lean result solves
+the user's balancing setup, and no hardware or proprietary-data claim is made.

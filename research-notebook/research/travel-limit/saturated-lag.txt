@@ -1,0 +1,72 @@
+Exact saturated held-input actuator-lag bridge
+============================================
+
+Source: lean-controls/LeanControls/SaturatedLag.lean
+Namespace: LeanControls.SaturatedLag
+
+Model and semantics
+-------------------
+State order is [position x, velocity v, acceleration a]. The normalized actuator
+time constant is one. The sampled feedback request is input(z)=-x-3v-2a.
+During one interval, the applied input is u=clip[-1,1](input(z))+w, with both
+the sampled request and additive disturbance w held constant. The exact model
+is x'=v, v'=a, a'=-a+u. The disturbance is added after clipping: the clipped
+command is limited to one, while total input including w need not be.
+
+heldSegment is the analytic exponential solution for an arbitrary held u.
+segment uses the actual clipped request plus w. Component derivative theorems
+and segment_ode establish the equations for that exact model. segment_zero
+establishes its initial state. These facts impose no discretization error.
+
+response(t)=[t^2/2-t+1-exp(-t), t-1+exp(-t), 1-exp(-t)].
+heldSegment_add_input proves the exact disturbance response identity. Under
+|input(z)|<=4, segment_sector_decomposition chooses one alpha in [1/4,1]
+such that, simultaneously for every t and w,
+
+  segment(t,z,w)=nominalSegment(t,z,alpha)+w*response(t).
+
+The chosen alpha depends on the initial request, not on elapsed time or w.
+The actual saturated feedback is retained. Requests between one and four in
+magnitude can genuinely clip; no inactive-saturation assumption is made.
+
+Four-vertex bridge
+------------------
+segmentInExp exposes a common scalar exponential parameter e in all three
+coordinates. Its dependence is affine in e at fixed alpha and affine in alpha
+at fixed e. Four exact coordinate identities connect (alpha,e) equal to
+(1/4,1-t), (1/4,1-t+t^2), (1,1-t), (1,1-t+t^2) to the four generated Travel
+transition matrices. These identities are symbolic Lean equalities.
+
+ActuatorLag.exp_interpolation supplies exp(-t) between 1-t and 1-t+t^2 on
+0<=t<=1, including t=0. nominal_enclosed then supplies a nested convex
+combination of the four transitions for every alpha in [1/4,1]. The gain
+interpolation parameter is (4*alpha-1)/3. Both parameters are proved in [0,1].
+
+All four generated matrices share exactly the same positive quadratic P:
+  [[38/5,257/25,5], [257/25,1319/50,769/50], [5,769/50,278/25]].
+Using their checked decrease certificates and quadratic convexity,
+nominal_energy_decrease proves, for all initial z, all alpha in [1/4,1],
+and all t in [0,1/5],
+
+  energy(nominalSegment(t,z,alpha)) <= energy(z)-t*squaredNorm(z).
+
+nominal_energy_nonexpansion is the resulting upper bound by initial energy.
+This is no overshoot relative to the initial sample. It does not assert
+pairwise monotonicity between arbitrary times within the interval.
+
+Scope and remaining composition
+-------------------------------
+This module alone does not establish a disturbed invariant, position limit,
+all-real-time closed-loop bound, or safety under arbitrary varying continuous
+disturbances. Those require bounds on response, ellipsoid geometry, recurrence
+and sampling-clock coverage. It exposes the exact equalities needed for that
+composition. There is no quantization, sensing noise, floating-point error,
+hardware calibration, changing lag constant, or actuator rate limit here.
+
+Validation
+----------
+lake build LeanControls.SaturatedLag completed successfully with 21 public
+theorems. An independent #print axioms file audits those theorem names; output
+is retained in saturated-lag-axioms.txt. All 21 results depend only on the
+standard propext, Classical.choice and Quot.sound axioms. No existing Lean source, aggregate
+imports, or global Audit.lean was edited by this task.

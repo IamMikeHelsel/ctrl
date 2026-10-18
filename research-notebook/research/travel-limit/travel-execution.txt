@@ -1,0 +1,45 @@
+Execution semantics for the assembled travel-safety trajectory
+=============================================================
+
+Source: lean-controls/LeanControls/TravelExecution.lean
+Namespace: LeanControls.TravelExecution
+
+The module imports TravelSafety and uses its existing recursive samples and
+real-time state definitions. No alternative execution is introduced.
+
+state_on_segment proves, for every n and 0<=s<h(n),
+  state(T_n+s)=SaturatedLag.segment(s,samples(n),w(n)).
+The positive minimum dwell time gives coverage; uniqueness of the containing
+half-open interval identifies the selector's index with n.
+
+state_on_closed_segment extends the equality to s=h(n). Although the selector
+uses the next interval at that endpoint, samples_succ says its initial state
+is exactly the completed previous segment. state_on_interval gives the same
+identity in absolute-time coordinates throughout [T_n,T_(n+1)].
+
+segment_continuous follows coordinatewise from the exact local ODE derivative
+theorems. state_continuousOn_interval transfers it to each closed interval.
+At a positive sample boundary, gluing the adjacent closed intervals yields a
+neighborhood of that boundary. At zero, the first interval gives right
+continuity. Thus state_continuousOn_nonnegative proves continuity of the
+entire state vector on [0,infinity), including all sample boundaries.
+
+state_ode_interior proves the actual assembled trajectory satisfies
+  x'=v, v'=a, a'=-a+clip[-1,1](-x_n-3v_n-2a_n)+w_n
+at every real time strictly between T_n and T_(n+1). An open neighborhood
+stays in that same interval; local equality and the derivative chain rule
+transfer the exact held-segment ODE to the global execution.
+
+Only hmin>0 and h(n)>=hmin are required. These are execution-semantics
+results for arbitrary initial state and arbitrary held disturbance sequence.
+The travel bound still requires TravelSafety's additional initial-region,
+maximum timing, and disturbance magnitude hypotheses. No bound or continuity
+of the disturbance sequence is assumed here. Its per-interval hold is part
+of the defined model. The state is continuous even if the held input changes
+discontinuously at a boundary; no derivative claim at boundaries is made.
+
+Validation: lake build LeanControls.TravelExecution passed. The eight public
+results were individually queried with #print axioms; output is retained in
+travel-execution-axioms.txt. All eight use only propext, Classical.choice and
+Quot.sound. No existing Lean source, root import, or global
+Audit.lean was changed by this task.

@@ -1,0 +1,266 @@
+\documentclass[10pt]{article}
+\usepackage[margin=0.75in]{geometry}
+\usepackage{amsmath,amssymb,amsthm,booktabs,tabularx,array,hyperref,microtype}
+\emergencystretch=1.5em
+\hypersetup{colorlinks=true,linkcolor=blue,urlcolor=blue,citecolor=blue,pdftitle={Lean-Checked Travel Safety with Saturation and Uncertain Actuator Lag}}
+\newtheorem{theorem}{Theorem}
+\newcommand{\R}{\mathbb R}
+\newcommand{\E}{\mathcal E}
+\newcommand{\clip}{\operatorname{clip}}
+\newcommand{\norm}[1]{\left\lVert#1\right\rVert}
+\newcommand{\code}[1]{\texttt{#1}}
+\title{Lean-Checked Travel Safety with Saturation\\and Uncertain Actuator Lag}
+\author{Mike\\\small Working draft; full author details and affiliation to be confirmed}
+\date{17 October 2026}
+\begin{document}
+\maketitle
+\begin{abstract}
+We present an academic verification benchmark and formalize an all-time position envelope for a sampled actuator with command saturation, uncertain fixed lag, variable sampling intervals, and bounded held errors. One fixed controller covers normalized actuator rates in $[9/10,11/10]$, sampling intervals at most $1/5$, and a combined request/drive error budget of $1/100$. From an explicit full-state ellipsoid, every continuous trajectory satisfying its own sampled-feedback ODE remains within $|x(t)|\le2$. The proof connects an exact exponential solution, twelve rational polynomial matrix certificates, an elapsed-time-scaled perturbation inequality, and existence and uniqueness of the sampled execution. A physical corollary retains controller gains tuned to a nominal lag across the admitted fixed-lag plants. Two exact ablations explain why the sector and response bounds matter. The artifact regenerates the certificates, rejects deliberately broken model links, and audits the final statements in Lean. The contribution is a formal application and reusable proof composition using established control methods; no physical-axis validation or optimality is claimed.
+\end{abstract}
+
+\section{Problem and contribution}
+A sample-to-sample inequality alone does not state that a robot axis stays inside a position envelope between updates. A certificate must also describe the actual held dynamics, command clipping, timing assumptions, and admissible errors. For a small actuator model, we join these obligations in Lean and make the final guarantee apply to arbitrary continuous solutions of the stated sampled equations.
+
+The proposed contribution is a reproducible formal case study with three connected parts: uniform certification of a fixed saturated controller under lag uncertainty; an explicit ODE execution contract with existence, uniqueness and all-time safety; and exact ablations and mutation checks that expose important certificate/model boundaries. The Bernstein positivity construction, sector method and Lyapunov reasoning are established techniques. The constants and witness matrix are specific to this controller; we do not claim a general synthesis method, a first formal control envelope, or an optimal uncertainty range.
+
+The model is deliberately small: adding one actuator state to position and velocity exposes plant memory, while clipping, held uncertainty and variable update times exercise distinct proof obligations. Its analytic solution lets an investigator inspect each link from the physical equations to the finite certificate. The parameters define an academic benchmark rather than a calibrated robot.
+
+The position limit is measured from a fixed origin. It is not a bound on accumulated path length, and the model contains no collision or hard-stop contact dynamics.
+
+\section{Execution contract and safety theorem}
+Let $z=(x,v,a)^\top$, $k(z)=-x-3v-2a$, and
+$\clip(s)=\max(-1,\min(1,s))$. Fix a rate $r>0$, sample durations $h_n$, and error sequences $e_n,d_n$. Define $t_0=0$ and $t_{n+1}=t_n+h_n$. A trajectory $f:[0,\infty)\to\R^3$ is an execution if it is continuous, has initial value $z_0$, and, on each open interval $(t_n,t_{n+1})$, satisfies
+\begin{equation}\label{eq:plant}
+ x'=v,\qquad v'=a,\qquad a'=r(u_n-a),\qquad
+ u_n=\clip(k(f(t_n))+e_n)+d_n.
+\end{equation}
+The feedback is evaluated on the trajectory's own sample state. Equality to an analytic formula, invariance and uniqueness are not hypotheses of this contract. Derivatives at switching times are not required.
+
+The request error $e_n$ enters before clipping, and the drive error $d_n$ after clipping but inside the rate multiplier. Both are constant during a hold and may change arbitrarily between holds within the budget below. The clipped component has magnitude at most one; the combined drive $u_n$ need not. An external jerk added outside the rate multiplier is a different specification.
+
+Set $\E(z)=z^\top Pz$ and $\mathcal S=\{z:\E(z)\le12\}$, where
+\begin{equation}\label{eq:P}
+P=\begin{pmatrix}
+38/5&257/25&5\\
+257/25&1319/50&769/50\\
+5&769/50&278/25
+\end{pmatrix}.
+\end{equation}
+Checked quadratic bounds give
+\begin{equation}\label{eq:geometry}
+x^2\le\E(z)/3,\qquad k(z)^2\le\E(z)/2,\qquad
+\E(z)\le M\norm{z}_2^2,\quad M=451/10.
+\end{equation}
+In particular, the initial condition constrains position, velocity and acceleration jointly.
+
+\begin{theorem}[Every admitted execution stays inside the envelope]\label{thm:main}
+Suppose $9/10\le r\le11/10$, $\E(z_0)\le12$, and some $h_{\min}>0$ satisfies, for all $n\in\mathbb N$,
+\[
+ h_{\min}\le h_n\le1/5,\qquad |e_n|+|d_n|\le1/100.
+\]
+There exists an execution of \eqref{eq:plant}. Any two executions for these same prescribed $r,h,e,d,z_0$ agree on $[0,\infty)$. Every such execution satisfies
+\[
+ \E(f(t))\le12,\qquad |f(t)_x|\le2\quad\text{for every }t\ge0.
+\]
+\end{theorem}
+Existence and uniqueness actually require only positive $r$ and the positive dwell lower bound; the remaining assumptions establish safety. Uniqueness compares the same prescribed error sequences. It is not a separate uniqueness theorem for a discontinuous state-dependent quantizer.
+
+The result admits active clipping. At $z_0=(0,0,1)^\top$,
+$\E(z_0)=278/25<12$ and $k(z_0)=-2$. A constant period $1/10$ and errors $e_n=d_n=1/200$ satisfy the contract for every admitted rate, with initial request $-399/200<-1$. The formalized nominal special case also gives a cautionary example: the state $(19/10,1,0)$ begins inside the position interval but escapes it by elapsed time $1/5$. It lies outside $\mathcal S$. A position-only initial condition cannot replace the ellipsoid.
+
+\section{Exact dynamics and rational certificate reduction}
+\subsection{One shared exponential remainder}
+For a constant drive $u$ and elapsed time $s$, the held solution is
+\begin{align}\label{eq:exact}
+ a(s)&=u+(a_0-u)e^{-rs},\nonumber\\
+ v(s)&=v_0+us+(a_0-u)(1-e^{-rs})/r,\\
+ x(s)&=x_0+v_0s+us^2/2+(a_0-u)\bigl(s/r-(1-e^{-rs})/r^2\bigr).\nonumber
+\end{align}
+Lean checks its initial value and derivatives against \eqref{eq:plant}.
+For $0\le s\le H=1/5$ and $9/10\le r\le11/10$, a checked exponential enclosure gives a single $\theta\in[0,1]$ with
+$e^{-rs}=1-rs+\theta r^2s^2$. Substituting this identity in all three coordinates yields
+\begin{equation}\label{eq:poly}
+\begin{pmatrix}
+x_0+v_0s+us^2/2+(a_0-u)\theta s^2\\
+v_0+us+(a_0-u)(s-\theta rs^2)\\
+u+(a_0-u)(1-rs+\theta r^2s^2)
+\end{pmatrix}.
+\end{equation}
+The same remainder parameter preserves the relation between coordinates. The $s=0$ case is handled explicitly.
+
+For $z\in\mathcal S$, \eqref{eq:geometry} implies $(2/5)|k(z)|\le1$. Thus the nominal clipped command is $\clip(k(z))=\alpha k(z)$ for some $\alpha\in[2/5,1]$. Invariance will re-establish this condition at the next sample. With $u=\alpha k(z)$, \eqref{eq:poly} is a linear map $F(s,\alpha,\theta,r)z$, affine separately in $\alpha$ and $\theta$ and quadratic in $r$.
+
+\subsection{Twelve vertices, including a nonphysical coefficient}
+The quadratic dependence on $r$ has a degree-two Bernstein representation on $[9/10,11/10]$. At each fixed $(s,\alpha,\theta)$ its three coefficient matrices are
+\[
+ B_0=F(9/10),\qquad
+ B_1=2F(1)-\tfrac12\bigl(F(9/10)+F(11/10)\bigr),\qquad
+ B_2=F(11/10).
+\]
+Arguments other than $r$ are suppressed here. The middle coefficient $B_1$ is generally not the transition matrix for the midpoint plant. Replacing it with $F(1)$ breaks the model identity.
+
+Two sector endpoints, two remainder endpoints, and three rate coefficients give twelve polynomial matrices $F_j(s)$. For each one, the artifact supplies an exact rational certificate
+\begin{equation}\label{eq:certificate}
+ P-F_j(s)^\top P F_j(s)-\tfrac32sI=sR_j(s),\qquad
+ R_j(s)\succeq0\quad(0\le s\le1/5).
+\end{equation}
+Each cubic residual has four Bernstein coefficient matrices on the single interval $[0,1/5]$. The Python producer supplies rational $LDL^\top$ witnesses. Lean checks the polynomial identity, each factorization and nonnegative diagonal, the Bernstein weights, and interval coverage. Producer output has no mathematical authority until checked.
+
+For a nonnegative quadratic form,
+\[
+ \E((1-\lambda)y+\lambda z)
+ =(1-\lambda)\E(y)+\lambda\E(z)-\lambda(1-\lambda)\E(y-z).
+\]
+Nested convexity over the parameter box therefore transfers \eqref{eq:certificate} to every exact nominal held solution:
+\begin{equation}\label{eq:decrease}
+ \E(z_{\rm nom}(s))\le\E(z_0)-\tfrac32s\norm{z_0}_2^2
+ \le(1-2\eta s)\E(z_0),\qquad \eta=15/902.
+\end{equation}
+This compares a segment to its sampled initial state. It does not claim monotonic energy between every pair of interior times. The handwritten matrix identities connecting \eqref{eq:poly} to these certificates are as necessary as the certificate checks.
+
+\section{Held errors, global execution, and uniqueness}
+\subsection{A response estimate with the right time dependence}
+The exact change caused by an additional held drive $w$ is $g(r,s)w$. In the polynomial representation,
+\[
+ g(r,s)=s\bigl((1/2-\theta)s,\ \theta rs,\ r-\theta r^2s\bigr)^\top.
+\]
+A separate convex enclosure bounds its energy by
+\begin{equation}\label{eq:response}
+ \E(g(r,s)w)\le16s^2W^2 \quad\text{when } |w|\le W.
+\end{equation}
+Clipping is nonexpansive, so the actual command is the nominal clipped command plus
+\[
+ w=\clip(k(z_0)+e)-\clip(k(z_0))+d,\qquad |w|\le|e|+|d|.
+\]
+This identity is checked on the actual sample state; a safe execution is not assumed to obtain it.
+
+For $s>0$, apply the quadratic Young inequality with parameter $s\eta$ to \eqref{eq:decrease} and \eqref{eq:response}. The existing generic perturbation lemma gives
+\begin{equation}\label{eq:step}
+ \E(z(s))\le(1-s\eta)\E(z_0)+sD,\qquad
+ D=16(H+1/\eta)W^2.
+\end{equation}
+When $D\le12\eta$ and $0\le s\eta\le1$, the right side is at most $12$ for $z_0\in\mathcal S$. Scaling the Young parameter with elapsed time avoids a fixed energy penalty as $s$ tends to zero. The normalized proof even admits $W=1/90$; Theorem~\ref{thm:main} retains the original $1/100$ contract.
+
+\subsection{From segments to all continuous ODE solutions}
+Define the sample sequence recursively with \eqref{eq:exact}, and join its held segments on the half-open sampling intervals. Endpoint identities prove continuity. The positive dwell bound implies $t_n\ge nh_{\min}$, giving coverage of every finite nonnegative time and uniqueness of its interval. Induction establishes the sample invariant, and \eqref{eq:step} establishes the invariant at every intermediate time. Differentiating the selected segment proves the ODE in each open interval.
+
+To connect this construction to the execution contract, first consider two continuous solutions of one held ODE on a closed interval, with the same initial value. The difference of their accelerations multiplied by $e^{rs}$ has zero derivative in the interval interior. A mean-value argument makes it constant and hence zero; the velocity difference and then the position difference are constant and zero as well. Continuity includes the endpoints, so no derivative assumption at a switch is needed.
+
+If an arbitrary execution and the constructed execution agree at sample $n$, their own sampled feedback commands agree. The held uniqueness result then gives equality throughout the next closed interval. Sample induction and clock coverage prove equality on $[0,\infty)$. This transfers the invariant and position bound to every execution satisfying the contract, rather than only to a designated analytic trajectory. Lean proves both the normalized correspondence and its physical counterpart.
+
+\section{Physical units without retuning the controller}
+Let $\tau_0>0$ be a nominal time constant used by the controller, $\tau>0$ the actual fixed time constant, and $U>0$ the clamp command limit. Normalize by
+\[
+ t=T/\tau_0,\qquad
+ z=\bigl(X/(U\tau_0^2),\,V/(U\tau_0),\,A/U\bigr)^\top,\qquad r=\tau_0/\tau.
+\]
+At physical sample times $T_n$, hold the request
+\[
+ q_n=-X(T_n)/\tau_0^2-3V(T_n)/\tau_0-2A(T_n).
+\]
+The physical execution contract is continuity, the specified initial state, and
+\begin{equation}\label{eq:physical}
+ \dot X=V,\qquad \dot V=A,\qquad
+ \tau\dot A=-A+\clip_{[-U,U]}(q_n+\varepsilon_n)+\Delta_n
+\end{equation}
+on each open sample interval. The same controller gains remain in force across the admitted fixed values of $\tau$. Lean proves that normalizing an arbitrary physical execution gives a normalized execution, including its own sample feedback and time derivatives.
+
+\begin{theorem}[Physical travel envelope]\label{thm:physical}
+Suppose $9/10\le\tau_0/\tau\le11/10$, positive physical dwell times are bounded below uniformly and above by $\tau_0/5$, and
+$|\varepsilon_n|+|\Delta_n|\le U/100$ for every $n$. If the normalized initial energy is at most $12$, every execution of \eqref{eq:physical} satisfies
+\[
+ |X(T)|\le2U\tau_0^2\qquad(T\ge0).
+\]
+There exists such an execution, unique for the prescribed durations, errors and initial state.
+\end{theorem}
+The allowed time-constant range is $10/11\le\tau/\tau_0\le10/9$, which is asymmetric about the nominal value. For illustration, $\tau_0=0.1$ s and $U=2$ m/s$^2$ give actual lags from approximately $90.91$ to $111.11$ ms, sample intervals at most $20$ ms, combined held error at most $0.02$ m/s$^2$, and a position envelope of $\pm4$ cm. These are illustrative assumptions, not robot measurements. The full-state initial condition remains essential.
+
+\section{Evaluation and reproducibility}
+\subsection{Two exact ablations}
+\paragraph{A sector that is too broad for this witness.}
+The preceding nominal-rate certificate used the sector $[1/4,1]$. For the continuous sector generator
+\[
+ A(r,\alpha)=
+ \begin{pmatrix}0&1&0\\0&0&1\\-r\alpha&-3r\alpha&-r(1+2\alpha)\end{pmatrix},
+ \qquad D(r,\alpha)=-(PA+A^\top P),
+\]
+Lean checks, at $r=9/10$, $\alpha=1/4$, and $v=(-1529/2000,-9/4,0)^\top$, that
+\[
+ v^\top D(r,\alpha)v=-4597569/16000000<0.
+\]
+Thus this same $P$ cannot provide even a nonnegative infinitesimal dissipation bound for that entire broader sector family. The state-dependent sector $[2/5,1]$ is sufficient on the admitted ellipsoid and supports the twelve certificates. The obstruction concerns the enlarged sector abstraction and this particular quadratic form. It is not an unsafe trajectory of the clipped plant or a proof that another witness cannot succeed.
+
+\paragraph{A response norm bound that loses the requested error budget.}
+For the same response enclosure, the maximum squared norm of its normalized coefficient vectors is $61/50$. Multiplying by the trace bound $M$ gives the coarse sufficient constant $C=27511/500$. Direct response energy instead gives the checked $C=16$.
+\begin{center}
+\small
+\begin{tabular}{@{}lrrl@{}}
+\toprule
+Estimate & $C$ & $D=C(H+1/\eta)W^2$ & Versus $12\eta=90/451$\\\midrule
+Coarse, $W=1/100$ & $55.022$ & $0.3319661\ldots$ & Fails this sufficient budget\\
+Direct, $W=1/100$ & $16$ & $0.0965333\ldots$ & Passes\\
+Direct, $W=1/90$ & $16$ & $0.1191770\ldots$ & Passes\\\bottomrule
+\end{tabular}
+\end{center}
+Lean checks the exact rational budget comparisons. The derivation of the coarse norm constant is an exact arithmetic diagnostic; the checked direct-energy result is what the safety theorem uses. Failure of a sufficient estimate is not plant unsafety. Neither estimate establishes an optimal error budget.
+
+\subsection{Regeneration and negative model checks}
+A versioned rational specification generates all twelve certificate inputs. The verification script rederives the uncertain polynomial transition and its rate Bernstein coefficients, regenerates the witnesses and Lean modules, compares them with the installed modules modulo terminal whitespace, and freshly checks their proofs and axiom dependencies.
+
+Two negative tests keep the old certificates while breaking distinct semantic links. Substituting the midpoint plant for the middle rate Bernstein coefficient is rejected at the matrix identity. Removing the rate multiplier from the acceleration vector field is rejected at the exact-solution ODE theorem. These demonstrate rejection at the intended boundaries; they do not decide whether an alternative model is safe. The artifact also retains producer-corruption and nominal model-binding tests from the earlier development.
+
+The toolchain is pinned to Lean 4.35.0 and mathlib revision \code{56a0058}; full revisions and hashes are recorded. The rational producer uses SymPy 1.14.0. The aggregate project contains 63 modules and 830 inventoried named public theorem declarations, including earlier examples. These counts measure audit coverage, not research contributions. The permitted transitive axioms are \code{propext}, \code{Classical.choice}, and \code{Quot.sound}. Admitted proofs and extra mathematical or compiler-trust axioms are rejected.
+
+The standalone benchmark contract \path{robust-benchmark/model.json} records the plant, controller, initial set, uncertainty, error/timing assumptions and acceptance properties, with hashes of the corresponding Lean sources. This structured metadata is intended for independent implementations; it is not itself a formally checked semantics parser. With the pinned Lean dependencies and Python requirements installed, \texttt{python3\ scripts/verify\_project.py} runs the complete workflow from the extracted project directory.
+
+One local run took 164.54 seconds for the five-step verification workflow, including 56.98 seconds for the twelve-certificate uncertainty regeneration and mutation checks. Two separate project-source replays took 104.14 and 160.45 seconds. These timings exclude initial toolchain/dependency provisioning, reuse cached dependencies, and occurred with concurrent research workloads. They describe this artifact's local checking cost, not a controlled performance comparison.
+
+The final verification manifest and fresh-source replay accompany this draft. A source replay rebuilds project modules from a separate source snapshot while reusing the pinned Lean executable and isolated mathlib dependency cache; it is not an independent bootstrap of the proof system. Successful checking establishes the formal statements relative to their definitions and the permitted axioms. It cannot establish that a robot implements those definitions.
+
+\subsection{Claim map and reuse boundary}
+\begin{center}\small
+\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{0.37\linewidth}X@{}}
+\toprule
+Lean module & Principal responsibility\\\midrule
+\code{UncertainLag} & Exact held solution, ODE, parameter enclosure, twelve model identities and decrease.\\
+\code{UncertainResponse} & Response energy over the full rate/time/remainder box.\\
+\code{UncertainTravel} & Actual sampled feedback, held errors, sample and all-time energy/travel invariants.\\
+\code{UncertainExecution} & Continuity and interior ODE of the constructed execution.\\
+\code{ExecutionUniqueness} & Arbitrary normalized ODE execution equals the construction; existence, uniqueness, travel.\\
+\code{PhysicalExecutionUniqueness} & Physical execution normalization and arbitrary-trajectory travel theorem.\\
+\code{UncertaintyScope} & Sector obstruction and exact error-budget comparisons.\\\bottomrule
+\end{tabularx}
+\end{center}
+The generic Bernstein checker, quadratic convexity and elapsed-time-scaled perturbation theorem are reusable. The twelve matrices and ellipsoid are application data. Physical normalization reuses one proof across a parameterized plant family. A retained nominal-rate experiment translates the earlier four certificates into existing Lean SOS witnesses; it does not provide a second checker for this entire uncertain execution.
+
+\section{Related work and limits}
+Hellwig et al.~\cite{zonotope} connect numerical zonotope witnesses to KeYmaera X proofs of control envelopes, including one-step invariance, intersample safety and control admissibility. Our case uses a fixed clipped feedback law, ellipsoidal energy, exact lag flow and variable sampling in Lean. No general advantage over that pipeline is established. Earlier theorem-prover work already addresses sampled closed-loop properties~\cite{closedloop}. Doll and Shames~\cite{doll} formalize Lyapunov and small-gain foundations in Lean; our development is not the introduction of formal control theory to Lean. Rational positivity checking and sampled saturation methods likewise have existing implementations and theory~\cite{sos,palmeira}.
+
+To apply the generic certificate layers to another plant, a user must supply its quadratic form and polynomial transition enclosure, prove the connection to the held ODE, establish a command-response bound, and connect the interval invariant to its execution semantics. The producer automates rational witness construction and proof emission; the model identities, enclosure, response analysis and execution bridge remain mathematical work. The present physical rescaling demonstrates parameter reuse, but no independent consumer of the interface or matched comparison with another complete verification pipeline is reported.
+
+The model omits varying lag, within-interval varying disturbance, friction, transport/computation delay, coupling, finite arithmetic, overflow and sensor range. The nominal ideal-rounding result is retained in the artifact but is not asserted as an uncertain-lag quantizer execution theorem here. No physical axis has been calibrated. Before an engineering safety claim, measured parameter/error bounds and an implementation correspondence are required. The benchmark is intended to make those mathematical and implementation correspondence obligations inspectable. Its usefulness beyond this example remains to be tested by another application or independent implementation.
+
+\paragraph{Authorship and assistance.}
+AI systems assisted exploration, proof implementation, writing and review. This local draft for Mike has not been submitted; human review and attribution remain pending.
+
+\begin{thebibliography}{9}\small
+\bibitem{zonotope} J. Hellwig, L. Sch\"afer, L. Qian, A. Platzer, and M. Althoff.
+From Zonotopes to Proof Certificates: A Formal Pipeline for Safe Control Envelopes.
+\emph{iFM 2025}, LNCS 16194, 248--267, 2026.
+\url{https://doi.org/10.1007/978-3-032-10794-7_13}.
+\bibitem{closedloop} N. Ar\'echiga et al.
+Using Theorem Provers to Guarantee Closed-Loop System Properties.
+\emph{American Control Conference}, 2012.
+\url{https://logic.kastel.kit.edu/ap/pub/TPgenloop.pdf}.
+\bibitem{doll} M. Doll and I. Shames.
+Foundations of Machine-Checked Control Theory in Lean. 2026.
+\url{https://arxiv.org/abs/2607.19727}.
+\bibitem{sos} Lean SOS contributors. SOS certificate tooling.
+Revision \code{fb7ae417609093f04cf0608dc92e9343550c2ae4}, inspected 17 October 2026.
+\url{https://github.com/leanprover/sos}.
+\bibitem{palmeira} A. H. K. Palmeira, J. M. Gomes da Silva Jr., S. Tarbouriech, and I. M. F. Ghiggi.
+Sampled-data control under magnitude and rate saturating actuators.
+\emph{International Journal of Robust and Nonlinear Control} 26 (2016), 3232--3252.
+\url{https://doi.org/10.1002/rnc.3503}.
+\end{thebibliography}
+\end{document}

@@ -1,0 +1,147 @@
+A checked graph bridge for sparse halves
+Local completion note — 17 October 2026
+
+This work completes a Lean composition of an existing sparse-half argument.
+It proves the implication below for all finite graph orders. It does not prove
+Erdős #128, improve the numerical constant, or formalize the external max-cut
+theorem. It is a local technical note, not a submitted paper.
+
+Exact result
+
+Let e_G(S) count the unordered edges of G with both endpoints in S. Each edge
+is counted once. Assume the following statement:
+
+  There exists N such that every finite triangle-free simple graph H with
+  at least N vertices has a vertex set X satisfying
+
+    e_H(X) + e_H(V(H)\X) <= (2/47)*|V(H)|^2.
+
+Then every finite triangle-free simple graph G on n vertices has a set S with
+
+    |S| = floor(n/2),
+    e_G(S) <= (2587/100000)*n^2 = 0.02587*n^2.
+
+The conclusion is an integral vertex set. It covers empty graphs, odd orders
+and even orders. The final wrapper uses a non-strict inequality. Its endpoint is
+  Erdos128.CompletionBridge.sparse_half_2587_100000
+in PublishedBCL.lean. The printed full Lean type is in FINAL-THEOREM-TYPE.txt.
+
+The external input
+
+The hypothesis is the cut form of Balogh, Clemen and Lidický's published
+max-cut bound: Max Cuts in Triangle-free Graphs, arXiv:2103.14179v1,
+25 March 2021, PDF Theorem 2(a). It bounds D_2(G), the least number of edges
+whose deletion makes G bipartite, by n^2/23.5 for sufficiently large n.
+There is no extra density or parity condition in that part of the theorem.
+
+Primary reference: https://arxiv.org/pdf/2103.14179v1
+Record: https://arxiv.org/abs/2103.14179
+
+The Lean theorem takes this statement explicitly as hBCL. The project checks
+its use and its transport to arbitrary finite orders. It does not prove BCL's
+full argument or computational certificates. Reporting only standard Lean
+axioms does not discharge this hypothesis.
+
+Attribution and local contribution
+
+The mathematical 0.02587 argument is Pablo Miguel Argudo's A cut and
+independent-set bound for sparse halves, dated 9 September 2026, at commit
+2193a4a06a4ec288a53ae986cdca5c1082abf1bb:
+https://github.com/pma1999/erdos-128-sparse-halves
+That source credits Razborov's Section 4.5 for the completion framework.
+Its formal/Scalar.lean is copied unchanged as ScalarCertificate.lean.
+
+Seven graph, blow-up and rounding modules come unchanged from the aimir
+formal baseline at commit ba85f319ebb33ec2194ef4c2929a12916329e1e7:
+https://github.com/aimir/erdos-128-sparse-halves
+Two BCL transport declarations are also reused, with their proof bodies
+unchanged. The complete file and declaration record is in
+borrowed-bridge-sources.json. Adapted helper provenance appears in the code.
+
+The local work proves and connects the graph-level completion steps. It selects
+independent sets and finite profiles, proves their sizes and edge costs, and
+uses double counting and averaging to obtain an actual witness. It proves the
+piecewise completion envelope and restores deleted edges with the correct cost.
+It then connects the two cut witnesses to the attributed scalar certificate.
+The reused blow-up and rounding results supply the all-order integral endpoint.
+
+This is a formalization contribution. The framework, cut/deletion argument,
+scalar certificate and numerical constant are not claimed as our inventions.
+
+Verification and reproduction
+
+The recorded final run compiled fresh source copies of all 22 local modules.
+Each module then passed a separate leanchecker replay. The 62 recorded audit
+closures use only propext, Classical.choice and Quot.sound. This is an audit
+inventory, not a count of new results. Cached, pinned Mathlib artifacts are
+trusted dependencies. leanchecker is Lean's checker, not a second prover.
+
+The run used Lean 4.35.0 and Mathlib commit
+56a005855ea17e0b0958f73ec801ae140b0a1679. The successful compilation and replay
+took about 520 seconds on the recorded machine. An earlier combined replay
+ended with signal 9 and no diagnostic. Its cause was not established. The
+successful replay used one module per process on the same fresh snapshot.
+
+Run these commands from the workspace root when a new replay is needed:
+
+  python3 research/opportunity-assessment/erdos-completion-spike/verify-full-bound.py
+
+This creates a fresh source snapshot and compiles it, then attempts a combined
+kernel replay. Inspect full-bound-verification.json. If every compilation
+passed, its source hashes are stable, and the complete checkpoint is present,
+the existing sequential runner can replay each fresh module separately:
+
+  python3 research/opportunity-assessment/erdos-completion-spike/replay-fresh-modules.py
+
+The sequential runner checks those prerequisites. Do not treat a failed compile
+as a successful verification. The final sequential record must have passed=true
+and 22 zero-exit replay results. These scripts use the installed toolchain at
+~/.elan/toolchains/leanprover--lean4---v4.35.0/bin and the pinned package artifacts
+under lean-controls/.lake/packages. They are local reproduction scripts; a
+self-contained portable package has not been prepared. Replaying rewrites the
+corresponding verification files and logs, so retain the old record if needed.
+
+No unchanged proofs were rerun for this note. Instead, all 22 current source
+hashes were compared with the passing manifest. They matched.
+
+Artifact pointers
+
+All paths below are relative to research/opportunity-assessment/:
+
+  erdos-completion-spike/PublishedBCL.lean
+      Final conditional theorem and explicit BCL interface.
+  erdos-completion-spike/FINAL-STATUS.txt
+      Authoritative completion status; supersedes older checkpoint lists.
+  erdos-completion-spike/FINAL-THEOREM-TYPE.txt
+      Full printed Lean statement.
+  erdos-completion-spike/full-bound-sequential-verification.json
+      Passing fresh-source and sequential-replay evidence.
+  erdos-completion-spike/independent-review.txt
+      Graph-semantic review, including the appended final-bridge review.
+  erdos-completion-spike/borrowed-bridge-sources.json
+      Attribution, pinned commits and byte-equality records.
+  erdos-scalar-relaxation/README.txt
+      Exact diagnostic showing a limit of the present scalar inequalities.
+
+Final source SHA256, PublishedBCL.lean:
+  842f708532a1bd2d1dcffbc1532321b9d97fd7b87418af99334a13d0444b1fef
+Passing sequential manifest SHA256:
+  c30946d53fabca495466579f8eb6370ad65f10c0781513d2144b8fb7cbd1561e
+
+What remains
+
+An unconditional Lean endpoint needs a proof or verified import of the exact
+BCL input. The conjectural coefficient 1/50 needs additional mathematics.
+The current scalar inequalities alone cannot yield even 0.02586; the separate
+exact diagnostic is a relaxation witness, not a counterexample graph.
+
+There is no submission, accepted paper, agreed author list or prize claim for
+this local work. Any paper must distinguish the original argument, borrowed
+formalization, local formalization work and AI assistance. Authorship has not
+been assigned by this note.
+
+The pinned Argudo source lists CC BY 4.0 for its prose and MIT for its code.
+No LICENSE/COPYING file was found in the inspected aimir source tree. The full
+redistribution and attribution review remains open. This records the local
+evidence; it is not a determination of legal rights. No outside author was
+contacted, and no material was published by this documentation task.

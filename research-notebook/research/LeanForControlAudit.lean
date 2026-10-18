@@ -1,0 +1,7 @@
+import LeanForControl
+
+#print axioms LinearSystems.IsSchur.exists_posDef_unique_solution_discrete_lyapunov
+#print axioms LinearSystems.isSchur_of_discreteLyapunovEquation
+#print axioms DiscreteSystem.globallyExponentiallyStable_of_lyapunov
+#print axioms DiscreteSystem.globallyAsymptoticallyStable_of_lyapunov
+#print axioms exists_isIntegralCurveOn_Ici

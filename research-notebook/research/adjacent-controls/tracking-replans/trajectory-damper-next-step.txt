@@ -1,0 +1,134 @@
+WHEN THE PLAN CHANGES, KEEP THE MOTION
+Research question and next proof — 17 October 2026
+
+The candidate gap is a checked connection between frequent new plans and smooth
+physical execution. Industrial robots already shape paths and filter motion.
+Our question is how to retain those benefits when targets, timing and actuator
+response change, while keeping a stated tracking bound and a feasible stop.
+This is a research hypothesis. We have not established that the combination is new.
+
+A concrete task is a robot carrying a part toward a fixture. Vision keeps revising
+the fixture location. The robot should absorb small corrections without repeated
+jolts. It must also respond to a large correction and retain room to stop. Strong
+filtering can improve motion while adding delay or rounding the path. A useful
+method must account for each cost. Our present proof covers one modeled axis;
+it does not yet cover the full arm, contact, perception or network execution.
+
+WHAT THE EXISTING WORK ESTABLISHES
+
+The finished tracking package has 34 checked statements, including helper lemmas.
+It bounds actual tracking error under changing actuator response and matched
+finite replans. The five-page note, numerical comparison and animation remain a
+separate frozen artifact. Their verification record is verification.json.
+
+CommandSmoothing.lean adds seven checked statements. The new verification record
+is smoothing-verification.json. Fresh source builds, the axiom audit and separate
+kernel replay passed. A false doubled-allowance statement was rejected. The
+independent challenge is in trajectory-damper-challenge.txt.
+
+The main new result is conditional. Let u* be the original acceleration command,
+u the filtered command, and D a bound on |u-u*| throughout the segment. Then the
+earlier physical tracking bound still holds if
+
+    W + D + J/(48 sigma) <= 2 sigma^2 R.
+
+W bounds the actuator disturbance in acceleration units. J bounds planned jerk.
+R is the position-error radius. The actual response rate must lie between
+8 sigma and 12 sigma. The initial transformed error must lie in the same cube as
+before. The proof also retains the original trajectory and derivative conditions.
+The source gives the exact statement. This result does not prove that a chosen
+filter maintains D.
+
+At a matched replan, the filter state must survive. If the planned jerk changes
+by delta-j, the old command law changes by
+
+    delta-u* = 5 delta-j/(48 sigma).
+
+A continuous filter cannot follow that jump instantly. Its mismatch transfers as
+
+    d+ = d- - delta-u*.
+
+This is why a smooth reference alone is insufficient. A controller can reintroduce
+a command jump through jerk feedforward. Resetting the filter at each replan would
+remove the very continuity we want to preserve.
+
+The 0.2 mm illustration makes the conflict concrete. At sigma=10, W=0.01 m/s^2
+and J=10 m/s^3, the remaining pointwise filter budget is only 11/1200 m/s^2.
+A planned-jerk reversal from -10 to +10 changes u* by 5/24 m/s^2. No continuous
+filter state fits that same small mismatch allowance on both sides. Lean checks
+this incompatibility. It rejects transfer of that sufficient certificate; it
+does not show that actual position leaves the allowed region. A bound that uses
+the duration of the transient could permit more than this pointwise bound.
+
+Continuous command also does not ensure continuous physical jerk if response rate
+or disturbance can jump. A quantitative jerk-variation bound needs a bound on their
+combined effect. Separate bounds on rate and disturbance variation are one
+sufficient approach. The Lean file checks the exact jump identity. The challenge
+note also gives a mathematical trajectory example; that full example is not formalized.
+
+WHAT THE INDUSTRIAL SOURCES ADD
+
+FANUC's official driver documentation identifies timing jitter as a possible
+cause of drift or vibration. Its stated remedies include more buffering or a
+lower update rate. Yaskawa's external-motion guide distinguishes native buffered
+planning from incremental control and warns about overly dense target points.
+Its SMOOTH guide describes motion filtering with path and response tradeoffs.
+These are specific interface constraints, not evidence of inferior research arms.
+
+The six official sources, their limits and the proposed fair comparison are in
+industrial-motion-baselines.txt and industrial-motion-sources.json. Existing
+academic baselines are in trajectory-damper-prior.txt. DMPs, online jerk-limited
+generation and command filtering already address parts of this problem. Human
+motion sources guide useful requirements; they do not identify a single neural
+damper that can be copied into a robot controller.
+
+THE NEXT THEOREM TO ATTEMPT
+
+Prove one retained-state motion layer, with a precise rule for accepting a new
+plan. Start with an augmented state: physical tracking error plus filter error.
+Prove a bound between updates and a bound at each accepted update. The update
+rule must use the current filter error; a fixed minimum replan interval alone
+does not describe how large a new command may be.
+
+For the present certificate, a necessary handoff test is
+
+    |d- - 5 delta-j/(48 sigma)| <= D.
+
+Passing that test alone is not enough. The filter dynamics must keep the bound
+until the next update. Deriving a command-rate bound by assuming the tracking
+bound we are trying to prove would be circular. Use a joint invariant or an
+explicit continuation argument. A slew-clipped filter needs its own dynamics.
+
+Then include commands already committed to a buffer and a bound on their age.
+The fallback must preserve a feasible stop if a plan arrives late or is rejected.
+Our separate stopping work is a candidate component, but its assumptions and
+handoff must be proved compatible. Progress toward a goal needs an assumption
+such as a persistent feasible target; arbitrary target changes cannot guarantee
+arrival. These parts remain open.
+
+THE TEST THAT CAN SUPPORT OR REJECT THE IDEA
+
+Use the same plant, task, load, limits and measurements for each method. Compare
+a competent native blended baseline, an established online motion generator, and
+our retained-state layer. On an industrial arm, distinguish native buffered
+planning from externally generated increments. Do not manufacture a weak baseline
+with stop-between-points calls or missing tool data.
+
+Use a fixed repeated path, an unseen correction/reversal, delayed or irregular
+updates, and an approach to a travel limit with a rejected plan. Report actual
+path error, settling time, vibration, jerk, command age, buffer occupancy, rejected
+updates and remaining stop margin. Define measurement bandwidth and differentiation
+before comparing jerk. Separate simulation evidence from hardware evidence.
+
+A publication claim needs a clear gain or a useful limitation that existing
+methods do not already cover. If an established baseline meets the same contract
+with equal or better results, narrow the contribution to the verification method
+or stop claiming a new control benefit. The current negative filter-budget result
+is useful because it tells us exactly what the next construction must overcome.
+
+STATUS
+
+Done: conditional tracking package; seven new smoothing statements; independent
+mathematical challenge; official industrial baseline review. Open: the filter
+invariant, buffered execution, combined stopping proof, realistic measurements,
+broader novelty review and external review. No hardware validation or submission.

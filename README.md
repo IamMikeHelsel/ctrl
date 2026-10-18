@@ -7,7 +7,7 @@
 
 **`ctrl`** (`https://github.com/IamMikeHelsel/ctrl`) is a verified library of formal, machine-checked mathematics in modern control theory, robotic state estimation, and projective computer vision, built on Lean 4 and Mathlib.
 
-Every declaration in `ctrl` is 100% `sorry`-free, contains zero custom axioms or unverified escape hatches, and every public headline theorem is programmatically audited to depend solely on Lean's standard foundational axioms (`propext`, `Classical.choice`, `Quot.sound`).
+The compiled `ControlsLean` library contains no `sorry`, custom axioms, or unverified escape hatches. Its public headline theorems are audited to depend only on Lean's standard foundational axioms (`propext`, `Classical.choice`, `Quot.sound`). The separate [research notebook](research-notebook/README.md) preserves exploratory work and has its own acceptance records.
 
 ---
 
@@ -158,3 +158,11 @@ The repository includes pre-flight safeguards to protect local build caches (~7.
 - **Lake Cache Safeguard (`scripts/ensure_cache.sh`)**: When creating new Git worktrees or fresh clones, `.lake` is not cloned by Git. The safeguard automatically detects populated sibling caches (in the worktree parent or `ControlsLean/.lake`) and auto-symlinks `.lake`, preventing catastrophic re-compilation of Mathlib from scratch.
 - **Git Ignore**: `.lake` and `/.lake` are excluded so that symlinked build directories are never staged to Git. Scratch directories (`scratch/`, `scratch_*`) and binary/hash artifacts (`*.olean`, `*.ilean`, `*.c`, `*.hash`) are completely ignored.
 - **Detailed Documentation**: See [docs/INNER_LOOP.md](docs/INNER_LOOP.md) for complete details on the inner loop experience, scratch testing, and Loogle usage.
+
+## Research notebook
+
+The [controls and mathematics notebook](research-notebook/README.md) preserves the independent
+controls, Erdős, and Geometric Unity work: proof sources, paper drafts, source research,
+verification logs, comparisons, and Manim explanations. It keeps its original toolchain pins and
+proof scope separate from the root library. A [hash-checked sync tool](tools/sync_research_notebook.py)
+keeps later work from remaining only in a chat workspace.

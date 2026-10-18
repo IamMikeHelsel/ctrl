@@ -1,0 +1,97 @@
+Independent review: GU operator and sign audit
+2026-10-17
+
+Verdict
+
+The claimed local algebra passes this review. The report states its main limits
+correctly. I found no blocker in the two Lean statements of substance: the
+negative-tilt/minus-torsion defect, and covariance of the fixed-coefficient
+ordered-product construction. Neither result completes the GU operator.
+
+Evidence checked
+
+I read both Lean modules and verify.py. The current source hashes match the
+26-theorem verification record. I inspected its axiom, kernel-replay and failed
+mutation evidence. I did not repeat unchanged compilation or kernel replay.
+
+GaugeSignAudit.lean:
+31d7084df0a3e0a80373902c87c56be406c6a88c49d1262bf017fb320fcd34de
+ContractionCovariance.lean:
+663e101f90105aa6366fb37aec66ff175475fc348b977dcffc642ebf865cc083
+
+I opened the author's April 2021 PDF directly and checked the retained PDF's
+text against page images for printed pages 36, 40 and 43. I also read the
+surrounding definitions on pages 32-42. The retained primary-source PDF hash is
+3f28d742234a9841fc8e51ff172053200aa3eddf3ece38154a3328b9ebd186d4.
+
+Primary source:
+https://geometricunity.nyc3.digitaloceanspaces.com/Geometric_Unity-Draft-April-1st-2021.pdf
+
+The sign finding is faithful to the printed formulas
+
+Equation (5.9) defines right-factor conjugation in the semidirect product.
+Equations (6.2), (6.4) and (6.13) then fix the relevant action and negative
+shift. Equation (7.3) subtracts that same shift in the torsion. These are the
+choices encoded in GaugeSignAudit.lean, lines 25-29 and 58-68.
+
+The pointwise product rule gives s(e h) = C_h(s(e)) + s(h). Substitution therefore
+gives C_h(T_minus(e,w)) - 2 s(h). The first expansion after (7.4) changes the
+printed negative shift to a positive one. This change is visible in the PDF;
+it is not a text-extraction error. Its next derivative expansion also prints
+h^-1 where the product rule requires e. The Lean proof uses the correct product
+rule, which is already used in the draft's (6.5).
+
+A uniform reversal of the derivative sign does not cancel the defect. A
+consistent change of action, torsion, or connection conventions can repair the
+formula. Thus this is a mismatch among the displayed conventions, not an
+obstruction to every possible interpretation of the construction. Footnote 7
+on page 36 already warns that the draft combines conflicting conventions.
+
+The real 3 by 3 witness is nontrivial: s(h) = -2 A and the mixed-convention
+torsion equals 4 A instead of zero. Its orthogonality and determinant checks
+exclude a merely singular or non-orthogonal example. It is still a finite
+matrix example. No embedding into the specified GU spinor bundle is proved.
+The exact general conclusion is conditional: any allowed nonzero real shift
+prevents this mixed-convention covariance identity. The pointwise algebra
+does not require the illustrative 3 by 3 realization.
+
+Both repairs are correctly limited
+
+The positive tilt with T_minus, and the negative tilt with T_plus, each give
+the claimed local covariance. The positive tilt generally fails to stabilize
+the selected base connection under the unchanged printed action (6.2).
+The T_plus repair changes the difference of connections supplied by (6.18)-
+(6.19) and (7.1)-(7.3). Neither is a replacement that preserves every downstream
+definition. A convention ledger must precede further geometric construction.
+
+The coefficient covariance theorem proves its stated law
+
+The assumptions are a real associative algebra R, units e and h, fixed real
+coefficient arrays C, and fixed arrays p1 and p2. The gauge action acts only on
+the algebra-valued coefficients, by conjugation. The same C, p1 and p2 occur on
+both sides. Their conjugated versions change through e becoming e h.
+
+Real coefficients are central, so finite real linear combinations commute with
+conjugation. Ordered multiplication also commutes with simultaneous conjugation.
+The source proves these facts and composes them. It does not assume the final
+covariance law, or hide it in a structure field.
+
+The nesting and 1/2 factor match the ordered-product reading of (9.3). The form
+index sizes and the degrees 2 -> 12 -> 13 and 2 -> 12 -> 14 -> 0 -> 1 -> 13 are
+correct. The theorem is a valid generic algebraic construction, not a vacuous
+implication from an assumed equivariance property.
+
+Remaining mathematical gaps
+
+The fields named star and wedge are arbitrary coefficient arrays. Their sizes
+alone do not make them a Hodge star or exterior product. No metric, orientation,
+exterior-basis bridge, star-square identity, or coordinate-change law is proved.
+The Phi arrays are arbitrary; the invariant tensors in Definition 8.1 have not
+been selected. The commutator/anticommutator and factors of i described near
+(8.1) are not implemented by the present ordered product. Lie-algebra output
+closure, a global bundle operator, Weyl annihilation, and the relevant Bianchi
+identity remain open. None of these follows from covariance alone.
+
+The current report exposes these gaps. Keep its phrase "fixed coefficient
+version" in any summary. Do not shorten the result to "the GU Shiab operator is
+formalized." This review makes no judgment about physics and no novelty claim.

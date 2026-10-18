@@ -1,0 +1,114 @@
+Adjacent controls: proof reuse and useful next problems
+2026-10-17. Bounded source assessment; frozen project/publication untouched.
+
+RESULT NOW CHECKED
+proof-spike/SampleVaryingRate.lean replaces fixed r by a sequence r_n. Define
+z_(n+1)=heldSegment(r_n,h_n,z_n,clip(k(z_n)+e_n)+d_n), and assemble the same
+exact held solution between updates. If every r_n is in[.9,1.1], every duration
+is in[hmin,.2] with hmin>0, every combined held error obeys |e_n|+|d_n|<=1/90,
+and V(z0)<=12, then V(z(t))<=12 and |x(t)|<=2 for EVERY real t>=0.
+The original combined .01 budget is included. No rate-change magnitude or
+switch-count bound is needed, provided each r_n remains constant on its hold.
+The same fixed controller and common P are used; no certificate regenerated.
+
+Seven theorem closures compiled with pinned Lean4.35, using only propext,
+Classical.choice and Quot.sound. Logs and a source-hash manifest are in
+proof-spike/. Imported frozen-project/mathlib oleans were reused: this is a
+new-module check, not an independent project rebuild. The spike proves sample
+and all-time energy/travel, sample agreement and segment endpoint agreement.
+It does not yet package global continuity, interior ODE or arbitrary-solution
+uniqueness for the switched-rate trajectory. Existing held_ode_unique and
+UncertainExecution proofs can supply those with per-index rates; those are
+remaining semantic glue, not a new matrix inequality. Physical interpretation:
+r_n=tau0/tau_n, so tau_n/tau0 lies in[10/11,10/9], with changes only at updates.
+It does not prove safety for arbitrary rate variation inside a hold.
+
+Classification: routine corollary, high reuse confidence. A useful scope
+extension for the current artifact, but poor standalone publication novelty.
+The reason is precise: UncertainTravel.segment_invariant already uses a common
+energy and is uniform in r; induction never needs r_n=r_(n+1). A paper must not
+present the newly assembled rate sequence as a newly solved stability method.
+Next block: 1 focused session for continuity/ODE/own-feedback uniqueness and
+physical normalization. Stop if the proposal is being sold only by theorem
+counts or by calling this an uncertainty method not already implied locally.
+
+COMMAND AGE / DELAY: MORE USEFUL, WITH A REAL ADMISSION GAP
+Proposed model at actuator-update time T_n: the held request is computed from
+z(T_n-a_n), with age a_n>=0, plus a held request error eta_n. Drive error d_n is
+after clipping. Relative to current-state feedback, the extra held request
+error is e_n=k(z(T_n-a_n))-k(z(T_n))+eta_n. The existing theorem applies ONLY
+after proving |e_n|+|d_n|<=the budget. Assuming this inequality as an input and
+calling it a delay theorem would add little.
+
+Concrete next theorem: establish a timestamp-based admission rule and initial
+history contract that imply that error inequality, then transfer safety for
+all continuous solutions of the delayed sampled equations. The current code
+has neither history/timestamp semantics nor a proved request-change estimate.
+Feedback delay during a hold creates two command regimes and must be modeled
+at actual actuator update times, rather than silently changing the held model.
+
+A conservative feasibility calculation (not a Lean theorem here): k'=-v+
+(2r-3)a-2r*u. For V<=12, dual quadratic geometry gives a bound on the first
+state-dependent term via 12*L_r*P^-1*L_r^T, L_r=(0,-1,2r-3). Its endpoint
+values are3643746/1391479 and1444626/1391479; convexity in r bounds the entire
+rate interval. With |u|<=1+1/90 this implies |k'|<4. Thus a sufficient candidate
+is 4*a_n+|eta_n|+|d_n|<=1/100. If all .01 is assigned to age, a_n<=1/400=.0025
+normalized time; at nominal tau0=.1s this is only .25ms. This is a WARNING about
+conservatism/usefulness, not a verified engineering delay margin. Initial
+history must obey the region/slope conditions, or acquisition must begin with
+fresh state. A proof should use already-safe earlier segments to bound age
+error at the next update, avoiding an assumption of the desired invariant.
+
+Credible development: improve this to state-dependent admission using the
+actual clipped-request difference or a checked local reachable set. Saturation
+can make stale requests equal after clipping even when raw requests differ.
+Prove the time/measurement/error transfer, not merely a norm inequality. Obtain
+one explicit nonzero delay or useful age region, one rejected over-age example,
+and compare conservatism against a published baseline and numerical reachability.
+Next block: 1-2 sessions for history/admission semantics and conservative bound;
+then bounded certificate design for usefulness. Stop/pivot if only sub-millisecond
+bounds survive at plausible model scales, or if improvement requires shrinking
+the admitted region so far that active saturation disappears. No novelty claim
+is justified before targeted prior-work review of sampled saturation with delay.
+
+DROPOUTS: SEPARATE THE EASY COROLLARY FROM A NEW MODEL
+If packet success means fresh feedback is applied immediately, the maximum
+successful-update gap is<=.2, and r is held over that whole gap, dropouts are
+already irregular sampling. For nominal update period p, at most m consecutive
+misses gives gap<=(m+1)p; e.g. p=.05 and m=3 yields .2. Formalizing this schedule
+arithmetic is useful but routine. Do not call h<=.2 alone a packet-loss model.
+If actuator rate changes at missed base-clock updates while the old command
+persists, the current held-rate segment theorem does not directly apply.
+Likewise delayed delivery, stale packets, reordering and networked measurements
+need explicit command/timestamp semantics. A combined age/gap admission theorem
+with a tested packet policy is a more credible artifact than another jitter
+corollary. No stochastic packet-loss or probability guarantee is implied.
+
+EVENT-TRIGGERED SAFETY: A POLICY MUST EARN ITS TIMING GUARANTEE
+Current safety is conditional on hmin<=h_n<=.2. A state-dependent choice inside
+that interval is already allowed, but this does not prove that an event trigger
+exists, is implementable, or cannot produce Zeno updates. A timeout alone gives
+the upper bound; a cooldown/base polling clock can supply the lower bound.
+A trigger that could require an update before cooldown expires needs a proved
+safe waiting interval, rather than assuming its event times satisfy hmin.
+
+Candidate useful theorem: define a sampled trigger using a local energy/age
+certificate, a mandatory timeout, and a positive minimum polling interval;
+prove its recursion is total, the held-error admission condition at every
+accepted event, non-Zeno timing, and all-time safety. A policy selecting the
+largest certified next hold could also quantify fewer updates on a specified
+trajectory family. Compare with periodic .2 under the SAME errors/region/rate
+box; a larger theorem interface or a simulated mean event rate alone is not a
+contribution. Polling/max-gap wrappers alone are routine. A checked causal rule
+with less conservative holds and a useful delay/dropout contract is the more
+promising package. Continuous monitoring/instant actuation must not be implied
+for a digital polling implementation.
+
+RECOMMENDATION
+Use sample-varying held rates as a small verified extension, not the paper's
+main novelty. Prioritize a deterministic timestamp/command-age admission layer,
+then optional polling-trigger/dropout scheduling on that same layer. This reuses
+the verified plant/sector/energy/uniqueness work while closing a real execution
+assumption gap. Publication value remains conditional on useful constants,
+clear comparison and literature differentiation; this assessment is not a
+prior-art clearance or a claim of new control mathematics.

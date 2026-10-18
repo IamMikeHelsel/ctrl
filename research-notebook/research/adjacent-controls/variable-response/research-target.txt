@@ -1,0 +1,56 @@
+A stopping bound under changing response
+Research target fixed before the numerical comparison, 2026-10-17
+
+Question
+Given bounded starting-state error, command delay, response speed and braking
+strength, how far can an axis travel forward before it first reaches zero
+velocity, even when its response changes during the maneuver?
+
+Useful output
+An admitted approach-speed/clearance pair, a stopping deadline, and explicit
+rejection when the assumptions or margin are insufficient. All distances and
+timing are measured from a specified stop request and reference position.
+
+Current scope
+One powered axis, x'=v, v'=a. During delay, acceleration has an upper bound.
+After engagement, a'=r(t)*(b(t)-a), with a positive bounded response rate and a
+bounded effective acceleration target. The weakest admitted target is negative.
+Classical continuous trajectories, initial measurement boxes and finite horizon.
+The effective target separates available braking strength from response speed.
+
+First zero velocity is the stopping event for this work. Remaining stopped,
+recovery of frictional grip, a stop after loss of power and a fault-tolerant
+brake are separate requirements. No physical temperature law, vehicle, shoe,
+or ISO 13849 Performance Level is established by this abstraction.
+
+Conditions and history
+The admitted response can change with time. The theorem only applies while
+its declared response bounds hold. Temperature, load, wear or contact changes
+need evidence that they stay inside those bounds, or an explicit new mode.
+A recovered state at one instant does not prove that recovery will persist.
+
+Illustrative numerical experiment, SI units, not measured hardware
+Position estimate is zero with error +/-0.001 m.
+Velocity estimate has error +/-0.01 m/s; use its upper end for clearance.
+Initial/delay acceleration is at most 0.1 m/s^2, delay at most 0.05 s.
+After engagement, r(t) is in [8,12]/s and b(t) in [-2,-1.2] m/s^2.
+Reference clearance is 0.15 m. Fixed velocity-estimate cases: 0.30,0.40,0.50 m/s.
+Compare instantaneous nominal braking, fixed nominal response, lag-only
+uncertainty, and varying response plus varying strength on the SAME initial
+error and delay assumptions. Weaker-model acceptance is not a valid robust
+certificate for the richer plant. Also compare a simple conservative bound
+that includes the same lag and strength assumptions.
+
+Use an analytic upper curve for the full interval. Its endpoint alone is not
+its maximum. Root finding and ODE simulation are numerical evidence unless a
+separate Lean/rational certificate checks the claimed bound. Preselect smooth
+varying-rate/target traces, a weak constant endpoint case, and one target outside
+the stated bound to challenge model conformance. No parameter search for a
+favorable trajectory. A speed threshold search is an output, not a change to
+the declared model.
+
+Advance gate
+Close a new sound proof obligation, demonstrate a useful accepted/rejected
+decision under stated uncertainty, and expose the physical evidence still
+needed. A tighter bound alone is not proof of research novelty. Compare against
+existing robust-control and verified-reachability methods before a paper claim.

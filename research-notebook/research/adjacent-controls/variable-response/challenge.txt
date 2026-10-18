@@ -1,0 +1,251 @@
+VARIABLE RESPONSE — INDEPENDENT CHALLENGE
+17 October 2026. Review only; no proof source edits or Lean builds.
+
+Early design check
+The scalar comparison design is sound. An upper acceleration comparison with
+target b_hi chooses r_lo when its initial acceleration is at least b_hi, and
+r_hi otherwise. The comparison curve stays on the same side of its target.
+This permits arbitrary continuous rates and targets within their stated bounds.
+The proposed IsTrajectory contract includes full-state continuity on [0,H]
+and the actual interior ODE, without an analytic-flow equality or path-safety
+premise. Final compiled sources and theorem closures remain to be reviewed.
+
+Required first-stop claim
+State an actual first time T_stop with v(T_stop)=0 and v(t)>0 for 0<=t<T_stop,
+for initial v(0)>0. Prove it exists before a stated finite deadline. Then bound
+the maximum forward displacement up to that first zero. A root assumed in a
+premise, or a generic IVT theorem without a discharged final-velocity bound,
+does not yet establish that the proposed braking model stops in time.
+
+Concrete challenges
+1. A negative effective braking capability is essential. If a0=0 and b(t)=0,
+   positive r(t) of any size leaves acceleration zero and v0>0 never stops.
+   A wider lag interval alone cannot represent or solve lost braking strength.
+2. Endpoint position is insufficient. With x0=0,v0=1,a0=b=-1, every positive
+   rate gives x(t)=t-t^2/2. At H=2, x(H)=0, but the first zero of velocity is
+   at1 and the forward excursion is1/2. An endpoint-only .25 travel check
+   would pass incorrectly. Bound the full interval or prove the comparison
+   curve's maximum occurs at its first velocity zero.
+3. First zero can occur during a bounded command delay. Do not assume positive
+   velocity at engagement merely because initial velocity is positive. A global
+   continuity/IVT argument from initial positive to final nonpositive velocity
+   can establish existence despite earlier zeros.
+4. At stop velocity zero, acceleration may remain negative. Continuing the
+   command can reverse motion. First-zero travel is not maintained stopping,
+   two-sided safety after stopping, a power-loss stop, or a holding guarantee.
+
+Delay and measurement contract
+For 0<=delta<=D, x0<=X, v0<=V with V>=0, and a(t)<=A with A>=0 throughout
+the pending interval, the upper engagement bounds
+  x(delta)<=X+V*D+A*D^2/2; v(delta)<=V+A*D; a(delta)<=A
+are valid. The last bound must include the engagement endpoint and delta=0.
+These are upper bounds, not equalities of the actual engagement state.
+If the stated candidate approach speed is measured, use its upper uncertainty
+bound. Position error alone does not account for velocity/acceleration error.
+An acceleration bound during delay is a plant/controller assumption that needs
+its own evidence; it must not be inferred from the desired brake command.
+
+Composition boundary
+Per-hold boxes can enclose a finite prefix, provided the actual state is
+continuous at phase changes. Reinitializing a comparison box is permissible;
+reinitializing the actual state is not. Unknown delay can be bounded by a common
+engagement box, but total deadline must include delay plus braking duration.
+GeneralHandoff can attach a checked terminal box to the old robust tail only
+if the actual tail obeys that fixed-rate sampled ODE and the whole terminal box
+satisfies V<=12. Thermal drift continuing into the tail remains outside it.
+
+No publication novelty follows from this design check. The potentially useful
+extension is the changed forcing class and a concrete first-stop envelope under
+nonzero uncertainty, tied to an explicit application contract.
+
+Frozen comparison and numerical audit, 17 October 2026
+Reviewed ComparisonEnvelope.lean SHA-256
+735210fa549739ea28bc8ffab5afb9541534dedab24914653bcd1300dc34e21f.
+No mathematical contract defect found. Both comparison rates have the correct
+sign-dependent endpoint choice. The integrating factor handles the actual
+time-varying rate; derivative order then bounds velocity and position. The
+initial state is bounded componentwise, not identified with the comparison
+state. All real times and both endpoints are covered. The inspected build log
+reports five public closures with only propext, Classical.choice and Quot.sound;
+there are four style-linter messages and no elaboration errors. I did not rerun
+Lean or an independent source replay.
+
+Regularity remains a real scope boundary. r is continuous on the closed finite
+interval. b need not be separately continuous, but an actual classical solution
+with the specified interior derivatives is assumed. This is not an existence
+theorem for every arbitrary bounded, discontinuous target, nor an almost-
+everywhere/Caratheodory solution theorem. No old fixed-rate tail is attached.
+
+The numerical experiment uses the same error and delay bounds for its tight
+envelope and simple conservative comparison. Its simple bound drops the
+nonpositive exponential position term and maximizes the resulting quadratic;
+this is a sound upper bound for the stated braking case. The nominal and
+lag-only models have stronger strength assumptions and are not equally robust
+competitors. Their comparison illustrates the cost of omitting strength loss.
+
+I independently recomputed the weak/slow peaks with 55-digit Decimal arithmetic
+and bisection, without running the experiment's producer. Results agree:
+  speed estimate .30: position peak .0921768062458 m;
+  speed estimate .40: position peak .1407107829442 m;
+  speed estimate .50: position peak .1977883550761 m.
+For .40, the simple bound is .1605859375 m, so the tighter bound changes the
+15 cm decision. The admissible constant weak/slow response already defeats the
+15 cm limit for .50. These numerical peaks and optimized speed thresholds are
+not kernel-certified results. A grid refinement check on changing traces is
+useful numerical evidence, not a universal proof.
+
+Result provenance checked against the current source hashes:
+  research-target.txt: 0737ab553d9671979ce1b80b10f74131cef3572f62946c02031a1f1eadc736cb
+  experiment.py: 9593670c2468828e490e214c7c79af919415b735126739410e4d45838f88e248
+
+The concrete StoppingCertificate source supplies noncircular full-time bounds
+for the comparison curve. Its delay_state_arithmetic is explicitly only an
+arithmetic lemma. The final actual delayed-trajectory composition and its build
+evidence remain pending at this audit point; those must discharge the actual
+path and final-velocity premises of FirstStop before claiming an actual stop.
+
+Interpretation: x(t)<=.15 is position relative to the measured starting reference
+with position error included. It is not automatically a .15 m displacement
+bound measured from the unknown true initial x(0). A nonpenetration limit also
+needs an externally specified geometric margin if contact at the limit is unsafe.
+The current values are synthetic. No physical calibration, population coverage,
+failure probability, holding safety, or Performance Level follows from them.
+
+Actual delayed stopping audit, 17 October 2026
+Reviewed the frozen ActualStop.lean source, including all six public theorem
+statements and their proof dependencies. Its build log reports only the three
+standard axioms for each closure. No blocking mathematical mismatch was found.
+Independent fresh-source/kernel replay is still parent-owned, not rerun here.
+
+The composition now discharges the previously pending obligations. One actual
+state f is continuous across the delay/braking boundary. The delay equations
+give polynomial upper bounds; closed-interval acceleration bounds include
+engagement and D=0. The same f(D+t) satisfies the braking ODE. ActualStop derives
+both the whole-path position bound and nonpositive velocity by D+.5, then uses
+global first-zero existence. It does not assume a root, safe path, terminal box,
+positive engagement velocity, or equality with a selected analytic trajectory.
+An early zero during the delay is therefore included correctly.
+
+The generic result takes 0<=v(0)<=.41 and x(0)<=.001. The stated .40 +/- .01
+velocity measurement is a subset. Its positive initial velocity excludes T=0;
+the more general theorem correctly permits T=0 when initially stationary. A
+lower bound on position or effective target is unnecessary for this one-sided
+result. Omitting those lower bounds strengthens the scope and does not weaken
+the stated position conclusion.
+
+The complete contract is nonempty: constant_response_example instantiates it
+with an explicit analytic state starting at (0,.4,0), r=8, b=-1.2. It already
+brakes during the declared .05 s delay interval, as its comment discloses. This
+is an allowed faster response under the delay overapproximation, not a witness
+attaining the worst engagement box or a simulated physical onset delay.
+
+Counterexample.lean proves that the explicit .50 m/s-case engagement flow has
+positive velocity throughout [0,.5] but position above .15 at .5. Thus this is
+an actual admitted post-engagement violation before stopping, not only failure
+of an enclosure test. The delay state is arithmetically attainable from initial
+(.001,.51,.1) with a=.1 for .05 s. The inspected counterexample module itself
+does not formalize that piecewise request-to-engagement witness.
+
+Audited hashes:
+  ActualStop.lean: 84f119c001aaa368923a8a5a1243f3ec613eba9a2afd5112e8836a18b7834367
+  FirstStop.lean: 27014737ecb0f6e5a07d948130ac61b8b122e72b0bbba36e6a1f7e7d8316e56e
+  StoppingCertificate.lean: e28867cfd18acf5626be810d436458432a0f1a97c717d5b962c154510d8e5156
+  Counterexample.lean: 6f230be7658f25601d11179f37183be3acb35a35cff0a0a624ef7edf4a68db39
+
+Remaining event boundary, being addressed separately
+ActualStop requires the braking ODE and target upper bound for the entire .5 s
+after engagement, even when the first zero occurs earlier. It does not directly
+cover a real controller that changes its target to hold at that event. An
+event-terminated contract must remove both the post-zero ODE and the negative
+target requirement. A guard saying only that all EARLIER velocities are positive
+is insufficient: it remains true at the first-zero instant itself. Including
+current positive velocity avoids requiring the old command at the switching
+instant; the state bound at that instant must follow by continuity. EventStop
+is in development and is not covered by this frozen-source audit yet.
+
+Replay evidence update
+The parent-owned five-module verification run completed successfully with 20
+public theorem closures, fresh builds of the new sources, separate kernel
+replays, and rejection of the deliberately false .10 m clearance certificate.
+I independently checked that the report's five source hashes and all recorded
+log hashes match the current files, and that every recorded closure uses only
+the three standard axioms. The pinned LeanControls/mathlib artifacts were
+reused, as the report states. I did not rerun this expensive verification.
+verification.json SHA-256:
+1d730356e0b8700b4fa4a2eea3f270b7fb3cf6d72581989da19d5299211d9d6f
+
+Event-terminated stopping audit, 17 October 2026
+Reviewed frozen EventStop.lean SHA-256
+6e8ac68061718003ced92e7821deb2daf07694a0a1d34e7112774d8441cd1e94.
+Its local compile log reports all three public closures with only the three
+standard axioms and no warnings. The five-module replay above predates this
+addition; parent-owned expanded replay is pending at this review point.
+
+The event boundary identified above is resolved in this new theorem. BeforeStop
+includes the current instant, so the guard is false at the first zero itself.
+Both the actual braking ODE and the negative-target requirement use that guard.
+The auxiliary bCut agrees with the real target strictly before the endpoint,
+then supplies an artificial endpoint value only to apply the closed-interval
+comparison. It imposes no value on the actual command at the first zero and
+does not reset or replace the actual state. Closed state continuity carries the
+bound to the event. An initial first zero during the delay remains covered.
+
+Existence is not assumed: first_zero_or_positive gives either a first zero or
+positive velocity throughout the horizon. The latter case activates braking
+throughout the required comparison interval and contradicts the proved final
+nonpositive velocity. The position bound is then derived up to the first zero.
+No safety or terminal conclusion has been hidden in the input contract. I found
+no blocking mathematical defect in this frozen source.
+
+Remaining assumptions are explicit: global full-state continuity, bounded
+continuous rate across the finite horizon, delay kinematics and acceleration
+bound across the whole delay interval, and sufficient effective braking while
+the true first-zero event has not happened. Later motion is unspecified. This
+supports a first-stop bound; it proves neither maintained rest nor a safe hold
+controller, and does not attach the old fixed-rate all-time invariant.
+
+The guard is a mathematical event condition, not an implemented stop detector.
+An estimated/sampled detector that switches early while actual velocity is
+still positive can violate the guarded negative-target premise. Initial
+measurement uncertainty is covered; continuing sensor error, event detection,
+sampling delay and mode-switch implementation still need their own contract.
+This is the next useful composition proof if a real stopping controller is the
+goal. Calibrating the rate, strength, delay and pending-acceleration bounds on
+the intended mechanism remains the larger engineering evidence gate.
+
+Current judgment
+The bundle now proves a concrete conditional first-stop property with variable
+response, nonzero initial uncertainty and bounded delay. This is more useful
+than the original fixed-lag academic case. It is still a synthetic formalization
+of established comparison/first-event ideas, not evidence of a new control law,
+an unsolved named problem, an identified physical model, or PL d/e compliance.
+The scalar attribution example and this dynamic stopping theorem remain separate
+contracts until a sound measurement-to-dynamics interface is provided.
+
+Final six-module replay and progress-report audit, 17 October 2026
+The expanded verification.json reports passed=true, source_unchanged=true,
+23 public theorem closures, all six source builds and individual kernel replays
+successful, and rejection of the false .10 m clearance claim. I independently
+matched every source hash, the verifier hash and every recorded log hash to
+current files, and checked all 23 recorded axiom sets. All contain only the
+three standard axioms. This supersedes the earlier five-module replay status.
+No full dependency rebuild or independent verification of Lean is claimed.
+
+Reviewed index.html and README.txt against these sources and the experiments.
+No required claim correction found. They distinguish reference-relative position
+from true initial displacement, the exact .15 m / .55 s theorem from numerical
+peaks and speed thresholds, the post-engagement counterexample from its unproved
+delay attachment, a true first-zero event from an implemented detector, and the
+Python attribution checker from Lean. They do not claim holding, hardware
+validation, established novelty or PL d/e compliance. All 18 distinct local
+links/media references in the HTML resolve to existing files. This was a source
+and link audit, not a new visual/video render review.
+
+The attribution report's 14-negative-case claim agrees with its saved report;
+I separately ran the five corruption checks documented in its challenge file.
+The report keeps the attribution model separate from the stopping ODE.
+
+Final reviewed hashes:
+  verification.json: 0de89aaa71d8b58d557ebcdc0f0d81ad9ca0cbd11e4033f0c705947a4d6a2219
+  index.html: 097f2fff7b02b0efc24a8df51a907b020bfd9c8d8abd563d29f76605bc10dffa
+  README.txt: 6d0a81e2781a082944da9e69d349d24973571d014b0cb5c9f8aba164aaa74d28

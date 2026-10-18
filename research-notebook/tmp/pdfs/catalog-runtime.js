@@ -1,0 +1,9 @@
+
+const entries=JSON.parse(document.getElementById('data').textContent);
+const el=id=>document.getElementById(id);
+function cell(row,text){const c=document.createElement('td');c.textContent=text;row.appendChild(c);return c}
+function link(c,text,url){const a=document.createElement('a');a.textContent=text;a.href=url;a.target='_blank';a.rel='noopener noreferrer';c.appendChild(a)}
+function render(){const q=el('query').value.trim().toLowerCase();const rows=entries.filter(e=>(!el('open').checked||e.ordinary_unresolved_label)&&(!el('prize').checked||e.official_prize_listed)&&(!el('lean').value||e.statement_formalized===el('lean').value)&&(!q||e.number===q||(e.tags||[]).join(' ').toLowerCase().includes(q)));el('count').textContent=`${rows.length} of ${entries.length} entries shown — metadata screening only`;const frag=document.createDocumentFragment();for(const e of rows){const r=document.createElement('tr');link(cell(r,''),'#'+e.number,e.problem_url);cell(r,e.derived_status||e.informal_status||'Unknown');cell(r,e.official_prize_listed?'$'+e.official_display_dollars+' · unverified payout':e.community_prize_raw&&e.community_prize_raw!=='no'?e.community_prize_raw+' · community only':'No listed reward');cell(r,(e.tags||[]).join(', '));const c=cell(r,'');if(e.statement_formalized==='yes'&&e.statement_url)link(c,'Statement',e.statement_url);else c.textContent=e.statement_formalized||'Unknown';cell(r,e.formal_solution_status||'Unknown');frag.appendChild(r)}el('rows').replaceChildren(frag)}
+for(const id of ['query','open','prize','lean'])el(id).addEventListener('input',render);
+el('all').onclick=()=>{el('open').checked=false;el('prize').checked=false;el('query').value='';el('lean').value='';render()};
+el('reset').onclick=()=>{el('open').checked=true;el('prize').checked=true;el('query').value='';el('lean').value='';render()};render();

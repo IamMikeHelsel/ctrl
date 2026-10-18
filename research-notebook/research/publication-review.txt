@@ -1,0 +1,186 @@
+PUBLICATION REVIEW — 17 October 2026
+Independent literature and contribution assessment; read-only review of the
+62-theorem baseline in lean-research-report.html. This review did not rebuild
+external repositories or independently replay their axiom audits.
+
+DECISION
+
+The present work is a useful checked case study and learning artifact. It is
+not yet a demonstrated novel research contribution. Increasing the sufficient
+sampling interval for one normalized double integrator, adding ideal rounding,
+or proving the diagonal Lyapunov-operator case are not strong publication
+claims by themselves. The best near-term route is a reusable, evaluated Lean
+certificate-to-closed-loop theorem pipeline. Keep the order-six problem as a
+bounded exploration track, rather than making publication depend on solving it.
+
+1. WHAT THE LITERATURE ALREADY COVERS
+
+A. Lean control foundations already exist.
+Moritz Doll and Iman Shames, Foundations of Machine-Checked Control Theory in
+Lean, arXiv:2607.19727v1, presents Lyapunov and small-gain formalizations. Its
+repository is active and broader than its July paper. LeanForControl separately
+contains continuous/discrete stability and linear-system theorems. Our local
+work reports a completed LeanForControl build and five central axiom checks;
+that is stronger evidence than a README, but not an audit of every result.
+Do not claim that Lean lacked Lyapunov theory, global linear ODE existence,
+or general discrete stability before this project.
+https://arxiv.org/html/2607.19727v1
+https://github.com/mcdoll/DynamicalSystems
+https://github.com/AnandGokhale/LeanForControl
+
+B. Exact polynomial certificates in Lean are an established approach.
+leanprover/sos searches using CSDP, reconstructs rational certificates, and
+checks certificate soundness in Lean. It supports constrained polynomial
+nonnegativity, with explicit search limitations. Search failure proves nothing.
+Reimplementing numerical discovery followed by rational SOS checking is not,
+on its own, a fresh contribution.
+https://github.com/leanprover/sos
+
+C. General univariate matrix-polynomial interval certificates are available.
+Mocho Go's lean-matrix-sos exposes bounded Markov–Lukacs SOS and Gram forms on
+finite intervals, including both even and odd degree. Source inspection found
+public theorem statements and #guard_msgs axiom audits. This is stronger and
+more general positivity machinery than our specific two-by-two Bernstein
+calculation. It is an existence formalization, not evidence that every numerical
+control-certificate search problem is already solved. Integration or a small
+computable rational checker may still be useful, but the distinction must be
+explained. This source was read, not built locally in this review.
+Observed revision: 02cfe73de3d3535c867eacae5a715036466cab92
+https://github.com/selpoG/lean-matrix-sos
+https://raw.githubusercontent.com/selpoG/lean-matrix-sos/02cfe73de3d3535c867eacae5a715036466cab92/MatrixSOS/Certificates/Interval.lean
+https://raw.githubusercontent.com/selpoG/lean-matrix-sos/02cfe73de3d3535c867eacae5a715036466cab92/MatrixSOS/Audit.lean
+
+D. Sampled-data theorem proving and safe-envelope certificates predate this work.
+Using Theorem Provers to Guarantee Closed-Loop System Properties (2012) treats
+nondeterministic sampling and zero-order-held control in KeYmaera. Therefore,
+"formal proofs despite timing variation" is not novel as a general concept.
+https://logic.kastel.kit.edu/ap/pub/TPgenloop.pdf
+
+Hellwig, Schafer, Qian, Platzer, and Althoff, From Zonotopes to Proof
+Certificates: A Formal Pipeline for Safe Control Envelopes (iFM 2025,
+proceedings 2026), links numerical invariant-set witnesses to KeYmaera X
+proofs. It explicitly separates one-step invariance, intersample safety, and
+control admissibility. This is a close methodological comparison for our
+proposed pipeline. A Lean implementation must state its distinct representation,
+assurance boundary, automation, or scope advantage rather than implying the
+general bridge is new.
+https://logic.kastel.kit.edu/ap/pub/zonotope-proofs.pdf
+https://doi.org/10.1007/978-3-032-10794-7_13
+
+E. Lean controller quantization examples are already public.
+Sparkle contains an LQR controller example with quantized gains, a quadratic
+contraction, an ISS-style disturbance inequality, and an ultimate bound, plus
+fixed-point/RTL correspondence work. The inspected source makes its remaining
+saturation limitations explicit. Thus "Lean + fixed-point controls" is not a
+novelty claim. Our exact zero-order-hold and variable-period setting differs
+from that particular discrete example; whether the complete combination makes
+a substantive contribution remains to be demonstrated. Source inspected only.
+Observed revision: 1614cee83ac586ca9a0626cd4af13bfef7347c3a
+https://github.com/Verilean/sparkle
+https://raw.githubusercontent.com/Verilean/sparkle/1614cee83ac586ca9a0626cd4af13bfef7347c3a/proofs/SparkleProofs/Control/QuantizedGains.lean
+https://raw.githubusercontent.com/Verilean/sparkle/1614cee83ac586ca9a0626cd4af13bfef7347c3a/docs/tutorial/md/Ch12_ControlPrecision.md
+
+2. THREE CONTRIBUTION SHAPES WORTH PURSUING
+
+PREFERRED: reusable sampled-data assurance pipeline.
+Provisional question: Can an untrusted numerical design tool export a compact
+rational certificate which Lean checks and composes into an all-time statement
+covering exact held dynamics, arbitrary sampling within an interval, bounded
+disturbances, specified sensor arithmetic, and actuator constraints?
+
+Minimum useful package:
+  - A generic theorem/certificate interface, not one hard-coded controller.
+  - Explicit state, input, sampling, rounding, saturation, and disturbance
+    semantics. Separate sample-time and intersample conclusions.
+  - Existence of actual executions and a nonempty initial region.
+  - At least three meaningfully different instances, including a coupled
+    higher-dimensional plant. A diagonal product of the current example is
+    not a convincing scalability demonstration.
+  - Replay without the design solver; source pins, exact certificate data,
+    audited theorem dependency closure, and an informal-to-formal claim map.
+  - Measured certificate size, checking time, conservatism, and failures;
+    compare a direct proof and relevant existing certificate infrastructure.
+  - A clear reason for the chosen Lean architecture and what downstream users
+    gain. A fully proved bridge to actual bounded integer/BitVec controller
+    arithmetic would materially strengthen the result, but must not be
+    promised until implemented.
+
+This is a candidate for a formal-methods methods/artifact paper, not a claim of
+new control theory. A concise technical report can document intermediate work.
+
+SECOND: checked operator-norm certificates for matrix analysis.
+Build a reusable rational LDL/SOS witness checker and a theorem connecting its
+coordinates to the Frobenius norm on symmetric/skew matrix subspaces. Replay
+the published seven-dimensional counterexample in Lean, then use the same
+interface for new experiments. The known example is attributed validation;
+any contribution would be the reusable checker/representation and lessons from
+formalization. Check existing mathlib and SOS interfaces before duplicating.
+This offers an artifact even if dimension six remains unresolved. It may be
+better as a component or short paper than as a stand-alone major result.
+
+HIGH-RISK: resolve the six-dimensional symmetric-maximizer question.
+A complete proof or exact counterexample would be a new mathematical result if
+novelty survives a renewed literature check and independent expert scrutiny.
+Structured-family results can also matter, but first compare them with known
+nonnegative, nonpositive, and tridiagonal cases. Diagonal matrices and ordinary
+orthogonal invariance are preliminary lemmas. Failed floating-point searches
+cannot establish the universal conjecture or a percentage of completion.
+
+3. CURRENT STATUS OF THE SIX-DIMENSIONAL QUESTION
+
+The canonical arXiv record and v1 paper by Daniel Kressner and Bart
+Vandereycken (21 August 2026) still explicitly leave order six unresolved.
+The work gives exact integer/rational certificates at order seven and extends
+failure to larger dimensions. The paper attributes the n <= 5 result to Chen
+and Tian (2015), and structured cases to Feng et al. (2015). Searches on
+17 October did not locate a subsequent resolution. That is a bounded search,
+not a guarantee that no unpublished solution exists. Use "open in the checked
+literature" with a date.
+https://arxiv.org/abs/2608.20875
+https://arxiv.org/html/2608.20875v1
+
+Important unreviewed lead: a 2 October Hugging Face release called ORISON VI
+claims a generic reduction via coupled skew singular vectors to families of
+ten-variable SDPs. Its own card explicitly labels the work AI-generated,
+unreviewed, not proof-assistant formalized, and the universal conjecture
+unresolved. No repository-wide license is established. Treat the formulas as
+ideas to independently derive and audit; do not cite them as accepted results
+or copy their implementation wholesale. Its arXiv metadata points to the
+Kressner–Vandereycken BACKGROUND paper, not to a peer-reviewed ORISON paper.
+https://huggingface.co/datasets/PureOne/orison-vi-order-six-lyapunov-norm-certificates
+
+4. PUBLICATION PATH AND CLAIM DISCIPLINE
+
+Journal of Formalized Reasoning is a plausible eventual fit for a significant,
+reusable formalization with methodological lessons and accessible proof scripts.
+CPP/ITP are plausible for novel certification infrastructure and evaluated
+applications. This is a scope assessment, not an acceptance prediction.
+https://jfr.unibo.it/about
+https://www.sigplan.org/Conferences/CPP/
+https://itp-conference-2026.github.io/
+
+Annals of Formalized Mathematics explicitly requires mathematical novelty or
+insight into proof-assistant theory/use. Routine known-result formalization
+without that insight is outside its scope. Its emphasis on human statement
+auditing is directly relevant to this project.
+https://afm.episciences.org/page/aims-and-scope
+
+CPP 2027's paper deadline was 10 September 2026, so it is not an available
+ordinary submission slot today. Its call explicitly discusses substantive
+human intellectual contribution, responsibility for AI-generated material,
+and accurate AI disclosure. We should develop the user's problem choice,
+modeling/design judgments, mathematical understanding, and review contribution
+as real parts of the research, not treat ownership of an account as a substitute.
+Select the eventual venue and reread its current policy before submission.
+https://popl27.sigplan.org/home/CPP-2027
+
+Practical release gate: an independent reader should be able to match every
+headline claim to a theorem, reconstruct its assumptions without reading the
+chat, run a clean pinned build, and distinguish proven results from numerical
+observations and research hopes. Today there is no new open-problem solution,
+no physical-robot certificate, and no demonstrated publication novelty yet.
+
+Assessment confidence: high that the current narrow examples alone are below
+a strong research-paper contribution threshold; moderate that the reusable
+pipeline can become publishable after implementation, comparison, and external
+review. These judgments are not calibrated success probabilities.

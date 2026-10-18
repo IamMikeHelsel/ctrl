@@ -1,0 +1,137 @@
+CONTROLS INDEPENDENT GRADE 03 — 17 October 2026
+Decision: pause the current 0.2 mm tube/formalization path.
+Grade: B. This is a useful, independently reproduced negative numerical screen.
+It removes a specific uncertainty about the two fixed controllers. It is not a
+uniform theorem, controller acceptance, or publication grade. The prior accepted
+proof results remain valid within their stated scopes.
+
+Exact result
+Neither filtered law meets the assigned 0.2 mm target in all fixed cases.
+Original kappa=5/48: 0/24 cases stay within the target at saved samples; the worst
+sampled position error is 1.152600723 mm.
+Changed kappa=29/48: 20/24 cases have no saved-sample target violation; the worst
+sampled position error is 0.280948157 mm.
+
+The changed law fails four reversal cases:
+  r=80/s, w=0:        0.266134347 mm at t=0.3625 s.
+  r=80/s, w=+0.01:    0.280948157 mm at t=0.3610 s.
+  r=80/s, w=-0.01:    0.251642698 mm at t=0.3635 s.
+  r=100/s, w=+0.01:   0.206830709 mm at t=0.3485 s.
+Disturbance units are m/s^2. These are explicit numerical violation samples.
+The other 20 cases are sample passes, not between-sample safety certificates.
+The weakest violation still exceeds the target by about 6.831 micrometers.
+Independent numerical disagreement is far smaller, but no interval enclosure is
+claimed. The broad unchanged-tube claim has adverse numerical evidence.
+
+Artifacts and complete case check
+I reviewed screen.py, crosscheck.py, check_equations.py, verify.py, equations.txt,
+status/result reports, summary.csv, traces, high-precision evidence, verification,
+and the manifest. I checked the exact Cartesian product of 2 controllers, 4 rate
+cases, 3 constant disturbances, and 2 jerk schedules. All 48 cases are present
+once, with the requested initial state and no parameter search.
+The scripts and independent evidence are under grader-screen-03/. No builder file
+or accepted proof was changed. No proposed ramp was run.
+
+Model and physical scaling
+The physical model is x'=v, v'=a, a'=r*(u+w-a), q0'=q1, q1'=q2, q2'=j,
+  u_star=q2-800*ex-60*ev-ea/2+(kappa/10)*j,
+  u'=20*(u_star-u).
+Set tau=10*t and xi=(ex,ev/10,ea/100,(u-q2)/100). Then
+  xi_tau'=A(r/10)*xi+(0,0,(r/10)*(w/100)-j/1000,
+                            (2*kappa-1)*j/1000).
+The equations, normalized forcing, physical output reconstruction, and constant
+segment equilibrium all match this scaling. The homogeneous A is unchanged by
+the coefficient change. The exact rational checker covers 54 forcing/equilibrium
+combinations. The extra convention q0=q1=q2=u=0 initially is explicit and fixes
+absolute command values, which xi(0)=0 alone would not fix.
+
+Each event retains the complete xi and q triple. Thus actual x,v,a and u remain
+continuous. Both event sides are saved. I independently inspected all 72 event
+pairs and checked the separate jump identities:
+  Delta(u_star)=(kappa/10)*Delta(j),
+  Delta(u')=20*Delta(u_star),
+  Delta(actual jerk)=Delta(r)*(u+w-a)
+for these constant-w cases. Continuity and all identities passed. The maximum
+saved-state continuity residual was 2.775557562e-17. Actual jerk is continuous
+at isolated reference-jerk switches here; u' generally jumps. Rate switches can
+make actual jerk jump. The reports correctly keep these outputs distinct.
+
+Independent reproduction
+I copied the three simulation/check scripts byte-for-byte and reran the full
+screen in grader-screen-03/. All 48 trace hashes and summary.csv match the frozen
+builder files byte-for-byte. JSON evidence matches except elapsed times. The
+80-digit mpmath Taylor cross-check reproduced all 72,120 saved rows independently
+of SciPy segment-start states. Its maximum position discrepancy is about
+3.067e-18 m; the other physical-output discrepancies are also recorded.
+
+I added an independent physical-coordinate check. It builds the unnormalized
+5x5 affine system directly, with last homogeneous row
+[-16000,-1200,-10,-20], and evaluates its matrix exponential by 80-digit Pade.
+It imports no builder helper and uses no normalized matrix. Starting from zero,
+it reproduced the saved position-peak time of every one of the 48 cases. Maximum
+position difference was 9.518488225e-19 m. The 0/24 and 20/24 counts agree.
+This adds an independent scaling/model route to the full copied-script replay.
+
+Every frozen builder manifest entry and each copied script hash remained unchanged
+after review. Prior JointFilter, FiniteJointFilter, and QuadraticSlowFilter hashes
+also match their accepted versions. Replay log hashes passed. See replay.json,
+physical-review.json, and post-replay-check.json for exact evidence and hashes.
+
+Practical meaning
+Compensation materially improves this fixed comparison, but it leaves four target
+violations. Both laws are filtered; there is no direct/unfiltered baseline. No
+smoothing advantage over direct control follows. The five reported output peaks
+can occur in different cases or at different times and must not be combined into
+one fictitious run. Reference J=10 is not a bound on actual jerk. No physical
+jerk or actuator-authority limit was supplied. Neither reference is a stopping
+trajectory. No stopping, travel/velocity feasibility, saturation, sampled execution,
+arbitrary-rate safety, or hardware claim follows from this screen.
+
+The proposed 50 ms ramp is a different task
+A centered +10 to -10 linear jerk ramp over [0.225,0.275] s starts 25 ms before
+the nominal replan at 0.25 s. It requires preview or an explicitly earlier
+admission. A causal reaction to new information arriving at 0.25 s cannot use it.
+
+Even with preview, replacing only that jerk step changes the integrated reference.
+Let J=10 and h=0.025 s. Against the original reference, exact integration gives
+at ramp end:
+  Delta(q2)=0,
+  Delta(q1)=-J*h^2/3=-1/480 m/s,
+  Delta(q0)=-J*h^3/3=-1/19200 m.
+If all later jerk remains unchanged, Delta(q0)=-1/1920 m at t=0.5 s and
+-1/640 m, or -1.5625 mm, at t=1 s. Thus measuring error only relative to the new
+reference changes the task behind the 0.2 mm test. If that altered-reference
+error were within 0.2 mm at t=1, its error relative to the original reference
+would be at least 1.3625 mm. A new-reference sample pass would not repair the
+assigned task. These are exact reference-kinematics calculations, not a new
+controller simulation; see ramp-proposal-review.json.
+
+There is also a causal endpoint constraint. At the original switch time 0.25 s,
+q2=2.5 m/s^2. Reaching q2=0 by 0.5 s under |j|<=10 requires integral(j)=-2.5,
+the lower bound across that interval. Hence j must be -10 almost everywhere.
+A nonzero continuous ramp from +10 cannot keep that acceleration endpoint and
+deadline under the same jerk limit. Some timing, endpoint, jerk-limit, or broader
+future-reference condition must change. This is a limitation of this proposed
+replacement, not a ban on motion planning with explicit slack.
+
+Pause boundary and restart test
+Do not formalize a 0.2 mm forced tube for either current law over all assigned
+cases. Do not run the proposed single worst-case ramp as evidence of success on
+the same task. Do not perform a broad parameter search to find a passing example.
+The completed negative screen and prior proofs should be preserved now.
+
+A restart needs one explicit reference-admission contract: available preview,
+permitted timing change, required final position/velocity/acceleration, and stated
+motion/command limits. State whether error is measured against the external task
+reference or a newly admitted internal reference. Keep the old failing evidence.
+
+The next falsifiable test, after that contract is fixed, is one causal,
+endpoint-matched transition at the old worst case r=80/s,w=+0.01, with identical
+initial state, task endpoints, limits, and deadline for every compared controller.
+First prove or exactly check that the reference transition is feasible. If the
+original limits and deadline are retained, the simple ramp is rejected by the
+acceleration-integral condition above. If explicit slack is allowed, compare
+original and compensated filtered laws, plus a stated direct-law baseline, on
+that same accepted reference and report total task error separately from internal
+tracking error. Stop if feasibility fails or if all candidates still miss the
+stated task. No new implementation batch is authorized by this paused grade.

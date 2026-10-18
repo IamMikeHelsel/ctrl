@@ -1,0 +1,1543 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+
+<title>Erdős Problems</title>
+<meta property="og:title" content="Erdős Problems">
+<link rel="icon" href="/static/favicon.ico">
+<link rel="stylesheet" href="/static/style.css?v=96ccfe07">
+
+<script>
+document.addEventListener('click', (e) => {
+  // Toggle reply form
+  const toggle = e.target.closest('.reply-toggle');
+  if (toggle) {
+    const id = toggle.getAttribute('data-target');
+    const form = document.getElementById(id);
+    if (form) form.classList.toggle('hidden');
+  }
+  // Reply with quote
+  const quoteBtn = e.target.closest('.reply-quote');
+  if (quoteBtn) {
+    const id = quoteBtn.getAttribute('data-target');
+    const form = document.getElementById(id);
+    if (!form) return;
+    const ta = form.querySelector('textarea');
+    const raw = quoteBtn.getAttribute('data-raw') || '';
+    const quoted = raw.split('\n').map(l => '> ' + l).join('\n') + '\n\n';
+    ta.value = quoted;
+    form.classList.remove('hidden');
+    ta.focus();
+    const len = ta.value.length;
+    ta.setSelectionRange(len, len);
+  }
+});
+</script>
+
+<!-- This creates the reference in the bibliography box. -->
+
+<script>
+function addNewBox(key, problem_id, shouldScroll = false) {
+  const local_id = 'bib-container' + String(problem_id);
+  const container = document.getElementById(local_id);
+  if (!container) return;
+
+  container.innerHTML = "";
+
+  fetch(`/bibs/${encodeURIComponent(key)}`)
+    .then(res => {
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return res.text();
+    })
+    .then(html => {
+      container.innerHTML = html;
+
+      if (shouldScroll) {
+        requestAnimationFrame(() => {
+          container.scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+          });
+        });
+      }
+    })
+    .catch(err => {
+      console.error("Failed to load bib:", err);
+      container.textContent = "Unable to load reference.";
+
+      if (shouldScroll) {
+        container.scrollIntoView({
+          behavior: "smooth",
+          block: "start"
+        });
+      }
+    });
+}
+</script>
+
+<script>
+const filledSVG = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="black" class="fav-icon">
+  <path fill-rule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.006 5.404.434c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.434 2.082-5.005Z" clip-rule="evenodd" />
+</svg>
+                `;
+const outlineSVG = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke="black" fill="white" class="fav-icon">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.610l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.840-.610l1.285-5.386a.563.563 0 0 0-.182-.557L3.041 10.385a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z" />
+</svg>
+                `;
+
+document.addEventListener("click", async (e) => {
+  const btn = e.target.closest(".fav-btn");
+  if (!btn) return;
+
+  e.preventDefault();
+  const problemId = btn.dataset.problemId;
+
+  try {
+    const res = await fetch(`/forum/toggle_favourite/${problemId}`, { method: "POST" });
+    const data = await res.json();
+
+    btn.dataset.favourited = data.favourited ? "true" : "false";
+    btn.innerHTML = data.favourited ? filledSVG : outlineSVG;
+  } catch (err) {
+    console.error("Toggle failed:", err);
+  }
+});
+</script>
+
+    
+<script>
+function addImageBox(X, problem_id, shouldScroll = true) {
+  const local_id = 'image-container' + String(problem_id);
+  const container = document.getElementById(local_id);
+  if (!container) return;
+
+  container.innerHTML = "";
+
+  const newBox = document.createElement("div");
+
+  const img = document.createElement("img");
+  img.src = `/static/${encodeURIComponent(X)}.png`;
+  img.className = "responsive-image";
+  img.alt = String(X);
+
+  newBox.appendChild(img);
+  container.appendChild(newBox);
+
+  if (shouldScroll) {
+    requestAnimationFrame(() => {
+      container.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+      });
+    });
+  }
+}
+</script>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const form = document.getElementById('searchForm');
+  if (!form) return;
+  form.addEventListener('submit', function (e) {
+    const input = form.querySelector('.searchTerm');
+    if (!input) return;
+    const value = input.value.trim();
+    if (!value) return;
+    const path = '/search/' + encodeURIComponent(value);
+    const inDual = window.location.pathname.startsWith("/dual");
+    if (inDual) {
+      e.preventDefault(); 
+      const selected = document.querySelector('input[name="targetPanel"]:checked');
+      const panel = selected ? selected.value : "left";
+      const iframe = document.getElementById(`iframe-${panel}`);
+      if (iframe) {
+        const url = path.includes("?") ? path + "&embed=1" : path + "?embed=1";
+        iframe.src = url;
+        const box = document.querySelector(`#panel-${panel} input`);
+        if (box) box.value = path;
+      } else {
+        window.location.href = path;
+      }
+    } else {
+      form.action = path;
+      form.method = "GET";
+    }
+  });
+});
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  if (window.location.pathname.startsWith("/dual")) return;
+
+  var form = document.getElementById('idsearchForm');
+  if (!form) return;
+
+  form.onsubmit = function() {
+    var input = document.querySelector('.idsearchTerm').value.trim();
+    var searchUrl;
+
+    if (/^\d+$/.test(input)) {
+        searchUrl = '/' + encodeURIComponent(input);
+    } else if (/^((\d+|end)(-(\d+|end))?\s*)+(open|solved|yes|no)?$/.test(input.toLowerCase())) {
+        let parts = input.split(/\s+/).filter(Boolean);
+        searchUrl = '/range/' + parts.map(encodeURIComponent).join('/');
+    } else {
+        alert("Enter either a single integer or a space-separated list of numbers/ranges...");
+        return false;
+    }
+    window.location.href = searchUrl;
+    return false;
+  };
+});
+</script>
+
+<script>
+  window.CURRENT_USERNAME = "";
+</script>
+
+
+<script>
+document.addEventListener("click", async (ev) => {
+  const btn = ev.target.closest(".reaction-btn");
+  if (!btn) return;
+  const you = window.CURRENT_USERNAME || "";
+  const bar = btn.closest(".reaction-bar");
+  const postId = bar?.dataset.postId;
+  const rtype = btn.dataset.type;
+  const reactUrl = bar?.dataset.reactUrl; 
+  if (!postId || !rtype || !reactUrl) return;
+
+  try {
+    const res = await fetch(reactUrl, {
+      method: "POST",
+      credentials: "same-origin",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({type: rtype})
+    });
+    const data = await res.json();
+    if (!data.ok) {
+      alert(data.error || "Could not update reaction.");
+      return;
+    }
+    const summary = data.summary;
+    
+    bar.querySelectorAll(".reaction-btn").forEach(b => {
+      const t = b.dataset.type;
+      const countSpan = bar.querySelector(`.reaction-count[data-type="${t}"]`);
+      if (countSpan && summary[t]) {
+        countSpan.textContent = summary[t].count;
+    const desc = b.dataset.desc || "";
+    const usersTitle = summary[t].users_title || "No one yet.";
+    b.title = `${desc}\n\n${usersTitle}`;
+      }
+        const iReacted = you && (summary[t].users_title || "").includes(you);
+  b.classList.toggle("active", !!iReacted);
+  b.setAttribute("aria-pressed", iReacted ? "true" : "false");
+    });
+  } catch (e) {
+    console.error(e);
+    alert("Only registered users with 5+ posts can react.");
+  }
+});
+</script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  document.body.addEventListener("click", function (e) {
+    const link = e.target.closest(".problem-reaction-link");
+    if (!link) return;
+
+    e.preventDefault();
+
+    const row = link.closest(".problem-reaction-row");
+    if (!row) return;
+
+    const form = row.querySelector(".problem-reaction-form");
+    if (!form) return;
+
+    const formData = new FormData(form);
+
+    fetch(form.action, {
+      method: "POST",
+      body: formData,
+      headers: {
+        "X-Requested-With": "XMLHttpRequest"
+      }
+    })
+      .then(resp => resp.json())
+      .then(data => {
+        if (!data.ok) {
+          console.error(data.error || "Problem reaction update failed");
+          return;
+        }
+
+        const summary = data.summary;
+
+        // Update users text for each reaction type
+        for (const [type, info] of Object.entries(summary)) {
+          const r = document.querySelector(
+            `.problem-reaction-row[data-reaction-type="${type}"]`
+          );
+          if (!r) continue;
+
+          const usersCell = r.querySelector(".problem-reaction-users");
+          if (usersCell) {
+            usersCell.textContent = info.users_title || "None yet";
+          }
+        }
+        link.classList.toggle("active");
+        if (link.classList.contains("active")) {
+          link.textContent = "(no)";
+        } else {
+          link.textContent = "(yes)";
+        }
+      })
+      .catch(err => {
+        console.error("Problem reaction AJAX error", err);
+      });
+  });
+});
+</script>
+
+
+
+
+
+
+</head>
+
+<body>
+
+<div class="topnav">
+
+  <div class="left">
+    <div class="logo">
+      <a class="dual-aware" href="/"><img src="/static/EPLogo.png" alt="Logo" height="50"></a>
+    </div>
+    <div class="links dual-aware desktop-nav">
+      <a href="/forum">Forum</a>
+      <a href="/dm">Inbox</a> 
+      <a href="/favourites">Favourites</a>
+      <a href="/tags">Tags</a> 
+      <div class="dropdown">
+        <a href="javascript:void(0)" class="dropbtn">More</a>
+        <div class="dropdown-content">
+          <a href="/faq">FAQ</a>
+          <a href="/prizes">Prizes</a>
+          <a href="/lists">Problem Lists</a>
+          <a href="/definitions">Definitions</a>
+          <a href="/links">Links</a>
+        </div>
+      </div> 
+    </div>
+    <div class="mobile-nav">
+    
+        <a class="forumlink" href="/forum">Forum</a>
+    <div class="dropdown">
+      <button class="dropbtn" id="mobileMenuButton">Menu</button>
+      <div class="dropdown-content">
+        <a href="/dm">Inbox</a> 
+        <a href="/favourites">Favourites</a>
+        <a href="/tags">Tags</a>  
+        <a href="/faq">FAQ</a>
+        <a href="/prizes">Prizes</a>
+        <a href="/lists">Problem Lists</a>
+        <a href="/definitions">Definitions</a>
+        <a href="/links">Links</a>
+      </div>
+     </div>
+    </div>
+  </div>
+
+  <div class = "middle">
+    <div class="button-container" style="max-width: 50%;">
+      <form id="idsearchForm">
+        <input required type="text" name="query" class="idsearchTerm" placeholder="# (or range #-#)" title="Enter either a single integer or a space-separated list of numbers/ranges, optionally ending with 'open' or 'solved'.">
+        <button type="submit" class="searchButton">Go</button>
+      </form>
+    </div>
+    <div class="button-container" style="max-width: 50%;">
+      <form id="searchForm">
+        <input required type="text" name="query" class="searchTerm" placeholder="Search" title="Search all problems.">
+        <button type="submit" class="searchButton">Go</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="right">
+    <a href="/random" class="split_neutral dual-aware">Random</a>
+  </div>
+
+</div>
+
+<div id="notifications-slot"></div>
+
+
+
+    
+    
+        
+            <div class="container">
+            <div class="solve_count"> 2 shown 
+            </div>
+            </div>
+        
+        
+            <div class="container">
+                <div class="problem-box">
+                
+                
+                
+<div class="problem-text" id=neutral> 
+ 
+ <div id="prize"> $10000</div>
+    
+
+
+
+    <div id="content">
+Is it true that, for any $C&#62;0$, there are infinitely many $n$ such that\[p_{n+1}-p_n&#62; C\frac{\log\log n\log\log\log\log n}{(\log\log \log n)^2}\log n?\]
+    </div>
+
+    <div id="problem_id">
+<a href="/4">#4</a>: <a href="#bib-container4" onclick="event.preventDefault();addNewBox('Er55c', '4', true);return false;">[Er55c,p.2]</a><a href="#bib-container4" onclick="event.preventDefault();addNewBox('Er57', '4', true);return false;">[Er57,p.292]</a><a href="#bib-container4" onclick="event.preventDefault();addNewBox('Er61', '4', true);return false;">[Er61,p.223]</a><a href="#bib-container4" onclick="event.preventDefault();addNewBox('Er65b', '4', true);return false;">[Er65b,p.201]</a><a href="#bib-container4" onclick="event.preventDefault();addNewBox('Er81k', '4', true);return false;">[Er81k,p.1]</a><a href="#bib-container4" onclick="event.preventDefault();addNewBox('Er82e', '4', true);return false;">[Er82e,p.64]</a><a href="#bib-container4" onclick="event.preventDefault();addNewBox('Er90', '4', true);return false;">[Er90]</a><a href="#bib-container4" onclick="event.preventDefault();addNewBox('Er97c', '4', true);return false;">[Er97c]</a><a href="#bib-container4" onclick="event.preventDefault();addNewBox('Er97f', '4', true);return false;">[Er97f]</a><a href="#bib-container4" onclick="event.preventDefault();addNewBox('Va99', '4', true);return false;">[Va99,1.1]</a>
+    </div>
+
+ 
+    <div id="tags">
+
+<a href="/tags/number theory">number theory</a> | 
+
+<a href="/tags/primes">primes</a>
+
+    </div>
+
+</div>  
+
+<div class="problem-additional-text"> 
+
+The peculiar quantitative form of Erdős' question was motivated by an old result of Rankin <a href="#bib-container4" onclick="event.preventDefault();addNewBox('Ra38', '4', true);return false;">[Ra38]</a>, who proved there exists some constant $C&gt;0$ such that the claim holds. Solved by Maynard <a href="#bib-container4" onclick="event.preventDefault();addNewBox('Ma16', '4', true);return false;">[Ma16]</a> and Ford, Green, Konyagin, and Tao <a href="#bib-container4" onclick="event.preventDefault();addNewBox('FGKT16', '4', true);return false;">[FGKT16]</a>. The best bound available, due to all five authors <a href="#bib-container4" onclick="event.preventDefault();addNewBox('FGKMT18', '4', true);return false;">[FGKMT18]</a>, is that there are infinitely many $n$ such that\[p_{n+1}-p_n\gg \frac{\log\log n\log\log\log\log n}{\log\log \log n}\log n.\]This was improved (see the proof claims and exposition) to\[\gg \frac{\log\log n}{\log\log\log\log n}\log n\]by GPT 5.6 Pro (prompted by DottedCalculator), combining new sieving ideas with the ideas of <a href="#bib-container4" onclick="event.preventDefault();addNewBox('FGKMT18', '4', true);return false;">[FGKMT18]</a>.<br><br>The likely truth is a lower bound like $\gg(\log n)^2$. In <a href="#bib-container4" onclick="event.preventDefault();addNewBox('Er97c', '4', true);return false;">[Er97c]</a> Erdős revised the value of this problem to \$5000 and reserved the \$10000 for a lower bound of $&gt;(\log n)^{1+c}$ for some $c&gt;0$.<br><br>The best known upper bound is\[p_{n+1}-p_n \ll n^{0.525+o(1)},\]proved by Baker, Harman, and Pintz <a href="#bib-container4" onclick="event.preventDefault();addNewBox('BHP01', '4', true);return false;">[BHP01]</a>.<br><br>See also <a href="/687" rel="nofollow noopener noreferrer ugc" target="_blank">[687]</a>.<br><br>This is discussed in problem A8 of Guy's collection <a href="#bib-container4" onclick="event.preventDefault();addNewBox('Gu04', '4', true);return false;">[Gu04]</a>.
+
+
+    <div id="bib-container4"></div>
+ 
+   
+    <div class="citationbox">
+        <div id="content">
+<b>Additional thanks to</b>: Wouter van Doorn and Desmond Weisenberg
+
+        </div>
+    </div>
+
+    
+    <div class="image-container" id="image-container4"></div>
+</div>
+
+<div class="problem-info">
+
+
+
+<details class="problem-info-section">
+  <summary class="problem-info-row">
+    <span>Proof expositions (1)</span>
+  </summary>
+
+  <div class="problem-info-content problem-expositions">
+If you would like to contribute an exposition of a proof related to this problem, please <a href="https://www.erdosproblems.com/dm/with/moderator">message a moderator</a> or email <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="d6b3a4b2b9a5a6a4b9b4bab3bba5b9b8babfb8b396b1bbb7bfbaf8b5b9bb">[email&#160;protected]</a><p>
+
+
+    
+      
+        <div class="proof-exposition" id="proof-exposition-2">
+
+          <div class="proof-exposition-meta">
+              Written by 
+      <strong><a href="/forum/user/TFBloom">Thomas Bloom</a></strong>
+             (last edited 31 Aug 2026)
+            
+            
+          </div>
+
+          <div class="proof-exposition-content">
+            I will sketch the important new ideas involved in the recent <a href="https://www.erdosproblems.com/forum/thread/4/proof-claims" rel="nofollow noopener noreferrer ugc" target="_blank">improvement</a> by GPT 5.6 Pro (provided by DottedCalculator). As this is a heuristic sketch I won't bother with routine calculations or concentration estimates - some of the omitted technicalities are quite substantial.<h3>Jacobsthal's function and gaps between primes</h3>Let $Y(X)$ be the Jacobsthal function: it is the largest $Y$ such that there is a choice of residue class $a_p$ for all primes $p\leq X$ such that every integer in $[1,Y]$ belongs to at least one of these residue classes. (This function is the subject of <a href="/687" rel="nofollow noopener noreferrer ugc" target="_blank">[687]</a>).<br><br>The lower bound $Y(X)\geq X$ is trivial (just choosing $a_p=0$ for all $p\leq X$ for example). Improved lower bounds for $Y(X)$ directly yield large gaps between primes: by the Chinese Remainder Theorem there exists some $m$ with $X&lt;m\ll e^{O(X)}$ such that $m\equiv -a_p\pmod{p}$ for every $p\leq X$, and so for any $1\leq h\leq Y$ the integer $m+h$ is divisible by at least one prime $p\leq X$, and so must be composite. This means there is a prime gap of size $Y(\asymp \log x)$ at scale $x$. Thus, for example, the trivial bound $Y(X)\geq X$ recovers the trivial prime gap of size $\gg\log x$.<br><br>This is a very old idea, and all of the best bounds for prime gaps go via giving lower bounds for $Y(X)$. For example, the argument of Erdős <a href="#bib-container4" onclick="event.preventDefault();addNewBox('Er35c', '4', true);return false;">[Er35c]</a> and Rankin <a href="#bib-container4" onclick="event.preventDefault();addNewBox('Ra38', '4', true);return false;">[Ra38]</a> actually proved\[Y(X) \gg \frac{L_3}{L_2^2}X L_1.\](Here we introduce the convenient notation $L_k$ for the $k$-fold iterated logarithm of $X$.) Ford, Green, Konyagin, Maynard, and Tao <a href="#bib-container4" onclick="event.preventDefault();addNewBox('FGKMT18', '4', true);return false;">[FGKMT18]</a> improved this to\[Y(X) \gg \frac{L_3}{L_2}XL_1.\]The new GPT argument improves this further to $Y(X) \gg \frac{1}{L_3}XL_1$. (The best upper bound known is $Y(X) \ll X^2$ due to Iwaniec; it is conjectured that $Y(X) =XL_1^{2-o(1)}$).<br><br>In this note I'll sketch a proof that $Y(X) \gg \frac{1}{L_2L_3}XL_1$ using the new GPT ideas, which already improves the Erdős-Rankin bound by $L_2^{1+o(1)}$. The further improvement to $\frac{1}{L_3}XL_1$ combines these ideas with the existing work of <a href="#bib-container4" onclick="event.preventDefault();addNewBox('FGKMT18', '4', true);return false;">[FGKMT18]</a>, which can save a further factor of $L_2$ over this just as it did with the Erdős-Rankin bound. It is striking that, while <a href="#bib-container4" onclick="event.preventDefault();addNewBox('FGKMT18', '4', true);return false;">[FGKMT18]</a> used recent tools such as the Maynard-Tao sieve developed for small gaps between primes, the new GPT ideas use purely 'elementary' idea that could have been discovered decades earlier. <br><br>(Part of the reason this argument may have been missed is that it uses two distinct ideas, both of which are natural in hindsight, but neither of which themselves produce any improvement, only in tandem; it is possible that each idea may have been considered independently but discarded when it was found lacking.)<h3>Preliminaries</h3>Fix some $Y$ (which will be $&gt;X$ but $o(XL_1)$). The challenge is to select residue classes $a_p$ for all $p\leq X$ which cover all integers in $[1,Y]$, with $Y$ as large as possible. <br><br>First note that it suffices to leave at most $O(\frac{X}{L_1})$ many 'survivors' in $[1,Y]$. This is because we can just increase $X$ by some constant factor to create $\gg \frac{X}{L_1}$ more primes, and then just greedily choose one residue class per survivor to eliminate everybody.<br><br>Similarly, it suffices to cover just integers in $[X,Y]$, since then we can translate all classes down to cover $[1,Y-X]$, and this enough (adjusting our lower bound for $Y(X)$ down by $X$, which is just a small error term compared to the gains we're after).<br><br>The starting sieve is to remove all multiples of small primes - in other words, choose $a_p=0$ for all $p\leq w$. For our purposes choosing $w=L_1^{100}$, say, will suffice. (For comparison, the Erdős-Rankin argument is roughly equivalent to choosing the  $a_p$ uniformly at random for medium primes $w&lt;p\leq w'$ and $a_p=0$ again for $w'&lt;p\leq X$, although the authors did not phrase things in this manner).<br><br>Now we ask what's left. Firstly, all primes in $[X,Y]$ will remain. Call this set $P$.<br><br>The number of survivors which are not squarefree is at most $\sum_{w&lt;p&lt;\sqrt{Y}}(\frac{Y}{p^2}+1)\ll \frac{Y}{w}+\sqrt{Y}$ which is definitely $\ll X/L_1$ (recalling our choice of $w$ and that $Y=o(XL_1)$. <br><br>What about those composite survivors which are squarefree? If $q$ is the largest prime factor of such an $n$ then $n/q$ must be at least $w$ (since it can't be $1$ or have any prime divisors $\leq w$) so $q\leq Y/w\leq X/2$. In other words, the remaining set to worry about is the set of squarefree composite numbers in $[X,Y]$ all of whose prime divisors are in $[w,X/2]$. Call this set $C$. The size of $C$ is easy to estimate using classical sieve estimates, as\[\lvert C\rvert \ll \prod_{p\leq w}\left(1-\frac{1}{p}\right)Y\ll \frac{Y}{L_2}.\]It remains to choose $a_p$ for primes $w&lt;p\leq X$ to deal with the survivors in $P\cup C$.<h3>The first idea</h3>We choose $a_p$ for all $w&lt;p\leq X/2$ randomly - not uniformly, but with a probability heavily skewed towards $0$. Let $f(p)$ be some function to be chosen later, and let $\beta_p$ be such that $\frac{\beta_p}{1-\beta_p}=\frac{f(p)}{p-1}$. For all primes $w&lt;p\leq X$ let $a_p=0$ with probability $1-\beta_p(p-1)$, and $a_p$ is any other value with probability $\beta_p$.<br><br>For any fixed $n$, the probability that $n$ survives this sifting at $p$ is $\beta_p(p-1)$ if $p\mid n$, and $1-\beta_p$ if $p\nmid n$. For all $n\in P$ the probability that $n$ survives is therefore\[\prod_{w&lt;p\leq X/2}\left(1-\beta_p\right)=A,\]say, and similarly the probability that $n\in C$ survives is (since all $p\mid n$ are in thise range $(w,X/2]$)\[A\prod_{p\mid n}\frac{\beta_p}{1-\beta_p}(p-1)=A\prod_{p\mid n}f(p).\]It's now natural to choose $f$ to be multiplicative, so this factor is just $f(n)$. <br><br>Now provided $f(p)\in [0,1/2)$ we have $\beta_p\asymp f(p)/p$, and so\[\log A\asymp -\sum_{w&lt;p\leq X/2}\frac{f(p)}{p}.\]If $f(p)=p^{-t/L_1}$ (which is multiplicative) then a standard calculation using partial summation shows that $A\ll t\frac{\log w}{L_1}\asymp t\frac{L_2}{L_1}$. On the other hand, for $n\in [X,Y]$ we have $f(n)=e^{-t\frac{\log n}{L_1}}\approx e^{-t}$, say. <br><br>Therefore the probability that $n\in C$ survives is $\ll \frac{t}{e^t}\frac{L_2}{L_1}$, while the probability that $n\in P$ survives is $\ll t\frac{L_2}{L_1}$.<br><br>Recalling $\lvert C\rvert \ll Y/L_2$ and $\lvert P\rvert \ll Y/L_1$, the expected number of survivors is therefore\[\ll \left(\frac{t}{e^t}\frac{1}{L_1}+t\frac{L_2}{L_1^2}\right)Y.\]If we choose $Y\ll \frac{1}{tL_2}XL_1$ then the second summand is $\ll X/L_1$, which is acceptable. <br><br>But what about the first summand, coming from those squarefree composite numbers with prime divisors in $(w,X/2]$? To beat the Erdős-Rankin bound we need $t=o(L_2)$, which would make the first summand $\approx YL_1^{-1-o(1)}$ - so for this to be $\ll X/L_1$ we'd need $Y\ll XL_1^{o(1)}$, much too small!<br><br>To do better, we need the second idea.<h3>The second idea</h3>Note that we still have not yet used any of the primes in $(X/2,X]$. If we were choosing these sifting classes greedily then there would have to be $O(X/L_1)$ many survivors, which is the analysis we just did. <br><br>Instead, we still choose these residue classes randomly, but in a different way. First note that, as above, the probability that any $n\in C$ survives is $\approx \frac{t}{e^t}\frac{L_2}{L_1}$. Secondly, a routine sieve estimate proves that the number of $n\in C$ in any fixed residue class modulo $p\in (X/2,X]$ is $\ll \lvert C\rvert/p\ll Y/L_2X$. Therefore, for any fixed prime $p\in (X/2,X]$, the expected number of survivors from the earlier procedure in any fixed residue class is $\ll \frac{t}{e^t}\frac{L_2}{L_1}\cdot \frac{\lvert C\rvert}{p}\ll \frac{t}{e^tL_1}\frac{Y}{X}$. With the choice of $Y\asymp \frac{1}{tL_2}XL_1$ from the previous section, this is $\ll 1/e^tL_2$, so actually much smaller than $1$.<br><br>So we have a rather odd situation: there are lots of primes still to be removed, and yet in any fixed congruence class the expected number of survivors is much less than $1$.<br><br>The idea is to choose a residue class modulo $p$ weighted towards those classes which actually contain many survivors.<br><br>Let $q\approx \frac{tL_2}{e^tL_1}$ be the probability that $n\in C$ survives. (A significant complication that we are skipping over is that this probability is not uniform across $n$, which causes technical difficulties, but for heuristic purposes we suppose it is.) Let $r_{p,b}$ count the number of elements of $C$ which are congruent to $b\pmod{p}$. (A simple sieve estimate shows that $r_{p,b}\ll \lvert C\rvert/p$.) Let $m_{p,b}$ count the number of elements of $C$ congruent to $b\pmod{p}$ which survive the sieving process from primes $p\leq X/2$. Finally, let $K\asymp \lvert C\rvert/X$ be some integer. Let $k_{p,b}=\min(K,r_{p,b})$. <br><br>We choose $b\pmod{p}$ with probability\[<br>W_{p,b}=<br>q^{-k_{p,b}}\frac{\binom{m_{p,b}}{k_{p,b}}}<br>     {\binom{r_{p,b}}{k_{p,b}}} \frac{1}{Cp},<br>\]where $C&gt;0$ is some large constant, chosen to ensure that $\mathbb{E}\sum_{b&lt;p}W_{p,b}\leq 1/100$, say. (It doesn't really matter that it's $&lt;1$ -- just assign the remaining probability to some dummy class, or just think of it as not using the prime $p$ at all. Also note that we only bounded the expected sum -- there may be some $p$ for which these 'probabilities' are invalid since they sum to $&gt;1$, but since this happens rarely we can just not use such $p$ without affecting the below.)<br><br>In other words, we choose only those residue classes which contain at least $k_{p,b}$ survivors, and choose somewhat 'uniformly' over all such classes. Crucially, the total probability is $\leq 1$ since\[\mathbb{E} \binom{m_{p,b}}{k_{p,b}}\asymp q^{k_{p,b}}\binom{r_{p,b}}{k_{p,b}}.\]This is because distinct elements of $C$ in the same residue class modulo $p$ are coprime (since their difference is $hp$ with $|h|&lt;2Y/X&lt;w$), and so by the calculation from the preceding section the probability that $k_{p,b}$ of them survive is $\ll q^k_{p,b}$.<br><br>We now fix $n\in C$ and condition on the event that $n$ survives the earlier sifting. Here is the crucial part: while the probability that any given residue class contains at least $K$ survivors is $\approx q^{K}$, the probability that a given residue class contains at least $K$ survivors <b>conditional on containing at least one survivor</b> is $\approx q^{K-1}$. This means that, when examining the survival chances of a given $n$, we gain a factor of $q^{-1}$. This makes all the difference.<br><br>More precisely, if $n\equiv b\pmod{p}$, then\[<br>\mathbb E(W_{p,b}\mid n\textrm{ survives})<br>\gg \frac{1}{q^{k_{p,b}}p\binom{r_{p,b}}{k_{p,b}}} \mathbb{E}\left( \binom{m_{p,b}}{k_{p,b}}\mid n\textrm{ survives}\right)\gg <br>\frac{\binom{r_{p,b}-1}{k_{p,b}-1}}{\binom{r_{p,b}}{k_{p,b}}}\frac{1}{qp}<br>\]since\[\mathbb{E}\left( \binom{m_{p,b}}{k_{p,b}}\mid n\textrm{ survives}\right)\approx q^{k_{p,b}-1}\binom{r_{p,b}-1}{k_{p,b}-1}.\]Since $r_{p,b}\ll \lvert C\rvert/p\ll K$ and $k_{p,b}=\min(K,r_{p,b})$ we have $\binom{r_{p,b}-1}{k_{p,b}-1}\gg \binom{r_{p,b}}{k_{p,b}}$ and so the expected probability that $n$ is sifted out at $p$ is\[\gg \frac{1}{qp}\asymp\frac{1}{qX}.\]In other words, given that some $n\in C$ survives the first sieve, the probability that it is picked up by the sifting at $p$ is $\gg 1/qX$. (There is a subtlety here, in that we have only calculated the expectation of each probability, but all of the probabilities at play are simple enough that this can be made precise using some (non-trivial) concentration arguments.)<br><br>These probabilities are independent for distinct $p$, and since there are $\asymp X/L_1$ primes in $(X/2,X]$, the probability that $n\in C$ further survives all of these sieves is\[\leq \exp\left(-\frac{X}{L_1}\frac{1}{qX}\right)=\exp\left(-\frac{2^t}{tL_2}\right).\]If we choose $t$ some large multiple of $L_3$ then this is at most $L_1^{-100}$, say, and hence the expected number of survivors is\[\ll L_1^{-100}\lvert C\rvert \ll L_1^{-100}Y\ll X/L_1,\]and we are done.<br><br>Recalling from the previous section that to cover all of the primes required $Y\ll XL_1/tL_2$ this choice of $t\asymp L_3$ shows $Y\ll \frac{1}{L_2L_3}XL_1$ as claimed.<br><br>(To get to $Y\gg \frac{1}{L_3}XL_1$ we proceed as above, noting that this removes all except $\frac{L_2}{L_1}X$ many primes in $[X,Y]$, which the machinery of <a href="#bib-container4" onclick="event.preventDefault();addNewBox('FGKMT18', '4', true);return false;">[FGKMT18]</a> can remove efficiently.)
+          </div>
+
+        </div>
+      
+    
+
+  </div>
+</details>
+
+<a class="problem-info-row problem-info-link" href="/forum/discuss/4">
+    <span>Comments (6)</span>
+  </a>
+
+  <a class="problem-info-row problem-info-link"
+     href="/forum/thread/4/proof-claims">
+    <span>Proof claims (2)</span>
+  </a>
+
+
+  <details class="problem-info-section">
+    <summary class="problem-info-row">
+      <span>More information and links</span>
+    </summary>
+
+    <div class="problem-info-content">
+
+      <div class="problem-info-small">
+
+This page was last edited 31 August 2026.
+ (<a href="/history/4">View history</a>) (<a href="/latex/4">View the LaTeX source</a>)<p>
+
+When referring to this problem, please use the original sources of Erd&#337;s. If you wish to acknowledge this website, the recommended citation format is:
+<p>
+T. F. Bloom, Erd&#337;s Problem #4, https://www.erdosproblems.com/4, accessed 2026-10-16
+</div>
+      <div class="problem-info-small">
+From the <a href="https://github.com/teorth/erdosproblems">external database</a>. (You can
+        <a href="https://github.com/teorth/erdosproblems">
+          help update
+        </a> this.)
+      </div>
+
+      
+
+        <div class="problem-info-data-row">
+          <span class="problem-info-label">Formalised statement?</span>
+          <span>
+            
+              <a href="https://github.com/google-deepmind/formal-conjectures/blob/main/FormalConjectures/ErdosProblems/4.lean">
+                Yes
+              </a>
+            
+          </span>
+        </div>
+
+        
+          <div class="problem-info-data-row">
+            <span class="problem-info-label">OEIS</span>
+
+            <span>
+              
+                
+                  
+                    <a href="https://oeis.org/A002386"
+                       target="_blank"
+                       rel="noopener noreferrer">A002386</a>
+                  
+                
+              
+            </span>
+          </div>
+        
+
+        
+
+        
+
+      
+
+    </div>
+  </details>
+
+
+  
+  
+
+  <details class="problem-info-section">
+    <summary class="problem-info-row">
+      <span>Reactions</span>
+    </summary>
+
+    <div class="problem-info-content">
+
+      
+        
+
+        <div class="problem-info-data-row problem-reaction-row"
+             data-reaction-type="like">
+
+          <span class="problem-info-label">
+            Likes
+          </span>
+
+          <span>
+            <span class="problem-reaction-users">
+              
+                
+                  <a href="/forum/user/holyterror">holyterror</a>
+                
+              
+            </span>
+
+            
+          </span>
+
+        </div>
+      
+        
+
+        <div class="problem-info-data-row problem-reaction-row"
+             data-reaction-type="collab">
+
+          <span class="problem-info-label">
+            Open to collaboration
+          </span>
+
+          <span>
+            <span class="problem-reaction-users">
+              
+                <span class="problem-info-muted">None</span>
+              
+            </span>
+
+            
+          </span>
+
+        </div>
+      
+        
+
+        <div class="problem-info-data-row problem-reaction-row"
+             data-reaction-type="working_on">
+
+          <span class="problem-info-label">
+            Currently working on
+          </span>
+
+          <span>
+            <span class="problem-reaction-users">
+              
+                <span class="problem-info-muted">None</span>
+              
+            </span>
+
+            
+          </span>
+
+        </div>
+      
+        
+
+        <div class="problem-info-data-row problem-reaction-row"
+             data-reaction-type="hard">
+
+          <span class="problem-info-label">
+            Looks difficult
+          </span>
+
+          <span>
+            <span class="problem-reaction-users">
+              
+                <span class="problem-info-muted">None</span>
+              
+            </span>
+
+            
+          </span>
+
+        </div>
+      
+        
+
+        <div class="problem-info-data-row problem-reaction-row"
+             data-reaction-type="easy">
+
+          <span class="problem-info-label">
+            Looks tractable
+          </span>
+
+          <span>
+            <span class="problem-reaction-users">
+              
+                <span class="problem-info-muted">None</span>
+              
+            </span>
+
+            
+          </span>
+
+        </div>
+      
+        
+
+        <div class="problem-info-data-row problem-reaction-row"
+             data-reaction-type="formalisable">
+
+          <span class="problem-info-label">
+            Could be formalisable
+          </span>
+
+          <span>
+            <span class="problem-reaction-users">
+              
+                <span class="problem-info-muted">None</span>
+              
+            </span>
+
+            
+          </span>
+
+        </div>
+      
+        
+
+        <div class="problem-info-data-row problem-reaction-row"
+             data-reaction-type="working_form">
+
+          <span class="problem-info-label">
+            Working on formalising
+          </span>
+
+          <span>
+            <span class="problem-reaction-users">
+              
+                <span class="problem-info-muted">None</span>
+              
+            </span>
+
+            
+          </span>
+
+        </div>
+      
+
+    </div>
+  </details>
+
+</div>
+               
+
+                    
+</div></div>
+        
+            <div class="container">
+                <div class="problem-box">
+                
+                
+                
+<div class="problem-text" id=neutral> 
+ 
+ <div id="prize"> $10000</div>
+    
+
+
+
+    <div id="content">
+Let $r_k(N)$ be the largest possible size of a subset of $\{1,\ldots,N\}$ that does not contain any non-trivial $k$-term arithmetic progression. Prove an asymptotic formula for $r_k(N)$. 
+    </div>
+
+    <div id="problem_id">
+<a href="/142">#142</a>: <a href="#bib-container142" onclick="event.preventDefault();addNewBox('Er80', '142', true);return false;">[Er80,p.92]</a><a href="#bib-container142" onclick="event.preventDefault();addNewBox('Er81', '142', true);return false;">[Er81,p.4]</a><a href="#bib-container142" onclick="event.preventDefault();addNewBox('Er97c', '142', true);return false;">[Er97c]</a><a href="#bib-container142" onclick="event.preventDefault();addNewBox('Va99', '142', true);return false;">[Va99,1.27]</a>
+    </div>
+
+ 
+    <div id="tags">
+
+<a href="/tags/additive combinatorics">additive combinatorics</a> | 
+
+<a href="/tags/arithmetic progressions">arithmetic progressions</a>
+
+    </div>
+
+</div>  
+
+<div class="problem-additional-text"> 
+
+Erdős remarked this is 'probably unattackable at present'. In <a href="#bib-container142" onclick="event.preventDefault();addNewBox('Er97c', '142', true);return false;">[Er97c]</a> Erdős offered \$1000, but given that he elsewhere offered \$5000 just for (essentially) showing that $r_k(N)=o_k(N/\log N)$ (see <a href="/3" rel="nofollow noopener noreferrer ugc" target="_blank">[3]</a>), that value seems odd. In <a href="#bib-container142" onclick="event.preventDefault();addNewBox('Er81', '142', true);return false;">[Er81]</a> he offers \$10000, stating it is 'probably enormously difficult'.<br><br>The best known upper bounds for $r_k(N)$ are due to Kelley and Meka <a href="#bib-container142" onclick="event.preventDefault();addNewBox('KeMe23', '142', true);return false;">[KeMe23]</a> for $k=3$, Green and Tao <a href="#bib-container142" onclick="event.preventDefault();addNewBox('GrTa17', '142', true);return false;">[GrTa17]</a> for $k=4$, and Leng, Sah, and Sawhney <a href="#bib-container142" onclick="event.preventDefault();addNewBox('LSS24', '142', true);return false;">[LSS24]</a> for $k\geq 5$. An asymptotic formula is still far out of reach, even for $k=3$.<br><br>In <a href="#bib-container142" onclick="event.preventDefault();addNewBox('Er80', '142', true);return false;">[Er80]</a> and <a href="#bib-container142" onclick="event.preventDefault();addNewBox('Va99', '142', true);return false;">[Va99]</a> he asks (much more reasonably) for the order of magnitude of $r_k(N)$. In <a href="#bib-container142" onclick="event.preventDefault();addNewBox('Er80', '142', true);return false;">[Er80]</a> he remarks that we do not even know whether $r_k(n)/r_{k+1}(n)\to 0$ for any $k\geq 3$.<br>  <br>See also <a href="/3" rel="nofollow noopener noreferrer ugc" target="_blank">[3]</a> and <a href="/139" rel="nofollow noopener noreferrer ugc" target="_blank">[139]</a>.
+
+
+    <div id="bib-container142"></div>
+ 
+   
+    <div class="citationbox">
+        <div id="content">
+<b>Additional thanks to</b>: Zach Hunter
+
+        </div>
+    </div>
+
+    
+    <div class="image-container" id="image-container142"></div>
+</div>
+
+<div class="problem-info">
+
+
+
+<details class="problem-info-section">
+  <summary class="problem-info-row">
+    <span>Proof expositions (0)</span>
+  </summary>
+
+  <div class="problem-info-content problem-expositions">
+If you would like to contribute an exposition of a proof related to this problem, please <a href="https://www.erdosproblems.com/dm/with/moderator">message a moderator</a> or email <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="751007111a0605071a17191018061a1b191c1b10351218141c195b161a18">[email&#160;protected]</a><p>
+
+
+    
+      <div class="problem-info-muted">
+        No proof expositions yet.
+      </div>
+    
+
+  </div>
+</details>
+
+<a class="problem-info-row problem-info-link" href="/forum/discuss/142">
+    <span>Comments (1)</span>
+  </a>
+
+  <a class="problem-info-row problem-info-link"
+     href="/forum/thread/142/proof-claims">
+    <span>Proof claims (0)</span>
+  </a>
+
+
+  <details class="problem-info-section">
+    <summary class="problem-info-row">
+      <span>More information and links</span>
+    </summary>
+
+    <div class="problem-info-content">
+
+      <div class="problem-info-small">
+
+This page was last edited 04 April 2026.
+ (<a href="/history/142">View history</a>) (<a href="/latex/142">View the LaTeX source</a>)<p>
+
+When referring to this problem, please use the original sources of Erd&#337;s. If you wish to acknowledge this website, the recommended citation format is:
+<p>
+T. F. Bloom, Erd&#337;s Problem #142, https://www.erdosproblems.com/142, accessed 2026-10-16
+</div>
+      <div class="problem-info-small">
+From the <a href="https://github.com/teorth/erdosproblems">external database</a>. (You can
+        <a href="https://github.com/teorth/erdosproblems">
+          help update
+        </a> this.)
+      </div>
+
+      
+
+        <div class="problem-info-data-row">
+          <span class="problem-info-label">Formalised statement?</span>
+          <span>
+            
+              <a href="https://github.com/google-deepmind/formal-conjectures/blob/main/FormalConjectures/ErdosProblems/142.lean">
+                Yes
+              </a>
+            
+          </span>
+        </div>
+
+        
+          <div class="problem-info-data-row">
+            <span class="problem-info-label">OEIS</span>
+
+            <span>
+              
+                
+                  
+                    <a href="https://oeis.org/A003002"
+                       target="_blank"
+                       rel="noopener noreferrer">A003002</a>, 
+                  
+                
+                  
+                    <a href="https://oeis.org/A003003"
+                       target="_blank"
+                       rel="noopener noreferrer">A003003</a>, 
+                  
+                
+                  
+                    <a href="https://oeis.org/A003004"
+                       target="_blank"
+                       rel="noopener noreferrer">A003004</a>, 
+                  
+                
+                  
+                    <a href="https://oeis.org/A003005"
+                       target="_blank"
+                       rel="noopener noreferrer">A003005</a>
+                  
+                
+              
+            </span>
+          </div>
+        
+
+        
+
+        
+
+      
+
+    </div>
+  </details>
+
+
+  
+  
+
+  <details class="problem-info-section">
+    <summary class="problem-info-row">
+      <span>Reactions</span>
+    </summary>
+
+    <div class="problem-info-content">
+
+      
+        
+
+        <div class="problem-info-data-row problem-reaction-row"
+             data-reaction-type="like">
+
+          <span class="problem-info-label">
+            Likes
+          </span>
+
+          <span>
+            <span class="problem-reaction-users">
+              
+                
+                  <a href="/forum/user/Chadyyyy1234">Chadyyyy1234</a>, 
+                
+                  <a href="/forum/user/RaziqStark">RaziqStark</a>, 
+                
+                  <a href="/forum/user/satsun93">satsun93</a>, 
+                
+                  <a href="/forum/user/jbbaehr22">jbbaehr22</a>, 
+                
+                  <a href="/forum/user/Prasannam">Prasannam</a>, 
+                
+                  <a href="/forum/user/SkyYang">SkyYang</a>, 
+                
+                  <a href="/forum/user/Terrez1000">Terrez1000</a>, 
+                
+                  <a href="/forum/user/JMullings">JMullings</a>, 
+                
+                  <a href="/forum/user/Rafikzeraoulia2025">Rafikzeraoulia2025</a>, 
+                
+                  <a href="/forum/user/ATheo1">ATheo1</a>, 
+                
+                  <a href="/forum/user/umpolungfish">umpolungfish</a>
+                
+              
+            </span>
+
+            
+          </span>
+
+        </div>
+      
+        
+
+        <div class="problem-info-data-row problem-reaction-row"
+             data-reaction-type="collab">
+
+          <span class="problem-info-label">
+            Open to collaboration
+          </span>
+
+          <span>
+            <span class="problem-reaction-users">
+              
+                
+                  <a href="/forum/user/afshinkhadangi">afshinkhadangi</a>, 
+                
+                  <a href="/forum/user/RaziqStark">RaziqStark</a>, 
+                
+                  <a href="/forum/user/jbbaehr22">jbbaehr22</a>, 
+                
+                  <a href="/forum/user/Rafikzeraoulia2025">Rafikzeraoulia2025</a>
+                
+              
+            </span>
+
+            
+          </span>
+
+        </div>
+      
+        
+
+        <div class="problem-info-data-row problem-reaction-row"
+             data-reaction-type="working_on">
+
+          <span class="problem-info-label">
+            Currently working on
+          </span>
+
+          <span>
+            <span class="problem-reaction-users">
+              
+                
+                  <a href="/forum/user/Chadyyyy1234">Chadyyyy1234</a>, 
+                
+                  <a href="/forum/user/RaziqStark">RaziqStark</a>, 
+                
+                  <a href="/forum/user/satsun93">satsun93</a>, 
+                
+                  <a href="/forum/user/jbbaehr22">jbbaehr22</a>, 
+                
+                  <a href="/forum/user/SkyYang">SkyYang</a>, 
+                
+                  <a href="/forum/user/Terrez1000">Terrez1000</a>, 
+                
+                  <a href="/forum/user/ATheo1">ATheo1</a>, 
+                
+                  <a href="/forum/user/BAUHAUS">BAUHAUS</a>, 
+                
+                  <a href="/forum/user/AnimishSharma">AnimishSharma</a>, 
+                
+                  <a href="/forum/user/umpolungfish">umpolungfish</a>, 
+                
+                  <a href="/forum/user/Evan_Adikes">Evan_Adikes</a>
+                
+              
+            </span>
+
+            
+          </span>
+
+        </div>
+      
+        
+
+        <div class="problem-info-data-row problem-reaction-row"
+             data-reaction-type="hard">
+
+          <span class="problem-info-label">
+            Looks difficult
+          </span>
+
+          <span>
+            <span class="problem-reaction-users">
+              
+                
+                  <a href="/forum/user/TerenceTao">TerenceTao</a>, 
+                
+                  <a href="/forum/user/msawhney">msawhney</a>, 
+                
+                  <a href="/forum/user/RaziqStark">RaziqStark</a>, 
+                
+                  <a href="/forum/user/satsun93">satsun93</a>, 
+                
+                  <a href="/forum/user/Terrez1000">Terrez1000</a>, 
+                
+                  <a href="/forum/user/Rafikzeraoulia2025">Rafikzeraoulia2025</a>, 
+                
+                  <a href="/forum/user/TFBloom">TFBloom</a>, 
+                
+                  <a href="/forum/user/fefemath">fefemath</a>, 
+                
+                  <a href="/forum/user/Vjeko_Kovac">Vjeko_Kovac</a>, 
+                
+                  <a href="/forum/user/jleng01">jleng01</a>
+                
+              
+            </span>
+
+            
+          </span>
+
+        </div>
+      
+        
+
+        <div class="problem-info-data-row problem-reaction-row"
+             data-reaction-type="easy">
+
+          <span class="problem-info-label">
+            Looks tractable
+          </span>
+
+          <span>
+            <span class="problem-reaction-users">
+              
+                
+                  <a href="/forum/user/Chadyyyy1234">Chadyyyy1234</a>, 
+                
+                  <a href="/forum/user/RaziqStark">RaziqStark</a>, 
+                
+                  <a href="/forum/user/satsun93">satsun93</a>, 
+                
+                  <a href="/forum/user/umpolungfish">umpolungfish</a>
+                
+              
+            </span>
+
+            
+          </span>
+
+        </div>
+      
+        
+
+        <div class="problem-info-data-row problem-reaction-row"
+             data-reaction-type="formalisable">
+
+          <span class="problem-info-label">
+            Could be formalisable
+          </span>
+
+          <span>
+            <span class="problem-reaction-users">
+              
+                
+                  <a href="/forum/user/jbbaehr22">jbbaehr22</a>, 
+                
+                  <a href="/forum/user/umpolungfish">umpolungfish</a>
+                
+              
+            </span>
+
+            
+          </span>
+
+        </div>
+      
+        
+
+        <div class="problem-info-data-row problem-reaction-row"
+             data-reaction-type="working_form">
+
+          <span class="problem-info-label">
+            Working on formalising
+          </span>
+
+          <span>
+            <span class="problem-reaction-users">
+              
+                
+                  <a href="/forum/user/ATheo1">ATheo1</a>, 
+                
+                  <a href="/forum/user/umpolungfish">umpolungfish</a>
+                
+              
+            </span>
+
+            
+          </span>
+
+        </div>
+      
+
+    </div>
+  </details>
+
+</div>
+               
+
+                    
+</div></div>
+        
+    
+    
+
+
+
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+window.MathJax = {
+  output: {
+    font: 'mathjax-tex'
+  },
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']],
+    displayMath: [['$$', '$$'], ['\\[', '\\]']],
+    processEscapes: true
+  },
+};
+</script>
+
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@4.1.2/tex-chtml-nofont.js"></script>
+
+
+<!-- Previewing forum posts -->
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  function escapeHtml(str) {
+    return String(str).replace(/[&<>"']/g, m => ({
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#39;"
+    })[m]);
+  }
+
+  function normalizeHref(href) {
+    href = href.trim();
+    if (!/^https?:\/\//i.test(href) && !href.startsWith("/")) {
+      href = "https://" + href;
+    }
+
+    return href;
+  }
+
+  let mathJaxQueue = Promise.resolve();
+
+  function clearMathJax(element) {
+    if (window.MathJax && MathJax.typesetClear) {
+      MathJax.typesetClear([element]);
+    }
+  }
+
+  function typesetMath(element) {
+    if (!window.MathJax) return;
+
+    if (MathJax.typesetPromise) {
+      mathJaxQueue = mathJaxQueue
+        .then(() => {
+          if (MathJax.startup && MathJax.startup.promise) {
+            return MathJax.startup.promise;
+          }
+        })
+        .then(() => MathJax.typesetPromise([element]))
+        .catch(err => {
+          console.error("MathJax typeset failed:", err);
+        });
+
+      return;
+    }
+
+    if (MathJax.Hub) {
+      MathJax.Hub.Queue(["Typeset", MathJax.Hub, element]);
+    }
+  }
+
+  function renderPreview(textarea, preview, label) {
+    let raw = textarea.value;
+    const anchors = [];
+    let idx = 0;
+
+    raw = raw.replace(
+      /<a\s+href=("(?:[^"]*)"|'(?:[^']*)')\s*>([\s\S]*?)<\/a>/gi,
+      (match, qHref, labelText) => {
+        const href = qHref.slice(1, -1);
+        const token = `__A_TAG_${idx++}__`;
+
+        anchors.push({
+          token,
+          href: normalizeHref(href),
+          label: labelText
+        });
+
+        return token;
+      }
+    );
+
+    let safe = escapeHtml(raw);
+
+    anchors.forEach(a => {
+      const html = `<a href="${escapeHtml(a.href)}">${escapeHtml(a.label)}</a>`;
+      safe = safe.replace(a.token, html);
+    });
+
+    safe = safe.replace(/\{PROBLEM=(.+?)\}/g, (_, p1) =>
+      `<a href="/${escapeHtml(p1)}">[${escapeHtml(p1)}]</a>`
+    );
+
+    safe = safe.replace(/\n/g, "<br>");
+    clearMathJax(preview);
+
+    if (!safe.trim()) {
+      preview.innerHTML = "";
+      preview.classList.add("hidden");
+      label.classList.add("hidden");
+      return;
+    }
+
+    preview.innerHTML = safe;
+    preview.classList.remove("hidden");
+    label.classList.remove("hidden");
+
+    typesetMath(preview);
+  }
+
+function initialisePreview(textarea) {
+  const form = textarea.closest("form");
+  const preview = form && form.querySelector(".post-preview");
+  const label = form && form.querySelector(".preview-label");
+
+  if (!preview || !label) {
+    return;
+  }
+
+  renderPreview(textarea, preview, label);
+}
+
+document.addEventListener("input", function (event) {
+  if (!event.target.matches("form textarea")) {
+    return;
+  }
+
+  initialisePreview(event.target);
+});
+
+document.querySelectorAll("form textarea").forEach(function (textarea) {
+  initialisePreview(textarea);
+});
+});
+</script>
+
+<!-- To handle the search bar -->
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    function setFilterLink(linkId, newFilter) {
+        const link = document.getElementById(linkId);
+        if (!link) return;
+        const pathParts = window.location.pathname.split("/");
+        // Expect: /<section>/<entry> or /<section>/<entry>/<filter>
+        if (pathParts.length >= 3) {
+            const section = pathParts[1];
+            const entry = pathParts[2];
+            // Construct base: /tags/additive, /sources_bib/BL09, etc.
+            const baseUrl = "/" + section + "/" + entry;
+            link.href = baseUrl + "/" + newFilter;
+        }
+    }
+    setFilterLink("solvedLink", "solved");
+    setFilterLink("openLink", "open");
+    setFilterLink("yesLink", "yes");
+    setFilterLink("noLink", "no");
+});
+</script>
+
+<!-- Handle the dual view link -->
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const dualLink = document.getElementById("dualViewLink");
+  if (!dualLink) return;
+
+  const isInDualView = window.location.pathname.startsWith("/dual");
+  dualLink.textContent = isInDualView ? "Exit Dual View" : "Dual View";
+  dualLink.addEventListener("click", function (e) {
+    e.preventDefault();
+
+    if (isInDualView) {
+      try {
+        const leftIframe = document.getElementById("iframe-left");
+        const src = leftIframe?.src || "/";
+        let clean = src.replace(window.location.origin, "");
+        clean = clean.replace(/[?&]embed=1/, "");
+
+        window.location.href = clean;
+      } catch (err) {
+        window.location.href = "/";
+      }
+    } else {
+      const currentPath = window.location.pathname + window.location.search;
+      const rightPanelDefault = "/";
+      const hash = `#left:${encodeURIComponent(currentPath)}&right:${encodeURIComponent(rightPanelDefault)}`;
+      window.location.href = `/dual${hash}`;
+    }
+  });
+});
+</script>
+
+<!-- Redirect links and searches when in dual view mode -->
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  if (!window.location.pathname.startsWith("/dual")) return;
+
+  function getTargetPanel() {
+    const selected = document.querySelector('input[name="targetPanel"]:checked');
+    return selected ? selected.value : "left";
+  }
+
+  function loadInPanel(panel, path) {
+    if (!path) return;
+    const iframe = document.getElementById(`iframe-${panel}`);
+    if (!iframe) return;
+    const url = path.includes("?") ? path + "&embed=1" : path + "?embed=1";
+    iframe.src = url;
+    const inputBox = document.querySelector(`#panel-${panel} input`);
+    if (inputBox) inputBox.value = path;
+    console.log(`Loaded "${url}" into panel "${panel}"`);
+  }
+  
+  document.querySelectorAll(".dual-aware a[href^='/'], a.dual-aware[href^='/']").forEach(link => {
+    link.addEventListener("click", function (e) {
+      e.preventDefault();
+      const path = this.getAttribute("href");
+      loadInPanel(getTargetPanel(), path);
+    });
+  });
+
+  const idForm = document.getElementById("idsearchForm");
+  if (idForm) {
+    idForm.addEventListener("submit", function (e) {
+      e.preventDefault();
+      const input = idForm.querySelector(".idsearchTerm").value.trim();
+      if (!input) return;
+
+      let path = null;
+
+      if (/^\d+$/.test(input)) {
+        path = "/go_to/" + encodeURIComponent(input);
+      } else if (/^((\d+|end)(-(\d+|end))?\s*)+(open|solved|yes|no)?$/i.test(input)) {
+        const parts = input.split(/\s+/).filter(Boolean);
+        path = "/range/" + parts.map(encodeURIComponent).join("/");
+      } else {
+        alert("Invalid input format.");
+        return;
+      }
+
+      loadInPanel(getTargetPanel(), path);
+    });
+  }
+
+  const searchForm = document.getElementById("searchForm");
+  if (searchForm) {
+    searchForm.addEventListener("submit", function (e) {
+      e.preventDefault();
+      const input = searchForm.querySelector(".searchTerm").value.trim();
+      if (!input) return;
+
+      const path = "/search/" + encodeURIComponent(input);
+      loadInPanel(getTargetPanel(), path);
+    });
+  }
+});
+</script>
+
+<!-- Different menu on mobile -->
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const button = document.getElementById("mobileMenuButton");
+  const dropdown = document.getElementById("mobileDropdown");
+
+  if (button && dropdown) {
+    button.addEventListener("click", function () {
+      dropdown.classList.toggle("show");
+    });
+
+    document.addEventListener("click", function (e) {
+      if (!button.contains(e.target) && !dropdown.contains(e.target)) {
+        dropdown.classList.remove("show");
+      }
+    });
+  }
+});
+</script>
+
+<!-- For expanding threads -->
+
+<script>
+document.addEventListener('click', (e) => {
+  const link = e.target.closest('#toggle-posts');
+  if (!link) return;
+  e.preventDefault(); 
+
+  const box = document.getElementById('more-posts');
+  const isHidden = box.classList.toggle('hidden');
+  const expanded = !isHidden;
+
+  link.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+  box.setAttribute('aria-hidden', expanded ? 'false' : 'true');
+
+  link.textContent = expanded
+    ? 'Show only the top five comments'
+    : `Show ${link.dataset.remaining} more comments`;
+});
+</script>
+
+
+<script>
+document.addEventListener('click', (e) => {
+  const link = e.target.closest('.toggle-replies');
+  if (!link) return;
+  e.preventDefault();
+
+  const pid = link.dataset.postId;
+  const box = document.getElementById(`more-replies-${pid}`);
+  if (!box) return;
+
+  const isHidden = box.classList.toggle('hidden');
+  const expanded = !isHidden;
+
+  link.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+  box.setAttribute('aria-hidden', expanded ? 'false' : 'true');
+
+  link.textContent = expanded
+    ? 'Hide replies'
+    : `Show ${link.dataset.remaining} more replies`;
+});
+</script>
+
+
+<script>
+document.addEventListener("click", async function (event) {
+    const button = event.target.closest(".problem-status-option");
+    if (!button) return;
+
+    const widget = button.closest(".problem-status-widget");
+    if (!widget) return;
+
+    if (widget.dataset.canEdit !== "1") return;
+
+    const status = button.dataset.status;
+    const url = widget.dataset.setUrl;
+
+    widget.classList.add("is-saving");
+
+    const buttons = widget.querySelectorAll(".problem-status-option");
+    buttons.forEach(btn => btn.disabled = true);
+
+    try {
+        const response = await fetch(url, {
+            method: "POST",
+            credentials: "same-origin",
+            headers: {
+                "Content-Type": "application/json",
+                "X-Requested-With": "fetch"
+            },
+            body: JSON.stringify({ status: status })
+        });
+
+        const data = await response.json().catch(() => ({}));
+
+        if (!response.ok || !data.ok) {
+            throw new Error(data.error || "Could not update problem status.");
+        }
+
+        widget.dataset.currentStatus = data.status;
+
+        buttons.forEach(btn => {
+            const active = btn.dataset.status === data.status;
+            btn.classList.toggle("is-active", active);
+            btn.setAttribute("aria-checked", active ? "true" : "false");
+        });
+
+        const label = widget.querySelector(".js-problem-status-label");
+        const description = widget.querySelector(".js-problem-status-description");
+
+        if (label) label.textContent = data.label || button.dataset.label;
+        if (description) description.textContent = data.description || button.dataset.description;
+          widget.style.setProperty("--status-progress", button.dataset.progress);
+
+    } catch (err) {
+        alert(err.message || "Could not update problem status.");
+    } finally {
+        widget.classList.remove("is-saving");
+
+        if (widget.dataset.canEdit === "1") {
+            buttons.forEach(btn => btn.disabled = false);
+        }
+    }
+});
+</script>
+  
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4c067939ffeb828',t:'MTc5MjI1MTY1Ng=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

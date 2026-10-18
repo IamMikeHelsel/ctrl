@@ -1,0 +1,72 @@
+CONTROLS QUADRATIC BATCH 02 — 17 October 2026
+Status: ready for independent grading. This batch is complete; no next batch started.
+
+Result
+A rational common quadratic certificate exists at normalized sigma=1, lambda=2
+for every actuator rate r in [8,12]. A is the exact matrix in grade-01.txt.
+With xi=(ex,ev,ea,u-q2), let V=xi^T P xi, where
+
+P = (1/100) * [[22700,16487,1640,143],
+               [16487,14809,1421,1567],
+               [1640,1421,311,36],
+               [143,1567,36,1027]].
+
+The exact margin is mu=1/2. P is symmetric positive definite. At both endpoints,
+A(r)^T P+P A(r) <= -(1/2) I. Affine dependence on r gives the same inequality
+throughout [8,12]. Exact rational LDL factorizations certify positive definiteness
+of P-I/2, -A(8)^T P-P A(8)-I/2, -A(12)^T P-P A(12)-I/2, and 500I-P.
+All pivots are strictly positive. Every factorization identity was checked with
+Python Fraction arithmetic and independently encoded as exact Lean sum-of-squares
+identities. The final Lean theorem common_quadratic_certificate states the matrix
+quadratic inequality for every r in [8,12] and every real xi.
+
+Actual ODE conclusion
+For supplied continuous actual trajectories on [0,H] whose equations hold on
+(0,H), H>=0, the homogeneous plant/reference/filter equations imply
+  V(t) <= exp(-t/1000)*V(0).
+The proof uses (1/2)||xi||^2 <= V <= 500||xi||^2 and derives the augmented ODE
+from x'=v, v'=a, a'=r*(u-a), q0'=q1, q1'=q2, q2'=0, and
+  u'=2*(q2-8*(x-q0)-6*(v-q1)-(a-q2)/2-u).
+Only 8<=r(t)<=12 is assumed about r. No derivative or continuity condition on r
+is added. The supplied trajectory hypotheses restrict admissible executions.
+Existence is not proved; uniqueness is neither assumed nor proved. No all-time
+tracking, filter-error, or command-rate estimate is assumed.
+
+Search and exact arithmetic
+The existing Python had NumPy and SciPy, but no CVXPY. No package was installed.
+One fixed-parameter HiGHS search used violated-eigenvector linear cuts, with a cap
+of 160 solves or 120 seconds. It found a candidate after 69 LP solves in about
+0.08 seconds on this machine. Solver eigenvalues are recorded as numerical search
+evidence only. Rounding to tenths failed an exact pivot test. Rounding to hundredths
+passed with mu=1/2. The earlier midpoint Lyapunov candidate's endpoint failures
+and every solver iteration are preserved in search-result.json.
+
+Verification
+Final fresh-source build passed for QuadraticSlowFilter and its local dependency
+ComparisonEnvelope. Lower-level pinned LeanControls/mathlib artifacts were reused.
+Every one of the 25 target theorem/lemma statements passed an axiom audit allowing
+only propext, Classical.choice, and Quot.sound. Separate leanchecker replay passed.
+The false endpoint margin mu=100 was rejected by an arithmetic-proof failure.
+The accepted source proves its counterexample: at r=8 and xi=(1,0,0,0), the
+negative energy derivative is 1144/25, which is less than 100.
+Exact certificate checks, generated-source reproduction, final source stability,
+and prior accepted proof hash checks passed. See verification.json, exact-
+verification.json, generation-reproducible.json, and prior-proof-integrity.json.
+
+Practical meaning and open scope
+This certifies a substantially slower filter for homogeneous stability under
+pointwise rate variation. It shows the earlier box rate restriction is conservative
+for that homogeneous property. The decay bound is conservative; it is not a
+settling-time or performance measurement. This result does not prove a forced
+tracking tube, finite replan safety, stopping, sampled or clipped execution,
+actuator feasibility, or measured smoothing. Those claims need separate evidence.
+
+Reproduction
+python3 research/pods/2026-10-17/controls/quadratic-02/verify.py
+
+The verifier requires no numerical solver: it rechecks the recorded rational
+certificate and runs fresh Lean builds, audit, kernel replay, and negative control.
+The bounded search can be repeated separately with search.py; exact.py rationalizes
+its candidate; generate_lean.py reproduces the Lean source from exact-certificate.json.
+Runtime versions and the artifact manifest are included. No Git operation, remote
+push, external message, cloud setup, hardware change, or new agent was used.

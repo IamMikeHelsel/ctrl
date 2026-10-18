@@ -1,0 +1,153 @@
+Erdos 128: assembled conditional finite-graph theorem
+2026-10-17
+
+RESULT AND SCOPE
+The complete local graph construction, exact scalar optimization, finite-order
+transport and integer rounding now compile under Lean 4.35.0. The endpoint is
+Erdos128.CompletionBridge.sparse_half_2587_100000 in PublishedBCL.lean.
+Its exact mathematical meaning is:
+
+  Assume there exists N such that every finite triangle-free simple graph H
+  with |V(H)| >= N has a cut X satisfying
+    e_H(X) + e_H(V(H)\X) <= (2/47)|V(H)|^2.
+  Then every finite triangle-free simple graph G on n vertices has a set S
+  with |S| = floor(n/2) and e_G(S) <= (2587/100000)n^2.
+
+The size threshold in the hypothesis is explicit, as in the published BCL
+statement. The result covers zero, positive even, and odd orders. Edges are
+unordered simple-graph edges counted once. The conclusion is an actual
+integral vertex set, not just a fractional profile or a scalar inequality.
+It is a non-strict bound; the argument's stronger strict positive-order form
+was not added to this final wrapper.
+
+This formalizes the existing proposed 0.02587 argument. It is NOT a new
+numerical bound, NOT a proof of the conjectural 1/50 coefficient, and NOT a
+formalization of the external BCL theorem. The graph completion is proved
+locally without an assumed completion lemma. Only BCL remains an external
+mathematical hypothesis at the final endpoint.
+
+EXTERNAL INPUT AND PRIMARY SOURCE
+Jozsef Balogh, Felix Christian Clemen and Bernard Lidicky, "Max Cuts in
+Triangle-free Graphs", arXiv:2103.14179v1, 25 March 2021, PDF Theorem 2(a):
+for sufficiently large n, D_2(G) <= n^2/23.5 for every triangle-free G.
+https://arxiv.org/pdf/2103.14179v1
+https://arxiv.org/abs/2103.14179
+The explicit cut formulation above is the corresponding bipartition form of
+D_2, the least number of edges deleted to make G bipartite. Part (a) has no
+extra density or parity hypothesis. The HTML conversion renumbers it 1.2(a).
+The source was inspected for applicability; its proof and computational
+certificates were not independently formalized here. See BCL-INPUT.txt.
+
+ATTRIBUTION
+The mathematical argument is Pablo Miguel Argudo's "A cut and independent-set
+bound for sparse halves", dated 9 September 2026, at pinned commit
+2193a4a06a4ec288a53ae986cdca5c1082abf1bb of
+https://github.com/pma1999/erdos-128-sparse-halves
+The source itself credits Razborov's Section 4.5 for the completion framework
+and describes its change and cut/deletion combination. We do not claim that
+framework, combination, scalar bound, or numerical constant as our invention.
+ScalarCertificate.lean is the author's formal/Scalar.lean copied byte-for-byte.
+
+GraphBasics, ExternalInputs, GraphRational, BalancedBlowup, Rounding,
+RoundingIterate and RoundingFinal are byte-identical copies from commit
+ba85f319ebb33ec2194ef4c2929a12916329e1e7 of
+https://github.com/aimir/erdos-128-sparse-halves
+Two BCL transport theorem declarations are extracted unchanged from its
+BCLCertificate/Bridge.lean, into our namespace/import context. Adapted finite
+sum helper provenance is documented in CompletionBranch.lean. Exact source
+paths, SHA256 hashes, equality checks and changes are recorded in
+borrowed-bridge-sources.json. No upstream checkout was edited.
+
+WHAT WAS CONNECTED HERE
+1. Deleting internal edges of X makes X independent and costs at most e_G(X)
+   when the same fractional half is restored to the original graph.
+2. A maximum independent set, greedy extension and low-degree candidate set
+   are selected with finite graph semantics and explicit cardinality proofs.
+3. The large-neighborhood branch selects an actual independent extension.
+   The small-neighborhood branch constructs bounded rational profiles with
+   exactly n/2 total weight and proves their edge-cost expressions.
+4. Incidence double counting, variance and finite averaging select a profile.
+   Mantel's contribution follows from mathlib's proved Turan theorem.
+5. The piecewise completion envelope is proved and decreases with the size
+   of the independent seed. The deletion/completion theorem follows.
+6. A second profile uniformly weights the complement of a cut. The minimum
+   of the two witnesses is combined with the attributed exact scalar proof.
+7. The smaller cut side is chosen internally. The even-order fractional
+   0.02587 conclusion follows from an explicit fixed-graph BCL cut witness.
+8. Attributed balanced-blow-up results remove BCL's size threshold, then a
+   two-fold blow-up handles arbitrary parity. Attributed rounding produces
+   a set of exactly floor(n/2) vertices without increasing edge cost.
+
+The technically new artifact here is this graph-level composition and its
+checked interface to the existing scalar proof. This is a formalization
+contribution, not a claim of new extremal graph theory or publication priority.
+
+VERIFICATION AND TRUST BOUNDARY
+Development compilation passed for every module. The final theorem's audit
+contains only propext, Classical.choice and Quot.sound. Its explicit hBCL
+parameter is printed in PublishedBCL.log and FINAL-THEOREM-TYPE.txt.
+An axiom audit does not discharge a
+theorem hypothesis: hBCL is still required despite the standard axiom list.
+
+Fresh replay status: PASSED for all 22 modules. Fresh source compilation
+took 144.23s; the successful sequential checker replay
+took 375.98s, for 520.21s successful verification total.
+All original sources, copied sources and copied .olean hashes remained stable.
+The final manifest is full-bound-sequential-verification.json; each module
+has an individual full-bound-sequential-*.log with exit code 0, duration and
+Darwin maximum RSS. The maximum measured successful-process RSS was
+5162909696 bytes.
+
+An earlier combined 22-module checker was terminated by signal 9 with no
+diagnostic; its cause is not established. That failed attempt remains in
+full-bound-verification.json and is linked by hash from the successful
+manifest. Retrying one module per process against the identical fresh
+snapshot completed. replay-fresh-modules.py performs that sequential replay.
+The fresh-source build runner is verify-full-bound.py. It copies all 22 local
+modules to a new directory,
+compiles them in dependency order and replays them with leanchecker, using
+only the installed Lean 4.35 toolchain and pinned Mathlib package artifacts.
+It does not reuse original bridge, completion, or controls project .olean
+files. Cached Mathlib is trusted; this is Lean's checker, not a second prover.
+It rejects unexpected axioms and source changes during verification.
+
+The inventory has 38 audited completion-namespace declarations, including
+TWO reused BCL transport declarations; this is not a novelty count. There
+are also 17 attributed scalar audit declarations and seven earlier deletion
+bridge declarations. The final closure incorporates the reused modules.
+Earlier 16- and 27-declaration checkpoints and their manifests are preserved.
+README.txt and FULL-COMPLETION.txt describe those earlier checkpoints; this
+file supersedes their lists of remaining graph/parity/rounding work.
+
+REMAINING / HONEST STOPPING POINT
+The complete BCL proof is still outside Lean in this artifact. Proving or
+importing that exact theorem with a verified connection would remove the
+external premise. Improving 0.02587 to 0.02 remains the open mathematical
+problem and is not implied by this formalization. Publication, authorship,
+licensing/redistribution review and any prize eligibility are separate;
+none has been claimed or submitted. The preserved independent semantic
+review and replay evidence support this conditional theorem only.
+
+COMPANION DIAGNOSTIC
+The parent's separate ../erdos-scalar-relaxation/ exact rational diagnostic
+shows a limitation of the present scalar inequalities when seeking a smaller
+constant. It is not a realizable-graph counterexample, an optimality theorem,
+or part of this frozen Lean proof. No proof sources were changed by it.
+
+SOURCE-ARGUMENT DIAGNOSTIC
+The earlier exact diagnostic found a minor displayed identity that holds
+only in the lower branch of the piecewise envelope: the stated difference
+from a(1/2-a)/2 is 2(a-3/8)^2 there, but is zero in the upper branch. For
+a=2/5 the latter is zero while the square is 1/800. The needed inequality
+remains true. The Lean proof uses the correct piecewise formulas; this is
+not a counterexample to the claimed bound. See diagnostic.json and the
+preserved earlier completion notes for exact scope.
+
+FINAL CHECKED SOURCE
+PublishedBCL.lean SHA256:
+  842f708532a1bd2d1dcffbc1532321b9d97fd7b87418af99334a13d0444b1fef
+Independent semantic review: independent-review.txt, final appended section.
+Final endpoint replay: full-bound-sequential-PublishedBCL.log, exit 0.
+All 62 recorded audit closures use only standard axioms; this includes
+38 completion-namespace declarations (2 copied), 17 copied scalar declarations
+and 7 deletion-bridge declarations. These are audit counts, not novelty counts.

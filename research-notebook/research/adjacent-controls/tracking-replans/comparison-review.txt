@@ -1,0 +1,357 @@
+SMOOTH PLANS, BOUNDED TRACKING
+Independent comparison and publication review — 17 October 2026
+
+Decision: finish the conditional tracking theorem and its comparison artifact.
+Do not yet present this as a new robotics controller or a submission-ready
+research paper. The proposed reduction is sound in outline and useful for our
+proof chain. Its control mathematics is simple, and the inherited error tube
+can be too wide for the earlier high-jerk example. Both facts belong in the result.
+
+This review inspected the current recovery manuscript, SmoothReplan report and
+proof scope, RobustHold statement, sampled handoff scope, and the proposed new
+tracking equations. It does not assert that the proposed theorem has passed Lean.
+The separate final verification record must establish that fact.
+
+THE EXACT BRIDGE
+
+The physical scalar plant is
+  x'=v, v'=a, a'=r(t)(u+w-a),  8 <= r(t) <= 12.
+On each open reference segment, q'=v_ref, v_ref'=a_ref, a_ref'=j.
+Let e=(x-q, v-v_ref, a-a_ref) and choose
+  u=a_ref - 8e_x - 6e_v - e_a/2 + kappa*j.
+Direct substitution gives
+  e_x'=e_v, e_v'=e_a,
+  e_a'=r[-8e_x-6e_v-(3/2)e_a + w_eff],
+  w_eff=w+(kappa-1/r)j.
+
+This is the old holding error model with a moving reference. It is not a new
+stability mechanism. Its value is that the tracking premise follows from the
+actual plant rather than being supplied as an unexplained tracking-error bound.
+
+If |w|<=W, |j|<=J, and delta bounds |kappa-1/r|, require
+  W + delta*J <= 2R.
+The inherited initial cube is
+  |e_x|<=R,
+  |e_x+e_v/4|<=R,
+  |e_x+e_v/2+e_a/16|<=R.
+Its invariance gives |x-q|<=R, |v-v_ref|<=8R, |a-a_ref|<=64R.
+These are model bounds in the same fixed SI gains as RobustHold.
+
+A physical position interval follows if the reference interval is reduced by R
+at both ends. Matching q,v_ref,a_ref at the actual switch preserves the error
+state and its cube. No physical coordinate is reset. The result should quantify
+over a finite, chronologically ordered list of positive-duration segments.
+
+Jerk can jump at a splice. Therefore the actual acceleration derivative need not
+exist at the switch. Use a continuous physical state and an ODE on each open
+segment, then finite induction. Do not silently apply a global classical-ODE
+contract across every switch. This is also why reference jerk and actual jerk
+must remain separate quantities.
+
+THE RIGHT THREE-WAY COMPARISON
+
+For the inherited cube, compare the same gains, W, J, initial cube, plant, and
+reference sequence. Change only the constant jerk feedforward coefficient:
+
+  Method                     kappa (s)  max |kappa-1/r| (s)
+  Acceleration feedforward   0          1/8
+  Nominal rate 10/s          1/10       1/40
+  Reciprocal midpoint        5/48       1/48
+
+The first row still feeds forward reference acceleration; it omits jerk
+feedforward only. Calling it "no feedforward" would misdescribe the baseline.
+
+The reciprocal midpoint is minimax for this one objective. Since
+  1/r in [1/12,1/8],
+its center is (1/12+1/8)/2=5/48 and its radius is 1/48.
+For any kappa, the sum of the endpoint distances is at least 1/24, so their
+maximum is at least 1/48. The endpoints supply a short exact optimality proof.
+This is elementary interval minimax arithmetic, not a new synthesis method.
+
+Do not call 5/48 globally optimal tracking. At zero initial error and w=0,
+the initial acceleration-error derivative is
+  e_a'=(r*kappa-1)j.
+The different objective max_r |r*kappa-1| is minimized by kappa=1/10:
+its endpoint value is 1/5. For kappa=5/48 the endpoint values are 1/6 and 1/4.
+Thus the reciprocal midpoint improves this uniform certificate while giving a
+larger worst initial acceleration-error derivative. The two objectives differ.
+Keep this negative comparison; it prevents a false optimal-controller claim.
+
+An oracle kappa(t)=1/r(t) removes the jerk mismatch algebraically. It is a useful
+reference for the price of uncertainty, but it assumes access to the true rate.
+It is not a fair deployable competitor when our controller has only an interval.
+
+HOW CONSERVATIVE IS THE CERTIFICATE?
+
+The smallest radius allowed by this disturbance inequality is
+  R_min=(W+delta*J)/2.
+It also needs to contain the initial transformed error. The following values
+use W=0.0005 m/s^2. They are exact rational arithmetic converted to millimetres.
+These are illustrative specifications, not measured robot performance.
+
+  J (m/s^3)   R_min, k=0   R_min, k=1/10   R_min, k=5/48
+  0.005        0.5625 mm    0.3125 mm       0.302083... mm
+  0.05         3.375 mm     0.875 mm        0.770833... mm
+  0.5         31.5 mm       6.5 mm          5.458333... mm
+  5          312.75 mm     62.75 mm        52.333333... mm
+  10         625.25 mm    125.25 mm       104.416666... mm
+
+The earlier SmoothReplan example uses J=10 m/s^3 over 20 ms segments. Even with
+W=0, this inherited reciprocal-midpoint tube requires R>=104.166... mm. It
+cannot certify that example as a millimetre-precision motion. The radius is a
+sufficient all-time invariant for arbitrary admitted jerk signs and initial
+errors. It is not the actual error of a short pulse.
+
+For R=1 mm and W=0.0005 m/s^2, reciprocal-midpoint admission needs J<=0.072
+m/s^3. Nominal-rate feedforward permits J<=0.06, and omitting jerk feedforward
+permits J<=0.012. These comparisons concern certificate admissibility. Failure
+of the sufficient inequality does not prove unsafe tracking.
+
+For constant r,j,w, a steady tracking-error solution has
+  e_x=w_eff/8, e_v=e_a=0.
+This gives an analytic sanity check: the inherited R=|w_eff|/2 bound is four
+times the magnitude of this particular steady error. It is not proof that the
+invariant is four times too wide for all initial states and switching signals.
+
+IMMEDIATE IMPLEMENTATION LIMITS
+
+1. The theorem uses actual continuous-state feedback. Existing sample-and-delay
+   capture results do not automatically certify this tracking controller.
+   Derive sensor, sample-age, command-hold, and delay errors into W, or state
+   this implementation bridge as open. Do not reuse the VLA update rate as
+   the low-level servo rate without an execution model.
+
+2. If |a_ref|<=A_ref, the nominal command obeys
+     |u| <= A_ref + 24R + |kappa|J.
+   The effective target including w obeys
+     |u+w| <= A_ref + 24R + |kappa|J + W.
+   State which quantity the actuator clamps. A bounded requested command alone
+   does not prove the saturated actuator satisfies the unclamped ODE.
+
+3. A new reference must start from the previous executed reference state at the
+   actual switch. Starting it at the measured physical state may reset the
+   tracking error and break reference continuity. A stale candidate needs an
+   explicit continuation or a new feasibility test at its actual start time.
+
+4. Matching reference acceleration preserves reference jerk bounds through a
+   finite history. It does not prove |a'|<=J for the physical axis. In fact,
+   |a'|<=12(56R+|kappa|J+W) follows by combining the error terms in the cube
+   coordinates, and can be much larger. Do not report planned jerk as measured
+   or certified physical jerk.
+
+5. A terminal constant reference can reuse the hold invariant when q'=q''=0
+   and the error cube is admitted. Bounded tracking alone does not ensure a
+   planned motion reaches that terminal state, or that a stop reserve exists
+   from every intermediate state. A separate continuous path to the terminal
+   hold is needed. No contact, collision, flexure, grasp or human tremor model
+   is added by the tracking reduction.
+
+CLOSEST PRIMARY WORK AND ITS CONSEQUENCE
+
+[1] Lambrechts, Boerlage and Steinbuch, 2004/2005, higher-order trajectory
+    planning and feedforward for motion systems. The primary paper discusses
+    planned versus actual motion limits, model inversion, higher derivatives,
+    and discretization. Feedforward tied to higher-order references is mature.
+    https://skoge.folk.ntnu.no/prost/proceedings/acc04/Papers/0827_FrM03.2.pdf
+    https://doi.org/10.1016/j.conengprac.2004.02.010
+
+[2] Chen et al., FaSTrack, 2021. A simplified planner is connected to a higher
+    fidelity tracking model with a computed tracking-error bound and safety
+    controller. Thus the planner-to-plant tube is also established. Our possible
+    distinction is a small replayable Lean certificate and explicit splice
+    semantics for this chosen uncertain-lag model, not the architecture.
+    https://arxiv.org/abs/2102.07039v2
+
+[3] Kousik et al., Reachability-based Trajectory Design, 2018/2020. Tracking
+    error, planning deadlines, and persistent feasibility appear together in
+    the prior method, with simulation and hardware. A retained backup is not
+    a new idea. Our stop/hold composition must be compared with that obligation.
+    https://arxiv.org/abs/1809.06746
+
+[4] Holmes et al., ARMTD, 2020. Every planned arm trajectory includes braking
+    if replanning fails. Section II.C explicitly uses kinematic trajectories
+    and discusses tracking error and available methods for bounding it. It
+    does not make our scalar proof a new full-arm collision certificate.
+    https://arxiv.org/pdf/2002.01591
+
+[5] Berscheid and Kroeger, Ruckig, RSS 2021. General jerk-limited trajectory
+    generation is broader than our constant-jerk segment certificates. Use
+    Ruckig as a reference generator if comparing implementations; do not
+    misrepresent it as a competing uncertain-plant tracking controller.
+    https://roboticsproceedings.org/rss17/p015.pdf
+
+[6] Bohrer et al., VeriPhy, PLDI 2018. Verified models, runtime checks, machine
+    arithmetic, executable controllers, and a physical robot are connected in
+    an established formal pipeline. A Lean theorem over real arithmetic is a
+    narrower result. There is no basis to call our current package the first
+    verified robotics controller or an end-to-end implementation proof.
+    https://user-web-p-u02.wpi.edu/~rbohrer/pub/pldi18.pdf
+
+RTC and Legato remain relevant to the proposal source, but this theorem does
+not run or prove either policy. Their command continuation work is already
+documented in ../vla-smooth-replanning/report.txt and ../steady-motion/.
+No absence-of-prior-work claim follows from this bounded literature check.
+
+FINITE DELIVERABLE TO FINISH TONIGHT
+
+A defensible artifact is a verified case study called "Smooth Plans, Bounded
+Tracking" with the subtitle "A Lean certificate for finite replanning under
+uncertain actuator lag." Its deliverable is a checked model and honest tradeoff
+table. It is not an announcement of dead-steady robot arms.
+
+The minimum complete package is:
+
+- One actual-plant-to-error theorem with explicit units and disturbance placement.
+- Exact residual bounds for kappa=0, 1/10, and 5/48, including the limited minimax
+  theorem and the competing initial-error objective.
+- Finite matched replanning with unchanged physical state, global real-time
+  position containment, and a nonempty trajectory example.
+- A command-authority corollary and a reference travel margin. If saturation is
+  not modeled, clearly restrict the result to an inactive-saturation regime.
+- A closed reference sequence ending at a constant hold, with every transition
+  covered, if it can be completed without assuming a safe path. Otherwise title
+  the result tracking through finite replans and leave the terminal guarantee open.
+- A pinned fresh build, standard-axiom audit, kernel replay, and a negative
+  mutation that breaks a real bound. Publish the exact theorem statements and
+  hashes in the local package; do not replace evidence with a theorem count.
+- A fixed comparison over the same references and uncertainties. Include short
+  jerk pulses, longer sustained segments, sign reversals, and a rate change.
+  Keep the J=10 example as a visibly rejected precision specification.
+
+For numerical evaluation, retain three fixed rates (8,10,12), a smooth varying
+rate such as 10+2 sin(t), and a switch-adjacent change. Keep the same trajectories,
+disturbances, initial states and authority for all coefficients. Report actual
+peak error, endpoint error, command magnitude and the conservative tube. A
+time-step refinement check is necessary. None of these traces proves all-time
+uncertainty coverage. A validated finite-horizon error enclosure would give a
+stronger useful comparator than simulation alone.
+
+The fixed coefficient comparison should show both objectives. Do not retune
+gains or choose durations separately to favor one coefficient. A difference in
+certificate radius is a certification result; a difference in numerical error
+is numerical evidence. Keep those columns separate.
+
+GO / NO-GO
+
+GO: finish and package the bridge as a local, fully checked technical result.
+It closes a real gap between our command proof and actual conditional tracking.
+An educational or formal-methods case study is plausible if the implementation
+and negative tests are reusable. Acceptance at any venue remains unknown.
+
+NO-GO: claim a novel general controller, publishable robotics performance, or
+precision dexterous manipulation from this theorem alone. The algebra is too
+small, the plant is narrow, and the uniform tube can be too conservative.
+
+To justify a stronger research paper, show one of the following concrete gains:
+a sound finite-horizon error checker that admits useful short high-jerk motions
+when this invariant rejects them; a checked sampled/delayed implementation with
+a useful error budget; or a full recurrent admission-and-stop reserve theorem
+that keeps its hypotheses through execution. Compare against the established
+methods above and quantify the cost of certification. This is a research gate,
+not a promise that adding one feature will ensure publication.
+
+Do not append the proposed tracking claim to the current recovery manuscript
+without rewriting its scope. That draft centers on a different fixed-rate
+normalized recovery example and contains historical open-comparison statements.
+Its assumptions and claim map need reconciliation before a paper revision.
+
+DECLARED NUMERICAL COMPARISON AND RESULTS
+
+The accompanying comparison.py uses the actual three-state plant. Reference
+segments use exact rational initial values and constant jerk; the numerical
+integrator receives the analytic reference on each segment. Four signed jerk
+segments [+J,-J,-J,+J] of equal duration h return reference velocity and
+acceleration to zero, then hold the final reference for four seconds.
+
+These profiles were fixed before inspecting outcomes:
+  short_high_jerk: J=10 m/s^3, h=0.02 s (ties to the earlier segment scale);
+  long_high_jerk:  J=10 m/s^3, h=0.25 s;
+  slow_precision: J=0.05 m/s^3, h=0.5 s.
+All methods receive the same profile within a case. Differences between profiles
+are intentional stress cases, not evidence that changing J has no cost.
+
+Compare sigma=1 and sigma=10 as different physical response families:
+  r in [8 sigma,12 sigma]/s;
+  feedback = -8 sigma^2 e_x - 6 sigma e_v - e_a/2;
+  kappa = 0, 1/(10 sigma), or 5/(48 sigma);
+  cube coordinates = [e_x,e_x+e_v/(4 sigma),
+                       e_x+e_v/(2 sigma)+e_a/(16 sigma^2)];
+  sufficient radius = (W+delta J)/(2 sigma^2).
+The faster response band is an assumption, not a gain-only software upgrade.
+Use the same physical reference histories and W for both families.
+
+Test fixed normalized rates 8,10,12 and the smooth stress signal
+  r(t)=sigma[10-2 tanh(4 cos(pi t/(2h)))].
+It tends toward the slow endpoint during positive jerk and the fast endpoint
+during negative jerk. It is deliberately aligned to create a residual bias for
+the reciprocal-midpoint choice. It is a hand-chosen stress signal, not a proven
+worst-case adversary. The mathematical rate contract supplies no rate-of-change
+bound. This waveform must not be confused with a calibrated physical actuator.
+
+Use W=0 and W=0.0005 m/s^2 with smooth disturbance
+  w(t)=-W[1-exp(-20t)].
+Start all runs with zero tracking error. Do not change disturbance sign or rate
+trace separately for each coefficient. Run a refined integration with tighter
+tolerance and a smaller maximum time step. Record numerical peak position
+error, maximum transformed-coordinate error, endpoint error, input magnitude,
+the sufficient radius, and refinement differences. Use SI units in JSON/CSV.
+The plot may display millimetres for readability. Sampled peaks remain numerical
+measurements and cannot certify all continuous times or all admitted signals.
+
+
+COMPLETED NUMERICAL EVIDENCE
+
+The experiment completed 144 cases, each with a coarse and refined integration
+(288 integrations). All declared numerical consistency checks passed. The largest
+coarse-to-refined position difference was 1.42e-10 m. This is a numerical
+refinement result, not a validated error enclosure or all-time proof.
+
+The two examples below retain a mixed outcome. For EACH coefficient, the entry
+is the maximum sampled position error across the same four declared rate signals,
+with W=0.0005 m/s^2 and zero initial error. Units in this table are millimetres.
+
+Profile and response family         Acceleration FF   Nominal jerk FF   Midpoint FF
+Short high jerk, sigma=1
+  largest sampled position error        0.112446         1.883685          1.960176
+  sufficient radius                   625.250000       125.250000        104.416667
+Long high jerk, sigma=10
+  largest sampled position error        0.156422         0.031760          0.026711
+  sufficient radius                     0.627500         0.127500          0.106667
+
+The short reference moves only 0.16 mm in 0.08 s. A rate signal aligned with
+jerk can create a residual bias. In this family, both jerk-feedforward choices
+have larger sampled peak error than the acceleration-feedforward baseline.
+The long reference moves 312.5 mm in 1 s. In that faster-response family, both
+jerk-feedforward choices improve this selected numerical measure. The midpoint
+choice improves it slightly over the nominal coefficient. These cases do not
+rank the methods for all inputs or all admissible rates.
+
+The vector figure also shows fixed-r=12/s, zero-disturbance traces. There the
+midpoint residual has 1.25 times the nominal residual. The linear error system
+therefore gives 1.25 times the position error for the same reference. This check
+makes the different minimax objectives visible rather than hiding a losing case.
+
+The animation file is comparison-trace.json. It contains the SHORT sigma=10
+reference, the smooth stress rate, and W=0.0005 m/s^2. It holds 201 samples per
+coefficient, concentrated around the 80 ms motion. Each sample has t_s, q_m,
+x_m, error_m and R_m. The midpoint radius is 0.1066667 mm; the final reference is
+0.16 mm. Values between the saved numerical samples are linearly interpolated.
+Use the stated analytic reference for exact reference geometry. This is one
+illustrative trajectory, not a worst-case witness or a physical measurement.
+
+REPRODUCTION AND FILE PROVENANCE
+
+From the workspace root:
+  python3 research/adjacent-controls/tracking-replans/comparison.py
+
+The experiment uses the existing system Python with numpy and scipy. It then
+uses .tools/travel-plot-python/bin/python for the SVG and PDF if that existing
+environment is present. No package installation is required. To redraw from the
+saved data without repeating the numerical integration:
+  .tools/travel-plot-python/bin/python research/adjacent-controls/tracking-replans/comparison.py --render
+
+comparison-results.json records the final script hash as source_sha256 and the
+original numerical-execution revision separately. Since that run, only comments,
+figure layout and result-summary/render metadata changed. The plant, controller,
+references, integration, validation and animation sample extraction did not
+change. SVG and PDF come from the same Matplotlib figure. CSV retains all cases.

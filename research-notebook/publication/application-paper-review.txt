@@ -1,0 +1,230 @@
+APPLICATION PAPER: ADVERSARIAL CLAIM REVIEW
+Reviewed 17 October 2026. Read-only review of manuscript and proof sources.
+
+Verdict
+-------
+No blocking mathematical overclaim found in the current focused draft. The
+measured-request theorem, physical scaling, active-clipping example, and
+position-only counterexample agree with the implemented definitions and
+statements. The two minor issues raised during review have been corrected:
+division by elapsed time is explicitly restricted to positive elapsed time,
+and the claim map now names measured-execution continuity and ODE theorems.
+
+Claim fidelity: A-. Publication contribution: plausible focused formalization
+case study, not established new control theory. This is a qualitative review
+grade, not a probability of acceptance. The remaining substantive publication
+risk is relevance and breadth, rather than a known mismatch between the paper
+and the checked artifact. No source or manuscript changes were made by this
+reviewer. PDF typography and an independent full hand-proof audit were outside
+this pass.
+
+Claim-by-claim findings
+----------------------
+1. Plant and disturbance channels: ACCEPT.
+   The paper's e enters the scalar requested command before clipping; d enters
+   after clipping, as a held acceleration-command error. MeasuredTravel.segment
+   implements exactly heldSegment t z (saturate 1 (input z + e) + d).
+   The distinction between |u| <= 1 and a possibly larger |u+d| is explicit.
+   This is neither a force disturbance nor an arbitrary within-interval signal.
+
+2. Main all-time theorem: ACCEPT.
+   MeasuredTravel.state_invariant and travel_limit have the advertised positive
+   lower sampling bound, upper bound 1/5, combined |e_n|+|d_n| <= 1/100, initial
+   V <= 12, and arbitrary real t >= 0. state_at_sample,
+   state_continuousOn_nonnegative, and state_ode_interior supply the other
+   conclusions. The latter proves componentwise derivatives on open sample
+   intervals with command computed from that interval's recursive sample.
+   No assumption of an already-safe trajectory or ODE uniqueness is hidden.
+   The draft correctly identifies a defined execution and does not claim
+   differentiability at switches or uniqueness of every abstract ODE solution.
+
+3. Nonvacuity and clipping: ACCEPT.
+   MeasuredTravel.active_initial proves V(0,0,1)=278/25 < 12 and clipping of
+   request -399/200 to -1 with e=d=1/200. active_example_travel supplies an
+   all-time instantiation with period 1/10 and these nonzero errors. Therefore
+   active saturation is admitted, not excluded by an inactive-clipping region.
+   The text correctly refrains from claiming perpetual saturation or attainment
+   of every sector/enclosure extreme.
+
+4. Region and weakened-contract counterexample: ACCEPT.
+   P in the manuscript equals TravelGeometry.P. The coordinate and gain
+   inequalities used are x^2 <= V/3 and k^2 <= V/2; the upper energy constant is
+   451/10. They are sufficient geometric bounds, not exact support values.
+   TravelScope.position_only_initial, position_only_escapes, and
+   outside_certified_region match Proposition 1. The initial energy is exactly
+   2322/25 > 12. At elapsed time 1/5, position equals 32/25+exp(-1/5), which is
+   at least 52/25 > 2. The admitted time statement does not require the unsafe
+   initial state to be admitted by the main ellipsoid theorem.
+
+5. Analytic-to-polynomial bridge: ACCEPT.
+   The held formulas and F0-alpha*g*K signs agree with SaturatedLag. The gain
+   is selected from the sampled state and held, not recomputed continuously.
+   A shared exponential interpolation variable preserves coordinate dependence.
+   Separate affine dependence in gain and exponential justifies the four
+   vertices without assuming those uncertain quantities are independent random
+   variables or dynamically free. Convexity applies to a positive quadratic
+   form. The proof uses enclosure of the actual exponential; the vertices are
+   not misidentified as the actual dynamics. The zero-time case is explicit.
+   Decay is relative to the sample state, not pairwise monotonicity in time.
+
+6. Certificate scope and trust: ACCEPT.
+   Four travel cases have cubic residuals, one interval [0,1/5], and four
+   Bernstein coefficient matrices. The exact identity and coefficient LDL
+   witnesses are checked. Model-to-vertex identities are separate. The producer
+   is correctly outside the trust boundary. The text does not infer new control
+   theory, optimality, or truth of a physical model from compilation.
+
+7. Response bound and invariant budget: ACCEPT.
+   Independently recomputed using Python Fraction arithmetic:
+     endpoint energies: 278/25, 3049/250, 7474/625;
+     eta = 5/451;
+     direct D = 1469/12500 = 0.11752;
+     region budget = 60/451 = 0.13303769401330376;
+     strict slack = 87481/5637500 > 0.
+   TravelDisturbance.response_energy_bound concerns the response without w;
+   disturbance_energy_bound supplies the w^2 form shown in equation (7).
+   The claim-map label is broadly accurate; optionally list both declarations
+   if the intent is to point directly to that exact displayed inequality.
+   StepScaledRobustness uses a parameter proportional to elapsed time, with
+   the zero-time identity handled separately. The D expression and invariance
+   arithmetic match the source.
+
+8. Measured-request reduction: ACCEPT.
+   Clipping nonexpansiveness yields the combined scalar error bound globally.
+   effectiveErrors is computed from the recursively defined actual samples;
+   samples_eq_effective and state_eq_effective prove equality to the base
+   execution. There is no circular construction assuming safe sample states.
+
+9. Rounding: ACCEPT WITH THE DRAFT'S EXISTING LIMITATION.
+   roundedRequestError_bound has delta_x/2 + 3 delta_v/2 + delta_a, with each
+   grid width positive. roundedSamples computes measurements from its own
+   evolving samples. Equal grids 1/1000 consume 3/1000, leaving 7/1000 for d.
+   rounded_active_example confirms the initial state is represented exactly
+   and clips. Mathlib's round uses half-integer ties toward positive infinity.
+   The draft correctly limits this corollary to ideal real-valued sensing,
+   safety, and sample agreement; it does not silently claim that a separate
+   rounded global execution calculus theorem was proved, or that floating
+   point, register width, overflow, sensor range, or physical grids are verified.
+
+10. Physical interpretation: ACCEPT.
+    PhysicalTravel normalizes time by tau and state by (U*tau^2,U*tau,U).
+    Its measured_travel_limit, measuredState_at_sample,
+    measuredState_continuousOn_nonnegative, and measuredState_ode_interior
+    establish the stated dimensional model and envelope. Positive tau and U
+    are retained. Controller gain scaling and post-clamp disturbance scaling
+    are correct. For tau=1/10 and U=2 the limits are 20 ms, 0.02 m/s^2 combined
+    error, and 0.04 m position; initial acceleration 2 requests -4 and clips
+    to -2. The table is explicitly illustrative, not calibrated hardware.
+    Varying known tau is not robustness to uncertain tau; the draft says so.
+
+11. Response-bound ablation: ACCEPT.
+    Exact recomputation gives C=9471/200=47.355 and
+    D_coarse=1070223/2500000=0.4280892. The final rational comparisons are the
+    TravelScope theorems. The paper explicitly distinguishes their checked
+    status from the explanatory coarse-bound derivation and from an actual
+    unsafe trajectory. No maximality claim or comparative solver claim occurs.
+
+12. Mutation and producer tests: ACCEPT.
+    Current evidence/model-bridge/verification.json binds to the current
+    SaturatedLag source. Its positive case passes; changing feedback 2 to 3
+    while retaining old vertex matrices fails at all four identity locations.
+    Producer log records acceptance of the valid scalar and rejection of the
+    corrupt residual and changed transition, plus 14 passing producer tests.
+    These are rejection-boundary tests, not proofs the modified plant is unsafe.
+
+13. Existing SOS checker comparison: ACCEPT.
+    The translator emits 12 rational weighted squares per cubic residual,
+    distributed over the nonnegative interval factors h and H-h: 48 total.
+    It is not a global unconstrained SOS decomposition. The replay has four
+    residual-nonnegativity, four transition-identity, and four decrease proofs.
+    Input, generated-source, translator, emitted-source, manifest, and all three
+    replay-log hashes match the current files. The Lean 4.33.1 / fb7ae41 replay
+    times round to 20.593, 9.049, 9.260 s, median 9.260 s, as stated.
+    The text correctly says existing-witness translation, cached imports,
+    no discovery, different toolchain, and only vertex-level comparison.
+
+14. Replay and counts: ACCEPT.
+    The current main workflow manifest is verified and every listed current
+    source hash matches. It includes build/audit, producer tests, model bridge
+    tests, and benchmark regeneration. The separate fresh replay passed:
+      43 LeanControls modules plus the aggregate root built from source;
+      516 public declarations audited; no unexpected axioms;
+      83 archived source/configuration files; check.sh elapsed 52.61 s;
+      zero initial project .olean files and no original project build reused.
+    Independently verified all four before/after source maps agree, current
+    originals and copied sources match them, all durable artifact hashes match,
+    and the source archive contains exactly those 83 files with no .olean.
+    Pinned dependency checkouts have unchanged clean tracked source status.
+    The isolated dependency cache is reused by symlink and is not read-only;
+    cache metadata may change. This is appropriately disclosed in the manifest.
+    This review verified the replay evidence; it did not rerun the build again.
+    The manuscript appropriately says this is not a fresh bootstrap of Lean
+    and mathlib, and it does not equate 516 declarations with new research.
+
+15. Literature and novelty phrasing: ACCEPT.
+    The primary sources inspected in this research support the current narrow
+    descriptions. Hellwig et al. distinguish one-step invariance, intersample
+    safety, and input admissibility; Arechiga et al. cover nondeterministic
+    sampled loops; Doll and Shames cover Lean control foundations; existing
+    SOS and MatrixSOS cover positivity checking; Palmeira et al. treat sampled
+    magnitude/rate saturation. None are presented as executed competitor
+    benchmarks except the explicitly pinned SOS replay. The manuscript avoids
+    first-ever, new-theory, and general comparative-advantage claims.
+    Primary reference URLs are listed below. No new broad literature search
+    was needed for this delta review; this check reused inspected primary
+    papers and the source-specific comparison evidence.
+
+Remaining publication issues and suggested next decision
+--------------------------------------------------------
+- The core plant is intentionally small and exactly solvable, and the control
+  tools are established. A reviewer may reasonably view it as an illustration
+  rather than a research contribution. A workshop/case-study framing is honest;
+  numerical precision, theorem counts, and AI effort do not answer novelty.
+- The response ablation and genuine clipping give the application a concrete
+  point. They support the chosen sufficient contract, not optimality. Preserve
+  that distinction when writing an abstract for a venue.
+- The physical transform is useful but does not substitute for a justified
+  plant. A second model that exercises the same generic interfaces, or a
+  documented axis contract with uncertainty/delay assumptions, would test
+  applicability more strongly than additional elementary lemmas.
+- Upstream SOS replay is a useful same-object representation check. It is not
+  an independent full proof of the saturation, exponential, execution, or
+  sensing layers. Preserve this boundary in any publicity.
+- Before submission: human mathematical/application review, release license,
+  stable artifact distribution, authorship details, and venue-specific length
+  and formatting. None require altering the current mathematical statements.
+- Optional claim-map polish: name TravelDisturbance.disturbance_energy_bound
+  alongside response_energy_bound; name the physical continuity/ODE declarations
+  in artifact documentation if the paper table is too narrow to include them.
+
+Primary references supporting the literature check
+--------------------------------------------------
+https://logic.kastel.kit.edu/ap/pub/zonotope-proofs.pdf
+https://doi.org/10.1007/978-3-032-10794-7_13
+https://logic.kastel.kit.edu/ap/pub/TPgenloop.pdf
+https://arxiv.org/html/2607.19727v1
+https://github.com/leanprover/sos/tree/fb7ae417609093f04cf0608dc92e9343550c2ae4
+https://github.com/selpoG/lean-matrix-sos/tree/02cfe73
+https://doi.org/10.1002/rnc.3503
+
+Evidence binding
+----------------
+The final hashes below were recorded after the two manuscript fixes and the
+addition of the fresh-replay paragraph. Source replay snapshot identifier:
+07b2af501539f5e7a6dde8d081111ccd384bb4b981608f2111221c66583571d1
+6480aa31f2d0344bb06c2a9fd9e03d0b60ae976c111d7ba186f805bd967db6b8  publication/manuscript/main.tex
+c916addd0377d644235c882facf11d649e541504dd88b7c37bb37b62f151fe59  lean-controls/LeanControls/MeasuredTravel.lean
+1fa36e5da10f6e9a5d10609cfb3ea92649a661976a058c7fb5d74c107fec9b00  lean-controls/LeanControls/PhysicalTravel.lean
+c31e402b3e942843d90f961e8945d2bd1d8c6b3deceef1ee5b64f9952a329b32  lean-controls/LeanControls/TravelScope.lean
+8e7b6eaffcf46295cf03f7df5b837589ee145325ae27715ad20bc358e38ecb6e  lean-controls/LeanControls/StepScaledRobustness.lean
+05005f8f4fed05fa1a3439fa4bb0beaed1868fb402a5966a64ac4fdaf1a8915a  publication/application-comparison/verification.json
+f68becfc0b4fbb0ebda764f59cc68838f6cad0b2df7c2b383471f5cead04c707  lean-controls/evidence/project-verification.json
+c220b1a2d47e29658463caf4fce4395ac9baed34bfbbb2f60643a6e4822cb191  publication/application-fresh-replay.json
+
+Parent post-review cosmetic delta
+--------------------------------
+Changed the claim-map table columns from justified to ragged-right text only.
+No mathematical text, constants or theorem names changed. Final source SHA256:
+2f36adb7c8203969611b93bd2e7d15cbbe70edb21b9fa96c8b022e9d9f26d8a2
+The final source compiled through Tectonic and the desktop compiler; final PDF
+rendering was inspected. manuscript-compilation.json binds the exported PDF.

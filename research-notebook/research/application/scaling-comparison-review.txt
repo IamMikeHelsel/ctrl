@@ -1,0 +1,86 @@
+Independent mathematical interpretation review: physical scaling and travel SOS replay
+Date: 2026-10-17
+Reviewer scope: read-only proof/evidence review; no proof-source edits.
+
+RESULT
+No mathematical defect found in the reviewed scaling statements or the stated
+matched-target comparison. The current manuscript's physical-unit and witness-
+interoperability paragraphs preserve the necessary boundaries. This review is
+not a novelty assessment or validation of a particular physical axis.
+
+PHYSICAL SCALING
+With t=T/tau and (x,v,a)=(X/(U*tau^2),V/(U*tau),A/U), the normalized equations
+x'=v, v'=a, a'=-a+u give X'=V, V'=A, tau*A'=-A+U*u. The factor 1/tau in the
+chain rule is present in vectorField_rescale and both interior-ODE proofs.
+The resulting physical sampled request is exactly
+  q=-X/tau^2-3*V/tau-2*A.
+Clamp homogeneity requires U>=0 and is used with U>0; the inverse changes of
+units require tau>0 and U>0. Held request errors and drive disturbances scale
+as e/U and d/U. Sampling periods scale as h/tau, and sampleTime_normalized
+proves exact clock agreement. The physical measured execution therefore has
+  tau*A'=-A+clip[-U,U](q_n+e_n)+d_n
+on every open sampling interval, not merely a renamed position bound.
+Continuity at updates and agreement with recursive samples are also checked.
+
+The safety assumptions are the normalized FULL-STATE ellipsoid, a positive
+uniform minimum period, h_n<=tau/5, and |e_n|+|d_n|<=U/100. They imply the
+absolute position envelope |X(T)|<=2*U*tau^2 for every T>=0. This is neither a
+bound on accumulated travel nor a consequence of position bounds alone.
+The numerical example tau=0.1 seconds, U=2 m/s^2 yields 20 ms maximum period,
+0.02 m/s^2 combined error budget and a 4 cm symmetric position envelope.
+The example [0,0,2] has normalized state [0,0,1], request -4 and clamp -2.
+All units and values are consistent.
+
+Essential scope retained: d is an additive DRIVE/COMMAND disturbance before
+the first-order actuator lag, after the clamp. It is not a mechanical force
+or acceleration added directly to V'. U bounds the clipped command, not the
+sum including d. tau is known and fixed; changing it changes controller gains
+as well as the plant. This is not robustness to uncertain lag. Errors are held
+per interval. No floating-point implementation, physical grid-normalization
+corollary, arbitrary measurable disturbance, or ODE uniqueness result is claimed.
+
+SOS COMPARISON
+The accepted source contains four scalar residual-nonnegativity theorems,
+four exact transition/residual identities, and four interval-decrease results.
+For each JSON input, an independent exact SymPy parse of the replay source
+confirmed energy=z^T P z, next=A(h)z, and residual=z^T((P-A^T P A)/h-I)z after
+polynomial cancellation. This includes every matrix entry, cross-term factor,
+margin c=1, and interval [0,1/5]. The cancellation causes no h=0 proof gap:
+the accepted residual is polynomial, its identity is proved for all real h,
+and the final inequality multiplies its nonnegativity by h>=0.
+
+Each cubic Bernstein witness is reused as 12 weighted squares (48 total).
+The decomposition R=h*sigma0+(H-h)*sigma1 uses nonnegative interval factors;
+Lean's sos_witness checks the supplied certificate. This establishes a second
+checked representation of the SAME FOUR VERTEX inequalities and shared-witness
+interoperability. It does NOT establish independent SOS discovery, comparative
+search power, a positivity-class improvement, or a second derivation of the
+saturation/exponential/clock/disturbance/physical execution proof.
+
+The three recorded runs (20.592919, 9.049181, 9.259693 seconds) include fresh
+Lean processes, imports and axiom queries, with cached dependencies and no
+search. They support replay reproducibility only. Their median 9.259693 s is
+not a comparative performance result against a larger module on another Lean
+version. Prior failed discovery for a different double-integrator target is
+not evidence of failure on these four travel targets.
+
+EVIDENCE CHECKS
+- Fresh focused `lake build LeanControls.PhysicalTravel`: success, 3278 jobs.
+- Reviewed the 20-result PhysicalTravel axiom log; only propext,
+  Classical.choice and Quot.sound are reported.
+- Verified all current hashes for replay source, generator, target manifest,
+  four JSON inputs, four main generated files, upstream dependency manifest,
+  three raw logs; accepted source equals its upstream replay copy.
+- All three recorded replay exits are zero and each audits exactly 12 named
+  results with only the same three standard axioms.
+- Upstream toolchain is Lean 4.33.1; tracked checkout is clean at the recorded
+  SOS revision fb7ae417609093f04cf0608dc92e9343550c2ae4. Untracked replay inputs
+  and clearly separated experiments are present, as expected.
+- The target manifest's UNVERIFIED label is its producer-stage status; the
+  separate matching verification.json is the checker acceptance record.
+- This review inspected and crosschecked the three recorded SOS replays; it
+  did not overwrite them or rerun their timing experiment.
+
+Snapshot SHA-256 values:
+PhysicalTravel.lean: 1fa36e5da10f6e9a5d10609cfb3ea92649a661976a058c7fb5d74c107fec9b00
+TravelSOSReplay.lean: 0fd2faa39d1550e708d1efedead64efea34edae9c5be2de4839ae8be30d700ba

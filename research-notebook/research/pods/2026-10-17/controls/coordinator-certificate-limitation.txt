@@ -1,0 +1,24 @@
+COORDINATOR CHALLENGE TO THE PROPOSED FILTER CERTIFICATE
+
+The proposed budgets appear to force lambda >= 54 sigma. The tracking budget
+implies D <= 2 sigma^2 R. The filter budget implies lambda > 6 sigma and
+(lambda-6 sigma) D >= 96 sigma^3 R. Combining them gives the stated necessary
+condition for this certificate. This algebra needs independent review.
+
+Thus sigma=10 requires lambda at least 540/s, even with larger R and small
+forcing. The witness lambda=4000/s is a 0.25 ms filter, compared with actuator
+response rates of 80 to 120/s. A nonempty certificate does not establish a useful
+smoothing benefit or a viable sampled implementation.
+
+For comparison, the unforced constant-rate plant/filter characteristic polynomial
+is s^4+(r+lambda)s^3+(3/2)r lambda s^2+6 sigma r lambda s+8 sigma^2 r lambda.
+The companion JSON computes positive Routh determinant margins at sigma=1,
+lambda=2 and r=8,10,12 by exact rational arithmetic. This is a diagnostic of
+certificate conservatism. It is not a Lean stability proof, a switching guarantee,
+or evidence of improved motion. Do not present three frozen cases as robust
+stability under arbitrary rate changes.
+
+Grading implication: a verified joint invariant can close the stated mathematical
+gap. A practical controller claim still needs useful filtering, measured error,
+and stopping performance. If the box is too conservative, the next direction
+should be a transient or shaped invariant, not declaring filtering solved.

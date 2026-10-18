@@ -1,0 +1,78 @@
+Uncertain actuator lag: exact segment certificate integration
+Completed 2026-10-17. This note concerns the new UncertainLag module and its
+twelve generated certificate modules, not the separately assembled execution.
+
+Model and theorem
+-----------------
+The exact analytic held solution satisfies x'=v, v'=a, a'=r*(u-a).
+The unknown rate r is held constant during the segment and is in [9/10,11/10].
+The fixed feedback request is -x-3v-2a; its gains do not use r.
+For every state z, held sector gain alpha in [2/5,1], and elapsed time
+t in [0,1/5], nominal_energy_decrease proves
+
+  V(heldSegment r t z (alpha*input z)) <= V(z) - (3/2)*t*||z||^2.
+
+Here V(z)=z^T P z uses the same rational P as the prior travel theorem.
+The companion nominal_contraction gives
+  V(next) <= (1 - 2*t*(15/902))*V(z).
+These bounds are relative to energy at the start of the held interval;
+they do not assert pairwise monotonicity at every pair of interior times.
+
+Exact semantics and certificate transfer
+---------------------------------------
+An exact exponential enclosure provides one remainder theta in [0,1] shared
+by all coordinates and all commands for the given rate/time pair. The
+polynomial solution is affine in theta and alpha and quadratic in r.
+Its degree-two Bernstein rate coefficient at the middle index is
+2*f(1) - (f(9/10)+f(11/10))/2, not an actual midpoint plant.
+All twelve matrix identities are proved in Lean. Each generated certificate
+then supplies the energy decrease bound at one combination of two sector
+endpoints, two remainder endpoints, and three Bernstein rate coefficients.
+Nested convexity transfers all twelve bounds to the exact exponential model.
+No finite numerical grid is used in these proofs.
+
+Saturation and perturbations
+---------------------------
+region_sector_bound proves V(z)<=12 implies (2/5)*|input z|<=1.
+segment_sector_decomposition therefore applies the clamp sector theorem to
+the actual clipped command. Active clipping remains possible in this region.
+The exact held response is proved equal to the polynomial response enclosure
+from UncertainResponse, yielding V(w*response(r,t))<=16*t^2*W^2 when |w|<=W.
+The segment definition uses u=clip_1(input z)+w: w is a held command-equivalent
+perturbation inside r*(u-a). An external additive jerk j outside this multiplier
+requires w=j/r (and its corresponding bound), not w=j.
+Any pre-clamp measured request error must first be converted using clipping
+Lipschitz continuity; this module does not silently identify it with post-clamp
+disturbance. Parent integration owns that conversion and global execution.
+
+Scope and scaling
+-----------------
+This module proves the exact segment ODE, initial conditions, response bound,
+and uniform energy decay; it does not itself define a sampled global trajectory.
+A single unknown constant rate is directly compatible with the segment theorem.
+Using independently selected rates on successive intervals additionally needs
+the assembled execution/ODE statement and held-rate assumption there.
+The normalized rate range corresponds to actual time constant
+tau_actual/tau_nominal in [10/11,10/9], not a symmetric +/-10% time-constant range.
+No hardware identification, calibration, or mathematical novelty is asserted.
+
+Verification and provenance
+---------------------------
+lake build LeanControls.UncertainLag completed successfully, including all
+twelve new generated modules. The files were copied from the previously
+accepted tight-sector scratch experiment, removing only trailing #print axioms
+commands; the manifest verifies exact body agreement for all twelve files.
+UncertainLagAudit.lean imports the compiled module and prints the transitive
+axiom closure of every explicit public theorem, definition, and abbreviation
+in the thirteen owned modules: 393 declarations, including 246 theorems.
+All 393 printed closures contain only propext, Classical.choice, and Quot.sound.
+The audit exited 0 and source hashes remained unchanged after it. There are no
+sorry/custom axioms/native_decide declarations in these sources. Two harmless
+informational ring suggestions remain in the successful core build output.
+This is a local pinned-toolchain, cached-dependency build/audit, not an independent
+pristine toolchain or fresh-source replay. Aggregate project verification and
+execution-module checks are separate integration evidence.
+
+Evidence: uncertain-lag-manifest.json, uncertain-lag-axioms.log,
+UncertainLagAudit.lean. The manifest records source SHA-256 hashes and original
+generator input/certificate hashes for every copied certificate.

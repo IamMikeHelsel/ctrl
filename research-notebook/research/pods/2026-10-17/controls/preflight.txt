@@ -1,0 +1,113 @@
+CONTROLS PREFLIGHT — 17 October 2026
+Decision: continue for one bounded builder batch. Grade: C.
+This grade means a concrete next step with an explicit test. It is not a proof grade.
+
+Result to attempt
+Prove a joint tracking/filter invariant for an un-clipped first-order filter on
+constant-jerk segments. This removes the assumed all-time filter-error bound for
+that stated filter and that reference class. Do not extend this batch to buffers,
+stopping, nonlinear arms, clipped filters, or a physical smoothness claim.
+
+Current evidence
+CommandSmoothing.tracking_under_bounded_filter_error assumes hfilter at every time.
+Its proof correctly charges D to the disturbance budget. It does not derive D.
+ScaledTracking supplies physical scaling and the actual-plant tracking theorem.
+RobustHold.finite_barrier supplies a finite simultaneous first-contact argument.
+RobustHold.coordinates_ode and cube_face provide the tracking-side structure.
+The challenge correctly identifies the circular command-rate argument and the
+retained-filter jump. These are source observations; I did not replay the frozen
+Lean package during this preflight. Its old verification is not new pod evidence.
+Exact source hashes and rational arithmetic checks are in preflight.json.
+
+Exact model and hypotheses
+Fix sigma>0, lambda>0, H>=0, R>0, D>0, W>=0, J>=0. All are real.
+On [0,H], f=(x,v,a), q=(q0,q1,q2), and u are continuous.
+On (0,H), f satisfies x'=v, v'=a, a'=r(t)*(u+w(t)-a).
+The reference satisfies q0'=q1, q1'=q2, q2'=j0, with constant j0 and |j0|<=J.
+The un-clipped filter satisfies u'=lambda*(u_star-u), where
+  u_star=q2-8*sigma^2*(x-q0)-6*sigma*(v-q1)-(a-q2)/2
+         +5*j0/(48*sigma).
+Assume 8*sigma<=r(t)<=12*sigma and |w(t)|<=W on [0,H].
+No derivative bound on r or w is needed for this conditional trajectory theorem.
+Existence of the stated continuous, interior-classical trajectories is a premise.
+This batch need not prove existence or uniqueness for arbitrary r and w.
+
+Define ex=x-q0, ev=v-q1, ea=a-q2 and d=u-u_star. Define
+  z0=ex,
+  z1=ex+ev/(4*sigma),
+  z2=ex+ev/(2*sigma)+ea/(16*sigma^2).
+Assume only the initial joint box: |zi(0)|<=R and |d(0)|<=D.
+Require these two parameter inequalities:
+  W+D+J/(48*sigma) <= 2*sigma^2*R,
+  (lambda-6*sigma)*D >= 96*sigma^3*R+(13/12)*J+6*sigma*W.
+The second inequality with R,D>0 implies lambda>6*sigma.
+Conclusion: for every t in [0,H], all |zi(t)|<=R and |d(t)|<=D.
+In particular, actual position error is at most R. No all-time tracking or filter
+bound, and no all-time command-rate bound, may appear as an independent premise.
+
+A concrete algebra test before the invariant proof
+Let rho=r/sigma. Derive from the plant, reference and filter equations:
+  u_star' = sigma^3*((-64+4*rho)*z0+(160-12*rho)*z1
+                    +(-96+12*rho)*z2)
+            +(3/2-5*rho/96)*j0-(r/2)*(d+w),
+  d' = -(lambda-r/2)*d
+       -sigma^3*((-64+4*rho)*z0+(160-12*rho)*z1
+                 +(-96+12*rho)*z2)
+       -(3/2-5*rho/96)*j0+(r/2)*w.
+For 8<=rho<=12 the three coefficient signs are -, +, + (zero allowed).
+Their absolute sum is 128-4*rho<=96. The jerk coefficient lies in [7/8,13/12].
+These yield the filter-face inequality under the joint box at that same time.
+They do not yield an all-time bound until the simultaneous invariant is proved.
+The existing tracking face argument uses residual w+d+(5/(48*sigma)-1/r)*j0.
+Its physical residual bound is W+D+J/(48*sigma).
+
+Non-circular proof route
+Use eight signed barriers: the six tracking faces and the two filter faces.
+At a possible first contact, all eight bounds are available at that one time.
+Prove both sets of faces inward there. Handle non-strict boundaries by inflating
+R and D by the same factor 1+epsilon*(1+t), then send epsilon to zero.
+The two displayed budgets still hold after common inflation because the
+constant disturbance/jerk terms are nonnegative. R,D>0 make both barrier
+expansion derivatives strictly positive. This is a feasible route using the
+existing finite_barrier, not permission to assume the desired conclusion.
+
+Retained state and one matched update
+For a switch, match f and q componentwise and keep u_plus=u_minus.
+Let j_old,j_new be the two segment constants. The existing identity gives
+  d_plus=d_minus-5*(j_new-j_old)/(48*sigma).
+Admit the next segment only if |d_plus|<=D and |j_new|<=J.
+Use its joint segment theorem to propagate the same box. The tracking cube at
+the switch follows from matched f and q. Do not reset u to the new target.
+A finite induction is useful completion of this one result. No infinite-switch
+claim, dwell-time claim, accepted-update frequency, or goal-arrival claim follows.
+
+A nonempty precision parameter test
+Use sigma=10, R=1/5000, D=11/1200, W=1/100, J=10, lambda=4000.
+The tracking budget is exactly 1/25 on both sides.
+The filter inequality is 2167/60 >= 919/30, with slack 329/60.
+Thus this proposed sufficient certificate is nonempty at the old 0.2 mm radius.
+The filter time constant is 1/4000 seconds. This is an arithmetic witness, not
+an actuator recommendation or a measured smoothing benefit. It still rejects
+the old -10 to +10 jerk jump at this D. Do not claim that obstruction is removed.
+
+Acceptance
+B: Lean proves the joint segment theorem from the actual plant/reference/filter
+ODEs and initial joint box. The two budgets are explicit and the parameter
+witness is checked. A local fresh-source build, complete axiom audit, and separate
+kernel replay pass. No sorry, added axiom, or hidden all-time bound is allowed.
+One targeted false variant must be rejected for the intended mathematical reason.
+The result and its restricted constant-jerk scope are documented accurately.
+A: all B checks pass under independent replay, and a retained-state matched
+handoff plus finite-segment theorem is proved using the state-dependent admission
+condition. Check one nonzero admitted jerk change, and retain the old rejected
+large-jump example as a limitation. A proof-only result earns no hardware claim.
+A verified counterexample to the proposed joint invariant can also earn B or A
+if it checks the stated hypotheses and identifies the exact false implication.
+
+Stop condition
+Allow one builder batch. If the builder obtains only another theorem conditional
+on an all-time tracking, filter, or command-rate bound, grade D and redirect once
+back to the eight-face proof. If that condition persists, pause and record the gap.
+If a valid counterexample defeats the displayed budgets, stop this construction
+and report it. If formalization stalls, preserve the exact missing lemma and the
+last passed check; do not spend another batch without this grader's review.

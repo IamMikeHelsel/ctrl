@@ -1,0 +1,150 @@
+Eric Weinstein: what can we check in Lean?
+Assessment date: 2026-10-17
+
+Answer
+
+Yes. We have checked one exact algebraic ingredient used in Geometric Unity.
+We have not proved Geometric Unity, a new physical law, or a new research result.
+The full theory is not a sensible short proof target in its present public form.
+
+The result we checked
+
+The Geometric Unity draft separates a symmetric tensor into its trace part and
+its trace-free part. It chooses the sign of the trace part. That choice matters
+for the signature used later in the construction [1, printed pp. 19 and 22].
+
+A signature counts independent positive and negative directions in a quadratic
+form. This is a property of a mathematical space. It does not count particles.
+
+We wrote the calculation explicitly for every symmetric real 4 by 4 matrix A.
+Let G = diag(1,-1,-1,-1). The chosen form is
+
+  Q(A) = tr(G A G A) - tr(G A)^2 / 2.
+
+We prove that this formula reverses the trace contribution and keeps the
+trace-free contribution. We give an invertible linear change of ten coordinates.
+It turns Q into
+
+  -y0^2 + y1^2 + y2^2 + y3^2
+  -2 y4^2 -2 y5^2 -2 y6^2 +2 y7^2 +2 y8^2 +2 y9^2.
+
+The formal result is six positive directions and four negative directions.
+This checks the local trace-sign choice behind the draft's ordered pair (4,6).
+We report both sign counts to avoid a convention ambiguity. The opposite overall
+sign would exchange the counts.
+
+What Lean checked
+
+MetricSignature.lean has 11 proved statements. They include the matrix identity,
+the trace split, both inverse identities, coverage of all symmetric matrices,
+and the positive and negative counts using mathlib's signature definitions.
+The count is not just arithmetic on an assumed diagonal form. The proof links
+that form to the matrix contraction by an explicit linear equivalence.
+
+The file compiled with Lean 4.35.0. leanchecker replay also passed. Its theorem
+axioms are only propext, Classical.choice and Quot.sound. No sorry or extra
+axiom was used. Pinned mathlib build artifacts were reused; this is not an
+independent rebuild of Lean or of all mathlib. See verification.json and the logs.
+Run: python3 research/weinstein-lean/verify.py
+
+This is established linear algebra applied to a claim that the draft actually
+uses. It is a useful feasibility check. It is not a publishable breakthrough by
+itself, and it does not verify the global geometric construction or its physics.
+
+What else is in reach?
+
+1. A stronger Geometric Unity check.
+   Target: write a precise finite-dimensional version of the operator in equation
+   (9.3), with all domains and group actions stated, then check its transformation
+   law. A preliminary gate is to establish that all terms have matching types.
+   The draft's section 8.2 says that the preferred operator selection argument
+   has not been reconstructed [1, printed pp. 41-44]. A proof must not fill that
+   gap by assuming the desired property. This is a much larger project than our
+   signature check. It would test a central mathematical claim if the exact
+   operator and hypotheses can first be fixed.
+
+2. The Malaney-Weinstein welfare construction.
+   The 2021 paper has two explicit conjectures about comparing welfare when
+   preferences change [2, section 9]. This is a more compact formalization target
+   than a full field theory. A useful first statement is the relabeling action:
+   if C(X(u))=u and g is an invertible relabeling, then
+   (g inverse composed with C)(X(g(u)))=u. This checks equation (3.3), but is
+   elementary and would not settle either conjecture.
+   The harder target is uniqueness of the welfare comparison. Before a Lean
+   statement is credible, 'constructible from' must become an exact condition.
+   The allowed function spaces, regularity, and existence of complete flows
+   must also be fixed. Formalization can reveal these choices; it cannot decide
+   which choice best measures human welfare.
+
+3. An audit of the welfare conjectures and their assumptions.
+   Nguyen's 2021 response argues that the uniqueness conjecture needs clarification
+   and treats the structure conjecture through standard connection theory [3].
+   Pfeffer's August 2026 draft claims proofs with explicit observed-basket and
+   completeness conditions [4]. I read the relevant original statements and the
+   response sections. I have not verified either full response. Their hypotheses
+   must be compared before claiming that the original conjectures are solved,
+   false, or still open. A Lean audit of that comparison could be useful.
+
+Mathlib already available in our pinned checkout
+
+- QuadraticForm/Signature.lean provides positive/negative signature counts and
+  the needed invariance under linear isometry. This was used above.
+- Matrix.Trace, bilinear forms and quadratic forms provide the local algebra.
+- CliffordAlgebra/SpinGroup.lean defines Pin and Spin groups. Its own notes list
+  a remaining comparison between Lipschitz-group definitions. This is not a
+  ready-made classification of all representations used by Geometric Unity.
+- Geometry/Manifold provides manifolds and vector bundles. The LeviCivita file
+  constructs and proves uniqueness for a Riemannian connection. That alone does
+  not discharge every indefinite-metric construction in the draft.
+- ExteriorPower/HodgeStar.lean defines a star operator for a nondegenerate
+  bilinear form and volume choice. Its notes still list missing identities.
+
+These are verified source observations for mathlib commit
+56a005855ea17e0b0958f73ec801ae140b0a1679. They are not a complete search of every
+external Lean library. The main work would be assembling the required structures
+and proving the bridges between them.
+
+Recommendation
+
+Keep the controls program as the main effort. Keep this as a bounded mathematics
+side project. The next useful decision is whether to audit a specific GU operator
+or the exact assumptions behind a welfare uniqueness theorem. Do not spend a large
+budget on a statement that still contains undefined terms.
+
+Primary sources and access limits
+
+[1] Eric Weinstein, Geometric Unity: Author's Working Draft v1.0, 1 April 2021.
+    Official project: https://geometricunity.org/
+    Author PDF: https://geometricunity.nyc3.digitaloceanspaces.com/Geometric_Unity-Draft-April-1st-2021.pdf
+    Inspected sections 3.1-3.6 and 8-9. Exact local target: (3.8)-(3.9), printed
+    page 19; trace-sign discussion printed page 22. Central operator limitation:
+    section 8.2, printed page 42. The site still links this draft. This is not
+    proof that no later private or public version exists elsewhere.
+
+[2] Pia N. Malaney and Eric R. Weinstein, An Extension of Intertemporal Ordinal
+    Welfare to Changing Tastes: Economics as Gauge Theory, workshop draft,
+    10 November 2021. Inspected original sections 2-9.
+    The live university PDF host failed to load. Its archived PDF was readable:
+    https://web.archive.org/web/20230223205927if_/https://economics.uchicago.edu/sites/economics.uchicago.edu/files/Welfare_Chicago_Draft.pdf
+
+[3] Timothy Nguyen, A Response to Economics as Gauge Theory, December 2021.
+    https://arxiv.org/abs/2112.03460
+    Original response paper; inspected sections 2.5 and 3. Its conclusions are
+    the author's arguments, not a substitute for our own proof of the conjectures.
+
+[4] Daniel Pfeffer, A Response to the Malaney-Weinstein Conjectures, August 2026.
+    https://danielpfeffer.org/
+    https://danielpfeffer.org/mw-response.pdf
+    Original draft; inspected abstract, conjecture statements and assumptions.
+    Full proof validity and publication status were not established in this pass.
+
+[5] Pinned mathlib source, used directly in our calculation:
+    https://github.com/leanprover-community/mathlib4/blob/56a005855ea17e0b0958f73ec801ae140b0a1679/Mathlib/LinearAlgebra/QuadraticForm/Signature.lean
+
+Plain-language takeaway
+
+We can ask Lean to check exact mathematical parts of Weinstein's ideas. We did
+one such check, and it passed. That means the calculation is sound. It does not
+mean nature follows the proposed theory. Larger checks need sharper statements
+first. The most useful next step is to identify one disputed or missing claim
+whose proof would change our assessment.

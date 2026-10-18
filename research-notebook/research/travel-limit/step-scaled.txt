@@ -1,0 +1,108 @@
+STEP-SCALED ROBUSTNESS — 17 October 2026
+
+STATUS
+LeanControls/StepScaledRobustness.lean builds cleanly with Lean 4.35.0.
+All 14 theorem closures audit to exactly propext, Classical.choice, Quot.sound.
+No sorry, custom axiom, or compiler-trust axiom was introduced.
+Source SHA-256: 3e67532b3d782535649623e70ed0fdbfdd6546f509bbe71128ea206dbbbe1621
+Evidence: step-scaled-axioms.log and step-scaled-verification.json.
+Only this new Lean module and these research notes/evidence files were added;
+no aggregate import or existing project source was changed.
+
+CORE DERIVATION
+Let Q be any nonnegative quadratic form on a real module, eta>0, C>=0,
+0<h<=H, and suppose
+  Q(y) <= (1-2*h*eta) Q(x),
+  Q(e) <= C*h^2*W^2.
+Use Certificate.quadratic_add_bound with theta=h*eta. Its nominal multiplier is
+  (1+h*eta)(1-2*h*eta) = 1-h*eta-2*h^2*eta^2 <= 1-h*eta.
+The weighted error budget simplifies exactly to
+  (1+1/(h*eta))*C*h^2*W^2 = h*C*(h+1/eta)*W^2
+                            <= h*C*(H+1/eta)*W^2.
+Therefore, setting D=C*(H+1/eta)*W^2,
+  Q(y+e) <= (1-h*eta) Q(x) + h*D.
+This is checked by quadratic_step_pos. No positive lower bound on h is used.
+A nonnegative nominal factor is not needed for the implication itself: all
+multiplications of inequalities have their actual sign obligations checked.
+
+ZERO-TIME ENDPOINT
+quadratic_step includes h=0 under the explicit hypothesis h=0 -> e=0.
+At h=0 the nominal bound is Q(y)<=Q(x), and e=0 gives Q(y+e)=Q(y).
+No stronger nominal identity y=x is assumed. This handles semidefinite forms
+without silently inferring e=0 from Q(e)=0. The bound at zero is exactly Q(x),
+so there is no fixed Young multiplier jump at the interval's left endpoint.
+
+INVARIANCE
+If h*eta<=1, Q(x)<=R and D<=eta*R, then
+  Q(y+e) <= (1-h*eta)R+h*D <= R.
+The nonnegative coefficient 1-h*eta is essential when substituting Q(x)<=R.
+The generic scalar lemma is scaled_invariant; quadratic_invariant and
+matrix_invariant compose it with the energy inequality.
+For a whole interval, H*eta<=1 is sufficient, because eta>0 and h<=H.
+matrix_segment_invariant has explicit quantifiers
+  forall t, 0<=t -> t<=H -> energy P (y t + e t)<=R,
+and assumes e(0)=0 plus pointwise nominal and error bounds on the same interval.
+It does not impose continuity or an ODE relation on y,e: those relations must
+be supplied by the concrete model and decomposition used to discharge bounds.
+
+ORIGINAL RATE AND MATRIX API
+matrix_step_of_decay sets eta=c/(2*M) with c>0,M>0 and accepts directly
+  energy P y <= (1-h*c/M)*energy P x.
+Its result is exactly
+  energy P (y+e) <= (1-h*eta)*energy P x
+                    +h*C*(H+eta^(-1))*W^2.
+matrix_invariant_of_decay accepts the same rate and the sufficient period
+condition h*c/M<=1. This implies the weaker required h*eta<=1.
+The matrix API uses BernsteinCertificate.energy directly, via the checked
+identity P.toQuadraticForm'(x)=energy P x, and assumes P.PosSemidef.
+It is dimension-independent (finite index type with decidable equality).
+
+VARIABLE-STEP SAFETY AND ULTIMATE BOUND
+scaled_trajectory_invariant applies to local scalar step bounds while V(n)<=R:
+  V(n+1) <= (1-h(n)*eta)V(n)+h(n)D.
+It needs h(n)>=0, h(n)*eta<=1, D<=eta*R, and V(0)<=R. It proves all n safe.
+Zero step lengths are permitted for safety.
+
+For h(n)>=hmin, eta>0, hmin*eta<=1 and all h(n)*eta<=1,
+scaled_affine_envelope gives
+  V(n) <= q^n*max(V(0)-D/eta,0)+D/eta, q=1-hmin*eta.
+The finite envelope only needs the stated order hypotheses; hmin may be zero.
+For the eventual conclusion, scaled_eventually_below_floor additionally
+requires hmin>0, giving 0<=q<1 and
+  forall eps>0, eventually for all n: V(n)<D/eta+eps.
+The positive part of the initial excess is deliberate: replacing variable
+contraction factors by a common upper factor is not valid on a negative
+initial excess without this adjustment. The floor remains D/eta and is not
+artificially multiplied by H/hmin. scaled_local_guarantee combines local
+invariance, the envelope, and the eventual floor statement.
+No eventual contraction is claimed when all periods may be zero.
+
+SIGN AND SCOPE AUDIT
+- eta>0 and C>=0 are explicit in the perturbation theorem.
+- H>=0 follows from 0<=h<=H for any instantiation of the pointwise theorem.
+  For the quantified segment theorem, H<0 would make the interval empty;
+  applications must supply their actual nonnegative/positive horizon.
+- W appears only squared, so W>=0 is not needed for this algebraic result.
+  An application interpreting W as an absolute disturbance bound still needs
+  its own meaningful bound, normally W>=0 and |w|<=W.
+- D>=0 and R>=0 need not be separate premises of the scalar implication.
+  In the intended application D>=0 follows from C>=0,H>=0,eta>0,W^2>=0;
+  nonempty nonnegative energy sublevels imply R>=0.
+- The initial energy need not exceed the disturbance floor.
+- P positive semidefinite suffices for energy invariance, but an energy sublevel
+  alone need not bound position. A travel-limit conclusion still needs a
+  separately proved positive coordinate/coercivity lower bound, plus a
+  nonnegative physical travel limit and a compatible sublevel R.
+- The concrete exact held-error bound, transition/vertex certificate, input
+  constraints, and connection to the chosen plant are separate obligations.
+  This file makes no physical-model, floating-point or implementation claim.
+
+INTEGRATION SUGGESTION
+For the exact actuator-lag model, prove nominal energy decrease and derive its
+c/M contraction; prove the exact disturbance energy bound C*t^2*W^2 and e(0)=0.
+Instantiate matrix_segment_invariant (eta=c/(2M)) at each held segment's sampled
+initial state. Use scaled_trajectory_invariant for sampled states, then apply
+the segment theorem for every t in the corresponding holding interval.
+Use the coordinate-energy inequality to turn the common sublevel into travel
+limits. If a positive minimum hold duration is available, scaled_local_guarantee
+adds the stated sample-index transient and ultimate floor.

@@ -1,0 +1,115 @@
+{
+  "primary_source_request_cap": 8,
+  "primary_source_requests_used": 8,
+  "counting_rule": "Count direct primary-page requests, including failed requests and retry. Search discovery calls are separately logged; no nonprimary result was opened or used as evidence.",
+  "acquisition_started_utc": "2026-10-18T01:25:05Z",
+  "acquisition_ended_utc": "2026-10-18T01:26:49.754935+00:00",
+  "requests": [
+    {
+      "sequence": 1,
+      "url": "https://arxiv.org/html/2103.14179v1",
+      "method": "web.open",
+      "status": "success",
+      "purpose": "Inspect pinned primary paper",
+      "original_bytes_retained": false,
+      "note": "Parsed response in tool transcript; original pinned TeX bytes retained separately. Fetch immediately preceded recorded request 2; exact tool request timestamp unavailable."
+    },
+    {
+      "sequence": 2,
+      "url": "https://arxiv.org/src/2103.14179v1",
+      "requested_at_utc": "2026-10-18T01:25:05.766539+00:00",
+      "purpose": "Pinned original arXiv v1 source bundle",
+      "fetch_cap": 8,
+      "error": "URLError: <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1077)>"
+    },
+    {
+      "sequence": 3,
+      "url": "https://arxiv.org/src/2103.14179v1",
+      "method": "curl with normal TLS verification",
+      "status": 200,
+      "path": "sources/arxiv-2103.14179v1-source.bin",
+      "purpose": "Retry the same pinned source using the working system TLS store",
+      "response_saved_at_utc": "2026-10-18T01:25:17.303761+00:00",
+      "bytes": 22342,
+      "sha256": "e7cd89c1e6d3903b79fe7282da2c341a0166d895bdfd77d9311e75f4e87770f2"
+    },
+    {
+      "sequence": 4,
+      "url": "https://lidicky.name/pub/",
+      "method": "curl",
+      "status": 403,
+      "path": "sources/lidicky-pub.html",
+      "purpose": "Author publication directory; directory listing denied",
+      "response_saved_at_utc": "2026-10-18T01:25:35.542127+00:00",
+      "bytes": 262,
+      "sha256": "edbcf5c17d871b1141c2df2c87ffbb4a047908abcc465ff6dc5440cddaf7a21b"
+    },
+    {
+      "sequence": 5,
+      "url": "https://lidicky.name/",
+      "method": "curl",
+      "status": 200,
+      "path": "sources/lidicky-home.html",
+      "purpose": "Find author publication page",
+      "response_saved_at_utc": "2026-10-18T01:26:07.785106+00:00",
+      "bytes": 24488,
+      "sha256": "82a0f9e80c8a8382186035eca5650154e116032de9e034b6aa1663f50d96bc1f"
+    },
+    {
+      "sequence": 6,
+      "url": "https://lidicky.name/pub.html",
+      "method": "curl",
+      "status": 200,
+      "path": "sources/lidicky-publications.html",
+      "purpose": "Inspect paper entry and attached supplement links",
+      "response_saved_at_utc": "2026-10-18T01:26:21.910522+00:00",
+      "bytes": 53289,
+      "sha256": "0e6278ef10925c3e120da32333af281a29d6e7c5f463b9ae508d30a2b6bd1206"
+    },
+    {
+      "sequence": 7,
+      "url": "https://sites.google.com/view/jozsefbaloghmath",
+      "method": "curl",
+      "status": 200,
+      "path": "sources/balogh-home.html",
+      "purpose": "Follow coauthor homepage linked by Lidicky",
+      "response_saved_at_utc": "2026-10-18T01:26:38.430287+00:00",
+      "bytes": 146061,
+      "sha256": "39eb08d59649dc8fe8bf0e3e6c4fea65fd95e5478ac8791f5020d91f49b54ca3"
+    },
+    {
+      "sequence": 8,
+      "url": "https://sites.google.com/view/jozsefbaloghmath/publications",
+      "method": "curl",
+      "status": 200,
+      "path": "sources/balogh-publications.html",
+      "purpose": "Inspect paper entry and attached supplement links",
+      "response_saved_at_utc": "2026-10-18T01:26:49.754935+00:00",
+      "bytes": 502023,
+      "sha256": "b5212a105e372bf22ff15f382fb67f89fe6bc967422788e429f262ad4354ad11"
+    }
+  ],
+  "discovery_calls": [
+    {
+      "tool": "web.search_query",
+      "queries": [
+        "Bernard Lidicky Max Cuts Triangle-free Graphs data certificate"
+      ],
+      "domain_filter": [
+        "lidicky.name",
+        "iastate.edu"
+      ],
+      "use": "Located author domain and paper path only."
+    },
+    {
+      "tool": "web.search_query",
+      "queries": [
+        "\"Felix Clemen\" \"Max Cuts\"",
+        "site:math.illinois.edu/~jobal \"Max Cuts\"",
+        "site:lidicky.name \"Max Cuts\" \"data\""
+      ],
+      "use": "Author-page discovery only; no nonprimary search result was fetched or used."
+    }
+  ],
+  "further_acquisition": "Stopped at primary request cap; no linked supplement for this exact paper was found."
+}

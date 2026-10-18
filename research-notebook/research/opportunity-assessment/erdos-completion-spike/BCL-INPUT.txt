@@ -1,0 +1,46 @@
+CURRENT STATUS: see FINAL-STATUS.txt for the assembled all-finite-order,
+integral theorem conditional only on the explicit published BCL input.
+This file retains the earlier checkpoint or source-inspection record.
+
+Primary-source BCL input audit, verified 2026-10-17
+
+Jozsef Balogh, Felix Christian Clemen and Bernard Lidicky,
+"Max Cuts in Triangle-free Graphs", arXiv:2103.14179v1,
+25 March 2021, an extended abstract.
+Primary PDF: https://arxiv.org/pdf/2103.14179v1
+Abstract record: https://arxiv.org/abs/2103.14179
+Primary HTML: https://arxiv.org/html/2103.14179v1
+
+Theorem 2(a) on PDF page 2 states that, for sufficiently large n, every
+triangle-free graph G on n vertices has D_2(G)<=n^2/23.5=(2/47)n^2.
+D_2 is defined as the minimum number of edges removed to make G bipartite.
+The HTML conversion renumbers this as Theorem 1.2(a); use PDF Theorem 2(a)
+when citing the pinned v1. Part (a) has no edge-density, regularity or parity
+restriction. The separate density hypotheses in parts (b) and (c) are not
+needed here. The abstract's abbreviated universal wording does not erase the
+formal theorem's sufficiently-large-n qualifier.
+
+Our fixed-graph Lean input is deliberately a concrete cut witness:
+  exists X, e_G(X)+e_G(V\\X) <= (2/47)*n^2.
+This is the required bipartition formulation of D_2(G)'s bound. Its use is
+explicit; it is not introduced as an axiom or inferred just from a name.
+Orienting the smaller side is elementary, but must be proved in the wrapper.
+
+To claim the bound for an arbitrary finite graph from the published theorem,
+one must additionally remove the size threshold. The pinned aimir baseline
+has a balanced-blow-up bridge for exactly this purpose, and a separate
+fractional-half blow-up equivalence. These source declarations have been
+inspected, not yet rebuilt or integrated into this completion spike:
+Erdos128/BCLCertificate/Bridge.lean:
+  bclCutCertificate_all_of_eventually
+Erdos128/BalancedBlowup.lean:
+  hasNormalizedInternalCutBoundQ_balancedBlowup_iff
+  hasNormalizedFractionalHalfBoundQ_balancedBlowup_iff
+https://github.com/aimir/erdos-128-sparse-halves/tree/ba85f319ebb33ec2194ef4c2929a12916329e1e7/lean/Erdos128
+
+The local completion theorem now checked here needs no BCL premise. A later
+fixed-graph global-bound theorem will consume the concrete cut input above.
+A still later all-finite-order theorem would need the asymptotic-to-finite
+bridge, parity/blow-up handling, and integer rounding. Keep these distinct.
+This primary-source audit verifies applicability of the quoted statement;
+it does not formally verify the BCL proof or its flag-algebra computation.

@@ -1,0 +1,12 @@
+import MetricSignature
+#print axioms WeinsteinLocalCheck.left_inverse
+#print axioms WeinsteinLocalCheck.right_inverse
+#print axioms WeinsteinLocalCheck.modifiedForm_eq_contraction
+#print axioms WeinsteinLocalCheck.metric_inverse
+#print axioms WeinsteinLocalCheck.traceFreeTensor_has_zero_trace
+#print axioms WeinsteinLocalCheck.modifiedForm_reverses_trace
+#print axioms WeinsteinLocalCheck.tensor_symmetric
+#print axioms WeinsteinLocalCheck.tensor_injective
+#print axioms WeinsteinLocalCheck.tensor_surjective_onto_symmetric
+#print axioms WeinsteinLocalCheck.positive_count
+#print axioms WeinsteinLocalCheck.negative_count

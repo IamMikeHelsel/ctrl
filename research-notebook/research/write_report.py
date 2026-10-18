@@ -1,0 +1,43 @@
+from pathlib import Path
+import json,hashlib,datetime
+root=Path(__file__).resolve().parent.parent
+p=root/'research/session-evidence.json'
+e=json.loads(p.read_text())
+e['source_sha256']={str(f.relative_to(root)):hashlib.sha256(f.read_bytes()).hexdigest() for f in sorted((root/'lean-controls/LeanControls').glob('*.lean'))}
+e['last_verified_utc']=datetime.datetime.now(datetime.timezone.utc).isoformat()
+e['audited_theorems']=len(json.loads((root/'lean-controls/evidence/axioms.json').read_text()))
+p.write_text(json.dumps(e,indent=2)+'\n')
+html='''<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Lean controls and research — first results</title>
+<style>body{font:17px/1.6 system-ui,sans-serif;max-width:880px;margin:50px auto;padding:0 24px;color:#1d2938;background:#fafbfc}h1,h2{line-height:1.2}h1{font-size:34px}h2{margin-top:36px;font-size:23px}a{color:#185cb0}code,pre{background:#edf0f5;border-radius:4px}code{padding:2px 4px}pre{padding:16px;overflow:auto}.result{border-left:4px solid #237c5b;padding:12px 20px;background:#eef7f1}small{color:#526172}table{border-collapse:collapse;width:100%}td,th{text-align:left;border-bottom:1px solid #ddd;padding:9px;vertical-align:top}</style>
+<h1>Lean controls and research</h1><p>First checked results · 16 October 2026 · Lean 4.35.0</p>
+<div class="result"><strong>62 theorem declarations pass the build and axiom audit.</strong> The newly checked results improve our sampling certificate and connect ideal grid rounding and actuator clipping to a disturbance budget. No original open problem has been resolved.</div>
+<h2>1. A larger certified sampling interval</h2>
+<p>The normalized double integrator obeys ẋ = v, v̇ = u. At each sample we choose u = −2x − 3v and hold it constant. The exact sample update is</p>
+<pre>x⁺ = x + h v + (h²/2)(−2x − 3v)
+v⁺ = v + h(−2x − 3v).</pre>
+<p>With V(x,v) = 5x² + 2xv + v², Lean now proves</p>
+<pre>0 ≤ h ≤ 1/2  ⇒  V(x⁺,v⁺) − V(x,v) ≤ −h(x² + v²)
+                    V(x⁺,v⁺) ≤ (1 − h/6)V(x,v).</pre>
+<p>Consequently arbitrary sample-to-sample variation within [h_min, 1/2] gives V_n ≤ (1 − h_min/6)ⁿ V_0. A positive h_min gives geometric decay. The upper limit is three times our earlier sufficient bound of 1/6; it is not claimed optimal. Time and state are normalized, not calibrated physical units.</p>
+<p>The proof expresses the matrix polynomial (P − A(h)ᵀPA(h))/h in a Bernstein basis. Every coefficient matrix exceeds the identity. Nonnegative basis weights that sum to one then give a uniform bound across the entire interval. Symbolic algebra discovers the coefficients; the Lean proof independently checks the polynomial inequalities.</p>
+<p><a href="lean-controls/LeanControls/Sampling.lean">Lean proof</a> · <a href="research/sampling-certificate.json">Exact coefficient evidence</a> · <a href="research/sampling_certificate.py">Derivation script</a></p>
+<h2>2. Grid rounding, clipping, and disturbances</h2>
+<p>Define qδ(z) = δ round(z/δ), and command u = clip(−2qδ(x) − 3qδ(v), −1, 1). The held acceleration is u + w. Lean proves nearest-grid error ≤ δ/2 and bounds the resulting control error. It also proves clipping cannot increase error relative to an in-range nominal command.</p>
+<table><tr><th>Assumption</th><th>Value</th></tr><tr><td>Each sample interval h_n</td><td>1/20 ≤ h_n ≤ 1/2</td></tr><tr><td>Grid spacing δ</td><td>1/10000</td></tr><tr><td>Held acceleration disturbance</td><td>|w_n| ≤ 1/4000</td></tr><tr><td>Initial condition</td><td>V(x_0,v_0) ≤ 1/10</td></tr></table>
+<p><strong>Conclusion: V(x_n,v_n) ≤ 1/10 at every sample.</strong> This includes, for example, the initial state (0.1, 0), whose energy is 0.05. The recurrence is exact and disturbances may vary adversarially from interval to interval.</p>
+<p>This is ideal real-number rounding, not a proof of floating-point firmware. The theorem includes the clipped update but is local to the stated energy region; it is not a global result for strongly saturated trajectories. The new rounded-controller theorem proves sample-time safety, not an independent between-sample safety envelope or convergence to zero under persistent disturbance.</p>
+<p><a href="lean-controls/LeanControls/Quantized.lean">Rounding and safety proofs</a></p>
+<h2>3. The original-research track</h2>
+<p>For L_A(X) = AX + XAᵀ, the remaining order-six question asks whether a symmetric X always achieves the largest Frobenius-norm amplification. The primary paper reports truth through dimension five and counterexamples from seven onward, leaving six open. <a href="https://arxiv.org/html/2608.20875v1">Kressner–Vandereycken, 2026</a>.</p>
+<p>We have checked the diagonal-A case in Lean in any finite dimension, given an index of maximal diagonal magnitude. A single diagonal-entry witness attains the upper bound. This is an elementary known case and a baseline for subsequent formalization, not a new contribution to the open case.</p>
+<p>The earlier 12-minute numerical search found no counterexample in 5,004 optimization restarts. Its best positive gap was approximately 3×10⁻¹⁵, at floating-point noise scale. A separate search uses diagonal-plus-skew coordinates: an orthogonal change of basis diagonalizes the symmetric part of any real matrix, preserving both restricted Frobenius operator norms. That reduction is mathematically justified and numerically cross-checked, but has not yet been formalized here. The two-minute structured search completed 1,245 restarts and likewise found no counterexample; the best gap was about 2×10⁻¹⁵. Numerical searches prove no universal statement.</p>
+<p><a href="lean-controls/LeanControls/DiagonalLyapunov.lean">Diagonal case proof</a> · <a href="research/mf13-search.json">First search</a> · <a href="research/mf13-structured.json">Structured search</a> · <a href="research/structured_search.py">Search code</a></p>
+<h2>Verification and reproduction</h2>
+<p>Run from the workspace root:</p><pre>./lean-controls/check.sh</pre>
+<p>The script builds the project, prints dependencies for each listed theorem, and rejects axioms outside <code>propext</code>, <code>Classical.choice</code>, and <code>Quot.sound</code>. The current audit covers 62 theorem declarations. No sorry-based or compiler-trust axioms appear. Existing standard Lean/mathlib foundations and the checker implementation remain trusted.</p>
+<p><a href="lean-controls/evidence/build.log">Build log</a> · <a href="lean-controls/evidence/axioms.json">Axiom audit</a> · <a href="research/session-evidence.json">Version and source hashes</a> · <a href="lean-controls/LeanControls/Examples.lean">Introductory examples</a></p>
+<h2>Next concrete targets</h2>
+<ol><li>Parameterize the controls certificate in controller gains, grid spacing, disturbance bound, and actuator limit, then connect it to a selected physical model.</li><li>Separate the best bound for this fixed quadratic energy from the true constant-sampling stability limit and from arbitrary-jitter stability.</li><li>Formalize orthogonal invariance for the research operator, then investigate genuinely coupled diagonal-plus-skew families. Require exact certificates for every proposed numerical counterexample.</li></ol>
+<p><small>These results establish mathematical implications under explicit assumptions. They do not certify a physical robot, a deployed implementation, or research novelty.</small></p></html>'''
+(root/'lean-research-report.html').write_text(html)
+print('Report written; audited theorems:',e['audited_theorems'])

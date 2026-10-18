@@ -1,0 +1,95 @@
+CONTROLS GRADE 02 — PRELIMINARY ARITHMETIC REVIEW
+17 October 2026
+No final theorem grade. The builder sources were still active during this review.
+No builder file was changed. No forced-tracking work was authorized.
+
+Finding
+The rational candidate passes an independent exact matrix check. I read exact.py
+but did not run or import it. I recomputed each Q=-(A^T P+P A) directly using
+Python fractions. I checked positive definiteness by positive leading principal
+minors, using independent elimination. I then checked the supplied LDL factors
+against the recomputed matrices. All identities and strict positive signs agree.
+The candidate is rounded at denominator 100. The earlier denominator-10 failure
+is reported candidly. The successful exact checks do not depend on how the float
+candidate was obtained.
+
+Reviewed source hashes
+exact.py: 490bd6fbd1beab91c9d4e7f5848b56132a9b83ff2c0e665d152759b52fce6358
+exact-certificate.json: 1a1d8f1f44c228c3dff5903874223b53f95a0d90c0f677ff54a7e7d1149bb815
+The certificate hash was unchanged across my arithmetic check. This is not the
+later frozen-source stability check or an independent Lean replay.
+
+Exact matrix evidence
+All four leading principal minors are positive for each matrix below:
+P-(1/2)I:
+  453/2, 62470181/10000, 7717030751/1000000,
+  982162617761/100000000.
+Q(8)-(1/2)I:
+  2263/50, 50443/125, 36507977/125000,
+  2523567219/12500000.
+Q(12)-(1/2)I:
+  2263/50, 50443/125, 146134073/125000,
+  13038256101/12500000.
+500I-P:
+  273, 688893131/10000, 34003791864799/1000000,
+  1661530348195576211/100000000.
+Thus the rational arithmetic supports (1/2)I<P<500I and Q(8),Q(12)>(1/2)I.
+The reported LDL pivot values equal consecutive principal-minor ratios. The
+reported triangular factors reconstruct all four matrices exactly.
+
+Actual model check
+This is the normalized homogeneous model, with sigma=1, lambda=2, w=0, and j=0.
+Set ex=x-q0, ev=v-q1, ea=a-q2, and b=u-q2. The reference satisfies
+q0'=q1, q1'=q2, q2'=0. The actual equations give
+  ex'=ev,
+  ev'=ea,
+  ea'=r*(b-ea),
+  b'=2*(-8*ex-6*ev-ea/2-b).
+Hence, for xi=(ex,ev,ea,b),
+  A(r)=[[0,1,0,0],[0,0,1,0],[0,0,-r,r],[-16,-12,-1,-2]].
+This agrees with the candidate checker. The fourth state is b, not the prior
+filter mismatch d. Confusing those states would change the last equation.
+The model derivation assumes supplied differentiable trajectories; it does not
+supply existence or uniqueness. The final Lean theorem must discharge this model
+connection from the actual ODEs or state its abstract-model scope accurately.
+
+Interval and decay check
+A(r)=((12-r)/4)*A(8)+((r-8)/4)*A(12). The coefficients are nonnegative and sum
+to one on [8,12]. The same affine identity holds for Q(r) at fixed P. Therefore
+the exact endpoint inequalities cover every rate in the interval with one P.
+For a supplied homogeneous execution, V=xi^T P xi has
+  V'=-xi^T Q(r) xi <= -(1/2)*||xi||^2 <= -V/1000.
+The proposed exponential comparison V(t)<=exp(-t/1000)*V(0) has the correct
+sign and factor. It uses the upper bound P<=500I. It does not need r'.
+This is stronger evidence than three frozen-rate eigenvalue checks. A full
+conditional trajectory theorem and fresh Lean replay are still required.
+
+Practical conservatism
+The filter rate 2 is slower than every actuator rate in [8,12]. Thus the candidate
+escapes the prior box certificate's lambda>=54 restriction at the homogeneous
+model level. This makes the certificate search a useful next step.
+
+The displayed comparison remains weak as a performance guarantee. Combining the
+reported lower/upper energy bounds yields
+  ||xi(t)|| <= sqrt(1000)*exp(-t/2000)*||xi(0)||.
+Its initial multiplier is about 31.62. The guaranteed energy time constant is
+1000 normalized time units; the norm exponential time constant is 2000. These
+are conservative guarantees, not actual settling times or predicted overshoot.
+
+A sharper geometric position check also shows that this is not yet the old
+position tube. Independent exact inversion gives
+  (P^-1)[0,0]=203366302700/2473716526211, approximately 0.08221084.
+For an initial pure position error xi(0)=(R,0,0,0), V(0)=227*R^2. The invariant
+energy ellipsoid alone then gives
+  |ex(t)| <= sqrt(46164150712900/2473716526211)*R,
+which is about 4.320*R. This is the maximum position allowed by the energy
+ellipsoid. It does not show that a trajectory reaches that value. A tighter
+position bound needs further analysis or a better certificate.
+
+Open boundary
+There is no disturbance, nonzero jerk, commanded replan, saturation, sampled
+execution, stop, or hardware performance claim in this interim arithmetic check.
+The candidate supports progress on robust homogeneous stability. It does not yet
+support a forced tracking tube or a useful measured smoothing benefit. No error
+was found that needs a builder correction. Await a frozen proof source and fresh
+verification package before a final grade.

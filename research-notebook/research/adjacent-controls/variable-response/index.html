@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>How far before the first stop?</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#eef1ec;color:#18382e;font:17px/1.6 system-ui,sans-serif}main{max-width:1080px;margin:28px auto;padding:38px 46px;background:#fffef9;border-radius:12px}h1{font-size:42px;line-height:1.12;letter-spacing:-1px}h2{font-size:25px;margin-top:34px}p{max-width:900px}.small{font-size:14px;color:#58685f}.card{padding:20px 24px;background:#e3eee4;border-left:4px solid #307155;margin:24px 0}.caution{background:#fff0de;border-color:#b67730}a{color:#17684b}.links{display:flex;gap:12px;flex-wrap:wrap}.links a{background:#214e3b;color:white;padding:9px 14px;border-radius:5px;text-decoration:none}video,img{width:100%;height:auto;border-radius:8px;margin-top:20px}video{background:#101820}.scroll{overflow:auto}table{width:100%;border-collapse:collapse;font-size:15px}th,td{text-align:left;padding:12px;border-bottom:1px solid #d0ddd2;vertical-align:top}th{background:#eaf0e7}.equation{background:#eef1e8;padding:16px;font-family:ui-monospace,monospace;overflow:auto}li{margin:8px 0}footer{margin-top:35px;padding-top:18px;border-top:1px solid #cdd9ce}@media(max-width:700px){main{margin:0;padding:24px 20px}h1{font-size:32px}table{min-width:640px}}
+</style></head><body><main>
+<p class="small">Controls research · 17 October 2026 · illustrative parameters, not measured hardware</p>
+<h1>How far before the first stop?</h1>
+<div class="card"><strong>New downstream result:</strong> a noisy state reading and bounded command delay can now be joined to a proved bounded-position holding law. A separate agent also proved a smooth-replanning admission result for scalar VLA commands. <a href="sampled-handoff/index.html">See the new proofs, examples and animation</a>.</div>
+<p><strong>The conditions can change the response during a stop.</strong> A useful guarantee must cover that change, the delay before braking starts, and error in the starting measurements. We have now proved such a bound for a powered-axis model.</p>
+<div class="card"><strong>Checked in Lean:</strong> for the stated 0.40 m/s example, the first true zero velocity occurs within <strong>0.55 seconds</strong>. Position stays <strong>at or below 15 cm</strong> until that event, measured from the estimated starting reference. The guarantee covers every admitted response, including ones that change during the stop.</div>
+<div class="links"><a href="animation/changing-response.mp4">Watch the 27-second explanation</a><a href="README.txt">Proof and reproduction</a><a href="verification.json">Verification record</a><a href="challenge.txt">Independent challenge</a></div>
+<video controls preload="metadata" playsinline poster="animation/response-frame.png"><source src="animation/changing-response.mp4" type="video/mp4">Download the <a href="animation/changing-response.mp4">MP4</a>.</video>
+<p class="small">Made with Manim Community. The curves are numerical illustrations. The closing statement is the exact conditional theorem. <a href="animation/README.txt">Render details and scope</a>.</p>
+
+<h2>What the model says</h2>
+<p>Position changes with velocity. Velocity changes with acceleration. Acceleration takes time to approach the effective braking target. Both that target and the response rate can change. The proof encloses all such motion within the declared bounds.</p>
+<div class="equation">x′ = v, &nbsp; v′ = a, &nbsp; a′ = r(t) [b(t) − a]<br>x: position &nbsp; v: velocity &nbsp; a: acceleration<br>r: response rate &nbsp; b: effective acceleration target</div>
+<div class="scroll"><table><tr><th>Assumption</th><th>Illustrative value</th><th>Role</th></tr>
+<tr><td>Starting measurement</td><td>Position 0 ± 1 mm; velocity 0.40 ± 0.01 m/s</td><td>Use the adverse ends of both intervals. The theorem permits the larger range 0 ≤ true velocity ≤ 0.41 m/s.</td></tr>
+<tr><td>Delay before engagement</td><td>At most 50 ms; acceleration ≤ 0.1 m/s²</td><td>Include the travel and speed gained while braking is pending.</td></tr>
+<tr><td>Response rate</td><td>8–12 per second; continuous</td><td>The actuator can respond faster or slower during the maneuver.</td></tr>
+<tr><td>Effective braking target</td><td>At most −1.2 m/s² before first zero</td><td>It must remain sufficiently negative. Numerical examples also use a lower bound of −2 m/s²; the one-sided theorem does not need that lower bound.</td></tr>
+<tr><td>Actual motion</td><td>Continuous state; stated differential equations where required</td><td>The guarantee applies to every such trajectory. An explicit example proves that the assumptions can hold.</td></tr>
+</table></div>
+<p>This is a bound on position relative to the <em>measured reference</em>. It is not exactly 15 cm of travel from the unknown true initial position. The theorem requires the delay equations on the delay interval and a continuous, bounded rate on the full horizon. The braking equations and negative target are required only before the first true zero.</p>
+
+<h2>Does the tighter calculation change a decision?</h2>
+<p><strong>Yes, in this synthetic example.</strong> A simple conservative bound with the same uncertainty needs about 16.06 cm at a 0.40 m/s estimate. The sharper envelope has a numerical peak of 14.07 cm. Lean separately proves the rounded 15 cm limit for the entire interval, including the delay.</p>
+<div class="scroll"><table><tr><th>Estimated speed</th><th>Sharper envelope: numerical peak</th><th>Simple bound: same assumptions</th><th>Decision at 15 cm</th></tr>
+<tr><td>0.30 m/s</td><td>9.22 cm</td><td>11.16 cm</td><td>Both numerical bounds pass</td></tr>
+<tr><td>0.40 m/s</td><td>14.07 cm</td><td>16.06 cm</td><td>Sharper bound passes; exact Lean certificate covers this case</td></tr>
+<tr><td>0.50 m/s</td><td>19.78 cm</td><td>21.79 cm</td><td>An admitted response crosses the limit</td></tr>
+</table></div>
+<img src="response-comparison.svg" alt="Comparison of stopping position bounds and changing response traces">
+<p>The 0.50 m/s rejection is more than a loose bound. Lean checks a concrete admitted trajectory that crosses 15 cm while still moving forward. That proof starts at the corresponding engagement state; its delay prefix has not been formally attached in that module.</p>
+<p class="small">The numerical maximum speed estimates are 0.41734 m/s for the sharper envelope and 0.37975 m/s for the simple bound. Those thresholds are not Lean certificates. A fixed nominal model admits faster motion because it omits part of the uncertainty; that is not a valid comparison of safety for the richer plant. <a href="results.json">Numerical results</a> · <a href="experiment.py">Reproducible experiment</a>.</p>
+
+<h2>What changed in the proof?</h2>
+<p>The first version required continued braking through the whole analysis horizon. The reviewer noted that a real controller may switch to holding at zero velocity. The final theorem removes the braking equation and negative-target requirement at the first zero and afterward. It still proves that the zero occurs on time and that the preceding motion respects the limit.</p>
+<p><a href="EventStop.lean">The final event theorem</a> builds on a general response comparison, exact delay integration and an earliest-zero argument. The six new modules contain 23 public named theorems. Fresh source builds, standard-axiom audits and individual kernel replays are recorded in <a href="verification.json">verification.json</a>. The checker also rejects a deliberately false 10 cm certificate. Pinned dependencies are reused.</p>
+<div class="card caution"><strong>First zero is not maintained rest.</strong> The theorem refers to true velocity. A noisy sensor can report zero too early. Switching to a weaker hold command then can break the braking assumption. A sampled stop detector and a later holding guarantee remain open.</div>
+
+<h2>Your shoe example identifies the next boundary</h2>
+<p>A shoe can lose grip, slide, regain grip, then lose it again. Conditions and the current state determine the response. The present model permits changing response within bounds. It does not model contact loss, impact, a friction law or recovery of grip. To cover those events, we need separate contact modes, limits on each mode and rules for transitions.</p>
+<p>The next useful theorem should account for the time needed to detect a change and reach a mode that can maintain safety. A one-instant recovery is not enough. We must prove what happens while the system changes mode and afterward.</p>
+
+<h2>The wheel and drivetrain example changed a second decision</h2>
+<p>In a small source-attribution model, one observed signal is the sum of wheel and drivetrain contributions. Repeating the same reading does not identify either source. A known trial change also leaves them unresolved in this chosen data set. A new condition with a bounded drivetrain contribution narrows the possible wheel contribution enough to accept a preselected correction.</p>
+<img src="../source-attribution/comparison.svg" alt="Possible wheel contribution before and after a separating measurement, with the accepted correction">
+<p>After that measurement, correction −0.5 keeps the wheel residual at most 4/35 and the total residual at most 3/5 under the stated model. Cancelling the whole nominal reading with correction −1 fails the wheel requirement. An independent exact-rational Python checker verifies 56 bound certificates, one infeasibility certificate and eight action decisions. It rejects all 14 corrupted examples.</p>
+<p class="small">This is a synthetic signed, single-phase amplitude model. The transfer assumptions are supplied, not measured on a vehicle. It is not a Lean proof or a full wheel-balance method. We have not proved an interface from source attribution to the stopping model. <a href="../source-attribution/readme.txt">Model, exact results and limits</a> · <a href="../source-attribution/check.py">Independent checker</a> · <a href="../source-attribution/challenge.txt">Independent challenge</a>.</p>
+
+<h2>What would make this worth publishing?</h2>
+<p>We have a checked proof and a case where sharper reasoning changes an accepted decision. We have not established a new control method. The next useful work is to connect the bounds to repeatable measurements, include sampled stop detection and holding, and compare against a public robust-stopping or verified-reachability method under the same assumptions.</p>
+<p>Temperature, load, wear and contact changes are reasons to measure those bounds. They are not yet inputs to a validated physical law here. PL d/e requires a wider machine safety case. The existing paper draft has not been rewritten around this new result.</p>
+<p><a href="../adjacency-review/index.html">Read the wider literature and application review</a>. A separate agent also completed the requested <a href="../../weinstein-lean/report.txt">Weinstein-to-Lean feasibility assessment</a>, with one checked local algebra calculation.</p>
+<footer class="small">Local research artifact. No submission or public release. <a href="../index.html">Earlier recovery and handoff work</a> · <a href="research-target.txt">Predeclared research target</a>.</footer>
+</main></body></html>

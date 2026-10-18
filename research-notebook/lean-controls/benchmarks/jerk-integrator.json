@@ -1,0 +1,146 @@
+{
+  "description": "Exact zero-order-held jerk integrator; u=-x-3v-3a",
+  "A_coefficients": [
+    [
+      [
+        "1",
+        "0",
+        "0"
+      ],
+      [
+        "0",
+        "1",
+        "0"
+      ],
+      [
+        "0",
+        "0",
+        "1"
+      ]
+    ],
+    [
+      [
+        "0",
+        "1",
+        "0"
+      ],
+      [
+        "0",
+        "0",
+        "1"
+      ],
+      [
+        "-1",
+        "-3",
+        "-3"
+      ]
+    ],
+    [
+      [
+        "0",
+        "0",
+        "1/2"
+      ],
+      [
+        "-1/2",
+        "-3/2",
+        "-3/2"
+      ],
+      [
+        "0",
+        "0",
+        "0"
+      ]
+    ],
+    [
+      [
+        "-1/6",
+        "-1/2",
+        "-1/2"
+      ],
+      [
+        "0",
+        "0",
+        "0"
+      ],
+      [
+        "0",
+        "0",
+        "0"
+      ]
+    ]
+  ],
+  "P": [
+    [
+      "37/4",
+      "31/4",
+      "2"
+    ],
+    [
+      "31/4",
+      "13",
+      "13/4"
+    ],
+    [
+      "2",
+      "13/4",
+      "7/4"
+    ]
+  ],
+  "decay_margin": "1",
+  "partition": [
+    "0",
+    "1/2"
+  ],
+  "model": {
+    "state_order": [
+      "position",
+      "velocity",
+      "acceleration"
+    ],
+    "equation": "z'=N*z+B*u; u=-K*z_at_sample is held throughout each sample interval",
+    "N": [
+      [
+        "0",
+        "1",
+        "0"
+      ],
+      [
+        "0",
+        "0",
+        "1"
+      ],
+      [
+        "0",
+        "0",
+        "0"
+      ]
+    ],
+    "B": [
+      [
+        "0"
+      ],
+      [
+        "0"
+      ],
+      [
+        "1"
+      ]
+    ],
+    "K": [
+      [
+        "1",
+        "3",
+        "3"
+      ]
+    ],
+    "transition_identity": "F(0)=I and F'(h)=N*F(h)-B*K",
+    "continuous_design_identity": "(N-B*K)^T*P+P*(N-B*K)=-4*I",
+    "normalization": "All coordinates and time are mathematical normalized quantities; no calibrated hardware model is claimed."
+  },
+  "producer_checked_energy_bounds": {
+    "lower": "1/4",
+    "upper": "24"
+  },
+  "verification_status": "Exact producer checks only. Generated Lean and the held-model correspondence require independent checking."
+}

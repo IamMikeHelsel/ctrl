@@ -1,0 +1,62 @@
+Variable-response coordinate envelope: checked scope
+
+Module: ComparisonEnvelope.lean
+Namespace: LeanControls.VariableResponse
+
+The independent actual-trajectory predicate IsTrajectory H r b f requires:
+- full-state continuity on the closed interval [0,H];
+- interior derivatives x'=v, v'=a, a'=r(t)*(b(t)-a).
+It does not assume an analytic solution, a state bound, a stopping event,
+or equality with a selected comparison trajectory.
+
+The public coordinate_enclosure theorem assumes H>=0, r continuous on [0,H],
+0<rlo<=r(t)<=rhi, blo<=b(t)<=bhi, and componentwise initial-state bounds.
+It proves lower and upper bounds for all three state components at EVERY t in
+[0,H]. The bounds are the existing exact heldSolution at two fixed comparison
+rates and targets. This includes the zero-length interval and both endpoints.
+No derivative at either endpoint is required. b need not be separately assumed
+continuous; the given classical trajectory and the stated ODE must still exist.
+
+Upper comparison:
+  initial state zHi, target bHi;
+  upperRate = rlo when bHi<=zHi[2], otherwise rhi.
+Lower comparison:
+  initial state zLo, target bLo;
+  lowerRate = rhi when bLo<=zLo[2], otherwise rlo.
+
+The rate choices follow the sign of target minus acceleration. Faster response
+increases acceleration when below its target and decreases it when above.
+The scalar integrating-factor theorem linear_comparison proves acceleration
+order. derivative_comparison then lifts that order to velocity and position.
+These are genuine differential-equation arguments; there is no sampling grid,
+numerical integration acceptance, hidden uniqueness premise, or native decision.
+
+upper_flow_bound argument order:
+  hH hrc hrlo0 hrlo hrhi hb hf hi t ht i
+where hb is the upper target bound, hi the upper initial-state bound,
+ht : t in Icc 0 H, and i : Fin 3. lower_flow_bound is analogous.
+The final combined theorem takes both target and initial bounds.
+
+The theorem permits arbitrarily varying continuous rates within the interval;
+there is no bound on r'. It does not cover discontinuous rates by this one
+contract, or arbitrary absolutely-continuous solutions with almost-everywhere
+ODEs. Such extensions require explicit concatenation or solution semantics.
+The effective target b can account for a declared command/gain/error envelope,
+but the theorem does not identify or validate that envelope from hardware data.
+
+This is finite-horizon enclosure. It does not itself prove that velocity first
+reaches zero, that the axis remains at rest after reaching zero, or that a
+friction brake is modeled correctly. It also does not transfer the old fixed-
+rate all-time feedback invariant to time-varying rates. Parent-owned FirstStop
+and StoppingCertificate build separate stopping-event consequences.
+
+Build from lean-controls:
+  ELAN_HOME="$PWD/../.tools/elan" ../.tools/elan/bin/lake env lean \
+    --root=../research/adjacent-controls/variable-response \
+    -o ../research/adjacent-controls/variable-response/ComparisonEnvelope.olean \
+    ../research/adjacent-controls/variable-response/ComparisonEnvelope.lean
+
+Dependencies reuse the pinned project's built toolchain/mathlib/project cache.
+This local module build is not a fresh-toolchain replay. The parent owns the
+independent source replay and verification driver. See comparison-build.log and
+comparison-manifest.json for the local elaboration and standard-axiom audit.

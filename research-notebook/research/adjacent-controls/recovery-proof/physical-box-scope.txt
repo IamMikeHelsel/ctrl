@@ -1,0 +1,25 @@
+PhysicalRecoveryBox concrete wrapper (2026-10-17)
+
+Three checked theorem closures use only propext, Classical.choice and Quot.sound.
+The build uses existing pinned artifacts; a separate fresh replay is coordinated
+by the parent. See physical-box-manifest.json and physical-box-check.log.
+
+The initial state must lie in the concrete normalized box:
+ X/(U*tau0^2) in [99/100,101/100],
+ V/(U*tau0) in [49/100,51/100],
+ A/U in [-1/100,1/100].
+Positive tau0,tau,U, actual fixed rate tau0/tau in [9/10,11/10], physical sampling
+intervals h_n in [hmin,tau0/5] with hmin>0, and combined held tail command errors
+|e_n|+|d_n|<=U/90 imply |X(s)|<=2U*tau0^2 for every s>=0, for every continuous
+actual physical recovery execution. The backup holds exactly -U without errors
+until 5tau0/4. Then the nominal-tau0 feedback uses its own sampled states, e_n
+before clipping, d_n after clipping, both inside the actual actuator lag.
+
+Backup whole-path safety and terminal entry are proved by imported concrete
+certificates; neither is assumed by these theorem statements. The actual
+physical terminal state, normalized using the fixed tau0 and U, has energy<=12.
+An explicit safe execution exists under the same assumptions. No reset occurs.
+
+This supplies mathematical ODE and travel guarantees for the stated model.
+It does not identify a real robot, verify sensing/timing/hardware conformance,
+allow errors during backup, or assert that the backup ends at rest.

@@ -1,0 +1,118 @@
+ERDOS CATALOG: INDEPENDENT RECONCILIATION AND PRESENTATION REVIEW
+17 October 2026. Local source inspection and read-only checks; no web refresh.
+
+Verdict: PASS for the stated metadata-screening purpose. No numerical mismatch
+or claim that a historical prize is verified payable was found. The default
+59 is a deliberately restricted screening set, not all mathematically
+unresolved prize-bearing problems. No dataset files were changed.
+
+Counts independently recomputed
+------------------------------
+- 1,221 unique entries, with IDs exactly the integers 1 through 1,221.
+- The copied YAML passes its pinned Draft 2020-12 schema with date-format
+  checking. An independently defined loader rejects duplicate mapping keys;
+  no duplicates occurred. Every raw YAML entry is preserved exactly in the
+  corresponding JSON raw_community_entry.
+- 114 unique prize IDs were re-extracted from the problem-heading links in
+  the 12 saved official prize-amount pages. IDs, amounts, page counts, and
+  SHA256 hashes match erdos-official-prizes.json. Their displayed amounts sum
+  to 59,733 dollars, matching the stored official index. This is a source
+  display total, not a sum of payable awards.
+- 106 community prize tags are a subset of the 114 official-page entries.
+  The eight official-only IDs are 7, 18, 32, 159, 182, 548, 552, and 1071.
+  There are no community-only prize entries in this snapshot.
+- 633 entries have one of the four selected labels: open, falsifiable,
+  verifiable, decidable. Of these, 59 occur on the official prize pages;
+  54 carry a community prize tag. Restricting to the exact label open gives
+  51 official-listed and 47 community-tagged entries.
+- The default 59 comprise 51 open, 5 falsifiable, 2 verifiable, and 1 decidable.
+  All 59 have source solution tag unformalized. Of them, 51 have a recorded
+  formalized statement and 8 do not. These are distinct metadata dimensions.
+- The three categorical totals reconcile: informal-status counts sum to 1,221;
+  solution tags are 317 Lean / 904 unformalized; statement tags are
+  868 yes / 353 no. erdos-counts.json equals the counts embedded in the manifest.
+- Four source entries retain open labels plus a Lean solution tag: 390, 522,
+  550, 1112. The source STATISTICS.md explains that human digestion of a formal
+  solution may lag. The catalog preserves the conflict rather than resolving
+  it or silently declaring a newly solved theorem.
+
+Filter scope and nuanced states
+-------------------------------
+The default filter implements exactly the four included states above. It
+excludes proved (336), disproved (139), solved (101), not provable (3),
+not disprovable (6), and independent (3). Among official-listed prizes, the
+last three nuanced categories exclude #474 (not provable) and #1123
+(independent). These two entries are available through Show all.
+
+The JSON gives the included state list explicitly, and the HTML footer says
+the filter excludes other nuanced states and directs users to Show all.
+This is sufficient for the current label 'Ordinary unresolved labels'. Never
+shorten the result to '59 open prizes' or '59 remaining prize problems'.
+Optional clarity improvement: name not provable, not disprovable, and
+independent in the footer, rather than only saying 'other nuanced states'.
+
+Prize and formalization semantics
+--------------------------------
+- Every manifest prize_payment_verified is null; every corresponding CSV cell
+  is empty. All official-list payment_verified fields are also null.
+- The HTML prominently labels rewards as historical/source claims and payout
+  as unverified. Each official-listed table amount repeats 'unverified payout'.
+- Original community currency strings are retained separately from the site's
+  display amounts. For example, #710 and #711 have different rupee strings
+  but the same $78 official display. The artifact does not invent or claim
+  an exchange-rate reconciliation. Such discrepancies require source-specific
+  investigation before relying on a particular amount.
+- The stored site FAQ says publication in a reputable journal and documentary
+  support for the historical amount are prerequisites to award consideration;
+  the catalog makes no claim that checking a proof alone earns a prize.
+- Schema comments distinguish formalized statements from formalized solutions.
+  Manifest fields, table columns, filters, and the explicit statement-is-not-
+  proof warning maintain this distinction. A Lean solution tag is copied
+  community metadata, not a claim that this project built or semantically
+  audited that solution.
+- The title's 'full current' scope is immediately limited to the pinned
+  community metadata catalog, explicitly not every question Erdos ever posed.
+  The pinned revision and snapshot date are visible. Links to statements use
+  the upstream moving main branch; they are browsing links, not immutable
+  statement artifacts. The manifest does not claim statement completeness.
+
+Implementation and artifact checks
+----------------------------------
+- All six pinned community-source hashes in erdos-provenance.json match.
+- The catalog's embedded JSON is exactly the intended field projection of
+  all 1,221 manifest rows. Initial checkboxes select the 59-entry set.
+- Executed the actual inline renderer with a minimal DOM stub: default 59,
+  Show all 1,221, reset 59, statement-recorded filter 51, not-recorded filter 8,
+  and ID query 128 gives one matching entry. This is JavaScript behavior
+  verification, not a browser layout or accessibility audit.
+- Ran build_catalog.py against a temporary copy of the manifest. Its generated
+  HTML is byte-for-byte equal to the checked-in erdos-catalog.html. No project
+  dataset or HTML was overwritten during that test.
+- CSV contains 1,221 records and preserves unknown payout fields as empty.
+- Text is inserted into generated cells using textContent. Source text in the
+  embedded JSON has '<' escaped, avoiding an accidental closing script tag.
+- At initial review the footer target shortlist.html was absent. The parent
+  reported that it was being created in parallel; this is a pending local-link
+  check, not a data or mathematical blocker. CSV and JSON links already exist.
+
+Minor future-maintenance issue, not a current-snapshot error
+---------------------------------------------------------
+The upstream schema only requires the number field, while this snapshot has
+prize/status/formalization fields for every row. The manifest correctly uses
+null for missing source fields. If future rows omit a prize field, the HTML
+currently falls through to 'No listed reward'; it should instead display
+'Unknown' when neither source establishes absence. No current row triggers
+that branch with unknown community-prize data.
+
+Evidence hashes
+---------------
+a25e2932c78e7d06f3d0cd15d980fb7138813d222f1200107f7fac39cb6546a5  erdos-manifest.json
+bde209058e5bed031a4ade2d34924a8f87657d57513d9b4529c4ce6d4f047b7c  erdos-counts.json
+26b9a9c490ead1dd1ed3db15e0e9960c387aeda2f78c65a6af8d805a6095ac07  erdos-official-prizes.json
+7b9b1a19b3d4e1531f2073fac00628fa76aac3d71503bc629a0ab5025f54620f  erdos-problems.yaml
+f768f6e5811966102c1616d7234985d26230aa3482e5d4a092805c8afc00445f  erdos-problems.schema.json
+edd01bf841d56786a9b4810d7c2c20aba6735df88cd181fad40256cf0ee94b14  erdos_build_manifest.py
+3d3c0c04923317366c82e3bac6236cccb4cba5e3347ed021ff74593d55fe2819  build_catalog.py
+a26b4faf1ef7cfe05570fff1b88ae59caa13c90b56eed8eaf8a603faf84a387b  erdos-catalog.html
+
+Final local-link recheck: shortlist.html now exists; pending footer issue resolved.

@@ -1,0 +1,176 @@
+# Contributing
+
+Edits and contributions to the [main table](README.md#table) are very welcome, particularly with regards to the OEIS column, as [discussed below](#linking-with-the-oeis).
+
+## Quickstart (editing via GitHub UI)
+
+To make an edit to the [main table](README.md#table) of this repository:
+
+1. Open [data/problems.yaml](data/problems.yaml).
+2. Click **Edit** (or the edit icon ✏️) and add or modify an entry, as per the sample template below.  Only the **number** field is mandatory; omit any field for which you have no information.  One field is an exception: **status** is *derived* from **informal_status** and **formal_status** and is regenerated automatically, so please edit those two instead and leave **status** alone (see [the notes below](#notes-on-template-fields)).
+3. Open a [Pull Request](https://github.com/teorth/erdosproblems/pulls).  (Once the request is accepted, this will automatically regenerate the [main table](README.md#table).  Do not edit the table directly - any such edits will be overridden by this automatic regeneration.) Feel free to use the comment field of the pull request to describe your methodology (e.g., links to code).
+4. If there is additional mathematical context that you could give concerning your edit, consider also adding a comment to the corresponding problem page on the [erdosproblems.com](https://www.erdosproblems.com) site.
+
+If you are uncertain as to whether an edit is appropriate, or are unable to make a pull request, you are welcome to [open an issue](https://github.com/teorth/erdosproblems/issues) on this repository to discuss it, or (if the question is mathematical in nature) use the corresponding problem page on the [erdosproblems.com](https://www.erdosproblems.com) site; you can also join the discussion at [this blog post for the project](https://terrytao.wordpress.com/2025/08/31/a-crowdsourced-project-to-link-up-erdosproblems-com-to-the-oeis/).
+
+If you find an interesting sequence connected to an Erdős problem, but find it challenging to compute a significant number of entries of the sequence, please feel free to [open an issue](https://github.com/teorth/erdosproblems/issues) on this repository with a title such as "HELP WANTED: Computing sequence for Erdős problem #X", describing the sequence and any partial computations you have done so far.  (One can also use the "help wanted" label for the issue.) Other contributors may be able to help you compute further entries of the sequence. 
+
+## Sample template
+
+```yaml
+- number: "17"
+  prize: "no"
+  informal_status:
+    state: "open"
+    last_update: "2025-08-31"
+  formal_status:
+    state: "unformalized"
+  status:
+    state: "open"
+    last_update: "2025-08-31"
+  oeis: ["A038133"]
+  formalized:
+    state: "yes"
+    last_update: "2025-08-31"
+  comments: "cluster primes"
+  tags: ["number theory", "primes"]
+```
+
+A problem whose solution has been formalized in Lean looks like this instead (note that **status** simply combines the two fields above it, and that a link to the formalization may optionally be recorded):
+
+```yaml
+  informal_status:
+    state: "disproved"
+    last_update: "2026-02-24"
+  formal_status:
+    state: "Lean"
+    last_update: "2026-02-24"
+    url: "https://github.com/google-deepmind/formal-conjectures/blob/main/FormalConjectures/ErdosProblems/16.lean"
+  status:
+    state: "disproved (Lean)"
+    last_update: "2026-02-24"
+```
+
+## Notes on template fields
+
+- **number**: The number of the problem in the [erdosproblems.com](https://www.erdosproblems.com) website. Stored as a string.
+- **prize**: use "no" if no prize given, or the currency amount otherwise. Stored as a string.
+- **informal_status**: the logical status of the problem as understood by human readers, as of the **last_update** subfield, and ignoring any formalization.  The permitted values of the **state** subfield are:
+  - "proved": the problem has been solved in the affirmative.
+  - "disproved": the problem has been solved in the negative.
+  - "solved": the problem is satisfactorily resolved in some other fashion than a proof or disproof (this can occur for more open-ended questions that are not phrased in a yes-no fashion, or for multi-part questions that have affirmative answers to some parts but negative answers to others).
+  - "falsifiable": the problem is open, but if false, can be disproven with a finitary counterexample.
+  - "verifiable": the problem is open, but if true, can be proven with a finitary example.
+  - "decidable": the problem is both falsifiable and verifiable, but not yet solved. (This is rare, but can happen for instance if the problem has somehow been reduced to verifying a large but finite number of cases.)
+  - "open": the problem is open and is not known to be either falsifiable or verifiable.
+  - "not provable": the problem is open in general, but there exist models of set theory where the result is false.
+  - "not disprovable": the problem is open in general, but there exist models of set theory where the result is true.
+  - "independent": the problem is independent of the usual axioms of set theory (ZFC).
+
+  Note: this status is an *unofficial* crowdsourced classification of the problem.  The [erdosproblems.com](https://www.erdosproblems.com) website will report whether these problems are officially classified as "solved".  In some cases, recent developments on a problem may cause the unofficial status on this site to temporarily be inconsistent with the official status on [erdosproblems.com](https://www.erdosproblems.com); in such cases, the latter should be taken to be the more reliable source.  For further discussion, see [this Github issue](https://github.com/teorth/erdosproblems/issues/26).
+
+- **formal_status**: whether a *solution* to the problem has been formalized in a proof assistant, as of the **last_update** subfield.  The permitted values of the **state** subfield are:
+  - "unformalized": no formalized solution is known.  This is the default, and is stated explicitly rather than left blank.
+  - "Lean": a solution has been formalized in [Lean](https://lean-lang.org/).  (Other proof assistants may be added to this list as candidates arise.)
+
+  Two optional subfields may be given when a formalization exists: **url**, a link to the formalization itself (this is displayed on [the interactive table](https://teorth.github.io/erdosproblems/), and is the best place to record where the formal proof lives), and **note**, for any further remarks.
+
+  This field is about the *solution*.  It is not the same thing as the **formalized** field below, which records whether the *statement* has been formalized in the formal conjectures repository.  A problem can perfectly well have a formalized statement and no formalized solution, or vice versa.
+
+- **status**: **derived - do not edit.**  This field combines the two above: it is **informal_status**, with " (⟨proof assistant⟩)" appended whenever **formal_status** is not "unformalized", and a **last_update** that is the later of the two dates.  It is regenerated by [scripts/derive_status.py](scripts/derive_status.py) on every push to `main`, so any hand-edit to it will be overwritten (and a pull request that edits it directly will fail validation).  It is retained because a number of downstream applications read it.
+
+  Because the two component fields are independent, combinations such as **"open (Lean)"** are possible and meaningful.  That one reads: *a solution has been formally verified in Lean, but has not yet been digested by a human reader*, and so the problem is not yet being claimed as solved in the informal sense.  See [this Github issue](https://github.com/teorth/erdosproblems/issues/346) for the discussion that motivated the split.  Conversely, a problem may be "proved" with **formal_status** "unformalized": a human proof exists but no machine-checked one does.
+
+If a problem has multiple parts, the informal status will be the strongest statement that applies to all component parts simultaneously.  (Similarly for the formalized tag below.)
+
+Regarding formalization in Lean: for the purpose of this site, formalizations conditional on past results will be accepted, as long as these past results are either (a) widely accepted, published results that do not simply contain the solution to the problem as a quick corollary, or (b) themselves formalized (or in the process of being formalized) by similar standards.  
+- **formalized**: whether the *statement* of the problem has been formalized in the [formal conjectures repository](https://github.com/google-deepmind/formal-conjectures), as of the **last_update** subfield.  It is autogenerated and should not be edited directly. The permitted values of the **state** subfield are:
+  - "yes": the problem has been formalized in the formal conjectures repository.
+  - "no": if no formalization exists in that repository.
+  If the problem is formalized in a different location than the formal conjectures repository, this should be noted in **comments** instead (as the **formalized** field is autogenerated from that repository).
+- **oeis**: a list of integer sequences (stored as strings of [OEIS numbers](https://oeis.org/)) relevant to the problem, ignoring extremely well known sequences (such as the sequence of primes).  [The general rule of thumb should be that a researcher interested in the Erdos problem would plausibly be interested in at least some of the information contained in the OEIS sequence page, or vice versa.] Additional strings include
+  - "possible": there may be a theoretically computable sequence associated to the problem that is in the OEIS and not already listed on the table; but it needs enough values actually computed that one can cross-check with that database.
+  - "submitted": a sequence associated to the problem has been generated to a satisfactory length; it was not in the OEIS, but has been submitted.  **Important note**: please adhere to all the OEIS guidelines when considering submitting a new sequence there.  For instance, [AI-generated submissions are forbidden](https://oeis.org/wiki/Use_of_AI_for_OEIS_Submissions_is_Forbidden).
+  - "in progress": there is some ongoing effort to compute one of the sequences attached to this problem, and then link it to either an existing OEIS sequence or a new one.  In such cases, it may make sense to [open a Github issue](https://github.com/teorth/erdosproblems/issues) around this problem to record this effort (and also to coordinate any discussion around that effort).
+  - "N/A": it does not appear that there is an obvious sequence to attach to this problem.  (This status may be updated if new developments create a previously unknown connection to an integer sequence.)
+
+  Note that it is possible for multiple sequences to be associated to a single problem.  Note also that the classification of a problem as having a "possible" OEIS sequence or not may be based on a cursory reading of the problem, and can be subject to revision.
+- **comments**: A **very brief** status remark on the problem, for instance an alternative name that the problem is commonly known by ("Brocard-Ramanujan conjecture", "Heilbronn's triangle problem"), as well as the following specific comments:
+  - "ambiguous statement": there is some uncertainty as to what the intended statement of the problem is, often because the literal wording of the statement is easily provable or disprovable or does not match the context of the problem.
+  - "literature review sought": we suspect that the literature review on this problem is incomplete, and would welcome any assistance in finding relevant references.
+
+  This field is rendered as the final column of the README table, so it is intended for short labels rather than prose: a few words is typical, and anything beyond roughly one short phrase is too long.  **Detailed mathematical commentary does not belong here.**  Discussion of the mathematical content of a specific problem — the current state of the art, search bounds, references to the literature, or an account of what is and is not known — should instead be directed to the commentary on that problem's page at [erdosproblems.com](https://www.erdosproblems.com), which is the authoritative venue for it.  If a formalization needs explaining, use the **note** subfield of **formal_status** rather than this field.
+- **tags**: the tags associated to the problem from the [erdosproblems.com](https://www.erdosproblems.com) database. Stored as a list of strings.
+
+## Automated fields and validation
+
+Several parts of the database maintain themselves, and should not be edited by hand:
+
+| What | Regenerated by | When |
+|---|---|---|
+| the **status** field of each entry | [scripts/derive_status.py](scripts/derive_status.py) | on every push to `main` that touches `data/` |
+| the **formalized** field of each entry | [scripts/update_formalization_status.py](scripts/update_formalization_status.py) | whenever the [formal conjectures repository](https://github.com/google-deepmind/formal-conjectures) changes |
+| the [main table](README.md#table) and the [summary statistics](STATISTICS.md) | [scripts/generate_readme.py](scripts/generate_readme.py) | on every push to `main` that touches `data/` |
+| `data/statistics_history.csv` | [scripts/plot_statistics_history.py](scripts/plot_statistics_history.py) | on every push to `main` that touches `data/` |
+
+The progress charts (`data/statistics_history_*.svg`) are **frozen as of October 6, 2026** and are no longer regenerated; see [Progress](README.md#progress) for why.  The history CSV behind them is still updated, so a current chart can be produced on demand with `python scripts/plot_statistics_history.py --force`.
+
+Every pull request that touches `data/`, `schema/` or `scripts/` is checked by [scripts/validate.py](scripts/validate.py), which verifies the YAML against [schema/problems.schema.json](schema/problems.schema.json), rejects duplicate problem numbers and duplicate keys, and reports any direct edit to the derived **status** field.  You can run these locally:
+
+```bash
+pip install -r requirements.txt
+python scripts/derive_status.py      # refresh the derived status field
+python scripts/validate.py           # check the file
+python scripts/generate_readme.py    # rebuild the README table and charts
+```
+
+## Linking with the OEIS
+
+We are particularly interested in contributions regarding the integer sequences associated with the Erdős problems, and linking them to the [OEIS](https://oeis.org/).  If you would like to help out in this regard, we suggest the following.
+
+- Navigate to the problem page of an Erdős problem for which an OEIS sequence is marked as "possible" on [the table](README.md#table).
+- The mathematical description or commentary of that problem may describe (either explicitly or implicitly) one or more integer sequences (often denoted by a function such as `f(n)` or `g(n)`).
+- If you feel able to do so, see if you can compute (either by hand, by writing a program, or using AI assistance) the first few values of that sequence (typically one needs at least five or six values to be useful).  [But see the [next section](#on-the-use-of-ai-tools) regarding the use of AI tools.]
+- Look up the sequence in the [On-line Encyclopedia of Integer Sequences (OEIS)](https://oeis.org/) to see if the sequence is already listed there, with a description that is functionally equivalent to the one in problem page.
+- If a match is found, you can submit a pull request to update the table with that sequence (or, if you prefer, write an issue or make a comment at the problem page).  If you believe that there are still further sequences related to this problem that could be added in the future, keep the "possible" string in the **oeis** field; otherwise, delete it.
+- If no match is found, you can still report your sequence as a [Github issue](https://github.com/teorth/erdosproblems/issues) or on the [Erdős problem web page](https://www.erdosproblems.com), and we can discuss whether to submit the sequence to the OEIS (at which point we would update the table accordingly).
+- If the sequence matches a seemingly unrelated sequence from the OEIS, this could either be a coincidence (particularly if one only has a small number of elements of the sequence computed), or an unexpected connection with another problem.  It would be best to debate this on the appropriate [Erdős problem web page](https://www.erdosproblems.com) before taking further action.
+
+- Term-by-term agreement is not enough. Four systematic traps are written up in [issue #356](https://github.com/teorth/erdosproblems/issues/356); [`scripts/oeis_false_match_traps.py`](scripts/oeis_false_match_traps.py) recomputes the r(n) vs A174903 split (pairs vs “has a partner”), which first appears at n=60. Compare definitions, extend past the first plausible agreement horizon, treat an erdosproblems.com backlink on an OEIS entry as a candidate rather than a confirmation, and state offset / empty-object / b=c conventions explicitly.
+- If the sequence you worked on was too hard to evaluate more than a few entries of, don't worry: the sequences vary quite widely in difficulty of computation (and many are attached to problems that are still unsolved despite the combined efforts of many mathematicians).  Most likely there are other sequences that need computing in this project that are easier to work with.  You can also post your efforts on the
+appropriate [Erdős problem web page](https://www.erdosproblems.com) and see if anyone can help you work out the difficult sequence.
+
+Note that in some cases, the integer sequences associated to a problem may be somewhat implicit.  For instance:
+
+- The problem may involve a specific real number, such as [Vardi's constant](https://oeis.org/A076393). In that case, the relevant integer sequence would be the decimal expansion of the sequence.
+  OEIS `cons` (decimal expansion) entries store digits **truncated**, not rounded.
+  Printing with `mpmath.nstr`, f-strings, or `format` usually rounds, which can
+  flip the last digit and produce a silent false negative against a correct
+  match. Use [`scripts/oeis_cons_compare.py`](scripts/oeis_cons_compare.py) to
+  truncate and to flag when rounding alone would have rejected the match.
+
+- The problem may involve an integer function of two variables rather than one.  In such cases, there may be interesting sequences to extract by specializing one of the variables to a notable value.  For instance, if the problem involves a function $r_k(N)$ of two parameters $k,N$, it may be of interest to use specific choices of one parameter, e.g., $k=1,2,3$, as examples of sequences associated to the problem.  In some cases, listing the entire two-variable function as a [table](https://oeis.org/wiki/Clear-cut_examples_of_keywords#tabl).
+- The problem may ask to upper or lower bound the "score" of an object $A$ that is defined on some space of "size" $n$ (e.g., $A$ could range over subsets of $\{1,\dots,n\}$ obeying some additional properties), where the "score" could refer to the cardinality of $A$, or some other more complicated metric.  In that case, the natural sequence to consider is the maximal or minimal "score" of such an object, as a function of $n$.
+- In a small number of cases, the natural sequence to consider is a sequence of rational numbers rather than integers.  In such cases, one can take the numerator and denominator of these numbers (in reduced form) as two separate integer sequences and see if they are already in the OEIS.  Or one can try to renormalize the sequence to take integer values rather than rational ones.
+- If the problem involves an explicit set of natural numbers $A$, then one natural integer sequence is the enumeration of the elements of $A$ in increasing order; another is the counting function of how many elements of $A$ are less than (or less than or equal to) a given threshold $n$, which is essentially the inverse of the enumeration function.  One may have to try various encodings of the set as an integer sequence before obtaining a match with the OEIS (or in some cases, multiple interpretations will be present in the OEIS).  For some problems, it will be auxiliary statistics of this set, such as the gaps between adjacent elements, or the largest such gap up to a given threshold, which will be of the most relevance.
+
+If you have further questions about how to extract an integer sequence from a given Erdős problem, you can raise a [Github issue](https://github.com/teorth/erdosproblems/issues) or make a comment on the appropriate [erdosproblems.com](https://www.erdosproblems.com) forum page.
+
+
+## On the use of AI tools
+
+Many of the integer sequences associated with the Erdős problems could conceivably be calculated to some reasonable finite length by running code provided by AI.  This is potentially a good use of AI tooling, especially if it leads to identifying a match with an existing OEIS sequence that is clearly relevant to the problem.  However, in the event that an AI-generated code produces a sequence that does not match any existing relevant OEIS sequence, it will be important to independently verify the output of that code, in order to rule out (with reasonable confidence) the possibility that the code contained bugs or hallucinations that caused it to compute the sequence incorrectly.  In particular, [AI-generated submissions to the OEIS are forbidden](https://oeis.org/wiki/Use_of_AI_for_OEIS_Submissions_is_Forbidden); any AI-generated components need to be replaced by human-generated substitutes before submission.  If in doubt, open a [Github issue](https://github.com/teorth/erdosproblems/issues) regarding the code.
+
+In general, when using AI tools to generate code, I would recommend using the tool to perform a simplified version of the task, so that you can understand how the code works and check the outputs, and then manually modify that AI-generated code to perform the original complex task.  It is also worthwhile to perform "sanity checks" on the output: for instance, if the integer sequence being generated is known to be monotone, one should look for that monotonicity property in any AI-generated output that claims to produce that sequence.
+
+Asking a large language model to directly generate a sequence, as opposed to generating code that one then inspects and executes to compute the sequence, runs the risk of hallucinated output, and is discouraged except for the purposes of a preliminary exploration that is to be replaced by a more trustworthy calculation at a later point in time.
+
+## Discussion of potential solutions to Erdős problems
+
+In general, discussion of Erdős problems should occur on the web site for that problem.  The issue system here is mostly intended for matters relating to the database entries, or for topics which for some reason cannot be easily discussed on the main site (e.g., if they span multiple problems rather than just one).  AI-generated issues will, at a bare minimum, need to disclose their use of AI, and will likely be closed if they are not contributing a significant amount of value.
+
+## How to cite this database
+
+Bibliographic information for this database can be found at [CITATIONS.cff](CITATIONS.cff).  One possible citation style is
+
+- [Erdős problems database](https://github.com/teorth/erdosproblems), 2025.  Maintained by Thomas Bloom and Terence Tao.

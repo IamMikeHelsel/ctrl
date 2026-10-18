@@ -1,0 +1,185 @@
+INDEPENDENT TRAVEL-SAFETY SEMANTIC REVIEW — 17 October 2026
+
+Finding: no substantive statement/model mismatch found in the reviewed main
+proof chain. The application has genuine active clipping, a positive held
+disturbance allowance, nonempty initial and timing assumptions, and a bound
+at every nonnegative real time for its explicitly defined execution.
+
+Evidence status: source inspection and independent exact arithmetic, extended
+after the source freeze to include TravelExecution. Independent source-copy
+replay is recorded separately in travel-fresh-replay.json; its result is
+appended to this review after completion. No Lean sources were edited by this
+reviewer. The removal of the named Matrix section in StepScaledRobustness
+does not change the public theorem types; this review hashes the final source.
+
+1. THE ACTUAL MAIN STATEMENT
+
+TravelSafety.travel_limit states that, for any initial z0 with V(z0)<=12,
+any hmin>0, every sampling sequence hmin<=h_n<=1/5, any held disturbance
+sequence |w_n|<=1/100, and every real t>=0, the defined state satisfies
+  |x(t)|<=2.
+The state consists of position, velocity, and acceleration. Its P is exactly
+  [[38/5,257/25,5],
+   [257/25,1319/50,769/50],
+   [5,769/50,278/25]].
+The source defines the sample recurrence rather than assuming that an
+unproved feasible recurrence happens to exist. A constant h_n=1/10 with
+hmin=1/10 and w_n=0 demonstrates consistency of the timing/error assumptions.
+The active initial state below demonstrates a nonzero admissible initial set.
+
+2. EXACT MODEL, COMMAND, AND DISTURBANCE
+
+SaturatedLag.segment is the exact exponential held solution with input
+  saturate 1 (-x0-3*v0-2*a0)+w,
+where both the sampled command and w are constant through the segment.
+The component derivative lemmas and segment_ode check
+  x'=v, v'=a, a'=-a+saturate 1 (-x0-3*v0-2*a0)+w.
+They preserve the initial sample in the feedback law. There is no silent
+replacement by continuously evaluated state feedback or an Euler update.
+The exponential response is retained exactly and only enclosed for energy
+analysis. The added disturbance is after clipping, not a disturbance applied
+directly to the acceleration equation v'=a+w.
+
+The command clamp is max(-1,min(1,u)). SaturationSector.clamp_abs_le proves
+the command bound. It does not bound the total actuator drive u+w by one.
+Nor does it impose a hard rate bound on a' or directly bound acceleration by
+one. The normalized lag constant is one; these are not hardware units.
+
+3. SATURATION SECTOR AND COMMON ENERGY
+
+TravelGeometry.request_energy proves input(z)^2<=V(z)/2. On V<=12 this
+gives an adequate request bound for the [1/4,1] sector. The bound is a
+sufficient rational certificate, not the exact support function of the region.
+region_sector chooses one alpha before quantifying over all t,w, correctly
+fixing the same gain for the entire held interval. Zero requests and the
+clipping boundaries are handled in exists_sector_gain.
+
+SaturatedLag.nominal_enclosed uses one common exponential interpolation
+parameter across all coordinates and one common gain interpolation parameter.
+It includes the alpha*exp(-t) term through successive affine identities.
+Correlation between alpha and the state, or exp(-t) and t, does not invalidate
+this conservative rectangle enclosure. The four vertex equalities connect
+the explicitly derived dynamics to the generated transitions. All four P
+matrices coincide, and nominal_energy_decrease uses that equality explicitly.
+
+The four generated certificates cover every 0<=t<=1/5, including zero;
+nominal decrease is V(next)<=V(z)-t*||z||^2. The generated upper bound
+M=451/10 yields the stated rate 10/451=2*(5/451).
+
+4. DISTURBANCE AND THE ZERO-TIME ENDPOINT
+
+TravelDisturbance.response_enclosed correctly represents the exact input
+response using t times [t/2,0,1] and [-t/2,t,1-t]. Positive quadratic
+convexity supplies a uniform response energy bound 13*t^2. The four endpoint
+energies are independently consistent: 278/25, 3049/250, 278/25, 7474/625.
+Homogeneity and |w|<=W give error energy <=13*t^2*W^2.
+
+StepScaledRobustness applies Young's inequality with theta=t*eta, eta=5/451.
+The zero-time case is explicit; no division by zero or minimum local elapsed
+time is assumed. Its scalar invariant argument uses a nonnegative remaining
+factor and the exact budget
+  13*(1/5+451/5)*(1/100)^2 =1469/12500 <=60/451=eta*12.
+The rational slack is 87481/5637500>0. The resulting invariant applies to
+every segment offset; it is not merely a sample-endpoint theorem.
+
+5. TRAVEL, RECURSION, AND REAL-TIME COVERAGE
+
+TravelGeometry.position_energy uses the checked sufficient bound x^2<=V/3;
+therefore V<=12 implies |x|<=2. It does not rely on floating-point inversion
+of P. The independently calculated sharper support 1.95626 is not the
+published theorem in this module; report the formal travel limit as two.
+
+samples_invariant is ordinary induction on the defined exact held updates.
+state chooses the unique containing half-open sample interval. The positive
+minimum hmin supplies unbounded sample times and coverage through SamplingClock.
+state_invariant bounds its selected offset by h_n<=1/5, then invokes the
+universal segment invariant. At a sample boundary, state_at_sample agrees
+with the recursively defined new sample. This resolves the previous
+sample-only versus all-real-time scope gap for the defined execution.
+
+The main claim is about this explicitly assembled execution. TravelExecution
+now proves state_on_closed_segment, including the endpoint, so sample-boundary
+selection agrees with the preceding completed segment. It proves continuity
+on each closed interval and joins adjacent intervals at positive sample
+boundaries. At time zero it proves the appropriate one-sided continuity.
+state_continuousOn_nonnegative therefore covers the entire [0,infinity) state,
+including acceleration. state_ode_interior uses local equality with the held
+segment to prove the ODE for every coordinate on every open sampling interval.
+All these statements need only positive dwell time, not the safety bounds.
+No derivative at command-switching boundaries is claimed. A general uniqueness
+theorem for every independently specified ODE solution is still outside this
+artifact, and the manuscript explicitly says so.
+
+6. ACTUAL CLIPPING IS NOT ASSUMED AWAY
+
+TravelSafety.active_initial proves all of the following for z0=(0,0,1):
+  V(z0)=278/25<12, requested input=-2, applied command=-1.
+Thus the model actually attenuates a request by 50 percent at the initial
+sample. The disturbance remains a separate post-clamp contribution.
+active_initial_travel instantiates the SAME all-real-time theorem for this
+state, for every admitted timing and held disturbance sequence. The witness
+is not from an unrelated region or a different controller.
+
+Do not claim all initial states clip, that clipping persists forever, or that
+the region realizes alpha=1/4. Exact support arithmetic gives a maximum
+request about 2.11089 and true minimum alpha about 0.473735 for V<=12.
+The verified sector is deliberately broader than the particular region uses.
+
+7. CLAIM BOUNDARIES FOR THE PAPER AND USER SUMMARY
+
+Appropriate: a checked normalized position-travel envelope for an exact held
+first-order actuator-lag model, with active command clipping, bounded held
+post-clamp disturbance, and arbitrary sampling intervals in a positive range.
+
+Do not extend it to arbitrary measurable intra-interval disturbances, direct
+mechanical loads, sensor quantization, floating-point controller execution,
+uncertain lag parameters, sample/compute delays, hard-stop contact, or physical
+calibration. The initial condition is the full three-state ellipsoid, not
+just |x0|<=2 with unrestricted velocity and acceleration. Persistent error
+does not imply convergence to the origin. This result proves no globally
+maximal safe region, optimal sampling bound, or novel general control theory.
+
+No required correction was identified in the reviewed main statement or the
+new TravelExecution bridge. The manuscript's travel subsection agrees with
+the source: defined exact execution, continuous state, ODE only on interval
+interiors, post-clamp held disturbance, full-state ellipsoid, and active
+initial clipping. It does not inflate this into hardware safety or uniqueness.
+Minor wording improvement only: "a fixed positive Young parameter would not
+yield this uniform sublevel bound" is more precise than saying the parameter
+"would not preserve the proposed sublevel"; the limitation is of that estimate.
+
+The source freeze inventory is 40 project modules and 464 named public theorem
+declarations. Independent replay must verify those counts and the complete
+audit. A clean replay confirms the formal statements; the semantic scope
+above remains vital. A named theorem count is not a claim that all conclusions
+are independent research results.
+
+REVIEWED SOURCE SHA256
+lean-controls/LeanControls/TravelSafety.lean: 1d71b23c9459a7ded8a602f2cc279210dada36f0adde4e29f933ca868db4bbe8
+lean-controls/LeanControls/TravelExecution.lean: 7b8bda30de5cfa3315b923186160e54a2a0c6a85fa72f9066770eb5ea833e5a9
+lean-controls/LeanControls/TravelGeometry.lean: ebf062047a9ae7049c7af30bff35d698cc6f136c2d07f482525e036fe00b6997
+lean-controls/LeanControls/TravelDisturbance.lean: 68838e4153b087e24bfba10fd7b636dabb98bf603b065e5e3ef1f98ef90c4214
+lean-controls/LeanControls/SaturatedLag.lean: 5b55203ae0d6bd3d11a87666de3aa7e3ed01cb444b8e9d435a9dc461c92366d9
+lean-controls/LeanControls/SaturationSector.lean: bdc09222ebeb64539c89de08125b21c73e1f5337fa906d675b45e5e8e61f48ba
+lean-controls/LeanControls/StepScaledRobustness.lean: 8e7b6eaffcf46295cf03f7df5b837589ee145325ae27715ad20bc358e38ecb6e
+lean-controls/LeanControls/SamplingClock.lean: 78f7c44717580f5a62a4fe7c1d14b69d76d8f304cb5fbb9cbdd0f13bf63a430a
+lean-controls/LeanControls/Generated/TravelFullLower.lean: 02d37db14e793bb54f0a51f87f51a46c4848776db909bcea6c9113b61b67b7b4
+lean-controls/LeanControls/Generated/TravelFullUpper.lean: 02a24e5d0089031e3d21a87a5833d20e951ba7ac6f5abb7d3316d9323de10eb8
+lean-controls/LeanControls/Generated/TravelQuarterLower.lean: 6608d59456d5014db262ac6e7155ea80548ce3e26f8194aeff842e26b6c290f5
+lean-controls/LeanControls/Generated/TravelQuarterUpper.lean: 764eb0b2cbef171a0d5fe79989b16a80492d0348696de0eb457145382f07733d
+
+INDEPENDENT SOURCE-COPY REPLAY RESULT
+PASSED. Source snapshot SHA256: 36f240d51476ad9e587f27f34835808166779664c46162fe37edaf09eb62149d
+Copied 79 source/configuration files; rebuilt all 40 project modules
+and the aggregate module. Audited all 464 named public declarations;
+only propext, Classical.choice, and Quot.sound occur in their axiom closures.
+check.sh elapsed time: 60.879 seconds. Original and copied source
+hashes match before and after execution; no original project .olean was copied.
+All dependency revisions match the manifest and tracked dependency sources
+were unchanged. The prior isolated dependency cache and pinned Lean toolchain
+were reused. This is not a bootstrap rebuild of Lean/mathlib, nor a rerun of
+producer tests or numerical certificate discovery. Parent owns those checks.
+Evidence: publication/travel-fresh-replay.json, .log, .build.log, .axioms.log,
+.axioms.json, .declarations.json, .sources.tar.gz, and .txt. Every artifact hash
+recorded in the manifest was independently rechecked after completion.
+The previous final-fresh-replay (307-declaration) evidence remains preserved.

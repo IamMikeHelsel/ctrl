@@ -1,0 +1,225 @@
+SAFETY FILTER ADJACENCY REVIEW — 17 October 2026
+Independent primary-source screen; no proof builds or paper edits
+
+Recommendation: pivot the research question, retain the proof infrastructure.
+The user's concern is justified. Three references did not expose the strongest
+prior work. More references alone will not make the case study meaningful.
+Safe recovery into a terminal invariant, sampled backup control, actuator-lag
+robustness, online safety filtering, and verified controller implementations
+all have substantial precedents. Our concrete Lean proof does not establish a
+new control method, and there is no identified public open problem that it solves.
+
+The model is a plausible abstraction of one acceleration-controlled axis. It
+is not a calibrated industrial axis. Its present value is a transparent test
+case for verification machinery. No evidence yet shows that it changes a real
+design decision or makes verification substantially easier for another person.
+The exact instance being locally new is weak evidence of research novelty.
+
+Scores below are ordinal judgments, not acceptance probabilities:
+  New control-theory contribution: 1/5.
+  Useful proof/checker foundation: 3/5.
+  Demonstrated industrial application value: 1/5.
+  Case for another round of nearby numerical/theorem variants: 1/5.
+
+What the primary literature already supplies
+
+[1] Singletary, Chen and Ames, Control Barrier Functions for Sampled-Data
+Systems with Input Delays (2020).
+https://arxiv.org/html/2005.06418v1
+Full text inspected: Sections II-IV and simulation description. The paper
+already combines zero-order-hold backup flow, whole-hold safety, terminal safe
+sets and state uncertainty. Its tractable state-uncertainty construction uses
+incremental stability. The delay treatment assumes a known integer multiple of
+a fixed controller period and an initial safety condition. Its demonstration is
+a high-fidelity Segway simulation, not a hardware experiment. This subsumes the
+generic claim that sampled backup recovery with delay is a new idea. It does
+not establish equivalence to our variable hold sequence, exact numerical region
+or Lean theorem. A matched comparison must preserve its delay and stability
+assumptions instead of presenting it as an arbitrary-delay result.
+
+[2] van Wijk et al., Disturbance-Robust Backup Control Barrier Functions:
+Safety Under Uncertain Dynamics (2024).
+https://arxiv.org/html/2409.07700v2
+Full text inspected: Assumption 1, flow bounds, feasibility remark and examples.
+The method encloses disturbed backup trajectories around a nominal flow and
+uses a robustly invariant terminal backup set. The disturbance bound includes
+piecewise-continuous forcing; the spacecraft simulation uses time-varying
+disturbances. Examples include a double integrator and rigid-body rotation.
+The QP need not remain feasible; the specified robust backup supplies the
+fallback. Its prediction-grid tightening must not be confused with a proof
+for every arbitrary implementation hold. Our exact zero-error braking prefix
+is less physically robust than this disturbance class. The local addition is
+mechanical checking of a specific flow, terminal certificate and execution
+composition, not discovery of recovery under uncertainty.
+
+[3] Seiler, Jankovic and Hellstrom, Control Barrier Functions With Unmodeled
+Dynamics Using Integral Quadratic Constraints (2021).
+https://arxiv.org/html/2108.10491v1
+Full text inspected: input uncertainty model, Examples 1-2, robust constraint
+and simulation. It explicitly models delays and first-order actuator dynamics
+A(s)=p/(s+p). Input-output IQC bounds account for the dependence of the error on
+the command history. The safety condition requires a suitable robust barrier
+and feasible controls; the paper notes feasibility difficulties. Its example
+is a simulated point mass with uncertain delay, not calibrated servo hardware.
+Thus "we account for actuator lag" cannot carry novelty. Our explicit lag
+state and exact held flow give a different, narrower certificate route. There
+is no demonstrated quantitative superiority over an IQC approach at matched
+assumptions.
+
+[4] Abate et al., Run Time Assurance for Spacecraft Attitude Control Under
+Nondeterministic Assumptions, IEEE TCST (2024).
+https://coogan.ece.gatech.edu/papers/pdf/abate2022runtime.pdf
+https://coogan.ece.gatech.edu/papers/abate2022runtime.html
+Full author manuscript inspected: model, algorithm assumptions, terminal set,
+reachability and hardware sections. The filter checks a desired action followed
+by backup reachability into a terminal set, with disturbance torques and bounded
+actuation. It can operate outside the terminal set. It assumes negligible RTA
+computation time relative to the update step. ASTROS experiments use human
+commands; the reported update rate is about 10 Hz and filter computation about
+1 ms. This is a much stronger application demonstration than our fixed braking
+maneuver. It is not a Lean/kernel certificate of its implementation. Our work
+currently has no analogous online admission rule, recursive fallback guarantee,
+measured computation deadline or hardware demonstration.
+
+[5] Bohrer et al., VeriPhy: Verified Controller Executables from Verified
+Cyber-Physical System Models, PLDI (2018).
+https://www.cs.cmu.edu/~smitsch/pdf/VeriPhy.pdf
+Full text inspected: pipeline, machine-code theorem and experimental section.
+It connects verified hybrid models, monitor/fallback code, sound machine-word
+interval arithmetic and CakeML compilation. It includes commodity robot tests.
+The end-to-end guarantee is conditional on sound sensing/external interactions,
+compiler assumptions and resource conditions. Model violation detection does
+not make arbitrary violating physics safe. This is a direct warning against
+claiming that adding fixed-point code or a model monitor would itself be new.
+Our all-time Lean execution theorem has not reached this implementation scope.
+A Lean integration might still be useful, but must demonstrate a distinct
+supported contract or a practical workflow advantage.
+
+[6] Hellwig et al., From Zonotopes to Proof Certificates: A Formal Pipeline
+for Safe Control Envelopes, iFM 2025 proceedings published 2026.
+https://logic.kastel.kit.edu/ap/pub/zonotope-proofs.pdf
+Full text inspected: problem definition, invariant-to-safety link and certificate
+architecture. It develops a formal pipeline combining numerical reachability,
+control-envelope proofs, Taylor error bounds and containment witnesses.
+Correction after a Section4 read: its double-integrator example uses visual
+containment verification and states that a formal proof can be derived. Do not
+describe the paper's examples as fully mechanically replayed on that evidence.
+Its sampled formulation uses a fixed period. Whole-step invariance, intersample
+safety and input admissibility are explicit obligations. Thus an untrusted
+numerical producer plus a small checker, or finite-step-to-all-time composition,
+is not a new architecture here. Our potentially useful difference is a Lean
+artifact with explicit actual-ODE uniqueness, saturated own-state sampling and
+bounded variable tail holds. This screen does not show that those properties
+are unavailable in the prior framework, nor that our method scales better.
+
+[7] Lange and Suppa, Trajectory Generation for Immediate Path-Accurate
+Jerk-Limited Stopping of Industrial Robots, ICRA (2015).
+https://elib.dlr.de/96525/2/stop_ICRA15_header.pdf
+Full text inspected: motivation and stopping constraints; repository metadata
+and experiment summary cross-checked at https://elib.dlr.de/96525/.
+The work considers unexpected controlled stops, acceleration and jerk limits,
+path preservation and prevention of rebound when velocity reaches zero. It
+reports KUKA robot experiments. This directly predates the practical motivation
+that zero velocity alone is not an adequate stopping endpoint. Its trajectory
+generation problem is not our uncertain first-order acceleration-servo model.
+It shows, however, that a useful axis contribution must account for commanded
+path behavior and actuator constraints, not merely prove a selected rail box.
+
+[8] Berscheid and Kroger, Jerk-limited Real-time Trajectory Generation with
+Arbitrary Target States, RSS (2021), Ruckig.
+https://www.roboticsproceedings.org/rss17/p015.pdf
+Full primary paper available; abstract, problem definition and evaluation scope
+inspected. It generates synchronized trajectories with velocity, acceleration
+and jerk constraints, including arbitrary target acceleration. It reports a
+large random-trajectory test suite and real-world use. That is kinematic
+trajectory generation, not a guarantee that uncertain lagged hardware exactly
+tracks the reference. Our local first-order lag model might help check tracking
+envelopes, but the current held-command checker is not already a checker for
+Ruckig's piecewise-polynomial references. Any such adapter needs its own input
+and tracking semantics. Do not advertise compatibility without proving it.
+
+[9] A Backup Control Barrier Function Approach for Safety-Critical Control of
+Mechanical Systems Under Multiple Constraints, IEEE/ASME TMECH,
+DOI 10.1109/TMECH.2024.3504573; published online 2024, volume 30(6), 2025.
+https://ieeexplore.ieee.org/document/10787265/
+Access limit: publisher abstract/index only; direct page did not expose full
+text. It describes a feasibility-guaranteed backup filter, multiple state/input
+constraints and experiments. Its abstract explicitly does not guarantee all
+aggressive time-varying constraints. This is an overlap lead that must be read
+fully before making a novelty claim about mechanical-system backup filtering.
+I do not infer its delay, lag, numeric verification or hardware-error guarantees.
+
+What is actually different in the local artifact
+
+Source review, not an inference from those papers: we have explicit proofs for
+the selected third-order plant, uncertain but fixed r, clipped sampled feedback,
+exact flow, rational enclosures, actual executions, and continuous handoff.
+The original backup box has a checked zero-error recovery prefix and a robust
+tail. PilotContinuation now gives all-time direct-feedback safety for one
+positive-volume initial subbox and one rate cell: the first 25 holds are .05
+with zero errors, then holds may vary up to .2 with combined held command error
+at most 1/90. A complete direct-feedback parameter covering is not yet checked.
+GeneralHandoff permits any continuous prefix but deliberately leaves its plant
+dynamics, prefix safety and terminal energy to the caller.
+
+Those are useful proof components. They do not yet constitute an online safety
+filter, an industrial safe-stop function, deployed code assurance, a calibrated
+servo model, or a result for arbitrary within-hold disturbances. Adding more
+small boxes will not by itself change those boundaries. Our earlier family
+comparison did not prove a true safe-region advantage for backup over direct
+feedback; a failed enclosure is not a failed controller.
+
+Three worthwhile, falsifiable directions
+
+A. Independent certificate checking on an existing public controls benchmark.
+Practical relevance 4/5; contribution runway 3/5.
+Use an external producer and a preselected public problem. Check both the
+continuous trajectory tube and terminal invariant against actual execution
+semantics. Compare accepted region, proof/checking time, manual proof effort,
+certificate size and trusted components with [6], on the same plant and
+uncertainty assumptions. Include deliberately corrupted certificates and one
+independent user replay. The smallest useful result is a reproducible adapter
+that verifies a result its producer cannot certify, with a measured advantage
+or a clearly useful additional contract. Stop the paper claim if the only
+difference is prover choice, or if each new plant needs another bespoke proof.
+The existing full direct-feedback cover is a pilot gate, not the contribution.
+
+B. A measured single-axis operating contract for recovery and continued motion.
+Practical relevance 5/5; contribution runway 3/5, conditional on real plant access.
+Choose a real axis and an engineering decision: maximum update/measurement age,
+admitted approach speed, or required distance from a software travel limit.
+Specify acceleration estimation, lag range, command saturation, computation
+and actuation timing, and model residual. Make the proof accept nonzero prefix
+error and a physically justified disturbance class. Produce a conservative
+design envelope, an intentionally rejected operating point, and repeatable
+hardware evidence under declared loads. Tests support the model assessment;
+they do not prove a universal residual bound. Stop if only ideal zero-error
+prefixes pass, or if the model cannot explain observed stopping behavior. This
+is an application/verification contribution, not a new backup-control method.
+
+C. Checked acceptance and fallback for commands from an untrusted planner.
+Practical relevance 5/5; contribution runway 2/5 because [4]-[6] already cover
+much of the concept. Specify a finite command certificate, its entire execution
+window, and the state/timing uncertainty at reception. Prove that accepted
+commands preserve recoverability and that rejection or timeout has a safe
+fallback available. Connect the checker to actual controller arithmetic and
+measured execution cost. Stop if fallback feasibility is simply assumed, if
+the check completes after the command must start, or if the integration adds
+nothing beyond an existing runtime-assurance pipeline. A fixed brake followed
+once by feedback does not satisfy this deliverable.
+
+Recommended next decision
+
+Pause expansion of the current control example. Select A if the intended
+audience is formal methods; select B if the intended audience is robotics or
+controls. Do not attempt all three at once. Before another large proof effort,
+write a one-page matched comparison and obtain an external consumer or concrete
+axis requirement. The current work is worth retaining as a regression example
+and proof library. It is not yet evidence for a strong standalone research paper.
+
+Limits: this was a focused adjacency screen, not a systematic review or proof
+of absence of prior art. Dates and sources were checked live on 17 October 2026.
+No paper artifact was reproduced. Two TUM robot-trajectory PDF fetches returned
+errors; their search snippets were not used to assert technical results here.
+No standard compliance, prize problem, public release or external submission
+is claimed. Only this review file was added for this task.

@@ -1,0 +1,51 @@
+Sampling clock and every-real-time nominal bound
+================================================
+Source: lean-controls/LeanControls/SamplingClock.lean
+Scope: a small generic coverage theorem plus its nominal double-integrator application.
+
+Generic clock result
+--------------------
+Define T_n=sum_{k<n} h_k. If every h_k>=hmin>0, Lean proves:
+  - T_0=0 and T_(n+1)=T_n+h_n.
+  - T_n>=n*hmin, so the sample times are unbounded above.
+  - For every real t>=0, there exists exactly one n with T_n<=t<T_(n+1).
+  - The elapsed segment offset s=t-T_n satisfies 0<=s<h_n, and t=T_n+s.
+
+The strict minimum duration rules out accumulation of infinitely many samples before a finite real time. No maximum duration is needed for this generic coverage result.
+
+The implementation chooses the least containing interval by a total, noncomputable segmentIndex definition. Its fallback value is used only outside the coverage condition; segmentIndex_spec proves that under hmin>0 and t>=0 the chosen interval really contains t. Half-open intervals assign each boundary T_n to the new sample n. Both uniqueness and segmentIndex(h,T_n)=n are proved.
+
+Defined trajectory and bound
+----------------------------
+For supplied sample sequences x_n,v_n, nominalState(h,x,v,t) is defined by the original exact held-input formulas using n=segmentIndex(h,t) and s=t-T_n. It is proved to equal (x_n,v_n) at every T_n.
+
+Assume additionally:
+  hmin<=h_n<=33/50,
+  x_(n+1)=SampledPD.position(h_n,x_n,v_n),
+  v_(n+1)=SampledPD.velocity(h_n,x_n,v_n).
+
+For EVERY real t>=0, nominal_energy_bound proves:
+  V(nominalState(t)) <= (1-hmin/600)^(segmentIndex(h,t)) * V(x_0,v_0).
+
+nominal_energy_nonexpansion then proves:
+  V(nominalState(t)) <= V(x_0,v_0), for every real t>=0.
+
+Thus the prior segment-wise bounds are now connected to a trajectory covering all nonnegative real times. This is stronger than merely saying a bound holds for each finite sample index without establishing that the sampling clock reaches every finite time.
+
+What is not claimed
+-------------------
+The rate is expressed using the containing sample index, not as a separately derived exponential function of real time. No global differentiability or continuity theorem at switching boundaries is included. The endpoint value agrees with the supplied sample state; the segment formulas already have their derivative facts in SampledPD. This file is not a general hybrid-system semantics library.
+
+The application is nominal, uses exact mathematical reals and normalized held-input dynamics, and includes no quantization, saturation, disturbance, plant mismatch, or machine arithmetic. The robust rounded-controller result remains separate. Initial-energy nonexpansion is not pairwise monotonicity between arbitrary real times; the earlier exact counterexample still applies.
+
+Verification
+------------
+  lake build LeanControls.SamplingClock: succeeded.
+  All 13 public theorem declarations were independently audited with #print axioms.
+  Only propext, Classical.choice, Quot.sound occur.
+  No sorry, custom axioms, or native_decide are used.
+
+Recheck from lean-controls:
+  ELAN_HOME="$PWD/../.tools/elan" ../.tools/elan/bin/lake build LeanControls.SamplingClock
+  #print axioms LeanControls.SamplingClock.exists_segment
+  #print axioms LeanControls.SamplingClock.nominal_energy_bound

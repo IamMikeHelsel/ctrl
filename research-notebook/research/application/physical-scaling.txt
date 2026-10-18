@@ -1,0 +1,94 @@
+Physical-unit interpretation of the verified travel certificate
+=============================================================
+
+Source: lean-controls/LeanControls/PhysicalTravel.lean
+Namespace: LeanControls.PhysicalTravel
+
+The theorem is parameterized by any lag time constant tau>0 and command limit
+U>0 in acceleration units. These are mathematical parameters, not estimated
+or calibrated values for hardware. Physical state order is [X,V,A].
+
+Normalization and execution
+---------------------------
+Normalized time is t=T/tau. Normalized state is
+  z=[X/(U*tau^2), V/(U*tau), A/U].
+The inverse scaling is [U*tau^2*x, U*tau*v, U*a]. Both inverse identities are
+proved. Physical interval durations h_n and held disturbances w_n become
+h_n/tau and w_n/U. The sample-time sum scales exactly by 1/tau.
+
+The physical state is defined by rescaling the existing checked TravelSafety
+execution at T/tau. state_at_sample proves its agreement with the correspondingly
+scaled recursive samples at each physical clock time. state_zero proves its
+physical initial state is exactly the supplied [X0,V0,A0].
+
+The physical controller sampled at time T_n is
+  q_n=-X_n/tau^2-3*V_n/tau-2*A_n.
+Actual command is clip[-U,U](q_n), held until the next sample. w_n is added
+after clipping and is also held. The exact physical ODE is proved on every
+open sampling interval:
+  X'=V, V'=A, A'=(-A+clip[-U,U](q_n)+w_n)/tau.
+Clamp homogeneity and vector-field rescaling are proved explicitly; the units
+are not inferred solely from an inequality. The entire physical state is
+continuous on [0,infinity), including sample boundaries. Its derivative can
+jump at those boundaries, so no derivative theorem there is asserted.
+
+All-time travel theorem
+-----------------------
+Let S=diag(U*tau^2,U*tau,U) and
+  P=[[38/5,257/25,5], [257/25,1319/50,769/50], [5,769/50,278/25]].
+Assume the initial physical state satisfies
+  (S^-1 Z0)^T P (S^-1 Z0) <= 12,
+and physical timing and disturbance bounds satisfy
+  0<hmin<=h_n<=tau/5,   |w_n|<=U/100, for every n.
+Then travel_limit proves for every physical T>=0:
+  |X(T)| <= 2*U*tau^2.
+This is a symmetric bound about the model's chosen position origin, not a
+bound on total accumulated distance traveled. It applies to every state in
+the stated ellipsoid and every admitted timing/disturbance sequence.
+
+Measured request extension
+--------------------------
+measuredState and measuredSamples rescale the actual MeasuredTravel execution,
+where e_n is a held error in the pre-clamp request and d_n is a distinct held
+post-clamp disturbance. Both are measured in acceleration-command units.
+measuredState_at_sample proves physical sample agreement.
+measuredState_continuousOn_nonnegative proves continuity of this actual
+measured state. measuredState_ode_interior proves its physical ODE, whose
+actuator equation is
+  A'=(-A+clip[-U,U](q_n+e_n)+d_n)/tau.
+measured_travel_limit proves the same all-time position bound under
+  |e_n|+|d_n|<=U/100,
+with the same timing and initial-ellipsoid conditions. This is an actual
+perturbed clipped trajectory, not a bound on a nominal substitute. In this
+module the errors are abstract scalar request errors; it does not itself
+instantiate sensor grids or model floating-point controller arithmetic.
+
+Illustrative constants, not a robot validation
+---------------------------------------------
+For tau=0.1 seconds and U=2 metres/second^2, illustrative_travel_limit checks:
+  maximum sample interval: 0.02 seconds,
+  post-clamp disturbance budget: 0.02 metres/second^2,
+  symmetric position envelope: |X(T)|<=0.04 metres.
+The initial ellipsoid remains required. illustrative_active_initial checks
+that [X,V,A]=[0,0,2] is strictly inside it and requests -4 metres/second^2,
+so the command actually clips to -2 metres/second^2 at the initial sample.
+The measured version shares the 0.02 acceleration-command budget between
+request error and post-clamp disturbance.
+
+Application boundary
+--------------------
+The mathematical plant has an exact first-order acceleration actuator lag,
+known constant tau, exact held commands, and piecewise constant additive
+disturbance. U bounds the clipped command, not the sum including disturbance.
+No claim is made for unmodeled friction, variable tau, state-estimation error
+outside the request budget, rate/jerk limits, computation delay, continuous
+within-interval disturbance variation, sensor overflow, or machine arithmetic.
+These are assumptions to establish for a concrete application, not results
+of this unit conversion. No real axis or robot has been selected or tested.
+
+Validation
+----------
+The focused lake build succeeds for all 20 public results. Public theorem names are audited with
+#print axioms; the final audit output is physical-scaling-axioms.txt. This
+audit reports only propext, Classical.choice, and Quot.sound for every result.
+This task edits only PhysicalTravel.lean and its owned application notes/evidence.

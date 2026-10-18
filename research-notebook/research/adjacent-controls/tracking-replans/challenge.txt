@@ -1,0 +1,231 @@
+Independent challenge: physical tracking through smooth replans
+17 October 2026
+
+Proposed closure
+The new proof should connect the existing scalar command segments to the actual
+uncertain actuator model. Smooth commanded position does not by itself imply
+small physical tracking error. This is a useful missing interface to check.
+It is not a complete VLA controller or a novelty result.
+
+Exact error dynamics
+Let q, q', q'' be a constant-jerk reference segment with q'''=j. Let actual
+state be x,v,a and error e=(x-q,v-q',a-q''). The plant obeys
+  x'=v, v'=a, a'=r(t)*(U+w-a).
+Use U=q''+command(0,e)+kappa*j, with command(0,e)=-8e_x-6e_v-e_a/2.
+Then on the open segment interior,
+  e_x'=e_v,
+  e_v'=e_a,
+  e_a'=r(t)*(command(0,e)+w_eff-e_a),
+  w_eff=w+(kappa-1/r(t))*j.
+This algebra is correct when r is nonzero. The allowed r>=8 supplies that.
+The intended reference is q, not a sensed proposal of q. Sensor and delay
+errors must be included in a separately justified w budget.
+
+The robust feedforward constant
+For r in [8,12], the reciprocal interval is [1/12,1/8].
+Nominal-rate feedforward kappa=1/10 gives max|kappa-1/r|=1/40.
+The minimax constant is kappa=(1/12+1/8)/2=5/48. Its maximum residual is 1/48.
+The two endpoint distances are equal; any constant kappa has at least one
+endpoint distance >= half the reciprocal-interval width = 1/48. This proves
+optimality only among constant coefficients for this specific residual metric.
+It does not prove optimality of the controller or best physical tracking.
+Without jerk feedforward, kappa=0 gives the larger residual 1/8.
+Thus the jerk part of the sufficient disturbance budget improves by a factor
+of six against no feedforward, or by a factor of 6/5 against 1/10.
+
+Physical tube and authority
+If |j|<=J, |w|<=W, and W+J/48<=2R, the old robust-hold invariant applies to
+the error trajectory, provided the initial transformed error cube has radius R.
+It gives |x-q|<=R, |v-q'|<=8R, and |a-q''|<=64R.
+If |q''|<=A, the requested acceleration-target command has bound
+  |U| <= A+24R+5J/48,
+and the disturbed effective target has bound
+  |U+w| <= A+24R+5J/48+W.
+A saturation implementation must be shown inactive under its actual limit.
+The error dynamics alone do not account for clipping, contact, joint coupling,
+flexibility, moving obstacles or inaccessible task-space commands.
+
+Finite replan boundaries
+Matched reference position, velocity and acceleration preserve the error state
+at a switch because the actual state is not reset. The error cube therefore
+passes directly to the next segment. The next segment must satisfy the same
+budget, or an explicitly checked compatible cube and authority contract.
+
+A jump in reference jerk can make q''' undefined at the switch. The feedforward
+command can jump too, so actual acceleration need not be differentiable there.
+Do not treat the whole concatenation as a single globally classical trajectory
+whose ODE holds at every interior time. Use a continuous trajectory on each
+closed segment with the ODE required only on its open interior. Prove the
+endpoint bounds by continuity, then induct over a finite segment sequence.
+A finite sequence needs no minimum dwell for the invariant. This does not
+establish an infinite schedule, Zeno execution, or an implemented scheduler.
+The actual state and the reference must refer to the same execution time;
+matching a predicted state at plan-generation time is insufficient.
+
+Numerical scale is a material limitation
+At J=10 m/s^3 and W=0, the required radius is at least:
+  no feedforward: 0.625 m;
+  nominal 1/10 feedforward: 0.125 m;
+  minimax 5/48 feedforward: 0.1041667 m.
+These are sufficient invariant-cube radii, not measured or exact peak errors.
+A one-millimetre radius with W=0 permits only J<=0.096 m/s^3 under these gains.
+The improvement is useful, but the fixed-rate example is not fast precision
+holding. A tighter finite-horizon bound or faster verified plant may help.
+For a constant residual and constant jerk, the steady error equation gives
+|e_x|=|w_eff|/8. The invariant radius can be conservative even in this simple
+case. This observation is not a smaller proved worst-case variable-input tube.
+
+Time-scaled extension checked algebraically
+For sigma>0 and an actual measured rate band [8*sigma,12*sigma], use
+  command=-8*sigma^2*e_x-6*sigma*e_v-e_a/2,
+  feedforward=(5/(48*sigma))*j.
+Set tau=sigma*t and normalized errors E=(e_x,e_v/sigma,e_a/sigma^2).
+The normalized error ODE has rate r/sigma in [8,12] and disturbance
+(w+(5/(48*sigma)-1/r)*j)/sigma^2. Therefore the sufficient condition is
+  W+J/(48*sigma) <= 2*sigma^2*R.
+The transformed cube is
+  (e_x, e_x+e_v/(4*sigma), e_x+e_v/(2*sigma)+e_a/(16*sigma^2)).
+The bounds are |e_x|<=R, |e_v|<=8*sigma*R, |e_a|<=64*sigma^2*R,
+and effective-target authority A+24*sigma^2*R+5J/(48*sigma)+W.
+The required radius floor is W/(2*sigma^2)+J/(96*sigma^3).
+The formulas are correct. Sigma scales the actual rate interval; increasing
+gains alone on the original [8,12] plant does not satisfy this assumption.
+This is a conditional pathway for faster verified hardware, not a free gain
+change or measured robot result. Formal verification of this extension is
+separate from this algebraic review.
+
+Defensible scope for tonight
+A source-replayed theorem for actual tracking on one segment, an exact endpoint
+handoff, and finite sequence composition would close a real gap between the
+existing command proof and physical holding proof. Include a fair no-feedforward
+comparison with identical uncertainty and authority assumptions. Report the
+radius and any rejected examples. An exact minimax residual lemma clarifies why
+the feedforward constant was chosen. Do not call the sixfold residual reduction
+a sixfold measured tracking improvement. The proof's contribution is the checked
+composition; control-method novelty needs a separate prior-work comparison.
+
+Further practical gaps
+The most important remaining interface is finite computation/sensing delay:
+a planned segment must begin at the state it will actually inherit, and the
+state estimate must have a validated error set. The accepted trajectory must
+retain a stop or hold reserve across missed updates. End-effector position and
+contact constraints also need a robot dynamics and kinematics model. The
+scalar tube is useful as a component, not an unqualified dexterous-arm result.
+
+Reference jerk is not actual jerk
+The reference bound |j|<=J does not imply |a'|<=J for the physical plant.
+For example, at zero tracking error, w=0 and r=12, the proposed law gives
+actual jerk r*kappa*j=(5/4)j. A reference at its positive jerk limit can
+therefore exceed the same numerical physical jerk limit.
+In error-cube coordinates z, command(0,e)-e_a=-8z0+24z1-24z2.
+Thus an available physical bound on the open segment interior is
+  |a'| <= 12*(56R+5J/48+W).
+Under the sigma extension it becomes
+  |a'| <= 12*sigma*(56*sigma^2*R+5J/(48*sigma)+W).
+This is conservative and can be much larger than J. If the application has
+a physical jerk limit, admit the reference using an actual-jerk certificate
+or a tighter derived bound. Do not transfer the command jerk limit unchanged.
+
+Two minimax criteria give different feedforward constants
+The 5/48 coefficient is optimal for max|kappa-1/r|, the residual metric used by
+the invariant-cube certificate. It is not universally optimal feedforward.
+For max|r*kappa-1| over r in [8,12], the minimax coefficient is 1/10 and the
+minimum is 1/5. The coefficient 5/48 instead gives maximum 1/4 in this metric.
+At zero initial tracking error and constant reference jerk, initial actual-jerk
+error is (r*kappa-1)j. Short-time position error starts as
+(r*kappa-1)j*t^3/6. Constant-input steady position error is instead
+(kappa-1/r)j/8, which matches the inverse-rate criterion. These facts explain
+why different observation horizons and objectives can prefer different gains.
+A fair numerical comparison should retain both 1/10 and 5/48. A smaller proved
+cube is not proof of uniformly better finite-horizon tracking.
+
+TrackingReplan.lean semantic audit
+Reviewed the generic error_trajectory derivation, reciprocal-rate lemmas,
+tracking_cube, physical_margins, constant-jerk reference construction,
+matched_error, finite_replans, admitted_tracking_segment and
+actual_finite_replans. No mathematical defect found in the stated implications.
+The actual finite-replan theorem derives the per-segment invariant from the
+actual ODE, rate bounds, disturbance budget and matched states. It does not
+assume the desired tracking conclusion. The conclusion remains a family of
+matched local-clock segments, not a construction of a global runtime scheduler.
+Zero-duration segments are permitted; their conclusions concern their common
+endpoint and do not add a minimum dwell assumption.
+
+The numerical constants are consistent: reciprocal residual 1/48, physical
+velocity-error factor 8, acceleration-error factor 64, feedback-target factor
+24, and feedforward 5/48. The admitted reference has position margins R and
+separate reference velocity/acceleration bounds. The theorem correctly adds
+tracking-error margins to obtain actual velocity/acceleration bounds.
+The short-time minimax comparator has lower bound 1/5 and coefficient 1/10.
+The planned-jerk caution is an arithmetic RHS-factor witness; it is not a
+formal construction of an entire violating physical trajectory.
+
+Meaningful negative verification cases
+1. Change only the centered reciprocal conclusion from 1/48 to 1/96. At r=8,
+|5/48-1/8|=1/48>1/96, so the tighter theorem is false.
+2. Change only input's feedforward sign from +kappa*j to -kappa*j. Retain the
+residual formula and error_trajectory statement. The ODE derivation must fail.
+At zero error, r=8, kappa=5/48, j=1 and w=0, the wrong-sign error jerk is
+8*(-5/48)-1=-11/6. The unchanged residual formula predicts
+8*(5/48-1/8)=-1/6. The difference is -5/3. This checks the actual input/error
+interface and is stronger than rejecting an unrelated false arithmetic fact.
+
+Frozen base-source audit
+Reviewed TrackingReplan.lean with 20 public theorem statements at SHA-256
+c10dfd281ff8755b0131522436ee60424e8df3c8f72651a6c7d96aeae0144c7c.
+The added cube_drive_bound gives 56R. This is the exact maximum of the absolute
+linear form -8z0+24z1-24z2 on the radius-R cube; z=(-R,R,-R) attains it.
+actual_jerk_bound derives the actual acceleration derivative directly from
+the actual ODE and bounds it on the open segment interior. No derivative
+across a switch is claimed. The renamed actual_jerk_rhs_can_exceed_reference
+correctly signals the limited arithmetic-factor witness. No semantic defect
+found in the frozen base source. Build and kernel evidence remain recorded
+separately by the verifier.
+
+Frozen scaled-source audit and completed verification
+Reviewed ScaledTracking.lean at SHA-256
+  d16727e92d30b73993d0aa409a95ce70945b03d8cf742a887740ba9daed255f6.
+All 14 public lemmas/theorems match the intended change of units. The normalized
+horizon is sigma*H; velocity, acceleration and jerk divide by sigma, sigma^2
+and sigma^3. The actual plant and reference are transformed with proved chain
+rules. The normalized initial error reduces to the stated physical initial
+cube. At each finite handoff, full actual and reference states match before
+normalization, so the same scaled error cube transfers. The physical margins
+have the correct factors 8*sigma, 64*sigma^2 and 24*sigma^2. No semantic defect
+found. The theorem explicitly requires the faster physical rate band.
+
+The final verification.json inspected by this reviewer reports passed=true,
+source_unchanged=true and 34 audited public statements. It records fresh builds
+of three local dependencies and the two target sources, successful axiom audit,
+separate successful kernel replays of both target modules, and rejection of
+both false-residual and reversed-feedforward mutations. Verification manifest
+SHA-256 at review:
+  ce1f8e890174638c29584a7ba94563545952368d86a19b4109c356a8e2ba6f1d.
+This records proof validation under the stated dependency assumptions, not a
+validation of hardware parameters.
+
+Persistent independent numerical audit
+review_numeric.py now saves the independent checks rather than leaving them
+only in chat. It uses the standard library and does not import comparison.py
+or SciPy. review-numeric.json records exact source/data hashes and outputs.
+It reconstructs all 144 case specifications with Fraction arithmetic and checks
+radii, authority, reference distance and the sampled actual-jerk bound.
+It then integrates the derived error ODE with classical RK4 for all six stored
+fixed-r=12, W=0 short/long traces, split at every jerk boundary. This uses a
+different state model and solver from the original actual-state DOP853 run.
+Maximum discrepancy across these six traces was 7.50e-13 m (rounded upward).
+This is independent numerical consistency evidence, not interval numerics.
+
+Latest technical-note review
+Reviewed publication/tracking-note/main.tex at SHA-256
+  f046c9c01b3fde248c886a1133dfaf1e979b458d0d907305d95eb47d19e763d5.
+The theorem, controller, margins and physical rate-scale warning match the
+Lean sources. The illustrative 0.2 mm radius arithmetic is correct, including
+0.016 m/s velocity margin, 1.28 m/s^2 acceleration margin, and 0.594166... m/s^2
+effective-input margin above A. These remain unmeasured specifications.
+The added table matches all six independently recomputed saved peak values.
+It exposes the poor short-move feedforward case rather than claiming universal
+improvement. The comparison explains why a smaller sufficient radius need not
+improve every actual trace. No mismatch between the mathematical claims and
+checked source was found. Bibliographic novelty and physical validation remain
+separate obligations; this review did not independently re-audit those sources.

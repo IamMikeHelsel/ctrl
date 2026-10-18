@@ -1,0 +1,250 @@
+STEADY MOTION UNDER CONTINUOUS REPLANNING
+Independent controls adjacency review — 17 October 2026
+
+The useful research question is: how little unwanted motion can we guarantee,
+while still reacting to a real change in the task within a stated time?
+
+“Any arm dead steady” is not a possible unconditional contract. An arm can lack
+the force, bandwidth, sensing, or stable contact needed to oppose a disturbance.
+A command trace also does not label which motion is intended. The promise needs
+a robot model, a disturbance envelope, and a definition of intended motion.
+
+THREE DIFFERENT PROBLEMS
+
+1. Planner dithering. Successive plans disagree although the task is unchanged.
+   A smooth splice can remove acceleration jumps while retaining repeated small
+   reversals. A jerk bound alone therefore does not establish steadiness.
+   A target uncertainty set, commitment rule, and task progress condition belong
+   above the trajectory generator.
+
+2. Physical motion error. Loads, friction, resonance, contact, and actuator error
+   move the arm away from its command. Command smoothing cannot by itself bound
+   that error. A measured response envelope or physical tracking theorem is
+   needed. Flexible modes and impact require more than our current lag model.
+
+3. Feedback oscillation. Fast corrections can interact with sensing, sampling,
+   computation, and actuator delay. Raising gains or observer bandwidth is not
+   an unrestricted remedy. Stability and noise sensitivity must be checked for
+   the actual discrete execution loop [5].
+
+These mechanisms can coexist. A single motion spectrum does not identify which
+one caused the oscillation. Report command motion and actual motion separately.
+
+EIGHT PRIMARY SOURCES
+
+[1] Burdet, Osu, Franklin, Milner and Kawato, Nature 414 (2001), 446–449.
+    The central nervous system stabilizes unstable dynamics by learning optimal
+    impedance. https://doi.org/10.1038/35106566
+    In a robotic force-field experiment, people adapted the geometry of arm
+    impedance to stabilize unstable motion. This supports direction-dependent
+    mechanical resistance as a useful design idea. It does not show that all
+    human steadiness comes from one neural rule, or that maximal stiffness is
+    best. Publisher abstract and supplementary description inspected; main
+    article is subscription content.
+
+[2] Ferraguti, Secchi and Fantuzzi, ICRA 2013, 4948–4953.
+    A Tank-Based Approach to Impedance Control with Variable Stiffness.
+    https://iris.unimore.it/handle/11380/1012933
+    The controller accounts for exchanged energy to preserve passivity while
+    stiffness varies. Thus safe online stiffness adaptation is established
+    territory. The institutional abstract was inspected; it provides no full
+    paper. Do not infer a complete moving-reference or sampled-VLA contract
+    from this abstract. DOI: 10.1109/ICRA.2013.6631284.
+
+[3] Panzirsch, Singh, Sierotowicz and Dietrich, IEEE RA-L, accepted January 2024.
+    Extension of the Deflection-Domain Passivity Approach for Variable
+    Stiffnesses to SO(3).
+    https://elib.dlr.de/206285/1/panzirsch24ral1_copyright.pdf
+    The author's manuscript describes an important limitation of time-based
+    energy controls: an empty tank can cause sudden force attenuation and
+    zero-stiffness periods. Their method distributes the required attenuation
+    over spring deflection, including coupled rotations, with teleoperation
+    experiments. Passivity alone is not a lower bound on task authority or a
+    proof of accurate tracking. Abstract and opening discussion inspected via
+    the indexed author PDF; direct PDF opening returned an internal error.
+
+[4] Riviere, Rader and Thakor, IEEE Transactions on Biomedical Engineering
+    45(7), July 1998, 839–846. Adaptive Canceling of Physiological Tremor for
+    Improved Precision in Microsurgery.
+    https://publications.ri.cmu.edu/storage/publications/pub_files/pub3/riviere_cameron_1998_1/riviere_cameron_1998_1.pdf
+    An adaptive frequency estimator drives active cancellation on a benchtop
+    instrument. Recordings from simulated surgery provide the input. This is
+    direct evidence that a narrow disturbance model can help. Intended motion
+    was not measured independently; an offline low-pass estimate was used for
+    one error metric. The discussion reports sensor noise and beam resonance
+    as limits. Full eight-page manuscript inspected.
+
+[5] Sariyildiz, Hangai, Uzunovic, Nozaki and Ohnishi, 2020.
+    Stability and Robustness of the Disturbance Observer-based Motion Control
+    Systems in Discrete-Time Domain.
+    https://arxiv.org/abs/2010.08075
+    The authors derive bounds on observer tuning from stability, performance,
+    and noise sensitivity, and report experiments. Their result warns against
+    assuming more bandwidth always gives better rejection. Measurement choice
+    matters; their position/velocity and acceleration cases have different
+    constraints. Primary abstract inspected, not a full implementation audit.
+
+[6] Muramatsu and Katsura, IEEE Transactions on Industrial Informatics 14(10),
+    2018, 4446–4456. An Adaptive Periodic-Disturbance Observer for
+    Periodic-Disturbance Suppression.
+    https://arxiv.org/abs/2004.00487v2
+    A disturbance observer uses a delay element to reject a fundamental and
+    harmonics. An adaptive notch filter estimates changing frequency. The paper
+    reports multi-axis manipulator experiments. Thus periodic rejection and
+    adaptive notch estimation are existing baselines, not a new consequence of
+    our Lean work. Primary abstract inspected. The arXiv upload is later than
+    the 2018 journal publication. DOI: 10.1109/TII.2018.2804338.
+
+[7] DeWolf, Jaworski and Eliasmith, Frontiers in Neurorobotics 14 (2020), 568359.
+    Nengo and Low-Power AI Hardware for Robust, Embedded Neurorobotics.
+    https://www.frontiersin.org/journals/neurorobotics/articles/10.3389/fnbot.2020.568359/full
+    A neural adaptive component augments an operational-space controller on a
+    physical Kinova Jaco arm with an unexpected load. CPU, GPU, and Loihi
+    implementations are compared. This is evidence for a practical adaptive
+    implementation. Spiking hardware does not remove observability, authority,
+    delay, or stability premises. The primary article and arm-control section
+    were inspected; code was not run.
+
+[8] Liu et al., Robotics: Science and Systems 2026.
+    Learning Native Continuation for Action Chunking Flow Policies (Legato).
+    https://www.roboticsproceedings.org/rss22/p058.html
+    The policy learns continuation across chunks and conditions for varying
+    inference delay. Reported real-robot results address smoothness, multimodal
+    switching, hesitation, and completion time. Those objectives already have
+    close VLA prior work. A proof proposal must distinguish bounded physical
+    error and worst-case response from measured command smoothness. Official
+    proceedings abstract inspected; earlier project review also read v1 text.
+
+THREE ESSENTIAL EXISTING BASELINES
+
+RTC already preserves a committed prefix while inference runs:
+https://arxiv.org/html/2506.07339v1
+Its full text was inspected again. Learned continuation and multirate execution
+are established. Neither a new splice rule nor a faster planner is sufficient
+by itself to claim novelty.
+
+Ruckig already constructs jerk-limited trajectories from general initial and
+target position, velocity, and acceleration:
+https://roboticsproceedings.org/rss17/p015.pdf
+The primary paper was inspected again. Our constant-jerk segment is narrower.
+
+Reference governors already admit or modify references to enforce constraints.
+Bemporad's 1998 nonlinear result includes stability and tracking conditions:
+https://cse.lab.imtlucca.it/~bemporad/publications/papers/ieeetac-rgnl.pdf
+The author's primary manuscript abstract was inspected. Adding an admission
+gate alone is not a new control architecture.
+
+SMALLEST USEFUL CONTRACT TO PROVE
+
+Start with a scalar translation axis. Separate four contracts: task observation,
+command generation, physical response, and backup. This keeps assumptions visible.
+
+Task observation. During a hold task, let c be the fixed intended position.
+Each planner proposal p_k obeys |p_k-c| <= epsilon. The retained anchor a also
+obeys |a-c| <= epsilon. Do not treat this as a property supplied by a VLA unless
+there is evidence for it. Set an update threshold H >= 2 epsilon.
+
+Noise rejection. Admit a target change only when |p_k-a| > H, followed by the
+feasibility checks below. Then bounded proposal noise cannot cause an update:
+|p_k-a| <= |p_k-c| + |c-a| <= 2 epsilon <= H.
+The execution remains at its current hold policy. This prevents planner-driven
+motion, while the physical hold theorem still permits its stated error tube.
+
+Response to a real change. Suppose the intended target changes and remains at
+c'. All subsequent valid proposals obey |p_k-c'| <= epsilon. If
+|c'-c| > H + 2 epsilon, then the next valid proposal crosses the threshold.
+This follows from |p_k-a| >= |c'-c| - |p_k-c'| - |a-c|.
+The theorem must state what happens for smaller changes: they may be ignored.
+A threshold creates a resolution/response tradeoff, not a free improvement.
+
+Timing and feasibility. Suppose a valid proposal arrives within P seconds,
+admission computation finishes within D seconds, and a feasible continuation
+can begin within S seconds. Then acceptance and onset occur within P+D+S.
+This is an onset bound, not an arrival bound. A declared motion duration T and
+tracking guarantee are needed to bound target acquisition by P+D+S+T.
+If no feasible path exists, the theorem must not promise response. The supervisor
+must remain in the already certified hold or stopping set.
+
+Motion. Use the executed state at the actual switch, preserve the committed
+prefix, and match position, velocity, and acceleration. Reuse SmoothReplan's
+finite-history jerk and interval checks. Its scalar checks do not certify
+collision avoidance, orientation, contact force, or inverse kinematics.
+
+Physical authority. Reuse RobustHold only with its actual premises. In that
+model, |w| <= 2R, 8 <= r <= 12, and the invariant initial cube give |x-a| <= R.
+The target bound is 26R in the stated units. If an actuator bound U is used to
+rule out saturation, require 26R <= U and prove that the implemented saturation
+is inactive. Sample, sensor, and delay errors consume the disturbance budget.
+For a fixed intended c, this composes to |x-c| <= R+epsilon while holding.
+
+Backup. Every admitted motion must retain a stop or hold reserve through the
+next decision deadline, including a missed update. This recursive feasibility
+step is not supplied by rejecting a candidate or by a jerk bound. It is the
+main missing composition with our existing braking results.
+
+No hidden progress claim. A noise bound does not prove the planner proposes a
+useful target. A nonempty feasible set does not force the supervisor to use it.
+Task progress needs a persistent feasible proposal, a selection rule, and a
+task-specific progress measure. Emergency handling needs its own timing and
+motion limits, rather than silently bypassing a smoothness theorem.
+
+This contract is a proposed research target. It is not yet a Lean result.
+Its elementary threshold and timing lemmas are not publication novelty.
+
+TWO NECESSARY LIMITS TO INCLUDE IN THE PROOF PACKAGE
+
+Intent ambiguity. For the same observed trace y(t), one admissible explanation
+can be intended motion y(t) with zero disturbance. Another can be intended rest
+with disturbance y(t). An algorithm receiving only that trace has the same
+output in both cases. It cannot guarantee exact tracking in the first and exact
+cancellation in the second when y is nonzero. Frequency overlap is one way this
+ambiguity arises. Extra task labels, force/contact data, or a separation model
+can change the problem. They must become explicit premises.
+
+Finite authority. If a disturbance requires more opposing input than the arm
+can deliver, exact rejection is impossible. Even within authority, unmeasured
+disturbance onset and delay can cause nonzero transient error. A useful theorem
+therefore bounds motion and response time. It does not assert zero motion for
+all arms, loads, contacts, or disturbances.
+
+FAIR EXPERIMENT AND NOVELTY SCREEN
+
+Freeze a common sequence of proposed targets, timestamps, inference delays,
+measurement errors, and emergency triggers before tuning controllers. Include:
+bounded alternating proposal noise; a sustained true step; a slow intended
+drift; an intentional oscillation inside the rejection frequency band; changing
+periodic disturbance; a payload change; and a missed update. Use known intended
+motion in simulation rather than defining truth with the tested filter.
+
+Compare raw replacement, minimum dwell, low-pass filtering, hysteresis alone,
+Ruckig with current-state initialization, and our certified admission. Use the
+same actuator, sensor, delay, position, velocity, acceleration, and jerk limits.
+If actual RTC or Legato is not run, label a prefix-preserving surrogate as a
+surrogate. Compare physical disturbance observers in a separate layer so a
+better low-level controller is not mistaken for a better planner policy.
+
+Measure maximum and RMS actual hold error, command error, unintended reversals,
+actual response delay, target acquisition time, constraint violations, input
+saturation, rejected proposals, backup use, and completion of the task. Report
+frequency-band error separately from whole-trajectory error. An algorithm that
+holds forever can score well on jitter while failing every motion task.
+
+Use three test levels. First, exact scalar command checks. Second, the declared
+lagged plant with bounded errors and disturbances. Third, a flexible/contact
+simulation as an external challenge. Passing level three is numerical evidence;
+it is not covered by the scalar lag theorem. Physical tests remain a separate
+stage. Record all failed and out-of-contract cases.
+
+Potential contribution: a small replayable certificate that jointly bounds
+unwanted physical motion, response time to a distinguishable feasible update,
+and retained stopping reserve under asynchronous execution. The paper needs a
+clear benefit over reference governors, robust filtering, trajectory generation,
+and current VLA continuation methods. This search identifies a plausible place
+to test for that benefit; it does not establish a literature gap or novelty.
+
+A low-pass equation, a jerk-splice lemma, or an energy tank on its own is not
+enough. A clean negative result about conflicting specifications can also be
+useful, but it must go beyond the elementary ambiguity example above.
+
+No hardware, medical, PL d/e, publication, or universal steadiness claim follows
+from this review. See sources-controls.json for access scope and source metadata.

@@ -1,0 +1,174 @@
+THINK OFTEN, SWITCH SMOOTHLY
+A bounded Lean result for frequent robot replanning
+17 October 2026
+
+The useful distinction is between planning a new motion and committing it to the
+robot. A planner can update often. The executor should accept an update only if
+it joins the motion already in progress and satisfies the motion limits.
+
+A minimum wait between updates is insufficient. After any wait, the next plan can
+still demand an acceleration jump. Conversely, a matching replacement can keep
+a fixed jerk bound without a minimum wait. Jerk is the rate of acceleration change.
+
+WHAT WE NOW CHECK
+
+SmoothReplan.lean is a scalar command-level result. A segment has position q,
+velocity v, acceleration a and constant jerk j. Its exact motion is
+
+  q(t) = q0 + v0 t + a0 t²/2 + j t³/6,
+  v(t) = v0 + a0 t + j t²/2,
+  a(t) = a0 + j t.
+
+Admission checks a positive duration h and ten finite conditions: a jerk limit,
+four position control points, three velocity control points and two acceleration
+control points. The position controls are
+
+  q0,
+  q0 + v0 h/3,
+  q0 + 2 v0 h/3 + a0 h²/6,
+  q(h).
+
+If these four numbers are inside the position interval, the entire cubic segment
+is inside it. This follows from the Bernstein convex-hull property. Parallel
+checks give the velocity and acceleration bounds. These are sufficient checks;
+failing a control-point check does not always mean a trajectory is unsafe.
+
+The Lean statements establish:
+
+- Exact derivatives for the segment.
+- Continuous-time position, velocity, acceleration and jerk bounds from Admission.
+- Replacement from the current executed command state matches q, v and a.
+- If two motions match q, v and a at their switch, then q'=v and v'=a still hold
+  at every time, including the switch, and acceleration stays continuous.
+- Matching acceleration preserves |a(t)-a(s)| <= J |t-s|. The same J survives
+  any finite certified replacement history. Jerk itself may jump.
+- A replacement leaves its committed prefix unchanged.
+- A separately established tracking-error bound transfers a shrunken command
+  position interval to the actual position interval.
+- A single acceleration jump after any waiting time violates every finite jerk
+  bound. Thus a minimum dwell time alone does not solve this problem.
+
+This is a finite-history theorem. It does not cover infinitely many switches in
+finite time. A fixed positive servo period is one way to exclude that behavior.
+For prefix preservation, the switch must occur at or after the current execution
+time. The history theorem alone does not impose chronological scheduling.
+
+A CONCRETE ACCEPT/REJECT PAIR
+
+These are illustrative translation units, not identified robot limits.
+Start with q=0 m, v=0.1 m/s, a=0 m/s² and h=0.020 s. Hold the same limits for all
+candidates: q in [-0.01,0.01] m, |v|<=0.2 m/s, |a|<=1 m/s², |j|<=10 m/s³.
+
+  Candidate                                  Decision
+  j=10; endpoint 0.002013333... m             Accepted in Lean
+  Next 20 ms: j=-10 from the executed state   Accepted in Lean
+  New endpoint 0.0025 m over the first 20 ms  Rejected in Lean
+
+The last target requires j=375 m/s³ under this constant-jerk construction.
+It fits the position interval, but it violates the unchanged jerk limit.
+The second accepted segment reverses jerk without resetting acceleration. Its
+final state is q=0.00408 m, v=0.104 m/s, a=0. This arithmetic is exact rational
+arithmetic in examples.json and the segment admissions are Lean checked.
+
+For one constant-jerk segment, Lean also proves the exact endpoint condition
+
+  |q(h) - (q0 + v0 h + a0 h²/2)| <= J h³/6.
+
+This sets a motion horizon for a target correction. It does not force the planner
+to wait that long before thinking again. The theorem is not general reachability
+for prescribed final position, velocity and acceleration.
+
+WHAT ALREADY EXISTS
+
+1. RTC, Black, Galliker and Levine (2025), runs policy inference while the robot
+   executes the current action chunk. It conditions the next chunk on the prefix
+   already committed during inference delay. Its soft mask improves continuation;
+   Section 4.2 says hard-prefix guidance can still permit strategy changes.
+   It has a minimum execution horizon and reports robot experiments. Our result
+   adds an exact, conditional execution check; it does not replace RTC or prove
+   RTC unsafe. We did not run its policy or audit its implementation.
+   Paper: https://arxiv.org/html/2506.07339v1
+   Authors' code: https://github.com/Physical-Intelligence/real-time-chunking-kinetix
+
+2. Training-time RTC, Black et al. (2025), conditions on action prefixes during
+   training to remove inference-time inpainting cost. Continuation itself is
+   therefore not an unexplored idea.
+   https://arxiv.org/abs/2512.05964
+
+3. Legato, Liu et al. (2026), trains native continuation. Its stride ablation
+   separates boundary agreement from whole-trajectory smoothness: more frequent
+   updates can improve overlap consistency while worsening global smoothness.
+   Its smoothness metrics evaluate model commands, not actual robot states.
+   This supports our caution that a local jerk bound does not prove decisive,
+   efficient, human-like task behavior.
+   https://arxiv.org/html/2602.12978v1
+
+4. Adaptive Action Chunking, Liang et al. (CVPR 2026), uses action entropy to vary
+   the execution horizon. It targets the responsiveness/consistency tradeoff.
+   It is not a proof that a minimum wait implies bounded jerk.
+   https://arxiv.org/html/2604.04161v1
+
+5. VLASH, Tang et al. (2025 preprint), predicts the future execution-time state
+   to address the difference between state at inference and state at execution.
+   Our splice must also use the state at the actual switch. A stale start state
+   does not meet the matching premise.
+   https://arxiv.org/abs/2512.01031
+   Authors' code: https://github.com/mit-han-lab/vlash
+
+6. Ruckig, Berscheid and Kroeger (RSS 2021), already generates jerk-limited motion
+   from arbitrary initial and target position, velocity and acceleration. The
+   present constant-jerk certificate is much narrower. We do not claim a new
+   trajectory generator, optimality, or equivalence to Ruckig's implementation.
+   https://roboticsproceedings.org/rss17/p015.pdf
+   Authors' code and documented usage: https://github.com/pantor/ruckig
+
+7. Bernstein trajectory constraint checking is established. The BeBOT work gives
+   continuous-time constraints using Bernstein geometry. Our small Lean proof is
+   a checked instance of that mathematics, not a new convex-hull theorem.
+   https://arxiv.org/abs/2010.09992
+   Authors' code: https://github.com/caslabuiowa/BeBOT
+
+SOURCES AND VERIFICATION
+
+The paper text or primary abstract and author-maintained repository pages above
+were inspected on 17 October 2026. Their implementations were not executed.
+All 24 theorem statements passed. verification.json records the local source hashes, pinned toolchain, fresh build,
+transitive axiom audit, kernel replay and negative mutation check. The only
+allowed axioms are propext, Classical.choice and Quot.sound. No sorry, axiom
+shortcut, native_decide or sampled-time safety argument is used.
+
+PRACTICAL INTERPRETATION AND NEXT WORK
+
+A low-level executor could receive candidate VLA targets, preserve commands that
+are already committed, create a matching motion segment, and admit that segment
+only if the certificate passes. A rejected target can be delayed, modified, or
+replaced by a previously certified backup. This admission layer can complement
+RTC, Legato, or another planner.
+
+No fallback is automatically safe just because the new target was rejected.
+The old motion must retain a valid backup or stop reserve. An emergency should
+preempt a dwell preference. It still needs its own physical bounds. If emergency
+motion uses a larger jerk bound, the original smoothness guarantee no longer
+applies during that mode.
+
+Our command proof is not a proof of actual end-effector motion. Physical tracking
+error must be bounded separately. Rotation, inverse kinematics, joint limits,
+singularities, contact force, friction, torque and tactile response are open.
+Applying independent scalar bounds to coordinates does not prove collision
+avoidance or safe dexterous contact. Matching commanded acceleration also does
+not establish that the motor has that actual acceleration.
+
+Bounded jerk can still allow small repeated reversals and indecision. We have
+not proved task progress, grasp persistence, optimality, or human-like control.
+A plausible next step is a progress test or mode hysteresis above this admission
+layer, with an explicit emergency exception. That needs a task-specific merit
+function; a generic timer cannot establish progress.
+
+The publication opportunity is not yet established. A useful next experiment is
+an identical recorded stream of asynchronous proposed updates, including delay,
+state error, rapid target reversals and emergency triggers. Compare raw swapping,
+minimum dwell, RTC-style continuation, Ruckig, and certified admission. Measure
+constraint violations, response latency, task completion, rejected updates and
+backup use. The exact certificate should be checked on the same executed trace.
+A contribution may emerge from uncertainty-aware admission plus a certified stop
+reserve. That connection has not yet been proved for the existing braking plant.

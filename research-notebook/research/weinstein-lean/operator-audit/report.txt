@@ -1,0 +1,112 @@
+Geometric Unity: operator and sign audit
+2026-10-17
+
+Result
+
+Two useful parts are now precise in Lean. A sign audit finds a local mismatch
+in the printed formulas. A separate construction proves the conjugation law for
+a fixed coefficient version of the proposed contraction. Neither result proves
+or refutes the full theory. Neither is claimed as new mathematics.
+
+The sign audit
+
+Write C_h(x) = h^-1 x h and s(h) = h^-1 D_A h. The printed negative tilted
+action sends (e,w) to (e h, C_h(w) - s(h)). The printed torsion is
+T_minus(e,w) = w - s(e).
+
+The product rule gives s(e h) = C_h(s(e)) + s(h). Therefore the result is
+
+  T_minus(e h, C_h(w) - s(h)) = C_h(T_minus(e,w)) - 2 s(h).
+
+Lean proves this defect for arbitrary pointwise derivative values. It does not
+assume the covariance conclusion. Evaluating a matrix-valued one-form on one
+tangent vector reduces the differential-form identity to exactly this algebra.
+A global reversal of the D_A sign reverses the defect; it does not remove it.
+
+For a concrete check, we define D_A x = A x - x A and prove its product rule.
+We use real 3 by 3 matrices:
+
+  A = [ 0 -1  0 ]       h = [-1  0  0 ]
+      [ 1  0  0 ]           [ 0  1  0 ]
+      [ 0  0  0 ]           [ 0  0 -1 ].
+
+Lean proves A is skew, h is orthogonal, det(h)=1, and s(h) is nonzero.
+With e=I and w=0, the two sides of the printed covariance identity differ.
+This is a finite matrix witness. We have not formalized its embedding into the
+full GU spinor bundle or a global GU background. The general pointwise defect
+itself is independent of that illustrative realization.
+
+Two conventions pass the local covariance test:
+
+  1. Keep T_minus and use the positive tilted term C_h(w) + s(h).
+  2. Keep the negative tilted term and use T_plus(e,w) = w + s(e).
+
+These are local repairs. They are not interchangeable throughout the draft.
+For example, the negative tilt stabilizes the base connection under the printed
+right action. The positive tilt generally does not. All downstream definitions
+must use one consistent choice. We have not silently changed the author's theory.
+
+The contraction construction
+
+ContractionCovariance.lean defines finite arrays with the actual form dimensions
+choose(14,k). Fixed real coefficient arrays define linear maps and bilinear
+contractions with ordered matrix multiplication. Lean proves that these maps
+commute with simultaneous conjugation of all matrix factors.
+
+We then assemble the ordered-product expression corresponding to the two terms
+of (9.3). The first term follows degrees 2 -> 12 -> 13. The second follows
+2 -> 12 -> 14 -> 0 -> 1 -> 13. Both terms therefore have the required degree.
+For every fixed coefficient choice and every fixed pair p1,p2, Lean proves
+
+  S_(e h)(h^-1 x h) = h^-1 S_e(x) h.
+
+This is a useful algebraic foundation. The proof derives covariance from concrete
+sums and products; it does not include covariance as an axiom or premise.
+
+Its boundary is specific: the current code has not identified the coefficient
+arrays with a particular exterior basis and Hodge star. It has not selected the
+invariant Phi tensors. Ordered products are not automatically Lie-algebra valued;
+the bracket convention and any required factors of i still need an exact choice.
+It does not prove Weyl annihilation, a Bianchi identity, field equations, or a
+physical prediction. Gauge covariance by itself does not choose a useful operator.
+
+Primary-source mapping
+
+[1] The author's 2021 draft: (5.9) gives the product; (6.2) the right action;
+(6.4) and (6.13) the negative tilt; (7.3) the minus torsion. In the proof of
+(7.4), the next line uses a positive term. Footnote 7 on page 36 already warns
+of conflicting sign conventions. Definition 8.1 and (9.2)-(9.3) supply the
+operator target. Section 8.2 leaves the preferred selection unresolved.
+https://geometricunity.nyc3.digitaloceanspaces.com/Geometric_Unity-Draft-April-1st-2021.pdf
+
+[2] Nguyen and Polya's February 2021 response, sections 2.2-2.3, already uses
+the positive tilt with minus torsion. It predates the April draft and matches
+our first repair. This is evidence for a convention issue, not a new no-go result.
+https://files.timothynguyen.org/geometric_unity.pdf
+
+[3] Engin Atik's Kleis audit, sections 5-6, also uses the positive tilt. Its
+formalization assumes gauge covariance and encodes physics obstruction premises
+as axioms. We have not independently verified those premises or its code. Its
+SMT results must not be treated here as proofs of full geometric or physical
+impossibility. We did not find this precise negative-tilt defect identified in
+these two checked responses. This bounded search does not establish novelty.
+https://kleis.io/docs/papers/geometric_unity_audit.pdf
+
+Verification
+
+Run: python3 research/weinstein-lean/operator-audit/verify.py
+All 26 public theorem statements passed. Only the standard axioms propext,
+Classical.choice and Quot.sound occur (some theorems need fewer or none).
+The script compiles fresh source copies, checks every public theorem's axioms,
+and replays both modules with leanchecker. It also requires Lean to reject an
+incorrect version that loses a factor of two in the defect. See verification.json
+and logs/. Pinned prebuilt Lean/mathlib dependencies are reused.
+
+Next useful target
+
+Fix a convention ledger first. Then choose an explicit finite Clifford model
+and define Phi_1 and Phi_2, a bracket convention, wedge coefficients and the
+(7,7) Hodge star. Check output closure and the action on a basis of algebraic
+curvature tensors. A failure can identify an exact missing assumption. A pass
+would close a real bridge beyond generic covariance. Library gaps can be
+implemented; unchosen mathematical data must be stated rather than assumed.

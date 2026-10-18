@@ -1,0 +1,96 @@
+FINAL DELTA REVIEW — 17 October 2026
+
+Read-only source/statement review while the parent's unified build was running.
+This review does not assert completion of that build or its final axiom audit.
+Manuscript snapshot SHA256:
+0081268bb7dd735e9c8f0da613119dcfbe3ed80c70956bc44a0b1f596cdba779
+
+RESULT
+
+No substantive mathematical overclaim found in the new nonmonotonicity example
+or the active-saturation episode. The new real-time result matches the source,
+provided its energy conclusion explicitly retains the upper sampling bound and
+held-step recurrence. The earlier missing bridges, actuator-sign assumption,
+and sample-versus-intersample robustness ambiguity are resolved.
+
+1. SAMPLING CLOCK: ONE ASSUMPTION CLARIFICATION
+
+Manuscript line 92 correctly reports sampleTime_lower, exists_segment,
+segment_unique, nominalState_at_sample, nominal_energy_bound, and
+nominal_energy_nonexpansion.
+
+The coverage/uniqueness statements require h_n >= hmin > 0. The energy statements
+add h_n <= 33/50 and the two nominal held-step recurrences for x and v.
+The surrounding paragraphs discuss these conditions, but line 92 introduces
+only the lower bound before stating both coverage and energy conclusions.
+Recommended precise insertion:
+  "For sample states obeying the held-step recurrence and
+   0 < hmin <= h_j <= 33/50, ..."
+Alternatively separate the weaker coverage assumptions from the stronger energy
+assumptions explicitly. Positive minimum dwell time alone gives no decay bound.
+
+The stated limitations are accurate: this defines a real-time function by a
+noncomputable interval selector, not an executable real-number search. It covers
+every t >= 0 and identifies sample boundaries. No global continuity, uniqueness
+of arbitrary ODE solutions, or switching-point differentiability theorem is
+claimed. The decay exponent is segmentIndex(h,t), not a separately formalized
+real-time exponential rate. The same clock construction is not currently stated
+as a jerk/planar or rounded/disturbed real-time theorem.
+
+2. DOUBLE-INTEGRATOR BRIDGE AND NONMONOTONICITY: RESOLVED / ACCURATE
+
+DoubleIntegratorBridge.normal_transition and wide_transition identify both
+generated polynomial maps with SampledPD's held segments. normal_energy and
+wide_energy identify the matrix energy with 5x^2+2xv+v^2. The previous manuscript
+overstatement that all models had this bridge is now supported by source.
+
+Lines 86–90 correctly distinguish a bound below each sample's starting energy
+from monotonicity between arbitrary intermediate times. The checked counterexample
+uses initial state (0,1), E(1/2)=13/64, E(3/5)=281/500, and 1/2<3/5<=33/50.
+Both values are below initial energy 1, while the later value is larger. This
+supports precisely the stated limitation. It belongs to the wider interval;
+do not describe it as a counterexample inside a duration limited to 1/2.
+
+3. SATURATED ENTRY: QUANTIFIERS AND NUMBERS ACCURATE
+
+Lines 125–132 match the recursively defined run and recovery_guarantee:
+  - one initial state (1,0), U=1, delta=1/10000;
+  - h_n=1/10 and w_n=0 for n<26;
+  - active clipping for n=0,1,2,3;
+  - arbitrary future h_n in [1/20,1/2] and |w_n|<=1/4000;
+  - sampled E<=5 for every n, and sampled E<=1/10 for n>=26.
+
+The four requested inputs -2,-1.69,-1.36,-1.01 match the supplied exact grid
+states. The displayed sample-26 state matches prefixState; independent rational
+arithmetic confirms E=17757641969/200000000000<1/10.
+No regional initial-set, perturbed-prefix, or intersample recovery guarantee is
+implied by the revised text. The infinite-tail guarantee is sample-indexed, as
+the paper now states. This separate recovery example is consistent with the
+small invariant budget forcing clipping to remain inactive.
+
+4. PREVIOUS FIXES CONFIRMED
+
+  - U>=0, theta>0 and the other budget assumptions appear explicitly at line 120.
+  - Lines 103–108 explicitly limit generic robust invariance/ultimate bounds to
+    sample indices and require coercivity before claiming a bounded state region.
+  - The review is now identified as separate AI-agent review.
+  - Hellwig's initial is corrected to J.
+  - The current benchmark manifest now includes per-case command fields, so the
+    earlier "records exact commands" objection is resolved.
+
+5. FINAL FREEZE HOUSEKEEPING
+
+The inspected manifest finished at 2026-10-17T14:09:54.805040+00:00, with case
+times 3.0963, 3.1251, 5.9855 and 13.2504 seconds. The manuscript currently lists
+3.16,3.31,6.57,13.28. It labels these as one run, so this is not necessarily a
+false historical claim, but the final artifact should identify the matching run
+or refresh the numbers to its final manifest. Do this after the running audit.
+
+The residual definition at h=0 still merits the small clarification in the first
+review: explicitly use polynomial continuation or define hR(h) by the identity.
+The bibliography-completion and feature-level related-work tasks remain editorial
+work; the separately supplied related-work comparison addresses their substance.
+
+Acceptance of this delta review is conditional on the final unified build and
+theorem-closure audit matching the distributed source hashes. It is a source-level
+scope review, not an external peer review or publication-readiness verdict.

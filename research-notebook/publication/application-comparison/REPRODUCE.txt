@@ -1,0 +1,42 @@
+MATCHED TRAVEL-VERTEX SOS REPLAY
+
+This is a separate toolchain from the main Lean4.35.0 project. It checks only the
+four polynomial vertex residuals and their identities/decrease conclusions.
+The48weighted squares are translations of the existing Bernstein witnesses.
+No solver discovery or second end-to-end actuator proof is claimed.
+
+From the extracted workspace root, obtain upstream dependencies without changing
+the pinned revisions:
+
+  git clone https://github.com/leanprover/sos research/sos-comparison
+  git -C research/sos-comparison checkout fb7ae417609093f04cf0608dc92e9343550c2ae4
+
+Install the upstream project's native dependencies and pinned Lean4.33.1 using
+its own README. We used its existing CSDP/native dependency build. From that repo:
+
+  lake exe cache get
+
+Copy publication/application-comparison/TravelSOSReplay.lean into the upstream
+SOSTest/ directory. In research/sos-comparison, build the target:
+
+  lake build SOSTest.TravelSOSReplay
+
+This creates the module setup file used for fresh-process replay. From the
+workspace root, with a usable Lake/Elan installation:
+
+  python3 publication/application-comparison/replay_sos.py
+
+The script checks upstream revision, target input/source hashes and all12theorem
+axiom closures; it records three fresh-process checks in verification.json.
+It intentionally refuses a mismatching source or upstream checkout. Its retained
+logs contain historical absolute execution paths; replay discovers current paths.
+Native/compiler availability can vary by platform; this is not a bundled runtime.
+
+To regenerate the untrusted source, use a Python environment with SymPy1.14.0:
+
+  python3 publication/application-comparison/generate_sos_replay.py
+
+The generator does not prove acceptance. Copy and recheck the generated source.
+The target-manifest.json label remains UNVERIFIED by design; verification.json is
+the separate Lean acceptance record. Main and comparison toolchains/timing scopes
+differ, so their numbers do not measure relative solver speed.

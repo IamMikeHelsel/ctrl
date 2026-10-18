@@ -1,0 +1,67 @@
+{
+  "decision": "continue",
+  "grade": "C",
+  "evidence": {
+    "source_sha256": {
+      "research/adjacent-controls/tracking-replans/trajectory-damper-next-step.txt": "e4e62732ef3aa42176ff2fefe34a0dcc3adcbed1fa1d90bb18f6877e5ef9aea0",
+      "research/adjacent-controls/tracking-replans/CommandSmoothing.lean": "61578bb87c2b9dbb27c1e20c1b3c5ebebe25c3219f2012f7e63e749c6c03111e",
+      "research/adjacent-controls/tracking-replans/ScaledTracking.lean": "d16727e92d30b73993d0aa409a95ce70945b03d8cf742a887740ba9daed255f6",
+      "research/adjacent-controls/tracking-replans/trajectory-damper-challenge.txt": "0eeb6702b63b8e6621f4e5458d344ba530e05cf7ea9f7c6b31877e6037217087",
+      "research/adjacent-controls/tracking-replans/TrackingReplan.lean": "c10dfd281ff8755b0131522436ee60424e8df3c8f72651a6c7d96aeae0144c7c",
+      "research/adjacent-controls/variable-response/sampled-handoff/RobustHold.lean": "9eaf5a2071f81b2339a6ee35a95b76b6e6c69360361ef245250d82598a1bc272"
+    },
+    "fresh_lean_replay": false,
+    "finding": "The frozen composition assumes all-time hfilter. The existing finite_barrier can support a simultaneous tracking/filter box proof.",
+    "rational_checks": {
+      "tracking_budget_lhs": "1/25",
+      "tracking_budget_rhs": "1/25",
+      "filter_budget_lhs": "2167/60",
+      "filter_budget_rhs": "919/30",
+      "filter_budget_slack": "329/60",
+      "rho_endpoint_coefficients": [
+        {
+          "rho": "8",
+          "tracking_coefficients": [
+            "-32",
+            "64",
+            "0"
+          ],
+          "coefficient_abs_sum": "96",
+          "jerk_coefficient": "13/12"
+        },
+        {
+          "rho": "12",
+          "tracking_coefficients": [
+            "-16",
+            "16",
+            "48"
+          ],
+          "coefficient_abs_sum": "80",
+          "jerk_coefficient": "7/8"
+        }
+      ]
+    }
+  },
+  "task": {
+    "name": "Joint tracking/filter invariant for un-clipped first-order filtering on constant-jerk segments",
+    "scope": "Actual plant and reference ODEs, initial joint box, explicit parameter budgets, retained filter at matched finite replans.",
+    "parameters": "sigma>0, lambda>0, H>=0, R>0, D>0, W>=0, J>=0",
+    "filter": "u_prime=lambda*(u_star-u)",
+    "budgets": [
+      "W+D+J/(48*sigma)<=2*sigma^2*R",
+      "(lambda-6*sigma)*D>=96*sigma^3*R+(13/12)*J+6*sigma*W"
+    ],
+    "conclusion": "For all t in [0,H], abs(z_i(t))<=R and abs(u(t)-u_star(t))<=D.",
+    "forbidden_hidden_premises": [
+      "all-time tracking bound",
+      "all-time filter mismatch bound",
+      "all-time nominal-command derivative bound derived from the desired tracking result"
+    ]
+  },
+  "acceptance": {
+    "B": "Prove the actual-trajectory joint segment theorem with explicit initial and parameter assumptions; check nonempty witness; fresh build, axiom audit, kernel replay, and targeted negative control pass.",
+    "A": "All B checks pass on independent replay; prove retained-state matched handoff and finite-segment composition with the state-dependent admission rule; check a nonzero accepted jerk change and retain the rejected large-jump limitation.",
+    "counterexample": "A verified counterexample satisfying all stated hypotheses can earn B or A if it closes this construction."
+  },
+  "stop_condition": "One builder batch, then independent grading. Redirect once for circular all-time premises. Pause if repeated, or if a checked counterexample defeats the budgets. A stalled formalization must identify the exact missing lemma and last passed check."
+}

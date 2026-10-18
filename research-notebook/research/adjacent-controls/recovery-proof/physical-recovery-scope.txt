@@ -1,0 +1,33 @@
+PhysicalRecovery semantic scope (2026-10-17)
+
+The standalone module is checked with the frozen pinned project and the local
+RecoveryHandoff.olean; four theorem closures use only the standard three axioms.
+See physical-recovery-manifest.json for source/build/log hashes and check command.
+
+Parameters tau0>0 (nominal controller constant), tau>0 (actual fixed actuator
+constant), U>0 (acceleration-command limit) remain symbolic. Physical time s
+normalizes to s/tau0; state normalizes to (X/(U*tau0^2),V/(U*tau0),A/U).
+The physical switch occurs at tau0*T, with T=5/4 available for concrete recovery.
+The exact backup command is -U, with no backup disturbance. Actual equations are
+X'=V, V'=A, A'=(-A+command)/tau. After the switch, command is
+clip_U(-X_sample/tau0^2 - 3V_sample/tau0 - 2A_sample + e_n) + d_n.
+Both held errors are acceleration-command quantities; d_n is not external jerk.
+The actual fixed rate r=tau0/tau lies in [9/10,11/10] for the safety theorem.
+
+Any continuous trajectory satisfying those physical equations normalizes to
+RecoveryHandoff.IsRecoveryExecution. Its physical travel is bounded by
+2U*tau0^2 under the exact normalized backup-path and terminal-energy obligations,
+physical dwell hmin>0, h_n in [hmin,tau0/5] and |e_n|+|d_n|<=U/90. The controller
+uses the same nominal tau0 throughout. The actual tau interval is
+[10tau0/11,10tau0/9], not a symmetric ten-percent tau interval.
+
+The contract is nonvacuous: the explicitly rescaled piecewise analytic execution
+satisfies both actual physical ODE branches and continuity, without safety,
+uncertainty-range, backup-path or terminal-energy premises. Physical executions
+with the same initial state, fixed parameters, timing and error sequences are
+unique for all nonnegative times.
+
+No concrete initial box, terminal certificate, robot identification/calibration,
+velocity-to-rest claim or hardware validation is supplied by this module.
+The physical travel theorem is generic and awaits those separate exact
+certificates to yield an assumption-free concrete box corollary.

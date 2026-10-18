@@ -1,0 +1,252 @@
+Independent challenge: sampled capture and safe holding
+17 October 2026
+
+Review boundary
+I read EventStop.lean, its scope, the current README and the prior final audit.
+The first-stop theorem uses a guard on true velocity. Its guard is false at the
+first zero, and its state bound reaches the endpoint by continuity. The proof
+makes no post-zero hold claim. I found no new defect in that stated scope.
+This note challenges the next design. It is not a completed audit of the new
+hold or capture Lean sources, which were still being implemented when I wrote
+this note. I did not rerun the old kernel replay.
+
+Why releasing the command is insufficient
+For a constant rate r>0, set b=0 at handoff. From handoff state (x0,v0,a0),
+  a(t)=a0*exp(-r*t),
+  v(t)=v0+(a0/r)*(1-exp(-r*t)),
+  x(t)=x0+(v0+a0/r)*t-(a0/r^2)*(1-exp(-r*t)).
+Thus v tends to v0+a0/r. Unless this equals zero exactly, position is unbounded
+in one direction. Even v0=0 does not suffice if a0 is nonzero. A threshold
+|vhat|<=epsilon with sensor error ev gives only |v|<=epsilon+ev. It cannot
+justify either rest or a permanent position tube under b=0.
+
+A constructive hold law for the same changing-rate model
+Take a fixed position reference c and choose the effective acceleration target
+  b = -8*(x-c) - 6*v - a/2.
+The coefficients carry the SI units needed to make b an acceleration. Define
+  z1=x-c, z2=x-c+v/4, z3=x-c+v/2+a/16.
+For q=r/8 in [1,3/2], direct substitution gives
+  z1'=4*(-z1+z2),
+  z2'=4*(-z2+z3),
+  z3'=4*((1-q)*z1+3*(q-1)*z2+(2-3*q)*z3).
+The cube |zi|<=R has inward vector fields on all faces. For the last pair of
+faces, the outward absolute cross contribution is 4*(q-1)*R and the inward
+coefficient is (3*q-2)*R before the outer factor 4. Their difference is
+(2-q)*R>=R/2. The first two rows are inward or tangent. This yields a useful
+position tube c-R<=x<=c+R if invariance is proved for actual trajectories.
+A tangent-face calculation alone is not a complete invariant proof: use
+uniqueness, a strict inflated barrier, or a valid maximum-norm comparison.
+Handle R=0 separately or in the general proof.
+
+The hold command is b=8*z1-8*z2-8*z3, hence |b|<=24*R inside the cube. If target
+saturation is included, the capture contract must enforce this command range.
+The negative braking-target assumption b<=-1.2 ends at handoff. It must not be
+silently carried over to the hold mode, which can command positive acceleration.
+For true v=0 and a=-1.2, choosing c=x+a/32 and R=-a/32=.0375 gives the nonempty
+initial tuple (z1,z2,z3)=(R,R,-R). The cube spans [x-.075,x] and its command bound
+is .9 m/s^2. This is a mathematical handoff example, not a physical mechanism.
+
+Disturbance placement matters
+If w is added to the physical effective target b, then the transformed z3
+gets an additive r*w/16=q*w/2. The stated cube remains inward for |w|<=2*R:
+q*|w|/2<=q*R, while the inward margin is 4*(2-q)*R; the worst q=1.5 leaves
+.5*R of slack. If w instead denotes a disturbance directly in z3', its units
+and admissible bound differ. State which definition is used. With additive
+physical-target disturbance, total effective-target magnitude is <=26*R under
+this sufficient bound. A nonzero disturbance floor sets a minimum tube radius.
+
+A simpler conservative proof route
+If the cube proof is costly, E=z1^2+z2^2+z3^2 decreases for the same law.
+Write D=E'/4. At q=1,
+ -D=z1^2+(z1-z2)^2+(z2-z3)^2+z3^2.
+At q=3/2,
+ -D=2*(z1-z2/2+z3/4)^2+(3/2)*(z2-3*z3/2)^2+(3/2)*z3^2.
+D is affine in q, so these identities prove nonincrease throughout the rate
+interval. A scalar derivative comparison then gives a looser position tube.
+This is a fallback, not a replacement for a tighter checked cube theorem.
+
+Noisy state capture
+Acceleration error matters as well as velocity error. For measured x,v,a and
+absolute errors ex,ev,ea, enclose the three uncentred transformed coordinates
+  x,
+  x+v/4,
+  x+v/2+a/16
+with respective radii ex, ex+ev/4 and ex+ev/2+ea/16. Let L be the minimum lower
+endpoint and U the maximum upper endpoint. Then c=(L+U)/2 and R=(U-L)/2 give a
+nonempty cube enclosure. After latency propagation, require U<=.15 to preserve
+the existing global travel limit. Merely proving an arbitrary c+R bound does
+not close the old safety claim. Also prove safety during the command latency.
+All coordinates share the position error; separate interval radii are sound
+but conservative. Do not call the independent-box enclosure exact.
+
+The old EventStop contract only bounds b above. It gives no lower acceleration
+bound for later two-sided capture. Add a lower target bound and an initial lower
+acceleration bound, or use a measured acceleration interval and a justified
+finite-latency jerk bound. Do not derive these from the old one-sided theorem.
+The hold law assumes continuous state feedback. Finite sampling of that hold
+law needs a separate error/disturbance reduction or a sampled invariant proof.
+A noisy trigger, an ideal continuously evaluated hold law, and a sampled hold
+implementation are three different contracts.
+
+Detection and liveness
+An absolute-value velocity band can be skipped between samples. A capture test
+can be sound without ever becoming true. Do not claim detector liveness from
+safe capture alone. A crossing trigger vhat<=theta, with the preceding sample
+vhat>theta, sample gap <=h and |a|<=A, gives the current true-velocity bounds
+ theta-ev-A*h < v <= theta+ev.
+This avoids assuming that a sample lands inside a narrow symmetric band. It
+still needs an initial/final case and a proof that a triggering sample occurs.
+The sampling clock and command latency must be explicit, rather than counted
+only as initial braking delay.
+
+Preliminary reachable-case arithmetic, numerical only
+For the existing weak/slow admitted trajectory r=8,b=-1.2, engagement state
+(.021625,.415,.1), at .52 seconds from the original request (.47 after
+engagement) the direct analytic evaluation gives approximately
+ x=.140670451, v=.009716392, a=-1.169731138.
+Without measurement error or command latency, the transformed upper endpoint
+is .143099549 and R=.035339549. It is therefore a plausible capture example
+inside the original .15 limit. These numbers are floating-point evaluation,
+not a verified noisy/latency capture certificate or a liveness proof. The
+parent will choose and verify a declared measurement/latency contract.
+
+Publication boundary
+This can close a useful gap between a stopping bound and safe mode handoff.
+It does not by itself prove maintained zero velocity: the cube proves bounded
+position. Nor does it establish physical rest, a friction-brake force law,
+PL d/e compliance, hardware validation, or novelty over robust invariant-set
+control. A coherent paper needs the full composition and a fair comparison.
+
+Source review: 17 October 2026, sampled handoff implementation
+I reviewed the four new Lean sources below. The parent was still completing
+Handoff compilation and the integrated replay at this review point. These
+are semantic source findings, not a claim that the pending replay passed.
+Reviewed SHA-256 values:
+ Capture.lean d63844cdb17654868e40702086d110ec898446762e8659eb10cc473e365170a8
+ RobustHold.lean 9eaf5a2071f81b2339a6ee35a95b76b6e6c69360361ef245250d82598a1bc272
+ ReleaseCounterexample.lean 8861cafc1a19cbf1ccd60a996d0c339f27c11a049e1bcd4bd6c8a09b2d211a94
+ Handoff.lean d6605b737fe2abdfabf8e1c3213c2fbff4105b0161a0f1536de551cba7b16f64
+
+No blocking mathematical defect was found in these theorem statements or proof
+arguments. Capture obtains each state interval from initial measurement error
+and explicit acceleration/jerk bounds. No future safety conclusion is assumed.
+The crossing lemma states a consequence of two samples; it does not assert
+that a crossing sample exists. The capture cube is an initial-set admission
+test computed from those intervals, not an assumed terminal path invariant.
+
+RobustHold supplies the actual physical-to-transformed ODE identity. Its
+finite_barrier proves strict first contact impossible using the left slope.
+An expanding radius makes every first contact strict, and a final limit
+removes that expansion. This resolves the tangent-face concern and includes
+R=0. The target disturbance enters as r*w/16, as required by the physical ODE.
+The equilibrium witness establishes a nonempty hold contract, but does not
+prove existence for every captured state or arbitrary disturbance signal.
+Those results remain conditional on an actual classical trajectory.
+
+Handoff requires equality of all three actual state coordinates between the
+end of the delay and the start of holding. It resets none of x,v,a. It derives
+both the position tube and the effective-target authority bound from the
+capture and invariant theorems. The delay and hold are allowed to have a jerk
+change at the switch, with state continuity preserved. Holding does not retain
+the earlier negative-target braking requirement. This is the intended change
+of operating mode.
+
+I independently recomputed the concrete example using rational arithmetic:
+ measured (x,v,a)=(7/50,-1/100,-117/100),
+ errors (1/1000,1/100,1/20), D=1/200, A=2, J=48;
+ aged errors (X,V,A)=(23/20000,1/50,29/100);
+ transformed lower endpoints=(2777/20000,2627/20000,163/5000);
+ transformed upper endpoints=(2823/20000,2873/20000,1823/20000).
+Therefore c=141/1600=.088125 and R=2221/40000=.055525. The physical position
+tube is [163/5000,2873/20000]=[.0326,.14365] metres in the same reference frame.
+Nominal target magnitude <=24R=1.3326; with the allowed target disturbance,
+the effective target magnitude <=26R=1.44365, below the illustrative bound 2.
+The disturbance bound is 2R=.11105 m/s^2; the coefficient 2 carries 1/s^2.
+
+One scope correction was sent to the parent: the reviewed concrete_capture
+and Handoff switch at exactly D=1/200. Their prose said 'up to 5 ms', but their
+statements did not quantify an earlier actual switch time. The generic delay
+lemma covers every instant in the delay interval, so a generalization is
+available. Until changed, describe a 5 ms delay. The fixed-delay theorem
+itself is sound.
+
+The composed statement begins at the new state reading. It does not yet link
+the initial stop request and EventStop prefix to this capture reading in Lean.
+A numerical reachability witness is available: the existing slow/weak admitted
+flow has (x,v,a) approximately (.140709089,-.001992710,-1.172058318) at request
+time .53 s, within the specified reading errors. This is a useful candidate,
+not the missing formal prefix or general detector-liveness theorem.
+
+ReleaseCounterexample defines an actual constant-rate zero-target trajectory.
+It proves that its initially zero velocity and residual acceleration -1 cause
+position to pass every finite rear limit. This refutes bounded-position safety
+for that release rule; it does not claim every zero-target release violates a
+forward-only limit. This distinction should remain explicit in explanations.
+
+The new result is a bounded-position hold tube. It does not assert exact rest,
+convergence, an implemented sampled hold law, saturating-actuator dynamics,
+or a complete original-request-to-indefinite-hold implementation. RobustHold's
+finite horizon is arbitrary, but existence for all future time remains an
+assumption if the result is presented as permanent holding.
+
+Interpretation of the selected reference
+The reference c=.088125 m is about 5.2 cm behind the .14 m reading. The law can
+make a controlled retreat within the certified tube. It does not certify rest
+at the measured stop position, or a small error about that position. Show the
+full [.0326,.14365] m tube and its centre when explaining this example. The
+guaranteed tube remains within the example's [0,.15] travel range, but its width
+is a material limitation of this conservative capture construction.
+
+Final generalized-delay and replay audit
+The fixed-delay wording issue is now resolved. bounded_delay_measurement_box
+propagates only through the actual d, with 0<=d<=1/200. concrete_capture and
+Handoff both quantify this d, and the full-state link is g(0)=f(d). No capture
+ODE or jerk bound is required after the actual switch. Handoff also normalized
+the command-bound expression; its earlier compilation issue was algebraic
+elaboration, not a mathematical counterexample.
+Final reviewed source hashes:
+ Capture.lean 1dee619af8b359d26c6ac5a59eba7422301a962f39ac88fcbc326d3b8029faa7
+ RobustHold.lean 9eaf5a2071f81b2339a6ee35a95b76b6e6c69360361ef245250d82598a1bc272
+ ReleaseCounterexample.lean 8861cafc1a19cbf1ccd60a996d0c339f27c11a049e1bcd4bd6c8a09b2d211a94
+ Handoff.lean 027ba32f7df894cb9fa65e974e75d178305ef02238114d9fcbeb41f6940b5cee
+
+The integrated verification report now has passed=true and 20 target theorem
+closures. It records fresh builds of four target modules plus four local
+dependencies, individual kernel replay for the four targets, a transitive axiom
+audit and rejection of a false .14 m tube upper bound. I independently matched
+all source hashes, the verifier hash and all 14 log hashes to current files.
+All 20 recorded axiom sets contain only propext, Classical.choice and Quot.sound.
+I read the verifier: it fresh-copies the sources, resolves the pinned environment,
+checks its local dependency hashes against the earlier successful report, audits
+every named theorem, and requires the mutation to fail with unsolved goals.
+I did not duplicate the kernel replay or rebuild all pinned dependencies.
+verification.json SHA-256:
+ aaeab6068d6a2030ebcd1398d2a4afb70aa397a518a5a950fa1d8e13e39c1677
+
+No blocking issue remains in this checked sampled-reading-to-continuous-hold
+scope. The earlier caveats about the missing original braking-prefix composition,
+true rest, reference retreat, liveness, sampled feedback and physical validation
+remain in force.
+
+Adjacent VLA proof: brief source review
+At the parent's request I also read SmoothReplan.lean and its report. I found
+no blocking mathematical defect in the scalar command-level result. Its finite
+Bernstein control-point conditions imply whole-segment position/velocity/
+acceleration bounds. Actual derivative splice lemmas match q,v,a at the switch,
+and preserve q'=v, v'=a and continuous acceleration there. Finite replacement
+history preserves a Lipschitz acceleration bound; it permits jerk jumps and
+does not impose chronological execution by itself. The report states these
+limits, excludes infinitely many switches in finite time, and distinguishes
+command motion from measured physical end-effector motion. The tracking-tube
+lemma explicitly assumes its physical tracking-error bound.
+
+I matched the VLA source, verifier and all four evidence-log hashes. Its report
+has passed=true with 24 named theorem closures, all using only the three standard
+axioms, a successful kernel replay and a rejected false admission. I did not
+rerun that replay or independently reopen its external literature sources.
+ SmoothReplan.lean SHA-256:
+ 978bd958b242fc767b642a044fdfcb7393ed61ad559aefcf02f9d4bbcb61e7d0
+ VLA verification.json SHA-256:
+ 9f985c0b213b59f214c603984a6383c2c31cf81bfe81e6fd9ebb2aa2b52e7fcd
+A checked local smoothing contract is not a whole VLA proof, collision/contact
+safety result, or established publication contribution.

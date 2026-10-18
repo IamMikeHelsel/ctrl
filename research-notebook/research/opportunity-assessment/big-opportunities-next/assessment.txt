@@ -1,0 +1,146 @@
+Big-opportunity follow-up: useful work before giant-solve claims
+17 October 2026. This is a bounded local research spike, not a submission.
+Owner folder: research/opportunity-assessment/big-opportunities-next/.
+
+Decision
+The two strongest immediately testable routes are:
+1. A universally verified algorithm improvement for SAIR's Lean Kernel Challenge.
+2. Exact, replayable move certificates for SAIR Andrews-Curtis.
+
+Both routes produced concrete artifacts during this spike. They do not yet
+establish a new leaderboard record, a publishable mathematical theorem, or a
+prize entitlement. Proximity remains the stronger longer-term large-program
+connection, but our prior exact probes already excluded its easy parameter/
+rounding tweaks; a new counting idea is the missing ingredient.
+
+Experiment A — sparse permanent
+Pinned official repo: 940f0a2ead23ef70ab1387edabb347e629111edd
+Source: kernel-spike/Submission.lean
+Target: for every n : Nat, impl n = permanentSpecN n.
+n encodes dimension in its high bits and a 32-bit seed in its low bits. The
+spec generates a fixed family of matrices. This is the official packed-input
+target, not an entry interface for arbitrary matrices.
+
+The baseline scans every column at every recursive node. Our implementation
+first turns each row into its list of nonzero (column,value) pairs, then traverses
+those pairs. It preserves the same recursive search; no answers are precomputed.
+The helper sparseRows_correct proves this weighted-row transformation for all
+row lists, widths and used-column masks. impl_correct instantiates it at the
+unchanged generator. Both compiled under the exact required Lean 4.33.1 and
+their axiom closures contain only propext and Quot.sound.
+
+The locked participant, evaluator and copied scratch Spec.lean have identical
+SHA256 12dc7095ec1642e7cfe78bce065164397cb7e8f12c970e00ea8c711894ce5403.
+The proof uses core Lean only. No mathlib dependency download was needed.
+
+An exact Python diagnostic checked fifteen cases: dimensions 6,12,16 and seeds
+0,1,2,42,2^32-1. Every output and recursive-node count matched. At dimension16,
+the per-node entry visits dropped by the exact factor 16/3, excluding the
+one-time quadratic preprocessing. This is algorithm instrumentation, not Lean
+kernel instruction scoring. Outputs and counts are in permanent-probe.json.
+
+Preliminary Lean proof checks for dimension6/12/16, seed0, succeeded on both
+versions. Total process times were 57.4s baseline and 19.0s sparse. These include
+elaboration and kernel type checking, use only three selected inputs, and are
+not an official evaluator result or a leaderboard score.
+The canonical local evaluator completed its full public plan on both versions
+with the default 120s per-case timeout. Each passed all fifteen cases, with the
+same complete evaluation policy, locked specification, inputs and exact
+reference answers. Comparator checks accepted the universal correctness
+declarations. Total kernel-only wall times were 101.629121209s for the supplied
+baseline and 32.808567459s for the sparse candidate (single runs under concurrent
+load; see the caveat below). These are local canonical-evaluator measurements,
+not the official Linux instruction-count score. Full outputs, per-case values
+and cohort f2dcad742b9144cbc727dd3a are retained in matched-default-comparison.json
+and baseline/sparse-official-default-local.{json,log}.
+
+The earlier paired 60s-timeout experiment is separately preserved: baseline
+correctness accepted but only 14/15 performance cases completed; case12 timed
+out during build/export. Sparse completed 15/15, total 33.529700668s. There is
+no valid baseline full-plan total or complete-plan ratio for that first pair.
+This setup failure is not erased by the subsequent successful default run.
+
+Next useful deliverable: quiet, repeated matched evaluation plus comparison
+with the current public frontier, then one further general improvement
+(e.g. a proof-correct memoized state computation), with an honest baseline
+comparison. The sparse representation is established technique;
+this small optimization alone is not a credible novel-mathematics paper.
+A reusable verified computation method with substantial measurements and clear
+prior-work comparison could be a formal-methods publication contribution.
+No performance claim extends to official Linux instruction-count scoring.
+Parent reports concurrent controls verification about 18:19-18:22 UTC, a fresh
+source build from about 18:24 onward, and Erdos compilation/replay during this
+screen. Therefore neither timing pair is a controlled benchmark. Keep single-run
+values as diagnostics and require quiet repeated matched runs before a speedup
+claim. The correctness theorem and exact output matches do not depend on timing.
+
+Experiment B — Andrews-Curtis
+Pinned official repo: a0fd6e6f52d82c93ccc06ab91d81e8fa3678256e.
+Selected the shortest input by initial relator length from the official pool,
+ac-08491, not from the unscored training set.
+Initial relators: ((-2,-1),(-2,-2,-1,-1,2,2,1)).
+Found move IDs: [7,4,1,12,12,2,5,5].
+The reference CLI verifies this eight-move path to exactly ((1),(2)), with
+total work51 and peak relator length9. Its certificate SHA256 is
+10385198143e7d1bafdd554eb45f247ee92101191ecb50314ff4eea5d7fbf0ec.
+A separate implementation using repeated adjacent inverse deletion also
+replayed every step and obtained the same endpoint/work.
+The search spent about0.06s; that tiny instance is not a benchmark of hard cases.
+
+This is an exact finite certificate, not a Lean formalization of AC soundness,
+a globally shortest-path proof, a general conjecture solution, or a novel path.
+Current leaderboard paths have not been obtained/compared. Next gate: compare
+with the public frontier before investing in search optimization; only then
+target one family or a record shorter path. A useful publication would require
+a general shortening method, a verified family theorem, or a substantial
+proof-producing tool, not one easy instance.
+
+The full requested screen
+task-cards.json has twelve five-minute tasks, covering all five Clay problems
+currently labelled Unsolved, active Navier-Stokes, Beal, Collatz, Proximity,
+and SAIR Lean Kernel/Andrews-Curtis/Inverse Galois. Every card specifies a smaller
+deliverable, prerequisite barrier, diagnostic, evidence artifact and stop/
+continue gate. The proposed small results are generally known mathematics or
+infrastructure; their value would be reuse or a precisely identified missing
+formal bridge. They are not disguised claims to solve the larger problem.
+
+Current primary-source status checks
+- Clay's live roster still separates five unsolved problems, active
+  Navier-Stokes, and solved Poincare. Its September11 announcement describes
+  an apparent Navier-Stokes resolution under evaluation; we did not inspect
+  or endorse that proof.
+  https://www.claymath.org/millennium-problems/
+  https://www.claymath.org/news/navier-stokes-announcement/
+- Proximity research-program terms currently close eligibility Dec31,2027 and
+  permit recognition of significant partial results after scientific peer
+  review; this is distinct from better.codes platform conditions.
+  https://proximityprize.org/terms/
+- Lean Kernel Stage1 deadline is Nov20,2026; Andrews-Curtis Nov30,2026.
+  No cash amount is established by this check. Their official repositories
+  are pinned above; local verification does not create an entry.
+  https://github.com/SAIRcompetition/lean-kernel-challenge
+  https://github.com/SAIRcompetition/Andrews-Curtis
+- IGP24's June-August2026 round is finished. A fall Stage2 was announced, but
+  no new technical entry window was verified. Its exact-field-discriminant
+  and Galois-group obligations must not be replaced by polynomial discriminant
+  or finite-prime factorization alone.
+  https://github.com/SAIRcompetition/IGP24-public/blob/main/competition/rules/overview.md
+  https://competition.sair.foundation/competitions/igp24/evaluation-setup
+  https://blog.sair.foundation/an-open-commitment-to-mathematics-and-science/
+- Collatz sponsor terms remain linked from the live page. Beal's current
+  administrator availability remains unconfirmed, as in the prior source
+  screen. Neither advertised reward is used to infer tractability.
+  https://mathprize.net/posts/collatz-conjecture/
+  https://www.bealconjecture.com/
+
+Sparky queue instructions
+Provision exact runtimes/checkers before starting each300s task clock. Treat
+installation failure separately from mathematical failure. The proposed exact
+probes need CPU/integer algebra, not a GPU. A model may propose a proof or
+certificate; the independent checker decides whether it passes.
+Emit exact negatives and remaining obligations. 'No route found within five
+minutes' is neither 'impossible' nor evidence of a refutation.
+Do not run matched timing jobs concurrently. Local wall times need repetition
+and host/workload disclosure, and cannot be labelled official scores.
+No accounts, submissions, outreach, global installation or existing controls
+source edits occurred.
