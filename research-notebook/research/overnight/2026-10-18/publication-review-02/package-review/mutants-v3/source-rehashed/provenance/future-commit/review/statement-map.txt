@@ -1,0 +1,61 @@
+INDEPENDENT STATEMENT MAP — MOTION COMMIT GATE 05
+
+Objects
+Base contains every retained signed event, offset, common positive width and
+natural-number version. Task contains the goal, request time, deadline, speed,
+acceleration, jerk bound and version. Pending contains both whole objects,
+execution time, signed increment and ordered finite candidate list. Timing holds
+completion, atomic commit time and dispatch allowance. All numbers except
+versions are exact rationals. Real reference values are cast from these numbers.
+
+certificateOK
+Checks delta = task.goal - (base.offset + sum of retained increments).
+Checks that the unchanged finite candidate selector returns exactly execution.
+Selection uses every retained event plus the new event. It checks all-future
+reference jerk and acceleration, sufficient Bernstein velocity coefficients,
+and rest of every event by the absolute reference deadline. This is not an
+optimizer, a complete velocity test, or a physical stopping theorem.
+
+commitOK
+Requires certificateOK, live Base = pending Base, and live Task = pending Task.
+These are complete structural equalities, not version equality alone.
+Requires request <= completion <= atomic commit, dispatch >= 0, and
+atomic commit + dispatch <= unchanged selected execution time.
+The supplied times must describe the same ideal clock. Completion includes
+certificate verification by an external assumption.
+
+successful_commit_contract
+Conclusion refers to commit(p, live, task, timing), which appends the unchanged
+(execution, delta) event and increments the current version. The output's actual
+retained history has reference V/A/J bounds at every real time from request
+onward. Its entire reference jet equals the old live jet through execution.
+From the task deadline onward, its position equals the actual live task goal
+and all three reference derivatives are zero. The main theorem also exposes
+candidate membership, completion plus dispatch <= execution, commit <= execution,
+next version, and final target = current task goal.
+
+Every transition and duplicate handling
+Rejection returns the entire live Base. Every transition preserves the reference
+prefix through commit, regardless of acceptance. A successful append makes the
+pending Base unequal to the new Base. ReviewClients proves that every later use
+of that same pending object rejects for any new Task and Timing, and returns the
+first committed Base unchanged. That second state is reachable by the actual
+transition, not merely an arbitrary stale-state fixture.
+
+Scope limits
+The reference is mathematical. No physical state appears in Base. There is no
+physical reset, trajectory uniqueness result, hardware timing, atomic machine
+implementation, scheduler, global multi-task completion result, sampled
+controller theorem, obstacle guarantee, physical actuator limit, or Franka/VLA
+performance result. A future task can replace the current task. Rejection can
+retain the old target and fail the new task. A selected time can expire even
+when some later time could still work. Exact structural equality also rejects
+an equivalent pruned or reordered history. Versions use unbounded naturals.
+
+Timing fixture
+Request 0.52 s, declared completion and commit 0.57 s, allowance 0.01 s,
+execution 0.62 s. The declared 50 ms interval is not measured checker latency.
+The pure commitOK function contains certificate computation. An asynchronous
+machine implementation must bind any precomputed result to the exact Pending
+and perform its live checks atomically. This implementation is not provided or
+verified by the abstract Lean transition.

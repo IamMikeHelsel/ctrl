@@ -1,36 +1,65 @@
-QUESTIONS BEFORE SUBMISSION — working list, not a request to interrupt tonight
-Updated 18 October 2026 07:54 UTC. Morning report will give final evidence status.
+QUESTIONS BEFORE SUBMISSION — integration working list
+18 October 2026. These are collected decisions, not requests to interrupt tonight.
+The final morning report will bind them to the accepted artifacts.
 
-For Mike
-1. Confirm author name, affiliation wording, and employer disclosure/release
-   requirements. Current draft uses Mike Helsel and discloses AI assistance.
-2. Choose one venue and the main claim after the evidence is integrated. The
-   current candidate is a formal-methods case study, not a validated robot method.
-3. Choose a license and public scope for source, data, videos, and manuscript.
-   Third-party reference PDFs need a separate reuse check before public release.
-4. Identify a human controls/formal-methods reviewer. No one has been contacted.
-5. For a later robot demo, identify Franka variant, payload, controller interface,
-   safety setup, and measured clocks/latency. The scalar proof does not cover it.
+Owner decisions
+1. The author is Mike Helsel. What affiliation and disclosure wording should the
+   public version use, and what employer release process applies to this work?
+2. Which public scope and license should cover the original code, data, paper
+   and animation? Check redistribution rights separately for third-party source
+   PDFs and dependencies. The current repository and PR remain private/draft.
+3. Which human controls/formal-methods specialist should review the contribution?
+   No one has been contacted. Then choose a venue and its required format.
 
-Research questions to resolve or explicitly delimit
-6. Does the exact finite-history certificate provide enough reusable value beyond
-   established FIR planning, reference governors and proof-generated monitors?
-7. Which task can accept extra forward travel after a reversal request in exchange
-   for a lower integral of squared jerk? The matched comparison must show both.
-8. Can the generic admission interface include a useful velocity contract and an
-   actual completion bound? Finite candidate rejection is not global infeasibility.
-9. Which uncertainty assumptions are experimentally defensible? The accepted
-   changing-response/changing-disturbance theorem covers the stated scalar hold.
-   Its input bounds still need physical evidence and a separate FIR composition.
-10. Can the implementation meet the chosen admission schedule? The current Lean
-   timings are not a measured 1 kHz control-loop guarantee.
+Scientific value and scope
+4. Does this specialized mechanization offer enough reusable value beyond known
+   FIR planning, reference governors, runtime monitors and asynchronous action
+   execution? A search and agent review do not establish novelty. The current
+   claim is a checked case study with failure witnesses, not a new smoother.
+5. Which real task benefits from these tradeoffs? Retained FIR lowers a sampled
+   squared-jerk integral against the native baselines but adds forward travel.
+   A stronger offline smooth plan improves both measures while increasing peak
+   jerk. Native fast alone passes the tight task. There is no universal winner.
+6. Is a conservative physical terminal bound useful for the intended task?
+   The same-trajectory proof reaches position tolerance at 1.42 s and guarantees
+   speed/acceleration bands at 3.42 s. It does not prove the sampled 1.70 s deadline.
+   The reference deadline and physical terminal deadline must remain distinct.
+7. What measured evidence supports the response interval and disturbance bound?
+   Both can change within the theorem's limits, conditional on its classical
+   solution premise. Friction loss, saturation, contact and coupled axes are
+   not covered by merely renaming the scalar parameters.
 
-Geometric Unity
-11. Which exact Phi/operator definition and normalization should be formalized?
-    Do not choose these silently. Use geometric-unity/critic-01/QUESTIONS-FOR-AUTHOR.txt.
-12. Confirm scalar conjugation, varied fields and the metric/Hodge dependence
-    of the stated action. The author's Eq9.4 is an action, so lack of an action
-    is not our objection. Known Clifford algebra results do not validate physics.
+Implementation and later Franka demonstration
+8. Can the executor meet a measured schedule? A future-commit theorem can reject
+   late or stale work without establishing that any request finishes in time.
+   Ideal common clocks, truthful completion/dispatch values and atomic state
+   capture need an implementation argument. The optimizer comparison is offline.
+9. Which Franka model, software version, control interface, payload and reference
+   frame will be used? What clock mapping, network latency and filter settings
+   will be measured? Use the existing franka-demo-08/hardware-plan.txt protocol.
+10. Which coupled controller and tracking bound connect the scalar certificate
+    to that arm? A successful scalar check or simulated position plot does not
+    establish hardware safety, contact performance, or PL d/e.
 
-No account creation, contact, submission, public release, paid API, billing
-change, or PR merge is part of this overnight authorization.
+Resolved within the current proof scope
+- A sufficient speed check is tied to the actual finite reference. It can reject
+  safe motion; finite candidate rejection is not a general infeasibility result.
+- The same physical FIR trajectory is carried into a hold without a reset or
+  a new endpoint-cube assumption. The response and disturbance clocks shift too.
+- The accepted commit proof binds the exact history and task and has late, stale
+  and duplicate failure witnesses. The final portable package and replacement
+  input-recording tool are under independent integration review.
+
+Geometric Unity: exact missing inputs
+11. Supply fixed Phi tensor/operator definitions, normalization, brackets and
+    projection conventions, and the intended spaces/domains. No missing choice
+    will be supplied silently. Read geometric-unity/critic-01/QUESTIONS-FOR-AUTHOR.txt
+    and critic-05/NEXT-GATE.txt for the precise source questions.
+12. Fix the scalar conjugation convention and the varied fields, boundary/domain
+    conditions, and metric/Hodge dependence in the action. Equation 9.4 is an
+    action; absence of an action is not our objection. The accepted real/complex
+    matrix construction and 64+64 signature are standard algebra ingredients,
+    not new physics or a validation of Geometric Unity.
+
+No account creation, outside contact, submission, public release, purchase,
+paid API, billing change or PR merge occurred as part of this list.

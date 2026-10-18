@@ -1,0 +1,66 @@
+INDEPENDENT HISTORY-PRUNING REVIEW
+
+Decision: ACCEPT for future reference equivalence and guard equivalence.
+Evidence gate: A. This grade concerns proof evidence, not novelty or speed.
+No required repair was found.
+
+The partition is correct. Events with tau+4*h <= c contribute their signed
+increment to the new position offset. Events with c < tau+4*h remain in their
+original list order. Thus active events, queued events and repeated increments
+are handled without assuming they are distinct or positive.
+
+For positive h, future_jet_eq proves equality of position, velocity, acceleration
+and jerk for every t >= c, including t = c. Its rational version connects the
+executable filter and offset sum to the real reference. The existing exact
+jerk and acceleration guards accept equivalent histories after pruning.
+
+Invalid widths do not create a hidden gap in guard equivalence. Both guards
+reject h <= 0 before their real interpretation applies. Future jet equality
+does require h > 0. Our zero-width witness shows why that premise is necessary.
+
+Fresh checks
+
+- Reconstructed and rebuilt all 7 local modules. All 7 passed separate
+  leanchecker replay. The audit covered 202 local elaborated declarations.
+- Allowed only propext, Classical.choice and Quot.sound. No unsafe declaration,
+  local axiom, sorry/admit proof, native_decide or implemented_by route was used.
+- Recompiled the target, reran the axiom audit and replayed it with the original
+  project's compiled cache removed from LEAN_PATH. Only fresh local objects
+  and pinned dependency caches were needed.
+- Added 10 independent named witness theorems. Their enlarged closure had
+  217 audited declarations and passed separate kernel replay.
+- Six false controls failed for mathematical reasons: past equality, removing
+  an active event, removing a queued event, summing unsigned offsets, dropping
+  the positive-width premise, and retaining an exactly completed endpoint.
+- Independently checked 200 deterministic exact-rational histories at 1,200
+  future times. All four reference components agreed after pruning. This is
+  supporting executable evidence; the general result is the Lean theorem.
+- Checked all 41 files in the frozen source artifact and rechecked them at
+  closeout. No frozen source was changed.
+
+The useful boundary
+
+A constant offset cannot reconstruct past motion. The proof does not reset or
+otherwise alter physical state. It does not prove an actual-state trajectory
+equivalence, an admission-state update algorithm, infinite-stream behavior,
+bounded storage, or a hardware effect. Integrating it into an online admission
+state needs an explicit update of both the offset and retained list.
+
+Removing expired events can reduce future checking work. It does not bound the
+number of active or queued events and does not establish a speedup when those
+events dominate the list. Keep that limit beside any cost discussion.
+
+Next productive gate
+
+Use this as an implementation-preservation lemma. Prove the online state update
+maintains the same future reference when pruning is followed by admission.
+Measure a declared workload with expired events if a speed claim is needed.
+For many active events, the adjacent-cell checker remains the relevant separate
+optimization. Do not treat pruning as evidence of better physical motion.
+
+Reproduction
+
+rebuild.py audits the frozen source closure. ReviewWitnesses.lean and
+check_witnesses.py supply the independent boundary controls. exact-oracle.json
+records the deterministic rational cases. Build caches are excluded from the
+manifest. See grade.json and artifact-sha256.json for the accepted evidence.

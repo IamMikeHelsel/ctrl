@@ -1,0 +1,18 @@
+import ReviewClients
+set_option pp.universes true
+#print LeanControls.VariableResponse.IsTrajectory
+#check RobotMotion.FIRHold.trajectory_shift
+#check RobotMotion.FIRHold.constant_tail_hold
+#check RobotMotion.FIRHold.tail_cube_identity
+#check RobotMotion.FIRHold.tracked_tail_terminal
+#check RobotMotion.FIRHold.delayed_return_physical_terminal
+#check LeanControls.QuadraticHold.two_seconds_actual_changing_input
+#check ControlsReview05.literal_physical_contract
+#check ControlsReview05.wrong_clock_is_not_trajectory
+#check ControlsReview05.residual_motion_is_actual
+#check ControlsReview05.residual_motion_certified
+#check ControlsReview05.residual_terminal_speed_nonzero
+#print axioms RobotMotion.FIRHold.delayed_return_physical_terminal
+#print axioms ControlsReview05.wrong_clock_is_not_trajectory
+#print axioms ControlsReview05.residual_motion_certified
+#print axioms ControlsReview05.residual_terminal_speed_nonzero

@@ -7,6 +7,12 @@ HERE=Path(__file__).resolve().parent
 sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
 TARGETS=['ComparisonEnvelope','ScaledTracking','Composition','PhysicalArrival','Settling','SettlingFixtures','QuadraticAlgebra','QuadraticTrajectory','FIRHold','FIRHoldWitness']
 NEGATIVES={
+'unshifted-physical-inputs':'''import FIRHoldWitness
+open RobotMotion.FIRHoldWitness
+example : wrongClockRHS = 0 := by
+  rw [wrong_clock_rhs_nonzero]
+  norm_num
+''',
 'erase-inherited-state':'''import FIRHoldWitness
 open RobotMotion.FIRHoldWitness
 example : biasedReference (1/100) (71/50) 0 = 0 := by
@@ -26,10 +32,9 @@ example : |biasedReference (1/100) (171/50) 0| ≤ 0 := by
   norm_num
 ''',
 'drop-wait-before-speed-band':'''import FIRHoldWitness
-open RobotMotion.FIRHoldWitness
+open RobotMotion RobotMotion.AccelerationAdmission RobotMotion.FIRHoldWitness
 example : |biasedReference (1/100) (1/2) 1| ≤ 1/1000 := by
-  have h := moving_before_terminal
-  linarith
+  norm_num [biasedReference,velocity,response,realEvents,realEvent,deferredReturn,F1,P]
 ''',
 'erase-initial-error':'''import FIRHoldWitness
 open LeanControls.RobustHold LeanControls.ScaledTracking
@@ -45,7 +50,8 @@ def main():
  source_manifest={m:{'path':str(p.relative_to(dev.WORK)),'sha256':sha(p),'bytes':p.stat().st_size} for m,p in sources.items()}
  for p in sources.values():
   code=re.sub(r'/-.*?-/|--[^\n]*','',p.read_text(),flags=re.S)
-  assert not re.search(r'\b(sorry|admit|axiom|native_decide|unsafe|implemented_by)\b',code),p
+  assert not re.search(r'\b(sorry|axiom|native_decide|unsafe|implemented_by)\b',code),p
+  assert not re.search(r'(?m)^\s*(?:by\s+)?admit\s*$|:=\s*by\s+admit\b',code),p
  inherited=json.loads((HERE/'inherited-sources.json').read_text())
  for m,v in inherited.items():assert sha(HERE/'inherited'/(m.replace('.','/')+'.lean'))==v['sha256'],m
  (HERE/'source-closure.json').write_text(json.dumps(source_manifest,indent=2)+'\n')

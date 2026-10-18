@@ -1,0 +1,38 @@
+INDEPENDENT REVIEW REPRODUCTION
+
+The exact builder and parent artifact hashes are hardcoded in rebuild.py.
+It uses Lean 4.35.0, compiler commit
+eb6cafb7290e8bd5f2937522d8d804f58f02bafc,
+and mathlib commit 56a005855ea17e0b0958f73ec801ae140b0a1679.
+It checks the existing lake manifest and requires a clean mathlib checkout.
+No paid API, network package install, optimizer or hardware is used.
+
+Preserve this frozen review folder. To rerun, make a new sibling review folder
+under controls/ and copy rebuild.py, clients.py, ReviewClients.lean and
+exact_review.py into it. Keep the original builder-05 and parent artifacts in
+their existing paths. Run from that new folder:
+
+python3 rebuild.py
+python3 clients.py 01
+python3 exact_review.py
+
+The first command intentionally refuses to reuse an existing fresh/ folder.
+It discovers the pinned compiler with the local lake executable, permits only
+public package cache paths, copies the 54 local source files and compiles them
+in dependency order. It audits every declaration belonging to that closure,
+then separately replays 11 key modules with leanchecker.
+
+The client command compiles the independent review clients, audits them and
+replays their kernel proof. It then rejects eight reviewer and six builder
+false claims. A negative test must reach an intended False goal, not fail
+because of a missing import, unknown name or synthesis error.
+
+The arithmetic command expands the reference into exact global-time
+polynomials, differentiates the coefficients and checks the saved witness
+anchors and cell boundaries. Its checks are finite arithmetic evidence;
+the all-time claims come from the Lean sources.
+
+The recorded replay.json, clients.json, exact-review.json and corresponding
+logs document the run accepted in report.txt. Fresh compiled products are
+local caches, excluded from the artifact manifest. The fresh source copies
+are included so their bytes can be checked without using old local oleans.

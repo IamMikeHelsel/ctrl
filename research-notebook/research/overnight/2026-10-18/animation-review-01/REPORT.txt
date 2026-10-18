@@ -1,0 +1,82 @@
+INDEPENDENT ANIMATION REVIEW — FINAL VERSION 3
+18 October 2026 UTC. Reviewer owns animation-review-01 only.
+
+Decision: ACCEPT the bounded explanatory animation.
+Both version2 presentation repairs are complete. No further presentation change
+is required by this review. This acceptance covers data binding, numerical
+readout, visible scope and rendering. It is not publication novelty, physical
+validation, an all-time proof, or permission to release the movie publicly.
+
+Accepted artifact
+publication/robot-motion/execution-contract-animation-v3/
+Movie: same-goal-different-motion.mp4
+Movie SHA256:
+3335911f023242cb5e4146224fccb9746a550df3e6a85f75f409f53ad58a9eba
+Artifact manifest SHA256:
+d321bba2191a3ed6fee8bba102d1764cc13b83df2def4a9bb9b0dbd2b9ec50df
+All20 entries match. The33 original animation entries and59 frozen version2
+review entries were rechecked and remain unchanged. No frozen file was edited.
+
+Repairs verified independently
+The table now says "Extra forward travel". It defines that value on-screen as
+the maximum beyond the position at0.52s. It also states the metric interval,
+0.52–2.50s. The header, definition, units and values fit at1280x720 with no
+observed overlap. See v3-frames/table22.png, freshly extracted by this reviewer.
+
+The source removes the old request legend and clock from their parent group
+after their own fade. The reviewer extracted26 frames at24fps across19.4–20.5s
+and inspected the complete sequence. The hidden text no longer reappears or
+overlaps the task-pass sentence. See v3-transition-contact.jpg and its frames.
+
+check_v3.py compares the full new scene against an exact whitelist of changes:
+class rename, the group-child removal, the table header, and the two-line metric
+definition. Nothing else changed in the scene. The data, preparation script,
+provenance and render environment are byte-identical to the reviewed version2.
+Thus the earlier full-movie and numerical audit applies beyond these repairs.
+
+Numerical evidence retained
+REPORT-V2.txt and check_data.py record the original independent audit. It checks
+496 manifest entries,20,178 trace rows, the four physical prefixes, all displayed
+rounded values and each selected sampled task pass. It recomputes jerk-squared
+integrals, jerk peaks and extra forward excursions directly from the saved CSV
+rows with60-digit decimal arithmetic. It also compares to the prior independent
+80-digit plant replay. Maximum metric difference is1.028e-12 in the respective
+reported units. No simulation or optimizer was rerun for the presentation repair.
+
+The selected scalar plant has response100/s and zero disturbance. The task
+deadline is1.70s. The movie does not show the tighter task. The10mm cap applies
+to the reference. Its actual excursion for this selected case is approximately
+9.998749mm and rounds to10.00mm. That rounding is not a claim of a strict actual
+10mm bound for other cases. All four selected cases pass the declared sampled
+task. None of these statements establishes physical behavior between samples.
+
+The offline/no-robot footer remains present. The lower-integral/higher-peak
+statement remains supported by Smooth versus FIR. The final task, reference
+and actual-motion boxes preserve their separate meanings. No general VLA,
+Franka, hardware, causal-planner or optimality claim is introduced.
+
+Paper figure
+The new t10.png is byte-identical to the original t0010.png. The current paper's
+images/motion-animation.png is byte-identical to it as checked in this review.
+The figure displays simulated0.69s. All four actual velocities are positive
+through the surrounding0.6845–0.6955s sampled interval, so the paper's forward-
+motion caption is supported. Detailed velocities are in data-check.json.
+
+Video metadata precision
+The movie has807 frames, nominal rate24fps,1280x720 pixels and no audio. Nominal
+frame-count duration is33.625s. Its MP4 container duration is33.624023s and its
+reported average frame rate is275456/11477. These slight timestamp differences
+are recorded rather than rounded into an exact constant-rate container claim.
+Version2's measured container duration is33.624349s; its report's33.625s means
+the nominal frame-count duration. The first metadata assertion incorrectly
+required avg_frame_rate24/1. Its source and diagnostic correction are preserved
+under attempts/. The repaired check tests nominal rate and saves actual values.
+No movie bytes or physical timestamps were altered to satisfy this check.
+
+Reproduction and remaining boundary
+check_v3.py verifies preserved identities and the limited source changes. Run
+checks only from a copied review folder after freezing to avoid overwriting
+the saved evidence. The prior physical replay remains the evidence for the
+model integration. This presentation review does not replace it.
+Repository sync, commits and remote verification remain the coordinator's job.
+Public release and license decisions remain with Mike.

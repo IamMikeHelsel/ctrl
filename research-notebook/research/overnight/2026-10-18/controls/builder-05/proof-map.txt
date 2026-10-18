@@ -1,0 +1,28 @@
+HOW THE GUARANTEES JOIN
+
+Global clock      0                 0.5               1.42              3.42       H
+                  |-----------------|------------------|-----------------|---------|
+Reference         starts at zero    advances           reaches zero      remains zero
+Physical state    one continuous trajectory f; it is never reset or replaced
+Tracking          |x-q| <= 0.2 mm throughout [0,H]
+Progress                            x(0.5)-x(0) >= 1 mm
+Position hold                                          |x| <= 0.2 mm throughout
+Terminal bands                                                            |v| <= 1 mm/s
+                                                                          |a| <= 0.02 m/s^2
+
+Proof dependency map
+accepted FIR jerk check + original physical ODE + initial error cube
+  -> checked_tracking on the original entire horizon
+  -> inherited transformed cube at global 1.42 s
+
+accepted exact reference zero tail + original physical ODE
+  -> constant_tail_hold on the same state f(1.42+s)
+  -> response r(1.42+s) and disturbance w(1.42+s), with their original bounds
+
+inherited cube + shifted actual hold + accepted quadratic certificate
+  -> terminal speed and acceleration after local hold time s >= 2 s
+  -> global time t >= 3.42 s
+
+The 1.7 s task deadline lies between 1.42 and 3.42. This theorem guarantees its
+position band but does not prove its speed or acceleration target at 1.7 s.
+The comparison's numerical results remain a different kind of evidence.

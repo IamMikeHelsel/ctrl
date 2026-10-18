@@ -1,0 +1,64 @@
+BUILDER 05 — ONE ACTUAL TRAJECTORY THROUGH THE RETURN AND HOLD
+Candidate; independent acceptance belongs to the next critic.
+
+Main claim
+For the declared scalar controller and a supplied classical physical trajectory,
+the delayed FIR return preserves its 0.2 mm tracking band at all times. The
+physical position advances by at least 1 mm at 0.5 s. The reference becomes zero
+at 1.42 s, and the actual position stays within 0.2 mm of zero from that time.
+From 3.42 s to the supplied horizon, actual speed is at most 1 mm/s and actual
+acceleration is at most 0.02 m/s^2.
+
+The statement is RobotMotion.FIRHold.delayed_return_physical_terminal.
+Horizon H must be at least 171/50 = 3.42 s. It has one initial error-cube premise,
+at global time zero. There is one physical trajectory f for the whole interval.
+There is no second trajectory, endpoint matching premise, state reset, or new
+initial cube at 1.42 s.
+
+Plant and controller
+x' = v; v' = a; a' = r(t) [u(t) + w(t) - a].
+u = q'' - 800(x-q) - 60(v-q') - (a-q'')/2 + q'''/96.
+The actuator response satisfies 80 <= r(t) <= 120 per second.
+The disturbance satisfies |w(t)| <= 0.01 m/s^2.
+Both may change with time. There is no rate derivative or dwell-time premise.
+The explicit trajectory premise requires a continuous physical state on [0,H]
+and its stated derivatives in (0,H). Existence for every bounded pair of input
+functions is not proved here.
+
+The reference is the accepted four-box FIR history with width 0.2 s, a +20 mm
+event at 0.22 s and a -20 mm event at 0.62 s. At global time zero the three
+transformed tracking coordinates each have magnitude at most 0.0002 m:
+e_x; e_x + e_v/40; e_x + e_v/20 + e_a/1600.
+
+Composition
+trajectory_shift restricts the original f to f(t0+s), with the same shifted
+response and command. constant_tail_hold derives the unchanged hold controller
+from the constant reference tail. tail_cube_identity transports the existing
+tracking coordinates algebraically. tracked_tail_terminal uses the accepted
+quadratic hold theorem after two hold seconds. The concrete FIR theorem derives
+the needed entire tracking cube from the accepted checker and physical ODE.
+
+Non-vacuity
+A constant-bias family sets actual position to q+b/800 and keeps actual speed
+and acceleration equal to q' and q''. Rate 96/s and disturbance b give an exact
+moving trajectory. For b=0.01, the physical offset is 12.5 micrometres. It remains
+nonzero at reference completion and terminal time, so exact arrival and a state
+reset are false. A second witness switches the response from 92/s to 100/s and
+uses a prescribed bounded changing disturbance while the same moving state is
+classical across the switch. This construction proves the assumptions can hold;
+it does not model an independent real-world disturbance process.
+A separate clock test keeps the shifted state but reads inputs at the unshifted
+time. Its ODE would require jerk -1/48 m/s^3 where the actual jerk is zero.
+This disproves that tempting clock substitution with an exact physical witness.
+
+Limits
+The terminal speed and acceleration bands permit small residual motion; they
+do not assert an exact physical stop.
+The 3.42 s guarantee does not prove the numerical comparison's 1.7 s physical
+terminal deadline. It does not make the 1.3 s task feasible. Two seconds is a
+sufficient hold duration from the inherited cube, not a necessary or optimal one.
+The theorem does not cover sample/hold implementation, delay, friction loss,
+saturation, actuator command limits, multi-axis coupling, contacts, or Franka
+hardware. It does not establish PL d/e, controller novelty, or publication value.
+The result composes two accepted scalar proof gates and closes their previously
+separate trajectory contracts.

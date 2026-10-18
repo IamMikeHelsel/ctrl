@@ -1,0 +1,60 @@
+/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/overnight/2026-10-18/robot-motion/builder-05/.cache/dev/FutureCommit.lean:131:4: error: linarith failed to find a contradiction
+case h1
+p : Pending
+live : Base
+task : Task
+tm : Timing
+h : commitOK p live task tm = true
+hdelta : p.delta = p.task.goal - finalTarget p.base
+hselect :
+  chooseVelocityExecution p.base.width p.task.speed p.task.accel p.task.jerkLimit p.task.request p.task.deadline
+      p.base.events p.delta p.candidates =
+    some p.execution
+hlive : live = p.base
+htask : task = p.task
+hreq : p.task.request ≤ tm.completion
+hcomplete : tm.completion ≤ tm.commitTime
+hdispatch : 0 ≤ tm.dispatch
+hexec : tm.commitTime + tm.dispatch ≤ p.execution
+hmember : p.execution ∈ p.candidates
+hcontract :
+  p.task.request ≤ p.execution ∧
+    (∀ (t : ℝ),
+        ↑p.task.request ≤ t →
+          |velocity (↑p.base.width) (realEvents (p.base.events ++ [(p.execution, p.delta)])) t| ≤ ↑p.task.speed) ∧
+      (∀ (t : ℝ),
+          ↑p.task.request ≤ t →
+            |acceleration (↑p.base.width) (realEvents (p.base.events ++ [(p.execution, p.delta)])) t| ≤ ↑p.task.accel) ∧
+        (∀ (t : ℝ),
+            ↑p.task.request ≤ t →
+              |jerk (↑p.base.width) (realEvents (p.base.events ++ [(p.execution, p.delta)])) t| ≤ ↑p.task.jerkLimit) ∧
+          (∀ t ≤ ↑p.execution,
+              referenceJet (↑p.base.offset) (↑p.base.width) (realEvents (p.base.events ++ [(p.execution, p.delta)])) t =
+                referenceJet (↑p.base.offset) (↑p.base.width) (realEvents p.base.events) t) ∧
+            ∀ (t : ℝ),
+              ↑p.task.deadline ≤ t →
+                position (↑p.base.offset) (↑p.base.width) (realEvents (p.base.events ++ [(p.execution, p.delta)])) t =
+                    ↑p.base.offset + (List.map Prod.snd (realEvents (p.base.events ++ [(p.execution, p.delta)]))).sum ∧
+                  velocity (↑p.base.width) (realEvents (p.base.events ++ [(p.execution, p.delta)])) t = 0 ∧
+                    acceleration (↑p.base.width) (realEvents (p.base.events ++ [(p.execution, p.delta)])) t = 0 ∧
+                      jerk (↑p.base.width) (realEvents (p.base.events ++ [(p.execution, p.delta)])) t = 0
+hd : ↑p.delta = ↑p.task.goal - (↑p.base.offset + ↑(List.map Prod.snd p.base.events).sum)
+a✝ : ↑p.base.offset + ((List.map Rat.cast (List.map Prod.snd p.base.events)).sum + ↑p.delta) < ↑p.task.goal
+⊢ False
+failed
+/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/overnight/2026-10-18/robot-motion/builder-05/.cache/dev/FutureCommit.lean:127:28: warning: This simp argument is unused:
+  Prod.snd
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [List.map_append, List.map_cons, List.map_nil, List.sum_append, List.sum_cons, List.sum_nil,
+    add_zero]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/overnight/2026-10-18/robot-motion/builder-05/.cache/dev/FutureCommit.lean:137:49: warning: This simp argument is unused:
+  Prod.snd
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [finalTarget, appendPending, List.map_append, List.map_cons, List.map_nil, List.sum_append,
+    List.sum_cons, List.sum_nil, add_zero]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`

@@ -1,0 +1,57 @@
+Independent statement review: builder-05
+
+Actual objects
+The matrix K is the existing ordered product N0*N1*...*N6 in VolumeForm.lean.
+TransposeBridge.lean defines each Ni as the image of the corresponding negative
+Clifford generator. Its negativeMatrix_fock theorem identifies that same matrix
+with the actual creation matrix minus the actual contraction matrix.
+FockOperators.lean defines these operators by exterior left multiplication and
+CliffordAlgebra.contractLeft. They are not arbitrary matrices with desired laws.
+
+Actual basis action
+ComplementAction.negative_basis uses BasisActions' insertion and contraction
+formulas. prefix_length identifies their list-position sign with the count of
+occupied lower indices. negative_mulVec transports that result through the actual
+spinBasis coordinate map. product_mulVec then proves the action of the ordered
+matrix product. Only after this bridge does signedToggles_seven use ordinary
+kernel evaluation to enumerate all 128 finite subsets. K_mulVec_basis therefore
+proves the action of the actual K; it has no assumed complement-action premise.
+
+The rightmost factor acts first. In order 6, ..., 0 an initially occupied index j
+contributes 6-j lower-index swaps and one contraction minus sign. The total sign
+is (-1)^(sum over j in T of (7-j)). The empty set has sign +1. The singletons {0}
+and {6} have sign -1; {0,6} has sign +1. These are independently probed.
+
+Change of basis and normalization
+D is diagonal with +1 on subsets without 0 and -1 on subsets with 0. Complementation
+flips this sign. Thus the actual K anticommutes with D. The already proved K^T=K
+and K^2=I, together with D^2=I, give U=I+KD and U^T U=UU^T=2I. The same U satisfies
+KU=UD and U^T K U=2D. Both inverse equations use U^T/2. The factor cannot be omitted.
+
+The source has two exact cardinality theorems, each 64. It also states every
+congruence entry, including off-diagonal zeros. It does not construct a Fin64
+reindexing or use an abstract inertia API. The explicit invertible congruence is
+a sufficient mathematical certificate of 64 positive and 64 negative directions.
+Any prose should say that grouping these two indexed sets yields diag(2I64,-2I64).
+The choice of coordinate 0 is an explicit basis choice, not a physical field choice.
+
+Complex result
+ComplexSignature maps the same real U,D and inverse entrywise to complex matrices.
+Kc remains the accepted entrywise image of the actual K. realToComplexMatrix is
+an algebra homomorphism for matrix multiplication, not pointwise multiplication.
+The mapped transpose is conjugate transpose because the source matrix is real.
+The result proves Uc^H Kc Uc=2Dc and both inverse equations with Uc^H/2.
+The complex form is Hermitian by the inherited Kc_conjTranspose theorem.
+It is a split Hermitian form with the same 64+64 certificate.
+
+Non-vacuity and limitations
+There are no additional premises in the fixed matrix congruences. Explicit
+positive and negative entries and a nonzero killed vector for I+K prevent a
+vacuous or singular-basis reading. New reviewer clients also check eigen-columns
+for the actual K and the sign of two concrete subset columns.
+The (7,7) generator form and (64,64) spinor form concern different vector spaces.
+No physical dimension, observable, field equation or stability statement follows.
+This gate does not prove uniqueness of Spin-invariant forms. Earlier review found
+that full vector-skew conditions are stronger than Spin invariance.
+The definition of the complex bar remains fixed in the formalization; matching
+that convention to the source is a separate unanswered question.

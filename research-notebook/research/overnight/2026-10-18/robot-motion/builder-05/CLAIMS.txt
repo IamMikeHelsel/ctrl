@@ -1,0 +1,84 @@
+BIND A CHECKED PLAN TO THE STATE AT EXECUTION
+Builder gate 05. Independent acceptance is pending.
+
+Proved statement
+FutureCommit.successful_commit_contract starts from commitOK = true for the
+supplied live base, live task, pending result and clock values. It concludes:
+- The selected execution time is in the supplied finite candidate list.
+- Completion plus dispatch allowance is no later than execution. The atomic
+  commit is also no later than execution.
+- The resulting version is live.version + 1. The signed event uses exactly the
+  checked execution time and increment. Its final target is the live task goal.
+- From the task's request time onward, the actual resulting reference obeys the
+  live speed, acceleration and jerk limits. Speed uses the earlier sufficient
+  Bernstein test. Acceleration and jerk use the earlier exact guards.
+- The entire reference jet agrees with the live old reference through execution.
+  Thus it agrees through the atomic commit and while computation is pending.
+- From the live absolute deadline onward, the reference is at the live goal,
+  with zero reference velocity, acceleration and jerk.
+
+The pending object contains the whole base history, offset, width and version,
+and the whole task goal, request, deadline, limits and version. The rule compares
+both complete structures. It never treats equal integers as state identity.
+The signed increment is checked against goal minus the old final target.
+A second use of the same result after a successful commit fails its base check.
+Every commit preserves the executed reference prefix; rejection retains the live
+state. The abstract transition appends events and never removes an old event.
+
+Positive client
+Old motion: +20 mm at 0.22 s, width 0.2 s. Request return to 0 at 0.52 s.
+The fixed candidate list is [0.52,0.62] s. Limits are 0.1 m/s, 0.5 m/s^2,
+and 7.5 m/s^3. Deadline 1.7 s. The rule selects 0.62 s.
+Completion and atomic commit are 0.57 s; dispatch allowance is 0.01 s.
+Planning therefore has a strictly positive declared delay of 0.05 s. At request,
+the old velocity is 23/480 m/s. The old reference stays unchanged through 0.62 s.
+The same candidate list is rejected for the 1.3 s deadline. This does not prove
+that no different safe trajectory could meet that deadline.
+
+Lost contracts when a check is removed
+1. Timing omitted: the .62 s event passes after completion/commit at .70 s.
+   At .70 s, its position differs from the continuing old reference by
+   -8/375000 m, about -21.3 micrometres. Its historical reference cannot agree
+   with the old executed prefix. A naive switch there has a position mismatch.
+2. Base binding omitted: an intervening +1 mm event yields final position +1 mm,
+   although the task still asks for 0. A duplicate accepted return is an even
+   simpler reachable case: applying the same result twice yields -20 mm.
+3. Task binding omitted: a new +5 mm goal receives the old return-to-zero result.
+   The reference reaches 0, which is the wrong task goal.
+Equal reused version integers still reject when their state differs.
+The exact real-valued failures are proved, not merely Boolean rejections.
+
+Trusted boundary
+The result concerns the fixed history returned by one transition. Later updates
+need their own certificates and can supersede the active task. There is no global
+multi-task completion or scheduling theorem.
+
+This is a mathematical reference and an atomic abstract state transition.
+The provided completion time must include verification. The atomic commit time
+must refer to the same common ideal clock, and the dispatch allowance must bound
+actual delivery. There is no measured worst-case compute time or clock theorem.
+The complete certificate computation is pure code; its cost is not modeled.
+A deployment may compute it before the timed atomic check, but must bind that
+computed result to the exact pending object. No such machine implementation is
+verified here. Exact equality also rejects harmless representation changes,
+such as completed-history pruning; semantic equivalence is not used by this gate.
+
+No physical state is represented or reset by the transition. Reference derivative
+bounds are not physical actuator bounds. Equality of references alone is not a
+proof about uniqueness of a physical plant trajectory. This gate does not prove
+sampling, parsing, atomic machine operations, hardware execution, obstacle safety,
+an emergency stop, or a Franka/VLA improvement. Rejection can preserve the old
+reference while failing the new task. A selected early candidate can also expire
+while a later candidate might still work; this rule rejects that pending result
+and does not search again or move its timestamp. Progress and availability are
+not proved.
+
+Prior work and new scope
+The existing Admission.lean already proved causal prefix retention and target
+bookkeeping for jerk admission. VelocityAdmission.lean already connected finite
+candidate selection to V/A/J/reference-rest deadlines. Those files are unchanged.
+The new step binds that certificate to the live state after nonzero computation
+and proves that timing, history and task checks preserve its meaning.
+The 2015 network reference governor and RTC already address delayed commands,
+stale references and execution during inference. See progress-review-05's source
+matrix. No novelty claim follows from adding this specialized Lean interface.

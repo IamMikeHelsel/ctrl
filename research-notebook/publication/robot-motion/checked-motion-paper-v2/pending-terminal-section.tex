@@ -1,0 +1,37 @@
+% Candidate text. Include only after fresh controls critic05 accepts the gate.
+\textbf{The same trajectory through the hold.}
+For the fixed delayed-return reference, the stronger composed result holds for
+any horizon $H\geq3.42$ s. It uses the same initial cube, physical trajectory,
+controller, response bounds and disturbance bound as above. Then
+\[
+ |x-q|\leq.2\ {\rm mm}\ (0\leq t\leq H),\qquad
+ x(.5)-x(0)\geq1\ {\rm mm},
+\]
+\[
+ |x|\leq.2\ {\rm mm}\ (1.42\leq t\leq H),\qquad
+ |v|\leq.001\ {\rm m/s},\quad |a|\leq.02\ {\rm m/s^2}
+ \quad(3.42\leq t\leq H).
+\]
+The proof inherits the tracking cube at $t_0=1.42$ s. It shifts the same state,
+response and disturbance to $t_0+s$. The zero reference tail makes the existing
+feedback exactly the hold controller; no new endpoint state is supplied.
+
+A common quadratic certificate follows the standard robust-control approach
+\cite{lmibook}. For $y=(80000x,2000v,50a)$ and $E=y^TQ^{-1}y$, the rational matrix
+\[
+ Q=\frac1{1000}\begin{bmatrix}2162&-549&-234\\-549&518&-151\\-234&-151&810\end{bmatrix}
+\]
+gives $\dot E\leq20(1-E)$ for every allowed response and disturbance.
+Lean checks the rational matrix inequalities and their interpolation over the
+response interval. The inherited cube gives $E(0)\leq10^6$, hence
+$E(s)\leq1+999999e^{-20s}\leq1.01$ for $s\geq2$ s. Its coordinate bounds give
+the stated physical speed and acceleration bands. $E$ is a proof function,
+not mechanical energy.
+
+This closes the same-trajectory handoff, but its sufficient time is conservative.
+The 3.42 s guarantee does not prove the numerical task at 1.70 s. The bands allow
+small residual motion; they do not state exact rest. A nonzero-bias moving
+witness has $x=q+12.5\,\mu$m and prevents an exact-arrival interpretation.
+A separate exact witness rejects shifting the state while reading response and
+disturbance from the old clock. No input derivative, dwell time, or constant-rate
+premise is added. Existence for every bounded discontinuous input is not proved.

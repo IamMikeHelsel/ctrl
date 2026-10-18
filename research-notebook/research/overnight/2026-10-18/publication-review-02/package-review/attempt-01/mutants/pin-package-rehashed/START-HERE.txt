@@ -1,0 +1,34 @@
+What this result gives us
+
+A robot has three different targets to check. The task states where it must go
+and when. The reference states the motion that the controller should follow.
+The physical system determines how closely the robot follows that reference.
+A guarantee at one stage does not automatically pass to the next stage.
+
+Our example starts moving toward 20 mm, then gets a request to return to zero.
+An immediate change can keep jerk below its limit while breaking acceleration.
+Waiting 0.10 s repairs the reference limits, but takes longer and adds travel.
+A late computation or a result for an old task must not be inserted as though
+it was ready earlier. The checked commit rule makes those conditions explicit.
+
+Lean checks the finite reference for all future real times, including between
+samples. For the declared scalar motor model, another proof carries the same
+physical state into the final hold. It gives a small position band from 1.42 s
+and small speed/acceleration bands from 3.42 s. That is a precise conditional
+promise. The input bounds and model still need evidence from a real machine.
+
+The comparison keeps the same moving start. It also keeps several definitions
+of smoothness separate. A plan can reduce total squared jerk and still increase
+its largest jerk. A smoother plan can take more room or miss a deadline.
+The strongest smooth comparator was calculated offline; its computation time
+was not charged to the motion. The numerical task passes are sampled evidence.
+
+This is a small verified case study and a reusable proof example. The formal
+contract is complete within its stated scope. The next publication question is
+whether that specialization offers enough value beyond existing work. The next
+robotics question is how to connect it to a measured, coupled arm and live clocks.
+No robot was tested and no paper was submitted.
+
+Start with examples/on-time.json and examples/late.json. README.txt gives the
+commands. Acceptance proves a reference contract for the supplied values.
+Rejection proves only that the existing plan stays in place.

@@ -1,0 +1,98 @@
+INDEPENDENT PROGRESS REVIEW 05
+18 October 2026 UTC. Decision review, not another proof or solver run.
+
+Recommendation
+Prepare one short formalization/case-study paper with a runnable artifact.
+Do not present the current work as a new robot-smoothing method, a general
+verified execution architecture, or a demonstrated VLA improvement. The accepted
+work is useful, but the research contribution still needs a specialist's judgment.
+A technical note and reusable repository remain worthwhile if that judgment is
+negative. More favorable plots would not resolve this question.
+
+What value survives the stronger comparison
+The reusable result is a precise interface between finite signed motion history,
+all-future reference bounds, and a conditional scalar physical-state guarantee.
+The jerk and acceleration checks are exact. The speed check is sufficient and
+can reject a safe reference. The proof exposes this difference. Completed tails
+can be removed while retaining their position offset; the adjacent-cell checker
+preserves acceleration acceptance. These are concrete operations that a future
+Lean client can reuse. They do not yet certify the parsing, clock, queue,
+floating-point execution, sampled servo, or machine code of a robot controller.
+
+The stronger offline comparator improves both the sampled squared-jerk integral
+and forward travel over retained FIR in the six declared plant cases. Its peak
+jerk is worse. Native fast alone passes the tight task. Thus retaining every
+commitment is a design choice with costs, not a general performance improvement.
+The exact reference is valuable as a checked comparison input. It is not a Lean
+proof of the numerical plant traces. Its 10 mm reference cap is exceeded by the
+sampled physical travel in two cases. Its computation starts and finishes outside
+the simulated time budget. Those boundaries must be prominent in the next draft.
+
+The comparison is useful negative evidence: a smoothness score, a derivative
+limit, and task success rank the methods differently. The paper can teach this
+through a reproducible case. It cannot claim that this distinction or the need
+to account for delay is new. SOURCE-MATRIX.txt checks five close primary works.
+In particular, a network-governor method already separates delayed-command
+constraint checks from stale-goal tracking, and RTC already retains actions
+while inference runs. A future-start contract should build on those precedents.
+
+Pod decisions
+Robot motion: ACCEPT the reviewed specialized reference and scalar tracking
+results. CONTINUE one bounded causal-commit test, described in NEXT-TEST.txt.
+Then freeze and integrate. Stop the fixed optimization batch. Do not add more
+plant cases, theorem counts, or a new smoother merely to seek a favorable rank.
+Submission status: artifact/case-study candidate; external value assessment open.
+
+Other controls: ACCEPT the changing-response and changing-disturbance hold
+result. It establishes speed and acceleration residual bands after two seconds
+under its exact scalar assumptions. It is not an emergency stopping-distance
+result. Continue the already assigned same-trajectory FIR-to-hold composition,
+then require independent review. If accepted, place it in the same case study:
+reference rest at 1.42 s and the proposed physical bands at 3.42 s are distinct
+milestones. Do not imply physical settling by the existing 1.7 s task deadline.
+Stop optimizing the fixed quadratic certificate. Submission status: useful
+formal component, not a justified separate control-theory paper.
+
+Geometric Unity: ACCEPT the reviewed actual real/complex matrix construction
+and adjoint transport as standard algebra formalization. Finish the bounded
+actual-K signature gate already assigned, then stop this source-specific branch
+unless a precise new statement has all needed inputs. Phi tensors, bracket and
+normalization choices, variation domains, and source adjoint convention remain
+material questions. More known algebra cannot fill those choices or establish
+physics. Submission status: useful repository mathematics and a precise question
+set; a GU validation or original mathematics paper is unsupported.
+
+What would make the short paper coherent
+Lead with the checked contract, its trusted boundary, and failure examples.
+Use the common moving prefix and retained physical state throughout. Show three
+separate outcomes: reference admission, physical model guarantee, and numerical
+task result. Include safe rejection from the velocity certificate and actual
+travel outside a reference-only cap. The controls composition belongs here
+because it closes the next physical question after reference arrival. GU does
+not belong in this paper.
+
+A tool-note claim also needs a small client-facing entry point: rational input
+schema, the decision meaning, exact failure cases, one-command replay, and the
+limits of the executable trust claim. The current replay package is a strong
+proof-review artifact; it is not yet a deployed real-time controller. Do not
+quote the acceleration-checker timing as combined V/A/J timing or worst-case
+execution time. Publication review01's caption correction and replay-plan
+metadata hardening should be applied in a new version, preserving the old one.
+
+Submission decision
+The defensible proposed claim is: a reusable Lean case study checks a finite
+retained FIR reference, preserves its committed history, and connects one task
+to an uncertain scalar model, with exact and numerical failure boundaries.
+Whether that specialization merits a paper is open. The searches do not prove
+that another formalization is absent. A human control/formal-methods review,
+public artifact/release choice, venue fit, and the integrated final proof review
+remain before submission. No paper, public release or message was sent.
+
+Evidence reviewed
+The five frozen review manifests contain 639 listed entries. All hashes match.
+I read the actual velocity-admission theorem, the hold theorem, the focused
+paper, the accepted review reports, and the exact source-convention questions.
+I did not repeat their compiler, separate-kernel, solver, or physical replay runs.
+Those prior independent reviews remain the acceptance basis. The new builder05
+results were not accepted by this review; they were pending at this snapshot.
+Input paths and hashes are in input-audit.json. Root owns sync and Git.

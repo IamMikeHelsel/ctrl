@@ -1,0 +1,147 @@
+/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/overnight/2026-10-18/controls/critic-05/fresh/ReviewClients.lean:48:4: error: Type mismatch: After simplification, term
+  hf
+ has type
+  IsTrajectory H r
+    (fun t =>
+      acceleration (1 / 5) (realEvents deferredReturn) t -
+                800 * (f t 0 - position 0 (1 / 5) (realEvents deferredReturn) t) -
+              60 * (f t 1 - velocity (1 / 5) (realEvents deferredReturn) t) -
+            (f t 2 - acceleration (1 / 5) (realEvents deferredReturn) t) / 2 +
+          jerk (1 / 5) (realEvents deferredReturn) t / 96 +
+        w t)
+    f
+but is expected to have type
+  IsTrajectory H r
+    (fun t =>
+      ![position 0 (1 / 5) (realEvents deferredReturn) t, velocity (1 / 5) (realEvents deferredReturn) t,
+                    acceleration (1 / 5) (realEvents deferredReturn) t]
+                  2 -
+                800 * (f t 0 - position 0 (1 / 5) (realEvents deferredReturn) t) -
+              60 * (f t 1 - velocity (1 / 5) (realEvents deferredReturn) t) -
+            (f t 2 -
+                ![position 0 (1 / 5) (realEvents deferredReturn) t, velocity (1 / 5) (realEvents deferredReturn) t,
+                    acceleration (1 / 5) (realEvents deferredReturn) t]
+                  2) /
+              2 +
+          jerk (1 / 5) (realEvents deferredReturn) t / 96 +
+        w t)
+    f
+/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/overnight/2026-10-18/controls/critic-05/fresh/ReviewClients.lean:62:2: error: Type mismatch: After simplification, term
+  biased_tail_state (-1 / 100) (71 / 50) le_rfl
+ has type
+  biasedReference (-1 / 100) (71 / 50) = ![-1 / 100 / 800, 0, 0]
+but is expected to have type
+  biasedReference (-1 / 100) (71 / 50) = ![-1 / 80000, 0, 0]
+/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/overnight/2026-10-18/controls/critic-05/fresh/ReviewClients.lean:80:54: error: Ambiguous term
+  response
+Possible interpretations:
+  RobotMotion.response : (ℝ → ℝ) → ℝ → List Event → ℝ → ℝ
+  
+  UncertainLag.response : ℝ → ℝ → State
+/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/overnight/2026-10-18/controls/critic-05/fresh/ReviewClients.lean:81:35: error: Ambiguous term
+  P
+Possible interpretations:
+  RobotMotion.P : ℕ → ℝ → ℝ
+  
+  UncertainLag.P : Generated.TravelQuarterLower.Mat
+Try this:
+  [apply] ring_nf
+  
+  The `ring` tactic failed to close the goal. Use `ring_nf` to obtain a normal form.
+    
+  Note that `ring` works primarily in *commutative* rings. If you have a noncommutative ring, abelian group or module, consider using `noncomm_ring`, `abel` or `module` instead.
+Try this:
+  [apply] ring_nf
+  
+  The `ring` tactic failed to close the goal. Use `ring_nf` to obtain a normal form.
+    
+  Note that `ring` works primarily in *commutative* rings. If you have a noncommutative ring, abelian group or module, consider using `noncomm_ring`, `abel` or `module` instead.
+/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/overnight/2026-10-18/controls/critic-05/fresh/ReviewClients.lean:96:44: error: unsolved goals
+case e'_8
+H t : ℝ
+ht : t ∈ Ioo 0 H
+i : Fin 3
+⊢ (fun s => Real.exp (80 - s * 40)) = fun x => Real.exp (80 - id x * 40)
+
+case e'_9
+H t : ℝ
+ht : t ∈ Ioo 0 H
+i : Fin 3
+⊢ -(Real.exp (80 - t * 40) * 40) = -(Real.exp (80 - id t * 40) * 40)
+Try this:
+  [apply] ring_nf
+  
+  The `ring` tactic failed to close the goal. Use `ring_nf` to obtain a normal form.
+    
+  Note that `ring` works primarily in *commutative* rings. If you have a noncommutative ring, abelian group or module, consider using `noncomm_ring`, `abel` or `module` instead.
+/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/overnight/2026-10-18/controls/critic-05/fresh/ReviewClients.lean:133:4: error: unsolved goals
+case e'_8
+H t : ℝ
+ht : t ∈ Ioo 0 H
+he : HasDerivAt (fun x => Real.exp (-80 * id x)) (Real.exp (-80 * id t) * (-80 * 1)) t
+⊢ (fun s => position 0 (1 / 5) (realEvents deferredReturn) s + Real.exp (-(s * 80)) * (1 / 5000)) =
+    position 0 (1 / 5) (realEvents deferredReturn) + fun x => Real.exp (-(x * 80)) * (1 / 5000)
+Try this:
+  [apply] ring_nf
+  
+  The `ring` tactic failed to close the goal. Use `ring_nf` to obtain a normal form.
+    
+  Note that `ring` works primarily in *commutative* rings. If you have a noncommutative ring, abelian group or module, consider using `noncomm_ring`, `abel` or `module` instead.
+/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/overnight/2026-10-18/controls/critic-05/fresh/ReviewClients.lean:135:4: error: unsolved goals
+case e'_8
+H t : ℝ
+ht : t ∈ Ioo 0 H
+he : HasDerivAt (fun x => Real.exp (-80 * id x)) (Real.exp (-80 * id t) * (-80 * 1)) t
+⊢ (fun s => velocity (1 / 5) (realEvents deferredReturn) s + Real.exp (-(s * 80)) * (-2 / 125)) =
+    velocity (1 / 5) (realEvents deferredReturn) - fun y => Real.exp (-(y * 80)) * (2 / 125)
+Try this:
+  [apply] ring_nf
+  
+  The `ring` tactic failed to close the goal. Use `ring_nf` to obtain a normal form.
+    
+  Note that `ring` works primarily in *commutative* rings. If you have a noncommutative ring, abelian group or module, consider using `noncomm_ring`, `abel` or `module` instead.
+/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/overnight/2026-10-18/controls/critic-05/fresh/ReviewClients.lean:137:4: error: unsolved goals
+case e'_8
+H t : ℝ
+ht : t ∈ Ioo 0 H
+he : HasDerivAt (fun x => Real.exp (-80 * id x)) (Real.exp (-80 * id t) * (-80 * 1)) t
+⊢ (fun s => acceleration (1 / 5) (realEvents deferredReturn) s + Real.exp (-(s * 80)) * (32 / 25)) =
+    acceleration (1 / 5) (realEvents deferredReturn) + fun y => Real.exp (-(y * 80)) * (32 / 25)
+/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/overnight/2026-10-18/controls/critic-05/fresh/ReviewClients.lean:146:50: error: Ambiguous term
+  response
+Possible interpretations:
+  RobotMotion.response : (ℝ → ℝ) → ℝ → List Event → ℝ → ℝ
+  
+  UncertainLag.response : ℝ → ℝ → State
+/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/overnight/2026-10-18/controls/critic-05/fresh/ReviewClients.lean:147:28: error: Ambiguous term
+  P
+Possible interpretations:
+  RobotMotion.P : ℕ → ℝ → ℝ
+  
+  UncertainLag.P : Generated.TravelQuarterLower.Mat
+/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/overnight/2026-10-18/controls/critic-05/fresh/ReviewClients.lean:146:50: error: Ambiguous term
+  response
+Possible interpretations:
+  RobotMotion.response : (ℝ → ℝ) → ℝ → List Event → ℝ → ℝ
+  
+  UncertainLag.response : ℝ → ℝ → State
+/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/overnight/2026-10-18/controls/critic-05/fresh/ReviewClients.lean:147:28: error: Ambiguous term
+  P
+Possible interpretations:
+  RobotMotion.P : ℕ → ℝ → ℝ
+  
+  UncertainLag.P : Generated.TravelQuarterLower.Mat
+/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/overnight/2026-10-18/controls/critic-05/fresh/ReviewClients.lean:146:50: error: Ambiguous term
+  response
+Possible interpretations:
+  RobotMotion.response : (ℝ → ℝ) → ℝ → List Event → ℝ → ℝ
+  
+  UncertainLag.response : ℝ → ℝ → State
+/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/overnight/2026-10-18/controls/critic-05/fresh/ReviewClients.lean:147:28: error: Ambiguous term
+  P
+Possible interpretations:
+  RobotMotion.P : ℕ → ℝ → ℝ
+  
+  UncertainLag.P : Generated.TravelQuarterLower.Mat
+
+client_exit 1

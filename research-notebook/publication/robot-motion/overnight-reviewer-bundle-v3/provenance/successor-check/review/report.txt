@@ -1,0 +1,98 @@
+INDEPENDENT REVIEW — minimum-successor acceleration checker
+18 October 2026. Outcome: ACCEPT for the exact theorem and cost scope below.
+
+Frozen input
+successor-check-01/artifact-sha256.json
+SHA256 006e5fee639c1eff6ce90d5e49945f2003ac47dc5155b7af8f4f265526ab856d
+Source freeze SHA256
+f0948e246af2e4f412b223f7b2b03a3abb19af7adafb33b96819a5f3eeeef452
+All 47 listed files and the actual local source closure were checked.
+No frozen source was edited. Root's authorship did not count as review.
+
+Proof verification
+All seven actual local modules were rebuilt in an empty reviewer cache.
+The original project build cache was excluded from LEAN_PATH. The pinned
+Mathlib/dependency caches were reused. Every local module passed a separate
+leanchecker replay. The standard-axiom audit covers all 231 local
+declarations. Only propext, Classical.choice and Quot.sound are allowed.
+No local axioms, unsafe definitions, sorryAx or native_decide were admitted.
+
+The review added 29 named witness theorems. Their module compiled and passed
+a separate kernel replay. The resulting audit covers 289 local declarations,
+including generated proof declarations. Seven intentionally false claims
+failed for mathematical reasons, without missing imports or names.
+An early negative-control harness used an old namespace. That failed attempt
+is preserved under attempts/ and does not count as a mathematical control.
+
+Exact independent decisions
+An independent Fraction oracle constructs the quadratic acceleration
+polynomial on sorted knot cells and checks its stationary points. It does
+not infer acceptance from the proposed successor implementation. It agrees
+with independently written successor and all-pairs evaluations on 212
+histories. Both freshly built Lean checkers then agree with all 640 exact
+oracle decisions, including exact peak bounds and strict failures below them.
+
+Cases include current time inside an old cell; queued and expired events;
+unsorted and repeated knots; exact cancellation; signed increments; negative
+current times; an empty history; zero and negative width; negative bounds;
+interior maxima; a nonzero acceleration plateau with zero jerk; and constant
+nonzero jerk cells. The old immediate return still fails. The delayed return
+still passes. Boundary-only checking is explicitly refuted by an interior
+maximum witness. Non-strict successor selection is also refuted.
+
+Meaning and proof reading
+checkSuccessor_real_iff states the exact rational Boolean contract: positive
+h, nonnegative A, and reference acceleration within A at every real time
+t >= current. The rational-to-real cast is explicit. same_acceptance gives
+the same true/false acceptance as checkAcceleration, including invalid
+parameter rejection. It does not claim identical candidate-point lists.
+
+For any time inside the future knot range, the proof chooses the last guard
+point at or before it and the first point after it. No event knot lies in
+that open cell. Affine jerk therefore identifies each nonflat stationary
+point. Equal endpoint jerk uses a separate constant-jerk argument. A zero
+jerk plateau retains its endpoint acceleration bound. After the last knot,
+acceleration is zero. The current point is always checked. List.min? takes
+a strictly later point, so repeated knots do not create zero-width cells.
+There is no externally trusted sort and no division-by-zero obligation in
+the flat branch.
+
+Cost evidence
+Read-only inspection confirms the fixed 1,2,4,8,16,32 event counts, all three
+repetitions per count, unchanged inputs, all 18 acceptances and the saved
+timer outputs. The old and new harnesses use the same alternating increments
+and internal timing convention. Both include result printing and exclude
+Lean startup/elaboration. The old 32-event median is 22520.810667 ms; the
+new median is 219.647875 ms. The ratio of these recorded medians is 102.53.
+The one-event new median is slower than the old median.
+
+These were separate runs on a shared active host. They do not establish a
+controlled hardware speedup, native production runtime, asymptotic bit cost,
+worst-case execution time or a Franka loop deadline. Pruning was not combined
+with the measured checker. Fast reference evaluation and an all-future
+admission check remain different operations.
+
+Limits and next productive gate
+This theorem is about a declared scalar reference. It does not bound actual
+arm acceleration, velocity, dispatch latency, saturation or task completion.
+It also does not make a finite execution-time selector complete over all
+possible trajectories. The independent accepted history-pruning result is
+a separate equivalence and is not silently incorporated here.
+
+Continue with a sufficient rational velocity admission condition on these
+same knot cells. Cubic Bernstein controls can give a simple finite check,
+provided the polynomial identity is proved. Call it sufficient, not exact.
+Then compose that condition with the existing A/J candidate contract. Keep
+physical task completion and measured implementation cost as separate gates.
+
+Evidence grade: A for the stated proof and read-only timing audit. No novelty
+or publication probability is assigned. The known 2012 reversal failure is
+prior art; the current contribution under review is the checked contract.
+
+Reproduction
+rebuild.py resolves actual imports and rebuilds the frozen seven-module
+closure. oracle.py generates exact cases and ReviewWitnesses.lean.
+check_witnesses.py compiles, audits and replays those witnesses and tests
+false controls. replay_decisions.py compares the two Lean evaluators against
+the independent oracle. cost_review.py checks saved timing rows. Repeat in
+a new sibling review folder to preserve this frozen evidence.

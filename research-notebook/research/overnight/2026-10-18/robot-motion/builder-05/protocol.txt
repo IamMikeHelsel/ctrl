@@ -1,0 +1,37 @@
+CERTIFICATE-BOUND FUTURE COMMIT — predeclared 2026-10-18 08:59 UTC
+Builder deadline: 09:50 UTC. One gate; no optimizer or timing benchmark.
+
+Request at 13/25 s (0.52). Existing signed FIR history [(11/50,1/50)],
+position offset 0 m, width 1/5 s. Return goal 0 m. Bounds: speed 1/10 m/s,
+acceleration 1/2 m/s^2, jerk 15/2 m/s^3. Candidate execution times are
+[13/25,31/50] s, in this order. Compare absolute deadlines 17/10 and 13/10 s.
+
+The pending object binds the exact base history, offset, width and history
+version; exact task goal, request time, limits, deadline and task version;
+selected execution time; supplied candidate list; and signed target increment.
+Its exact checker must validate the selection and target increment. Actual
+commit requires structural equality of both base and task, not only integers.
+The common ideal-clock timing check requires request <= completion <= commit,
+nonnegative dispatch allowance, and commit + allowance <= execution. Completion
+includes all verification. This stronger commit-time condition also implies
+completion + allowance <= execution. The successful state appends the unchanged
+future event and increments the history version. Rejection retains the live base.
+
+The positive client uses completion = commit = 57/100 s and allowance 1/100 s.
+Thus computation takes 1/20 s, with the original reference kept until the future
+execution at 31/50 s. No timestamp is moved. No physical state is reset.
+
+Mutants omit exactly one category of binding check: timing, base, or task.
+Late completion/commit 7/10 s must show that retroactive application changes
+an already executed reference value. Intervening base history adds a +1 mm event
+at 14/25 s, with a new version, and must show the committed final target is wrong.
+A superseding task requests +5 mm with a new task version and must show the old
+certificate returns to the wrong goal. Also test version reuse with unequal
+structural state. Tests must prove lost contracts, not only false Booleans.
+
+The theorem covers the mathematical reference and an atomic abstract state
+transition. Clock accuracy, bound on dispatch, trusted completion measurement,
+atomic implementation, sampling, execution hardware and physical tracking are
+outside this gate. Rejection is not guaranteed task progress or emergency stop.
+The idea of delay-aware control is prior art. The new piece is explicit binding
+of the existing V/A/J/deadline certificate to the later live history and task.

@@ -1,0 +1,210 @@
+structure LeanControls.VariableResponse.IsTrajectory (H : ℝ) (r b : ℝ → ℝ) (f : ℝ → LeanControls.UncertainLag.State) :
+  Prop
+number of parameters: 4
+fields:
+  LeanControls.VariableResponse.IsTrajectory.continuous : ContinuousOn.{0, 0} f (Set.Icc.{0} 0 H)
+  LeanControls.VariableResponse.IsTrajectory.ode : ∀ (t : ℝ),
+      Membership.mem.{0, 0} (Set.Ioo.{0} 0 H) t →
+        ∀ (i : Fin 3),
+          HasDerivAt.{0, 0} (fun s => f s i)
+            (Matrix.vecCons.{0} (f t 1)
+              (Matrix.vecCons.{0} (f t 2)
+                (Matrix.vecCons.{0} (HMul.hMul.{0, 0, 0} (r t) (HSub.hSub.{0, 0, 0} (b t) (f t 2)))
+                  Matrix.vecEmpty.{0}))
+              i)
+            t
+constructor:
+  LeanControls.VariableResponse.IsTrajectory.mk {H : ℝ} {r b : ℝ → ℝ} {f : ℝ → LeanControls.UncertainLag.State}
+    (continuous : ContinuousOn.{0, 0} f (Set.Icc.{0} 0 H))
+    (ode :
+      ∀ (t : ℝ),
+        Membership.mem.{0, 0} (Set.Ioo.{0} 0 H) t →
+          ∀ (i : Fin 3),
+            HasDerivAt.{0, 0} (fun s => f s i)
+              (Matrix.vecCons.{0} (f t 1)
+                (Matrix.vecCons.{0} (f t 2)
+                  (Matrix.vecCons.{0} (HMul.hMul.{0, 0, 0} (r t) (HSub.hSub.{0, 0, 0} (b t) (f t 2)))
+                    Matrix.vecEmpty.{0}))
+                i)
+              t) :
+    LeanControls.VariableResponse.IsTrajectory H r b f
+RobotMotion.FIRHold.trajectory_shift {H t0 : ℝ} (ht0 : LE.le.{0} 0 t0) {r b : ℝ → ℝ}
+  {f : ℝ → LeanControls.UncertainLag.State} (hf : LeanControls.VariableResponse.IsTrajectory H r b f) :
+  LeanControls.VariableResponse.IsTrajectory (HSub.hSub.{0, 0, 0} H t0) (fun s => r (HAdd.hAdd.{0, 0, 0} t0 s))
+    (fun s => b (HAdd.hAdd.{0, 0, 0} t0 s)) fun s => f (HAdd.hAdd.{0, 0, 0} t0 s)
+RobotMotion.FIRHold.constant_tail_hold {H t0 c : ℝ} (ht0 : LE.le.{0} 0 t0) {r w j : ℝ → ℝ}
+  {f q : ℝ → LeanControls.UncertainLag.State}
+  (hf :
+    LeanControls.VariableResponse.IsTrajectory H r
+      (fun t => HAdd.hAdd.{0, 0, 0} (LeanControls.ScaledTracking.physicalInput 10 f q j t) (w t)) f)
+  (hq :
+    ∀ (t : ℝ),
+      Membership.mem.{0, 0} (Set.Icc.{0} t0 H) t →
+        Eq.{1} (q t) (Matrix.vecCons.{0} c (Matrix.vecCons.{0} 0 (Matrix.vecCons.{0} 0 Matrix.vecEmpty.{0}))) ∧
+          Eq.{1} (j t) 0) :
+  LeanControls.VariableResponse.IsTrajectory (HSub.hSub.{0, 0, 0} H t0) (fun s => r (HAdd.hAdd.{0, 0, 0} t0 s))
+    (fun s =>
+      HAdd.hAdd.{0, 0, 0} (LeanControls.Settling.holdInput 10 c (fun u => f (HAdd.hAdd.{0, 0, 0} t0 u)) s)
+        (w (HAdd.hAdd.{0, 0, 0} t0 s)))
+    fun s => f (HAdd.hAdd.{0, 0, 0} t0 s)
+RobotMotion.FIRHold.tail_cube_identity {c t0 : ℝ} {f q : ℝ → LeanControls.UncertainLag.State}
+  (hq : Eq.{1} (q t0) (Matrix.vecCons.{0} c (Matrix.vecCons.{0} 0 (Matrix.vecCons.{0} 0 Matrix.vecEmpty.{0})))) :
+  Eq.{1} (LeanControls.RobustHold.coordinates 0 (LeanControls.ScaledTracking.scaledError 10 f q t0))
+    (LeanControls.RobustHold.coordinates c (LeanControls.ScaledTracking.scaleState 10 (f t0)))
+RobotMotion.FIRHold.tracked_tail_terminal {H t0 c : ℝ} (ht0 : LE.le.{0} 0 t0)
+  (hH : LE.le.{0} (HAdd.hAdd.{0, 0, 0} t0 2) H) {r w j : ℝ → ℝ} {f q : ℝ → LeanControls.UncertainLag.State}
+  (hf :
+    LeanControls.VariableResponse.IsTrajectory H r
+      (fun t => HAdd.hAdd.{0, 0, 0} (LeanControls.ScaledTracking.physicalInput 10 f q j t) (w t)) f)
+  (hrlo : ∀ (t : ℝ), Membership.mem.{0, 0} (Set.Icc.{0} 0 H) t → LE.le.{0} 80 (r t))
+  (hrhi : ∀ (t : ℝ), Membership.mem.{0, 0} (Set.Icc.{0} 0 H) t → LE.le.{0} (r t) 120)
+  (hw : ∀ (t : ℝ), Membership.mem.{0, 0} (Set.Icc.{0} 0 H) t → LE.le.{0} (abs.{0} (w t)) (1 / 100))
+  (hq :
+    ∀ (t : ℝ),
+      Membership.mem.{0, 0} (Set.Icc.{0} t0 H) t →
+        Eq.{1} (q t) (Matrix.vecCons.{0} c (Matrix.vecCons.{0} 0 (Matrix.vecCons.{0} 0 Matrix.vecEmpty.{0}))) ∧
+          Eq.{1} (j t) 0)
+  (hcube :
+    ∀ (t : ℝ),
+      Membership.mem.{0, 0} (Set.Icc.{0} 0 H) t →
+        ∀ (i : Fin 3),
+          LE.le.{0}
+            (abs.{0} (LeanControls.RobustHold.coordinates 0 (LeanControls.ScaledTracking.scaledError 10 f q t) i))
+            (1 / 5000))
+  (t : ℝ) :
+  Membership.mem.{0, 0} (Set.Icc.{0} (HAdd.hAdd.{0, 0, 0} t0 2) H) t →
+    LE.le.{0} (abs.{0} (HSub.hSub.{0, 0, 0} (f t 0) c)) (1 / 5000) ∧
+      LE.le.{0} (abs.{0} (f t 1)) (1 / 1000) ∧ LE.le.{0} (abs.{0} (f t 2)) (1 / 50)
+RobotMotion.FIRHold.delayed_return_physical_terminal {H : ℝ} (hH : LE.le.{0} (171 / 50) H) {r w : ℝ → ℝ}
+  {f : ℝ → LeanControls.UncertainLag.State}
+  (hf :
+    LeanControls.VariableResponse.IsTrajectory H r
+      (fun t =>
+        HAdd.hAdd.{0, 0, 0}
+          (LeanControls.ScaledTracking.physicalInput 10 f
+            (RobotMotion.referenceState 0 (1 / 5)
+              (RobotMotion.realEvents RobotMotion.AccelerationAdmission.deferredReturn))
+            (RobotMotion.jerk (1 / 5) (RobotMotion.realEvents RobotMotion.AccelerationAdmission.deferredReturn)) t)
+          (w t))
+      f)
+  (hrlo : ∀ (t : ℝ), Membership.mem.{0, 0} (Set.Icc.{0} 0 H) t → LE.le.{0} 80 (r t))
+  (hrhi : ∀ (t : ℝ), Membership.mem.{0, 0} (Set.Icc.{0} 0 H) t → LE.le.{0} (r t) 120)
+  (hw : ∀ (t : ℝ), Membership.mem.{0, 0} (Set.Icc.{0} 0 H) t → LE.le.{0} (abs.{0} (w t)) (1 / 100))
+  (hi :
+    ∀ (i : Fin 3),
+      LE.le.{0}
+        (abs.{0}
+          (LeanControls.RobustHold.coordinates 0
+            (LeanControls.ScaledTracking.scaledError 10 f
+              (RobotMotion.referenceState 0 (1 / 5)
+                (RobotMotion.realEvents RobotMotion.AccelerationAdmission.deferredReturn))
+              0)
+            i))
+        (1 / 5000)) :
+  (∀ (t : ℝ),
+      Membership.mem.{0, 0} (Set.Icc.{0} 0 H) t →
+        LE.le.{0}
+          (abs.{0}
+            (HSub.hSub.{0, 0, 0} (f t 0)
+              (RobotMotion.position 0 (1 / 5) (RobotMotion.realEvents RobotMotion.AccelerationAdmission.deferredReturn)
+                t)))
+          (1 / 5000)) ∧
+    LE.le.{0} (1 / 1000) (HSub.hSub.{0, 0, 0} (f (1 / 2) 0) (f 0 0)) ∧
+      (∀ (t : ℝ), Membership.mem.{0, 0} (Set.Icc.{0} (71 / 50) H) t → LE.le.{0} (abs.{0} (f t 0)) (1 / 5000)) ∧
+        ∀ (t : ℝ),
+          Membership.mem.{0, 0} (Set.Icc.{0} (171 / 50) H) t →
+            LE.le.{0} (abs.{0} (f t 0)) (1 / 5000) ∧
+              LE.le.{0} (abs.{0} (f t 1)) (1 / 1000) ∧ LE.le.{0} (abs.{0} (f t 2)) (1 / 50)
+LeanControls.QuadraticHold.two_seconds_actual_changing_input {H c : ℝ} (hH : LE.le.{0} 0 H) {r w : ℝ → ℝ}
+  {f : ℝ → LeanControls.UncertainLag.State}
+  (hf :
+    LeanControls.VariableResponse.IsTrajectory H r
+      (fun t => HAdd.hAdd.{0, 0, 0} (LeanControls.Settling.holdInput 10 c f t) (w t)) f)
+  (hrlo : ∀ (t : ℝ), Membership.mem.{0, 0} (Set.Icc.{0} 0 H) t → LE.le.{0} 80 (r t))
+  (hrhi : ∀ (t : ℝ), Membership.mem.{0, 0} (Set.Icc.{0} 0 H) t → LE.le.{0} (r t) 120)
+  (hw : ∀ (t : ℝ), Membership.mem.{0, 0} (Set.Icc.{0} 0 H) t → LE.le.{0} (abs.{0} (w t)) (1 / 100))
+  (hi :
+    ∀ (i : Fin 3),
+      LE.le.{0} (abs.{0} (LeanControls.RobustHold.coordinates c (LeanControls.ScaledTracking.scaleState 10 (f 0)) i))
+        (1 / 5000))
+  (t : ℝ) :
+  Membership.mem.{0, 0} (Set.Icc.{0} 2 H) t →
+    LE.le.{0} (abs.{0} (f t 1)) (1 / 1000) ∧ LE.le.{0} (abs.{0} (f t 2)) (1 / 50)
+ControlsReview05.literal_physical_contract {H : ℝ} (hH : LE.le.{0} (171 / 50) H) {r w : ℝ → ℝ}
+  {f : ℝ → LeanControls.UncertainLag.State}
+  (hf :
+    LeanControls.VariableResponse.IsTrajectory H r
+      (fun t =>
+        HAdd.hAdd.{0, 0, 0}
+          (HAdd.hAdd.{0, 0, 0}
+            (HSub.hSub.{0, 0, 0}
+              (HSub.hSub.{0, 0, 0}
+                (HSub.hSub.{0, 0, 0}
+                  (RobotMotion.acceleration (1 / 5)
+                    (RobotMotion.realEvents RobotMotion.AccelerationAdmission.deferredReturn) t)
+                  (HMul.hMul.{0, 0, 0} 800
+                    (HSub.hSub.{0, 0, 0} (f t 0)
+                      (RobotMotion.position 0 (1 / 5)
+                        (RobotMotion.realEvents RobotMotion.AccelerationAdmission.deferredReturn) t))))
+                (HMul.hMul.{0, 0, 0} 60
+                  (HSub.hSub.{0, 0, 0} (f t 1)
+                    (RobotMotion.velocity (1 / 5)
+                      (RobotMotion.realEvents RobotMotion.AccelerationAdmission.deferredReturn) t))))
+              (HDiv.hDiv.{0, 0, 0}
+                (HSub.hSub.{0, 0, 0} (f t 2)
+                  (RobotMotion.acceleration (1 / 5)
+                    (RobotMotion.realEvents RobotMotion.AccelerationAdmission.deferredReturn) t))
+                2))
+            (HDiv.hDiv.{0, 0, 0}
+              (RobotMotion.jerk (1 / 5) (RobotMotion.realEvents RobotMotion.AccelerationAdmission.deferredReturn) t)
+              96))
+          (w t))
+      f)
+  (hrlo : ∀ (t : ℝ), Membership.mem.{0, 0} (Set.Icc.{0} 0 H) t → LE.le.{0} 80 (r t))
+  (hrhi : ∀ (t : ℝ), Membership.mem.{0, 0} (Set.Icc.{0} 0 H) t → LE.le.{0} (r t) 120)
+  (hw : ∀ (t : ℝ), Membership.mem.{0, 0} (Set.Icc.{0} 0 H) t → LE.le.{0} (abs.{0} (w t)) (1 / 100))
+  (hi :
+    ∀ (i : Fin 3),
+      LE.le.{0}
+        (abs.{0}
+          (LeanControls.RobustHold.coordinates 0
+            (LeanControls.ScaledTracking.scaledError 10 f
+              (RobotMotion.referenceState 0 (1 / 5)
+                (RobotMotion.realEvents RobotMotion.AccelerationAdmission.deferredReturn))
+              0)
+            i))
+        (1 / 5000))
+  (t : ℝ) :
+  Membership.mem.{0, 0} (Set.Icc.{0} (171 / 50) H) t →
+    LE.le.{0} (abs.{0} (f t 0)) (1 / 5000) ∧
+      LE.le.{0} (abs.{0} (f t 1)) (1 / 1000) ∧ LE.le.{0} (abs.{0} (f t 2)) (1 / 50)
+ControlsReview05.wrong_clock_is_not_trajectory :
+  ¬LeanControls.VariableResponse.IsTrajectory 2 RobotMotion.FIRHoldWitness.changingRate
+      (fun s =>
+        HAdd.hAdd.{0, 0, 0}
+          (LeanControls.Settling.holdInput 10 0
+            (fun u => RobotMotion.FIRHoldWitness.biasedReference (1 / 200) (HAdd.hAdd.{0, 0, 0} (71 / 50) u)) s)
+          (RobotMotion.FIRHoldWitness.changingDisturbance s))
+      fun s => RobotMotion.FIRHoldWitness.biasedReference (1 / 200) (HAdd.hAdd.{0, 0, 0} (71 / 50) s)
+ControlsReview05.residual_motion_is_actual (H : ℝ) :
+  LeanControls.VariableResponse.IsTrajectory H (fun x => 640 / 7)
+    (fun t =>
+      HAdd.hAdd.{0, 0, 0}
+        (LeanControls.ScaledTracking.physicalInput 10 ControlsReview05.residualMotion
+          (RobotMotion.referenceState 0 (1 / 5)
+            (RobotMotion.realEvents RobotMotion.AccelerationAdmission.deferredReturn))
+          (RobotMotion.jerk (1 / 5) (RobotMotion.realEvents RobotMotion.AccelerationAdmission.deferredReturn)) t)
+        (ControlsReview05.residualDisturbance t))
+    ControlsReview05.residualMotion
+ControlsReview05.residual_motion_certified (t : ℝ) :
+  Membership.mem.{0, 0} (Set.Icc.{0} (171 / 50) 4) t →
+    LE.le.{0} (abs.{0} (ControlsReview05.residualMotion t 0)) (1 / 5000) ∧
+      LE.le.{0} (abs.{0} (ControlsReview05.residualMotion t 1)) (1 / 1000) ∧
+        LE.le.{0} (abs.{0} (ControlsReview05.residualMotion t 2)) (1 / 50)
+ControlsReview05.residual_terminal_speed_nonzero : Ne.{1} (ControlsReview05.residualMotion (171 / 50) 1) 0
+'RobotMotion.FIRHold.delayed_return_physical_terminal' depends on axioms: [propext,
+ Classical.choice.{u},
+ Quot.sound.{u}]
+'ControlsReview05.wrong_clock_is_not_trajectory' depends on axioms: [propext, Classical.choice.{u}, Quot.sound.{u}]
+'ControlsReview05.residual_motion_certified' depends on axioms: [propext, Classical.choice.{u}, Quot.sound.{u}]
+'ControlsReview05.residual_terminal_speed_nonzero' depends on axioms: [propext, Classical.choice.{u}, Quot.sound.{u}]

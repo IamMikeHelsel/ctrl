@@ -20,11 +20,12 @@ We formalize part of their connection for a scalar execution layer built from an
 established four-stage moving average. Lean checks a rational finite history against
 jerk and acceleration limits at every future real time. A sufficient speed check
 uses the cubic Bernstein coefficients on each knot cell. A finite candidate rule
-preserves committed motion and can delay or reject a new execution. We prove that
+preserves committed motion and can delay or reject a new execution. A commit rule
+binds the certificate to the live task, retained history, and declared timing. We prove that
 completed event tails can be removed without changing future motion, and that a
-checker using adjacent knot cells has the same acceleration decisions. A separate,
-conditional theorem carries the physical state from time zero and proves position
-tracking, progress, and position arrival for one return task.
+checker using adjacent knot cells has the same acceleration decisions. A conditional theorem carries the physical state from time zero and proves
+tracking, progress, position arrival, and terminal speed and acceleration bands
+for one return task under changing response and disturbance.
 
 A predeclared numerical comparison starts three methods from the same reference
 and physical state. The retained filter has about 0.40 times the squared-jerk
@@ -47,16 +48,15 @@ A small tracking error $x-q$ can coexist with a failed task. The reference may
 arrive too late, travel too far after a reversal, or continue an old goal after
 rejecting a request.
 
-\begin{center}
-\fbox{\parbox{.25\linewidth}{\centering\textbf{Task request}\\Goal and deadline}}
-$\longrightarrow$
-\fbox{\parbox{.29\linewidth}{\centering\textbf{Reference executor}\\Accept, delay, or reject}}
-$\longrightarrow$
-\fbox{\parbox{.27\linewidth}{\centering\textbf{Physical controller}\\Track under stated uncertainty}}
-\end{center}
-\textbf{Figure 1.} Each boundary needs its own contract. A reference limit does not
-become a physical limit merely because the controller receives that reference.
-\setcounter{figure}{1}
+\begin{figure}[ht]
+\centering
+\includegraphics[width=.88\linewidth]{images/motion-animation.png}
+\caption{A frame from the accompanying Manim animation. The new request is to
+return to zero, but all four axes are still moving forward at the displayed
+time. The paths share the same physical state at revision. This scalar
+simulation uses response 100/s and zero disturbance. Planning time is omitted;
+the 10 mm cap applies only to the smooth reference.}
+\end{figure}
 
 The case study asks whether a finite retained history can make these contracts
 explicit and executable. It does not infer whether a new request is noise or a
@@ -71,7 +71,11 @@ kinematic and frequency constraints \cite{fir2019}. We use the reversal as a
 regression case, not a discovery. Ruckig supplies online jerk-limited motion from
 nonzero initial states \cite{ruckig}. Reference governors and ModelPlex already
 connect future constraints, uncertainty, and checked execution
-\cite{governors,modelplex}. The proposed contribution is the specialized Lean
+\cite{governors,modelplex}. A network reference governor already uses plant-side
+acceptance checks for delayed or overtaken commands; its Remark 23 separates
+constraint satisfaction from tracking an outdated requested reference
+\cite{networkgovernor}. Timing and request identity are therefore established
+design concerns. The proposed contribution is the specialized Lean
 contract and its reproducible boundaries. Its research value still needs
 external specialist review.
 
@@ -90,7 +94,7 @@ The reference is $C^3$. Its velocity is piecewise cubic, acceleration piecewise
 quadratic, and jerk piecewise affine. Signed cancellation remains in the
 reference; we do not replace it by a sum of absolute event magnitudes.
 
-At current time $c$, let $S$ contain $c$ and every future knot $\tau_i+kh$,
+At current time $c$, let $S$ consist of $c$ and every future knot $\tau_i+kh$,
 $k=0,\ldots,4$. In each nonempty adjacent cell of $S$, add the interior zero of
 jerk when jerk is nonconstant and has such a zero. Call the resulting set $C$.
 When jerk is constant, acceleration is affine; its endpoints suffice. After
@@ -155,7 +159,7 @@ measurements apply to the jerk and acceleration checks, not this new guard.
 \section{Admission can repair a limit and still fail a task}
 A new increment is relative to the final committed target:
 $\delta=g_{\mathrm{requested}}-(g_0+\sum_i\delta_i)$.
-The caller must bind that final target to the task goal. An append-only
+The commit rule below binds that final target to the task goal. An append-only
 admission rule retains earlier events. Execution cannot precede admission.
 The separately proved causal wrapper also orders execution times. Rejection
 retains the existing reference. A new event contributes zero through its
@@ -172,7 +176,7 @@ listed motion violates a limit. The selector is not a complete trajectory planne
 
 \textbf{Fixed reversal.} Use $h=.2$ s. A $+20$ mm event starts at $.22$ s.
 A return to zero becomes available at $.52$ s. An immediate $-20$ mm event
-passes the jerk limit $7.5$ m/s$^3$, but its acceleration reaches
+passes the jerk limit $7.5$ m/s$^3$, but its acceleration magnitude reaches
 $21/32=.65625$ m/s$^2$, above the $.5$ limit. Trying execution times
 $[.52,.62]$ s selects $.62$ for deadline $1.70$ s. The retained reference then
 has $|q'|\leq1/15$ m/s, $|q''|\leq.5$ m/s$^2$, and $|q'''|\leq7.5$ m/s$^3$.
@@ -182,6 +186,36 @@ returns \texttt{none} for deadline $1.30$ s.
 These are exact rational Lean fixtures. They show a useful distinction:
 repairing a reference limit requires time, and a deadline may not allow it.
 Waiting while retaining an old motion is not an emergency stop policy.
+
+\textbf{Bind the certificate at the future commit.}
+A pending result records the exact base history, position offset, width and
+version, together with the task goal, limits, request time, absolute deadline
+and version. It also carries the proposed execution time and increment.
+At one atomic commit, the live base and task must equal those recorded values.
+Equal version integers alone are insufficient. Let $t_r,t_f,t_c,t_e$ be request,
+completed computation and verification, atomic commit, and execution times.
+For dispatch allowance $d\geq0$, acceptance also requires
+\[
+ t_r\leq t_f\leq t_c,\qquad t_c+d\leq t_e.
+\]
+The successful-commit theorem transfers the checked speed, acceleration, jerk
+and reference-deadline conclusions to the actual appended history and live task.
+It proves that the final target equals the requested goal and the old reference
+jet is unchanged through execution. Rejection retains the entire live base.
+Using the same certificate twice is rejected after the first commit changes
+that base.
+
+The moving fixture uses request $.52$ s, completion and commit $.57$ s,
+dispatch allowance $.01$ s, and execution $.62$ s. These are exact input values
+for a formal client, not measured host timing. Late completion, late commit,
+changed history, changed offset, a superseded task and duplicate use are
+rejected. Removing the timing check changes already executed reference position;
+removing history or task binding yields a wrong final goal.
+
+This theorem assumes one ideal clock and an atomic state check and update.
+The client does not measure hardware clocks or prove a real-time implementation.
+A late result can be rejected even if every result is late; rejection is not a
+progress guarantee. The new rule does not make the offline optimizer causal.
 
 \section{A conditional physical guarantee}
 The scalar plant and feedback are
@@ -199,7 +233,7 @@ Define the transformed errors
  z_1=e_x,\qquad z_2=e_x+\frac{e_v}{4\sigma},\qquad
  z_3=e_x+\frac{e_v}{2\sigma}+\frac{e_a}{16\sigma^2}.
 \]
-\begin{theorem}[Tracking and one position task]\label{thm:physical}
+\begin{theorem}[Tracking, arrival, and a terminal hold]\label{thm:physical}
 Let $H,R,W,J\geq0$ and $\sigma>0$.
 Suppose a classical physical trajectory of
 \eqref{eq:plant}--\eqref{eq:feedback} exists on $[0,H]$ and satisfies the stated
@@ -210,15 +244,19 @@ and
 \]
 then $|e_x|\leq R$, $|e_v|\leq8\sigma R$, and $|e_a|\leq64\sigma^2R$ throughout it.
 
-For the delayed-return history above, take $H=2.5$ s, $\sigma=10$ s$^{-1}$,
+For the delayed-return history above, take $H\geq3.42$ s, $\sigma=10$ s$^{-1}$,
 $W=.01$ m/s$^2$, $R=.2$ mm, and $J=7.5$ m/s$^3$. Under the same initial and
 trajectory premises,
 \[
- |x(t)-q(t)|\leq.2\ {\rm mm}\quad(0\leq t\leq2.5),
+ |x(t)-q(t)|\leq.2\ {\rm mm}\quad(0\leq t\leq H),
  \qquad x(.5)-x(0)\geq1\ {\rm mm},
 \]
 \[
- |x(t)|\leq.2\ {\rm mm}\quad(1.42\leq t\leq2.5).
+ |x(t)|\leq.2\ {\rm mm}\quad(1.42\leq t\leq H),
+\]
+\[
+ |v(t)|\leq.001\ {\rm m/s},\qquad |a(t)|\leq.02\ {\rm m/s^2}
+ \quad(3.42\leq t\leq H).
 \]
 \end{theorem}
 The proof derives the reference derivatives and jerk premise from the finite
@@ -227,12 +265,43 @@ $q(.5)=779/250000$ m and $q(0)=0$; the two position-error bounds suffice.
 The sole physical initial condition is at time zero. The state is not reset
 when a new request arrives.
 
-The final claim is position arrival, not physical rest. It does not imply the
-physical acceleration or jerk equals a reference limit. The existence premise
-is material: we have not proved existence for arbitrary discontinuous inputs.
-The numerical parameter values are illustrative, not identified from a robot.
-Separate terminal-settling results are outside this paper's composed task
-theorem.
+The proof inherits the tracking cube at $t_0=1.42$ s. It shifts the same state,
+response and disturbance to $t_0+s$. The zero reference tail makes the existing
+feedback exactly the hold controller; no new endpoint state is supplied.
+
+A common quadratic certificate follows the standard robust-control approach
+\cite{lmibook}. On the shifted clock, let
+\[
+ y(s)=(80000x(t_0+s),2000v(t_0+s),50a(t_0+s)),\qquad
+ E(s)=y(s)^TQ^{-1}y(s).
+\]
+The rational matrix
+\[
+ Q=\frac1{1000}\begin{bmatrix}2162&-549&-234\\-549&518&-151\\-234&-151&810\end{bmatrix}
+\]
+gives $\dot E\leq20(1-E)$ for every allowed response and disturbance.
+Lean checks the rational matrix inequalities and their interpolation over the
+response interval. The inherited cube gives $E(0)\leq10^6$, hence
+\[
+ E(s)\leq1+999999e^{-20s}\leq1.01\qquad(s\geq2\ {\rm s}).
+\]
+Its coordinate bounds give
+the stated physical speed and acceleration bands. $E$ is a proof function,
+not mechanical energy.
+
+This closes the same-trajectory handoff, but its sufficient time is conservative.
+The 3.42 s guarantee does not prove the numerical task at 1.70 s. The bands allow
+small residual motion; they do not state exact rest. A nonzero-bias moving
+witness has $x=q+12.5\,\mu$m and prevents an exact-arrival interpretation. An
+independent reviewer also checked a full FIR witness with nonzero actual speed
+at $3.42$ s while every theorem premise holds.
+A separate exact witness rejects shifting the state while reading response and
+disturbance from the old clock. No input derivative, dwell time, or constant-rate
+premise is added. Existence for every bounded discontinuous input is not proved.
+
+The parameters are illustrative, not identified from a robot. Physical
+acceleration and jerk need not equal their reference limits.
+
 
 \section{Comparison from the same moving state}
 The experiment starts all methods from zero and uses the same FIR reference
@@ -315,7 +384,8 @@ using the same arrival and an explicit reference-excursion cap.
 A convex program proposes piecewise linear jerk over the same $.90$ s suffix.
 It minimizes the reference squared-jerk integral. Initial jerk is retained and
 terminal jerk is zero. The reference is $C^3$; snap is not bounded.
-The six declared attempts use 90 or 180 intervals and forward-reference caps
+The experiment uses CVXPY 1.9.3 with Clarabel 0.11.1
+\cite{cvxpy,clarabel}. The six declared attempts use 90 or 180 intervals and forward-reference caps
 of 7, 10 or 15 mm. The procedure accepts only an \texttt{optimal} solver status
 followed by an exact rational reconstruction and sufficient Bernstein checks.
 
@@ -367,15 +437,23 @@ and reject a result that is late or based on a stale plan. We have not shifted
 the saved curve afterwards to hide that obligation.
 
 \section{Proof artifact and practical limits}
-The portable package binds 50 local source modules to three frozen proof
-gates. Its replay builds local sources into an empty directory, checks every
-local declaration for unsafe code and unapproved axioms, runs separate kernel
-checks for nine main modules, and requires twelve false clients to fail for
-mathematical reasons. Public dependency caches remain a declared trust
-boundary. The permitted axioms are \texttt{propext}, \texttt{Classical.choice},
-and \texttt{Quot.sound}. An independent copied-path replay passed the same
-checks. That reviewed 50-module package covers the pre-velocity proof set;
-packaging the expanded result is a separate integration gate.
+The expanded portable package binds 63 local source modules to six independently
+reviewed proof components. Its replay builds local sources into an empty directory,
+checks every local declaration for unsafe code and unapproved axioms, separately
+checks 22 module kernels, and requires 33 false clients to fail for mathematical
+reasons. The replay fixes the source, reviewer, root, kernel and negative-test
+plans. Public dependency caches remain a declared trust boundary. The permitted
+axioms are \texttt{propext}, \texttt{Classical.choice}, and \texttt{Quot.sound}.
+The expanded package's combined fresh replay is under independent review.
+
+An offline client reads an exact rational JSON request. It saves the input bytes,
+emits Lean literals, proposes a Boolean result by evaluation, then proves that
+result and its consequence. Acceptance yields the reference contract; rejection
+yields only unchanged live state. A separate kernel check follows. The parser,
+truthful timing inputs and atomic runtime state are outside the proof. An earlier
+client could report a changed input file's hash after proving its old contents.
+The replacement snapshots the bytes it parses and proves; this repair has a
+separate end-to-end review gate.
 
 \begin{center}\small
 \begin{tabular}{p{.36\linewidth}p{.56\linewidth}}
@@ -386,8 +464,10 @@ Exact future jerk & \texttt{check\_real\_iff}\\
 Exact future acceleration & \texttt{checkAcceleration\_real\_iff}\\
 Same successor acceptance & \texttt{SuccessorCheck.same\_acceptance}\\
 Remove completed tails & \texttt{HistoryPruning.future\_jet\_eq}\\
-Timed finite candidate contract & \texttt{chosen\_reference\_contract}\\
-Position task from initial physical state & \texttt{delayed\_return\_physical\_position}\\
+Sufficient future speed & \texttt{checkVelocity\_real\_sound}\\
+Timed candidate with speed & \texttt{chosen\_velocity\_reference\_contract}\\
+Bound future commit & \texttt{successful\_commit\_contract}\\
+Position and terminal task from initial state & \texttt{FIRHold.delayed\_return\_physical\_terminal}\\
 \bottomrule
 \end{tabular}
 \end{center}
@@ -421,7 +501,7 @@ fair comparisons and independent challenge. Codex agents assisted with source
 review, mathematics, Lean code, numerical code, critique, figures, and writing.
 Affiliation, release scope, license, and venue remain owner decisions.
 
-\begin{thebibliography}{10}\small\raggedright
+\begin{thebibliography}{12}\small\raggedright
 \bibitem{fir2012} L. Biagiotti and C. Melchiorri.
 FIR Filters for Online Trajectory Planning with Time- and Frequency-Domain
 Specifications. \emph{Control Engineering Practice} 20(12), 1385--1399, 2012.
@@ -437,6 +517,11 @@ RSS, 2021. \url{https://arxiv.org/abs/2105.04830v2}.
 Reference and command governors for systems with constraints: A survey on
 theory and applications. \emph{Automatica} 75, 306--328, 2017.
 \url{https://doi.org/10.1016/j.automatica.2016.08.013}.
+\bibitem{networkgovernor} S. Di Cairano, U. V. Kalabi\'c, and I. V. Kolmanovsky.
+Reference Governor for Network Control Systems Subject to Variable Time-delay.
+\emph{Automatica}, 2015. Author preprint, MERL TR2015-154, Section 5,
+Algorithm 1 and Remark 23.
+\url{https://merl.com/publications/docs/TR2015-154.pdf}.
 \bibitem{modelplex} S. Mitsch and A. Platzer.
 ModelPlex: Verified Runtime Validation of Verified Cyber-Physical System Models.
 Runtime Verification, 199--214, 2014.
@@ -447,6 +532,14 @@ Real-Time Execution of Action Chunking Flow Policies. NeurIPS, 2025.
 \bibitem{rail} Y. Zhao et al.
 VLA-RAIL: A Real-Time Asynchronous Inference Linker for VLA Models and Robots.
 2025. \url{https://arxiv.org/abs/2512.24673v1}.
+\bibitem{lmibook} S. Boyd, L. El Ghaoui, E. Feron, and V. Balakrishnan.
+\emph{Linear Matrix Inequalities in System and Control Theory}. SIAM, 1994.
+Chapter 5. \url{https://web.stanford.edu/~boyd/lmibook/index.html}.
+\bibitem{cvxpy} CVXPY authors. Solver Features. Official documentation.
+\url{https://www.cvxpy.org/tutorial/solvers/index.html}.
+\bibitem{clarabel} P. J. Goulart and Y. Chen.
+Clarabel: An interior-point solver for conic programs with quadratic objectives.
+2024. \url{https://arxiv.org/abs/2405.12762}.
 \bibitem{fanuc} FANUC Corporation.
 How to Configure 1kHz Mode. ROS 2 Driver Documentation v2.2.0.
 \url{https://fanuc-corporation.github.io/fanuc_driver_doc/v2.2.0/docs/fanuc_driver/how_to_configure_1khz_mode.html}.

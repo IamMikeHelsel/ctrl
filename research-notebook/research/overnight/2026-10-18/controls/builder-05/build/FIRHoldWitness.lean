@@ -35,9 +35,8 @@ theorem biased_reference_trajectory (b H : ℝ) :
     fin_cases i
     · exact (position_deriv 0 (1/5) (realEvents deferredReturn) t).add_const (b/800)
     · exact velocity_deriv (1/5) (realEvents deferredReturn) t
-    · convert acceleration_deriv (h:=1/5) (by norm_num) (realEvents deferredReturn) t using 1
-      dsimp [biasedReference,physicalInput,referenceState]
-      ring
+    · convert acceleration_deriv (h:=1/5) (by norm_num) (realEvents deferredReturn) t using 1 <;>
+      dsimp [biasedReference,physicalInput,referenceState] <;> ring
 
 theorem biased_error_coordinates (b t : ℝ) (i : Fin 3) :
     coordinates 0 (scaledError 10 (biasedReference b)
@@ -109,9 +108,9 @@ theorem changing_reference_trajectory (H : ℝ) :
     fin_cases i
     · exact (position_deriv 0 (1/5) (realEvents deferredReturn) t).add_const ((1/200)/800)
     · exact velocity_deriv (1/5) (realEvents deferredReturn) t
-    · convert acceleration_deriv (h:=1/5) (by norm_num) (realEvents deferredReturn) t using 1
-      dsimp [biasedReference,physicalInput,referenceState,changingDisturbance,changingRate]
-      split_ifs <;> ring
+    · convert acceleration_deriv (h:=1/5) (by norm_num) (realEvents deferredReturn) t using 1 <;>
+      dsimp [biasedReference,physicalInput,referenceState,changingDisturbance,changingRate] <;>
+      (try split_ifs) <;> ring
 
 theorem changing_rate_bounds (t : ℝ) : 80 ≤ changingRate t ∧ changingRate t ≤ 120 := by
   unfold changingRate
@@ -127,13 +126,13 @@ theorem changing_disturbance_bound {t : ℝ} (ht : 0 ≤ t) : |changingDisturban
   rw [abs_mul] at hb
   have hm := mul_le_mul hj hk (abs_nonneg _) (by norm_num : (0:ℝ) ≤ 15/2)
   dsimp [changingDisturbance]
-  norm_num at hb
+  norm_num [one_div] at hm hb ⊢
   linarith
 
 theorem witness_inputs_really_change : changingRate 0 ≠ changingRate 2 ∧
     changingDisturbance 0 ≠ changingDisturbance (1/2) := by
-  norm_num [changingRate,changingDisturbance,jerk,response,realEvents,realEvent,
-    deferredReturn,F3,P]
+  norm_num [changingRate,changingDisturbance,jerk,eventJerk,response,realEvents,realEvent,
+    deferredReturn,F3,P,RobotMotion.H]
 
 /-- The full moving witness satisfies the theorem with both inputs changing. -/
 theorem changing_witness_certified (H : ℝ) (hH : 171/50 ≤ H) :
@@ -142,5 +141,32 @@ theorem changing_witness_certified (H : ℝ) (hH : 171/50 ≤ H) :
   exact (delayed_return_physical_terminal hH (changing_reference_trajectory H)
     (fun t ht => (changing_rate_bounds t).1) (fun t ht => (changing_rate_bounds t).2)
     (fun t ht => changing_disturbance_bound ht.1) (biased_initial_cube (by norm_num))).2.2.2
+
+/-- A concrete wrong-clock calculation. The state is shifted into the hold,
+but the rate and disturbance are incorrectly read at the old local time. -/
+def wrongClockRHS : ℝ := changingRate (1/2) *
+  (holdInput 10 0 (fun s => biasedReference (1/200) (71/50+s)) (1/2) +
+    changingDisturbance (1/2) - biasedReference (1/200) (71/50+1/2) 2)
+
+theorem biased_tail_state (b t : ℝ) (ht : 71/50 ≤ t) :
+    biasedReference b t = ![b/800,0,0] := by
+  obtain ⟨hq,hv,ha,_⟩ := deferred_return_reference_contract.2.2.2 t ht
+  unfold biasedReference
+  rw [hq,hv,ha]
+  simp only [zero_add]
+
+/-- The correct shifted trajectory has zero jerk here. The unshifted inputs
+would require jerk -1/48 m/s^3, so they do not describe that trajectory. -/
+theorem wrong_clock_rhs_nonzero : wrongClockRHS = -1/48 := by
+  unfold wrongClockRHS
+  have hf := biased_tail_state (1/200) (71/50+1/2) (by norm_num)
+  dsimp [holdInput]
+  rw [hf]
+  norm_num [command,scaleState,changingRate,changingDisturbance,jerk,eventJerk,
+    realEvents,realEvent,deferredReturn,RobotMotion.H]
+
+theorem correct_shifted_jerk_zero :
+    jerk (1/5) (realEvents deferredReturn) (71/50+1/2) = 0 :=
+  (deferred_return_reference_contract.2.2.2 _ (by norm_num)).2.2.2
 
 end RobotMotion.FIRHoldWitness

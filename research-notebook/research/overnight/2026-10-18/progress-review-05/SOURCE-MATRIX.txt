@@ -1,0 +1,76 @@
+FIVE CLOSE PRIMARY METHODS — narrow method comparison
+Read 18 October 2026 UTC. This is not an exhaustive novelty search.
+No row asserts absence of the local theorem from the entire literature.
+
+1. Biagiotti and Melchiorri, FIR planning, 2012
+https://web.ing.unimo.it/~lbiagiotti/Papers/FIR%20filters%20for%20online%20trajectory%20planning%20with%20time-%20and%20frequency-domain%20specifications.pdf
+Read author PDF introduction and the relevant multipoint/reversal passage,
+PDF pp33–34. The local PDF and extracted text were inspected; live URL works.
+Established: cascaded moving averages generate smooth constrained trajectories.
+Overlapping opposite motions can exceed acceleration limits; the authors discuss
+waiting before reversal. Retained filtering and reversal waiting are prior art.
+Local value to assess: the exact signed-list rational checks, their continuous-time
+mathematical contracts, and the proof interface. This reading does not audit the
+whole digital implementation or establish that no equivalent formal proof exists.
+
+2. Di Cairano, Kalabic and Kolmanovsky, network reference governor, 2015
+https://merl.com/publications/docs/TR2015-154.pdf
+DOI:10.1016/j.automatica.2015.09.006. Full author PDF accessible. Read the
+introduction, Section5, Algorithm1, Remark23 and Theorem24/proof. Earlier-section
+assumptions and all derivations were not independently re-proved.
+Established: receiver-side checks reject commands that fail delayed-execution
+conditions. The method uses the applied-command buffer and an admissible set.
+Remark23 distinguishes safe constraint handling from degradation caused by a
+command paired with an old reference. The long-delay convergence theorem has
+probabilistic assumptions; it is not an arbitrary deterministic deadline result.
+Local value to assess: a specialized Lean certificate bound to exact history,
+task version and absolute start time. This would mechanize a precise interface;
+it would not introduce delay-aware rejection or the stale-goal issue.
+
+3. Mitsch and Platzer, ModelPlex, 2014
+https://symbolaris.com/pub/modelplex.pdf
+Original author-hosted RV paper accessible. Read Section3 monitor distinctions,
+Section3.5 prediction theorem, Section4 evaluation and Section6 boundary.
+Established: proof-derived runtime checks connect model safety to bounded plant
+deviation and a bounded next control interval. ModelPlex has explicit fallback
+logic and numerical-evaluation concerns. Its model assumptions still matter.
+Local value to assess: a Lean proof object for this concrete FIR/ODE interface,
+not invention of checked execution. The local artifact does not monitor whether
+its rate/disturbance assumptions hold on a robot. This review did not run the
+ModelPlex artifact or compare proof effort or performance across provers.
+
+4. Real-Time Execution of Action Chunking Flow Policies, RTC v2
+https://arxiv.org/html/2506.07339v2
+https://arxiv.org/abs/2506.07339v2
+Full versioned HTML accessible. Read the asynchronous-execution setup, Section3,
+Algorithm1 and the experimental setup/results passages. No reproduction run.
+Established: inference overlaps execution; already committed actions constrain
+new chunks; the implementation tracks delay. The paper explicitly treats the
+need to reconcile a new chunk with actions executed during inference. Its setup
+omits sub-timestep synchronization issues and uses a delay estimate.
+Local value to assess: an exact acceptance contract for one continuous reference
+family. It would not replace RTC's learned policy or substantiate a VLA success
+claim. Its benefit must be shown as a guarantee or defect rejection, not assumed
+from the use of immutable history. The local tests contain no learned policy.
+
+5. Berscheid and Kroeger, Ruckig, RSS2021 / arXiv v2
+https://arxiv.org/html/2105.04830v2
+https://arxiv.org/abs/2105.04830v2
+Full versioned HTML accessible. Read the abstract, problem definition, algorithm
+overview and timing/synchronization description. No new implementation audit.
+Established: kinematic time-optimal trajectory generation from nonzero initial
+states with velocity, acceleration and jerk constraints, including synchronized
+multiple degrees of freedom. Its objective is duration, not squared jerk.
+Local value to assess: exact checking and conditional plant composition. The
+matched-duration native baseline is useful, but it is not a minimum-jerk solver.
+The new offline quadratic-program comparator further prevents a claim that the
+retained FIR strategy is generally smoother or better for task completion.
+
+Access and coverage limits
+The 2017 governor survey was used to locate the original 2015 paper; the original
+is the comparison row above. The existing 2019 FIR reading is in the prior
+source record and was not upgraded to a full-method review here. No claim about
+absence of Lean control formalizations follows from these five selected works.
+The GU assessment uses the already reviewed source-question record; this task
+did not rescan all GU writings or choose any missing operator. All literature
+claims above are deliberately narrower than a full reproduction or proof audit.

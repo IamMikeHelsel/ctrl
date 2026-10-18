@@ -1,0 +1,159 @@
+INDEPENDENT REVIEW — PHYSICAL POSITION COMPOSITION AND FIXED COMPARISON
+
+Decision: ACCEPT. All closing checks passed. Evidence gate: A.
+This grade concerns the stated evidence, not novelty or publication prospects.
+Exact scope: the conditional physical position theorem and the canonical
+runtime-replay-02 numerical comparison. History pruning has a separate review
+and manifest in pruning-review/. No builder source was changed.
+
+What the proof establishes
+
+The same actual state f appears in the plant equation and controller. Its only
+initial error-cube premise is at time zero. IsTrajectory requires continuity
+over [0,2.5] s and the actual differential equations throughout the interior.
+No state or error cube is reset at 0.52 s or 0.62 s.
+
+The full retained history is the history already checked in builder-01: a
+20 mm increment at 0.22 s and a -20 mm increment at 0.62 s. The earlier prefix
+is unchanged. The tracking theorem uses the actual reference derivatives and
+the full jerk guard from time zero. PhysicalArrival then extracts coordinate
+zero of the tracking cube, which is exactly physical position error.
+
+The declared plant/controller conditions are essential. Rate lies in [80,120]
+per second, disturbance magnitude is at most 0.01 m/s^2, and the scaled initial
+cube radius is 0.0002 m. The budget is 41/1600 <= 0.04 in the declared units.
+The reference at 0.5 s is 779/250000 m. The progress proof subtracts both possible
+position errors, including the error in the initial position. It does not assume
+that initial position is zero. The resulting lower bound exceeds the required
+1 mm progress. This excludes an always-hold response from the task proof.
+
+The theorem establishes the physical position tube on [0,2.5] s and the target
+position band on [1.42,2.5] s, including the 1.70 s deadline. It is conditional
+on an actual trajectory with the stated equations. It does not prove general
+ODE existence, physical model identification, an online implementation, bounded
+actuator effort, Franka behavior, or physical velocity/acceleration settling.
+
+Non-vacuity and the rest boundary
+
+Independent Lean witnesses construct an actual trajectory for rate 96. The
+reference itself is a trajectory with zero disturbance and zero initial state.
+More generally, a constant position offset e is a trajectory under disturbance
+800*e. Setting e = 1/80000 m gives an admissible 12.5 micrometre offset under
+disturbance 0.01. It meets the original initial cube and instantiates the arrival
+theorem, but its terminal position is not exactly the target.
+
+A second constructed trajectory adds t/1000000 m to reference position and
+1/1000000 m/s to reference velocity. Its disturbance is (800*t+60)/1000000 and
+stays within the declared bound over [0,2.5]. It also satisfies the original
+initial cube and instantiates the arrival theorem. Its velocity at 1.70 s is
+exactly 1 micrometre per second. Thus position arrival does not imply exact
+physical rest. This witness does not violate the sampled 0.001 m/s tolerance.
+
+Independent numerical replay
+
+Replayed all 96 canonical traces, 362724 state rows and 1932 event-jump rows.
+The reviewer imports no builder numerical helper. It uses exact rational
+polynomial particular solutions and an 80-digit 3x3 homogeneous exponential.
+The builder uses a double-precision 9x9 augmented matrix exponential. Both
+retain the actual state across every event. The reviewer starts every trajectory
+from zero and never reads a saved actual state as an integration input.
+
+All task decisions agree. Maximum absolute discrepancies were:
+position 4.20e-16 m; velocity 5.61e-15 m/s; acceleration 3.73e-14 m/s^2;
+actual jerk 2.96e-12 m/s^3. Physical state jumps are zero. Command and actual
+jerk jump identities were checked on both event sides. Reference extrema were
+recomputed independently from the saved polynomial coefficients. Energy and
+command-variation metrics use the declared sampled quadrature; they are not
+new exact-integral theorems.
+
+Full task passes on the fine grid, six rate/disturbance settings per cell:
+                                1.70 s deadline        1.30 s deadline
+Native fast                         6/6                    6/6
+Native minimum duration 0.8          6/6                    0/6
+Old jerk-only FIR                   0/6                    0/6
+New checked FIR                     6/6                    0/6
+
+All 48 fine-grid cases meet the initial-progress requirement. The old FIR
+fails reference acceleration in both tasks even though its sampled endpoint
+bands pass. The new FIR rejects the tight revision and keeps its previous
+20 mm target. The authoritative target remains zero, so rejection is scored
+as failure. Native fast meets both tasks. The 1 ms and 0.5 ms grids have the
+same decisions. Settling means the declared bands hold at all remaining saved
+samples through 2.5 s; it is not an all-time or infinite-horizon settling proof.
+
+Input and native fidelity checks
+
+Recomputed the candidate trials with an independent exact rational adjacent-cell
+extrema calculation. Only 0.52 s and 0.62 s are tried for the revision. The first
+packet is identical in both tasks and contains no revision deadline. The second
+packet first supplies that deadline. The first accepted event remains unchanged.
+The new selector rejects 0.52 s for acceleration and accepts 0.62 s only for the
+generous deadline. Tight rejection does not erase old history or alter task truth.
+
+Bound all 36 FIR polynomial pieces to their exact event histories. Bound all
+8 native plans to their carried native states, exact binary execution origins,
+phase exports and input files. Generous-case native inputs and exports are
+byte-identical to moving-goal-08. There are 36 byte-identical deadline-contrast
+trace pairs for the unchanged methods. The 12 checked-FIR prefix pairs match
+through 0.62 s for position, velocity, acceleration, jerk and actual state.
+Higher reference derivatives can differ at that event, as expected.
+
+Built fresh native drivers against the verified pinned Ruckig static library.
+Verified 101 pinned source-tree files. All fresh plan exports and all 20208
+native query outputs equal the saved outputs. Independent exact-polynomial
+evaluation differs by at most 3.47e-18 m, 1.39e-17 m/s and 2.23e-16 m/s^2.
+There are no jerk-branch disagreements in those finite queries. This is native
+library fidelity, not a firmware proof or a physical robot result.
+
+Runtime correction and preservation
+
+Verified both original and canonical input, implementation and data manifests.
+The frozen implementation and reference schedules are identical across the two
+runtimes. Independently compared all 362724 original/canonical saved rows and
+recomputed the reported runtime differences. No task decision changed. The first
+run remains preserved. The proof source is byte-identical across both verifier
+attempts; the first verifier's failure was an ordinary function named admit,
+not an incomplete proof. Declaration-axiom checks still reject sorryAx.
+
+Fresh Lean evidence
+
+Rebuilt all 48 local dependency modules from source into an empty local cache.
+Audited all 3064 elaborated local declarations. Only propext, Classical.choice
+and Quot.sound are allowed. No unsafe declaration, local axiom or native_decide
+proof path was found. The inherited ordinary function named admit is covered by
+the same declaration audit. Every local module receives separate kernel replay.
+An additional target compilation, full axiom audit and kernel replay succeed
+with the original project's compiled cache removed from LEAN_PATH.
+
+The 16 independent named witness theorems, including the two actual trajectory
+constructions, are audited in a 3097-declaration closure. Both witness modules
+receive separate kernel replay. Seven false controls reject exact target arrival,
+exact physical rest, a smaller unsupported cube budget, rewriting a rejected
+goal, tight-deadline selection, the original acceleration failure, and a false
+half-second reference position. Missing imports or unknown identifiers are not
+accepted as negative-test success. Development failures in reviewer harnesses
+are retained as attempts; they are not counted as accepted evidence.
+
+Interpretation and next gate
+
+The new guard repairs a genuine reference-limit failure and supports a conditional
+physical position contract. It does not beat native fast on task completion or
+speed in this comparison. Native fast has at least 13.598 mm actual progress
+before revision, minimum-duration native has at least 6.439 mm, and both FIR
+methods have at least 3.112 mm. Their revision states and return distances differ.
+The lower FIR jerk-energy value is therefore not a matched-state or matched-path
+advantage. The generous-case figure labels this limit clearly. Keep the tight
+deadline failure table next to that figure when integrating it into a paper.
+
+The next useful experiment should use one common prefix and carry one actual
+state through revision availability. Compare the suffixes from that same state.
+Include native fast and a native duration tied to the declared FIR arrival time.
+Freeze the protocol first. Measure task success, jerk energy, actual error,
+extra travel, waiting and rejection together. Do not reset physical state to
+make the comparison easier. This tests the remaining motion-quality hypothesis
+before adding broad superiority claims. A robust admission contract can be
+useful without being a better general motion planner.
+
+This is independent machine-aided review, not external human peer review or a
+finding of publication novelty. See grade.json, physical-review.json,
+native-review.json, bindings-review.json and the artifact manifest for evidence.

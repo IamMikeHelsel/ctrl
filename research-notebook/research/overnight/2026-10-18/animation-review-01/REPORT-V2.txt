@@ -1,0 +1,121 @@
+INDEPENDENT ANIMATION REVIEW — VERSION 2
+18 October 2026 UTC. Reviewer owns animation-review-01 only.
+
+Decision
+ACCEPT the data and bounded scientific claims. REPAIR two presentation details
+before public use. The numerical input does not need to change. This review is
+not a novelty review, a hardware test, or an all-time physical proof.
+
+Required presentation repairs
+1. At about21.3–27.8s, the table calls its third column "Forward travel". The
+   numbers are the maximum additional forward excursion after the revision at
+   simulated0.52s. They are not total path length or distance from zero. The
+   README and RELEASE-CANDIDATE define this correctly, but the movie itself
+   does not. Use "Extra forward travel" and an on-screen definition such as
+   "Maximum beyond the position at0.52s". Keep the metric interval visible.
+   Evidence: original review-frames-v2/t0022.png; reviewer contact-02.jpg.
+   For example, FIR's shown14.32mm is extra excursion. Its total suffix path
+   is32.6548mm. The numerical distinction matters to a public viewer.
+2. At about19.75–20.00s, the outgoing reference scene briefly restores the
+   already-hidden request legend and clock. They overlap the green sentence
+   about task success. The source's FadeOut(content) still includes legend and
+   readout after those two children had a separate FadeOut. Remove those
+   children from content before fading the remaining scene. Preserve this
+   version and make the change in a new version.
+   Evidence: frames/transition-10.png and transition-11.png.
+
+Input identity and preserved evidence
+Animation artifact-sha256.json:
+b5a1f043f8814785069da6a7fe4cfe7970b7f16e4cede48554c971a2c676e759
+Final candidate movie same-goal-different-motion-v2.mp4:
+a9d0c200644eebb89e7c7a21e57de08016a7b8c13f77984859d3eabeb60e2cfc
+All33 animation files hash correctly. The complete original baseline, baseline
+review, smooth-comparison final set, and smooth review also pass their hashes:
+209,22,218,14 entries respectively. Total496 checked manifest entries. No input
+artifact was changed. The original version1 movie is still present and frozen.
+
+Independent data check
+check_data.py is a separate standard-library program. It imports no animation,
+builder, optimizer or physical-replay code. It directly reads the four stored
+compressed CSV traces at response100/s, disturbance0, generous deadline1.70s,
+and output spacing0.5ms. These traces were already independently replayed using
+80-digit arithmetic in critic-03 and smooth-review-01. This review does not
+repeat that plant integration. It binds the movie to those reviewed traces and
+independently recomputes its sampled metrics with60-digit decimal arithmetic.
+
+All20,178 source rows map exactly to the animation's times and actual positions.
+The check uses each stored rational timestamp. Position conversion to millimeters
+matches exactly at the binary-float display boundary. Every repeated event time
+has identical x/v/a on both sides, so linear interpolation has no ambiguous
+physical jump. All four physical prefixes match through the left side of0.52s.
+The source uses linear interpolation only for display, with no spatial retiming
+or physical state reset. Animation time is a separate, slower display clock.
+
+The suffix is[0.52,2.50]s. Trapezoidal jerk-squared integration preserves the
+saved left/right event order. Equal-time event sides add zero area. The peak
+is the largest absolute saved actual jerk. Extra forward travel is
+max(0,max(x(t))-x(0.52)), using saved samples in that interval.
+
+Method             Jerk-squared integral    Extra forward mm    Peak jerk
+Native fast                17.33                    6.86             7.82
+Native matched             15.17                    6.86             8.16
+Checked FIR                 6.09                   14.32             5.00
+Smooth, reference cap       3.72                   10.00             7.61
+Units for the integral are m^2/s^5; peak jerk is m/s^3. Every shown rounding is
+correct. Maximum difference across recomputation, stored metrics, animation
+JSON, and the prior independent physical replay is1.028e-12 in the respective
+reported units. This agreement is not a numerical error bound on the ODE.
+
+Task-pass check
+All four selected traces have accepted requests, at least1mm progress at0.50s,
+and sampled tracking error at most0.2mm. All saved states from1.70s to2.50s
+meet |x|<=0.2mm, |v|<=1mm/s, and |a|<=0.02m/s^2. The independent prior review's
+reference critical extrema meet the declared V/A/J limits, allowing the stated
+numerical tolerance. Each prior independent full_task_pass value is true.
+Thus "All four pass this generous1.70s sampled task" is supported. The animation
+does not show or claim success on the separate tight task. It does not prove a
+between-sample physical bound.
+
+Frame used in the paper
+The supplied t0010.png displays simulated time0.69s. The paper caption says all
+four axes are still moving forward. This was checked using actual velocity,
+not inferred from the dot positions. Every saved velocity from0.6845 through
+0.6955s is positive, including a margin around the displayed rounding bin.
+Minimum velocities in that range, m/s:
+  Native fast and matched:0.004210261978179062
+  Checked FIR:0.05420854535704781
+  Smooth:0.03069471137199213
+The caption's response100/s and zero-disturbance scope is correct. It correctly
+states that planning time is omitted and the10mm cap applies to the reference.
+
+Visual and claim review
+The reviewer extracted34 frames across the entire33.625s movie, then16 additional
+transition frames at4fps over17.5–21.5s. The three full contact sheets and the
+transition sheet were inspected. The original full-resolution frames at10s,
+22s and18.5s were also inspected. The MP4 has1280x720 video at24fps and no audio.
+Labels, millimeter ticks, unit superscripts, the four methods, and the persistent
+offline/no-robot footer are legible. No clipping or stable-frame overlap appears.
+The transient overlap above is the only observed rendering defect.
+
+The subtitle and smooth method label distinguish the reference cap from actual
+motion. The selected actual excursion rounds to10.00mm, but the movie makes no
+claim of a universal physical10mm cap. The "lower integral, higher peak" sentence
+is supported by Smooth versus FIR and does not call the integral mechanical
+energy. No method is said to dominate all criteria. The final task/reference/
+actual-motion boxes correctly separate three distinct contracts. No causal
+planner, VLA, Franka, hardware, solver-optimality, or Manim endorsement claim is
+made. The footer repairs the earlier uncharged planning-time issue in the
+underlying comparison. Public release still requires Mike's release decision.
+
+Reproduction note
+The first extraction attempt used the unsupported -vsync option in the installed
+ffmpeg. It failed before writing frames. Retrying without that option succeeded;
+there was no input mutation. No package, remote renderer or paid API was used.
+To repeat the data check from the workspace root:
+python3 research/overnight/2026-10-18/animation-review-01/check_data.py
+Run it only in a copied review folder after this review is frozen.
+
+Disposition
+Keep all frozen version2 files. Make a focused new render with the two repairs.
+Then inspect the table and scene transition again. No new experiment or data
+collection is needed for this presentation gate.

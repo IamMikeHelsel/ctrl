@@ -1,0 +1,9 @@
+The first V3 checker reached its metadata assertion and failed because it assumed
+avg_frame_rate==24/1. The video reports nominal r_frame_rate24/1, but concatenated
+MP4 timestamps report avg_frame_rate275456/11477. There are807 frames and container
+duration33.624023s, versus807/24=33.625s. The original checker source is preserved.
+The repaired checker checks nominal rate24/1,807 frames, and container duration
+within2ms of807/24; it records both rates and both durations. No video was changed.
+The V2 report's33.625s is nominal frame-count duration. Its measured container
+duration is33.624349s. This is a metadata precision correction, not a changed
+motion timeline, sample value, or claim about physical timing.

@@ -1,0 +1,67 @@
+Independent statement review — velocity admission
+
+The candidate proves a sufficient bound on a concrete scalar reference.
+It does not assume that bound. The Boolean test supplies the finite rational
+inequalities from which the proof derives the real-time result.
+
+Reviewed proof chain
+1. The event velocity is expanded from the existing F1 response, with h > 0.
+   It is a sum of shifted positive-part cubics. Endpoint acceleration is the
+   derivative already proved for that same reference, not an input fit.
+2. Each cubic positive part has the stated Hermite/Bernstein identity when
+   its knot lies outside the open cell. Linear combination gives the actual
+   retained reference identity. Knots at either endpoint cause no gap.
+3. For 0 <= u <= 1, the four Bernstein weights are nonnegative and sum to one.
+   Bounding each coefficient in absolute value therefore bounds velocity.
+4. The real guard includes current time and every future event knot. For an
+   arbitrary future real time, the proof selects adjacent finite-set points.
+   Earlier knots lie before the left endpoint. There is no interior knot.
+   After the last point, all events have ended and velocity is zero.
+5. The rational successor is the least STRICTLY greater point. Duplicated or
+   unsorted entries cannot create a zero-width interpolation cell. The cast
+   bridge covers rational endpoints and coefficients exactly. The final
+   quantifier ranges over every real future time, not a rational grid.
+6. The candidate rule conjoins this sufficient check with the old exact
+   acceleration/jerk guards and the sufficient reference-rest deadline test.
+   It selects the first passing member of a supplied finite list. The prefix
+   equality is through the selected execution time, including its endpoint.
+
+Boundaries that matter to the paper
+- A selected history reaches rest at g0 plus the sum of event increments.
+  The caller must connect that value to an external task goal.
+- The current/ready time and execution times are supplied to the checker.
+  No sensor, computation, transport or servo timing model is proved here.
+- The executable contract uses exact rational inputs and exact rational
+  arithmetic. A floating-point port, rounding policy or compiled deployment
+  needs its own connection to that contract.
+- The reference bounds do not bound an actual actuator's velocity by the
+  same numbers. Physical tracking, coupled joints, contact, force, torque,
+  saturation, travel clearance and Franka acceptance remain separate.
+- A finite frozen history is covered. Arbitrarily many subsequent replans
+  need an execution argument; they are not hidden in this theorem.
+- The combined implementation still calls the old all-pairs acceleration
+  checker. The successor benchmark does not give its execution cost.
+- Previous acceleration/jerk pruning equivalence is not a proved velocity
+  pruning equivalence. This review makes no transfer of that claim.
+
+Conservative rejection is a proved behavior, not a failed safety proof
+The unrefined example is proved safe at V = 1/6 yet rejected. The exact
+coefficient maximum is 3/16. Zero-size events leave velocity unchanged but
+refine the partition; the refined coefficient maximum is 1/6 and it passes.
+This does not say that actual velocity attains 1/6 or that the bound is sharp.
+The checker is representation-sensitive. Therefore `none` means every finite
+test rejected. It does not prove that every listed trajectory is unsafe, nor
+that a feasible motion or execution time does not exist.
+
+The zero-size refinement is a velocity-check witness. It is not a proved
+rewrite of the full timed selector. The old timed test checks every event's
+nominal tail, including zero-size events, so extra events can alter its
+deadline result. If later work automates subdivision, give the certificate
+an explicit partition instead of silently adding planner events.
+
+The endpoint-only counterexample is different. All future knots pass V=1/2,
+but the actual velocity at 9/5 is 409/750 > 1/2. That is a real violation.
+
+No publication novelty is inferred from these statements. This review checks
+the formal connection and finite execution contract for this exact model.
+Prior-art assessment and venue fit remain separate publication gates.

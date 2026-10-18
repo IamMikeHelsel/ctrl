@@ -1,0 +1,75 @@
+ONE BEST NEXT TEST: CERTIFICATE-BOUND FUTURE COMMIT
+Recommendation only. No implementation or experiment was run by this grader.
+Budget: one 45–60 minute builder gate, then independent review. Do not extend
+past the overnight deadline. Do not rerun the six quadratic-program cases.
+
+Question
+Can the executable admission rule use a certificate only for the motion and
+task that were checked, after nonzero computation time, without changing the
+already executed reference or silently losing the requested deadline?
+
+Why this test
+The offline comparison assumes instantaneous plan availability. Existing Lean
+candidate selection does not model completion of computation or a changing
+base history while a result is pending. A valid certificate for the wrong
+history, task, or time does not certify the command actually committed.
+This is an implementation contract to verify, not a new delay-control principle.
+See the original network-governor and RTC source rows.
+
+Predeclare the protocol before building fixtures
+- Use the existing FIR checker and same moving example, without an optimizer.
+  Keep the original 0.52 s request, bounds, return goal and declared task
+  deadlines. Choose a finite future-start list in advance. Do not select start
+  times after seeing a failure solely to make a result pass.
+- A pending result carries the exact base history and offset, history version,
+  task/goal version, requested goal, absolute execution time, deadline, and
+  limits. Delta must equal requested goal minus the old final committed target.
+- Continue the old accepted reference while computation runs. No physical state
+  reset is permitted. An intervening commit invalidates the pending base version.
+- At the atomic commit, require the current base and task versions to match.
+  Also require the measured completion time plus an explicit dispatch allowance
+  to be no later than execution. Include verification in that completion time.
+  Use one ideal common clock for this gate; clock error, hardware dispatch and
+  atomic machine execution remain declared implementation assumptions.
+- Check V/A/J and reference completion on the actual combined history. The
+  reference deadline is absolute. Late results are rejected; their timestamps
+  are never shifted retroactively. Rejection continues the old accepted plan.
+  Continuing it does not count as completion of the new task.
+
+Required outputs
+1. One general Lean implication from successful commit to the accepted reference
+   contract, correct target binding and unchanged executed prefix. The statement
+   must use the live history/task identifiers and the commit-time condition.
+   Version equality is meaningful only with an invariant that versions identify
+   their state; using freely reusable integers as a proxy is not sufficient.
+2. A nontrivial moving-state client that accepts after a strictly positive delay.
+   It must preserve the old motion during that delay. If the predeclared list
+   has no acceptable candidate, preserve that rejection as the result.
+3. Three negative clients: late completion, changed committed history, and a
+   superseded task goal. Remove each check in a separate mutant and exhibit
+   the lost conclusion. A Boolean false test alone is weaker than showing why
+   the unchecked result fails its contract. Do not accept missing-import errors.
+4. Exact event logs with request, computation completion, commit and execution
+   times. If physical traces are used, integrate the single actual trajectory
+   from time zero and report them separately from the formal reference result.
+
+What not to claim
+A measured duration is not a worst-case execution bound. This test can ensure
+that a late result is not applied, while still rejecting every new request on
+an overloaded host. Sound rejection is not progress or real-time availability.
+Reference V/A/J are not physical V/A/J. Keeping old motion is not a proved
+emergency stop, contact policy or obstacle-avoidance fallback. The existing
+actual hold theorem must not be invoked on a replacement plan without its
+inherited-state and controller premises.
+
+Stop rules
+- Stop and package after this one gate and independent review. No new optimizer,
+  multi-axis model, queue framework or broad benchmark is needed before morning.
+- If only Boolean version checks can be proved, without the actual reference
+  contract or a nonvacuous acceptance example, report the exact missing link.
+  Do not label the result an end-to-end execution guarantee.
+- If the gate fails, keep the paper's timing limitation and ship a technical
+  artifact draft. Do not repair the old offline data by shifting its start time.
+- Even if it passes, use it to improve the formalization/tool note. It does not
+  establish algorithmic novelty or a general VLA remedy. Obtain a human review
+  of the artifact's reusable value before escalating the publication claim.

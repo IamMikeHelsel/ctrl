@@ -1,0 +1,85 @@
+MOTION BUILDER 05 — FROZEN FOR INDEPENDENT REVIEW
+18 October 2026 UTC. Builder verification passed. Acceptance is not self-awarded.
+
+Result
+The specialized certificate can be bound to the exact live motion history and
+task after a nonzero computation interval. Successful commit implies the actual
+resulting reference has the checked V/A/J bounds, reaches the requested goal at
+reference rest by the absolute deadline, and preserves the old reference through
+its future execution time. The transition checks full structural equality as
+well as versions. It does not silently reinterpret a stored execution timestamp.
+
+Main theorem: RobotMotion.FutureCommit.successful_commit_contract.
+Prefix theorem: every_commit_preserves_executed_prefix.
+Duplicate invalidation: committed_base_invalidates_pending.
+Definitions and conditions: FutureCommit.lean and CLAIMS.txt.
+
+The timing rule is slightly stronger than completion + allowance <= execution:
+request <= completion <= atomic commit, allowance >= 0, and atomic commit +
+allowance <= execution. This prevents a result checked on time from being
+committed later with an expired start. Completion includes verification by
+assumption. A common ideal clock and truthful bounded dispatch remain required.
+
+Declared moving case
+Request .52 s, completion/commit .57 s, dispatch allowance .01 s, execution .62 s.
+The fixed [.52,.62] list, old +20 mm motion, and V=.1, A=.5, J=7.5 limits pass for
+the 1.7 s deadline. At request the old velocity is 23/480 m/s. No reference reset
+occurs. The same list fails for the 1.3 s deadline. These are clock scenarios,
+not measurements of how quickly this implementation can check the certificate.
+
+Negative evidence
+Removing the time check admits a past event and loses prefix equality. At .70 s,
+the reference position mismatch is -8/375000 m. Removing the base check can miss
+the goal by +1 mm; applying the same accepted return twice misses by -20 mm.
+Removing task binding returns to zero when the current task requests +5 mm.
+These are proved real-reference counterexamples. Reused version integers do not
+bypass unequal structural state. A later atomic commit is rejected even when
+computation had completed on time.
+
+Verification performed
+- 15 local modules rebuilt from source, with project build products removed from
+  the Lean search path. Pinned external mathlib products were reused.
+- All 578 declarations from the 15 local modules audited for axioms and unsafe
+  declarations. Only propext, Classical.choice and Quot.sound occur.
+- 15 separate leanchecker module replays passed.
+- 9 deliberately false clients all failed at an explicit False goal. No missing
+  import, unknown identifier, or wrong-module error was accepted as a failure.
+- Separate Fraction arithmetic reproduced the request jet, prefix samples and
+  all four concrete target/prefix failures.
+- Six generated exact-rational JSON clients each compiled a decision proof and
+  passed the separate kernel checker. One accepted; five rejected. Acceptance
+  derives the reference theorem. Rejection derives unchanged live state.
+- 19 malformed-input tests were rejected by the small Python translator. This
+  tests the parser; it does not formally verify it.
+- All 13 inherited source hashes and all 92 files in the preceding builder04
+  final manifest remain unchanged. Current proof and client freezes match.
+
+Preserved repairs
+Four development attempts preserve proof/coercion errors and their source files.
+The handwritten protocol heading had an incorrect minute label; its earlier
+actual JSON freeze timestamp is authoritative. No test condition changed.
+The first generated positive client had an invalid redundant noncomputable
+modifier on a theorem. Its original client code, freeze, generated file and
+failure log remain. The repaired positive run is client-results/on-time-02.
+The formal proof freeze was not changed for this packaging repair.
+
+Boundaries and stopping decision
+The result is about one finite scalar reference family and one abstract atomic
+transition. It does not prove physical actuator limits, a physical trajectory,
+sampling, a hardware clock, atomic machine operations, real-time availability,
+emergency stopping or a general VLA improvement. Later updates need their own
+checks and may supersede the task. Exact structural equality can reject an
+otherwise equivalent pruned representation. A selected candidate can expire
+even when a later candidate might still be useful; there is no automatic retry.
+
+The existing causal jerk wrapper already retained prefixes and targets. Existing
+V/A/J selection already supplied the geometric certificate. The new piece binds
+that certificate to the later live state and task. Delay-aware execution itself
+is prior art; the grader's 2015 governor and RTC source rows remain applicable.
+No claim of algorithmic novelty or publication readiness follows from this gate.
+
+Stop here. A fresh critic should check the general theorem, all three mutant
+categories, generated-client binding, state identity, timing assumptions and
+source preservation. Root owns manuscript integration, repository sync and Git.
+No shared report, paper, Git checkout, toolchain pin or external service was
+changed by this worker. No research process remains active in this folder.

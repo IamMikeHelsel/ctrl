@@ -1,0 +1,80 @@
+CONTROLS CRITIC 05 — ACCEPT THE DECLARED SCALAR PROOF GATE
+Independent reviewer; builder files were not changed.
+
+Reviewed builder manifest
+4036417f36ccf705244f9b285c8bdf4e98245d325c522a280ed8aeeed9ab2f00
+163 builder files verified before and after review.
+
+Decision
+Accept RobotMotion.FIRHold.delayed_return_physical_terminal for its stated
+classical scalar model. It carries one actual trajectory from global time zero,
+through the delayed FIR return, into the terminal hold. The proof uses one
+initial tracking-error cube. It does not reset the state or add a new endpoint
+cube. The response, disturbance and state use the same shifted clock.
+
+The result gives a 0.2 mm position band from 1.42 seconds, and speed <=1 mm/s
+and acceleration <=0.02 m/s^2 from 3.42 seconds to the supplied horizon.
+The tracking-position band holds from time zero. The theorem also proves
+at least 1 mm of forward progress by 0.5 seconds. H>=3.42 ensures that the
+terminal interval is nonempty, including its boundary case.
+
+Verification
+- 54 local builder modules compiled from frozen source into a fresh folder.
+  Only the pinned public dependency caches were reused.
+- All 3184 local declarations, including private ones, passed the axiom and
+  unsafe-code audit. Allowed axioms are propext, Classical.choice and Quot.sound.
+- 11 key source modules passed separate leanchecker replay.
+- The independent ReviewClients module compiled and passed its own axiom audit
+  and kernel replay: 15 proved clients, 31 total local declarations.
+- Eight new false clients and all six builder false clients failed at intended
+  False goals, with imports resolved and no missing-name/typeclass escape.
+- An independent exact polynomial reconstruction matched 16 witness anchors
+  and 72 position/velocity/acceleration/jerk cell-boundary equalities.
+- Five frozen input manifests were checked before and after review, covering
+  1217 file entries. All input and proof-source hashes remained unchanged.
+
+Independent challenges
+The literal-controller and literal-cube clients confirm coefficients and units.
+The minimal-horizon client checks a nonempty terminal boundary. A negative-bias
+client checks that the actual endpoint is carried through rather than reset.
+
+The wrong-clock client proves that the substituted input clock does not define
+the same actual trajectory. At its test time, derivative uniqueness would
+require 0=-1/48. This is a formal differential-equation contradiction.
+
+A new full FIR witness adds a decaying exponential tracking error, uses rate
+640/7 per second, and disturbance q'''/1920. It satisfies the original initial
+cube and every main premise. Its actual speed at 3.42 seconds is nonzero.
+Thus the proved residual bands cannot be restated as exact finite-time rest.
+A separate actual hold trajectory with a large initial error violates the
+speed and acceleration bands at two seconds. This tests omission of the
+initial cube; it is not a proposed physical experiment.
+
+Scope and publication verdict
+No mathematical repair is required for the declared result. The evidence gate
+is A for this bounded formal claim; this is not a publication or novelty grade.
+The work closes the previously separate FIR tracking and terminal-hold proof
+contracts. It can support a formalization and worked-case contribution.
+
+The result does not prove a 1.7-second physical terminal deadline, make the
+1.3-second task feasible, or establish an optimal stopping time. The two-second
+hold is sufficient. The rate and disturbance may change within their bounds,
+but the existence of a classical trajectory is assumed. There is no existence
+theorem for every arbitrary bounded signal pair.
+
+There is no new controller-method, real-time implementation, hardware, coupled
+Franka, contact, loss-of-grip, PL d/e, or publication-novelty result here.
+The numerical comparison remains separate evidence with its declared timing
+limits. Read scope-review.txt for the complete source-to-claim boundary.
+
+Stop recommendation
+Stop new controls proof branches for this gate. Integrate the accepted statement
+and its assumptions into the paper and replay bundle. A shorter physical
+deadline or a hardware claim requires a separately declared model and test.
+Human assessment of novelty and practical value remains open.
+
+Preserved failures
+The review retains one arithmetic-checker implementation failure and the first
+Lean client attempt. They were corrected only in reviewer-owned files. The
+successful client attempt has harmless tactic-style warnings. No failed run
+is counted as successful evidence. See reviewer-failures.txt and attempt logs.

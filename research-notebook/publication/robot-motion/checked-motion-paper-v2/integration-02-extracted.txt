@@ -1,0 +1,334 @@
+Treating the Tremors We Built into Robots
+What a checked execution layer can promise
+Mike Helsel
+Working draft for technical review; AI assistance disclosed
+18 October 2026
+Abstract
+A smooth reference, an accepted request, and a completed task are diﬀerent guarantees. We formalize
+part of their connection for a scalar execution layer built from an established four-stage moving average. Lean
+checks a rational ﬁnite history against jerk and acceleration limits at every future real time. A suﬃcient speed
+check uses the cubic Bernstein coeﬃcients on each knot cell. A ﬁnite candidate rule preserves committed
+motion and can delay or reject a new execution. We prove that completed event tails can be removed without
+changing future motion, and that a checker using adjacent knot cells has the same acceleration decisions. A
+conditional theorem carries the physical state from time zero and proves tracking, progress, position arrival,
+and terminal speed and acceleration bands for one return task under changing response and disturbance.
+A predeclared numerical comparison starts three methods from the same reference and physical state. The
+retained ﬁlter has about 0.40 times the squared-jerk integral of a native planner with matched arrival, but
+about 2.09 times its extra forward travel. Only the native fast method completes the tighter task. These results
+support a checked-contract case study, not a new smoothing algorithm, a general vision-language-action (VLA)
+remedy, or a physical robot result. A stronger oﬄine smooth comparator reduces FIR’s jerk integral and travel,
+but raises peak jerk and still misses the tighter task. These diﬀerent measures must not be collapsed into one
+claim of smoothness.
+1 The guarantee has three parts
+A planner requests a task goal g. An executor produces a reference q. A controller moves the physical position
+x. Their errors satisfy
+x − g = (x − q) + (q − g). (1)
+A small tracking error x − q can coexist with a failed task. The reference may arrive too late, travel too far after
+a reversal, or continue an old goal after rejecting a request.
+The case study asks whether a ﬁnite retained history can make these contracts explicit and executable. It does
+not infer whether a new request is noise or a real change of intent. The title describes an engineering symptom;
+it does not propose a neurological mechanism.
+Prior work sets the scope. Finite impulse response (FIR) planning and derivative limits are established.
+Biagiotti and Melchiorri already discuss acceleration growth under an overlapping reversal and waiting as a
+response [ 1]. Their later work addresses time optimization under kinematic and frequency constraints [ 2]. We
+use the reversal as a regression case, not a discovery. Ruckig supplies online jerk-limited motion from nonzero
+initial states [ 3]. Reference governors and ModelPlex already connect future constraints, uncertainty, and checked
+execution [ 4, 6]. A network reference governor already uses plant-side acceptance checks for delayed or overtaken
+commands; its Remark 23 separates constraint satisfaction from tracking an outdated requested reference [ 5].
+Timing and request identity are therefore established design concerns. The proposed contribution is the specialized
+Lean contract and its reproducible boundaries. Its research value still needs external specialist review.
+1
+
+Figure 1: A frame from the accompanying Manim animation. The new request is to return to zero, but all four
+axes are still moving forward at the displayed time. The paths share the same physical state at revision. This
+scalar simulation uses response 100/s and zero disturbance. Planning time is omitted; the 10 mm cap applies
+only to the smooth reference.
+2 Exact ﬁnite checks of a retained reference
+Let h > 0 be one box width, and write z+ = max(z, 0). The step response of four cascaded box averages is
+F (z) = 1
+24
+4∑
+k=0
+(−1)k
+(4
+k
+)
+(z − k)4
++.
+For a ﬁnite list of execution times and signed increments E = ((τi, δi))n
+i=1, deﬁne
+qE(t) = g0 +
+∑
+i
+δiF ((t − τi)/h).
+The reference is C 3. Its velocity is piecewise cubic, acceleration piecewise quadratic, and jerk piecewise aﬃne.
+Signed cancellation remains in the reference; we do not replace it by a sum of absolute event magnitudes.
+At current time c, let S contain c and every future knot τi + kh, k = 0, . . . ,4. In each nonempty adjacent cell of
+S, add the interior zero of jerk when jerk is nonconstant and has such a zero. Call the resulting set C. When
+jerk is constant, acceleration is aﬃne; its endpoints suﬃce. After the ﬁnal knot all derivatives vanish.
+Theorem 1 (Exact reference checks) . For any ﬁnite event list, h > 0, J ≥ 0, and A ≥ 0,
+(
+∀s ∈ S, |q′′′
+E (s)| ≤ J
+)
+⇐ ⇒
+(
+∀t ≥ c, |q′′′
+E (t)| ≤ J
+)
+,
+(
+∀s ∈ C, |q′′
+E(s)| ≤ A
+)
+⇐ ⇒
+(
+∀t ≥ c, |q′′
+E(t)| ≤ A
+)
+.
+For rational inputs, the Lean Boolean checks have these all-future real contracts. Invalid widths and negative
+limits are rejected.
+Proof structure. An aﬃne function has its absolute maximum at a cell endpoint. A quadratic function can also
+attain its maximum magnitude where its derivative vanishes. The formal argument constructs cells from the event
+2
+
+list, including the current time and the ﬁnal tail. Repeated, unsorted, expired, and queued events are covered. It
+does not rely on a sampled graph.
+The ﬁrst acceleration implementation enumerates candidate pairs. A proved replacement takes the minimum
+strictly greater knot for each left endpoint. The theorem same_acceptance equates the two Boolean results,
+including invalid-input rejection. This optimization changes evaluation work, not the accepted set.
+Theorem 2 (Removal of completed tails). Remove every event with τi+4h ≤ c, and add the sum of its increments
+to g0. For every t ≥ c, the resulting position, velocity, acceleration, and jerk equal those of the original reference.
+Both guard decisions are preserved.
+Completed responses have position contribution δi and zero derivative. This result does not preserve past motion
+or bound the number of active events. An unbounded arrival rate can still require unbounded active history.
+A suﬃcient speed check. On a cell [tL, tR] of length d > 0, the cubic velocity has Bernstein coeﬃcients
+b0 = q′(tL), b 1 = q′(tL) + d
+3 q′′(tL), b 2 = q′(tR) − d
+3 q′′(tR), b 3 = q′(tR).
+Its value is a convex combination of these four coeﬃcients. If every coeﬃcient has magnitude at most V , the
+speed is at most V throughout the cell. The Lean checker connects this identity to the actual retained reference,
+including its ﬁnal zero-speed tail.
+This is a suﬃcient check, unlike the exact acceleration check. A proved example has speed at most 1/6 but a
+coeﬃcient of 3/16, so it is rejected. Its decision can change when the certiﬁcate partition changes, even when
+the motion does not. Zero-size events can reﬁne this speed test, but their nominal tails also aﬀect the timed
+selector. Such events are not a proved reﬁnement of the whole selector. The earlier pruning equivalence and
+timing measurements apply to the jerk and acceleration checks, not this new guard.
+3 Admission can repair a limit and still fail a task
+A new increment is relative to the ﬁnal committed target: δ = grequested − (g0 + ∑
+i δi). The caller must bind that
+ﬁnal target to the task goal. An append-only admission rule retains earlier events. Execution cannot precede
+admission. The separately proved causal wrapper also orders execution times. Rejection retains the existing
+reference. A new event contributes zero through its execution time, so the executed position and its ﬁrst three
+derivatives remain unchanged.
+For a ﬁnite supplied list of candidate execution times, the timed selector checks τ ≥ c, speed, jerk, acceleration,
+and completion of every event by a reference deadline D. A selected candidate therefore preserves the preﬁx,
+meets those reference bounds, and reaches the ﬁnal committed target at rest by D. A result of none says only
+that all supplied certiﬁcate tests rejected. With a conservative speed check, this does not even imply that each
+listed motion violates a limit. The selector is not a complete trajectory planner.
+Fixed reversal. Use h = .2 s. A +20 mm event starts at .22 s. A return to zero becomes available at .52 s. An
+immediate −20 mm event passes the jerk limit 7.5 m/s3, but its acceleration reaches 21/32 = .65625 m/s2, above
+the .5 limit. Trying execution times [.52, .62] s selects .62 for deadline 1.70 s. The retained reference then has
+|q′| ≤ 1/15 m/s, |q′′| ≤ .5 m/s2, and |q′′′| ≤ 7.5 m/s3. It reaches zero with zero derivatives at 1.42 s. The same
+candidate list returns none for deadline 1.30 s.
+These are exact rational Lean ﬁxtures. They show a useful distinction: repairing a reference limit requires time,
+and a deadline may not allow it. Waiting while retaining an old motion is not an emergency stop policy.
+4 A conditional physical guarantee
+The scalar plant and feedback are
+˙x = v, ˙v = a, ˙a = r(t)[u + w(t) − a], (2)
+u = q′′ − 8σ2ex − 6σev − 1
+2 ea + 5
+48σ q′′′, (3)
+3
+
+where ex = x − q, ev = v − q′, and ea = a − q′′. The rate satisﬁes 8σ ≤ r(t) ≤ 12σ, and |w(t)| ≤ W . Here u, w, a
+have units m/s 2 and σ, r have units s −1.
+Deﬁne the transformed errors
+z1 = ex, z 2 = ex + ev
+4σ , z 3 = ex + ev
+2σ + ea
+16σ2 .
+Theorem 3 (Tracking, arrival, and a terminal hold) . Let H, R, W, J ≥ 0 and σ > 0. Suppose a classical physical
+trajectory of (2)–(3) exists on [0, H] and satisﬁes the stated pointwise uncertainty bounds. If |zi(0)| ≤ R, |q′′′| ≤ J
+on that interval, and
+W + J
+48σ ≤ 2σ2R,
+then |ex| ≤ R, |ev| ≤ 8σR, and |ea| ≤ 64σ2R throughout it.
+For the delayed-return history above, take H ≥ 3.42 s, σ = 10 s−1, W = .01 m/s2, R = .2 mm, and J = 7.5 m/s3.
+Under the same initial and trajectory premises,
+|x(t) − q(t)| ≤ .2 mm (0 ≤ t ≤ H), x (.5) − x(0) ≥ 1 mm ,
+|x(t)| ≤ .2 mm (1 .42 ≤ t ≤ H),
+|v(t)| ≤ .001 m /s, |a(t)| ≤ .02 m /s2 (3.42 ≤ t ≤ H).
+The proof derives the reference derivatives and jerk premise from the ﬁnite history, then uses the invariant error
+cube. For progress, q(.5) = 779 /250000 m and q(0) = 0 ; the two position-error bounds suﬃce. The sole physical
+initial condition is at time zero. The state is not reset when a new request arrives.
+The proof inherits the tracking cube at t0 = 1 .42 s. It shifts the same state, response and disturbance to t0 + s.
+The zero reference tail makes the existing feedback exactly the hold controller; no new endpoint state is supplied.
+A common quadratic certiﬁcate follows the standard robust-control approach [ 9]. For y = (80000 x, 2000v, 50a)
+and E = yT Q−1y, the rational matrix
+Q = 1
+1000
+
+
+2162 −549 −234
+−549 518 −151
+−234 −151 810
+
+
+gives ˙E ≤ 20(1 − E) for every allowed response and disturbance. Lean checks the rational matrix inequalities
+and their interpolation over the response interval. The inherited cube gives E(0) ≤ 106, hence E(s) ≤ 1 +
+999999e−20s ≤ 1.01 for s ≥ 2 s. Its coordinate bounds give the stated physical speed and acceleration bands. E
+is a proof function, not mechanical energy.
+This closes the same-trajectory handoﬀ, but its suﬃcient time is conservative. The 3.42 s guarantee does not
+prove the numerical task at 1.70 s. The bands allow small residual motion; they do not state exact rest. A
+nonzero-bias moving witness has x = q + 12.5 µm and prevents an exact-arrival interpretation. An independent
+reviewer also checked a full FIR witness with nonzero actual speed at 3.42 s while every theorem premise holds.
+A separate exact witness rejects shifting the state while reading response and disturbance from the old clock. No
+input derivative, dwell time, or constant-rate premise is added. Existence for every bounded discontinuous input
+is not proved.
+The parameters are illustrative, not identiﬁed from a robot. Physical acceleration and jerk need not equal their
+reference limits.
+5 Comparison from the same moving state
+The experiment starts all methods from zero and uses the same FIR reference through the left side of .52 s. At
+that revision, the common reference state is
+(q, q′, q′′) = (77 /19200, 23/480, 5/16)
+4
+
+in SI units. The physical state is carried from time zero and is identical across methods for each plant case.
+We compare retained FIR, native fast Ruckig, and native Ruckig with minimum duration .90 s. The latter matches
+FIR’s 1.42 s reference arrival within the predeclared 10−12 s tolerance. The binary native duration is not an exact
+rational identity. The native initial state is rounded once to binary ﬂoating point. All methods use the same
+physical feedback and reference limits V = .1 m/s, A = .5 m/s2, J = 7.5 m/s3.
+The frozen grid has rates 80, 100, 120 s−1, disturbances 0, .01 m/s2, three methods, two deadlines, and output
+intervals 1 and .5 ms: 72 traces. A full task requires request acceptance, initial progress, reference conformity,
+tracking, and all three physical terminal bands from the deadline through 2.5 s:
+|x| ≤ .2 mm , |v| ≤ .001 m /s, |a| ≤ .02 m /s2.
+A rejected revision fails the task even if the later position happens to be near zero. Numerical terminal checks
+include event sides but are not an all-time proof.
+Fine-grid results, six plant cases Retained FIR Native fast Native matched
+Full task, deadline 1.70 s 6/6 6/6 6/6
+Full task, deadline 1.30 s 0/6 6/6 0/6∫ 2.5
+.52 ( ˙a)2 dt (m2/s5) 6.067–6.121 17.307–17.494 15.171–15.250
+Extra forward excursion (mm) 14.315–14.331 6.851–6.872 6.851–6.872
+Suﬃx path length (mm) 32.650–32.669 17.734–17.763 17.723–17.770
+Command total variation (m/s 2) 1.973–1.978 2.771–2.881 2.610–2.780
+Motion-quality ranges use the generous task over [.52, 2.5] s. Extra forward excursion is measured beyond the
+physical position at revision, not beyond the ﬁnal target. The squared-jerk integral is a smoothness proxy, not
+motor energy. Command variation includes jumps. Numerical integrals use composite trapezoid quadrature. The
+two output grids are a resolution check, not a rigorous integration error bound. Native jerk uses one-sided values
+at switches; those numerical paths are not silently covered by the classical FIR theorem.
+An independent replay used 80-digit arithmetic and a diﬀerent physical propagator. It checked all 271,884 state
+rows and 1,356 event rows with no task-decision mismatch. Fresh native plans and 7,922 native queries matched
+the saved exports. Both output grids give the same decisions. The largest position diﬀerence between propagators
+was 4.2 × 10−16 m. This is agreement between numerical models, not a hardware error bar.
+The FIR/native-matched squared-jerk ratio is .398–.402, while the forward-excursion ratio is 2.085–2.090. Native
+fast alone passes the tight task. Matching arrival removes one confound; it does not match the paths or make
+the native method a squared-jerk optimizer. We tested that remaining question with a stronger smooth baseline,
+using the same arrival and an explicit reference-excursion cap.
+A stronger oﬄine comparator. A convex program proposes piecewise linear jerk over the same .90 s suﬃx.
+It minimizes the reference squared-jerk integral. Initial jerk is retained and terminal jerk is zero. The reference
+is C 3; snap is not bounded. The experiment uses CVXPY 1.9.3 with Clarabel 0.11.1 [ 10, 11]. The six declared
+attempts use 90 or 180 intervals and forward-reference caps of 7, 10 or 15 mm. The procedure accepts only an
+optimal solver status followed by an exact rational reconstruction and suﬃcient Bernstein checks.
+Only the 90-interval, 10 mm attempt passes this procedure. Two attempts return infeasible; three return
+optimal_inaccurate. None of these statuses is used as an exact infeasibility proof. The three inaccurate
+attempts’ raw candidate arrays and residuals were not saved; their statuses and warnings remain. No solve
+was repeated. No reference-grid convergence or optimality is claimed. The exact repaired candidate reaches
+q = q′ = q′′ = q′′′ = 0 at 1.42 s.
+Six generous-task cases Checked FIR Smooth 10 mm reference cap
+Squared-jerk integral (m 2/s5) 6.067–6.121 3.692–3.766
+Extra actual forward travel (mm) 14.315–14.331 9.996–10.003
+Peak actual jerk (m/s 3) 5.000–5.002 7.059–8.091
+Full task, deadline 1.70 s 6/6 6/6
+Full task, deadline 1.30 s 0/6 0/6
+5
+
+Figure 2: The accepted common-preﬁx comparison shows both smoothness and travel. Curves use the plant case
+stated in the ﬁgure. Both bar metrics use [.52, 2.5] s. The left integrates squared jerk; the right reports maximum
+extra forward excursion. Ranges cover all six declared scalar plant cases.
+All 90 traces, including rejected-plan fallback, were independently replayed: 363,564 state rows and 3,294 event
+records. The exact polynomial checks and numerical replay are separate evidence. The strict 10 mm reference
+cap does not become a physical cap: actual travel reaches about 10.0033 mm. The smooth candidate has a lower
+integral and less travel than FIR, but higher peak jerk. Native methods still use less travel. No method dominates
+all declared measures.
+Planning latency is a separate contract. This comparison idealizes planning latency. The accepted solver
+attempt took about .138 s on the recorded host, but its simulated reference begins at .52 s, when the request
+becomes available. This is an oﬄine matched-boundary comparison, not demonstrated real-time replanning. A
+causal executor must retain the old motion during computation, initialize a candidate at its future start, and
+reject a result that is late or based on a stale plan. We have not shifted the saved curve afterwards to hide that
+obligation.
+6
+
+Figure 3: Oﬄine comparison from the same moving state. The 10 mm cap constrains the reference, not actual
+motion. Dotted times mark .52 s and 1.42 s. Top panels show rate 100/s and zero disturbance; lower panels show
+the six generous-task cases. Rejected attempts remain in the solver-outcome record. Lower squared-jerk integral
+can coexist with a higher jerk peak.
+6 Proof artifact and practical limits
+The portable package binds 50 local source modules to three frozen proof gates. Its replay builds local sources
+into an empty directory, checks every local declaration for unsafe code and unapproved axioms, runs separate
+kernel checks for nine main modules, and requires twelve false clients to fail for mathematical reasons. Public
+dependency caches remain a declared trust boundary. The permitted axioms are propext, Classical.choice,
+and Quot.sound. An independent copied-path replay passed the same checks. That reviewed 50-module package
+covers the pre-velocity proof set; packaging the expanded result is a separate integration gate.
+Paper claim Lean entry point
+Exact future jerk check_real_iff
+Exact future acceleration checkAcceleration_real_iff
+Same successor acceptance SuccessorCheck.same_acceptance
+Remove completed tails HistoryPruning.future_jet_eq
+Timed ﬁnite candidate contract chosen_reference_contract
+Position and terminal task from initial state FIRHold.delayed_return_physical_terminal
+Exploratory shared-host timings put the new 32-event checker near 220 ms, versus about 22.5 s for the earlier
+7
+
+enumerating check on the same ﬁxed inputs. These are Lean –run measurements, not worst-case bounds or
+production native timings. They do not establish a 1 kHz implementation. Removing completed tails helps
+storage only when active event arrivals are also controlled.
+The next practical test needs measured clocks, an execution schedule, a command interface, and a coupled robot
+model. Franka is the intended later platform; no robot was used here. Contact, payload variation, joint coupling,
+actuator saturation, and sampled actuation need their own assumptions and acceptance tests. The result does
+not certify a machine-safety performance level.
+Relation to learned and industrial execution. Real-Time Chunking and VLA-RAIL already retain or
+combine actions across changing plans [ 7, 8]. The present scalar history is not a full action chunk. Industrial
+systems also expose path and timing choices: F ANUC documents timing conﬁguration, while Yaskawa describes
+its SMOOTH function [ 12, 13]. Those public interfaces motivate explicit execution contracts. They do not
+establish the vendors’ internal algorithms or provide a measured baseline in this study.
+Review status and authorship. The proof gates and numerical comparison have independent agent checks.
+No external human review, physical validation, public release, or paper submission has occurred. Mike Helsel set
+the research question, proposed the execution-layer direction, identiﬁed the timing interpretation, and required
+fair comparisons and independent challenge. Codex agents assisted with source review, mathematics, Lean code,
+numerical code, critique, ﬁgures, and writing. Aﬃliation, release scope, license, and venue remain owner decisions.
+References
+[1] L. Biagiotti and C. Melchiorri. FIR Filters for Online Trajectory Planning with Time- and Frequency-Domain
+Speciﬁcations. Control Engineering Practice 20(12), 1385–1399, 2012.
+https://doi.org/10.1016/j.conengprac.2012.08.005.
+[2] L. Biagiotti and C. Melchiorri. Trajectory generation via FIR ﬁlters: A procedure for time-optimization under
+kinematic and frequency constraints. Control Engineering Practice 87, 43–58, 2019.
+https://doi.org/10.1016/j.conengprac.2019.03.017.
+[3] L. Berscheid and T. Kröger. Jerk-limited Real-time Trajectory Generation with Arbitrary Target States. RSS, 2021.
+https://arxiv.org/abs/2105.04830v2.
+[4] E. Garone, S. Di Cairano, and I. Kolmanovsky. Reference and command governors for systems with constraints: A
+survey on theory and applications. Automatica 75, 306–328, 2017.
+https://doi.org/10.1016/j.automatica.2016.08.013.
+[5] S. Di Cairano, U. V. Kalabić, and I. V. Kolmanovsky. Reference Governor for Network Control Systems Subject to
+Variable Time-delay. Automatica, 2015. Author preprint, MERL TR2015-154, Section 5, Algorithm 1 and Remark
+23. https://merl.com/publications/docs/TR2015-154.pdf.
+[6] S. Mitsch and A. Platzer. ModelPlex: Veriﬁed Runtime Validation of Veriﬁed Cyber-Physical System Models.
+Runtime Veriﬁcation, 199–214, 2014. https://symbolaris.com/pub/modelplex.pdf.
+[7] K. Black, M. Y. Galliker, and S. Levine. Real-Time Execution of Action Chunking Flow Policies. NeurIPS, 2025.
+https://arxiv.org/abs/2506.07339v2.
+[8] Y. Zhao et al. VLA-RAIL: A Real-Time Asynchronous Inference Linker for VLA Models and Robots. 2025.
+https://arxiv.org/abs/2512.24673v1.
+[9] S. Boyd, L. El Ghaoui, E. Feron, and V. Balakrishnan. Linear Matrix Inequalities in System and Control . SIAM,
+1994. Chapter 5. https://web.stanford.edu/~boyd/lmibook/index.html.
+[10] CVXPY authors. Solver Features. Oﬃcial documentation. https://www.cvxpy.org/tutorial/solvers/index.html.
+[11] P. J. Goulart and Y. Chen. Clarabel: An interior-point solver for conic programs with quadratic objectives. 2024.
+https://arxiv.org/abs/2405.12762.
+[12] F ANUC Corporation. How to Conﬁgure 1kHz Mode. ROS 2 Driver Documentation v2.2.0.
+https://fanuc-corporation.github.io/fanuc_driver_doc/v2.2.0/docs/fanuc_driver/how_to_configure_
+1khz_mode.html.
+8
+
+[13] Yaskawa Motoman. SMOOTH Function Overview. 2023.
+https://knowledge.motoman.com/hc/en-us/articles/16313283895191-SMOOTH-Function-Overview .
+9

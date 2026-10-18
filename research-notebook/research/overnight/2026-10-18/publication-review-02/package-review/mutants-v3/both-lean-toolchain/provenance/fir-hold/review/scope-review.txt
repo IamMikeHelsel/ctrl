@@ -1,0 +1,103 @@
+CONTROLS CRITIC 05 — source and assumption review
+Final acceptance is recorded separately in report.txt after all checks finish.
+
+Main result
+RobotMotion.FIRHold.delayed_return_physical_terminal is a conditional theorem
+about one scalar physical trajectory f on [0,H], with H >= 171/50 seconds.
+It proves a tracking-position band of 1/5000 m on the entire interval, forward
+progress of at least 1/1000 m by 1/2 second, a zero-goal position band from
+71/50 seconds, and speed/acceleration bands from 171/50 seconds.
+Those bands are |v| <= 1/1000 m/s and |a| <= 1/50 m/s^2. They are residual
+bounds, not a claim of exact rest.
+
+Actual equations
+IsTrajectory requires continuity of f on the closed interval and the classical
+derivative equations at every interior time. Its components are position,
+velocity and acceleration. The physical controller is exactly
+u=q''-800(x-q)-60(v-q')-(a-q'')/2+q'''/96.
+The actual acceleration equation is a'=r(t)*(u+w-a). In particular, the
+controller's -a/2 term does not replace the plant's additional -a term.
+The review includes a literal-coefficient client for this equation.
+
+The fixed four-box FIR history uses width 1/5 second, an increment 1/50 m at
+11/50 second and an increment -1/50 m at 31/50 second. The reference and its
+first three derivatives are zero after 71/50 seconds. The proof imports the
+accepted exact reference and checker facts rather than assuming this tail.
+
+One initial cube
+The three coordinates are ex, ex+ev/40, and ex+ev/20+ea/1600. Their absolute
+values are bounded by 1/5000 at global time zero only. This is a coupled error
+condition; it is not three independent physical position/velocity/acceleration
+limits with the same numerical value. The source derives the entire tracking
+cube using checked_tracking, then evaluates that result at the handoff time.
+No new initial-state assumption, state reset, exact endpoint, or separately
+supplied hold trajectory occurs in the main statement.
+
+General composition
+trajectory_shift restricts f to f(t0+s) and shifts both input functions by t0.
+Its general statement can have an empty horizon if t0>H; the main use has
+t0+2<=H, so that case cannot make the claimed terminal interval vacuous.
+constant_tail_hold changes the controller formula only after q=[c,0,0] and
+j=0 are known. It retains the same f(t0+s), r(t0+s), and w(t0+s).
+tail_cube_identity is a direct coordinate identity at t0.
+tracked_tail_terminal assumes the full inherited tracking cube and derives its
+hold initial cube. The main theorem discharges this full-cube premise from the
+single global-time-zero condition. The local hold time t-t0 is at least two
+seconds exactly when global t>=171/50 in this example.
+
+Changing inputs and existence
+The pointwise bounds are 80<=r(t)<=120 per second and |w(t)|<=1/100 m/s^2.
+There is no separate continuity, derivative bound, dwell time, constancy or
+input-estimation assumption. The imported energy comparison uses a constant
+coefficient 20, so its continuity hypothesis does not constrain physical r.
+However, a classical trajectory is supplied as a premise. The result is not
+an existence theorem for every bounded, possibly discontinuous pair r,w.
+
+The imported certificate is dimensionless: z=(80000*(x-c),2000*v,50*a),
+V=z^T P z. It is not mechanical energy. It derives V'<=20*(1-V), then
+V(t)<=1+999999*exp(-20*t), and the stated speed and acceleration bounds for
+local hold time >=2. The original initial cube supplies V(0)<=1000000;
+the proof does not substitute a tighter unit ellipsoid as an extra premise.
+The endpoint inequalities and coordinate bounds were independently accepted
+in critic-04. This review rebuilds their actual source and kernel dependencies.
+
+Non-vacuity and negative evidence
+The builder's constant-bias witness has a permanent 12.5 micrometre position
+offset. It refutes an endpoint reset and exact goal arrival. Its moving speed
+and acceleration equal the reference. The changing-input witness changes
+r from 92 to 100 at 1/2 second and adjusts a prescribed bounded w so the same
+smooth state satisfies the classical ODE. Both inputs have become constant
+by the hold tail. This witness does not itself demonstrate variation during
+the hold, although the universal theorem allows such variation and the
+previous hold gate separately checked a changing-hold witness.
+
+The reviewer adds a full FIR trajectory with an exponential error, rate 640/7,
+and disturbance q'''/1920. It satisfies the sole initial cube and the actual
+ODE, but has nonzero speed at the guaranteed terminal time. This tests the
+difference between residual bounds and exact finite-time rest. A separate
+large-initial-state hold trajectory tests why the initial cube cannot simply
+be deleted. It is a logical counterexample, not a hardware test scenario.
+
+The reviewer also tests the wrong-clock substitution as a whole trajectory
+claim. The correctly shifted state has derivative zero at local time 1/2;
+the unshifted rate and disturbance would require -1/48 m/s^3 there. Derivative
+uniqueness rules out that substituted trajectory. No plotting tolerance or
+sampling argument is used in this test.
+
+Publication limits
+The new result closes the previously separate FIR tracking and terminal-hold
+contracts. It supports a formalization and worked-case contribution. It does
+not establish a new controller, a new quadratic method, or research novelty.
+3.42 seconds is a sufficient guarantee; it is not a sharp stopping time.
+It proves neither the 1.7-second numerical task's velocity/acceleration targets
+nor feasibility of the 1.3-second task. The position band at 1.7 follows from
+the earlier position tail, but the new terminal bands start later.
+
+No theorem here covers sampled feedback, sensing or dispatch delay, command
+clipping, friction loss outside the rate band, multi-axis coupling, contact,
+or Franka hardware. It is not a PL d/e safety claim. A reference velocity or
+jerk admission result is not automatically an actual velocity or jerk limit.
+No additional scalar proof branch is needed to make this claim coherent.
+The next work is manuscript integration, artifact replay, and human evaluation
+of the result's value; any shorter deadline or physical implementation needs
+a separate declared model and test.
