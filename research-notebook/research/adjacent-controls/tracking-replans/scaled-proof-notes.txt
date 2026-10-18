@@ -1,0 +1,83 @@
+Physical time scaling for tracking during finite replans
+
+Status
+ScaledTracking.lean compiled on 2026-10-17 with Lean 4.35.0 and the current
+pinned dependencies. It has seven theorems and seven helper lemmas. The local
+build used an isolated .lake/scaleddev folder. The parent task will run the
+full axiom audit and standalone kernel replay. Compilation alone is not a
+hardware test or a novelty review.
+
+What the proof says
+Let sigma > 0. Suppose the actual actuator rate r(t) stays in [8 sigma,
+12 sigma]. The physical plant has position x, velocity v, and acceleration a.
+Its equations are x'=v, v'=a, and a'=r(t)(u+w-a). The reference q has three
+components: position, velocity, and acceleration. Its derivative is
+[q_velocity, q_acceleration, j]. Here j is the reference jerk.
+
+The physical controller is
+  u = q_acceleration - 8 sigma^2 e_position - 6 sigma e_velocity
+      - e_acceleration/2 + 5 j/(48 sigma).
+The error e is actual state minus reference state. The disturbance w is added
+to the acceleration target. It is not an arbitrary force disturbance in an
+unmodeled rigid-body plant.
+
+The proof uses the new time tau = sigma t. It proves the plant and reference
+chain rules. The normalized state is [x, v/sigma, a/sigma^2], evaluated at
+t=tau/sigma. The normalized rate is r/sigma. The normalized disturbance is
+w/sigma^2. The normalized jerk is j/sigma^3. The normalized horizon is sigma H.
+The error ODE is a consequence of the actual plant and reference equations.
+It is not a separate assumption.
+
+Define three error coordinates:
+  z0 = e_position
+  z1 = e_position + e_velocity/(4 sigma)
+  z2 = e_position + e_velocity/(2 sigma) + e_acceleration/(16 sigma^2).
+Suppose each initial |zi| is at most R, with R >= 0. Suppose |w| <= W and
+|j| <= J. If
+  W + J/(48 sigma) <= 2 sigma^2 R,
+then each |zi| stays at most R for the whole closed time interval.
+
+The cube implies these physical error bounds:
+  |e_position| <= R
+  |e_velocity| <= 8 sigma R
+  |e_acceleration| <= 64 sigma^2 R.
+If the reference position stays in [L+R, U-R], the actual position stays in
+[L,U]. If reference speed and acceleration are bounded by V and A, the actual
+bounds are V+8 sigma R and A+64 sigma^2 R. The total acceleration target obeys
+  |u+w| <= A + 24 sigma^2 R + 5 J/(48 sigma) + W.
+This last bound can be compared with available actuator authority.
+
+Finite replans
+finite_replans_scaled applies the same certificate to any finite number of
+segments. Both actual and reference position, velocity, and acceleration must
+match at each switch. The hypotheses include the actual plant equation and
+reference equation separately on every segment. There is no derivative claim
+at a switch. There is no infinite-switch or Zeno claim. A lower bound on the
+segment duration is not needed for this finite statement.
+
+Illustrative values
+The exact rational arithmetic theorem uses sigma=10/s, W=.01 m/s^2,
+J=10 m/s^3, and R=.0002 m=.2 mm. It checks
+  .01 + 10/480 <= 2*100*.0002,
+or .030833... <= .04, in m/s^2. The assumed actuator rate band is 80 to
+120 per second. These values are illustrative. They are not measured robot
+parameters. The position error bound is .2 mm. The corresponding speed and
+acceleration error bounds are .016 m/s and 1.28 m/s^2. These bounds do not say
+that a physical end effector is motionless.
+
+Limits
+The result is conditional on an actual classical trajectory in each segment,
+continuous at both endpoints. It does not prove physical trajectory existence.
+The controller uses continuous state feedback. Sensor noise, delay, sampled
+feedback, saturation, compliance, friction, and coupled joint dynamics need
+separate assumptions or proofs. Matching reference states prevents jumps of
+position, velocity, and acceleration. It does not prevent jerk changes.
+Changing sigma also changes the assumed physical rate band. It is not a free
+way to improve a certificate on unchanged hardware.
+
+Reproduction
+From the workspace root, the standard development command is:
+  python3 research/adjacent-controls/tracking-replans/develop.py ScaledTracking
+This compiles TrackingReplan and its dependencies, then ScaledTracking.
+Use the parent task's final verification report for the recorded source hashes,
+axiom audit, and standalone kernel replay.

@@ -1,0 +1,47 @@
+Try this:
+  [apply] ring_nf
+  
+  The `ring` tactic failed to close the goal. Use `ring_nf` to obtain a normal form.
+    
+  Note that `ring` works primarily in *commutative* rings. If you have a noncommutative ring, abelian group or module, consider using `noncomm_ring`, `abel` or `module` instead.
+/var/folders/my/gvpc8lhn61b07vzgm7fxmnmh0000gn/T/tracking-replans-lean-ap1fsvv7/FalseSign.lean:33:2: error: unsolved goals
+case e'_9.«2»
+H κ : ℝ
+r w j : ℝ → ℝ
+f q : ℝ → State
+hf : IsTrajectory H r (fun t => input κ f q j t + w t) f
+hq : ContinuousOn q (Icc 0 H)
+hdq : ∀ t ∈ Ioo 0 H, ∀ (i : Fin 3), HasDerivAt (fun s => q s i) (![q t 1, q t 2, j t] i) t
+hr : ∀ t ∈ Ioo 0 H, r t ≠ 0
+t : ℝ
+ht : t ∈ Ioo 0 H
+he :
+  HasDerivAt ((fun s => f s ((fun i => i) ⟨2, ⋯⟩)) - fun s => q s ((fun i => i) ⟨2, ⋯⟩))
+    (![f t 1, f t 2, r t * (input κ f q j t + w t - f t 2)] ((fun i => i) ⟨2, ⋯⟩) -
+      ![q t 1, q t 2, j t] ((fun i => i) ⟨2, ⋯⟩))
+    t
+⊢ r t * command 0 (error f q t) + r t * w t + r t * κ * j t - r t * f t 2 + r t * q t 2 - j t =
+    r t * command 0 (error f q t) + r t * w t - r t * κ * j t - r t * f t 2 + r t * q t 2 - j t
+/var/folders/my/gvpc8lhn61b07vzgm7fxmnmh0000gn/T/tracking-replans-lean-ap1fsvv7/FalseSign.lean:118:6: error: invalid 'calc' step, left-hand side is
+  |q t 2 + command 0 (error f q t) + κ * j t + w t| : ℝ
+but is expected to be
+  |q t 2 + command 0 (error f q t) - κ * j t + w t| : ℝ
+Try this:
+  [apply] ring_nf
+  
+  The `ring` tactic failed to close the goal. Use `ring_nf` to obtain a normal form.
+    
+  Note that `ring` works primarily in *commutative* rings. If you have a noncommutative ring, abelian group or module, consider using `noncomm_ring`, `abel` or `module` instead.
+/var/folders/my/gvpc8lhn61b07vzgm7fxmnmh0000gn/T/tracking-replans-lean-ap1fsvv7/FalseSign.lean:281:61: error: unsolved goals
+H R κ W J t : ℝ
+r w j : ℝ → ℝ
+f q : ℝ → State
+hf : IsTrajectory H r (fun t => input κ f q j t + w t) f
+ht : t ∈ Ioo 0 H
+hr : |r t| ≤ 12
+hz : ∀ (i : Fin 3), |coordinates 0 (error f q t) i| ≤ R
+hw : |w t| ≤ W
+hj : |j t| ≤ J
+hc : |command 0 (error f q t) - error f q t 2| ≤ 56 * R
+⊢ (q t 2 + command 0 fun i => f t i - q t i) - κ * j t + w t - f t 2 =
+    (q t 2 + command 0 fun i => f t i - q t i) + κ * j t + w t - f t 2

@@ -1,3 +1,15 @@
+NEW FINISHED FOLLOW-UP — 17 October 2026
+
+tracking-note/main.pdf: When Plans Change, How Far Can a Robot Stray?
+Five-page illustrated note. It closes the actual tracking error ODE, time scaling,
+physical margins and finite matched replans. Its 34 new statements passed fresh
+source checks, axiom audit and kernel replay. The 144-case numerical comparison
+retains both better and worse jerk-feedforward outcomes. Continuous feedback,
+model identification, stop reserve and publication novelty remain explicit limits.
+See ../research/adjacent-controls/tracking-replans/README.txt and verification.json.
+The Manim explanation and its source are in that folder's animation/ directory.
+The existing fixed-rate sampled-control paper below has a different scope.
+
 CURRENT PAPER AND ARTIFACT — 17 October 2026
 
 Start with robust-manuscript/main.pdf (six pages). It unifies the fixed-controller

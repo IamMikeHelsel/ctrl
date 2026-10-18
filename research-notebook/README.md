@@ -6,12 +6,14 @@ and final animations. Start with the reports below.
 
 | Area | Start here |
 |---|---|
+| Finished tracking through finite replans | [Five-page note](publication/tracking-note/main.pdf), [proof scope](research/adjacent-controls/tracking-replans/README.txt), [Manim video](research/adjacent-controls/tracking-replans/animation/changing-plans.mp4) |
+| Tonight's closure across tracks | [Status](research/tonight-closure/README.txt), [Erdős conditional formalization note](research/tonight-closure/erdos-formalization-note.txt) |
 | Human steadiness and VLA target decisions | [Report](research/adjacent-controls/steady-motion/index.html), [proof scope](research/adjacent-controls/steady-motion/README.txt), [Manim video](research/adjacent-controls/steady-motion/animation/steady-enough.mp4) |
 | Changing response, stopping, and holding | [Report](research/adjacent-controls/variable-response/sampled-handoff/index.html), [proof scope](research/adjacent-controls/variable-response/README.txt) |
 | Smooth motion under replanning | [Proof and comparison](research/adjacent-controls/vla-smooth-replanning/report.txt), [animation](research/adjacent-controls/vla-smooth-replanning/animation/smooth-replanning.mp4) |
 | Main Lean controls project | [README](lean-controls/README.txt), [pinned toolchain](lean-controls/lean-toolchain) |
 | Paper drafts and frozen evidence | [Current-paper guide](publication/README.txt), [manuscript](publication/robust-manuscript/main.pdf) |
-| Erdős and prize opportunities | [Assessment](research/opportunity-assessment/current-status.html), [Erdős proof attempt](research/opportunity-assessment/erdos-completion-spike/README.txt) |
+| Erdős and prize opportunities | [Assessment](research/opportunity-assessment/current-status.html), [Erdős conditional theorem](research/opportunity-assessment/erdos-completion-spike/FINAL-STATUS.txt) |
 | Geometric Unity mathematical audit | [Report](research/weinstein-lean/operator-audit/report.txt), [independent review](research/weinstein-lean/operator-audit/independent-review.txt) |
 
 GitHub shows the source of HTML reports. Open them from a local checkout for the formatted page.
@@ -25,8 +27,10 @@ the root library currently uses a different pin. Keep the notebook's `lake-manif
 `lean-toolchain` files unchanged when replaying its evidence. Importing these files does not make
 them part of the root build or its CI coverage.
 
-The latest steadiness package contains 16 checked theorem statements. Its original verifier,
-source hashes, axiom audit, kernel replay logs, and rejected false-bound mutation are preserved.
+The tracking package contains 34 checked statements, including helper lemmas, plus a 144-case
+numerical comparison and independent critique. The earlier steadiness package contains 16 checked
+theorem statements. Each package preserves its verifier, source hashes, axiom audit,
+kernel replay logs, and rejected false mutations.
 Other folders have their own scopes and verification records. Some contain incomplete attempts
 and deliberate negative tests. A count of `.lean` files is not a count of proved results.
 
