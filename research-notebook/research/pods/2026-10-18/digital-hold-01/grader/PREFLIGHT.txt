@@ -1,0 +1,107 @@
+DIGITAL HOLD — PROGRESS REVIEW PREFLIGHT
+18 October 2026. Prepared before builder freeze. No final proof verdict.
+
+Decision to test
+If the fixed 1 ms result passes, it changes one design decision: an engineer
+can admit this holding mode when the declared state, sensor, actuator and
+whole-age conditions hold. Whole age means reading timestamp to the current
+physical time, including the time while a command is held. A nominal 1 kHz
+loop alone does not meet this condition.
+
+This is a useful model-level implementation bridge. It is not yet evidence
+that a measured axis can meet the contract, or that the maneuver can brake
+and enter this mode. No novelty or publication verdict follows from it.
+
+Fixed numbers from the input screen
+R = 0.055525 m; target-mismatch allowance = 0.11105 m/s^2.
+Sensor contribution = 0.093 m/s^2. Physical target error = 0.01 m/s^2.
+The old conditional slope screen gives 0.1087746 m/s^2 at 1 ms,
+leaving 0.0022754 m/s^2. This is screen arithmetic, not a safety proof.
+Do not require a new valid proof route to reproduce this exact intermediate
+bound; require that it closes the same fixed contract without circularity.
+
+The tube width is 0.11105 m. Exported cube bounds allow speed 0.4442 m/s
+and acceleration 3.5536 m/s^2. They do not establish precision standstill.
+Measured command <= 1.4256 m/s^2 and command plus physical error <=
+1.4356 m/s^2 follow only after the sampled true state is known to be in
+the cube. Keep command authority separate from actual acceleration.
+
+Accept / repair / redirect / stop
+ACCEPT the bounded sampled-hold milestone only if all A1-A6 pass:
+A1. The frozen public statement preserves the declared cube at every time,
+    on each arbitrary finite horizon, for the fixed gains and parameter
+    bounds. It must cover a repeatable execution, not one isolated interval
+    with an unproved recurrence premise. A smaller lemma is labelled partial.
+A2. The execution specifies measurement and dispatch times, causal reads,
+    measurement error, the first applied command and any initial history.
+    It holds the measured command between updates and carries one physical
+    state through updates. The age bound holds throughout each hold interval.
+    A past sample needs a justified past history; initial cube membership
+    at time zero does not certify an arbitrary state before time zero.
+A3. Cube membership and aggregate mismatch are derived. Neither is a hidden
+    global safety premise, nor a caller-supplied bound with the same missing
+    bootstrap. Local hypotheses inside a proved first-exit argument are fine.
+A4. Derivative jumps and update endpoints fit the trajectory definition.
+    Rate/error regularity, finite switching, and existence scope are explicit.
+    Conditional-on-existence safety can pass this bounded milestone when
+    labelled as such. It cannot pass the executable-controller gate. An
+    equilibrium witness alone does not prove existence for all initial states.
+A5. Saturation location and target-error location are explicit. Either the
+    actuator model includes clipping, or a derived command bound proves it
+    inactive for this execution. Real arithmetic and implementation rounding
+    remain distinct unless the finite-arithmetic bridge is checked.
+A6. The independent critic accepts the actual frozen statement and replays
+    its final source. Build, axiom and available separate-kernel evidence bind
+    to source hashes. Negative controls challenge the contract. No forbidden
+    proof escape, toolchain change or stale evidence supports acceptance.
+
+ACCEPT an obstruction packet as useful progress, but not as a completed hold
+milestone, if it identifies the exact false/missing premise or failing bound,
+ties it to the attempted statement and evidence, and states what would repair
+it. A failed sufficient bound is not evidence of unsafe plant motion.
+
+REPAIR once if the critic identifies one local, bounded defect that can be
+fixed without changing gains, cube, errors, age or claimed trajectory scope.
+Examples: a slope constant, a missing endpoint case, or source/evidence drift.
+Freeze again and replay affected evidence. No acceptance from promised edits.
+If repair needs a new proof route after 14:00 UTC, use REDIRECT or STOP.
+
+REDIRECT if the completed lemma assumes away digital execution, if existence
+or recurrence is the real missing bridge, or if the fixed 1 ms route cannot
+close after one justified repair. Preserve the result and name one exact next
+obligation. A valid but narrow proof may become a library example while the
+engineering comparison remains open. Do not broaden the robot or the claim.
+
+STOP this pod when the review packet is complete, when the one repair fails,
+at the root's usage/reserve gate, or at 14:40 UTC. Report unresolved obligations.
+This reviewer decides by 14:20 UTC; it cannot authorize an open-ended extension.
+
+What still blocks a complete stop-and-hold operation
+1. A declared initial uncertainty set, pending command, two travel limits,
+   available braking authority, and safe path during request/command delays.
+2. Braking with the same changing response and error channels. A sampled
+   detector must reach an admitted capture by a finite deadline. An assumed
+   lucky reading does not prove eventual capture or safe rearward travel.
+3. A state-preserving bridge into this digital hold, including its first
+   sample/history contract. The older one-off 5 ms capture delay is not an
+   ongoing 5 ms age permission, nor automatically a valid initial history.
+4. Required terminal speed, acceleration, position width and settling time.
+   Position containment alone does not meet an unspecified stop requirement.
+5. A decision function tied to real timestamps, units, state ordering,
+   sensor estimates and command placement; finite-arithmetic and measured
+   response/error/authority evidence for any hardware claim.
+
+Independent value gates
+Proof gate: pending frozen source and independent critic.
+Engineering gate: model-level admission value if A1-A6 pass; measured utility
+remains open. See COMPARISON.txt for the next bounded evidence test.
+Novelty gate: not established. Held input, noisy state, delay, backup sets and
+formal intersample safety already have primary-source precedents. See SOURCES.txt.
+
+Three questions for Mike at later human review
+1. What position width, speed, acceleration and deadline would count as
+   stopped for the first task? The present cube only bounds containment.
+2. Which axis and command interface should supply measured response,
+   braking authority, estimation errors and worst-case information age?
+3. Which benefit should decide further work: a better timing/clearance
+   admission boundary, or less manual work to obtain a checked guarantee?

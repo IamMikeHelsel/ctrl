@@ -1,0 +1,73 @@
+ONE NARROW COMPARISON AFTER THE HOLD MILESTONE
+18 October 2026. Predeclared proposal. No comparison has been run.
+
+Question
+Does the new bridge certify a useful sampled hold budget, or reduce the work
+needed to certify it, compared with a direct sampled reachable-set certificate?
+Keep the feedback fixed. This tests the certificate and its implementation
+contract; it does not test a newly invented controller.
+
+Common contract
+Use x'=v, v'=a, a'=r(t)(u+d-a), r in [8,12]/s, |d|<=.01 m/s^2.
+Use the charter's gains, cube, sensor errors, command authority and fixed c.
+Use the same causal timestamps, first command/history, hold convention,
+signal regularity and existence assumptions on both sides. Do not replace
+changing r(t) by one unknown constant r, or whole age by nominal sample period.
+Require all states in the initial cube and all allowed error/rate signals.
+Check every time between commands and the recurrence at each update.
+
+Baseline
+Construct an independent direct enclosure of the held-command flow, with
+sensor uncertainty and any necessary timestamp/history state. Certify:
+  (i) next-update membership in the same cube;
+  (ii) the same position/cube constraints between updates;
+  (iii) the same command-authority bound.
+Use validated interval or zonotope enclosures with outward error bounds.
+Derive the changing-response enclosure and stale-measurement contract; do not
+pretend an existing paper's theorem applies without these adaptations.
+Do not use the new hold theorem as the baseline's terminal certificate.
+
+This is a direct baseline for established sampled safety obligations. The
+one-step invariance/safety/admissibility structure is explicit in Hellwig
+et al. Definition 2. Singletary et al. is a relevant sampled backup baseline
+for the later whole operation; it already handles held inputs, state uncertainty
+and known delay with command history. Its inspected theorem is not a drop-in
+result for arbitrary r(t), this cube, and this timing model. A later backup
+comparison must prove or conservatively enclose those adaptations first.
+If the baseline cannot represent the common contract, label the comparison
+not yet matched. Do not count a model mismatch as a performance win.
+
+Small test matrix
+Mandatory first case: the full fixed cube at total age <=1 ms.
+Only after it is matched, test age caps .5, .75, 1, 1.25, 1.5, 2 and 5 ms.
+Keep all other constants fixed. Predeclare enclosure order, subdivision
+refinement and equal resource caps before running the matrix. Give each
+method reasonable tuning within those caps and preserve failed attempts.
+Report separately any restricted schedule/rate subset used for debugging.
+
+Outputs
+- Certified age grid points for the full cube; failure and reason per point.
+- Enclosure tightness at the same difficult faces and update boundaries.
+- Model-specific manual steps, source changes, certificate size, build and
+  replay time, trusted numerical code, and explicit unverified assumptions.
+- A short independent attempt to reproduce the result from the frozen inputs.
+If different tools have different trust boundaries, display them separately.
+Simulation can find candidate counterexamples. It is not the true safe-set
+boundary and cannot certify worst-case safety by itself.
+
+Decision rules
+If both certify 1 ms, that supports feasibility, not a larger operating region.
+Continue on an engineering-value claim only if a useful requirement is met
+on one side and not certified on the other after the agreed tuning budget.
+Report this as a difference in sufficient certificates, unless an actual
+validated unsafe trajectory proves a stronger distinction.
+Continue on a formal-methods value claim only if the measured work or trust
+boundary improves and an independent consumer can use the interface.
+Report raw costs and changed decisions; do not invent a combined grade.
+If both certify the same requirement at similar effort and neither offers
+clear reuse, preserve the bridge as a checked example. More similar lemmas
+will not resolve the missing value claim.
+
+The stop-and-hold comparison comes later. It must add a common braking
+prefix, finite capture, two-sided travel and terminal motion requirements.
+Passing this terminal-hold comparison cannot settle that larger claim.

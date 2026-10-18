@@ -1,0 +1,23 @@
+import DigitalHold
+#print axioms LeanControls.DigitalHold.cube_face
+#print axioms LeanControls.DigitalHold.cube_physical_bounds
+#print axioms LeanControls.DigitalHold.clip_eq
+#print axioms LeanControls.DigitalHold.measurement_cost
+#print axioms LeanControls.DigitalHold.slope_bound
+#print axioms LeanControls.DigitalHold.command_deriv
+#print axioms LeanControls.DigitalHold.coordinate_deriv
+#print axioms LeanControls.DigitalHold.age_bound
+#print axioms LeanControls.DigitalHold.finite_prefix_barrier
+#print axioms LeanControls.DigitalHold.prefix_read_bound
+#print axioms LeanControls.DigitalHold.prefix_clip_eq
+#print axioms LeanControls.DigitalHold.coarse_mismatch
+#print axioms LeanControls.DigitalHold.improve_mismatch
+#print axioms LeanControls.DigitalHold.prefix_mismatch
+#print axioms LeanControls.DigitalHold.prefix_budget
+#print axioms LeanControls.DigitalHold.digital_invariant
+#print axioms LeanControls.DigitalHold.digital_bounds
+#print axioms LeanControls.DigitalHold.first_command_fresh
+#print axioms LeanControls.DigitalHold.sampled_hold
+#print axioms LeanControls.DigitalHold.equilibrium_execution
+#print axioms LeanControls.DigitalHold.single_cell_schedule
+#print axioms LeanControls.DigitalHold.sampled_nonempty

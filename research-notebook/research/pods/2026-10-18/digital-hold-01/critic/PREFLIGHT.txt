@@ -1,0 +1,103 @@
+INDEPENDENT DIGITAL HOLD PREFLIGHT
+18 October 2026. Critic: digital_hold_critic_01.
+Scope: proposed 1 ms digital holding bridge. This is not final acceptance.
+
+Result
+The original 1 ms arithmetic screen is correct. It is conditional and does not
+close sampled invariance. I found no arithmetic obstruction at 1 ms. The main
+risks are the execution contract and a circular use of the mismatch budget.
+
+Exact independent checks
+The feedback derivative coefficients have absolute sum 128-4r for 8<=r<=12.
+Thus with cube radius K and mismatch bound B, a valid slope bound is
+  max(96K+4B, 80K+6B).
+At B=2R this gives 104R=5.7746 m/s^3. A separate rational test checks the physical
+and transformed derivative identities at 48 interior/nonvertex points.
+The original 1 ms screen is .1087746 m/s^2 < .11105, with slack .0022754.
+These checks prove scalar arithmetic, not the trajectory bridge.
+
+I challenged the builder's tentative 92K coefficient. At r=8, z=(-K,K,0), w=0,
+the absolute derivative is 96K. The builder was told to use at least 96K in an
+r-independent bound. Its proposed two-refinement route still has slack:
+  L0 = 208R + 6(M+D) = 12.1672 m/s^3;
+  W0 = M+D + h L0 = .1151672 m/s^2;
+  L1 = 96R + 6W0 = 6.0214032 m/s^3;
+  W1 = M+D + h L1 = .1090214032 m/s^2 < .11105.
+Here M=.093, D=.01 and h=.001 in SI units. W0 exceeds the desired budget, so it
+cannot directly feed the old cube theorem. W1 has slack .0020285968. The prefix
+argument, time integration and first-contact step still need proof.
+
+A separate possible route uses a bounded prefix supremum B, with
+  B <= M+D+h(96K+6B).
+It gives B <=(.103+.096K)/.994. At K=R this is .108984305835... <2R. This is only
+an algebraic route suggestion. A proof must first establish finite B without
+assuming the desired mismatch bound. It must not integrate across an interval
+for which its prefix hypothesis is unavailable.
+
+Concrete failure controls and contract requirements
+1. Causality: t-s<=h alone admits t=0,s=1. Require 0<=s<=dispatch<=t for the
+   active command. At a dispatch boundary, state which command is left-active
+   and which is right-active. Timestamp monotonicity is not a substitute for
+   these pointwise inequalities. All sample states must lie in the proved past.
+2. First command/history: a bound from t=0 needs a fresh initial reading and
+   dispatch, or a certified prehistory and pending command. If the initial
+   state is (x-c,v,a)=(R,0,0) and the pending target is +2 with r=12, then
+   a(t)=2(1-exp(-12t))>0 for t>0. It follows that x(t)>c+R immediately. This
+   violates containment despite bounded authority. At 1 ms the position excess
+   is about 3.9880e-9 m. The analytic sign argument, not this number, establishes
+   the counterexample to omitting the initial command law.
+3. Derivative jumps: q=0 before a dispatch and q=.093 after it, with r=8 and
+   zero state at dispatch, has left a'=0 and right a'=.744. The physical state
+   is continuous but a has no two-sided derivative there. The inherited
+   IsTrajectory requires a classical derivative at every interior time. It
+   cannot be applied unchanged to this legal digital command jump.
+4. Jumping mismatch: held commands and physical error can make w_total jump.
+   A first-exit proof on |w_total| needs appropriate regularity or must avoid
+   that argument. State continuity alone is not continuity of w_total.
+5. State linkage: one physical state must span all command updates. Equality of
+   position alone is insufficient. Velocity and acceleration cannot be reset.
+6. Saturation: state whether the plant sees clip(q)+d, clip(q+d), or another
+   signal. Under the proved cube, |q|<=1.4256 and |q+d|<=1.4356, both below2.
+   This can show the chosen clipping is inactive. An unconstrained derivative
+   premise is not itself a saturated implementation.
+7. Existence: bounded arbitrary r and d plus a classical trajectory assumption
+   do not prove trajectories exist. A finite/piecewise or one-sided contract
+   can support conditional safety; general existence and uniqueness remain
+   separate claims. A constant equilibrium witness proves nonemptiness only.
+8. Finite dispatches and endpoints: cover horizon zero, dispatch at0, final
+   horizon, exact age equality, sample=dispatch, and sample before the current
+   interval. Exclude or handle Zeno dispatch accumulation explicitly.
+9. Vacuity: a predicate requiring classical dynamics through incompatible
+   jumps can make the theorem true on an unrealistically small execution class.
+   Inspect a real held-command witness, not only an equilibrium witness.
+10. Circularity: the final execution predicate must not assume cube invariance,
+    a global feedback-slope bound, or the desired aggregate mismatch bound.
+    Prefix cube assumptions are acceptable only inside a discharged barrier
+    proof, not in the exported safety theorem's hypotheses.
+
+Planned falsification of a frozen packet
+- Inspect exact quantified theorem statements and definitions before logs.
+- Copy frozen source bytes into critic/fresh; build there using unchanged pins.
+- Record source and pin hashes, tool versions, build exits and all output.
+- Audit every claimed theorem for dependency only on the declared axiom set.
+- Run separate leanchecker checks on the new compiled modules where feasible.
+- Strengthen a true arithmetic budget beyond its value and require proof failure.
+- Revisit causality, the first command, derivative jumps and clock endpoints
+  against the actual definitions. A compilation error counts as a negative
+  control only if it reaches the intended false mathematical goal.
+- Verify frozen hashes again after replay. Do not modify builder input files.
+
+Acceptance boundary
+A checked theorem may establish finite-horizon cube containment for executions
+of an explicit real-valued digital contract. Conditional-on-existence scope must
+be visible. This would not establish a complete braking operation, eventual
+sample acceptance, real-time implementation, finite-precision arithmetic, hardware
+bounds, precision standstill, comparative merit, novelty or publication value.
+The cube permits |v|<=.4442 m/s and |a|<=3.5536 m/s^2. These are coarse guaranteed
+bands, not predicted motion or a precision-stop claim.
+
+Files
+preflight.py is the independent executable scalar check and analytic witness
+record. preflight-results.json contains its exact values and input hashes.
+PREFLIGHT-MANIFEST.json binds these preflight outputs. Final REPORT.txt will be
+written only after review of the frozen builder packet or an explicit stop.

@@ -1,0 +1,57 @@
+TARGETED PRIMARY-SOURCE CHECK
+Read 18 October 2026 through the web tool. No broad novelty search, artifact
+execution, author contact or code-level overlap audit was performed.
+
+S1. Singletary, Chen, Ames, Control Barrier Functions for Sampled-Data
+Systems with Input Delays (2020), arXiv v1.
+https://arxiv.org/html/2005.06418v1
+Inspected Sections II-IV, Proposition 1, Theorem 1, delay Assumptions 1-2,
+Algorithm 1, Theorem 2 and Corollary 1.
+Scope: zero-order held backup control, uncertainty sets, and known input
+delay with an input-history buffer are prior work. The delay section assumes
+an integer multiple of the sample period and an admissible initial zero-input
+prefix. State-uncertainty treatment uses incremental stability. The paper
+also discusses nonsmooth sampled flows and almost-everywhere conditions.
+Boundary: this inspection does not establish a ready application to arbitrary
+changing actuator response, the present sensor bounds, or this exact cube.
+Inference: a fair comparison must expose those adaptations and initialization.
+
+S2. van Wijk et al., Disturbance-Robust Backup Control Barrier Functions:
+Safety Under Uncertain Dynamics (2024), arXiv v1.
+https://arxiv.org/html/2409.07700v1
+Inspected Section II-B and Section III through Theorem 2, including the
+disturbed model, Assumption 1, tightened flow set and Lemma 3.
+Scope: the paper assumes a robustly invariant backup set under a backup law.
+It bounds deviation from a nominal flow under additive bounded disturbance.
+Its stated existence discussion uses piecewise continuous disturbance and
+locally Lipschitz feedback. This supports the overlap warning for terminal
+backup composition; it does not itself supply our sampled hold certificate.
+Boundary: the local multiplicative response error would need a justified
+enclosure before being treated as a bounded additive disturbance. Sampled
+feedback and arbitrary age are not silently inherited from this inspection.
+
+S3. Hellwig et al., From Zonotopes to Proof Certificates: A Formal Pipeline
+for Safe Control Envelopes (2025), arXiv v1.
+https://arxiv.org/html/2509.20301v1
+Inspected Section 2, Definition 2, Section 4 evaluation setup and the start
+of the double-integrator example.
+Scope: the paper states one-step invariance, intersample safety and command
+admissibility as control-envelope obligations and formally links them to
+safety. It connects numerical enclosure candidates with deductive checking.
+Boundary: we did not execute its artifact or establish support for our
+changing rate and stale-measurement history. The proposed direct-enclosure
+benchmark follows these obligations and must document its own adaptations.
+
+Conclusion
+The fixed hold bridge can have value without a new controller. The inspected
+sources prevent a novelty claim based only on held input, uncertain state,
+delay, backup composition or formal intersample safety. They do not establish
+that the exact planned interface is duplicated or that it offers an advance.
+
+Local sources read
+The pod CHARTER.txt and workspace AGENTS.md; controls-scope-review-20261018
+ASSESSMENT.txt, COMMENTS.txt, NEXT-GATE.txt, AGE-BUDGET.txt, SOURCES.txt,
+age_budget.py and age-budget-results.json; sampled-handoff RobustHold.lean,
+Capture.lean, Handoff.lean, hold-scope.txt and verification.json.
+The old verification record is recorded evidence only; this reviewer did not
+rerun those frozen Lean modules. Input hashes are in input-bindings.json.
