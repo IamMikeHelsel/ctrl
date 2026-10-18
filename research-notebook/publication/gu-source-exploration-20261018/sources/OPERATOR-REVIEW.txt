@@ -1,0 +1,42 @@
+Independent source and implementation review
+18 October 2026
+
+Reviewed: exploration/operator/OPERATOR-EXPLORATION.txt and curvature_probe.py.
+Script SHA-256: 6cd51267747338c0e942a2e727fad7c75c21ff22af43689953e5d317100db127
+
+Assessment: suitable as a bounded exploratory calculation and a target for
+formalization. No issue found in the present stated mathematical boundary.
+
+Source fidelity:
+Compared the acquired 2021 primary manuscript at pp41-44 and pp65-66 with
+the report. The manuscript explicitly allows commutator and i-anticommutator
+products, defines Spin-invariant tensor spaces, discusses Bianchi-based
+selection, gives (9.3), claims Weyl annihilation, and supplies an action (9.4).
+The report correctly treats its product assignment as a candidate rather
+than the recovered author-selected operator. It clearly separates algebraic
+Riemann Bianchi from differential gauge Bianchi. The newer 2025 interview's
+curved-complex discussion is compatible with maintaining this distinction.
+
+Implementation scope:
+Reviewed the signed-blade multiplication and index raising conventions.
+The updated script independently checks pair antisymmetry, pair exchange,
+and cyclic Bianchi on all 14^4 index tuples in each of five concrete cases.
+It compares every vector row against Ricci contraction, checks scalar and
+higher-grade content, includes mixed signature and off-diagonal examples,
+and has a deliberately Bianchi-violating input. The combined Einstein
+expression now evaluates the nested anticommutators with i squared = -1
+before comparison, resolving my initial concern that it was only inferred.
+The generated result records all vector contraction rows and five passing
+cases; the coordinator independently reran the full calculation. In this
+review I also executed the -O rejection and confirmed nonzero termination.
+
+Limits:
+These are five examples, not a basis spanning all algebraic curvature tensors.
+The general identities remain hand derivations. Complex factors in the
+nested Jordan term are reduced symbolically using i squared = -1; this is
+not a general complex-Clifford implementation. Exact exterior/Hodge signs,
+full gauge covariance, displaced torsion and source equation equivalence
+remain outside the calculation. No Lean or physical validation is implied.
+The JSON persists contraction rows; the combined Einstein rows are asserted
+in execution but are not separately serialized. This is acceptable for the
+current report's executable-check claim.

@@ -1,0 +1,121 @@
+A bounded reconstruction of the Einstein-like contraction
+18 October 2026. Hand derivation plus exact executable examples; NOT Lean-certified.
+
+PRIMARY SOURCE
+Eric Weinstein, Geometric Unity, Author's Working Draft v1.0, April 1 2021:
+https://geometricunity.nyc3.digitaloceanspaces.com/Geometric_Unity-Draft-April-1st-2021.pdf
+Printed p41 (8.1): a family built from invariant Lie-algebra-valued forms,
+gauge conjugation, Hodge stars, and commutator or i-anticommutator products.
+Printed p42 Definition 8.1 (8.7): Spin-invariant tensor spaces. Section8.2
+identifies Bianchi identities as a proposed way to select an operator; the
+original selection calculations were not recovered in that draft.
+Printed p43 (9.2)-(9.3): maps 2-forms to (d-1)-forms; Ricci-like term minus
+a one-half scalar-like composition. The source states Weyl is annihilated.
+Printed p44 (9.4): an action IS supplied, with Levi-Civita spin curvature plus
+displaced-torsion derivative and quadratic terms.
+Printed pp65-66 appendix (12.25)-(12.27): contraction, matrix commutator,
+and symmetric product i(ab+ba). Thus different bracket choices are expressly
+part of the source's construction; this experiment is not a discovery that
+there are multiple choices or that the author forgot to define any action.
+
+ADDED CONVENTIONS AND RESTRICTIONS
+Work at one point, epsilon=identity, with V=R^(7,7), orthogonal generators
+ e_i e_j+e_j e_i=2 s_i delta_ij, s=(+1 seven times,-1 seven times).
+Use the canonical vector and bivector inclusions. Assume an algebraic
+Riemann tensor R_ijkl: antisymmetric within each pair, symmetric between
+pairs, and satisfying R_ijkl+R_iklj+R_iljk=0. Define
+ B_ij=e_i e_j (i<j),
+ rho_ij=sum_(k<l) s_k s_l R_ijkl e_k e_l,
+ Ric_il=sum_j s_j R_jijl,  scal=sum_i s_i Ric_ii,
+ J(x,y)=i(xy+yx).
+This fixes an explicit spin-curvature normalization; another normalization
+rescales all formulas. Use component contractions below rather than assuming
+unverified exterior-wedge factorials or pseudo-Riemannian Hodge signs. The
+source's output is degree13; ours is its proposed pointwise degree1 analogue
+before any identification via Hodge star. The exact (9.3) correspondence is
+not yet proved. In particular this does not cover general u(64,64)-valued
+curvature or the displaced-torsion contributions in (9.4).
+
+HAND DERIVATION
+Let C_i=sum_j s_j [e_j,rho_ji]. The Clifford relation gives
+ [e_j,e_k e_l]=2 s_j(delta_jk e_l-delta_jl e_k),
+so
+ C_i=2 sum_l s_l Ric_il e_l.                                  (A)
+Let A_i=sum_j s_j (e_j rho_ji+rho_ji e_j). Repeated-index terms
+cancel. The remaining distinct-index trivectors have coefficients given
+by cyclic curvature sums; pair symmetry and Bianchi give A_i=0. (B)
+Thus the Jordan product here gives zero on Riemann curvature, while the
+commutator recovers Ricci. Bianchi, rather than mere equivariance, matters.
+
+For the bivector contraction set
+ Q=sum_(i<j) s_i s_j J(B_ij,rho_ij).
+The scalar part before multiplying by i is -scal. The remaining degree4
+part is the total antisymmetrization of R and vanishes by Bianchi. Hence
+ Q=-i scal 1.                                                (C)
+The same double contraction with a commutator is zero already by pair
+symmetry: exchange the two bivector index pairs to reverse the bracket.
+Finally define D_i=J(e_i,Q)=2 scal e_i. Combining these formulas,
+ E_i=C_i-(1/2)D_i
+    =2 sum_l s_l (Ric_il-(1/2)scal g_il)e_l.                   (D)
+This is twice the ordinary Einstein contraction, in our normalization.
+It uses a commutator in the Ricci term and TWO Jordan products in the
+scalar composition. Substituting commutators everywhere would not yield
+this scalar correction on this domain. This concrete product assignment
+is a useful candidate to compare with the author's intended (9.3).
+
+Multiplying Phi1 by the full Clifford volume omega gives omega*C_i and
+omega*A_i because omega commutes with all bivectors. Thus the previous
+volume-twisted candidate does not revive the Bianchi-killed Jordan term
+on this curvature domain. No classification or equivalence of complete
+operators follows from that statement.
+
+EXECUTABLE EVIDENCE
+Run: python3 exploration/operator/curvature_probe.py
+Standard Python only. Exact Fraction coefficients and sparse Clifford
+blades. It tests all14 indices and 14^4 Bianchi components per example; checks pair symmetries independently of construction:
+  Constant sectional curvature +1: Ricci=13g, scalar182; commutator
+  has14 nonzero rows, anticommutator zero; E_i=-156e_i.
+  Nonzero Weyl tensor supported in a positive4-plane: Ricci/scalar0;
+  all displayed contracted outputs zero, although R itself is nonzero.
+  Pair-symmetric but Bianchi-violating control R_0123=R_2301=1:
+  24 violated cyclic components; vector anticommutator has4 nonzero
+  rows, and the Phi2 anticommutator contains a nonzero grade4 term.
+  Mixed-sign sectional component R_0707=-1: Ricci has2 nonzero
+  entries, scalar2; confirms index raising signs in a mixed2-plane.
+  Off-diagonal Kulkarni-Nomizu tensor h wedge g, h_07=h_70=1:
+  Ricci_07=Ricci_70=12, scalar0; tests non-diagonal contraction.
+The program also checks the combined Einstein expression from computed
+inner and outer products against 2(Ricci-scal*g/2) for every output row.
+Optimized Python (-O) is rejected so verification assertions remain active.
+JSON records all output rows.
+The program also checks the omega-twisted vector contractions and that
+Phi2 commutator contraction is zero in every example. See JSON results.
+These are finite checks supporting the derivation, NOT a kernel proof,
+not an exhaustive curvature classification, and not empirical evidence.
+
+WHAT THIS CHANGES
+There is now a concrete constructive target beyond generic ambiguity:
+formalize (A)-(D) with algebraic-curvature assumptions, then prove an exact
+translation into a convention-fixed version of the source's (9.3).
+This supports the source's claimed Weyl-annihilation mechanism for a
+bounded candidate. It also demonstrates why importing algebraic Bianchi
+automatically into the full gauge/displaced-torsion curvature would be an
+extra assumption: the negative control is visible to different products.
+The differential gauge Bianchi identity d_A F_A=0 is not the algebraic
+cyclic identity used here, and must not be substituted for it.
+
+FOCUSED QUESTIONS INFORMED BY THE EXPERIMENT
+1. Is (9.3) intended to use a commutator for its first term and Jordan
+products at both scalar contractions, with what normalization/Hodge signs?
+2. Which input sector is required to obey algebraic Riemann symmetries:
+only F_B, or also any displaced-torsion combination inside (9.4)?
+3. What happens to the non-Riemannian grade3/grade4 channels detected by
+the negative control: retained dynamics, projected away, or constrained?
+4. Which Bianchi condition selects the desired operator on the full domain,
+and is there a written symbol or operator calculation we can reproduce?
+
+REVIEW BOUNDARY
+Existing accepted Lean algebra supplies the Clifford/adjoint setting and
+volume properties. The curvature tensor and contractions in this note
+have not yet been added to that library. This is a new local exploration
+and should not be folded into the previous 48-module certification count.

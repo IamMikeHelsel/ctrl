@@ -1,0 +1,39 @@
+The displayed Hermitian family is one orbit under Spin-commuting coordinate changes
+18 October 2026 — hand derivation, with an exact polynomial check; NOT yet Lean-certified.
+
+Input: existing accepted algebra/HermitianFamily.lean proves W²=-I,
+W†K=KW, K†=K, and W commutes with every represented mathlib Spin element.
+H_t=K(I+tW), t real. These identities use complex matrices and real parameters.
+
+Set S=aI+bW with a,b real. Then
+  S†KS = K S² = K((a²-b²)I+2abW).
+For any real t, set
+  q=sqrt(1+t²), a=sqrt((q+1)/2), b=t/(2a).
+Here a>0, a²-b²=1, 2ab=t, and a²+b²=q>0. Thus
+  S†KS=H_t,   S^(-1)=(aI-bW)/q.
+Since S is a polynomial in W, it commutes with every Spin matrix.
+This establishes congruence of every displayed H_t to K, while preserving the
+represented Spin action under the corresponding coordinate transformation.
+It does NOT classify all invariant Hermitian forms.
+
+Interpretation: the previous nonproportionality result is correct, but it is not
+an inequivalence result. This new hand derivation resolves that specific open
+coordinate-congruence question for the displayed family. There is no modulus
+in this family under arbitrary invertible complex Spin-commuting changes of
+basis. Such changes need not preserve fixed Clifford generator matrices.
+For t nonzero, S is not K-unitary: its congruence changes K to H_t. It therefore
+does not follow that S belongs to GU's fixed gauge group, or that a full action
+with all other structures held fixed is unchanged.
+
+Reproduce coefficient checks: python3 exploration/forms/check_congruence.py.
+The script checks exact identities in Q[a,b][W]/(W²+1) and six rational cases.
+It does not verify the square-root argument or import/extend Lean's certificate.
+The proof above gives the real-parameter argument. Independent review requested.
+
+Useful next library theorem: existence of an invertible S commuting with Spin
+such that S†KS=H_t. Then transport the generator action as well and compare the
+precise field and gauge conventions before drawing a physical conclusion.
+
+Review: operator_review independently checked the derivation on 18 October 2026.
+It confirmed the real-parameter coverage, positive inverse denominator, Spin
+commutation and the distinction from a fixed K-unitary gauge transformation.
