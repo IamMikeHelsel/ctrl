@@ -5,5 +5,8 @@ import ControlsLean.Controls.Reachability
 import ControlsLean.Controls.DiscreteLyapunov
 import ControlsLean.Controls.Gramian
 import ControlsLean.Controls.PolePlacement
+import ControlsLean.Controls.Observer
 import ControlsLean.Estimation.ScalarKalman
 import ControlsLean.Estimation.InformationFilter
+import ControlsLean.Estimation.RiccatiConvergence
+import ControlsLean.Tactics.ControlTactics
