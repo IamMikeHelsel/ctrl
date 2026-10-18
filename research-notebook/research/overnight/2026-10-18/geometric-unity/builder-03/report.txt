@@ -1,0 +1,78 @@
+The actual real Clifford conjugation now has a matrix adjoint formula
+18 October 2026 UTC — builder gate, independent acceptance required
+
+Result
+For the existing concrete real algebra equivalence splitMatrixEquiv from Cl(7,7)
+to 128 by 128 real matrices, the new theorem states:
+  splitMatrixEquiv(star x) = K * transpose(splitMatrixEquiv(x)) * K.
+It holds for every real Clifford element x. K is the ordered product of the seven
+actual negative generator matrices. Lean also proves K^T=K and K*K=I.
+
+In plain terms, the known real representation preserves Clifford conjugation.
+Writing the algebra as matrices does not change that operation: negate each
+vector and reverse products on the Clifford side, or apply transpose with K on
+both sides on the matrix side. This closes a concrete representation gap. It is
+standard algebra, not a new physics result or a publication-novelty finding.
+
+Why this is the actual representation
+creation_transpose uses the ordered exterior basis from the accepted gate. The
+same A ++ i :: B decomposition sets the creation and contraction signs. This
+proves each positive matrix is symmetric and each negative matrix is skew.
+Their Clifford relations then prove the K identities. A vector-basis expansion
+and Clifford induction extend the result to every real element. No new adjoint,
+faithfulness, matrix-unit or basis-action premise is assumed.
+
+Scope and assumptions
+The coefficients are real. Clifford star fixes real scalars, negates real vector
+generators and reverses multiplication. The complex tensor algebra has a separate
+bar that also conjugates complex scalars. This folder does not prove that complex
+representation, its Hermitian signature, a unitary Lie-algebra identification,
+operator Phi, variational equations or a physical prediction.
+
+Controls
+The positive generator is not skew for ordinary Euclidean transpose. Omitting
+the right K fails its vector identity. Substituting creation plus contraction
+for the negative generator gives square +I instead of -I. Plain transpose on iI
+fails the conjugate-linear convention. These inequalities are proved in Lean.
+All six intentionally false client claims failed compilation in the verifier.
+
+Reversing the seven K factors gives -K. Lean proves this and proves that the two
+K signs give the same adjoint. It is not used as a false counterexample.
+
+An exact ordered-wedge integer check covers all 128 basis columns, all fourteen
+generators and all 91 distinct bivectors. It also retains H=iKD, where D is
+exterior parity. H is Hermitian and bivector invariant but not vector-skew
+compatible, and H is not a scalar multiple of K. That last witness is a finite
+exact calculation, not a new Lean uniqueness or complex representation theorem.
+
+Verification
+The builder self-check passed. See verification.json for exact source hashes. The
+source freeze was made before the fresh verification run. The complete local
+closure has seventeen modules: thirteen byte-identical inherited sources and
+four new modules. All 188 public declarations receive an axiom audit. Every
+local module and the positive client passed separate leanchecker replay.
+Only pinned prebuilt dependency products are reused. The project build cache is
+excluded. The permitted axioms are propext, Classical.choice and Quot.sound.
+
+The pinned compiler is Lean 4.35.0. Mathlib is
+56a005855ea17e0b0958f73ec801ae140b0a1679. Previous builder/critic manifests and
+their files are checked before and after verification. Old failures and the new
+development failures are preserved. Independent review must check the final
+verification result rather than treating this builder report as acceptance.
+
+Next useful test
+After independent acceptance, construct the actual complex scalar extension,
+prove its pure-tensor formula and bijectivity, and prove the conjugate-transpose
+bridge with the accepted GUComplex.bar. Signature is another distinct gate.
+See NEXT-GATE.txt. No operator choice should be filled in silently.
+
+Source boundary
+This is an algebraic ingredient near (3.18) and (3.27) of the author's 2021 draft:
+https://geometricunity.nyc3.digitaloceanspaces.com/Geometric_Unity-Draft-April-1st-2021.pdf
+The prior critic-01 source errata and author questions remain authoritative.
+The draft supplies action (9.4). Its operator and variational choices remain
+separate questions. No fresh claim about missing source material is made here.
+
+Repository boundary
+Only builder-03 files were written. Root owns notebook sync, commits, the draft
+PR and manuscript integration. There was no external submission or contact.

@@ -1,0 +1,40 @@
+CLAIM MAP — builder candidate, independent acceptance pending
+
+VelocityBernstein.lean
+- cast_qVelocity binds exact rational evaluation to the existing real FIR.
+- velocity_blend derives the cubic on every cell with no interior event knot.
+- blend_abs_le proves the four nonnegative weights give the coefficient bound.
+- velocity_tail proves zero speed after every event has completed.
+
+VelocityGuard.lean
+- checkVelocity_eq_true is the exact Boolean/finite-coefficient equivalence.
+- checkVelocity_real_sound gives a sufficient real all-future speed bound.
+- It accepts any finite signed rational event list. No ordering, distinctness,
+  past-only-event, zero-initial-reference or outside-current-cell assumption
+  is hidden in the statement.
+- h must be positive and V nonnegative. Invalid values are rejected.
+
+VelocityAdmission.lean
+- chosen_velocity_reference_contract extends the old finite candidate rule.
+  A selected event preserves the old reference up to its execution time.
+  It satisfies V/A/J bounds from current time onward and reference rest by D.
+- choose_velocity_none_iff says all supplied finite checks reject. Because
+  the velocity test is sufficient, this does not even prove that every listed
+  candidate violates the actual speed limit. It does not prove global planner
+  infeasibility either.
+
+VelocityFixtures.lean
+- The delayed return remains selected at 0.62 s under V=1/15, A=1/2, J=15/2
+  and D=1.7. The tight deadline 1.3 returns none on the supplied list.
+- Future-knot endpoint checking alone misses a real interior speed violation.
+- A real history can be rejected although its all-future speed bound is proved.
+  Two zero-amplitude events refine its cells and certify the same velocity.
+
+Excluded claims
+No physical robot speed, speed of a tracking plant, torque, force, power,
+contact, obstacle/travel clearance, saturation, clock latency, sampled servo,
+Franka acceptance, infinite event stream, minimum-jerk optimality or complete
+velocity feasibility claim is made. The combined checker reuses the old
+all-pairs acceleration check. No successor timing, pruning cost, bounded
+memory or real-time execution result is transferred to the combined checker.
+This gate adds a checked contract, not a claim that Bernstein bounds are new.

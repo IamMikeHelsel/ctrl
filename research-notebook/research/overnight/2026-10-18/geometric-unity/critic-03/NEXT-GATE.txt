@@ -1,0 +1,30 @@
+Recommended next gate: actual complex scalar extension
+
+A bounded builder batch can now construct rho on the preserved algebra
+GUComplex.CCl = complex tensor_real Cl. Require the pure-tensor equation:
+  rho(z tensor a) = z * ofReal(splitMatrix(a)).
+Use the actual accepted real representation. A complex matrix model unrelated
+to that formula would not close this gap.
+
+Prove rho is a complex algebra map. Derive bijectivity from the real algebra
+equivalence plus a linear tensor-to-matrix equivalence, or from an equally
+explicit inverse. TensorProduct.piRight and piScalarRight in the pinned library
+supply the relevant linear maps. They do not directly prove matrix multiplication:
+pointwise multiplication of a function space is a different algebra structure.
+The matrix product must be handled by the algebra lift or by a separate proof.
+
+Then extend K entrywise and prove for every complex tensor element a:
+  rho(GUComplex.bar a) = Kc * conjugateTranspose(rho a) * Kc.
+Begin with pure tensors, then tensor induction. Test i times the identity,
+products with noncommuting factors, scalar mixtures and the inverse image of
+arbitrary matrices. Retain a false plain-transpose control. If bijectivity does
+not close, report the all-tensor bridge as partial and name the exact missing
+lemma. Do not call a homomorphism an equivalence.
+
+Reuse ComplexAdjoint.lean from complex-adjoint-04 byte-for-byte. Its sibling
+AdjointControls module has the same filename as this gate's control module;
+avoid that collision without changing either frozen source.
+
+After that, the actual K signature theorem is a separate useful gate. The exact
+complement-pair calculation provides a test, not its Lean proof. No source input
+for Phi should be invented to extend this algebra work into dynamics or physics.

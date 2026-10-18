@@ -1,0 +1,45 @@
+A finite speed check for a changing reference
+
+The old motion stays in the calculation when a new goal arrives. Each event
+adds a shifted four-box step response. Velocity is a sum of cubic positive
+parts. Acceleration is its derivative and is a sum of quadratic positive parts.
+
+Put every event knot after the current time in a finite set. Include the
+current time itself. Consecutive points L<R define a cell with no interior
+knot. On this cell, each positive-part term is either zero or an ordinary
+cubic. Their sum is therefore a cubic.
+
+Let d=R-L and u=(t-L)/d. The exact velocity on the cell is
+  v(t)=(1-u)^3 b0 +3u(1-u)^2 b1 +3u^2(1-u)b2 +u^3 b3,
+where
+  b0=v(L), b1=v(L)+d*a(L)/3,
+  b2=v(R)-d*a(R)/3, b3=v(R).
+For 0<=u<=1, the four weights are nonnegative and add to one.
+If all four |bi|<=V, then |v(t)|<=V throughout that cell.
+After the final knot the reference velocity is zero.
+
+Lean checks the cubic identity against the existing reference definition.
+It does not assume an externally fitted cubic or sampled trajectory. The
+rational checker computes all coefficients exactly. The proof transfers
+these rational inequalities to every real future time.
+
+Why endpoints alone are insufficient
+Take h=1 and events (0,1),(1,-1). Every event knot has |v|<=1/2. But at
+t=9/5, v=409/750, which is greater than 1/2. The coefficient test rejects it.
+These numbers describe a mathematical example, not the robot demonstration.
+
+Why rejection is not a proof of failure
+Take h=1 and events (0,1),(1/4,-1). The checker rejects V=1/6 because a
+Bernstein coefficient is too large. Add the zero-size events (1/2,0),(3/4,0).
+They add knots but no motion. The refined checker passes at V=1/6. A Lean
+proof then transfers this all-future bound to the unchanged original motion.
+Thus the original rejection was conservative. The history representation
+and cell partition can change the sufficient test without changing velocity.
+No optimal subdivision algorithm or complete speed test is supplied here.
+
+The useful guarantee
+The finite candidate selector now checks velocity, acceleration, jerk and
+reference-rest deadline conditions. A selected delayed return satisfies all
+four and preserves the previously issued reference up to its execution time.
+It is still a reference guarantee. A separate physical tracking result must
+supply the link to an actual actuator or arm.

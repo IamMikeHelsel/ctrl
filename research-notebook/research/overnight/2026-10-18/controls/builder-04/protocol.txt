@@ -1,0 +1,28 @@
+CONTROLS QUADRATIC CERTIFICATE — predeclared 2026-10-18 08:09 UTC
+Owner: overnight_controls_builder_04. Deadline: 09:08 UTC.
+Read critic-03/next-gate.txt as the fixed target and assumptions.
+
+Search grid alpha = [4,8,12,16,20,24,32,40] per physical second, in this order.
+For each alpha, maximize a shared strict matrix margin s subject to:
+Q - s I >= 0; -M(80) - s I >= 0; -M(120) - s I >= 0;
+Q11 <= 9/4; Q22 <= 81/100; s <= 1.
+This is a numerical fixed-alpha semidefinite program. The objective only seeks
+room for rationalization. One deterministic Clarabel solve per alpha, capped
+at 300 iterations; if unavailable, record the error and use SCS max_iters=50000.
+No randomized search and no target changes. Try all eight fixed alphas.
+
+For each feasible numerical candidate, rationalize entries at denominators
+10^3,10^4,10^5,10^6,10^8 (nearest decimal, symmetric entries once). Check exact
+LDL positive pivots for Q and -M endpoints. Retain all attempts. A successful
+candidate must also satisfy the fixed Q diagonal bounds and direct two-second
+entry condition from next-gate.txt. Use M0=sum |Pij| bi bj, b=(16,32,64), and
+C2=1+(max(1,M0)-1)/2048^(alpha/4). The first exact passing candidate is the
+selected certificate; record all other fixed-grid solver outcomes as well.
+Freeze candidate bytes before a separate exact verification program.
+
+If no candidate passes, report this finite search and any exact obstruction.
+Neither solver status nor finite-grid failure proves infeasibility.
+If one passes, attempt a Lean bridge from the actual physical ODE with no
+extra rate or disturbance derivative, no reset and no changed controller.
+Exact arithmetic and a handwritten trajectory argument do not count as a
+new Lean theorem. Preserve all failed checks and local sources.

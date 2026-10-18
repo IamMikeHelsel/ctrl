@@ -1,0 +1,54 @@
+VELOCITY ADMISSION — bounded builder milestone, 18 October 2026
+
+Task
+Add a sufficient all-future velocity check to the existing scalar retained
+four-box FIR reference. Use the existing strict-successor knot cells. Preserve
+all old sources and interfaces. Stop expansion when the guard, full candidate
+contract, nonvacuous example and falsification controls are checked.
+
+Mathematical statement
+Assume rational h > 0, a rational current time c, rational signed events, and
+V >= 0. The finite guard contains c and every future event knot. On each
+adjacent cell [L,R], check the four cubic Bernstein coefficients:
+  v(L), v(L)+(R-L)a(L)/3, v(R)-(R-L)a(R)/3, v(R).
+Endpoints are shared. The last tail has zero reference velocity. The Lean
+proof derives this cubic from the actual truncated-power FIR expressions.
+It then proves the convex-hull bound and the rational-to-real bridge.
+
+No exactness claim
+The Boolean checker is exactly its declared finite coefficient test. Passing
+implies |v(t)| <= V at every real t >= c. Rejection does not prove a speed
+violation. It also does not prove infeasibility over all candidate times.
+An explicit safe but rejected history is part of this milestone.
+
+Composition
+The new candidate checker calls the existing timed A/J/deadline checker and
+adds this velocity check. The old acceleration checker is unchanged. The
+successor acceleration optimization is imported for cell selection; its
+measured runtime is not transferred to this new combined checker.
+The selected reference keeps its issued prefix and reaches reference rest
+by D. No physical-state, sample-time, torque, contact, saturation or Franka
+claim follows automatically.
+
+Examples
+The retained delayed return uses the existing h=1/5 s and V=1/15 m/s bound.
+Its first event is (11/50 s,1/50 m). Its return is (31/50 s,-1/50 m).
+The candidate list stays [13/25,31/50] s. A=1/2 m/s^2, J=15/2 m/s^3 and
+D=17/10 s are unchanged. The shorter D=13/10 s rejects the supplied list.
+The other exact examples are mathematical controls, not new physical tasks.
+
+Verification and independence
+Development uses disposable local caches. The final test starts from empty
+local sources and objects, excludes the project build cache, and reuses only
+pinned dependency caches. It rebuilds every local module, audits all local
+declarations for standard axioms, and replays every module in leanchecker.
+An exact Fraction generator constructs cubic powers independently, converts
+them to Bernstein coefficients, and creates 180 decisions on 60 histories.
+These are builder controls. Only an independent critic can accept the work.
+No wall-clock or worst-case execution claim is made.
+
+Preservation
+Three failed development versions and their logs are retained. They concern
+Bool rewriting, rational casts and negation normalization. Earlier successful
+development runs were not treated as final fresh verification. The final
+source freeze precedes verification. Root owns repository sync and acceptance.

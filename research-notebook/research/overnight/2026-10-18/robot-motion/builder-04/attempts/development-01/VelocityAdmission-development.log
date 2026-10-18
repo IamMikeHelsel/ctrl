@@ -1,0 +1,22 @@
+/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/overnight/2026-10-18/robot-motion/builder-04/.cache/dev/VelocityAdmission.lean:69:13: error(lean.unknownIdentifier): Unknown constant `Bool.and_eq_true.mp`
+/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/overnight/2026-10-18/robot-motion/builder-04/.cache/dev/VelocityAdmission.lean:67:60: error: unsolved goals
+h V A J c D delta tau : ℚ
+es : List QEvent
+candidates : List ℚ
+hc : chooseVelocityExecution h V A J c D es delta candidates = some tau
+g0 : ℝ
+left✝ : tau ∈ candidates
+hb : checkVelocityTimedCandidate h V A J c D es delta tau = true
+⊢ c ≤ tau ∧
+    (∀ (t : ℝ), ↑c ≤ t → |velocity (↑h) (realEvents (es ++ [(tau, delta)])) t| ≤ ↑V) ∧
+      (∀ (t : ℝ), ↑c ≤ t → |acceleration (↑h) (realEvents (es ++ [(tau, delta)])) t| ≤ ↑A) ∧
+        (∀ (t : ℝ), ↑c ≤ t → |jerk (↑h) (realEvents (es ++ [(tau, delta)])) t| ≤ ↑J) ∧
+          (∀ t ≤ ↑tau,
+              referenceJet g0 (↑h) (realEvents (es ++ [(tau, delta)])) t = referenceJet g0 (↑h) (realEvents es) t) ∧
+            ∀ (t : ℝ),
+              ↑D ≤ t →
+                position g0 (↑h) (realEvents (es ++ [(tau, delta)])) t =
+                    g0 + (List.map Prod.snd (realEvents (es ++ [(tau, delta)]))).sum ∧
+                  velocity (↑h) (realEvents (es ++ [(tau, delta)])) t = 0 ∧
+                    acceleration (↑h) (realEvents (es ++ [(tau, delta)])) t = 0 ∧
+                      jerk (↑h) (realEvents (es ++ [(tau, delta)])) t = 0

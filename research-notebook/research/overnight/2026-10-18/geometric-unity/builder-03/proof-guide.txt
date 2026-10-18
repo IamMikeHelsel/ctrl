@@ -1,0 +1,39 @@
+Proof route
+
+1. TransposeBridge.creation_transpose compares each matrix entry. If a basis
+   subset contains i, reuse the ordered split A ++ i :: B in contraction and
+   creation from the erased subset. Both coefficients use (-1)^length(A).
+   All other entries are zero. Thus this is the actual exterior-basis transpose,
+   not an adjoint axiom for unrelated abstract generators.
+
+2. The accepted Fock formulas identify each positive generator as contraction
+   plus creation, and each negative generator as creation minus contraction.
+   Their transpose laws follow from step 1.
+
+3. VolumeForm obtains squares and pairwise anticommutation from the accepted
+   Clifford relations through splitMatrix. K is the ordered matrix product
+   N0 N1 N2 N3 N4 N5 N6. Rewriting these finite products proves K^T=K and K^2=I.
+   The product commutes with all negative generators and anticommutes with all
+   positive generators. The finite inequality checks use ordinary decide.
+
+4. RealAdjoint defines the real-linear map A -> K A^T K. K^2=I makes it reverse
+   multiplication. The generator transpose and commutation results make it
+   negate all fourteen vector generators. A basis expansion covers every real
+   vector. CliffordAlgebra.induction then covers scalar maps, vectors, products
+   and sums. The final statement uses the same splitMatrixEquiv as builder-02.
+
+5. AdjointControls proves the positive generator is not Euclidean-skew, omitting
+   the right K fails on that vector, and replacing a negative generator by the
+   creation-plus-contraction combination gives the wrong square. It also proves
+   that reversing the K factors gives -K, and -K gives the same adjoint.
+   A separate complex scalar matrix control shows why plain transpose cannot
+   replace conjugate transpose on iI. That control is not a complex map theorem.
+
+Logical boundary
+The only construction inputs are the real split Clifford algebra, its accepted
+exterior representation and ordered basis, and Mathlib's real Clifford star.
+No faithfulness, transpose or matrix-unit law is added as a premise. Existing
+faithfulness is reused from the separately accepted concrete equivalence.
+The source uses real scalars. In this setting Clifford star fixes scalars.
+The accepted complex tensor algebra bar conjugates complex scalars, so extending
+this result to it is a separate proof. Signature and operator Phi remain open.

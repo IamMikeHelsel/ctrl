@@ -1,0 +1,37 @@
+REPRODUCTION — velocity admission milestone
+
+This builder verifier is workspace-bound. It uses the pinned project at
+lean-controls and the local .tools/elan installation. It does not change pins,
+download dependencies or call a paid API. Root's portable reviewer package is
+a separate artifact; this folder does not claim standalone portability.
+
+The final source freeze is source-freeze.json. input-bindings.json records
+all prior local proof dependencies and the three project configuration files.
+source-closure.json records the actual imported closure rebuilt by verify.py.
+
+To inspect the existing result, read verification.json and its named logs.
+Do not rerun over the frozen evidence. The verifier rejects an existing
+.cache/fresh directory. For a fresh repeat, copy the five new Lean sources,
+dev.py, verify.py, oracle.py, oracle-cases.json, input-bindings.json,
+PROTOCOL.txt and source-freeze.json into a new sibling directory under
+research/overnight/2026-10-18/robot-motion/. Keep the source bytes unchanged.
+Then run python3 <new-directory>/verify.py from the working research root.
+This creates a fresh local build and reports separate leanchecker results.
+The prior dependency sources remain in their recorded workspace locations.
+
+To inspect or repeat the exact polynomial fixture generation, use oracle.py
+in a new sibling directory. It uses only Python's standard library and the
+fixed seed 2026101804. Compare generated source/data hashes with the original
+freeze. It produces 180 Boolean checks on 60 histories. These test the finite
+coefficient checker, not exact physical peak speed or an optimal planner.
+
+Negative controls must fail for their false mathematical claims. An import
+failure or missing identifier does not count. The final logs contain the
+actual rejection messages. The axiom audit rejects local axioms, unsafe
+local declarations and any dependency beyond propext, Classical.choice and
+Quot.sound. Separate kernel replay covers every local module, including the
+180 exact oracle decisions. Pinned dependency caches remain a stated trust
+and reproduction dependency.
+
+Development failures are in attempts/development-01 through -03. They are
+not accepted proof evidence. The final fresh proof starts after their repair.

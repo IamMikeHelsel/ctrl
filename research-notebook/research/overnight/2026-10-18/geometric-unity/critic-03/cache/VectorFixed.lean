@@ -1,0 +1,8 @@
+import ReviewClient
+noncomputable section
+open HyperbolicSpinor GUClifford
+example : splitMatrixEquiv (star (gamma 0)) = positiveMatrix 0 := by
+  change splitMatrix (star (gamma 0)) = positiveMatrix 0
+  rw [splitMatrix_star]
+  change realAdjoint (positiveMatrix 0) = positiveMatrix 0
+  rw [realAdjoint_positive]

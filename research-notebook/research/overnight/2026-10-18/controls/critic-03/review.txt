@@ -1,0 +1,119 @@
+Independent review of the varying-input numerical scout
+Decision: ACCEPT as limited numerical evidence. CONTINUE to the bounded exact
+certificate gate in next-gate.txt. No universal safety theorem is accepted here.
+
+Freeze and scope
+The builder manifest is
+7c270b9f1559b6895434cf238e8bd9500009ce40442b3ce0cc31a2c9d95a29e9.
+All 73 listed files matched before and after review. The protocol and search
+sources still match pre-run-freeze.json. This review ran fixed-input checks
+and replays only. It did not run an optimizer or add a search candidate.
+
+Inputs and initial states
+The frozen strongest candidate has 528 exact rational knots, starts at t=0,
+ends at t=4, and is strictly ordered. Every rate lies in [80,120]/s, every
+disturbance lies in [-0.01,0.01] m/s^2, and linear interpolation preserves those
+bounds. Both signals change. The selected initial state is e=-0.0002 m, v=0,
+a=0. Its three transformed coordinates equal -0.0002 m. The frozen target time
+3998177/1000000 seconds lies in [2,4].
+
+All 33 saved candidates contain exactly the eight cube vertices and zero.
+Their input knots and bounds pass checks. The review rebuilt the frozen C++
+kernel in its own cache and reproduced all 297 stored initial-state summaries.
+That replay uses the same search algorithm and is a reproducibility check.
+The strongest input was also replayed independently from all nine states in
+physical coordinates (e,v,a), with DOP853 split at every input knot. Those
+results agree with the builder's separate scaled-coordinate replay.
+
+The cube maps to e=z0, v=40(z1-z0), a=1600(z2-2z1+z0). A possible failure from
+this cube would refute the general cube premise, not establish reachability
+from the specific DirectPlant endpoint. No physical robot or sampled controller
+is represented in this scout.
+
+Adjoint logic
+For a fixed rate schedule, the terminal output is a linear function of the
+initial state and the piecewise-linear disturbance knot values. The physical
+adjoint obeys lambda'=-A(r)^T lambda backward in time. Integrating its input
+sensitivity against each linear hat basis gives the disturbance coefficients.
+The maximum over the initial cube and the independent disturbance knot box is
+R times the sum of absolute initial coefficients plus W times the sum of
+absolute knot coefficients. Central symmetry also covers the absolute output.
+
+The C++ implementation uses backward-time length, so its positive A^T update
+and positive sensitivity accumulation have the correct signs. Its initial
+coefficient transformation is the transpose of the inverse coordinate map.
+It resets only the two interval sensitivity accumulators, not the adjoint state.
+No derivative of r is needed for this sensitivity identity.
+
+An independent physical-coordinate DOP853 adjoint checked the fixed refined
+target at 3.997924 seconds. Its support was 0.6575610390301684, compared with
+0.6575602126503732 from the exploratory RK4 kernel, a difference of about
+8.264e-7. This is numerical agreement, not an exact optimality certificate.
+The final refined peak time 3.998177 seconds is different from that optimizer
+target; the saved input remains admissible at both. The report does not claim
+the outer changing-rate search found a global optimum.
+
+Search budget and disclosed deviation
+There are 20 fixed constant-rate controls, 12 original optimized candidates,
+and one refined candidate. The 13 optimizer histories contain 11,698 objective
+calls. Every history matches its call count and respects its individual budget.
+One original run and the refinement stopped at their budgets. Their unsuccessful
+termination statuses are preserved. No replacement search was run in review.
+
+The intended constant rate prefix was not executed. The decoder instead uses a
+linear ramp from the time-zero rate to the first knot of the last second. The
+review confirmed this in a saved nonconstant case. The actual input still
+belongs to the bounded continuous piecewise-linear class, so the candidate
+and its replay remain useful. This is partial protocol adherence, not full
+compliance. Do not erase the deviation or label a future correction as this run.
+
+Independent high-precision replay
+The reviewer derived a scalar physical equation directly:
+  e''' + 1.5 r e'' + 60 r e' + 800 r e = r w.
+A separate coefficient recurrence integrated this equation with exact rational
+input knots, 80-digit arithmetic, and orders 80 and 110. It did not import a
+builder solver. Across 526 intervals to the frozen time, both orders agree at
+the working precision. The result is
+  e = -0.00000331455621355709486430421165186115 m,
+  v = -0.000117982402767376605305601025730679 m/s,
+  a =  0.0131539094406987410512788646051706 m/s^2.
+Its acceleration ratio is 0.65769547203493705256. The difference from the
+builder's 60-digit acceleration is about 2.98e-62 m/s^2, consistent with its
+printed precision. Neither computation encloses truncation or roundoff error
+rigorously. This remains numerical evidence, not a mathematical certificate.
+
+Scoring and interpretation
+The reconstructed search summaries match the stated maximum observed velocity
+and acceleration. The original 0.02 acceleration limit is not violated at the
+frozen target. A separate 0.013 diagnostic threshold is detected as violated.
+This tests scoring; it does not change the original limit. The numerical state
+has nonzero velocity at the target. The builder sentence that the candidate
+"refutes exact rest" must be read as a numerical diagnostic. Do not repeat it
+as a mathematically certified counterexample without a trajectory-error bound.
+
+No violation found means no violation among the tested inputs, sampled times,
+and local peak searches. It does not establish the universal claim for every
+continuous r,w, every initial state, or every time. This limitation is material.
+
+Next-template assessment
+The proposed scaling, endpoint LMI, coordinate output bounds, and homogeneous
+transient arithmetic are correct. The LMI is sufficient, not necessary. Its
+feasibility is still unknown. The initial-state split is valid only for the
+same r and for the error state e=x-c. Summing two absolute-position trajectories
+about c would double-count the goal. Existence and decomposition must be proved
+if that route is used.
+
+There is a simpler possible route: apply the same LMI directly to the actual
+error state's quadratic V. Its scalar decay bound can include the entire
+initial cube, avoiding a new forced-response existence lemma. next-gate.txt
+states exact acceptance conditions for that route. No matrix was constructed,
+no certificate feasibility search was run, and no new control bound was proved
+by this review.
+
+Reviewer development record
+The first metadata check expected a flat manifest instead of its files mapping.
+It stopped before numerical checks. The second run passed its checks but could
+not serialize NumPy booleans. Both local harness failures and sources are kept
+under review-attempt-01/ and review-attempt-02/. The parser and serializer were
+repaired, then the same fixed-input review was rerun. These failures are not
+negative controls and did not change any builder file or search result.

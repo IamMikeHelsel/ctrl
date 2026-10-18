@@ -1,0 +1,115 @@
+CONTROLS BUILDER04 — a tighter bound under changing response and disturbance
+Status: BUILDER CANDIDATE. Independent review is required.
+
+Main result
+The original speed and acceleration targets now have a direct actual-state
+proof candidate. After two seconds of hold, every supplied classical trajectory
+of the original scalar controller satisfies
+  |v(t)| <= 0.001 m/s and |a(t)| <= 0.02 m/s^2,
+for every hold time t in [2,H], under the fixed assumptions below. This is an
+all-time conditional theorem, not a sampled numerical pass. Lean verification
+status and exact replay steps are in verification.json.
+
+Fixed model and assumptions
+  x'=v; v'=a; a'=r(t)*(u(t)+w(t)-a),
+  u=-800*(x-c)-60*v-a/2,
+  80 <= r(t) <= 120 per second; |w(t)| <= 0.01 m/s^2.
+The goal c remains fixed throughout this hold. At hold time zero, all three
+coordinates (x-c, x-c+v/40, x-c+v/20+a/1600) have magnitude at most 0.0002 m.
+The physical state is continuous on [0,H] and obeys the ODE at every interior
+time. No derivative, continuity, constancy, or minimum dwell-time assumption
+is added for r or w. The theorem is conditional on such a classical trajectory;
+it does not prove its existence for every arbitrary bounded input pair.
+
+No actual state is reset. fixed_reference_then_changing_hold also carries the
+existing eight-phase DirectPlant endpoint into this same hold with exact state
+matching. Its horizon premise H>=2 makes the terminal interval nonempty. The
+two-second clock starts at the hold, not at the start of the preceding motion.
+This is the earlier DirectPlant trajectory, not a new composition with the
+separate FIR robot-motion reference.
+
+Certificate construction
+The predeclared grid was alpha={4,8,12,16,20,24,32,40}/s. For each fixed alpha,
+one Clarabel semidefinite solve maximized a shared strict matrix margin, with
+Q11<=9/4 and Q22<=81/100. No random search or target revision was used.
+The first exact rational pass was alpha=20/s, at rounding denominator 1000:
+  Q=(1/1000)*[[2162,-549,-234],[-549,518,-151],[-234,-151,810]].
+The numerical proposal is not trusted as proof. Candidate bytes were frozen
+before the separate exact checker. All eight solver outcomes and every declared
+rounding attempt are preserved. Alpha 40 returned optimal_inaccurate with a
+negative margin and its warning remains. Negative margins at other grid points
+are not claims of mathematical infeasibility.
+
+Set q=(80000*(x-c),2000*v,50*a) and d=100*w. Then
+  q'=A(r)q+B(r)d,
+  A=[[0,40,0],[0,0,40],[-r/2,-3r/2,-3r/2]], B=(0,0,r/2)^T.
+The exact checker verifies Q>0 and strict negativity at r=80 and r=120 of
+  [[A Q+Q A^T+20Q, B],[B^T,-20]].
+It checks all 37 nonempty principal minors across these three matrices with
+Python Fraction arithmetic. It independently computes the cofactor inverse and
+checks Q*P=I. The search uses a separate rational LDL check.
+
+Direct trajectory proof
+P=Q^-1 and V=q^T P q. The exact P is
+ (1/68317631)*[[49597375,60003000,25513875],
+ [60003000,212058000,56866000],[25513875,56866000,102314375]].
+The Lean identifier energy denotes this quadratic measure. It is not mechanical
+energy, power, or effort. No mass model is used.
+
+The Lean proof contains explicit rational sums of squares for both endpoint
+inequalities. Their nonnegative affine combination proves the inequality at
+every interior rate. It also proves the coordinate inequalities
+  q1^2 <= (259/500)*V; q2^2 <= (81/100)*V.
+Differentiation of the actual physical trajectory gives V'<=20*(1-V).
+The inherited cube gives |q(0)|<=(16,32,64). Exact arithmetic gives
+  V(0)<=995542624000/68317631, about 14572.265.
+For a shorter Lean entry proof, a looser bound V(0)<=1000000 is proved directly.
+The existing scalar comparison theorem then yields
+  V(t)<=1+999999*exp(-20t).
+The existing checked exp(-4)<=1/16 gives exp(-40)<=1/16^10. Thus V(t)<=101/100
+for all t>=2. The two coordinate inequalities yield the fixed physical targets.
+There is no introduced forced trajectory, superposition premise, existence
+shortcut, input derivative, state reset, or shifted command goal in this route.
+
+Non-vacuity and false controls
+The supplied movingState has x=exp(-40t)/5000, v=-exp(-40t)/125,
+a=8*exp(-40t)/25. It starts at 8 mm/s and 0.32 m/s^2, outside both final bands.
+For t<=1, r=80 and w=0. For t>1, r=120 and w=(4/75)*exp(-40t).
+Lean proves the actual ODE, initial cube, both changing inputs, the pointwise
+bounds, and the new conclusion at t=2. The state remains classical across the
+switch because the changed disturbance compensates the rate change.
+
+Exact false statements test the disturbance bound, rate upper bound, initial
+ellipsoid reset, and false immediate settling. The expected Lean failures must
+have resolved imports and an unsolved false goal. A separate standard-library
+checker also rejects a corrupted Q22. These are failures of altered certificate
+statements, not counterexamples to the original target or to physical control.
+
+Limits and publication boundary
+This proves a bounded scalar continuous-feedback model. It does not prove a
+sampled implementation, actuator saturation, sensor-error model, joint coupling,
+Franka hardware, PLd/PLe compliance, contact recovery, or a full robot stopping
+certificate. It also does not cover complete loss of grip or a response rate
+below 80/s. The previous position theorem remains separate; this new terminal
+statement adds speed and acceleration under changing disturbance. It gives
+small residual bands, not exact finite-time rest. The quadratic method itself
+is established mathematics. Novelty and the value of this checked composition
+still need a literature and human-review judgment.
+
+Development and preservation
+The first search launch had a path typo and ran no search. The manual protocol
+heading timestamp is approximate; the machine pre-run freeze is authoritative.
+A second development build overlapped the first briefly in the same local cache;
+it was stopped. Neither run is final evidence. Later development failures were
+two numeric normalizations and one redundant tactic. Their sources and logs
+remain. Final evidence uses one fresh local-source build with unchanged pins.
+
+Completed builder verification
+All 43 local modules rebuilt from fresh sources. The audit checked 628 public
+local theorem statements and found only the allowed standard axioms. All eight
+selected separate kernel replays passed. All four intended false claims failed
+with resolved imports. Lean is 4.35.0, commit
+eb6cafb7290e8bd5f2937522d8d804f58f02bafc; Mathlib is
+56a005855ea17e0b0958f73ec801ae140b0a1679, with a clean dependency checkout.
+All frozen search, candidate, verifier and source inputs remain unchanged.
+This is builder verification; independent acceptance is still pending.

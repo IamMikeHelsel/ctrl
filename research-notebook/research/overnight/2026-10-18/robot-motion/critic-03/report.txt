@@ -1,0 +1,106 @@
+INDEPENDENT REVIEW 03 — common-prefix robot motion comparison
+18 October 2026. Outcome: ACCEPT for the exact numerical scope below.
+
+Accepted claim
+For the declared scalar plant and this fixed two-request return, the methods
+share the reference and physical trajectory through the left side of 0.52 s.
+Retained FIR has a smaller actual squared-jerk integral in the generous task.
+It also travels farther and rejects the tight revision. This is a tradeoff,
+not a general improvement over native fast or an optimal motion result.
+
+Frozen input
+builder-03/artifact-sha256.json
+SHA256 abfc9ca6da02e5cbec77b4019e8f356c80d612f65bea3fcb3e7b227ec1cf6d58
+All 209 listed artifacts were checked before and after the physical replay.
+The source, reference and data freeze bindings also pass independent checks.
+No builder file was edited. The old builder-02 result remains unchanged.
+
+Independent evidence
+The reviewer used an 80-digit 3 by 3 homogeneous exponential plus an exact
+rational polynomial particular solution. The builder uses a 9 by 9 SciPy
+exponential. No builder numerical helper was imported. Every trajectory
+starts from zero; all actual states are carried across every boundary.
+
+All 72 traces, 271,884 state rows and 1,356 event rows were replayed. All
+task decisions agree. The largest position difference is 4.191e-16 m.
+The largest actual jerk difference is 2.956e-12 m/s^3. The independent
+prefixes match for all 12 plant/grid combinations. There is no physical
+state reset at 0.52 s or 0.62 s. Both sides of each event are retained.
+
+An independent rational formula binds every FIR polynomial piece and all
+candidate trials. The initial request has no completion deadline and is
+identical across the six schedules. The revision truth remains zero after
+rejection. The immediate candidate still has acceleration peak 21/32,
+above 1/2. The delayed candidate has peak 1/2 and ends at 1.42 s. The
+1.30 s task rejects the listed candidates; it does not prove infeasibility
+over every possible trajectory or execution time.
+
+Two fresh native frontends reproduce both saved plans and all 7,922 native
+query rows exactly. All 101 pinned Ruckig source hashes and the static-library
+hash match. The exported polynomials and elapsed-time branches agree with
+an independent rational evaluator. The common native input is the rounded
+value of (77/19200, 23/480, 5/16). The reference clock is exact rational
+0.52 plus exported binary phase offsets. It does not use the previous
+batch's absolute-double subtraction convention.
+
+The native matched duration equals the binary value of 0.9 and meets the
+declared 1e-12 s matching tolerance. Its arrival and rational 1.42 are not
+an exact rational identity. This numerical distinction is immaterial to
+these reported metrics but must remain clear in theorem claims.
+
+Results and fairness
+At the fine grid, all three methods pass all six generous plant cases.
+Native fast passes all six tight cases. Retained FIR rejects all six tight
+revisions and continues to the old 20 mm target. Native matched accepts the
+revision but fails all three tight terminal bands in every plant case.
+Twenty-four native trace pairs are identical across the two deadline tasks.
+
+All 198 reported summary range/count fields agree with the independent
+replay. Suffix metrics use the same intervals, [0.52,1.42] and [0.52,2.5] s.
+Command variation includes the jump at revision. The generous FIR/native
+matched squared-jerk ratio is 0.39780–0.40154. The forward-excursion ratio
+is 2.08536–2.08963; the path-length ratio is 1.83847–1.84224.
+Thus the lower jerk result survives the common-state comparison, but has a
+clear travel cost. Matching arrival removes a timing confound; it does not
+match path geometry or prove an equal-objective optimum. Ruckig's duration
+constraint is not a squared-jerk minimization objective.
+
+Squared-jerk integral has units m^2/s^5. It is a smoothness proxy, not physical
+energy. Command variation has units m/s^2. Extra forward excursion is travel
+beyond actual position at revision; it is not overshoot past the final goal.
+Actual native acceleration can exceed the reference acceleration limit.
+No reference limit was transferred to the physical plant by this review.
+
+Figure and source scope
+The final PNG was inspected. The six trace hashes and summary hash agree
+with its saved inputs. It shows both tight-task failure and the travel cost.
+Its footer states the numerical scalar model, selected plant case, ranges,
+and the lack of a minimum-jerk objective. A publication caption should state
+the bar integration interval explicitly: 0.52 to 2.5 s.
+The original plot failures remain in builder-03/figure-attempt-01 and logs.
+
+The updated claim map, paper plan and focused 2012/2019 source-reading note
+were read. The 2012 work already discusses acceleration growth under an
+overlapping reversal and waiting as a response. This gate provides no broad
+novelty claim for that failure, equal-width FIR motion, or delayed execution.
+It also gives no human-arm, VLA, six-axis, contact, hardware, motor-energy,
+all-time physical-peak or universal changing-response result.
+
+Next productive question
+Before claiming a smoothing advantage, freeze one stronger comparison:
+from this same reference and actual revision state, can a smooth return
+planner meet the same arrival and a declared forward-excursion cap while
+matching the FIR jerk integral? State its objective and constraints first.
+If that comparison is outside the paper scope, keep this gate as evidence
+that a checked execution contract exposes a tradeoff, and focus the paper
+on the contract, physical assumptions and failures. Do not tune this batch.
+
+Evidence grade: A for this bounded numerical audit. This is not a novelty
+grade, a publication probability, or permission to remove the stated limits.
+
+Reproduction
+physical_replay.py, bindings.py, native_review.py and summary_review.py
+contain the independent checks. physical-review.json records all cases.
+Use the pinned local runtime described in reviewer-runtime.json. To repeat
+the review, copy these scripts into a new sibling review folder and preserve
+this frozen evidence. Compiled caches are excluded from the final manifest.

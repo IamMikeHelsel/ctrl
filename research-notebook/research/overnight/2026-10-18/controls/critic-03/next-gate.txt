@@ -1,0 +1,82 @@
+Recommended next gate: one exact rational quadratic certificate
+Decision: CONTINUE for at most 60 minutes. No certificate has been built here.
+
+Fixed question and model
+Keep sigma=10/s, r in [80,120]/s, |w|<=0.01 m/s^2, the original controller,
+the original goal, and initial transformed cube R=0.0002 m. Keep the targets
+|v|<=0.001 m/s and |a|<=0.02 m/s^2 at all hold times t>=2 within the horizon.
+Do not add a disturbance-rate assumption to obtain a pass.
+
+Use e0=1/80000 m, d=w/0.01, and q=(e,v/40,a/1600)/e0, e=x-c.
+Then q'=A(r)q+B(r)d with
+  A(r)=[[0,40,0],[0,0,40],[-r/2,-3r/2,-3r/2]],
+  B(r)=[0,0,r/2]^T.
+This is physical time, so alpha below has units 1/s. q is dimensionless.
+The outputs are v=0.0005 q1 m/s and a=0.02 q2 m/s^2.
+
+Certificate construction target
+Seek one rational symmetric positive-definite Q and one positive rational
+alpha such that, for r=80 and r=120,
+  M(r)=[[A(r)Q+Q A(r)^T+alpha Q, B(r)],[B(r)^T,-alpha]] <= 0.
+Retain the proposed zero-based bounds Q[1,1]<=9/4 and Q[2,2]<=81/100.
+The full matrix is affine in r, so the same certificate covers every interior
+rate by convex combination. No r' enters this reduction. The bounded input d
+is already handled by the last row and column; it is not an assumed constant.
+
+The unknown product alpha Q makes a joint search nonconvex. Predeclare a finite
+grid, for example alpha in {4,8,12,16,20,24,32,40}/s, and solve the fixed-alpha
+feasibility problems. Do not change the target limits after seeing a failure.
+Freeze a rational candidate before checking it. Floating-point eigenvalues do
+not count as a certificate. Check positive definiteness and endpoint negativity
+with exact rational LDL factors or the appropriate exact principal minors.
+Leading principal minors alone do not certify semidefiniteness; use all required
+principal minors, or strict definite factors with signed pivots.
+
+Why the inequality works
+Let P=Q^(-1), V=q^T P q. Congruence by diag(P,1) gives
+  V' + alpha V - alpha d^2 <= 0.
+Thus V'<=alpha(1-V) when |d|<=1. This proves invariant-ellipsoid control for a
+supplied zero-initial-state forced trajectory. No Q or P exists yet in this work;
+these are implications of a successful future certificate.
+
+Prefer a direct initial-state bound if it closes
+The same scalar inequality applies to the ACTUAL error trajectory. It gives
+  V(t)<=1+exp(-alpha t)(max(1,M0)-1),
+if V(0)<=M0. This route does not require a newly introduced forced trajectory.
+It can retain the existing conditional classical-trajectory premise with bounded
+pointwise r and w; no extra disturbance derivative is needed.
+The inherited cube implies component bounds |q(0)|<=(16,32,64). One simple
+rational bound is M0=sum_ij |P_ij| b_i b_j, b=(16,32,64). A tighter exact bound
+can use the eight mapped initial vertices, with the convexity argument stated.
+
+For alpha=4k from the proposed grid, use exp(8)>=2048 to obtain
+  C2=1+(max(1,M0)-1)/2048^k.
+The final exact arithmetic conditions are
+  Q[1,1]*C2<=4 and Q[2,2]*C2<=1.
+Together with the differential argument and output-coordinate inequalities,
+these would prove both original limits for every t>=2. The exponential bound
+can follow from exp(2)>=7 and exp(8)>=7^4>=2048. These implications still need
+checked theorem bridges before reporting a new Lean control result.
+
+Original homogeneous split remains a valid fallback
+If direct entry is too loose, split ERROR states into forced and homogeneous
+parts with the SAME changing r. The forced part starts at zero; the homogeneous
+part retains the entire actual initial error cube. Establish existence and the
+decomposition, or supply a direct Minkowski-set argument. Do not assume a reset.
+The proposed homogeneous bounds at t>=2 are correct:
+  |v_h|<=1/102400 m/s, |a_h|<=1/1280 m/s^2.
+Adding forced limits 3/4000 m/s and 9/500 m/s^2 stays below the original targets.
+An invariant ellipsoid by itself does not establish either entry argument.
+
+60-minute success and failure rules
+Success is a saved rational Q and alpha, exact positive/negative matrix evidence,
+and one exact entry condition above. Keep matrix construction, matrix arithmetic,
+trajectory proof, and Lean checking as separate acceptance gates. Do not call
+the whole theorem closed until its trajectory and initial-state bridges pass.
+
+If no exact candidate meets the fixed constraints, stop this template batch and
+record every tried alpha, solver outcome, residual, and rounding failure. A
+solver failure or finite-grid failure is not a proof of template infeasibility,
+and template infeasibility is not a counterexample to the control target.
+A multi-facet polytope is then a reasonable separate gate, with multi-affine
+rate/input endpoint reduction and a proved initial-state entry argument.

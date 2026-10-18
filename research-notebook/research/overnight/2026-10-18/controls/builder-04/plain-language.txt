@@ -1,0 +1,18 @@
+The useful claim is that the axis settles while its response keeps changing.
+It does not need the same response on every attempt. It does need a stated
+lower and upper response bound, and a limit on the added disturbance.
+
+The proof carries the actual position, speed, and acceleration into the hold.
+It measures them together with one quadratic formula. Outside a small allowed
+region, that measure must decrease. After two seconds, it is small enough to
+force both speed and acceleration inside the target bands.
+
+A numerical solver proposed the formula. Exact rational arithmetic and Lean
+check the formula and the implication from the physical equations. The solver
+is not asked to certify its own numerical answer.
+
+Here, “settled” means speed below 1 mm/s and acceleration below 0.02 m/s^2.
+It does not mean exact rest. The proof also does not cover complete loss of
+grip, an unmodeled delay, or a real robot arm without a justified model.
+Independent review must accept the frozen result before we present it as a
+completed project result.

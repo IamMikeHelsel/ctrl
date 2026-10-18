@@ -1,0 +1,28 @@
+Pinned-library notes for the next gate (read-only scout, not proved here)
+
+The local Mathlib source supplies:
+- RingTheory/TensorProduct/Maps.lean:
+  Algebra.TensorProduct.lift and lift_tmul; congr; map.
+- LinearAlgebra/TensorProduct/Pi.lean:
+  TensorProduct.piRight and TensorProduct.piScalarRight are linear equivalences.
+- LinearAlgebra/TensorProduct/Free.lean:
+  Algebra.TensorProduct.equivPiOfFiniteBasis.
+
+A concrete route to bijectivity may avoid a fresh dimension argument. First use
+Algebra.TensorProduct.congr with the accepted splitMatrixEquiv. Then use the
+linear piRight equivalence for matrix rows, and piScalarRight for columns.
+The resulting pure-tensor coordinate formula should be
+  (z tensor A)_(I,J) -> z * ofReal(A_(I,J)).
+Check the exact signatures and scalar towers before implementing this route.
+
+Do not directly use RingTheory/TensorProduct/Pi's algebra equivalence as the
+matrix-algebra result: its function algebra multiplies pointwise, while matrix
+multiplication sums over the middle index. Use the linear equivalence for
+bijectivity and separately prove compatibility with matrix multiplication, or
+identify it with the algebra lift through the exact pure-tensor formula.
+
+ComplexAdjoint.lean from complex-adjoint-04 already defines GUComplex.CCl,
+GUComplex.bar and bar_tmul. It can be reused byte-for-byte with the current
+CliffordModel. Its sibling AdjointControls.lean has the same module filename as
+this new gate's controls; avoid that module-name collision rather than editing
+frozen old sources. The main accepted ComplexAdjoint module has no such clash.

@@ -1,0 +1,33 @@
+CONTROLS BUILDER04 — reproduction instructions
+
+The accepted-status decision belongs to the independent reviewer. This folder
+contains a builder candidate. Read report.txt and next-gate.txt for boundaries.
+
+Exact arithmetic needs only Python's standard library:
+  python3 check_exact.py
+  python3 check_negative.py
+Run these from this directory or pass their full paths. They read candidate.json
+and write their exact results. No SDP solver participates in these checks.
+
+Exploratory search used the fixed eight-alpha protocol, CPython 3.14.0, NumPy 2.3.4,
+CVXPY 1.9.3 and Clarabel; solver-versions.json records all solver versions.
+The local .venv is a cache and is excluded from the artifact. It was created
+with --system-site-packages. install.log preserves the free local package install.
+To repeat the exploratory proposal search in a separate output copy, install
+those recorded versions and run search.py. It overwrites candidate/results in
+that copy. Do not rerun it in the frozen evidence directory.
+
+Lean verification uses the existing pinned lean-controls project dependency
+cache. It does not fetch or change the toolchain. Mathlib and Lean are pinned
+in verification.json; no local source object from that project is reused.
+  python3 verify.py
+The helper resolves the original local source closure, copies every local source
+to a fresh temporary directory, compiles in dependency order, audits all public
+local theorem axioms, separately replays the eight selected modules with
+leanchecker, and expects four exact false assertions to fail. Cached pinned
+Mathlib dependencies remain part of the trust base. All before/after source
+hashes must agree with source-freeze.json and source-closure.json.
+
+For preservation, the artifact manifest excludes .venv, build, __pycache__ and
+itself. Failed development sources/logs and solver warnings remain included.
+The artifact manifest is frozen only after all verification jobs finish.

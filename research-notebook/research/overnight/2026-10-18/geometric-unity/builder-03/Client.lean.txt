@@ -1,0 +1,19 @@
+import AdjointControls
+noncomputable section
+open HyperbolicSpinor GUClifford
+example (i : J) : (creationMatrix i).transpose = contractionMatrix i := creation_transpose i
+example (i : J) : (positiveMatrix i).transpose = positiveMatrix i := positive_transpose i
+example (i : J) : (negativeMatrix i).transpose = -negativeMatrix i := negative_transpose i
+example : K.transpose = K := K_transpose
+example : K*K = 1 := K_square
+example (i : J) : K * negativeMatrix i = negativeMatrix i * K := K_commutes_negative i
+example (i : J) : positiveMatrix i * K = -(K * positiveMatrix i) := K_anticommutes_positive i
+example (x : Cl) : splitMatrixEquiv (star x) = K * (splitMatrixEquiv x).transpose * K := splitMatrixEquiv_star x
+example (A : SpinMatrix) : realAdjoint (realAdjoint A) = A := realAdjoint_involutive A
+example (A B : SpinMatrix) : realAdjoint (A*B) = realAdjoint B * realAdjoint A := realAdjoint_mul A B
+example (A : SpinMatrix) : (-K) * A.transpose * (-K) = realAdjoint A := negative_K_same_adjoint A
+example : negativeMatrix 6 * negativeMatrix 5 * negativeMatrix 4 * negativeMatrix 3 * negativeMatrix 2 * negativeMatrix 1 * negativeMatrix 0 = -K := reversed_negative_product
+example : (positiveMatrix 0).transpose ≠ -positiveMatrix 0 := positive_not_euclidean_skew
+example : K * (positiveMatrix 0).transpose ≠ -positiveMatrix 0 := omitted_right_K_fails
+example : (creationMatrix 0 + contractionMatrix 0) * (creationMatrix 0 + contractionMatrix 0) ≠ -1 := wrong_negative_fock_square
+example : ((Complex.I : ℂ) • (1 : ComplexSpinMatrix)).transpose ≠ -(Complex.I • (1 : ComplexSpinMatrix)) := imaginary_scalar_plain_transpose_fails

@@ -14,13 +14,13 @@
   },
   "pods": {
     "robot-motion": {
-      "agent": "/root/overnight_motion_critic_01",
-      "role": "critic",
-      "owned_path": "research/overnight/2026-10-18/robot-motion/critic-03/",
-      "milestone": "Independent common-prefix suffix replay and separate root successor-check proof review",
-      "batch_deadline_utc": "2026-10-18T08:56:00Z",
-      "status": "reviewing",
-      "started_weekly_used": 53,
+      "agent": "/root/overnight_motion_builder_04",
+      "role": "builder",
+      "owned_path": "research/overnight/2026-10-18/robot-motion/builder-04/",
+      "milestone": "Sufficient cubic Bernstein velocity guard and finite-candidate composition",
+      "batch_deadline_utc": "2026-10-18T09:16:00Z",
+      "status": "active",
+      "started_weekly_used": 56,
       "candidate_summary": "Actual-plant composition compiles. Frozen 96-trace comparison preliminarily shows the new guard repairs acceleration failure but does not outperform native fast Ruckig. Runtime parity reproduction and independent review pending.",
       "builder_status": "builder-03 frozen; independent review active",
       "builder_manifest_sha256": "abfc9ca6da02e5cbec77b4019e8f356c80d612f65bea3fcb3e7b227ec1cf6d58",
@@ -36,21 +36,27 @@
           "critic": "critic-02",
           "decision": "ACCEPT bounded statement; evidence gate only",
           "critic_manifest_sha256": "fbc7ba5ddeb97c92b788f670fa8c483708366c0c2bfdb7da246128d064df9470"
+        },
+        {
+          "builder": "builder-03",
+          "critic": "critic-03",
+          "decision": "ACCEPT common-prefix numerical tradeoff, not optimality",
+          "critic_manifest_sha256": "2b3cc05bf3e9374bb21478c486424afca21b5d67b76e0bd9551747a9ed5b3660"
         }
       ],
       "recommended_next_gate": "After acceptance, freeze and run a common-prefix/common-actual-revision-state suffix comparison, including native fast and native arrival-duration-matched baseline. Then exact checker optimization. See next-round-decisions.txt."
     },
     "controls": {
-      "agent": "/root/overnight_controls_critic_01",
+      "agent": "/root/overnight_controls_critic_04",
       "role": "critic",
-      "owned_path": "research/overnight/2026-10-18/controls/critic-03/",
-      "milestone": "Independent bounded varying-rate/disturbance scout review; disclose ramp-prefix deviation and assess proposed invariant-plus-transient gate",
-      "batch_deadline_utc": "2026-10-18T08:42:00Z",
+      "owned_path": "research/overnight/2026-10-18/controls/critic-04/",
+      "milestone": "Independent direct actual-state changing-input two-second terminal bounds",
+      "batch_deadline_utc": "2026-10-18T09:15:00Z",
       "status": "reviewing",
-      "started_weekly_used": 53,
+      "started_weekly_used": 58,
       "candidate_summary": "Same commanded goal/controller and inherited state; candidate two-second position/speed/acceleration bounds for constant bias. Arbitrary changing disturbance remains separate.",
-      "builder_status": "builder-03 frozen; independent review active",
-      "builder_manifest_sha256": "7c270b9f1559b6895434cf238e8bd9500009ce40442b3ce0cc31a2c9d95a29e9",
+      "builder_status": "builder04 frozen; critic04 active",
+      "builder_manifest_sha256": "fcd32812a407ff8589951ef313da896c106751fef00fa987cfefe4ae64327a9b",
       "accepted_milestones": [
         {
           "builder": "builder-01",
@@ -63,17 +69,23 @@
           "critic": "critic-02",
           "decision": "ACCEPT bounded statement; evidence gate only",
           "critic_manifest_sha256": "2b302d0f17e02923d6e50eccd03bfac23a603c3d24961f11c6fbc2c16f26d35d"
+        },
+        {
+          "builder": "builder-03",
+          "critic": "critic-03",
+          "decision": "ACCEPT bounded numerical scout only; direct quadratic certificate recommended",
+          "critic_manifest_sha256": "ee9f3b92f81c52cbbb1cac9cda0cec529510b8d9d212f7baede16cf53afd74bb"
         }
       ]
     },
     "geometric-unity": {
-      "agent": "/root/overnight_gu_builder_03",
+      "agent": "/root/overnight_gu_builder_04",
       "role": "builder",
-      "owned_path": "research/overnight/2026-10-18/geometric-unity/builder-03/",
-      "milestone": "Actual real split Clifford matrix-adjoint bridge; derive transpose and K identities from existing exterior action",
-      "batch_deadline_utc": "2026-10-18T08:50:00Z",
+      "owned_path": "research/overnight/2026-10-18/geometric-unity/builder-04/",
+      "milestone": "Actual complex tensor matrix representation and conjugate-transpose bridge",
+      "batch_deadline_utc": "2026-10-18T09:16:00Z",
       "status": "building",
-      "started_weekly_used": 53,
+      "started_weekly_used": 58,
       "candidate_summary": "Actual exterior matrix-unit action and normalized Clifford preimages compile. Explicit arbitrary-endomorphism lift and fresh verification underway.",
       "builder_status": "builder-02 independently accepted; builder-03 started",
       "builder_manifest_sha256": "fab7240941cb89b4517fd2614160f7ebf122eff095b017f4676bd09cd94b792d",
@@ -89,14 +101,20 @@
           "critic": "critic-02",
           "decision": "ACCEPT actual real matrix equivalence; standard algebra only",
           "critic_manifest_sha256": "7984208c7cd519eb42eceb8264d6047af00c0d5869548d1ad17e57fcf4895c73"
+        },
+        {
+          "builder": "builder-03",
+          "critic": "critic-03",
+          "decision": "ACCEPT actual real matrix-adjoint bridge; no physics or complex claim",
+          "critic_manifest_sha256": "a6af23a3104a95e72aa5141ce327369a947d478eacf333600df052d07a0bb23c"
         }
       ],
       "authoritative_source_questions": "research/overnight/2026-10-18/geometric-unity/critic-01/QUESTIONS-FOR-AUTHOR.txt"
     }
   },
-  "root_current_work": "Controls and motion builder03 frozen; critic03 reviews active. GU builder03 real bridge compiles and is self-verifying. Successor checker has independent motion critic03 review. Root retrieved/read previously inaccessible 2012/2019 FIR method sections; source confirms reversal failure prior art. Focused PAPER-PLAN and working QUESTIONS-BEFORE-SUBMISSION saved. Checkpoint03 sync in progress.",
-  "next_dispatch_policy": "At first freeze, assign a fresh independent critic to that pod; rotate through3worker slots; do not stop all work after first milestone.",
-  "latest_verified_remote_sha": "70284a1b410274d2b1ebc3413893c7f04fb60ca5",
+  "root_current_work": "Frozen root50-module portable bundle passed fresh replay:3153 declarations,9 kernel replays,12 false clients and3 provenance mutation controls. Six-page paper compiled and visually checked. Both await independent packaging/content review; frozen manifests index04, do not edit them. Next review slot after current builders should cover each newly frozen proof first; then root bundle/paper in a new reviewer folder. For any paper revision create a new version preserving frozen original. GU builder04 complex gate active. Controls builder04 actual varying-r/w theorem compiles and verifies; motion builder04 sufficient velocity theorem compiles and verifies. Root checkpoint04 sync in progress.",
+  "next_dispatch_policy": "Review each newly frozen builder first. Motion builder04 next gets independent critic04. GU builder04 next gets independent critic04. Root50-module portable package and six-page paper then need one independent packaging/content review in new publication-review-01 folder; avoid file overlap and frozen-source edits. Consider controls/FIR composition only after actual changing-input result acceptance.",
+  "latest_verified_remote_sha": "25334b693a92f844e248095bcfcb35ce0e244727",
   "continuation": "ACTIVE thread heartbeat, every ten minutes at :04/:14/:24/:34/:44/:54; final scheduled tick 14:44 UTC. Stop guard is in prompt and state. Avoid duplicate active jobs.",
   "local_host_keep_awake": {
     "pid": 16927,
@@ -105,11 +123,11 @@
     "mode": "temporary idle-sleep assertion only; expires at round deadline",
     "ac_power_verified": true
   },
-  "last_coordinator_update_utc": "2026-10-18T07:57:21.102038+00:00",
+  "last_coordinator_update_utc": "2026-10-18T08:22:25.997107+00:00",
   "latest_shared_usage": {
-    "weekly_used": 53,
+    "weekly_used": 58,
     "credits": "66235.3330170000",
-    "observed_utc": "2026-10-18T07:45:52Z"
+    "observed_utc": "2026-10-18T08:17:20Z"
   },
   "repository_ci": {
     "head_sha": "9465d90050b9ecb0675039ce8921caf22e030b49",
@@ -129,13 +147,13 @@
     "mode": "shared-host Lean --run, no realtime claim",
     "next": "prove adjacent-cell equivalence and compare fixed inputs"
   },
-  "latest_local_checkpoint": "research/overnight/2026-10-18/checkpoint-02.txt",
+  "latest_local_checkpoint": "research/overnight/2026-10-18/checkpoint-03.txt",
   "repository_checkpoint": {
-    "remote_sha": "70284a1b410274d2b1ebc3413893c7f04fb60ca5",
-    "remote_verified_utc": "2026-10-18T07:34:11.564787+00:00",
-    "staged_manifest_files_verified": 7223,
+    "remote_sha": "25334b693a92f844e248095bcfcb35ce0e244727",
+    "remote_verified_utc": "2026-10-18T07:59:01Z",
+    "staged_manifest_files_verified": 7967,
     "checkout_clean_after_push": true,
-    "scope": "26 frozen manifests,4216 stored files and36 compiled products checked in source. Active folders are progress snapshots; full freshness found23 changing files. See repository research-notebook/_sync/overnight-checkpoint-02.json. Controls builder02 finished after this snapshot and must be added to the next frozen-evidence index."
+    "scope": "36 frozen manifests:5106 stored files and36 compiled products checked in source. All7967 snapshot files match manifest. Active-state full freshness found2 changing files; final full check remains open."
   },
   "coordinator_proof_gate": {
     "path": "research/overnight/2026-10-18/robot-motion/history-pruning-01",
@@ -147,10 +165,25 @@
   },
   "coordinator_optimization_gate": {
     "path": "research/overnight/2026-10-18/robot-motion/successor-check-01",
-    "status": "independent review dispatched to motion critic03/successor-review",
+    "status": "independently accepted",
     "deadline_utc": "2026-10-18T08:15:00Z",
     "target": "Prove minimum-successor acceleration checker equivalent to exact all-future guard; benchmark unchanged inputs only after freeze.",
     "manifest_sha256": "006e5fee639c1eff6ce90d5e49945f2003ac47dc5155b7af8f4f265526ab856d",
-    "claim": "Same exact all-future acceleration acceptance; observed 32-event median219.648ms in Lean --run on shared host"
+    "claim": "Same exact all-future acceleration acceptance; observed 32-event median219.648ms in Lean --run on shared host",
+    "critic_manifest_sha256": "3620c6af12b074de71d19232ab07db61af2d4f4c191429bae000b23c45f92753"
+  },
+  "active_agent_usage_note": "Shared meter55; motion/controls critics began earlier review work around47 and resumed at55. Conservatively review their continuity/cap before65 used. Current GU builder03 began53. No per-agent usage meter exists.",
+  "publication_candidates": {
+    "paper": {
+      "path": "publication/robot-motion/checked-motion-paper",
+      "manifest_sha256": "d8bf7fab19e445b4650c12933cefcfbd4dca5295a94daa51cfa51625258d410c",
+      "pdf_sha256": "5f24bc9dc7b43486d828e991b70d914d06925dc353c74d843cf9e1f705fcb462",
+      "status": "6-page draft; independent content review pending"
+    },
+    "bundle": {
+      "path": "publication/robot-motion/overnight-reviewer-bundle",
+      "manifest_sha256": "a03f4866baa0b97437f251ab1b0315f45132a91992324b8d031a29de912e59f4",
+      "status": "fresh50-module replay passed; independent packaging review pending"
+    }
   }
 }
