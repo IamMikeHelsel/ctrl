@@ -1,0 +1,90 @@
+CONTROLS TEAM REVIEW PACKET
+18 October 2026. Review owner: Mike Helsel. Prepared with AI assistance.
+
+Start with output/pdf/controls-review-brief.pdf (the new review brief).
+The primary candidate is the sampled-controller travel-envelope result.
+The newer changing-response settling result is a separate companion.
+This packet is prepared for review. No message has been sent to a team.
+
+READING ORDER
+1. The new review brief: problem, theorem boundaries, evidence, and decision.
+2. NOVELTY-EVAL.txt: a targeted controls and Lean assessment with falsifiable gates.
+3. ../robust-manuscript/main.pdf: the unchanged six-page primary paper.
+4. ../../research/overnight/2026-10-18/controls/critic-05/REPORT.txt:
+   independent review of the newer settling result.
+5. verification.json and input-bindings.json: current packaging checks.
+
+THE TWO FORMAL CLAIMS
+A. A fixed uncertain actuator rate, saturated sampled controller, bounded held
+   errors, a full-state initial ellipsoid, and bounded positive sample durations
+   imply a position envelope for all nonnegative real times. Existence and
+   uniqueness are proved for the same prescribed sample and error sequences.
+B. A supplied classical trajectory, continuous tracking feedback, time-varying
+   bounded response/disturbance and one initial error cube imply tracking and
+   terminal residual bands through the supplied horizon. No state is reset.
+There is no theorem here combining B's varying response with A's sampled and
+saturated controller. Neither theorem establishes PL d/e or robot safety.
+
+LEAN REVIEW ENTRY POINTS (paths from the working research folder)
+A: lean-controls/LeanControls/ExecutionUniqueness.lean
+   LeanControls.ExecutionUniqueness.IsExecution
+   LeanControls.ExecutionUniqueness.constructed_isExecution
+   LeanControls.ExecutionUniqueness.execution_unique
+   LeanControls.ExecutionUniqueness.execution_travel_limit
+   lean-controls/LeanControls/PhysicalExecutionUniqueness.lean
+   LeanControls.PhysicalExecutionUniqueness.execution_travel_limit
+Generic reuse candidates:
+   lean-controls/LeanControls/BernsteinCertificate.lean
+   lean-controls/LeanControls/VertexCertificate.lean
+   lean-controls/LeanControls/StepScaledRobustness.lean
+B: research/overnight/2026-10-18/controls/builder-05/FIRHold.lean
+   RobotMotion.FIRHold.delayed_return_physical_terminal
+   Related full replay: publication/robot-motion/overnight-reviewer-bundle-v4/
+
+REPRODUCTION
+Do not use the repository root ControlsLean build as evidence for these files.
+The notebook has a separate pinned Lean 4.35.0 project and mathlib revision
+56a005855ea17e0b0958f73ec801ae140b0a1679. Do not update those pins to fit a root build.
+
+For Result A, publication/robust-final-fresh-replay.sources.tar.gz contains the
+105-file frozen lean-controls/ project. Extract it into a NEW temporary folder.
+Read its README.txt, install/provide the exact pinned toolchain and dependencies,
+and use its requirements.txt (SymPy 1.14.0). From the extracted lean-controls:
+  python3 scripts/verify_project.py
+This runs the project build/audit, producer tests, model-link tests, ten benchmark
+regenerations and twelve uncertainty certificate regenerations/mutations.
+To inspect the previous fresh build, read publication/robust-final-fresh-replay.json.
+It rebuilt 63 local modules and audited 830 PUBLIC declarations. This is not the
+later robot-motion package's all-local-declaration audit or separate checker run.
+
+For a new source replay in this existing workspace, first confirm the isolated
+dependency-cache path in the baseline record still exists. Then, from workspace:
+  python3 publication/replay_source_snapshot.py --prefix controls-team-fresh-01 \
+    --baseline publication/robust-final-fresh-replay.json
+Use a new prefix on a second run. The tool refuses to overwrite evidence.
+This source replay does not rerun the generator/producer tests. Its cache and
+toolchain boundary is recorded; it does not bootstrap the proof system.
+
+For Result B, use the full V4 package README.txt commands. Its independent review
+is research/overnight/2026-10-18/publication-review-02/package-review/REPORT.txt.
+That package includes other robot-motion results. Do not count all of them as
+new controls contributions.
+
+WHAT WAS CHECKED FOR THIS PACKET
+python3 publication/controls-team-review-20261018/verify_packet.py
+Checks frozen source/evidence hashes and exact rational translations. It does
+not rerun Lean, synthesis, hardware, or all previous numerical experiments.
+The brief was rendered and visually inspected. Verification files state the
+scope; a green packaging check is not proof of novelty.
+
+TEAM REVIEW, 55 MINUTES
+Controls reviewer, 20 min: challenge model, initial set and error/timing assumptions.
+Lean reviewer, 20 min: review statement/definition fidelity and reuse overlap.
+Joint review, 15 min: choose exactly one next gate in NOVELTY-EVAL.txt, or stop.
+Record concrete accept/repair/stop reasons. A new theorem count is not a gate.
+
+RELEASE STATUS
+Prepared for internal technical and novelty review. External human review,
+affiliation/employer release, license and venue remain decisions. The historical
+paper's author placeholder and publication metadata need review before submission.
+No mail, public release, paper submission, or PR merge is authorized by this packet.

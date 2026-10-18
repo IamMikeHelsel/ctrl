@@ -1,3 +1,20 @@
+TEAM REVIEW PACKET — 18 October 2026
+
+Start with controls-team-review-20261018/output/pdf/controls-review-brief.pdf.
+This five-page brief separates the sampled-controller travel envelope from the
+later changing-response settling theorem. It includes diagrams, exact assumption
+boundaries, primary-source novelty comparisons, a team agenda and Lean entry points.
+NOVELTY-EVAL.txt gives a targeted assessment and three falsifiable next gates.
+READ-ME.txt links the unchanged six-page paper and frozen replay sources.
+Current packaging checks verified612 input files and all105 archived project
+files; no new Lean theorem or whole-project proof replay was performed.
+Ready for team technical/novelty review; human novelty and publication decisions
+remain open. No team message or external submission was sent.
+
+The overnight motion paper and final63-module proof package are separately listed
+in research/overnight/2026-10-18/MORNING-REPORT.txt, relative to the workspace root.
+The older dated checkpoints below retain their original scope and history.
+
 NEW WORKING NOTE — 17 October 2026
 
 robot-motion/execution-note/main.pdf: Treating the Tremors We Built into Robots
