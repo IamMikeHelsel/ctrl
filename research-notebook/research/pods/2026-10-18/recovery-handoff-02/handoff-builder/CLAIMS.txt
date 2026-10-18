@@ -1,0 +1,72 @@
+FROZEN CANDIDATE CLAIMS — DELAYED DIGITAL HANDOFF
+Builder: digital_hold_builder_01. Independent review is pending.
+
+C1. Conditional delayed holding, two fixed pending commands.
+LeanControls.DelayedHold.delayed_sampled_hold uses pending q=-1.
+LeanControls.BrakingDelayedHold.delayed_sampled_hold uses pending q=-121/100.
+Each theorem assumes a supplied Execution and IsSchedule on [0,H], with
+0<=D<=1/2000 seconds and D<=H. The first measured state is exactly
+(7/50,-1/100,-117/100), stamped at 0. Its true-state errors are at most
+(1/1000,1/100,1/20). Rates satisfy 8<=r<=12; physical target error is at most
+1/100. No endpoint cube, aggregate mismatch, or ongoing invariant is assumed.
+
+The physical state is continuous. The physical equations are x'=v, v'=a,
+a'=r*(u+d-a). Right and left derivatives are required separately. Pending q
+acts before D and on the left at D. The clipped measured-feedback command
+acts on the right at D and thereafter. Physical error d is added AFTER clip.
+Feedback is -8*(x-c)-6*v-a/2; c=141/1600, clip range [-2,2].
+
+The conclusion covers every real t in [0,H], including startup and dispatch:
+|x-c|, |x-c+v/4|, |x-c+v/2+a/16| <= R=2221/40000.
+Thus .0326<=x<=.14365, |v|<=8R, |a|<=64R, and |u+d|<=1.4356.
+The first digital command uses the ORIGINAL reading at stamp 0.
+
+C2. Admission is derived from measurement and pending-command dynamics.
+observation_admission derives the initial uncertainty box from Execution.error
+and the first schedule measurement. startup_acceleration derives |a|<=1.22
+from the actual ODE. startup_velocity derives |v|<=.02122. Startup state
+motion and cube membership follow from these derivatives and the initial
+sensor box. They are not trajectory-envelope premises.
+
+For pending -1, the global-history feedback slope is bounded by 7 after a
+coarse digital refinement; final mismatch <=.110 <2R=.11105 (slack .00105).
+For pending -1.21, startup slope <=8 and the global-history final bound is
+.111 <2R=.11105 (slack .00005). History before D remains in the integral.
+The cube proof is a first-contact argument on an inflated finite prefix.
+
+C3. The clock contract preserves total information age.
+Execution requires 0<=stamp<=t and t-stamp<=.001 seconds on the same global
+clock, on both derivative channels. Samples precede their dispatches.
+Dispatch times strictly increase and are locally finite. Each command uses
+the sample for its actual cell. first_cell_age proves that the original held
+reading can only remain active while t<=.001. no_first_hold_after_full_age
+proves that D>=.001 leaves no positive-duration first cell before the next
+dispatch on H>D. A fresh .001 allowance is not added at D.
+
+C4. There are exact nonconstant delayed execution witnesses for both cases.
+Each Witness.positive_delay_witness constructs the physical solution with
+r=8,d=0, initial state equal to the reading, D=.0005 and H=.001 seconds.
+The pending phase and following phase are exact exponential ODE solutions,
+joined at the SAME state. Acceleration changes before dispatch. The command
+jumps from -1 or -1.21 to .23 at D. The reading remains stamped 0. The schedule
+has dispatch 0 at .0005 and dispatch 1 at .001. The witness proves safety
+through H; it does not construct the command/state evolution after H.
+
+C5. Limited connection to the older braking condition.
+BrakingDelayedHold.pending_braking_compatibility proves
+-1.22<=-1.21+d<=-1.2 for |d|<=.01. This aligns the scalar effective-target
+bound of the earlier braking contract. Pending -1 does not align that bound.
+Neither case proves that the old stopping family reaches this fixed reading
+or its true-state box. No detector liveness, full stopping task, hardware
+execution, general ODE existence, or uniqueness theorem is claimed.
+
+C6. Explicit rejected cases.
+The earlier 5 ms capture allowance is not the 1 ms information-age contract.
+The new startup cap is 0.5 ms. Relaxing either age or startup cap to 5 ms
+breaks the submitted certificate; the failed Lean mutants are preserved.
+This is a certificate rejection, not a claim that every such motion is unsafe.
+An exact q=-2 example has |feedback slope|=12.08>8 and >7.
+An admitted sensor-box endpoint with q=-1.21 has slope 7.48>7, so the original
+slope-7 budget cannot simply be copied to the braking-compatible case.
+The assertion that an original stamp-0 reading has age<=1 ms at t=1.5 ms is
+also rejected. No quantitative maximum safe startup delay is claimed.

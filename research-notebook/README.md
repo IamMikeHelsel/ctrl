@@ -6,6 +6,7 @@ and final animations. Start with the reports below.
 
 | Area | Start here |
 |---|---|
+| Recovery and delayed handoff: accepted conditional proofs | [Review packet](research/pods/2026-10-18/recovery-handoff-02/REVIEW-ME.txt), [handoff review](research/pods/2026-10-18/recovery-handoff-02/critic/handoff/REPORT.txt), [recovery review](research/pods/2026-10-18/recovery-handoff-02/critic/grip/REPORT.txt), [scope and value grade](research/pods/2026-10-18/recovery-handoff-02/ROOT-GRADE.txt), [next decisions](research/pods/2026-10-18/recovery-handoff-02/QUESTIONS-BEFORE-SUBMISSION.txt) |
 | Digital hold: accepted conditional 1 ms theorem | [Team review packet](research/pods/2026-10-18/digital-hold-01/REVIEW-ME.txt), [independent proof review](research/pods/2026-10-18/digital-hold-01/critic/REPORT.txt), [scope and value grade](research/pods/2026-10-18/digital-hold-01/grader/FINAL-GRADE.txt), [next matched comparison](research/pods/2026-10-18/digital-hold-01/grader/COMPARISON.txt) |
 | Completed overnight round | [Runbook](research/overnight/2026-10-18/README.txt), [live state](research/overnight/2026-10-18/state.json), [current checkpoint](research/overnight/2026-10-18/checkpoint-02.txt), [claim map](research/overnight/2026-10-18/claim-map.txt), [submission requirements](research/overnight/2026-10-18/submission-readiness.txt) |
 | Previous five-hour session | [Checkpoint](research/pods/2026-10-17/five-hour-checkpoint-06.txt), [session limits](research/pods/2026-10-17/five-hour-session.json) |
@@ -53,9 +54,22 @@ errors and explicit command clipping. It derives the feedback mismatch instead o
 assuming it. A checked nonconstant dispatch witness exercises derivative jumps.
 Independent copied-source builds, axiom audits, separate kernel checks and negative
 controls passed. The first sample and dispatch must both occur at hold time zero.
-General existence, delayed braking-to-hold composition, precision standstill, hardware
-and comparative value remain open. This is a team-review artifact, not submission
-readiness. See the new review packet before using any result from that pod.
+That earlier fresh-start result remains unchanged. Its follow-up now accepts a delayed
+first dispatch of at most 0.5 ms for two fixed pending commands while retaining the
+original reading timestamp and 1 ms total age budget. Startup containment and later
+feedback mismatch are derived, with one continuous state. The fixed admission still
+does not cover all stopping outcomes.
+
+The follow-up also accepts a parameterized first-zero and upper-position bound when
+effective braking returns within a known time. It derives the loss acceleration cap
+and proves a separate exponential envelope with only a recovered rate floor. The
+simple formula loses the old 150 mm test, returning 160.5859375 mm. Its coast-then-brake
+witness and no-recovery counterexample are formal results; contact mechanics are not.
+The independent review rebuilt the full local import closure and preserved a repaired
+critic-only test failure. General existence, event-to-hold composition, useful terminal
+accuracy, hardware and comparative value remain open. Both bounded proof milestones
+are ready for internal review, not paper submission. Read the recovery/handoff packet
+before using the extensions; earlier manuscripts remain unchanged.
 
 This notebook is separate from the root `ControlsLean` library. Its main project uses Lean 4.35.0;
 the root library currently uses a different pin. Keep the notebook's `lake-manifest.json` and

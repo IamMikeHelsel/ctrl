@@ -1,0 +1,63 @@
+/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/pods/2026-10-18/recovery-handoff-02/handoff-builder/negative-controls/reject-5ms-information-age.lean:46:0: warning: automatically included section variable(s) unused in theorem `LeanControls.BrakingDelayedHold.initial_bounds`:
+  ex
+  hD
+  hDH
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit ex hD hDH in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/pods/2026-10-18/recovery-handoff-02/handoff-builder/negative-controls/reject-5ms-information-age.lean:190:8: warning: `if_pos` has been deprecated: Use `ite_eq_left` instead
+
+Hint: Replace the deprecated name:
+  i̵f̵_̵p̵o̵s̵i̲t̲e̲_̲e̲q̲_̲l̲e̲f̲t̲
+/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/pods/2026-10-18/recovery-handoff-02/handoff-builder/negative-controls/reject-5ms-information-age.lean:268:2: error: linarith failed to find a contradiction
+H D T K : ℝ
+f : ℝ → State
+r d stamp : Bool → ℝ → ℝ
+read : Bool → ℝ → State
+ex : Execution H D f r d stamp read
+hT : T ≤ H
+hKmax : K ≤ 1 / 16
+hz : ∀ t ∈ Icc 0 T, ∀ (i : Fin 3), |coordinates center (f t) i| ≤ K
+L : ℝ
+hL : 0 ≤ L
+hslope : ∀ t ∈ Ico 0 T, |actualSlope D f r d read true t| ≤ L
+b : Bool
+t : ℝ
+ht : t ∈ Icc 0 T
+htH : t ∈ Icc 0 H
+hs : 0 ≤ stamp b t ∧ stamp b t ≤ t ∧ t - stamp b t ≤ 1 / 200
+he :
+  |read b t 0 - f (stamp b t) 0| ≤ 1 / 1000 ∧
+    |read b t 1 - f (stamp b t) 1| ≤ 1 / 100 ∧ |read b t 2 - f (stamp b t) 2| ≤ 1 / 20
+hm : |command center (read b t) - command center (f (stamp b t))| ≤ 93 / 1000
+hc : ContinuousOn (fun t => command center (f t)) (Icc 0 T)
+hd : ∀ x ∈ Ico 0 T, HasDerivWithinAt (fun t => command center (f t)) (actualSlope D f r d read true x) (Ici x) x
+hmove : |command center (f t) - command center (f (stamp b t))| ≤ L * (t - stamp b t)
+hage : L * (t - stamp b t) ≤ L * (1 / 200)
+hnoise : |d b t| ≤ 1 / 100
+htri :
+  |command center (read b t) + d b t - command center (f t)| ≤
+    |command center (read b t) - command center (f (stamp b t))| +
+        |command center (f t) - command center (f (stamp b t))| +
+      |d b t|
+a✝ : 103 / 1000 + L / 1000 < |command center (read b t) + d b t - command center (f t)|
+⊢ False
+failed
+/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/pods/2026-10-18/recovery-handoff-02/handoff-builder/negative-controls/reject-5ms-information-age.lean:473:2: error: Type mismatch: After simplification, term
+  hc.right.right
+ has type
+  t ≤ 1 / 200
+but is expected to have type
+  t ≤ 1 / 1000
+
+Note: The following definitions were not unfolded because their definition is not exposed:
+  Real.instLE ↦ 2
+/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/pods/2026-10-18/recovery-handoff-02/handoff-builder/negative-controls/reject-5ms-information-age.lean:529:24: warning: `if_pos` has been deprecated: Use `ite_eq_left` instead
+
+Hint: Replace the deprecated name:
+  i̵f̵_̵p̵o̵s̵i̲t̲e̲_̲e̲q̲_̲l̲e̲f̲t̲
+/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/pods/2026-10-18/recovery-handoff-02/handoff-builder/negative-controls/reject-5ms-information-age.lean:533:24: warning: `if_neg` has been deprecated: Use `ite_eq_right` instead
+
+Hint: Replace the deprecated name:
+  i̵f̵_̵n̵e̵g̵i̲t̲e̲_̲e̲q̲_̲r̲i̲g̲h̲t̲

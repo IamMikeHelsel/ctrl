@@ -1,0 +1,51 @@
+REPLAY AND TRUST BOUNDARY
+18 October 2026
+
+Read REVIEW-ME.txt first. Source identity, proof replay, numerical illustrations
+and the engineering interpretation are different checks.
+
+1. Check the saved packet without changing it.
+   From the workspace or research-notebook root, run:
+   python3 research/pods/2026-10-18/recovery-handoff-02/verify_packet.py
+   python3 research/pods/2026-10-18/recovery-handoff-02/replay_root_screens.py
+
+   The first command checks frozen manifests, source copies, logs, standard-axiom
+   records and independent acceptance bindings. It does not execute Lean.
+   The second checks exact rational arithmetic, binary64 formula consistency
+   and saved figure hashes. It is not an interval or physical validation.
+   Both use the Python standard library and leave the packet unchanged.
+
+2. To execute Lean again, use a separate scratch copy of the workspace layout.
+   Keep lean-controls/lean-toolchain and lake-manifest.json unchanged. Install
+   or connect the retained Lean 4.35.0 runtime under .tools/elan and obtain the
+   exact pinned package products described in lean-controls/README.txt. The
+   repository stores source and recorded evidence, not a preinstalled runtime.
+
+   In that scratch copy only, move the recorded critic/handoff and critic/grip
+   output folders to separate saved locations. The replay scripts need empty
+   output folders and refuse to replace their existing fresh-build directories.
+   Keep the builder files and manifests intact. Then run, from the scratch root:
+   python3 research/pods/2026-10-18/recovery-handoff-02/critic/replay_handoff.py
+   python3 research/pods/2026-10-18/recovery-handoff-02/critic/replay_grip.py
+   python3 research/pods/2026-10-18/recovery-handoff-02/critic/replay_grip_extra.py
+
+   These scripts compile copied local source, audit theorem dependencies, invoke
+   leanchecker separately and reject deliberately false controls. Inspect every
+   step in the new replay-results.json and extra-checks.json files. The extra
+   recovery check uses the main recovery replay's environment and runs last.
+   Statement review still requires
+   reading the assumptions and conclusions; a successful build does not make
+   those assumptions true of a machine.
+
+3. Do not execute builder verify.py in the frozen source folder.
+   It rewrites its evidence files. Retain the original reports and logs even if
+   a later replay fails. Do not change pins or proof assumptions to obtain a pass.
+
+The package caches are a declared dependency boundary. Independent agent replay
+uses the same Lean implementation, not a separately implemented proof kernel.
+No theorem here certifies the Python plotting code, a sensor or a drive.
+
+After a notebook commit, verify its actual Git objects with:
+ python3 research/pods/2026-10-18/recovery-handoff-02/verify_committed_copy.py --repo /path/to/ctrl-checkout
+This checks all notebook sync-manifest file digests in the selected commit.
+Remote branch delivery and proof acceptance remain separate checks.

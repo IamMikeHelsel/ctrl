@@ -1,0 +1,77 @@
+/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/pods/2026-10-18/recovery-handoff-02/handoff-builder/build/BrakingDelayedHold.lean:46:0: warning: automatically included section variable(s) unused in theorem `LeanControls.BrakingDelayedHold.initial_bounds`:
+  ex
+  hD
+  hDH
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit ex hD hDH in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/pods/2026-10-18/recovery-handoff-02/handoff-builder/build/BrakingDelayedHold.lean:147:19: error: linarith failed to find a contradiction
+H D : ℝ
+f : ℝ → State
+r d stamp : Bool → ℝ → ℝ
+read : Bool → ℝ → State
+ex : Execution H D f r d stamp read
+hD : 0 ≤ D
+hDH : D ≤ H
+hi : Admitted f
+hlim : D ≤ startupLimit
+hc : ∀ (i : Fin 3), ContinuousOn (fun t => f t i) (Icc 0 D)
+hd0 : ∀ t ∈ Ico 0 D, HasDerivWithinAt (fun s => f s 0) (f t 1) (Ici t) t
+hd1 : ∀ t ∈ Ico 0 D, HasDerivWithinAt (fun s => f s 1) (f t 2) (Ici t) t
+hd2 : ∀ t ∈ Ico 0 D, HasDerivWithinAt (fun s => f s 2) (r true t * (-121 / 100 + d true t - f t 2)) (Ici t) t
+t : ℝ
+ht : t ∈ Icc 0 D
+hm0 : |f t 0 - f 0 0| ≤ 1061 / 50000 * (t - 0)
+hm1 : |f t 1 - f 0 1| ≤ 61 / 50 * (t - 0)
+hm2 : |f t 2 - f 0 2| ≤ 832 / 25 * (t - 0)
+h0 : -(1061 / 50000 * (t - 0)) ≤ f t 0 - f 0 0 ∧ f t 0 - f 0 0 ≤ 1061 / 50000 * (t - 0)
+h1 : -(61 / 50 * (t - 0)) ≤ f t 1 - f 0 1 ∧ f t 1 - f 0 1 ≤ 61 / 50 * (t - 0)
+h2 : -(832 / 25 * (t - 0)) ≤ f t 2 - f 0 2 ∧ f t 2 - f 0 2 ≤ 832 / 25 * (t - 0)
+e0 : -(1 / 1000) ≤ f 0 0 - 7 / 50 ∧ f 0 0 - 7 / 50 ≤ 1 / 1000
+e1 : -(1 / 100) ≤ f 0 1 - -1 / 100 ∧ f 0 1 - -1 / 100 ≤ 1 / 100
+e2 : -(1 / 20) ≤ f 0 2 - -117 / 100 ∧ f 0 2 - -117 / 100 ≤ 1 / 20
+a✝ : f t 2 - -117 / 100 < -(1 / 20 + 732 / 25 * t)
+⊢ False
+failed
+/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/pods/2026-10-18/recovery-handoff-02/handoff-builder/build/BrakingDelayedHold.lean:147:31: error: linarith failed to find a contradiction
+H D : ℝ
+f : ℝ → State
+r d stamp : Bool → ℝ → ℝ
+read : Bool → ℝ → State
+ex : Execution H D f r d stamp read
+hD : 0 ≤ D
+hDH : D ≤ H
+hi : Admitted f
+hlim : D ≤ startupLimit
+hc : ∀ (i : Fin 3), ContinuousOn (fun t => f t i) (Icc 0 D)
+hd0 : ∀ t ∈ Ico 0 D, HasDerivWithinAt (fun s => f s 0) (f t 1) (Ici t) t
+hd1 : ∀ t ∈ Ico 0 D, HasDerivWithinAt (fun s => f s 1) (f t 2) (Ici t) t
+hd2 : ∀ t ∈ Ico 0 D, HasDerivWithinAt (fun s => f s 2) (r true t * (-121 / 100 + d true t - f t 2)) (Ici t) t
+t : ℝ
+ht : t ∈ Icc 0 D
+hm0 : |f t 0 - f 0 0| ≤ 1061 / 50000 * (t - 0)
+hm1 : |f t 1 - f 0 1| ≤ 61 / 50 * (t - 0)
+hm2 : |f t 2 - f 0 2| ≤ 832 / 25 * (t - 0)
+h0 : -(1061 / 50000 * (t - 0)) ≤ f t 0 - f 0 0 ∧ f t 0 - f 0 0 ≤ 1061 / 50000 * (t - 0)
+h1 : -(61 / 50 * (t - 0)) ≤ f t 1 - f 0 1 ∧ f t 1 - f 0 1 ≤ 61 / 50 * (t - 0)
+h2 : -(832 / 25 * (t - 0)) ≤ f t 2 - f 0 2 ∧ f t 2 - f 0 2 ≤ 832 / 25 * (t - 0)
+e0 : -(1 / 1000) ≤ f 0 0 - 7 / 50 ∧ f 0 0 - 7 / 50 ≤ 1 / 1000
+e1 : -(1 / 100) ≤ f 0 1 - -1 / 100 ∧ f 0 1 - -1 / 100 ≤ 1 / 100
+e2 : -(1 / 20) ≤ f 0 2 - -117 / 100 ∧ f 0 2 - -117 / 100 ≤ 1 / 20
+a✝ : 1 / 20 + 732 / 25 * t < f t 2 - -117 / 100
+⊢ False
+failed
+/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/pods/2026-10-18/recovery-handoff-02/handoff-builder/build/BrakingDelayedHold.lean:190:8: warning: `if_pos` has been deprecated: Use `ite_eq_left` instead
+
+Hint: Replace the deprecated name:
+  i̵f̵_̵p̵o̵s̵i̲t̲e̲_̲e̲q̲_̲l̲e̲f̲t̲
+/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/pods/2026-10-18/recovery-handoff-02/handoff-builder/build/BrakingDelayedHold.lean:484:78: error: unexpected token '/--'; expected 'lemma'
+/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/pods/2026-10-18/recovery-handoff-02/handoff-builder/build/BrakingDelayedHold.lean:524:24: warning: `if_pos` has been deprecated: Use `ite_eq_left` instead
+
+Hint: Replace the deprecated name:
+  i̵f̵_̵p̵o̵s̵i̲t̲e̲_̲e̲q̲_̲l̲e̲f̲t̲
+/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/pods/2026-10-18/recovery-handoff-02/handoff-builder/build/BrakingDelayedHold.lean:528:24: warning: `if_neg` has been deprecated: Use `ite_eq_right` instead
+
+Hint: Replace the deprecated name:
+  i̵f̵_̵n̵e̵g̵i̲t̲e̲_̲e̲q̲_̲r̲i̲g̲h̲t̲

@@ -1,0 +1,66 @@
+/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/pods/2026-10-18/recovery-handoff-02/handoff-builder/build/DelayedHold.lean:46:0: warning: automatically included section variable(s) unused in theorem `LeanControls.DelayedHold.initial_bounds`:
+  ex
+  hD
+  hDH
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit ex hD hDH in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/pods/2026-10-18/recovery-handoff-02/handoff-builder/build/DelayedHold.lean:190:8: warning: `if_pos` has been deprecated: Use `ite_eq_left` instead
+
+Hint: Replace the deprecated name:
+  i̵f̵_̵p̵o̵s̵i̲t̲e̲_̲e̲q̲_̲l̲e̲f̲t̲
+/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/pods/2026-10-18/recovery-handoff-02/handoff-builder/build/DelayedHold.lean:507:2: error: unsolved goals
+case pos
+H D : ℝ
+hD : 0 ≤ D
+hDH : D ≤ H
+hlim : D ≤ startupLimit
+f : ℝ → State
+r d stamp : Bool → ℝ → ℝ
+read : Bool → ℝ → State
+q : Schedule
+ex : Execution H D f r d stamp read
+hs : IsSchedule H D q stamp read
+hm : q.measurement 0 = exampleReading
+hH : 0 ≤ H
+hi : Admitted f
+hz : ∀ t ∈ Icc 0 H, ∀ (i : Fin 3), |coordinates center (f t) i| ≤ radius
+t : ℝ
+ht : t ∈ Icc 0 H
+hp : |f t 0 - center| ≤ radius ∧ |f t 1| ≤ 8 * radius ∧ |f t 2| ≤ 64 * radius ∧ |command center (f t)| ≤ 24 * radius
+htube : 141 / 1600 ≤ f t 0 + 2221 / 40000 ∧ f t 0 ≤ 2873 / 20000
+b : Bool
+hr : |command center (read b t)| ≤ 24 * radius + 93 / 1000
+hc : clip (command center (read b t)) = command center (read b t)
+hd : |d b t| ≤ 1 / 100
+hb : ¬b = true
+h✝ : t ≤ D
+⊢ |-1 + d b t| ≤ 3589 / 2500
+
+case neg
+H D : ℝ
+hD : 0 ≤ D
+hDH : D ≤ H
+hlim : D ≤ startupLimit
+f : ℝ → State
+r d stamp : Bool → ℝ → ℝ
+read : Bool → ℝ → State
+q : Schedule
+ex : Execution H D f r d stamp read
+hs : IsSchedule H D q stamp read
+hm : q.measurement 0 = exampleReading
+hH : 0 ≤ H
+hi : Admitted f
+hz : ∀ t ∈ Icc 0 H, ∀ (i : Fin 3), |coordinates center (f t) i| ≤ radius
+t : ℝ
+ht : t ∈ Icc 0 H
+hp : |f t 0 - center| ≤ radius ∧ |f t 1| ≤ 8 * radius ∧ |f t 2| ≤ 64 * radius ∧ |command center (f t)| ≤ 24 * radius
+htube : 141 / 1600 ≤ f t 0 + 2221 / 40000 ∧ f t 0 ≤ 2873 / 20000
+b : Bool
+hr : |command center (read b t)| ≤ 24 * radius + 93 / 1000
+hc : clip (command center (read b t)) = command center (read b t)
+hd : |d b t| ≤ 1 / 100
+hb : ¬b = true
+h✝ : ¬t ≤ D
+⊢ |clip (command center (read b t)) + d b t| ≤ 3589 / 2500

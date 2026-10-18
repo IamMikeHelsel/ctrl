@@ -1,0 +1,51 @@
+DELAYED HANDOFF — BUILDER REPORT
+
+Result submitted for independent review: two fixed-case delayed bridges,
+with exact nonzero-delay witnesses. All work is inside handoff-builder/.
+No earlier frozen source, toolchain pin, root state or Git state was edited.
+
+The primary result closes the old-reading/first-dispatch history gap.
+It retains one physical state and one time axis. Startup cube membership is
+derived from the initial measured box and known pending command. The holding
+proof then covers causal samples that reach back into the pending interval.
+The proof never assumes the final mismatch bound or final cube invariant.
+
+The original command q=-1 case is preserved in DelayedHold and DelayedWitness.
+A separate q=-1.21 case is in BrakingDelayedHold and BrakingDelayedWitness.
+The latter satisfies the old scalar effective braking-target inequality.
+Its final inward margin is only .00005. Both use the same 0.5 ms startup cap,
+1 ms total information age, old measured reading and unchanged radius.
+
+One narrow alternate command was used. No adaptive center, detector design,
+full stopping bridge or general existence construction was added. Both exact
+witnesses prove nonempty finite delayed behavior through 1 ms. Conditional
+holding for a supplied future execution is a separate claim.
+
+The old stop family is not proved to reach this fixed admission box. Matching
+the pending-target inequality alone does not establish that interface.
+The earlier 5 ms capture allowance was not silently carried into this model.
+
+Verification entry point:
+  python3 research/pods/2026-10-18/recovery-handoff-02/handoff-builder/verify.py
+Run from the workspace root. It uses the existing local Lean 4.35/mathlib pin.
+It copies and rebuilds all five local proof modules in fresh-replay/, audits
+every stated theorem, invokes the separate leanchecker on all five modules,
+and checks five negative controls. Package artifacts remain the local pinned
+inputs; the script does not rebuild all of mathlib. No project proof cache is
+in its LEAN_PATH. Detailed results are in verification.json and its log hashes.
+
+Failed development sources and their logs remain in attempts/. These include
+ordinary elaboration/proof failures, and the copied-constant/comment repair
+in the alternate command. Negative-controls/ holds intentionally false claims
+or relaxed contracts. They are evidence, not accepted proof modules.
+
+Read CLAIMS.txt for exact assumptions and exclusions. The artifact manifest
+covers source, replay scripts, input provenance, logs, failed attempts and this
+report. Build caches are excluded. The manifest itself is hashed in the freeze
+message to root and critic. The builder does not accept this result.
+
+Recorded verification result: PASS. Five fresh source builds, all 100 stated
+theorem audits (only propext, Classical.choice and Quot.sound), five separate
+leanchecker checks, and five intended negative-control rejections passed.
+The prior frozen builder manifest was rechecked: all 46 entries match.
+These are builder replay facts; independent acceptance is still pending.

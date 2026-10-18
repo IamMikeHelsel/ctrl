@@ -1,0 +1,139 @@
+DELAYED HANDOFF AND RESTORED BRAKING WITH LAG
+Review packet — 18 October 2026
+FINAL: both bounded proof milestones independently accepted.
+Ready for internal technical review. Not ready for paper submission.
+
+What this round adds
+We closed the first-command delay and measurement-history gap for two fixed
+handoff cases. We also built a symbolic stopping bound for braking that returns
+within a known time. These are scalar model results. They do not yet establish
+a complete stop-and-hold operation or a submission-ready paper.
+
+1. Keep the original clock through handoff — ACCEPTED
+The first measurement is already old when its command reaches the drive.
+The proof accounts for motion under the pending command, preserves the same
+physical state at the switch, and retains the original measurement timestamp.
+It derives the safe startup region and later error bound from the dynamics.
+It does not assume a safe dispatch state or an ongoing safety invariant.
+
+The first reading is (position, velocity, acceleration)=(.14,-.01,-1.17) in SI
+units. Sensor errors are bounded by (.001,.01,.05). The first dispatch delay
+is at most 0.5 ms. Total reading age, including time held after dispatch, is
+at most 1 ms. Response rate is 8 to 12 per second. Target error is at most
+.01 m/s². Feedback is -8(x-c)-6v-a/2, c=.088125 m, clipped to [-2,2] m/s².
+Physical target error is added after clipping.
+
+Two separate proofs cover pending commands -1 and -1.21 m/s². They do not
+certify every command between those values. The stronger case keeps the
+pending effective target in [-1.22,-1.20] m/s². This matches one condition of
+the earlier braking proof. Its remaining proof error budget is only
+.00005 m/s², compared with .00105 m/s² in the -1 case.
+
+For any supplied execution under the full contract, the axis remains between
+32.6 and 143.65 mm at every instant of its supplied finite horizon. The whole
+transformed state set is preserved. The speed and acceleration bounds
+are 0.4442 m/s and 3.5536 m/s². These establish containment, not precision rest.
+General existence and uniqueness remain open. Two exact nonconstant examples
+construct delayed executions through 1 ms, with a real command change at 0.5 ms.
+
+The clock does not restart at dispatch. A reading taken at 0 and dispatched
+at 0.5 ms has only another 0.5 ms left for its first hold. A 1 ms sample period
+plus 0.2 ms latency has peak reading age 1.2 ms and fails this timing condition.
+The diagram in figures/total-reading-age.png shows this distinction.
+
+2. Bound travel when effective braking returns — ACCEPTED
+The model is x'=v, v'=a, a'=r(q-a). Here q is the effective physical
+acceleration target, not just the command sent to a motor. Initially,
+x<=X, 0<=v<=v0 and a<=A, with v0,A>=0. Before the recovery deadline T>=0,
+q<=A and r>=0. After T, q<=-b and r>=lambda, with b,lambda>0, through the
+computed horizon. Rates are continuous within each phase. One continuous
+physical state spans the change, and each phase satisfies its stated ODE.
+
+Let V=v0+A*T+(A+b)/lambda. The theorem gives a first zero velocity
+by T+V/b and, until then, a forward position bound
+  x <= X + v0*T + A*T²/2 + V²/(2*b).
+It derives the acceleration envelope before recovery from the ODE. No upper
+recovered response-rate bound is needed. A separate lemma retains the full
+exponential upper envelope before the conservative simplification above.
+
+This is a supplied-execution theorem. It does not prove permanent rest,
+a lower travel limit or later holding. It requires the braking conditions
+through the computed horizon, even if velocity reaches zero earlier. A drive
+that changes mode at zero needs a separate argument for that change.
+Continuity includes acceleration;
+impact-like acceleration jumps and instantaneous contact-force loss are outside
+this model. Shoe and tire grip motivate the question but are not validated
+physical applications of this equation.
+
+The exact coasting counterexample has r=1, q=0, a=0, v=1 and x=t. A positive
+response rate alone does not cause braking. The checked nonempty recovery
+example coasts with q=0 for one second, then switches to q=-1 with rate 1 and
+no state reset. Its finite horizon is three seconds. The independent reviewer accepted
+this example and the general conditional statement.
+
+Where recovery could apply
+A candidate is a driven axis with a known maximum wait before effective
+braking becomes available. The bound could screen clearance, speed or delay
+requirements. A temporary physical braking limit is another candidate if its
+recovery time and minimum authority can be justified. Neither is validated
+hardware here. A shoe or tire losing contact needs an additional mechanical
+model; the present continuous-acceleration model does not supply that physics.
+
+What failed, and why it matters
+The simple formula gives 160.5859375 mm for the old stopping contract. Our old
+sharper certificate already proves a 150 mm limit. The new simple formula
+therefore loses this comparison. It can also be very loose near rest, and its
+bound can increase with a larger braking floor. This is conservatism from a
+dropped exponential term, not evidence that stronger physical braking is worse.
+See figures/bound-conservatism.png. Do not replace the sharper old certificate.
+
+The handoff guard also fails to cover the whole old stopping family. Numerical
+constant-rate examples at 8, 10 and 12 per second peak at 140.711, 132.525 and
+126.761 mm. The fixed handoff admission requires 139 to 141 mm. Two examples
+stop short of it. These are numerical diagnostics, not formal impossibility
+proofs. They expose a missing connection, not unsafe stopping behavior.
+See figures/admission-gap.png and root-admission-reachability-screen.json.
+
+Evidence and independent decisions
+Handoff: the independent critic accepted both fixed conditional results with
+no repair. Five copied source modules were rebuilt. All 100 stated theorem
+axiom closures used only standard Lean axioms. Separate kernel checks and
+six negative controls passed; all 20 independent replay steps passed.
+The two exact delay witnesses were included in that review.
+Recovery: the critic accepted the supplied-execution scope with no builder
+repair. The 31 local dependencies and six research modules were rebuilt from
+copied sources. All 27 named theorem axiom closures used standard axioms.
+Separate kernel checks covered those 37 modules and two critic test modules.
+All 87 accepted replay steps passed, including seven mathematical rejections.
+One critic-only arithmetic tactic failure is preserved in attempts/. Adding
+ring repaired that test; its replacement was run separately. The builder
+sources did not change. The 87 accepted steps exclude that failed attempt.
+Root: accepted both bounded scopes, checked frozen identities, and kept
+formal proofs, numerical illustrations, model validity and novelty separate.
+Pinned public dependency build products are reused; not all Mathlib sources
+were rebuilt. Independent replay is not a separate implementation of Lean.
+
+Paper and next decision
+Delay, command history, backup control and formal intersample safety are
+established topics. The primary-source scope checks are in ROOT-SCOPE-NOTES.txt
+and the existing digital-hold-01/grader/SOURCES.txt. No matched performance or
+proof-effort comparison was run here. Novelty and practical benefit remain open.
+
+The next useful proof needs ranges for the full starting state and physical
+input, including lower position, acceleration and effective-input bounds.
+The old upper-travel theorem does not supply those bounds. Derive an admission guard for the stopping
+outcomes in that set, then prove that a sampled detector reaches and accepts it.
+Define the required holding accuracy, speed, acceleration and settling time.
+Then compare the same complete contract against an independent reachability method.
+More isolated scalar bounds would not resolve the usefulness concern.
+
+Replay and preservation
+Handoff independent replay: critic/replay_handoff.py. Replays write to their
+own evidence folders; copy to fresh scratch rather than overwrite frozen logs.
+Root arithmetic and figure identity: python3 replay_root_screens.py.
+Packet identity: python3 verify_packet.py. Read REPLAY-INSTRUCTIONS.txt for
+recovery replay and a scratch-copy workflow that preserves the recorded evidence.
+Repository target: private IamMikeHelsel/ctrl, draft PR26. Commit and remote
+verification are reported separately from mathematical acceptance.
+Earlier paper drafts remain unchanged. No hardware test, external
+contact, public release, paper submission or merge is part of this round.

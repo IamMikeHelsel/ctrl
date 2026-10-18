@@ -1,0 +1,57 @@
+TARGETED PRIMARY-SOURCE OVERLAP CHECK
+18 October 2026. This is a narrow scope check, not a novelty search or a
+reproduced comparison. No paper artifact was executed.
+
+1. Shalev-Shwartz, Shammah, Shashua, On a Formal Model of Safe and Scalable
+Self-driving Cars, arXiv:1708.06374v6, Section 3.1, Definition 1 and Lemma 2.
+https://arxiv.org/html/1708.06374v6
+Inspected the response-time assumption and longitudinal distance formula.
+It combines bounded acceleration during response with a positive minimum
+braking rate afterward. The rear-vehicle distance includes v*T+A*T^2/2 and
+(v+A*T)^2/(2b). Thus the delay-then-brake structure is established prior work.
+Boundary: the inspected formula bounds actual braking acceleration after
+response; it does not provide this acceleration-lag transient or a grip-recovery
+theorem. Our C=(A+b)/lambda term is derived from the stated ODE, not attributed
+to RSS. No legal or implementation claim is taken from this source.
+
+2. Gacsi, Kiss, Molnar, Braking within Barriers: Constructive Safety-Critical
+Control for Input-Constrained Vehicles via the Backup Set Method,
+arXiv:2510.15797v1, Sections I and IV-B, equations 55-56.
+https://arxiv.org/html/2510.15797v1
+Inspected the split-friction motivation and force constraints. The paper
+models braking force as limited by available friction and uses backup sets
+to constrain lateral motion during braking. It is direct precedent for
+separating physical braking capacity from a desired control input.
+Boundary: its inspected four-wheel problem is not the present scalar recovery
+deadline/lag contract. No claim of identical theorem assumptions or direct
+substitution is made. No numerical or proof-effort comparison was run.
+
+3. Friction-Aware Force-Realizable Safety Control for Four-Wheel Independently
+Steered and Driven Mobile Robots, International Journal of Robust and
+Nonlinear Control, DOI 10.1002/rnc.70772, Sections 5.1 and 6, equations 44-49
+and Remark 7. Publisher full text inspected.
+https://onlinelibrary.wiley.com/doi/full/10.1002/rnc.70772
+The inspected section derives a conservative acceleration reserve from a
+friction-limited force set and requires a positive certification floor for
+closing obstacles. It uses a speed-squared/braking-reserve safety margin.
+Below the floor, it withholds that collision-avoidance guarantee rather than
+clipping the denominator to an invented positive value. This is relevant
+overlap for broad friction-aware recoverability or safe-distance claims.
+Boundary: this is a different robot, force model and sampled guarantee. The
+inspection does not establish a fixed loss-duration theorem with our lag ODE.
+No full proof or artifact audit was performed.
+
+Local overlap
+variable-response/ComparisonEnvelope.lean already proves scalar variable-rate
+comparison and physical x/v/a envelopes. FirstStop.lean gives earliest-zero
+existence from a proved endpoint sign. ActualStop/EventStop already compose a
+bounded delay with braking, but their delay acceleration bound is assumed.
+The proposed narrow delta derives that bound from a loss-phase ODE and adds
+an explicit parameterized recovery-deadline/authority contract. Formal
+composition and clear limits can be useful; these sources establish no
+publication novelty or advantage over existing stopping methods.
+
+One inaccessible optional source
+The publisher page for Observer-Based Coordinated Control for Blended Braking
+System with Actuator Delay (2021), https://www.mdpi.com/2076-0825/10/8/193,
+returned a web-tool error. No claim in this preflight relies on its content.

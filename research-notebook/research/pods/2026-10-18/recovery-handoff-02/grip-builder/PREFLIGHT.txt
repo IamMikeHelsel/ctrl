@@ -1,0 +1,128 @@
+TEMPORARY BRAKING LOSS — ANALYTIC PREFLIGHT
+18 October 2026. Informal argument; no new Lean build or acceptance yet.
+
+Finding
+The root's proposed bound is sound under the precise conditions below.
+The missing input is effective physical braking, not a larger response rate.
+The bound is useful as a cheap conservative admission test. It can be very
+loose near zero speed. The existing local comparison results already contain
+the main method; this extension is a new contract/composition, not established
+new control theory.
+
+Physical contract, SI units
+One continuous physical state satisfies x'=v, v'=a and a'=r(t)(q(t)-a).
+q is the effective acceleration target after all authority loss and error.
+It is not merely the command sent to a drive. r has units 1/s and controls
+the response speed. It cannot create a negative q when friction/force is absent.
+The proposed model is an effective scalar model. It is not a derived tire,
+contact, slip, normal-force, impact or shoe-grip model.
+Because actual a remains continuous, changing q to zero models a lagged loss
+of acceleration. It does not represent an abrupt contact-force jump unless
+a separate physical argument justifies that abstraction.
+
+Let T>=0 be a known recovery deadline; A>=0, v0>=0, b>0, lambda>0.
+Assume 0<=v(0)<=v0 and a(0)<=A. Before T, require q(t)<=A and r(t)>=0.
+After T, require q(t)<=-b and r(t)>=lambda. Recovery may occur earlier.
+The recovered authority must persist through the stopping argument. A brief
+return of grip or a negative command without effective force does not suffice.
+No physical state is reset at T. A command/rate jump may change a', not a.
+
+For a first formal pass, supply a trajectory continuous on [0,H], classical
+on each open phase, with a continuous rate on each closed phase and the ODE
+there. The phases share x(T),v(T),a(T); a' need not exist across T. This is a
+conditional theorem, not general existence for arbitrary signals. No derivative
+bound on r and no post-recovery upper rate are needed for this upper bound.
+The proposed whole-horizon theorem takes H=T+V/b below and requires braking
+through H. An event-limited version would only require it before the first
+zero; that is a separate formal scope improvement, not a silent assumption.
+
+Derivation from the ODE
+1. Compare a with the constant A on [0,T]. At initial time a(0)<=A, and
+   a'+r(a-A)=r(q-A)<=0. The positive integrating factor gives a(t)<=A.
+   Thus v(t)<=v0+At and x(t)-x(0)<=v0*t+A*t^2/2 for 0<=t<=T.
+   Define P=v0*T+A*T^2/2 and U=v0+A*T. In particular a(T)<=A and v(T)<=U.
+
+2. For s>=0 after recovery, set g(s)=-b+(A+b)exp(-lambda*s).
+   Then g+b>=0 and g'=-lambda(g+b). Along the actual ODE,
+   a'-g'+r(a-g)=r(q+b)-(r-lambda)(g+b)<=0.
+   Initial order is a(T)<=g(0)=A. Scalar comparison therefore gives
+      a(T+s)<=-b+(A+b)exp(-lambda*s).
+   Do NOT argue a'<=-lambda(a+b) for every actual a. That inequality need
+   not hold when a<-b. Comparison against the upper curve avoids this error.
+
+3. Put C=(A+b)/lambda and V=U+C. Integration gives the tighter envelopes
+      v(T+s)<=U-b*s+C*(1-exp(-lambda*s))
+              =V-b*s-C*exp(-lambda*s)<=V-b*s,
+      x(T+s)-x(0)<=P+V*s-b*s^2/2
+                           -(C/lambda)*(1-exp(-lambda*s)).
+   Hence x(T+s)-x(0)<=P+V^2/(2b), by completing the square. This bounds
+   all intermediate positions, not just a deadline position.
+
+4. V>=0 and b>0, so S=V/b>=0. The velocity envelope is nonpositive at S.
+   Continuity and v(0)>=0 give an earliest zero tau in [0,T+V/b], with
+   positive velocity before tau. If v(0)=0, tau=0. If the first zero occurs
+   during the loss phase, it is still covered. The path before tau satisfies
+      x(t)-x(0)<=L,  L=v0*T+A*T^2/2+(v0+A*T+(A+b)/lambda)^2/(2b).
+   Before the first zero, this displacement is the forward travel. The result
+   does not bound total path length after reversals or all future motion.
+
+Practical looseness
+The simple velocity bound inserts the entire lag allowance C at recovery,
+although the tighter envelope starts at U. The position bound also discards
+a nonpositive exponential term. These are sufficient relaxations, not a
+worst-case physical trajectory. The tighter envelope is attained by the
+idealized trajectory a=A,q=A before T and q=-b,r=lambda after T, with
+v(0)=v0 and no earlier first zero when v0>0. Numerical roots of that envelope
+can quantify looseness, but are not kernel-certified safety limits.
+
+As v0 tends to zero with A=T=0, the simple bound tends to b/(2*lambda^2),
+while actual first-zero travel tends to zero. At v0=0 the first zero is
+already time zero. Thus a finite residual bound near rest can be an artifact
+of the enclosure. A failed L<=clearance test does not establish unsafe motion.
+See numerical-screen.json for fixed illustrative cases; no calibrated plant
+data or comparison against another controller is supplied.
+
+Required comparison with the OLD exact illustrative contract
+x(0)<=.001 m, v(0)<=.41 m/s, A=.1 m/s^2, T=.05 s, b=1.2 m/s^2,
+lambda=8/s gives V=.5775 m/s. The simple reference-position bound is exactly
+.1605859375 m. It FAILS the old .15 m certificate already proved by the
+sharper exponential argument. The tighter-envelope peak is about .140710783 m
+by numerical evaluation only. This new symbolic route cannot be advertised
+as a stronger clearance result. Its possible value is an explicit parameter
+trade and an ODE-derived loss-phase envelope, at a known cost in conservatism.
+
+Exact failure witnesses, currently informal
+No recovery: q=0,r=1,a=0,v=1,x=t satisfies the ODE for every t>=0.
+Velocity never reaches zero and forward travel is unbounded. Positive response
+rate alone gives no braking authority.
+
+No uniform positive authority: q(t)=-exp(-t)/2, r=1,
+  a(t)=-t*exp(-t)/2,
+  v(t)=1/2+(t+1)*exp(-t)/2,
+  x(t)=t/2+1-(t+2)*exp(-t)/2.
+Direct differentiation gives the same ODE, x(0)=0,v(0)=1,a(0)=0.
+q is strictly negative, but v(t)>1/2 for all t>=0. Pointwise negative
+authority is insufficient when it decays and supplies too little impulse.
+
+No uniform positive rate: q=-1, r(t)=exp(-t)/4, a(0)=1 gives
+  a(t)=-1+2*exp(-(1-exp(-t))/4)>0 for t>=0.
+With v(0)>0 the plant never stops, despite q<0 and r(t)>0 at all times.
+A positive lower rate, or an adequate cumulative-response condition, matters.
+
+No known recovery deadline: coasting at v=1 for an arbitrary loss duration N
+already travels N. Later recovery does not yield one uniform finite distance
+bound when N has no upper bound.
+
+Boundaries and proposed build gate
+The model does not prove that grip recovers, estimate T/b/lambda, or guarantee
+that the chosen drive command yields q<=-b. External loads must already be
+included in q. Continuing braking after the first zero can drive backward.
+There is no permanent-rest, lower-travel, detector or digital-hold conclusion.
+
+After root releases construction, use the existing scalar comparison and
+first-zero helpers with their source bytes and pins preserved. First derive
+the pre-recovery acceleration bound, then compose the shared-state phases,
+prove the parametric travel/deadline inequality, and include a checked coast
+witness. Add a nonzero-delay numeric instance and failed-clearance test.
+Do not build until root releases this second milestone. The independent
+critic, not this builder, must accept the final actual statement/evidence.

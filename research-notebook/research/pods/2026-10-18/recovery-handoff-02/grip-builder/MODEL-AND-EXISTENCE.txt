@@ -1,0 +1,44 @@
+MODEL AND EXISTENCE BOUNDARY
+
+The state f=(x,v,a) is physical position, velocity and acceleration. Time is
+in seconds; x in metres, v in m/s, a and target q in m/s^2, rate k in 1/s.
+The physical equation is a'=r(q-a). q is an effective acceleration target
+after available braking authority and disturbance effects. A commanded motor
+effort alone does not establish q<=-b.
+
+This models restored effective braking with lag. Physical acceleration remains
+continuous across T. Its derivative may jump at T because the target or rate
+may change there. It excludes impact-like acceleration jumps. It is not a
+model of instantaneous loss of shoe or tire contact force. Grip recovery is
+motivation unless a mechanical mapping supplies the target and rate bounds.
+The recovery deadline T, lost-phase cap A, recovered magnitude b and rate floor
+k must be justified outside this theorem.
+
+There is one continuous f on [0,H]. The first phase has an ODE on (0,T);
+the second phase has an ODE on (0,S) for f(T+s). Both phase state predicates
+include their endpoints. Rate continuity is required within each closed phase;
+no agreement of the two rates at T is required. Targets may differ at T.
+No physical coordinate is reset. The witness shows q=0 before T=1 and q=-1
+after T=1 with the identical boundary state [1,1,0].
+
+The theorem is a universal statement about supplied executions satisfying
+these premises. General existence for every bounded or irregular target is
+not proved. The exact piecewise witness supplies one nontrivial instance.
+The guarantees on the recovered target and rate are required throughout the
+computed S, even if the first zero occurs earlier or before T. Stopping the
+ODE at a guard and removing the post-event continuation premise is a separate
+extension. A physical controller that changes mode at zero needs a matching
+composition argument; this result does not supply it.
+
+The first zero can equal zero if initial velocity is zero. Otherwise the
+returned prefix has positive velocity. Continuing a negative target after
+that zero can produce rearward motion. No maintained rest or lower position
+bound is claimed. The result is not yet connected to a detector, measured
+handoff guard, sampled hold or a complete stop-and-hold operation.
+
+The scalar comparison proof uses an exponential supersolution g. It does not
+assert the generally false inequality a'<=-k(a+b) for actual a below -b.
+Instead, g+b>=0 and
+ a'-g'+r(a-g)=r(q+b)-(r-k)(g+b)<=0.
+This permits r above k without any upper rate bound. The loss-phase comparison
+likewise derives a<=A from a'+r(a-A)=r(q-A)<=0.

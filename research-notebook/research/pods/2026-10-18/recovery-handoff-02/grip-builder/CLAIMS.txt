@@ -1,0 +1,61 @@
+CLAIM MAP — restored effective braking with lag
+18 October 2026. Builder record; independent acceptance is separate.
+
+C1. Derived loss-phase bound.
+Recovery.loss_acceleration_upper assumes T>=0, a supplied continuous physical
+state with x'=v, v'=a, a'=r(q-a) on (0,T), continuous r on [0,T], r>=0,
+q<=A and a(0)<=A. It proves a(t)<=A on the full closed interval. It does
+not assume an aggregate acceleration envelope. A need not be nonnegative
+for this helper; the complete simple stopping contract requires A>=0.
+
+C2. Symbolic exponential envelope, separate from the relaxed distance bound.
+Recovery.recovered_upper_flow assumes S>=0 and k>0; a supplied IsTrajectory
+on [0,S]; continuous rate r; r>=k; effective target q<=-b; coordinatewise
+initial state f(0)<=z; and z_acceleration>=-b. It proves, for every coordinate
+and every s in [0,S], f(s)<=heldSolution(k,s,-b,z). The helper itself permits
+any real b with the stated initial ordering. Stopping uses b>0.
+There is no response-rate ceiling. The actual target and rate may vary.
+No derivative bound on r is needed. No continuity premise is imposed on q;
+the supplied classical trajectory must satisfy its equation at each open time.
+The exact upper acceleration is -b+(z_a+b) exp(-k*s).
+The velocity and position coordinates retain the exponential transient.
+This formal envelope is not merely a numeric screen and does not depend on
+accepting the relaxed formula below. It is not a novelty claim.
+
+C3. Parameterized first zero and forward-position limit.
+Recovery.restored_braking_first_zero uses one physical state f. It is continuous
+on [0,H], including recovery T. The loss ODE uses f(t); the recovered ODE uses
+f(T+s). Parameters: T>=0, A>=0, v0>=0, b>0, k>0. Initial state satisfies
+x(0)<=X, 0<=v(0)<=v0 and a(0)<=A. Loss target/rate satisfy C1. Recovery
+satisfies C2 with q<=-b and r>=k through the full computed horizon.
+Let V=v0+A*T+(A+b)/k, S=V/b, H=T+S and
+L=v0*T+A*T^2/2+V^2/(2*b).
+The theorem returns a first zero tau in [0,H]. Velocity is positive on [0,tau),
+and x(t)<=X+L at every t in [0,tau]. Specialize X=x(0) for an actual forward
+displacement limit L. X above x(0) instead gives a reference-position limit.
+There is no final-acceleration, terminal-safety or pre-recovery-acceleration
+bound hidden in its premises. It is conditional on the supplied trajectory.
+
+C4. Nonvacuity and failure of recovery-free stopping.
+RecoveryWitness.coast_then_brake_trajectory gives an explicit continuous
+state with q=0, r=1 during [0,1], followed by q=-1, r=1 for two more seconds.
+Before recovery x=t, v=1, a=0. At recovery the state is [1,1,0]. The second
+phase is the exact lag flow from that same state. The target really changes.
+RecoveryWitness.coast_then_brake_first_zero instantiates C3: tau<=3 seconds,
+position<=3 metres through first zero. This is one exact instance, not a
+general existence theorem or a hardware simulation.
+Recovery.no_recovery_counterexample proves an exact ODE execution with
+q=0,r=1,a=0,v=1,x=t, for every finite horizon. Velocity stays positive at all
+times and forward position exceeds any proposed finite bound. A positive
+response rate cannot substitute for effective braking authority.
+The decaying-authority example in PREFLIGHT is analytic only, not formalized.
+
+C5. Exact old-contract failure.
+Recovery.old_contract_fails_simple_bound proves, for X=.001,v0=.41,A=.1,
+T=.05,b=1.2,k=8, that X+L=4111/25600=.1605859375 metres >.15 metres.
+The old local exponential certificate already proves the .15 metre limit
+under its own recorded contract. The new relaxed formula does not improve it.
+
+No claim: permanent rest, lower-travel safety, contact/slip mechanics, hardware
+acceptance, detector or delayed-hold composition, general trajectory existence,
+novel control theory, literature dominance or publication readiness.

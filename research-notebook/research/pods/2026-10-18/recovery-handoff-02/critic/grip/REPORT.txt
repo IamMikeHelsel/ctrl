@@ -1,0 +1,108 @@
+INDEPENDENT RECOVERY REVIEW
+18 October 2026 — FINAL INDEPENDENT ACCEPTANCE
+
+Verdict: ACCEPT the supplied-execution mathematical scope below. No builder
+repair was requested. Implementation, physical validity and publication merit
+are separate, unestablished claims.
+
+Accepted scope
+A conditional scalar theorem proves a first zero of forward velocity and an
+upper position limit for restored effective braking with lag. It derives the
+loss-phase acceleration envelope from the physical ODE, retains a symbolic
+exponential upper flow, and then derives a simple conservative budget. One
+continuous physical state spans the two phases. The result requires sustained
+negative effective target and a positive response-rate floor after recovery.
+
+The exact assumptions, conclusion and limitations are in SEMANTIC-REVIEW.txt.
+For V=v0+A*T+(A+b)/k, the horizon is T+V/b and the position limit is
+X+v0*T+A*T^2/2+V^2/(2*b). Parameters satisfy v0,A,T>=0 and b,k>0. Initial
+bounds are x<=X, 0<=v<=v0 and a<=A. Before T, r>=0 and q<=A. After T,
+r>=k and q<=-b must persist through the full computed horizon. Rates are
+continuous within each phase. Each phase has a classical ODE on its open
+interval. Position, velocity and acceleration remain continuous across T.
+The theorem assumes a supplied execution; it does not prove general existence.
+
+The exact witness really coasts for one second with q=0, then has q=-1 and
+r=1 from the same state [1,1,0]. The no-recovery example satisfies the actual
+ODE while moving forward forever with q=0 and r=1. These establish nonvacuity
+and reject response-rate-only recovery. They are not hardware simulations.
+
+Limits that matter
+The guarantee ends at first zero. It supplies no permanent rest, lower travel
+limit, detector, hold composition or full operating region. Continued negative
+target can reverse the witness: v(3)=-exp(-2)<0. The model excludes instantaneous
+acceleration jumps and has no contact/friction mechanics. Motor effort alone
+does not establish the effective target assumption. General existence and
+physical application need separate evidence.
+
+The simple budget is not a tighter replacement for the old certificate. Its
+old-contract reference-position bound is exactly 0.1605859375 m > 0.15 m.
+At v0=.01,A=T=0,k=8, changing b from 1 to 2 raises this simple budget from
+0.0091125 m to 0.0169 m. That is conservatism from a dropped exponential term,
+not worse physical braking. The symbolic exponential envelope is proved
+separately and does not rely on the usefulness of the relaxed formula.
+
+This is an extension and reuse of the local ActualStop/EventStop work. The
+new delta derives the loss acceleration bound, generalizes constants and drops
+the recovered rate ceiling. Novelty, practical advantage, implementation and
+publication readiness remain unestablished. The next full-operation result
+needs declared lower state/input bounds and an admission/detection contract.
+
+Independent replay and counter-controls
+All 84 accepted main replay steps and all three extra steps pass: 87 in total.
+The 31 local dependency modules and six research modules were rebuilt. All 27
+audited theorem closures use only standard Lean axioms. Separate kernel checks
+passed for those 37 modules and both critic test modules. Seven meaningful
+false-claim controls were rejected. Builder hashes match before and after.
+
+One earlier critic test failed because norm_num left the exact identity
+-1+(1-exp(-2))=-exp(-2). Adding ring fixed that critic-only test. The initial
+source, log, script and full result snapshot remain under
+attempts/critic-semantic-checks-initial/. Its failed step remains separately
+recorded in harness_attempts and critic-test-repair.json. Only that repaired
+test and the remaining critic controls were rerun; the unchanged successful
+builds, audits and module kernels retain their original records and hashes.
+The 87 accepted steps do not include that one historical failed attempt.
+Only pinned package products are reused. No cached local LeanControls or
+research module products are on the search path. The local dependency closure
+is copied byte-for-byte, hash-matched to the frozen builder inventory, and
+rebuilt before the recovery sources. Separate leanchecker runs use those fresh
+products. The standard Lean axioms allowed are propext, Classical.choice and
+Quot.sound. The Lean toolchain and package products are still shared trust;
+this is not a second implementation of Lean or a full Mathlib source rebuild.
+
+Four frozen builder negatives are preserved: weaken the loss target bound;
+remove recovered negative authority; assert that coasting stops; and assert
+that the old simple budget meets 0.15 m. Independent controls reject decreasing
+simple budget with stronger b, nonnegative witness velocity at t=3, and the
+invalid shortcut a'<=-k(a+b) for q=-1,a=-2,r=2,k=1. All rejections must be
+mathematical errors, not missing imports or unknown identifiers.
+
+Replay order in new scratch
+Preserve the recorded folder first. Run critic/replay_grip.py into an empty
+critic/grip/fresh directory. It copies and builds the complete local dependency
+closure and the six research modules, then performs statement, axiom, separate
+kernel and negative checks. Next run critic/replay_grip_extra.py. The latter
+reads the main replay's toolchain/search-path record, writes its own two small
+rate-comparison test sources, and runs their positive/kernel/negative checks.
+Main results are in replay-results.json. Extra results are in extra-checks.json.
+Both scripts are bound in the final manifest. Do not rerun into this frozen
+folder or alter the builder's frozen packet.
+
+Root integration review
+Root's provisional REVIEW-ME, ROOT-GRADE, QUESTIONS, screens and figures were copied into
+root-snapshots before review. Their originals may change during integration.
+No mathematical correction was identified. The conservatism figure clearly
+labels the algebraic screen and says stronger physical braking is not worse.
+Its units and highlighted values agree with the exact checks. Root screen
+replay passes on the snapshots; that evidence is separate from Lean proof.
+
+Frozen input bindings
+Builder frozen-manifest.json: c51f6effdb28ed5dcd31b0dd9079e9258f48d697ae4c59643f7ffa67060f7a90
+Builder verification.json: 58070194ef1ed2193c32fa77962deb22bcf490c2cb7fd7855b825b623d823863
+Recovery.lean: 89d93e466007a9b901acbc4f926d5e902e9cf57ca5fc3799e72fb9197639b2cb
+RecoveryWitness.lean: 9816a5ecf269d2c6880a692644c9acf17c1e47b32bd750f87e65d13143b4f024
+replay_grip.py: 9ce2ca7a1b07bae61f2b856e39fbb5d56077eeb96ae7a550282adc917a811f87
+replay_grip_extra.py: 4102a34bbbfbe62dd1eeabd8442c6c1718e4b1477bd0a4ad66d4bc3d2ba3213d
+The complete dependency, source, log and snapshot identities are in the final
+artifact-sha256.json, replay-results.json and root-snapshots manifest.

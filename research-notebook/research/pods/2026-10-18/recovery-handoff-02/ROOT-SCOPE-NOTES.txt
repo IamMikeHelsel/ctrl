@@ -1,0 +1,72 @@
+ROOT SCOPE AND USEFULNESS NOTES — provisional
+18 October 2026. Root analysis; no new result is accepted by this note.
+
+A complete operation still needs three distinct steps.
+1. Reach a measured state that the handoff guard accepts.
+2. Keep the same physical state and original reading time through dispatch.
+3. Remain inside the holding set afterward.
+The delayed-hold construction addresses steps2 and3 for a fixed admission box.
+Even if the pending target meets the earlier braking inequality, that alone
+cannot show step1 or connect the full stopping operation. The admitted velocity
+box is [-.02,0]m/s, so it already reaches or passes first zero velocity.
+An eventual detector and the relation to the stop trajectory remain open.
+
+The restored-braking model uses effective acceleration target q. A command
+sent to a motor is insufficient evidence for that physical target. Contact,
+slip, force capacity and their measurement need a separate model or validated
+bounds. A deadline T, authority b and rate lambda are supplied conditions.
+We have not inferred them from a robot, shoe or tire.
+
+The simple candidate formula is
+  U=v0+A*T; Z=U+A/lambda;
+  L=v0*T+A*T^2/2 + (Z+b/lambda)^2/(2*b).
+Its relaxed braking part equals Z^2/(2*b)+Z/lambda+b/(2*lambda^2).
+It therefore grows with b when b>lambda*U+A. This is a loss from dropping a
+negative exponential term, not evidence that stronger braking harms safety.
+Do not optimize a physical brake using this artifact of the bound. One may
+apply the contract with a weaker certified b, but proving or implementing that
+optimization is outside this milestone. The near-rest and old-contract failures
+must appear in the final review packet, not only in an appendix.
+
+External overlap checked by root
+RSS: Shalev-Shwartz, Shammah and Shashua, arXiv:1708.06374v6, Section3.1,
+Definition1 and Lemma2. The delay-then-brake distance structure is explicit.
+Its braking assumption is on actual acceleration, while our candidate includes
+a lagged acceleration target. This difference alone does not establish novelty.
+https://arxiv.org/html/1708.06374v6
+
+Braking within Barriers, arXiv:2510.15797v1, SectionIV-A and IV-B equations55–56.
+It models four-wheel motion and friction-limited forces. Its scope differs from
+our scalar lag model. The primary text confirms relevant overlap and a model
+boundary; no equal-assumption performance comparison was reproduced.
+https://arxiv.org/html/2510.15797v1
+
+The Wiley source in the analyst's notes loaded metadata for root, but follow-up
+full-text extraction failed. Root has not independently verified its detailed
+equation claims. Retain it as an analyst source lead, not a root-confirmed result.
+
+Publication decision
+Proof acceptance, engineering value and novelty need separate verdicts.
+A useful next full comparison must share the physical plant, disturbances,
+sensor errors, total clock age, initial set, and command authority. Compare
+certified clearance and timing and review effort. A method tested under easier
+assumptions is not an equal comparison. No new theory or hardware benefit is
+established by these notes.
+
+Nearest sampled-delay and formal-envelope overlap checked by root
+Singletary, Chen and Ames, Control Barrier Functions for Sampled-Data Systems
+with Input Delays, arXiv:2005.06418v1. Section IV assumes delay equal to an
+integer number of sample periods and a safe zero-input initialization. It
+carries an input-history buffer into the predicted dispatch state. That is
+prior work on command history and initialization. Our fixed pending-command
+proof derives its startup safety box, but this inspection does not establish
+a novel delay method or an equal-assumption implementation comparison.
+https://arxiv.org/html/2005.06418v1
+
+Hellwig et al., From Zonotopes to Proof Certificates, arXiv:2509.20301v1,
+Definition 2 and Section 4. It separates next-step invariance, safety between
+steps and admissible commands, then connects numerical enclosures to deductive
+checks. These obligations and the broad certificate-to-safety narrative are
+prior work. Our possible value still requires a useful implementation contract,
+measured reuse or a matched comparison. No artifact from either paper was run.
+https://arxiv.org/html/2509.20301v1

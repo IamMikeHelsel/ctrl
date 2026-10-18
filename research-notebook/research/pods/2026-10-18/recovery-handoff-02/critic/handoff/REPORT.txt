@@ -1,0 +1,122 @@
+INDEPENDENT HANDOFF REVIEW
+18 October 2026. Critic digital_hold_critic_01.
+
+Verdict
+ACCEPT the two fixed-case, conditional delayed digital holding results.
+No proof repair is required. The accepted scope is supplied executions from
+the stated initial reading and uncertainty box. This does not establish that
+an earlier stopping trajectory reaches that reading or that a detector admits
+it. General existence, implementation and hardware acceptance remain open.
+
+Frozen input
+Builder manifest: 0ca3f54c0d77ff244866bb5a861c6d701749594d6d155c87ba9ab7338e23276e.
+All 49 bound files matched before and after independent replay.
+DigitalHold is byte-identical to the prior accepted source:
+  aa91b649affc0906c79dd7a017b34d6f729d1c16f50117ab87daaa1ed2fadc03.
+New source hashes:
+  DelayedHold 24bce773c2710712c4967cfaab81180a76bd46c08a802146ee49305684c676a3.
+  DelayedWitness f2b4c4abd93af602f36520bbc66420ec5fa2d0c5a56230a419bd77a6962802fe.
+  BrakingDelayedHold 732d19f00b43e9c58cd1b06fca490d0a32fd7b025fd2235bd1372ec6ecbcf059.
+  BrakingDelayedWitness f26093927ed755de679468676425382d1f75d23217c763d28795b300d9f7b6c1.
+No frozen builder source, old proof, pin or Git state was changed by the critic.
+
+Statement and hypothesis review
+Each delayed_sampled_hold requires 0<=D<=.0005 s, D<=H, one supplied Execution,
+an IsSchedule, and first measured state exactly (.14,-.01,-1.17) in SI units.
+It does not take an endpoint cube or aggregate mismatch premise. Sensor errors
+from the physical state at the recorded timestamp are (.001,.01,.05).
+The fixed center is .088125 m; cube radius is .055525 m; gains are unchanged.
+Rates are in [8,12]/s and target error has magnitude at most .01 m/s^2.
+
+The primary case fixes the pending command at -1 m/s^2. The separate braking
+case fixes it at -1.21 m/s^2. These are two proved cases, not an interval of
+permitted pending commands. The latter gives effective target in [-1.22,-1.20]
+under the stated error, which matches one inequality of the old braking model.
+This scalar compatibility does not prove reachability of the admission box.
+
+Startup and history are explicit
+One global clock starts at the initial reading. One continuous physical state
+spans the pending interval and every later update. The pending command acts
+before D and on its left side; clipped measured feedback acts on the right at D.
+Physical target error is added after command clipping. The ODE has separate
+right and left derivatives, so a command change need not have a classical
+acceleration derivative at the switching time.
+
+observation_admission derives the initial true-state box from the error and
+schedule premises. startup_acceleration derives |a|<=1.22 from the pending ODE.
+The velocity and measurement envelopes then give startup cube membership.
+There is no assumed safe endpoint or supplied startup trajectory enclosure.
+
+On a bounded prefix, the age estimate integrates the ACTUAL mixed-mode feedback
+slope. It includes the pending interval when a read timestamp precedes D.
+Startup slope is bounded separately by 7 or 8. The coarse digital refinement
+then bounds the slope across the whole prefix by the same constant. The final
+digital mismatch bound is .110 in the -1 case and .111 in the -1.21 case.
+Their exact margins below 2R=.11105 are .00105 and .00005 m/s^2 respectively.
+First contact at or before D is excluded by the derived startup cube. After D,
+the barrier uses the derived mismatch bound. The prefix assumption is discharged.
+No continuity of mismatch or future state lookup is used.
+
+Clock review
+Both channels require 0<=stamp<=t and total age t-stamp<=.001 s. Dispatches are
+strictly ordered and locally finite; samples precede dispatches; cell indices
+select held readings. The initial stamp remains 0 at dispatch D.
+first_cell_age proves that this read can be held only while global t<=.001.
+no_first_hold_after_full_age rejects a positive first cell when D>=.001.
+A delay of .0005 therefore leaves at most another .0005 s for the first hold.
+The old 5 ms capture allowance is not imported into this contract.
+At the final horizon the right channel is algebraic endpoint data, with no
+right ODE. Its next dispatch is not evidence of an execution beyond that horizon.
+
+Nonvacuity and conclusions
+Both exact witnesses use D=.0005 s, H=.001 s, r=8, d=0, and the nominal initial
+state. Their exponential pending and holding phases join at the same full state.
+Acceleration at dispatch differs from its initially read value. The command
+jumps to .23 m/s^2 while the reading remains stamped 0. The second scheduled
+dispatch is at H. The witnesses construct no evolution after H.
+These are nonzero-delay, nonconstant physical executions, not zero-delay or
+reset-state demonstrations. They do not establish general trajectory existence.
+
+The theorem covers the whole interval [0,H], including startup. It gives
+x in [.0326,.14365] m, |v|<=.4442 m/s, |a|<=3.5536 m/s^2, and effective target
+magnitude<=1.4356 m/s^2. Clipping inactivity follows in the proof. The wide
+residual bands establish containment, not precision standstill or convergence.
+
+Independent verification
+Five complete local modules were copied and built fresh in critic/handoff/fresh.
+Only pinned external package products were reused; no cached local project
+proof module was on LEAN_PATH. The compiler, checker, toolchain pin, manifest
+and package revisions match the builder. Separate leanchecker runs passed for
+all five modules. Every one of the 100 declared theorem dependencies was audited;
+only propext, Classical.choice and Quot.sound occurred. No sorry/admit/new axiom,
+native_decide or unsafe route was found in the frozen source.
+The reused package sources were not all rebuilt. This is independent local
+replay, not a separate implementation of Lean's logic or kernel.
+
+The five builder negative controls were replayed from source. Changing age or
+startup cap to 5 ms fails the submitted certificate. False slope 7, slope 8 and
+extra-first-hold-age assertions reach the intended arithmetic failures.
+Independent checks verified both exact margins, dispatch-side commands,
+changed dispatch state and braking-target compatibility. They received a
+separate kernel check. A further false .0001-margin claim was rejected: the
+braking case has only .00005. All outcomes and logs are in replay-results.json.
+Contract mutations reject this proof route; they are not plant-unsafe examples.
+
+Integration and visual review
+I inspected root-admission-reachability-screen.json and the admission-gap plot.
+The numerical members with rates 10 and 12/s peak below the admission's necessary
+position interval [.139,.141] m. The screen is binary64 evaluation of exact-flow
+formulas, not an interval or Lean proof. It correctly flags the missing
+braking-to-admission interface rather than declaring those motions unsafe.
+I also inspected the total-reading-age plot. Its .5 ms period + .2 ms latency
+example peaks at .7 ms; its 1 ms + .2 ms example peaks at 1.2 ms. The labels
+correctly distinguish meeting the age condition from proving physical safety.
+These figures explain scope and are not part of the accepted proof evidence.
+
+Remaining decision
+Accept this delay/history bridge at the fixed admission. To claim a full stop
+and hold, derive a guard that covers the stopping outcomes and prove that a
+sampled detector reaches it under the same timing and uncertainty assumptions.
+Retain the existing distinction between first velocity zero, admission, delayed
+handoff and bounded holding. No publication novelty or measured benefit is
+accepted by this proof review.

@@ -1,0 +1,29 @@
+REPLAY
+
+From the workspace root:
+ python3 research/pods/2026-10-18/recovery-handoff-02/grip-builder/verify.py
+
+The verifier writes only in grip-builder/. It copies four unchanged predecessor
+modules and both new modules into fresh-replay/, then builds each fresh source.
+The exact Lean and lake pins are retained. Existing Mathlib and LeanControls
+library artifacts are reused. Their pin and local core source/artifact hashes
+are recorded; they are not reported as freshly rebuilt. No Git command is used.
+
+The audit checks axiom closures for all public theorems in the six modules and
+for exact_initial/exact_ode in the upstream flow. Only propext, Classical.choice
+and Quot.sound are allowed. A separate leanchecker process checks each of the
+six fresh local modules. Four negative controls must fail for actual proof
+errors, with no missing-module or unknown-name error:
+ - Relax the loss target from q<=A to q<=A+1.
+ - Replace recovered negative authority q<=-b with q<=0.
+ - Assert a zero/nonpositive velocity exists for exact coasting.
+ - Assert the simple formula passes the old .15 m clearance limit.
+
+The original source hashes are checked after replay. Copies of the four
+predecessors must equal both their current originals and frozen preflight pins.
+The frozen preflight packet must retain every listed hash.
+
+Build products are caches, not source evidence. The final manifest binds source,
+reports, copied fresh source, logs and negative controls, and excludes .olean
+and development build products. Independent review and final acceptance belong
+to the critic and root, not this script or builder.

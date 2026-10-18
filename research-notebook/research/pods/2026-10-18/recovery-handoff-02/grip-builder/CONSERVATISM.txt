@@ -1,0 +1,46 @@
+CONSERVATISM AND ENGINEERING USE
+
+The useful decision is conditional: given justified T,A,b,k and initial bounds,
+does a proposed clearance and time budget pass this sufficient certificate?
+The symbolic exponential envelope can also support later sharper certificates.
+This packet does not establish that the robot can meet the assumed bounds.
+
+The local predecessor already proves delayed first zero and .15 m travel under
+fixed constants and a supplied loss-phase acceleration envelope. The present
+delta derives that envelope from a loss-phase target/rate ODE, exposes symbolic
+parameters and needs only a recovered rate floor. It supplies an actual
+coast-then-recovery witness and a formal no-recovery obstruction. This is a
+contract/generalization of existing work, not evidence of new grip physics.
+
+Keep the exact old contract visible:
+ X=.001, v0=.41, A=.1, T=.05, b=1.2, k=8.
+ V=.5775; H=.53125 s; simple displacement L=.1595859375 m;
+ simple reference-position bound X+L=.1605859375 m >.15 m.
+The old exponential proof already certifies .15 m. Its fixed constants and
+rate assumptions remain in the copied source. The new formula is not stronger
+clearance evidence. The tighter envelope has numerical peak reference position
+about .140710782944 m for the worst upper flow. That number is numerical
+analysis, not a new Lean clearance certificate.
+
+Near rest the dropped term matters. At v0=.01,A=T=0,b=1,k=8, the simple bound
+is .0091125 m while the exact upper flow's numerical first-zero travel is about
+.000350929154 m. At v0=0 with the same A,T,b,k, the first zero is already zero,
+but the formula returns .0078125 m. These are useful limits of the certificate,
+not evidence of physical residual travel. numerical-screen.json preserves
+these and the other preflight cases; no numeric peak is promoted to a proof.
+
+Let U=v0+A*T and Z=U+A/k. The relaxed braking term is
+ (Z+b/k)^2/(2*b)=Z^2/(2*b)+Z/k+b/(2*k^2).
+It grows with b when b>k*(v0+A*T)+A. This is dropped-term conservatism, not
+worse physical braking. Do not use this artifact to optimize a physical brake.
+Root's root-conservatism-screen.json records the numerical screen. No new
+optimization route or monotonicity theorem is added here.
+
+The narrower fair comparison would use the same scalar plant, initial set,
+loss deadline, effective target and rate bounds. Compare this simple formula
+against the exact exponential envelope and the prior fixed certificate, using
+certified clearance/time and proof reuse effort. A contact/friction model is
+a different scope unless its mechanics provide the same effective-target
+contract. No equal-assumption external implementation comparison was run.
+The primary-source overlap check remains in the frozen SOURCES.txt. It does
+not establish novelty; no publication probability is assigned.

@@ -1,0 +1,27 @@
+INTERNAL OVERLAP ADDENDUM
+18 October 2026. Statement inspection only; no old source was rerun or changed.
+
+ActualStop.delay_coordinate_upper already derives delay travel and velocity
+bounds from a supplied acceleration bound. delayed_actual_first_stop already
+proves first zero velocity and forward travel safety after a bounded delay,
+with persistent effective target <=-1.2, rate in[8,12], and fixed initial bounds.
+It assumes acceleration<=.1 throughout the delay. Its concrete delay bound is
+.05 s, total stop deadline .55 s, and forward position limit .15 m.
+
+EventStop.delayed_event_first_stop already weakens the post-delay physical
+requirements to the part of the path before the first zero event. It retains
+the supplied delay acceleration envelope and fixed constants. Its before-stop
+guard is not an eventual digital detector or a permanent-rest guarantee.
+
+The new loss/recovery route must expose its actual delta. Candidate useful
+extensions are an acceleration envelope derived from pre-recovery ODE dynamics,
+symbolic rather than fixed parameters, one-sided recovery transitions, and
+explicit impossibility examples. Merely renaming the previous delay as grip
+loss is not a new physical model or control theorem. Neither old nor new scalar
+lag equations alone establish mechanical contact or friction behavior.
+
+Review gate
+Inspect the new theorem's assumptions against these old statements. Report
+reuse and generalization separately from the new bound. Root retains the
+usefulness/novelty decision. This critic will not convert a successful Lean
+replay into a claim of new control theory.

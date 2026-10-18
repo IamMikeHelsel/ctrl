@@ -1,0 +1,1 @@
+Failed development Lean sources and their corresponding compiler logs are preserved by build.py. Timestamp prefixes identify attempts. verification-preflight-comment-token.txt records the conservative token-scan stop. These files are historical failures, not the current proof. Only the five module paths listed in verification.json are accepted build candidates.

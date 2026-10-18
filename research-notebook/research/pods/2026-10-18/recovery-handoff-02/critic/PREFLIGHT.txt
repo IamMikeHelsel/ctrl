@@ -1,0 +1,94 @@
+INDEPENDENT PREFLIGHT — DELAYED HANDOFF AND TEMPORARY BRAKING LOSS
+18 October 2026. Critic digital_hold_critic_01. No new claimed proof is built here.
+
+Review posture
+Preserve the accepted digital-hold-01 packet. Accept only actual frozen source
+statements after independent copying, fresh builds, axiom audit and separate
+kernel replay. Analytic work remains informal until that review is complete.
+
+Delayed handoff: main challenges
+The accepted digital theorem starts with sample=dispatch=0. Merely shifting its
+clock to a later dispatch D turns the initial reading timestamp into -D. That
+violates its causal history contract. A new bridge must cover the actual old
+read and all physical motion before and after dispatch, on one physical state.
+
+The builder proposes global time0 at the initial reading, pending command q=-1,
+and a delayed first digital command using that reading. This can address the
+history gap if the following facts are proved from the stated initial box and
+physical ODE. They must not be assumptions of the final admission theorem.
+- Startup position, velocity and acceleration bounds, hence startup cube safety.
+- A startup feedback-slope bound under the pending command, not under digital
+  feedback. The old continuous-hold slope estimate cannot be reused here.
+- A common slope bound across startup and digital intervals, so a later reading
+  may refer to a time before D without an uncovered integration interval.
+- The pending command on the left of D and the digital command on the right.
+  Physical x, v and a must remain continuous through that change.
+- Admission from the measured state and error box; no assumed endpoint cube,
+  global mismatch bound or unproved trajectory envelope in the exported result.
+
+The proposed slope7 route gives .093+.01+.001*7=.110 m/s^2, below2R=.11105.
+It has only .00105 m/s^2 of slack. That number is an arithmetic check, not an
+acceptance of the mixed-mode proof. q=-1 is an explicit illustrative restriction.
+For the nominal measured state and r=12,d=0, a pending q=-2 gives k'=12.08,
+which exceeds7. The same state with q=-1 gives6.08. A slope7 certificate cannot
+be advertised as covering every pending brake command in [-2,2]. Failure of
+that sufficient guard is not a physical unsafe-trajectory claim.
+
+Sharp first-cell timing issue
+If the old reading is stamped0 and first dispatch is D=1 ms, its total age is
+already exhausted. A strictly later next dispatch leaves a nonempty interval
+where that read is older than1 ms. Thus D=1 ms cannot initialize a positive-
+duration first hold cell under this schedule. H=D is only an endpoint case.
+Use D<1 ms, an explicit smaller startup limit, or a different justified clock
+contract. If D=.5 ms, the initial command has at most another.5 ms of legal
+holding before a fresh enough reading must replace it. A1 ms sample period
+after D would be too late. The old5 ms capture allowance does not transfer.
+
+Require a D>0 example that satisfies the entire clock and physical contract,
+including a nonempty digital interval. Require a rejected delay or pending-
+command case. State whether the rejection is a guard failure or unsafe motion.
+
+Temporary braking loss: main challenges
+Effective braking authority and response rate are distinct. A positive rate r
+only makes acceleration approach its target; it does not make that target
+negative. A finite stopping claim needs a bounded recovery deadline, a bound
+on positive acceleration/motion during loss, a sustained post-recovery target
+at most -b with b>0, and enough post-recovery response. If a uniform response
+lower bound is used, expose it rather than hide it in the word recovery.
+
+The target bound must persist through the claimed stopping horizon. A momentary
+return of braking authority is insufficient. Any travel bound must include the
+loss interval and the transient while acceleration still points forward after
+recovery. Carry the same physical state across recovery; do not reset velocity
+or acceleration to a convenient recovered value.
+
+Counterexample targets to require
+- No recovery: q=0,a(0)=0,v(0)=v0>0 gives a=0 and x=x0+v0*t. Finite response
+  rate does not prevent unbounded forward travel.
+- No uniform minimum authority: for r=8, q(t)=-epsilon*exp(-t), a(0)=0, the
+  total braking impulse is epsilon. The exact acceleration is
+  -(8*epsilon/7)*(exp(-t)-exp(-8t)). If v0>epsilon, velocity stays positive.
+  A target can be strictly negative at every time and still fail to stop.
+  This is an informal analytic counterexample at preflight, not a Lean result.
+- If the proof only concludes first zero/nonpositive velocity, continued
+  negative braking can then make velocity negative. Do not claim permanent
+  rest, rearward-travel safety or a later holding law from that event alone.
+
+Physical interpretation
+A continuous acceleration state with a first-order lag describes an abstract
+lagged effective-target loss/recovery. It does not by itself model abrupt loss
+of mechanical contact, changing normal force, slip, Coulomb friction or contact
+restitution. State that boundary. The present review does not validate a grip
+mechanism or calibrated force model.
+
+Acceptance after freeze
+Inspect exact quantified hypotheses, mode order, admission and recovery guards,
+clock endpoints, left/right derivatives and nonconstant witnesses. Independently
+copy and replay the frozen local source without modifying old inputs or pins.
+Require meaningful false-goal rejection, source stability and allowed axiom
+dependencies. Separate conditional trajectory safety, existence, implementation,
+physical meaning, full-operation composition and publication usefulness.
+
+Status
+Preflight concerns sent to both builders and root. Await frozen evidence; no
+claimed handoff or grip proof has been written or accepted by this critic.

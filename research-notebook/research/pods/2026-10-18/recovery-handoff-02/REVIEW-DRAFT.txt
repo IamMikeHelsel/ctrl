@@ -1,0 +1,56 @@
+DRAFT — delayed handoff and recovery review
+This is a working root outline. Acceptance is pending independent review.
+
+Question answered by the handoff route
+If a reading is already old when its command reaches the drive, can we keep
+the axis inside the stated holding region without pretending time restarted?
+The candidate theorem includes the pending command, the true state at dispatch,
+and both sides of the command change. No endpoint safe set is assumed.
+
+Fixed admission, in SI units
+The first reading is (x,v,a)=(.14,-.01,-1.17). Its true-state errors are at most
+(.001,.01,.05). The holding target is c=.088125 m. The admitted transformed
+cube has radius .055525 m. The first dispatch delay is at most .5 ms. Every
+reading retains its original timestamp, and its total age must stay<=1 ms.
+Thus a reading sampled at0 and dispatched at.5 ms has at most.5 ms left for
+its first hold. A later dispatch does not restore its age allowance.
+
+Two pending-command cases are built separately
+The first uses -1 m/s². The stronger case uses -1.21 m/s². Physical target
+error is added after the command and has magnitude at most.01 m/s².
+The stronger case therefore keeps the effective pending target<=-1.2 m/s²,
+which matches one condition in the old braking proof. It uses more of the
+proof error budget. It does not show that braking reaches the admission box.
+
+Why this still is not a completed stop
+The accepted old stop family admits response rates8..12/s. A numerical screen
+of three constant-rate members puts their peak positions at140.711,132.525,
+and126.761 mm. The new fixed admission requires139..141 mm. Two members never
+reach it. This is a numerical screen of an integration gap, not a formal
+impossibility theorem or a claim that the motions are unsafe.
+
+Even after handoff, the fixed invariant allows speed up to444.2 mm/s and
+acceleration up to3.5536 m/s². It guarantees containment, not a quiet arm or
+precision standstill. The team must define the useful stop and hold limits.
+
+Recovery route: pending
+The candidate uses a known deadline for restoration of effective braking,
+a positive braking floor, and a positive response-rate floor. It models an
+acceleration target and its lag. Mechanical contact, tire slip and sensor
+estimation of available grip are not supplied by that equation.
+The simple symbolic bound fails our existing150 mm clearance case and can
+be very loose near rest. Retain the sharper old certificate where it applies.
+
+Next decisions already identified
+1. Use an admission guard that covers the actual stopping outcomes, then prove
+   a detector reaches and accepts that guard with real sensor and clock limits.
+2. Define acceptable position, speed, acceleration and settling time before
+   claiming an application or deciding whether a wider safe set is useful.
+3. Compare the same complete contract against an independent reachability
+   method. Separate theoretical novelty, formalization value and hardware use.
+
+Evidence to complete before release to review
+Independent copied-source statement and axiom review; separate kernel replay;
+negative controls; source and input identity checks; old-evidence preservation;
+repository sync and verified remote commit. The final REVIEW-ME.txt will state
+which of these passed. Existing paper drafts remain unchanged in this round.

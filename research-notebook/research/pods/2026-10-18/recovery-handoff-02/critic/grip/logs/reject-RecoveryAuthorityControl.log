@@ -1,0 +1,63 @@
+/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/pods/2026-10-18/recovery-handoff-02/critic/grip/fresh/RecoveryAuthorityControl.lean:70:4: error: linarith failed to find a contradiction
+S k b : ℝ
+hS : 0 ≤ S
+hk : 0 < k
+r q : ℝ → ℝ
+f : ℝ → State
+z : State
+hrc : ContinuousOn r (Icc 0 S)
+hr : ∀ t ∈ Icc 0 S, k ≤ r t
+hq : ∀ t ∈ Icc 0 S, q t ≤ 0
+hf : IsTrajectory S r q f
+hz : -b ≤ z 2
+hi : ∀ (i : Fin 3), f 0 i ≤ z i
+hk0 : k ≠ 0
+hfc : ∀ (i : Fin 3), ContinuousOn ((fun p => p i) ∘ f) (Icc 0 S)
+hc : ∀ (i : Fin 3), ContinuousOn (fun t => heldSolution k t (-b) z i) (Icc 0 S)
+hd :
+  ∀ (i : Fin 3) (t : ℝ),
+    HasDerivAt (fun s => heldSolution k s (-b) z i)
+      (![heldSolution k t (-b) z 1, heldSolution k t (-b) z 2, k * (-b - heldSolution k t (-b) z 2)] i) t
+hinit : ∀ (i : Fin 3), f 0 i ≤ heldSolution k 0 (-b) z i
+t : ℝ
+ht : t ∈ Ioo 0 S
+htc : t ∈ Icc 0 S
+hrt : 0 ≤ r t
+htarget : r t * q t ≤ r t * 0
+hgap : 0 ≤ heldSolution k t (-b) z 2 + b
+hs : 0 ≤ (r t - k) * (heldSolution k t (-b) z 2 + b)
+a✝ : 0 < r t * (q t - f t 2) - k * (-b - heldSolution k t (-b) z 2) + r t * (f t 2 - heldSolution k t (-b) z 2)
+⊢ False
+failed
+/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/pods/2026-10-18/recovery-handoff-02/critic/grip/fresh/RecoveryAuthorityControl.lean:149:49: error: linarith failed to find a contradiction
+X v0 A T b k : ℝ
+hv0 : 0 ≤ v0
+hA : 0 ≤ A
+hT : 0 ≤ T
+hb : 0 < b
+hk : 0 < k
+f : ℝ → State
+rLoss qLoss rBrake qBrake : ℝ → ℝ
+hfc : ContinuousOn f (Icc 0 (T + recoveryHorizon v0 A T b k))
+hLoss : IsTrajectory T rLoss qLoss f
+hrLossC : ContinuousOn rLoss (Icc 0 T)
+hrLoss : ∀ t ∈ Icc 0 T, 0 ≤ rLoss t
+hqLoss : ∀ t ∈ Icc 0 T, qLoss t ≤ A
+hx : f 0 0 ≤ X
+hv : 0 ≤ f 0 1
+hvHi : f 0 1 ≤ v0
+ha : f 0 2 ≤ A
+hBrake : IsTrajectory (recoveryHorizon v0 A T b k) rBrake qBrake fun s => f (T + s)
+hrBrakeC : ContinuousOn rBrake (Icc 0 (recoveryHorizon v0 A T b k))
+hrBrake : ∀ s ∈ Icc 0 (recoveryHorizon v0 A T b k), k ≤ rBrake s
+hqBrake : ∀ s ∈ Icc 0 (recoveryHorizon v0 A T b k), qBrake s ≤ -b
+hV : 0 ≤ velocityBudget v0 A T b k
+hS : 0 ≤ recoveryHorizon v0 A T b k
+haLoss : ∀ t ∈ Icc 0 T, f t 2 ≤ A
+hDelay : ActualStop.IsDelayTrajectory T f
+hprefix : ∀ t ∈ Icc 0 T, f t 0 ≤ X + v0 * t + A * t ^ 2 / 2 ∧ f t 1 ≤ v0 + A * t
+hend : f T 0 ≤ X + v0 * T + A * T ^ 2 / 2 ∧ f T 1 ≤ v0 + A * T
+hinit : ∀ (i : Fin 3), f (T + 0) i ≤ ![X + v0 * T + A * T ^ 2 / 2, v0 + A * T, A] i
+a✝ : A < -?m.718
+⊢ False
+failed

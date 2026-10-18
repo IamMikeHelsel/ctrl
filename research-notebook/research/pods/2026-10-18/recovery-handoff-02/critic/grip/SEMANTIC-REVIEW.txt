@@ -1,0 +1,70 @@
+RECOVERY SEMANTIC REVIEW — independent critic
+18 October 2026. This note records statement inspection; replay status is separate.
+
+The main theorem is conditional on a supplied physical trajectory. Its state is
+f=(x,v,a), continuous through recovery. The loss equation uses f(t); recovery
+uses that same f(T+s). There is no state reset or assumed terminal safety set.
+Each phase requires the classical ODE only on its open time interval. State
+continuity supplies endpoints. The two rates may differ at T, but each rate is
+continuous on its own closed phase. No derivative at T is assumed. Thus a target
+change and an acceleration-derivative jump are compatible with the interface.
+General existence for arbitrary irregular targets is not proved.
+
+For T>=0, the loss lemma derives a<=A from a(0)<=A, qLoss<=A and rLoss>=0.
+This is an ODE comparison, not an assumed acceleration envelope. The complete
+stopping theorem adds A>=0, v0>=0 and 0<=v(0)<=v0, with x(0)<=X. It has no
+lower x, acceleration or target bound. Those omissions are intentional for an
+upper-position result, but prevent treating this as a full operating region.
+
+After recovery, qBrake<=-b and rBrake>=k must hold throughout the computed
+horizon, with b,k>0. q denotes effective physical acceleration authority after
+disturbance effects. A motor command, positive rate, or momentary return of grip
+does not establish this premise. The theorem does not require an upper rate.
+Its comparison uses g=-b+(z_a+b)exp(-k*s), with z_a>=-b. It proves the correct
+inequality a'-g'+r(a-g)<=0. It does not multiply a possibly negative a+b by a
+rate floor. The proposed shortcut a'<=-k(a+b) is false when a<-b and r>k.
+
+Let V=v0+A*T+(A+b)/k, S=V/b and H=T+S. The theorem returns a first zero tau
+in [0,H], positive velocity on [0,tau), and x(t)<=X+L through tau, where
+L=v0*T+A*T^2/2+V^2/(2*b). With X=x(0), L is a displacement limit. For a loose
+upper X it is a reference-position limit. Recovery assumptions persist through
+H even if tau occurs earlier. General event-triggered mode composition is open.
+The zero may be time zero. No permanent rest or lower-travel safety follows.
+
+The exact witness is genuinely nonempty and includes a real loss phase:
+x=t, v=1, a=0 with q=0 and r=1 until T=1. It then uses the exact lag flow with
+q=-1 and r=1 from [1,1,0]. All three physical coordinates are continuous.
+The instantiated horizon is H=3; the theorem gives first zero by 3 and position
+at most 3 through that event. This is one analytic execution, not a general
+existence result. In fact v(3)=-exp(-2)<0, so continued braking reverses motion.
+
+The no-recovery example is also an actual ODE execution: r=1, q=0, a=0,
+v=1, x=t. It stays forward-moving and exceeds any finite position bound.
+This rejects rate-only recovery. Decaying-authority examples in the analytic
+preflight remain informal; they are not counted as checked theorems.
+
+The simple formula is conservative. Its exact old-contract position bound is
+4111/25600=0.1605859375 m, greater than 0.15 m. The previous sharper exponential
+certificate already proves 0.15 m under its recorded contract. At v0=.01,
+A=T=0,k=8, raising b from 1 to 2 raises the simple bound from 0.0091125 m to
+0.0169 m. At v0=0,A=T=0,b=1,k=8, the formula is 1/128 m although the first
+zero is already time zero. These facts limit use of the relaxed certificate;
+they do not show that stronger physical braking is worse.
+
+Internal overlap is explicit. ActualStop and EventStop already cover delayed
+first zero and travel with fixed constants and a supplied loss acceleration
+bound. This packet derives that bound from a loss-phase target/rate equation,
+exposes symbolic parameters, removes the recovered rate ceiling, and supplies
+actual coast/recovery and no-recovery witnesses. This is a checked extension
+and reuse of local work. It is not evidence of new friction mechanics, field
+benefit, literature dominance or publication merit.
+
+Root integration snapshots are in root-snapshots/. The reviewed REVIEW-ME and
+QUESTIONS correctly separate the model theorem, conservative screening formula,
+full-operation gap and novelty gap. No mathematical correction was identified.
+The root documents are provisional copies; their originals may change during
+integration. Figure labels, units and caveats were checked visually. The
+conservatism plot reports an algebraic screen, not validated dynamics. The
+admission and age plots were also inspected in the handoff review. Root replay
+passed on the copied screens and figure identities; it is numerical/algebraic
+evidence, separate from Lean proof and hardware evidence.
