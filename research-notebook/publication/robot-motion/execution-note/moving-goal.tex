@@ -1,0 +1,53 @@
+\section{A reversal reveals a missing constraint}\label{movinggoal}
+The isolated theorem does not cover a request that changes while its old motion
+is still active. A separate, predeclared comparison tests that case with the
+same scalar plant and retained physical state. It uses three methods, four
+request/deadline variants, three response rates and two constant disturbances:
+72 parameter cases, each sampled at 1 ms and .5 ms. No parameters were tuned
+after the results.
+
+The first $20$ mm request is issued at $.20$ s and available at $.22$ s.
+A reversal is issued at $.50$ s. All methods see identical requests and clocks.
+The buffered case retains a common 60 ms execution commitment. Native replanning
+uses its previous native state at execution time. FIR increments use the last
+committed target. Neither process resets physical state.
+
+\begin{center}\small
+\begin{tabular}{@{}lrrr@{}}\toprule
+Numerically valid tasks, out of six & Ruckig fast & Ruckig $.8$ s & FIR\\\midrule
+Return to $0$; deadline $1.70$ s & 6 & 6 & 0\\
+Same path; deadline before delivery & 0 & 0 & 0\\
+Buffered return; deadline $1.90$ s & 6 & 6 & 6\\
+Reverse to $-20$ mm; deadline $1.90$ s & 6 & 6 & 0\\\bottomrule
+\end{tabular}
+\end{center}
+
+The task score requires at least 1 mm of initial progress, accepted requests,
+causal service timing, nominal reference velocity/acceleration/jerk limits, and
+the physical position, speed and acceleration bands from deadline through
+$2.5$ s. Thus an always-hold policy cannot pass by ignoring the first move.
+The common numerical reference-limit allowance is $10^{-10}$ in each respective
+SI unit. This allowance is separate from native reconstruction tolerances;
+small exact exported excesses remain recorded.
+
+\textbf{The important failure.} In the unbuffered return, the exact FIR jerk peak
+is $6.25\ \mathrm{m/s^3}$, below the $7.5$ limit. Its exact acceleration peak is
+$21/32=.65625\ \mathrm{m/s^2}$, above the shared $.5$ limit. The jerk-only guard
+correctly accepts its stated property, but that property is insufficient for
+the full motion contract. Meeting the eventual endpoint does not cure this
+limit violation. The buffered FIR return meets this numerical task contract.
+The farther reversal fails its jerk admission check and remains a failed task.
+
+The early-deadline case has the same reference and physical paths as the first
+case. It changes only scoring. A deadline before command delivery violates this
+service contract; it does not by itself prove universal physical impossibility.
+All decisions agree at both sample steps. These are numerical task results,
+not all-time task proofs. The earlier rounded-reference theorem is instantiated
+for the twelve frozen gate06 paths, not these new native histories.
+
+\textbf{Consequence.} The next useful admission result must include acceleration
+and, where required, velocity and task time. A jerk-only proof is valuable but
+cannot stand in for those conditions. This comparison provides no evidence of
+general FIR superiority. Exact guard evidence, native fidelity checks, physical
+traces are in \path{moving-goal-08/}; the independent review is in
+\path{task-contract-08/grader/}.

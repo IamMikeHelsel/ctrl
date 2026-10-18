@@ -1,0 +1,56 @@
+\section{From accurate tracking to useful progress}\label{taskcontract}
+An authoritative request says which goal is valid. An advisory estimate need not
+change that goal. The executor assumes this distinction is correct; it does not
+infer intent from noisy position packets.
+
+Consider one new goal $g$, issued at $s$ and executed at $\tau\geq s\geq0$.
+Every old reference event must finish by $s$, and its final target must be $a$.
+Retain the entire old history and append $(\tau,g-a)$. The condition concerns
+all old events, including future commitments. Zero velocity now does not imply
+that no motion is queued.
+
+\begin{theorem}[Isolated position task]
+Let $h,J$ and the new event $(\tau,g-a)$ have exact rational encodings for the
+checker. Assume the old rational history passes the exact jerk check, the stated
+completed-tail condition holds, and
+\[
+\frac{2|g-a|}{h^3}\leq J,\qquad \tau+4h\leq D\leq H.
+\]
+Retain the plant, initial-error and budget assumptions of Theorem~\ref{tracking}
+for the full appended history on $[0,H]$. Then the appended exact check passes.
+For $s\leq t\leq H$, let $f=F((t-\tau)/h)$. The actual position satisfies
+\begin{align*}
+\min(a,g)-R&\leq x(t)\leq\max(a,g)+R,\\
+|x(t)-g|&\leq |g-a|(1-f)+R.
+\end{align*}
+Between issue and execution, $|x(t)-a|\leq R$. At $\tau+2h$, if that time is in
+the horizon, directed progress from $a$ toward $g$ is at least $|g-a|/2-R$.
+For every $t\in[D,H]$, $|x(t)-g|\leq R$.
+\end{theorem}
+
+\textit{Proof idea.} Lean proves $0\leq F\leq1$, monotonicity, $F(2)=1/2$ and
+the isolated jerk bound from the existing truncated-power primitive. Completed
+old events reduce to $a$ after issue. Their jerk supports do not overlap the new
+event's support, so the old guard and isolated bound imply the new exact guard.
+The physical tracking theorem then supplies $|x-q|\leq R$. The displayed task
+bounds follow from the range and midpoint properties. The physical trajectory
+and its initial cube stay anchored at time zero; no state is reset at admission.
+
+\textbf{Checked example.} For $a=0$, $g=20$ mm, $h=.2$ s, $s=.20$ s,
+$\tau=.22$ s and $R=.2$ mm, the theorem gives at least $9.8$ mm of directed
+progress at $.62$ s. Position is within $.2$ mm of the goal from $1.02$ s through
+the chosen $2$ s horizon, including the $1.5$ s deadline. A separate checked
+lower bound gives at least $9.8$ mm of goal error if the deadline is instead
+$.62$ s. These are conditional analytic bounds, not measured robot performance.
+
+\textbf{Scope.} Arrival is a position statement. It does not prove physical rest
+or the benchmark's tight speed and acceleration conditions. The theorem assumes
+the goal remains valid, bounds the declared trajectory, and requires a deadline
+inside the covered horizon. It does not prove real communication timing,
+arbitrary mid-motion replacement, or recognition of a small intentional move.
+
+The source entry point is \texttt{checked\_isolated\_task}.
+\par\path{task-contract-08/builder/TaskContract.lean}
+The independent review and
+negative controls are preserved beside it. This is a small composition result
+that closes a task-level gap; it is not a new theory of intent or smoothing.

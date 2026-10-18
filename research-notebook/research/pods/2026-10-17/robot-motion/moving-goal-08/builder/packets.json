@@ -1,0 +1,180 @@
+{
+  "version": 1,
+  "units": "SI; synthetic scalar plant, not Franka",
+  "h_s": "1/5",
+  "reference_jerk_limit_m_s3": "15/2",
+  "commit_tick_s": "1/50",
+  "initial_history": "reference and actual x/v/a initially zero; no reset at revisions",
+  "methods": [
+    "ruckig",
+    "ruckig_min_08",
+    "fir"
+  ],
+  "rates_per_s": [
+    80,
+    100,
+    120
+  ],
+  "disturbances_m_s2": [
+    "0",
+    "1/100"
+  ],
+  "resolutions_s": [
+    "1/1000",
+    "1/2000"
+  ],
+  "cases": [
+    {
+      "id": "return_generous",
+      "buffer_s": "0",
+      "deadline_s": "17/10",
+      "end_s": "5/2",
+      "revision_issue_s": "1/2",
+      "revision_ready_s": "13/25",
+      "initial_progress_time_s": "1/2",
+      "initial_progress_required_m": "1/1000",
+      "truth": [
+        {
+          "time_s": "0",
+          "position_m": "0"
+        },
+        {
+          "time_s": "1/5",
+          "position_m": "1/50"
+        },
+        {
+          "time_s": "1/2",
+          "position_m": "0"
+        }
+      ],
+      "packets": [
+        {
+          "sequence": 100,
+          "observed_s": "1/5",
+          "ready_s": "11/50",
+          "target_m": "1/50"
+        },
+        {
+          "sequence": 101,
+          "observed_s": "1/2",
+          "ready_s": "13/25",
+          "target_m": "0"
+        }
+      ]
+    },
+    {
+      "id": "return_predelivery",
+      "buffer_s": "0",
+      "deadline_s": "51/100",
+      "end_s": "5/2",
+      "revision_issue_s": "1/2",
+      "revision_ready_s": "13/25",
+      "initial_progress_time_s": "1/2",
+      "initial_progress_required_m": "1/1000",
+      "truth": [
+        {
+          "time_s": "0",
+          "position_m": "0"
+        },
+        {
+          "time_s": "1/5",
+          "position_m": "1/50"
+        },
+        {
+          "time_s": "1/2",
+          "position_m": "0"
+        }
+      ],
+      "packets": [
+        {
+          "sequence": 100,
+          "observed_s": "1/5",
+          "ready_s": "11/50",
+          "target_m": "1/50"
+        },
+        {
+          "sequence": 101,
+          "observed_s": "1/2",
+          "ready_s": "13/25",
+          "target_m": "0"
+        }
+      ]
+    },
+    {
+      "id": "return_late_buffered",
+      "buffer_s": "3/50",
+      "deadline_s": "19/10",
+      "end_s": "5/2",
+      "revision_issue_s": "1/2",
+      "revision_ready_s": "31/50",
+      "initial_progress_time_s": "1/2",
+      "initial_progress_required_m": "1/1000",
+      "truth": [
+        {
+          "time_s": "0",
+          "position_m": "0"
+        },
+        {
+          "time_s": "1/5",
+          "position_m": "1/50"
+        },
+        {
+          "time_s": "1/2",
+          "position_m": "0"
+        }
+      ],
+      "packets": [
+        {
+          "sequence": 100,
+          "observed_s": "1/5",
+          "ready_s": "11/50",
+          "target_m": "1/50"
+        },
+        {
+          "sequence": 101,
+          "observed_s": "1/2",
+          "ready_s": "31/50",
+          "target_m": "0"
+        }
+      ]
+    },
+    {
+      "id": "reverse_far_guard",
+      "buffer_s": "0",
+      "deadline_s": "19/10",
+      "end_s": "5/2",
+      "revision_issue_s": "1/2",
+      "revision_ready_s": "13/25",
+      "initial_progress_time_s": "1/2",
+      "initial_progress_required_m": "1/1000",
+      "truth": [
+        {
+          "time_s": "0",
+          "position_m": "0"
+        },
+        {
+          "time_s": "1/5",
+          "position_m": "1/50"
+        },
+        {
+          "time_s": "1/2",
+          "position_m": "-1/50"
+        }
+      ],
+      "packets": [
+        {
+          "sequence": 100,
+          "observed_s": "1/5",
+          "ready_s": "11/50",
+          "target_m": "1/50"
+        },
+        {
+          "sequence": 101,
+          "observed_s": "1/2",
+          "ready_s": "13/25",
+          "target_m": "-1/50"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,58 @@
+CLOSE WORK FOUND DURING THE FRANKA PREPARATION
+
+Scope: bounded primary-source check on 18 October 2026 UTC. This is not an exhaustive
+novelty review. No author was contacted, no method was reproduced, and no
+comparison result is inferred from an abstract. Earlier FIR/governor/ModelPlex,
+Ruckig, RTC and VLA-RAIL sources remain relevant.
+
+Langella et al., Keeping the Franka Emika Panda alive, 20 August 2026.
+https://arxiv.org/html/2608.19740v1
+Read sections 2–4 and 6. The authors attribute position-interface artifacts to
+external-loop timing and sampling jitter. They test asynchronous communication,
+rate matching, and position-domain reference generation on Panda hardware.
+They explicitly leave formal guarantees open. This is a close practical
+baseline. Our possible addition is a checked execution/task contract under
+explicit assumptions; we have not proved their algorithm or its hardware behavior.
+
+Black, Galliker and Levine, Real-Time Execution of Action Chunking Flow Policies.
+https://arxiv.org/abs/2506.07339v2
+Abstract and metadata rechecked. RTC keeps actions that must execute and
+generates the remaining chunk asynchronously. It already addresses the central
+committed-prefix idea. The existing manuscript cites it. Rebranding that idea
+as new would be incorrect.
+
+Yun et al., GROOVE, 12 September 2026.
+https://arxiv.org/abs/2609.13695v1
+Abstract checked. The regulator uses delivered commands as boundary data,
+optimizes jerk, and constrains cumulative path deviation. It reports LIBERO and
+UR5e experiments. This is a high-priority comparison for any broad execution-layer
+claim. Our scalar FIR study does not establish superiority over it. Full method,
+code, path constraints and evaluation protocol still need a reproduction review.
+
+Wang et al., Real-Time Robot Execution with Masked Action Chunking, 27 January 2026.
+https://arxiv.org/abs/2601.20130v1
+Abstract checked. REMAC addresses mismatch between perception and action within
+a chunk, alongside continuity between chunks. The implication for us: correct
+curve joins do not resolve stale observations or incorrect task intent. This is
+important for the learned-policy stage, which tonight's synthetic goals omit.
+
+Guo et al., SplineWAM, 30 September 2026.
+https://arxiv.org/abs/2609.39873v1
+Abstract checked. It adapts action horizons and preserves committed decoded
+actions through a spline representation. It is another close adjacent work;
+continuity of executed actions is already an active research topic. Treat its
+reported gains as the authors' results, not evidence for this project.
+
+Research decision
+Do not pitch a newly discovered general cause or universal cure for VLA jitter.
+Continue toward a narrow, reproducible claim: checked reference admission and
+physical task bounds that expose infeasible timing and retained commitments.
+The present mathematics is an artifact candidate; publication novelty needs
+expert comparison. A Franka result must add useful behavior to capable existing
+execution stacks. The missing formal guarantees in one paper do not establish
+that a formalization is itself novel or sufficient for publication.
+
+Mike's contribution remains the task framing, the timing/motion-history concern,
+the requirement to count useful progress, and the Franka demonstration target.
+This note records sources that constrain our claims; it does not erase those
+contributions or assert scientific priority over the cited authors.

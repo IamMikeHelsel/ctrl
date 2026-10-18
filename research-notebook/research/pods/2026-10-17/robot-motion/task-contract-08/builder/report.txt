@@ -1,0 +1,76 @@
+PASS — Isolated authoritative-goal position contract.
+
+Proved
+
+The existing four-box primitive is nondecreasing, lies in [0,1], has F(2)=1/2,
+and has |F3|<=2. These facts are proved from the existing truncated-power formula.
+No new reference curve or tuning is used.
+
+The complete old event list is retained. Every old event must finish by the
+issue time, and its final target must equal the old authoritative goal a.
+Appending one causal event (tau,g-a) then gives q(t)=a+(g-a)F((t-tau)/h).
+The old exact guard and 2|g-a|/h^3<=J prove acceptance of the appended full list
+by the existing executable rational guard. The guard is a conclusion.
+
+checked_isolated_task then invokes the actual existing plant-tracking theorem.
+Its final premises include the physical ODE, rate/disturbance limits, budget,
+and the original time0 tracking cube for the full history. A tracking tube or
+the requested task result is not assumed. No physical or tracking state resets.
+
+The conclusions give hold while execution waits, a transition interval from
+min(a,g)-R to max(a,g)+R, distance-to-goal and directed-progress bounds, halfway
+position/progress, and arrival through the observation horizon. The theorem
+requires tau+4h<=D<=horizon and proves a separate bound at D, so the deadline
+claim is not an empty-interval statement. A separate algebraic lemma derives
+the sufficient deadline from bounded issue-to-commit and commit-to-execution
+delays. It does not verify a scheduler or clock implementation.
+
+Fixed20mm example
+
+The original persistent_goal data remain unchanged: issue0.20s, execution0.22s,
+h0.20s, target20mm, position radius0.20mm, deadline1.5s and horizon2s.
+Under the explicit FixedPlant assumptions, the theorem proves at least9.8mm
+directed physical progress at0.62s. Position error is at most0.20mm from1.02s
+through2s, including the original1.5s deadline. The isolated reference jerk
+bound is5m/s^3, below the7.5m/s^3 guard limit. Actual admission is also checked.
+
+The specific halfway deadline at0.62s fails: the physical goal error is at
+least9.8mm. This does not say that every deadline before1.02s is impossible.
+A second witness retains a future event whose current reference jet equals
+the empty-history jet but whose final reference is20mm. Its exact jerk guard
+passes. Thus a current zero jet does not establish an old completed tail.
+
+Assumptions and open work
+
+The authoritative goal is trusted external task information. This theorem
+does not infer intent or verify advisory-message routing, labels, epoch choice,
+delivery, or a clock implementation. Rejection is not successful completion.
+The theorem covers one isolated revision after a complete old tail; mid-motion
+revision is not proved in this batch.
+
+Actual rest remains open. The generic tube permits velocity and acceleration
+bounds0.016m/s and1.28m/s^2 after reference rest. Those bounds do not certify the
+benchmark limits0.001m/s and0.02m/s^2. This is position hold/arrival/progress,
+not full endpoint success, native firmware correctness or real Franka behavior.
+No native, plant, hardware or new benchmark run was performed. Prior results
+and failures remain unchanged. This is a verified composition of established
+mechanisms, not a claim of a new control method or publication novelty.
+
+Evidence
+
+All four new modules compile. The fresh build copied47 local source modules
+and checked their hashes after compilation. The all-declaration audit covered
+3,014 declarations and accepted only propext, Classical.choice and Quot.sound.
+No local axiom, unsafe declaration, sorryAx or native_decide was accepted.
+Composition, Admission and the four new modules passed separate kernel replay.
+Three false claims failed for mathematical reasons, not import/parser errors:
+F(2)=1, success at the concrete halfway deadline, and a hold that erases a
+pending event. verification.json records commands, source/log hashes and times.
+The verification finished at2026-10-18T06:27:33.914116Z. Pins remain unchanged.
+The critic received the immutable source freeze at06:22:26UTC; its final review
+is separate from this builder evidence.
+
+Mike Helsel supplied the task framing and design direction. The next useful
+engineering step is to connect this explicit task interface to the planned
+Franka demonstration while keeping the scalar proof and robot evidence distinct.
+No further proof or numerical expansion is recommended within this gate.

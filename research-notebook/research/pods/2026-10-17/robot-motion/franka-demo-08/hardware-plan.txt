@@ -1,0 +1,85 @@
+FRANKA DEMO CONTRACT — PREPARATION, NOT HARDWARE EXECUTION
+
+Working target
+Use a single Franka arm for a hold, a real small move, a reversal during motion,
+and a delayed replan. Start with free-space motion. Keep task goal, accepted
+reference, emitted command, robot-reported desired state, and measured state
+separate in logs. A matching final pose is only one part of task success.
+
+Model and version gate
+Record Panda/FER versus FR3 and its revision, system image, libfranka commit,
+ROS version if used, tool mass/inertia, payload, and all relevant coordinate
+transforms. Pick the matching model and software compatibility set. The FR3
+simulation here does not resolve which physical robot will be available.
+
+Execution design
+Use an outer planning process and a small robot paced execution process. The
+planner publishes timestamped, numbered requests with a goal, valid interval,
+deadline, units, and frame. The executor retains committed motion while a new
+request is evaluated. It distinguishes issued, received, admitted and executed
+times. Log missed/rejected revisions as task failures when their task is due.
+Declare what happens on stale, reordered, duplicate, or missing messages.
+This design is proposed. The simulation only exercises a bounded subset.
+
+Franka FCI exposes 1 kHz interfaces for joint torque, joint position/velocity,
+and Cartesian pose/velocity. The callback receives a duration; its first value
+is zero. Sample the intended reference on robot-derived execution time. Record
+the clock mapping and any extrapolation explicitly. Do not feed wall-clock
+jitter into an otherwise smooth position curve without accounting for it.
+Sources: official overview and pinned robot.h, listed below.
+
+The official requirements specify Linux with PREEMPT_RT; the troubleshooting
+guide gives a 500 microsecond read-to-write budget. The Mac simulation supplies
+neither guarantee. Use the existing local Linux infrastructure after measuring
+its actual latency and network path to the robot. Simulation in a container
+would not establish a real-time kernel or network deadline either.
+
+Filtering is an experimental factor
+Record the explicitly selected low-pass cutoff and rate-limiter flag. The
+official overview describes default rate limiting as enabled, but the inspected
+robot.h at e88d08f64cbf842b8f53c0b551963684064038d6 defaults limit_rate to false.
+Thus we must pin and inspect the installed version and pass settings explicitly.
+Do not base the experiment on an assumed default or silently change it between
+methods. No hardware filter setting has been changed tonight.
+
+Limits and controller compatibility
+Use the installed robot's necessary and recommended conditions. The official
+FR3 limits include position-dependent joint velocity limits. Passing a scalar
+Cartesian jerk check does not establish those limits, inverse-kinematic
+feasibility, torque margins, or a safe stopping distance for a coupled arm.
+The demo must check joint and Cartesian limits for its actual frames and payload.
+No collision/protective setting is modified by this package.
+
+Fair comparison
+Keep the robot, controller, payload, limits, task deadline, permitted path
+deviation and inputs the same. Compare a capable native/reference execution
+baseline, the appropriate retained-state Ruckig baseline, and the checked
+executor when its assumptions apply. Include the timing/interface repair in
+Langella et al. for a compatible Panda setup, or document precisely which parts
+transfer to FR3. This is a baseline requirement, not a completed reproduction.
+FANUC and Yaskawa remain industrial context; they are not required hardware for
+this first Franka demonstration and are not represented by the stock MuJoCo servo.
+
+Measure
+Collect robot timestamps, request age, queue age, execution time, all sent and
+reported desired states, measured joints and flange pose, motor torque/current
+when available, packet success rate, and protective-stop/error flags. Define a
+fixed differentiation and filtering method before reporting measured jerk.
+Use position, speed, acceleration, settling duration and deadline as separate
+scores. Report transient violations and every failed trial. Electrical energy
+needs supply measurements; command variation and squared jerk are not joules.
+
+Next simulation work
+Replace the ideal bias assist with a declared feedback law suitable for the
+seven-joint plant. Evaluate recorded action chunks with measured-style delays,
+without assuming their target labels are perfect. Add coupled bounds or an
+empirically justified disturbance envelope. The scalar theorem can then be used
+only where a valid model-reduction or tracking argument connects it to the arm.
+
+Primary sources checked 18 October 2026 UTC
+https://frankarobotics.github.io/docs/overview.html
+https://frankarobotics.github.io/docs/doc/libfranka/docs/system_requirements.html
+https://frankarobotics.github.io/docs/troubleshooting.html#realtime-control-loop-best-practices
+https://frankarobotics.github.io/docs/doc/libfranka/docs/overview.html#signal-processing
+https://frankarobotics.github.io/docs/robot_specifications.html
+https://github.com/frankarobotics/libfranka/blob/e88d08f64cbf842b8f53c0b551963684064038d6/include/franka/robot.h

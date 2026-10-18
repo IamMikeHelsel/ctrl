@@ -1,0 +1,81 @@
+MOVING GOAL 08 — PROTOCOL FROZEN BEFORE RESULTS
+
+Purpose: one mid-motion authoritative goal reversal, with fixed deadline,
+delay/buffer and guard-pressure variants. Existing scalar plant; not a Franka
+model or VLA pipeline. No hardware. All earlier failures remain unchanged.
+
+Four cases; three methods: native fast Ruckig, native minimum_duration=.8s
+Ruckig, retained four-box h=.2s with its existing exact jerk guard. Rates80/100/120
+per second; constant disturbances0/.01m/s^2;72 parameter cases;1ms and.5ms grids;
+144 traces. All horizons2.5s. No raw strawman and no additional cases.
+
+First goal+20mm issued.20 ready.22. Reversal issued.50. Exact cases:
+A return0 ready.52, deadline1.70, no extra execution buffer.
+B identical toA, deadline.51 before delivery. This fails a causal service
+promise; it is not a universal claim that a physical endpoint is impossible.
+C return0 ready.62, all commands have60ms immutable execution buffer: first
+execution.28, reversal execution.68. Deadline1.90.
+D reverse to-20mm ready.52, deadline1.90, no extra buffer; guard-pressure case.
+
+Every method receives every identical authoritative proposal, issue/readiness,
+deadline and horizon. No generator sees a revision before readiness. Methods
+retain their fixed06 planning rules; deadlines are service criteria, not a new
+retiming optimizer. FIR rejection never censors native input. Rejected requests
+count as failure while previous accepted history continues. Expired requests
+still execute under this interface but fail the service criterion. No retries,
+parameter tuning, modified limits, or outcome-based case selection.
+
+Admission c=ceil(ready/.02)*.02. Execution tau=c+buffer. The old committed prefix
+on[c,tau] is immutable. FIR retains all events and appends delta=new target minus
+previous accepted committed target at tau, never current q/x. Its future guard
+checks c and all remaining knots, including queued events. Native replans carry
+their own previous native at_time q/v/a at the binary execution time tau. No
+physical x/v/a reset. Truth is used only for scoring/event bookkeeping.
+
+Plant x'=v,v'=a,a'=r(u+w-a); direct controller
+u=q''-800(x-q)-60(v-q')-(a-q'')/2+j_q/96. sigma10/s.
+Nominal reference limits V=.1m/s,A=.5m/s^2,J=7.5m/s^3. Initial actual/reference
+rest. Pinned native revision99751e6ebc7c963bb80e99fbbe66f2c279d1db57; local public
+profile export, native cumulative boundaries, every positive phase, exact-binary
+execution origins, retained endpoint acceleration. Separate native replay at
+.5ms, boundaries and neighboring doubles must pass fixed q/v/a residual limits
+[1e-8m,1e-8m/s,1e-10m/s^2] before plant. Jerk branch differences stay separate.
+Stop before plant and preserve witness if this native gate fails.
+
+Pre-revision response obligation: x(.50)-x(0)>=1mm. Always-hold therefore fails
+the return cases. Analytic design check for C FIR: q(.50)=.00121975m; conditional
+.2mm tracking tube gives x>=.00101975m. This is not observed performance.
+
+At deadline require actual position error<=.2mm, speed<=.001m/s and acceleration
+<=.02m/s^2, and require all three through2.5s. Report endpoint and remain flags
+separately. Overall numerical valid-task flag also requires initial response,
+all authoritative requests admitted, deadline after readiness/execution, and
+common nominal reference V/A/J conformity. FIR guard stays jerk-only: a V/A
+violation remains visible, with no new rejection rule.
+
+Use one numerical reference-limit policy for every method: critical-point peaks
+must be within nominal V/A/J plus absolute1e-10 in their respective SI units.
+This separately declared roundoff allowance is NOT the native reconstruction
+tolerance and NOT an exact bound theorem. Also report signed nominal excess;
+retain exact FIR evidence and tiny exported native excess. Do not imply strict
+exact conformity merely from this common numerical flag.
+
+Record x-q,q-g_true,x-g_true; actual issue/ready/execution states; signed return
+progress from each method's own x(.50); reference/proposal differences; V/A/J
+extrema and joins; physical state continuity; actual jerk peak and integral
+jerk^2(m^2/s^5); command peak/TV with continuous and jump parts(m/s^2); ages,
+commitment delay, admissions/rejections; settling through horizon. The methods
+have different remaining distances at revision: this is not a same-distance
+effort comparison. No joules/electrical energy/hardware-savings claim. Lower
+activity after ignoring/rejecting or missing a move cannot win.
+
+A/B share the union of all scoring/event times. Their reference pieces and
+saved physical trace contents must be byte-identical for each method/rate/w/grid;
+only deadline evaluation differs. Retain both sides of every reference switch,
+execution, truth and scoring event. Report grid-refinement decision consistency
+and metric deltas. Finite numerical checks are not continuous-time task proofs.
+These cases are outside the proposed completed-tail task theorem.
+
+Freeze inputs before any run; freeze implementation and passing native gate
+before plant; run only this batch, then stop for independent review. Builder
+writes only here. Root owns paper/notebook/Git. No hardware or contact.

@@ -1,0 +1,48 @@
+"""Inspect saved histories and coefficients; no native/physical rerun."""
+from pathlib import Path
+from fractions import Fraction as Q
+from math import factorial
+import hashlib,json
+HERE=Path(__file__).resolve().parent
+sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
+def main():
+    frozen=json.loads((HERE/'data-sha256.json').read_text())
+    for n,h in frozen['files'].items():assert sha(HERE/n)==h,n
+    spec=json.loads((HERE/'packets.json').read_text());cases={c['id']:c for c in spec['cases']}
+    schedules=json.loads((HERE/'reference-schedules.json').read_text())['schedules']
+    exports=json.loads((HERE/'ruckig-primary-exports.json').read_text());rows=[]
+    for s in schedules:
+        c=cases[s['case']]; key=s['case']+'__'+s['method'];outs=s['admissions']
+        assert [[o[k] for k in ['sequence','observed_s','ready_s','target_m']] for o in outs]==[[o[k] for k in ['sequence','observed_s','ready_s','target_m']] for o in c['packets']]
+        for o in outs:
+            assert Q(o['admission_s'])>=Q(o['ready_s'])>=Q(o['observed_s'])
+            assert Q(o['execution_s'])==Q(o['admission_s'])+Q(c['buffer_s'])
+        tau=Q(outs[-1]['execution_s']);checked=0
+        if s['method']=='fir':
+            first=outs[0];initial_tau=Q(first['execution_s']);delta=Q(first['target_m']);h=Q(1,5)
+            for p in s['pieces']:
+                left,right=Q(p['start_exact']),Q(p['end_exact'])
+                if left>=tau:continue
+                assert right<=tau or outs[-1]['outcome']=='jerk_rejected'
+                mid=(left+right)/2
+                if outs[-1]['outcome']=='jerk_rejected' or right<=tau:
+                    expected=[sum((delta*k*(left-(initial_tau+i*h))**(4-order)/Q(factorial(4-order))/h**4 for i,k in enumerate([1,-4,6,-4,1]) if initial_tau+i*h<mid),Q(0)) for order in range(5)]
+                    assert list(map(Q,p['rational_derivatives_at_start']))==expected,(key,p)
+                    checked+=1
+            if outs[-1]['outcome']=='jerk_rejected':assert s['final_accepted_goal']==.02
+        else:
+            plans=exports[key];assert [r['plan']['input']['target'] for r in plans]==[float(Q(p['target_m'])) for p in c['packets']]
+            prior=plans[0];actual_tau=Q(plans[1]['native_commit_exact']);origin=Q(prior['native_commit_exact'])
+            phase_by_origin={f'plan_0_{p["kind"]}_{p["index"]}':p for p in prior['plan']['phases']}
+            for p in s['pieces']:
+                if p['origin']=='initial_rest':continue
+                if Q(p['start_exact'])>=actual_tau:continue
+                phase=phase_by_origin[p['origin']]
+                assert Q(p['start_exact'])==origin+Q(phase['start'])
+                assert Q(p['end_exact'])==min(actual_tau,origin+Q(phase['end']))
+                assert [p[k] for k in ['p','v','a','jerk']]==[phase[k] for k in ['p','v','a','jerk']]
+                checked+=1
+        rows.append({'history':key,'identical_authoritative_proposals':True,'causal_ready_admission_execution':True,'prior_reference_pieces_preserved':checked,'revision_admitted':outs[-1]['outcome']=='accepted','requested_execution_s':str(tau),'buffer_s':c['buffer_s']})
+    result={'status':'Saved-data audit only. Scheduler/code verification and arbitrary online queue policies remain outside scope.','histories':rows,'all_passed':True}
+    (HERE/'causality-audit.json').write_text(json.dumps(result,indent=2)+'\n');print('PASS',len(rows),'histories')
+if __name__=='__main__':main()

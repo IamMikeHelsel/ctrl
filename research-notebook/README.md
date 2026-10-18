@@ -6,7 +6,7 @@ and final animations. Start with the reports below.
 
 | Area | Start here |
 |---|---|
-| Current bounded research session | [Checkpoint](research/pods/2026-10-17/five-hour-checkpoint-05.txt), [session limits](research/pods/2026-10-17/five-hour-session.json) |
+| Current bounded research session | [Checkpoint](research/pods/2026-10-17/five-hour-checkpoint-06.txt), [session limits](research/pods/2026-10-17/five-hour-session.json) |
 | Exact fixed motion and continuous tracking | [25-statement proof review](research/pods/2026-10-17/controls/direct-reference-06/grader/review-report.txt), [interactive comparison](research/pods/2026-10-17/controls/causal-stop-05/figure/index.html), [numerical review](research/pods/2026-10-17/controls/causal-stop-05/grader/grade.txt) |
 | Causal acceleration deadline | [Proof and scope](research/pods/2026-10-17/controls/admission-04/builder/report.txt), [independent review](research/pods/2026-10-17/controls/admission-04/grader-proof/grade.txt) |
 | Validated filter failure bounds | [Independent rational enclosure review](research/pods/2026-10-17/controls/filter-enclosure-08/grader/report.txt), [model and tail argument](research/pods/2026-10-17/controls/filter-enclosure-08/builder/report.txt) |
@@ -14,6 +14,8 @@ and final animations. Start with the reports below.
 | Accepted finite robot reference certificate | [Independent proof review](research/pods/2026-10-17/robot-motion/certificate-03/grader/report.txt), [72-case numerical review](research/pods/2026-10-17/robot-motion/comparison-04/grader/review-report.txt), [interactive figures](research/pods/2026-10-17/robot-motion/comparison-04/figure/index.html) |
 | Robot motion note and harder negative cases | [Illustrated draft](publication/robot-motion/execution-note/main.pdf), [manuscript challenge](publication/robot-motion/execution-note/review/report.txt), [144-case review](research/pods/2026-10-17/robot-motion/latency-noise-05/grader/review-report.txt), [native repair review](research/pods/2026-10-17/robot-motion/native-execution-06/grader/review-report.txt), [portable proof bundle](publication/robot-motion/reviewer-bundle/README.md), [animation](research/pods/2026-10-17/robot-motion/jerk-prefix-animation/jerk-prefix.mp4) |
 | Rounded native handoffs and task intent | [Accepted full-time proof review](research/pods/2026-10-17/robot-motion/rounded-handoff-07/grader/review-report.txt), [exact data binding](research/pods/2026-10-17/robot-motion/rounded-handoff-07/bindings/README.txt), [task-contract candidate](research/pods/2026-10-17/robot-motion/intent-contract-07/analyst/README.txt) |
+| Position progress, arrival, and reversal failure | [Accepted task proof and numerical review](research/pods/2026-10-17/robot-motion/task-contract-08/grader/review-report.txt), [moving-goal comparison](research/pods/2026-10-17/robot-motion/moving-goal-08/builder/report.txt), [Manim explanation](research/pods/2026-10-17/robot-motion/task-contract-08/animation/position-task.mp4) |
+| Preparing a Franka demonstration | [Simulation report](research/pods/2026-10-17/robot-motion/franka-demo-08/index.html), [run and reproduce](research/pods/2026-10-17/robot-motion/franka-demo-08/README.txt), [hardware plan](research/pods/2026-10-17/robot-motion/franka-demo-08/hardware-plan.txt), [independent scope/code review](publication/robot-motion/execution-note/review-08/franka-review.txt) |
 | Actual Clifford scalar contraction | [Independent review](research/pods/2026-10-17/weinstein/clifford-contraction-03/grader/report.txt), [declared candidate audit](research/pods/2026-10-17/weinstein/definition-audit-02/analyst/candidate-ledger.txt) |
 | Actual complex adjoint | [Independent review](research/pods/2026-10-17/weinstein/complex-adjoint-04/grader/report.txt), [proved algebra and limits](research/pods/2026-10-17/weinstein/complex-adjoint-04/builder/report.txt) |
 | Pretty mathematics after Maple | [Tool guide](research/tools/math-visualization/guide.txt), [interactive damping example](research/tools/math-visualization/damping-demo.html), [earlier tool shelf](research/academic-tools/pretty-math.html) |
@@ -69,7 +71,7 @@ from independent acceptance of its formal proof and Ruckig comparison. The finit
 72-case comparison have passed independent computational review. The periodic input
 aligns with a filter frequency zero, and the filter responds more slowly to a real step.
 The harder 144-case gate preserves two native reconstruction tolerance failures. Its
-canonical polynomial results and their scope have a separate review record. The ten-page
+canonical polynomial results and their scope have a separate review record. The fourteen-page
 note distinguishes the accepted FIR certificate from numerical Ruckig comparisons and
 retains the filter failures under irregular, random, and biased requests. The native-state
 repair passed finite reconstruction and independent physical replay with unchanged
@@ -81,8 +83,24 @@ and 874 joins of the 12 frozen native paths to a conditional Lean tracking
 bound of 0.128125000188 mm, with full time coverage. Its independent review
 rebuilt 46 local modules and replayed 13 modules with the separate kernel checker.
 The JSON-to-Lean binding is independently audited, not a verified parser.
-Task-goal failures remain unchanged. The task-intent progress result is still a
-candidate, and its equal-information comparison is not yet run. Human motion,
+Task-goal failures remain unchanged. A new isolated-task theorem proves conditional
+hold, progress, and position arrival after old reference tails have completed.
+The new reversal comparison gives all three methods the same requests and timing.
+Native Ruckig variants each pass 18/24 tasks; the jerk-only FIR method passes 6/24.
+An accepted FIR return violates acceleration, and the farther reversal is rejected.
+Independent replay covers all 144 traces with no decision mismatches. A Lean witness
+also checks jerk-guard acceptance alongside acceleration 21/32 > 1/2 m/s².
+The task proof has a fresh 49-module review, 13 kernel replays, and five rejected
+false controls. It does not prove physical rest or general mid-motion task changes.
+
+A pinned Franka FR3 model ran 16 integration checks. Eight ideal-bias-assist runs
+meet a sampled final position band; eight stock-actuator runs fail it under gravity.
+The queued reversal still has about 9.21 mm transient reference-tracking error.
+A separate reviewer checks the code, all saved scores, command and model hashes;
+it does not independently replay physics. The assist bypasses actuator force clamps.
+This exposes the remaining coupled-arm gap, not measured Franka performance.
+The actual robot variant, software, payload, and execution interface remain open.
+Human motion,
 FANUC/Yaskawa execution, derivative costs, and energy distinctions are documented
 without proprietary algorithm or hardware claims. General smoothing superiority and full-arm/VLA performance are not established.
 The two slow-filter failures also have independent exact-rational enclosures with explicit

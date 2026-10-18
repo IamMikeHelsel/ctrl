@@ -1,0 +1,85 @@
+{
+  "passed": true,
+  "scope": "Independent exact FIR reference and admission audit only. Does not review native extrema, plant states, or final task results.",
+  "sources": {
+    "pre-run-input-manifest.json": "321a4f28df94651d626777644f2cb2664ae3ef6a2b5f6e7efcf9fe0db8029762",
+    "protocol.txt": "e61e5fcabb3cb658c40d92db372f5471a3b371bfb2dfbb4655998213be943389",
+    "admission-transcripts.json": "ff25cfc2b24e65dd8d481b2445de9a8992397ce530e5898c7762fd9777381841",
+    "reference-extrema.json": "1079290429908cf19318c79bb75e117abe25f1be276c0c680af4b04c646b72cb"
+  },
+  "cases": [
+    {
+      "case": "return_generous",
+      "admissions": [
+        {
+          "peak_jerk_m_s3": "5",
+          "accepted": true
+        },
+        {
+          "peak_jerk_m_s3": "25/4",
+          "accepted": true
+        }
+      ],
+      "acceleration_peak_m_s2": "21/32",
+      "acceleration_witness_time_s": "77/100",
+      "acceleration_signed_m_s2": "-21/32",
+      "jerk_peak_m_s3": "25/4",
+      "nominal_acceleration_pass": false
+    },
+    {
+      "case": "return_predelivery",
+      "admissions": [
+        {
+          "peak_jerk_m_s3": "5",
+          "accepted": true
+        },
+        {
+          "peak_jerk_m_s3": "25/4",
+          "accepted": true
+        }
+      ],
+      "acceleration_peak_m_s2": "21/32",
+      "acceleration_witness_time_s": "77/100",
+      "acceleration_signed_m_s2": "-21/32",
+      "jerk_peak_m_s3": "25/4",
+      "nominal_acceleration_pass": false
+    },
+    {
+      "case": "return_late_buffered",
+      "admissions": [
+        {
+          "peak_jerk_m_s3": "5",
+          "accepted": true
+        },
+        {
+          "peak_jerk_m_s3": "5",
+          "accepted": true
+        }
+      ],
+      "acceleration_peak_m_s2": "1/2",
+      "acceleration_witness_time_s": "22/25",
+      "acceleration_signed_m_s2": "-1/2",
+      "jerk_peak_m_s3": "5",
+      "nominal_acceleration_pass": true
+    },
+    {
+      "case": "reverse_far_guard",
+      "admissions": [
+        {
+          "peak_jerk_m_s3": "5",
+          "accepted": true
+        },
+        {
+          "peak_jerk_m_s3": "45/4",
+          "accepted": false
+        }
+      ],
+      "acceleration_peak_m_s2": "1/3",
+      "acceleration_witness_time_s": "113/150",
+      "acceleration_signed_m_s2": "-1/3",
+      "jerk_peak_m_s3": "5",
+      "nominal_acceleration_pass": true
+    }
+  ],
+  "method": "Truncated-power sum, all knot jerk values, acceleration stationary points from exact affine-jerk zeroes."
+}

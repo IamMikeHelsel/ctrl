@@ -1,0 +1,90 @@
+{
+  "status": "predeclared integration smoke test; not a performance comparison or theorem",
+  "created_utc": "2026-10-18T06:15:58.390677+00:00",
+  "model": "MuJoCo Menagerie franka_fr3, illustrative choice until actual Franka variant is known",
+  "model_commit": "62ab00f2bc44f6f20c1c9b7a13f3fb1dd41a4e35",
+  "duration_s": 2.0,
+  "command_period_ns": 1000000,
+  "integration_steps_s": [
+    0.001,
+    0.0005
+  ],
+  "h_s": 0.2,
+  "position_tolerance_m": 0.0002,
+  "final_deadline_s": 1.8,
+  "joint_index": 0,
+  "initial_state": "model home keyframe, zero velocity; no state resets after start",
+  "reference": "retained sum of four-box step responses; numerical implementation, not bound to Lean",
+  "cases": {
+    "hold": [],
+    "single_move": [
+      {
+        "epoch": 1,
+        "issue_ns": 200000000,
+        "arrival_ns": 220000000,
+        "execute_ns": 220000000,
+        "target_rad": 0.04
+      }
+    ],
+    "mid_move_reversal": [
+      {
+        "epoch": 1,
+        "issue_ns": 200000000,
+        "arrival_ns": 220000000,
+        "execute_ns": 220000000,
+        "target_rad": 0.04
+      },
+      {
+        "epoch": 2,
+        "issue_ns": 550000000,
+        "arrival_ns": 570000000,
+        "execute_ns": 570000000,
+        "target_rad": -0.02
+      }
+    ],
+    "queued_reversal": [
+      {
+        "epoch": 1,
+        "issue_ns": 200000000,
+        "arrival_ns": 220000000,
+        "execute_ns": 220000000,
+        "target_rad": 0.04
+      },
+      {
+        "epoch": 2,
+        "issue_ns": 550000000,
+        "arrival_ns": 610000000,
+        "execute_ns": 670000000,
+        "target_rad": -0.02
+      }
+    ]
+  },
+  "servo_configurations": [
+    "stock_position",
+    "model_bias_compensation"
+  ],
+  "servo_definition": "Use original model position actuators. Second configuration adds model qfrc_bias as applied generalized force at each integration step; this is an ideal model-based assist, not Franka firmware.",
+  "record": [
+    "joint position, velocity, acceleration",
+    "command and actuator force",
+    "model bias assist",
+    "reference and goal flange position",
+    "actual flange position",
+    "goal issue/arrival/execution clocks",
+    "contact count",
+    "MuJoCo warnings"
+  ],
+  "smoke_acceptance": "All states finite; no MuJoCo warnings; same exact command samples at both integration steps; no access to commands before arrival. Report contacts and task error without hiding failures.",
+  "task_score": "Illustrative final flange position error <=0.2mm for every sample from1.8s through2s. Not physical settling, collision certification, or VLA success.",
+  "excluded": [
+    "libfranka and ROS execution",
+    "hardware command transport",
+    "network packet loss",
+    "FCI filtering and limits",
+    "tool or payload",
+    "contact task",
+    "learned planner",
+    "electrical energy",
+    "Lean theorem transfer to seven-joint model"
+  ]
+}

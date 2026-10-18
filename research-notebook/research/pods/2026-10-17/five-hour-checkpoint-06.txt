@@ -1,0 +1,97 @@
+RESEARCH CHECKPOINT 06 — 17 October 2026 local time
+
+Mike selected Franka robots for the eventual demonstration. No robot is available
+tonight. This batch closes a bounded task proof, preserves a decisive negative
+comparison, and prepares a reproducible coupled-arm simulation. It does not
+claim that the scalar proof now covers Franka or a learned policy.
+
+Closed: isolated task-contract08
+Under the stated scalar plant and controller assumptions, an authoritative new
+goal arrives after every old reference event has completed. The proof retains
+the old history and the physical trajectory from time zero. It derives guard
+acceptance, a hold bound before execution, a position corridor, directed progress,
+and position arrival by a feasible deadline within the theorem horizon.
+
+For the conditional 20 mm fixture, progress is at least 9.8 mm at 0.62 s and
+position error is at most 0.2 mm from 1.02 s through 2 s. A separate lower bound
+shows at least 9.8 mm of goal error at a premature 0.62 s deadline. These do not
+prove trajectory existence, physical rest, real communication timing, arbitrary
+mid-motion changes, or correct recognition of task intent.
+
+Independent proof grade A applies to this bounded evidence gate. The reviewer
+built 49 local modules, audited 689 public statements, replayed 13 modules with
+the separate kernel checker, and rejected five false acceptance controls. Counts
+include 637 inherited statements, 25 new core statements, 12 new fixtures and
+15 independent witnesses. They are not 689 research discoveries. The report and
+frozen evidence are in robot-motion/task-contract-08/grader/.
+
+Closed: moving-goal08 comparison, with a negative result
+The predeclared reversal study has 72 parameter cases and two sampling grids.
+All methods see the same requests, deadlines and buffer constraints. The native
+Ruckig baselines retain their native states; physical state is never reset.
+Each native method passes 18 of 24 tasks. FIR passes 6 of 24. All methods fail
+the deadline-before-delivery case under the stated causal service contract.
+
+In the ordinary return, FIR passes the exact jerk guard but violates acceleration:
+21/32 m/s^2 exceeds the common 1/2 limit. The reviewer also proves that witness
+in Lean. In the far reversal, FIR rejects the request and fails the task. Meeting
+a later endpoint does not erase an earlier limit violation or a rejected request.
+This is not a defect in the jerk theorem; that theorem checks too little for the
+full task. The new native paths have numerical evidence, not gate07's instantiated
+continuous-time proof for the older 12 paths.
+
+Independent 80-digit replay checked all 144 traces: 544,728 state rows and
+3,264 event rows. No task, admission, causality or limit classification differed.
+Maximum position discrepancy was 4.20e-16 m. No input was tuned after the result.
+Builder: robot-motion/moving-goal-08/builder/. Reviewer: task-contract-08/grader/.
+
+Executed: Franka FR3 simulation preparation
+The pinned Menagerie model ran four small joint-motion tasks, two servo modes,
+and two integration steps. All 16 runs completed with finite states, no warnings
+and no detected contacts. Commands match across the two steps. These are numerical
+integration checks, not hardware trials. Only FR3 ran; the actual robot variant
+remains open. A tool, contact task and learned policy are absent.
+
+Stock model position actuators leave about 6.05 mm of world-frame flange-position
+error under gravity. Ideal model-bias assist removes the hold error; all eight
+assist runs pass the sampled final position band. The queued reversal still has
+about 9.21 mm transient tracking error. The assist bypasses actuator force clamps,
+so no total torque limit is certified. Analytic reference jerk is not the derivative
+of the held emitted command. Orientation is not part of the position score.
+
+A separate reviewer checked all 32,016 CSV rows, scores, command hashes and 128
+model-file hashes. It found no blocker in these limited claims. It did not replay
+the dynamics or independently prove contact absence. No real-time or hardware
+acceptance is claimed. See robot-motion/franka-demo-08/index.html and README.txt.
+
+Publication and useful next work
+The 14-page working paper adds the proof, the failed reversal, the Franka model
+gap, and closer prior work. Two proof/comparison sections have independent claim
+reviews; the Franka section has a separate scope/code review. The paper retains
+Mike Helsel's contributions and the AI-assistance disclosure. Novelty and venue
+fit need external specialist review. Nothing was submitted or sent externally.
+A 26-second Manim explanation shows the conditional position corridor, midpoint
+progress and deadline limit. It draws no physical trajectory and claims no rest
+guarantee. Its source, proof bindings and checked frames are preserved.
+
+The next bounded proof target is a retained-history guard for acceleration and
+velocity, with an explicit task-time requirement. Keep the current failed cases
+unchanged. Before a real Franka demo, also need a declared coupled controller,
+actual arm/software/payload/frame details, measured execution timing, and a
+valid connection from the model to any claimed tracking or stopping bound.
+
+Repository and CI boundary
+Preserve this batch in the separate research-notebook tree on draft PR26. The
+notebook proof gates are separate from the main ControlsLean CI target. Prior
+run 39099507197 used ctrl-local-sparky-arm64. Lean and documentation compilation
+completed, but the docs action failed when sudo required an interactive password.
+That run is not green. No paid runner or billing change was introduced.
+
+Other tracks and budget
+Controls, GU algebra, and conditional Erdos work remain as recorded previously;
+this batch does not make a new physics or prize claim. The original deadline is
+07:23:43 UTC. Shared usage reached 42% used from 39% at this batch's start and
+20% at session start. Credit balance remains 66235.333017. The original max robot
+seat stopped at 06:28:43 UTC; charging the later 42% reading gives a conservative
+17-point cumulative bound, below its 20-point cap. Controls and Weinstein remain
+at conservative bounds 3 and 8. These are not actual per-agent usage readings.

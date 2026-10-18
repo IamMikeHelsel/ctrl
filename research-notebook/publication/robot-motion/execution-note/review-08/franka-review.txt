@@ -1,0 +1,117 @@
+FRANKA SMOKE REVIEW — 18 October 2026 UTC
+Reviewer: controls_task_analyst. Bounded read-only source and saved-data review.
+Decision: the revised description is supported as a simulation integration smoke
+check. No blocking defect found within that limited scope. This is not independent
+physics evidence, hardware acceptance, or a transfer of the scalar Lean theorem.
+
+What was checked
+I read the protocol, implementation, coordinator audit and results, README,
+hardware plan, and final paper fragment. The requested audit.py is actually named
+audit_smoke.py. I inspected the two FR3 XML files and verified all 128 current
+model files against model-provenance.json. I parsed all 16 saved CSVs independently
+with Python's standard library. No physics, audit script, or renderer was rerun.
+No frozen input, proof, trace, or publication source was changed by this reviewer.
+
+Causality and state retention
+The executor admits a packet only when its arrival time has passed. The receive
+check enforces issue<=arrival<=now<=execution and increasing epoch numbers. Its
+reference uses only received events. An accepted future event contributes zero
+before execution, including its first three derivative values at execution.
+The delayed reversal arrives at .61 s and starts at .67 s; this retains the
+previous reference prefix for 60 ms. Actual joint state is reset only once at
+run start. The fixed packets reveal no use of a later goal before arrival.
+
+The full packet list is available to the harness, but issue-time truth is used
+only for scoring in separate goal_data. It does not enter command generation or
+the physical state's force calculation. This is a static source review of these
+fixed schedules, not a proof of the receive API for all malformed input.
+The four negative packet controls have the stated limited scope. They are not
+network fault injection. Issue/arrival/execution clocks are fixed protocol fields,
+not measured transport logs or separate timestamp columns in the trace CSVs.
+
+Reference, command, actual state, and task
+The ideal reference is a four-box history. Its analytic derivatives are logged.
+The emitted position command is sampled on the 1 kHz simulated clock and held
+between samples. Those derivatives must not be presented as derivatives of the
+held command or actual robot motion. The final README now states this distinction.
+All four configurations for each task have identical command hashes, so changing
+the integration step or bias assist does not change the command samples.
+
+Reference tracking uses actual minus reference attachment-site position. Task
+error uses actual minus the latest issued goal's attachment-site position. The
+goal changes before a delayed request reaches the executor, which correctly
+keeps transport delay visible in task error. A final position pass does not erase
+transient tracking error, or establish final velocity, acceleration, orientation,
+settling, collision safety, or task success for a physical robot.
+
+Frames and forces
+All three positions come from site_xpos of attachment_site in the same model
+world frame. They omit orientation. The XML locates that site 0.107 m along the
+last link's local z axis. Calling it flange position is a declared model
+convention; it is not a verified real-robot flange/tool calibration. The revised
+README and paper make the world-frame position-only scope explicit.
+
+The ideal assist adds qfrc_bias through qfrc_applied. This extra generalized
+force bypasses the position actuator's force clamp. Keeping the original
+actuators and their clamps therefore does not certify total joint torque.
+The revised README and paper now state this. The assist uses exact model state
+and bias terms at each integration step. It is not measured feedforward,
+firmware reproduction, or a demonstrated feasible actuator command. The stock
+servo's sag is not evidence that a real Franka has the same sag.
+
+Counts and numerical claims
+Independent saved-data checks confirm:
+- 16 distinct case/servo/step combinations, 2,001 rows each: 32,016 rows total.
+- Uniform 1 ms saved clocks from 0 through 2 s, and finite CSV values.
+- 201 samples in each final window [1.8,2] s.
+- Eight final-position passes, all ideal-assist configurations; eight failures,
+  all stock configurations. Recomputed scores agree within 1e-15 m.
+- The finer-step assist final maxima are 0, .004522021, .057912170,
+  and .112451681 mm for hold, single, reversal, and queued reversal.
+- The finer-step queued assist transient tracking maximum is 9.212598124 mm.
+- Recomputed little-endian float64 command hashes match the summary.
+- The maximum reported flange step-refinement difference is .069950882 mm.
+The last item is a summary check, not a new independent refinement calculation.
+The no-warning and no-contact statements are supported by saved summary records
+and the implementation's checks. I did not independently execute or validate the
+dynamics/contact solver. Step refinement is not a rigorous error enclosure.
+Sampled jerk estimates change substantially with step size in some cases; no
+physical jerk acceptance claim should be inferred from those diagnostics.
+
+Remaining boundary
+The current paper fragment stays within its declared scope. Preserve the model,
+controller, force, frame, timing, and task distinctions when this is reused.
+A real robot comparison still needs a measured execution interface, a compatible
+controller, total force/torque limits, payload/frame calibration, and full task
+scores. This review does not verify the external hardware documentation or the
+Langella paper's missing-proof claim; those depend on the separate source review.
+
+Exact SHA-256 of reviewed final files
+430734bb852f9d85a5d653febf6b50963af71858716113868cf6a65de8444502  research/pods/2026-10-17/robot-motion/franka-demo-08/run_smoke.py
+5d1ae3ac844c4a10dc81de4817e5d8f4f8588eceecafb4efa8f9efdc416f8984  research/pods/2026-10-17/robot-motion/franka-demo-08/protocol.json
+24f5366961c2be7f14c8a62bf489ca8b14c50111cf8097c16a8fb5f986ce2198  research/pods/2026-10-17/robot-motion/franka-demo-08/audit_smoke.py
+8413831464a7a97f6528b11403bc7020554c6e716ec1830599241ea5502e1334  research/pods/2026-10-17/robot-motion/franka-demo-08/audit.json
+da13ce1db11a05546f4aa825589bbd3ab86724c39e7ca4b1c173356e5a4638e5  research/pods/2026-10-17/robot-motion/franka-demo-08/results/summary.json
+2d4eb89f2f3e9806a806cc2ef4ea29cd70f88fde2911681dec0b34baf2c07adb  research/pods/2026-10-17/robot-motion/franka-demo-08/README.txt
+d7a7dd7a8e41b01701bcd2db5a52379de15ad21442083dc05d37f5b4c0ddb433  research/pods/2026-10-17/robot-motion/franka-demo-08/hardware-plan.txt
+4d4e6761b62295a3e9cbdc15a6b7e66f7cb597c8101aa279a3ad2b94001b4a2b  research/pods/2026-10-17/robot-motion/franka-demo-08/pre-run-freeze.json
+4742dcfd6e28f3e735ac3142cd27dee44552c9a2c4ea2e54a27fe1ce4ea1e500  research/pods/2026-10-17/robot-motion/franka-demo-08/model-provenance.json
+81eeda348f3d46c600da829b6d6ef4431d54241e0d227c7509ccc917e9657fcf  publication/robot-motion/execution-note/franka-preparation.tex
+0d0e502d0c517a33217dac859fa84fbb74c7ab9b2f104c64c70a41dfa77e6d2f  .tools/mujoco-menagerie/franka_fr3/fr3.xml
+8f17f883872d6c95b63239bd82ca4374771deca9949b8fc9577356209f662ebe  .tools/mujoco-menagerie/franka_fr3/scene.xml
+b30edca2440f727ca5d2cd349d9d3bb8e0ca41c2d93ccc4024c66cf2d0a78367  research/pods/2026-10-17/robot-motion/franka-demo-08/results/hold__model_bias_compensation__1000us.csv
+b30edca2440f727ca5d2cd349d9d3bb8e0ca41c2d93ccc4024c66cf2d0a78367  research/pods/2026-10-17/robot-motion/franka-demo-08/results/hold__model_bias_compensation__500us.csv
+770bdeddd7b98e032d93fcd18d84181424af0456c11e4be6a566802241ad37af  research/pods/2026-10-17/robot-motion/franka-demo-08/results/hold__stock_position__1000us.csv
+37557835b39f89d3706e4e1ca73fe6305e3fedb46bd835fec0fd95634c8d7fd9  research/pods/2026-10-17/robot-motion/franka-demo-08/results/hold__stock_position__500us.csv
+6d3bf686f8277888dffee8e52a72856e0f33ba2bab4ae4f8482e075318207247  research/pods/2026-10-17/robot-motion/franka-demo-08/results/mid_move_reversal__model_bias_compensation__1000us.csv
+8cf4eaa324fa536bba4d17b46242af77698814f185b0ee920fd95981b344f76f  research/pods/2026-10-17/robot-motion/franka-demo-08/results/mid_move_reversal__model_bias_compensation__500us.csv
+67c96ea572f5be0d76f3158d06b68b4b0e9f6dbc1f77dbb54d6cabfbf570211a  research/pods/2026-10-17/robot-motion/franka-demo-08/results/mid_move_reversal__stock_position__1000us.csv
+ec7eb07dfbb754cc3ab6e4055181855eb67384aebd111e82e6bf8685d475f5a0  research/pods/2026-10-17/robot-motion/franka-demo-08/results/mid_move_reversal__stock_position__500us.csv
+0eeec4553b9af6368852d027cba7848951441108d5b20ad7f6da9002d607128a  research/pods/2026-10-17/robot-motion/franka-demo-08/results/queued_reversal__model_bias_compensation__1000us.csv
+75be26731b3f9cf6fbbf19fe4f00b4e1f5c88383e8562d58d77be11fb8ab3d25  research/pods/2026-10-17/robot-motion/franka-demo-08/results/queued_reversal__model_bias_compensation__500us.csv
+41ba5d3777643170796efa895700fb1844e2a2b06c72f157c256c001ef6761ac  research/pods/2026-10-17/robot-motion/franka-demo-08/results/queued_reversal__stock_position__1000us.csv
+7d59fc31b5a72bdbfd5f822ae32c62fabbcd54f6d2f3c09db2e1cd7c32b00ea0  research/pods/2026-10-17/robot-motion/franka-demo-08/results/queued_reversal__stock_position__500us.csv
+26c6539381d181bb7dee052c21884ef1a37f02639a31f3d53eab4b63d3d56ee1  research/pods/2026-10-17/robot-motion/franka-demo-08/results/single_move__model_bias_compensation__1000us.csv
+fed27d23201c5804cd0699e364ba180d6f7036bc3375b9959f4fee6975ed5625  research/pods/2026-10-17/robot-motion/franka-demo-08/results/single_move__model_bias_compensation__500us.csv
+533ddf8c3df38bc6e599277c7a675d50eb5f7b7bbd87592d3ff8cd8db9ca9190  research/pods/2026-10-17/robot-motion/franka-demo-08/results/single_move__stock_position__1000us.csv
+0ad28ddacd0c3b79221040b9f1c35f8f25b8b1ae08c595e5f8e3771c211b642a  research/pods/2026-10-17/robot-motion/franka-demo-08/results/single_move__stock_position__500us.csv
