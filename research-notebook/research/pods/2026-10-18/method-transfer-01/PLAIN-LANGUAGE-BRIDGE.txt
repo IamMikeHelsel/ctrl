@@ -61,3 +61,30 @@ Our rule for choosing the next idea
 
 This is a map for experiments. It is not evidence that combining more fields
 necessarily makes a proof better, or that the current results are novel.
+
+The next controls step: choose where to hold
+
+A safe stopping point and a safe holding target are different. At zero speed,
+the actuator can still apply force. Its delayed response can start motion again.
+Our current proof tracks position, speed and acceleration together.
+
+The proposed rule starts from one sensor reading. It finds holding targets
+that fit all three state bounds, including sensor error and the pending command.
+It chooses one target and keeps it fixed. The full proof must then show that
+the old and new commands cannot move the axis beyond the travel limit.
+
+For the illustrative reading at 140 mm, the proposed target is 95.73033 mm.
+That is about 44.27 mm behind the measured position. The old target was
+100.9375 mm. This is an intentional retreat from the limit, not a promise to
+stay at the stopping point. With the same error calculation, the proposed
+upper tube is 141.63033 mm; the old target's tube is 151.41254 mm.
+A tube is a guaranteed enclosure if its proof assumptions hold. A tube that
+crosses the limit does not prove that the actual motion crosses it.
+
+Across the proposed range of readings, the candidate upper tube is below
+150 mm by only about 0.064 mm. The arithmetic passed independent review.
+The dynamics proof is being built. The rule is a scalar model result; it
+has no robot, two-sided travel, precision-rest or hardware acceptance yet.
+Its reference-adjustment idea belongs to established reference-governor work.
+The research question is whether the explicit proof and useful contract add
+something worth sharing under a fair comparison.

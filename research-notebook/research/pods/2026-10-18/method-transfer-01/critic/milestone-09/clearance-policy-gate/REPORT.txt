@@ -1,0 +1,110 @@
+C5 INDEPENDENT MATHEMATICAL PREFLIGHT
+18 October 2026. This is a statement gate, not a new Lean proof acceptance.
+
+Verdict: ready for the bounded builder milestone, with the obligations below.
+The interval construction, continuous guard certificate, margins and fair
+nominal comparison check exactly. I found no mathematical obstruction to
+the proposed proof chain. No dynamic safety theorem or detector result is
+accepted by this preflight.
+
+Inputs
+Copied CARD.txt SHA256:
+3882e08b577747cc2f52102cd551671e6ee6215acc55a531b06e0c56205c89b2
+check.py: 79da23e2133b4df3773e518d7557e08630eefabc828d9cb8cd6035e7abd4665d
+result.json: 33061541e2aafc3a514125190a0bf288a99098cdbc350ddd9bf5901cf1539952
+The copied C3 AdaptiveAdmission and accepted C4 DelayedEntry sources retain
+their accepted hashes. Root's check runs only in root-replay/ and reproduces
+the result byte-for-byte. independent_check.py does not import root's code.
+It reconstructs the affine certificate and all arithmetic independently.
+
+Interval formula
+For fixed radius k, each coordinate imposes
+  ai+Ei-wi*k <= c <= ai-Ei+wi*k.
+The intersection is nonempty exactly when every lower endpoint is at most
+every upper endpoint. Since wi+wj>0, these conditions are precisely
+  k >= (ai-aj+Ei+Ej)/(wi+wj), for all ordered pairs i,j.
+Including the target floor gives the stated K. This proves feasibility and
+the least radius for this specified coordinate-interval enclosure. Choosing
+c as the maximum lower endpoint gives the least allowed center at that K.
+All pairs include i=j. The conclusion is |ai-c|+Ei<=wi*K, not an assumption.
+This box can overapproximate correlated physical errors; optimality for this
+box does not mean a physically optimal controller or least trajectory tube.
+
+Continuous guard certificate
+K is the maximum of ten affine forms in (mv,ma): the target and nine pair
+forms. Since w0-wi>=0, U=c+w0*K is the maximum of 30 affine forms.
+Each affine form at an interior rectangle point is a convex combination of
+its four corner values. Thus checking 120 rational values proves the bound
+over the entire continuous rectangle, not only at sampled readings.
+mx enters U with coefficient one and cancels from K. Therefore mx<=.143
+suffices, with no lower mx for this forward-only ceiling.
+
+Exact results agree with root:
+  max K = 2407079/50250000;
+  R-1.02*max K = 11163689/1675000000 > 0;
+  max U = 3013722449/20100000000;
+  .15-max U = 1277551/20100000000 m.
+The last margin is about 63.56 micrometres. Keep the exact margin; it is not
+a tolerance allowance for unspecified errors. The maxima of K and U occur
+at different corners. The affine expansion preserves that dependence.
+
+Pending dynamics and noncircular order
+The coarser |mv|<=.02, |ma|<=1.27 and original sensor box give |v0|<=.03
+and |a0|<=1.32. The pending target [-1.22,-1.20] stays within that acceleration
+interval. A one-sided barrier can therefore prove A=1.32 before dispatch,
+then V=.03066 and J=30.48. Integrating these bounds gives the stated e and E.
+These estimates precede and do not require the new center or a hold invariant.
+
+With the center chosen once, its derivative is zero. The pending feedback
+derivative is -8v-6a-r*(-1.21+d-a)/2. It is multiaffine in v,a,r,d on the
+stated rectangle. Its exact range is [11967/6250,48533/6250], within [-8,8],
+with upper margin 1467/6250. The interval feasibility then yields the
+startup weighted box; 1.02K<R yields startup containment in the old cube.
+
+C3 hard-codes its older center and guard. Its theorem cannot simply be
+invoked unchanged. The builder must generalize/reconstruct the prefix proof
+for the new center and startup estimates. Keep the OLD cube radius R distinct
+from the policy radius K. Use the R cube/prefix argument to derive W=.111
+over the actual mixed history. Since .111>2*.045, the unweighted 2K budget
+cannot be used directly at the smaller policy radius. Only the accepted
+weighted-face theorem justifies the later smaller box.
+
+After deriving the old cube and W, adapt C4's weighted barrier to
+max(target,K-drift*(t-D)). At/before D, exclude contact with the derived
+STARTUP weighted box, not merely the old R cube. The epsilon inflation makes
+that exclusion strict even at equality. Only for t>D may the incoming actual
+command be rewritten as digital feedback. Retain original timestamps, both
+command sides, clipping, sensor error and target error. Include the incoming
+plateau derivative, dispatches and final H. Require 0<=D<=H explicitly for
+clearance; require H>=D+(K-target)/drift only for the entry conclusion.
+This ordering has no apparent circularity. It still must be proved in Lean.
+
+Fair comparison and changed policy
+At the SAME nominal reading (.14,-.01,-1.17), the proposal gives K=.045,
+c=.09573033 and U=.14163033. With the SAME E enclosure and variable-radius
+analysis, the old center .1009375 needs K=.04948533 and U=.1514125366.
+This is the fair comparison, not just the old R tube. Neither failed upper
+bound proves an unsafe physical trajectory. The new nominal command is
+.29084264, instead of .3325; the reference policy changes the plant input.
+The nominal case is already inside the target enclosure during startup;
+its proposed entry deadline is D, not a demonstrated outside-to-inside motion.
+
+Guard and acceptance obligations
+The guard is changed: mx<=.143, |mv|<=.01122, ma in [-1.27,-.2]. It is not
+the old C3 guard with an improved conclusion. Widening mv to .02 at mx=.143,
+ma=-1.27 gives U=.15213033 and defeats this tube certificate. This negative
+is a bound failure, not a realized unsafe trajectory. Keep earlier failures.
+
+C4's equilibrium reading has ma=0 and fails the new guard. Do not reuse it
+as nonvacuity. Require the planned positive-delay nominal short-horizon
+witness with the new center, guard, actual pending dynamics and original
+stamp. It need not prove arbitrary-data or long-horizon existence. A general
+detector, C1 rate-floor-only composition, ma<=-.2 recovery condition and
+hybrid timing remain separate open obligations. No hardware or novelty claim
+is supported. The reference-governor attribution is root's source reading;
+this gate checks the elementary interval reconstruction, not that survey.
+
+Replay
+Run root-replay/check.py to reproduce its separate result, then
+independent_check.py to print independent-result.json's arithmetic.
+No Lean bridge was built. This gate accepts assignment readiness only.

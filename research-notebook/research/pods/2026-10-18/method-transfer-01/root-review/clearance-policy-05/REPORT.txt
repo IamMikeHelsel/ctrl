@@ -1,0 +1,92 @@
+C5 INDEPENDENT SOURCE AND MATHEMATICAL REVIEW
+18 October 2026, root review of the frozen worker implementation.
+
+Verdict: accept the stated finite-horizon, supplied-execution theorem.
+The exact new guard and sensor/clock contract imply x(t) <=
+3013722449/20100000000 m for every real t in [0,H]. This includes the
+pending-command interval, dispatch boundaries and the final endpoint.
+The ceiling is about149.93644mm. Its margin below150mm is about63.56um.
+No allowance for further unmodelled error is included.
+
+Independence and replay
+Root proposed the earlier arithmetic policy. The independent critic accepted
+that statement gate before the controls worker built this Lean proof. Root
+now inspected all four new source modules and the imported face lemma,
+then rebuilt the complete nine-module local closure from immutable copies.
+The policy gate remains separately preserved; this review is acceptance of
+the worker implementation and its stated scope, not self-acceptance by its
+builder. No compiled local proof artifact was reused.
+
+All28 replay steps passed: nine fresh local builds, the axiom audit,
+nine separate leanchecker runs and nine expected mathematical rejections.
+All144 public theorem closures have only propext, Classical.choice and
+Quot.sound. External package artifacts at the pinned mathlib revision are
+reused; the complete package tree was not rebuilt. Lean4.35 and the
+checker, toolchain and package-manifest hashes match the earlier C1 pin.
+See replay/verification.json and its command/log hashes. Original builder
+files and copied evidence matched all83 manifest entries before and after.
+REPLAY-CHANGES.txt records environment/preservation-path changes only.
+
+Statement and proof inspection
+The main endpoint takes the actual Execution, IsSchedule, first reading,
+new measured guard and 0<=D<=H withD<=.0005. It does not assume the
+invariant, an aggregate mismatch, a startup box or reference feasibility.
+The guard is mx<=.143, |mv|<=.01122 and ma in[-1.27,-.2]. The physical
+response rate is[8,12], target error<=.01, and sensor errors are
+(.001,.01,.05). Total sample age<=.001 includes pending time. The pending
+command is-1.21, and later feedback is clipped to[-2,2].
+
+The proof derives the true initial sensor box. Pending dynamics bound
+acceleration, speed and jerk, and integration gives the three uncertainty
+intervals. The policy formula proves that their weighted intersection is
+nonempty. Its startup weighted box fits inside the oldR=.055525 cube.
+The proof establishes that larger cube by a finite-prefix barrier, obtains
+a whole-history feedback-slope bound, and then derives residualW=.111.
+Only after that step does the smaller weighted shrinking box follow.
+Thus it avoids the false small-radius budget .111<=2*.045.
+
+Contact before or atD is excluded by the derived startup weighted box.
+For contact strictly afterD, the incoming command is digital. The left
+command atD is still pending-1.21. The plateau kink uses its incoming
+one-sided derivative. Continuity closes the finite-horizon endpoints.
+The policy's full continuous-guard ceiling is a maximum of finite affine
+forms; no sampled corner premise replaces that universal Lean statement.
+
+Additional independent arithmetic
+independent_arithmetic.py imports no builder code. It reconstructs the
+startup interval errors and120 affine corner evaluations, then checks
+all96 weighted-face extremes and their nonpositive coefficients inK.
+It checks the pending-slope extrema, new nominal command and fair old-center
+comparison. These exact rational checks supplement source inspection and
+kernel replay. They are not simulation evidence or a hardware claim.
+
+Fairness and practical limit
+At(.14,-.01,-1.17), the new center is.09573033m: a44.26967mm retreat from
+the measured position. Its tube ceiling is.14163033m. The old center,
+using the SAME errors and weights and its own required radius, has ceiling
+.1514125366m. This compares certificates for different physical targets.
+Failure of the old certificate does not show that its trajectory is unsafe.
+The new guard is narrower. This result does not establish useful precision
+standstill, tracking of the original desired position or a lower travel bound.
+The late speed and acceleration bounds are still loose.
+
+Failure controls and nonvacuity
+All nine rejection logs were inspected. They fail on the intended arithmetic
+or contract step, not a missing import or syntax error. The widened-speed
+case has an independent exact bad tube value. The5ms-age mutation breaks
+the age estimate and is a proof-dependency test; it is not a realized unsafe
+trajectory. The other failures preserve the old-reference bound, old
+ma=0 guard, wrong left command, renewed age, wider position and false larger
+margin. Failed proofs alone are not universal counterexamples.
+The positive-delay witness has a1ms horizon with two exact exponential
+phases and unchanged physical state. Its acceleration changes during the
+.5ms delay. Its nominal radius starts at the target floor; it does not show
+outside-to-inside entry, arbitrary-data existence or long-term continuation.
+
+Boundary and next test
+No detector reachability, full recovery-to-hold execution, general existence,
+robot/hardware result or novelty claim is accepted. A reference governor is
+established prior art. The next justified test is the separately reviewed C6
+continued-braking guard-reachability statement, with explicit stronger
+initial/command bounds and a finite .5ms grid. The actual hybrid switch and
+post-switch existence remain separate obligations.

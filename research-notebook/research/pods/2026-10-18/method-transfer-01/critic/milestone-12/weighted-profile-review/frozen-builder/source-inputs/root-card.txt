@@ -1,0 +1,79 @@
+E8 CANDIDATE: ACTUAL GRAPH PROFILES FOR THE ACCEPTED AFFINE CRITERION
+Root proposal. Not assigned; reconsider after E7 review.
+
+Purpose
+E5 has a written conditional graph proof and exact scalar cover, but no new
+Lean graph endpoint. The most useful formal step is a graph-to-profile lemma.
+It must construct an actual feasible profile and derive its graph moments.
+Another scalar inequality wrapper would not close this gap.
+
+Source objects
+Use the pinned attributed RatProbabilityWeight, weightedDegree,
+weightedSecondDegree, edgeMass and weightedObjective API rebuilt in E3.
+Keep upstream sources byte-for-byte; put new lemmas in a separate module.
+For a finite triangle-free H with positive probability weights W, write
+delta(v)=weightedDegree, s(v)=weightedSecondDegree, mu=edgeMass.
+The required identities are E[delta]=2mu and E[s]=E[delta^2]. They must follow
+from the actual symmetric adjacency sums, not be supplied as assumptions.
+
+Proposed theorem, normalized on the larger cut side
+Given rational 0<alpha<1, target T and an affine slope L, put b=1-alpha.
+Define
+ phi_low(d)=mu-(T/alpha^2)*(1-d)^2-d^2;
+ phi_high(d)=d*(mu-T)/b-d^2.
+If phi_low(d)<=L*(d-2mu) on0<=d<=b and phi_high(d)<=L*(d-2mu)
+onb<d<1, prove existence of a unit profile pi with weightedMean W pi=alpha
+and weightedObjective H W 0 pi<=T. The explicit pointwise inequalities are
+arithmetic certificate inputs. They are not assumed graph feasibility,
+assumed profile cost, or assumed moment identities. State this boundary.
+
+Actual candidates and graph obligations
+For v with delta<=b, set pi=0 on N(v) and alpha/(1-delta) elsewhere.
+For delta>b, set pi=1-b/delta on N(v) and1 elsewhere.
+Prove capacities, exact mean and exact objective for these profiles. Their
+costs are alpha^2*(mu-s)/(1-delta)^2 and mu-b*s/delta, respectively.
+Triangle-freeness makes N(v) independent. Positivity of denominators follows
+from alpha>0, b>0, and weightedDegree<1. Include zero degree and d=b.
+If every candidate cost exceeds T, each phi(delta)>s-delta^2. Averaging gives
+E[phi]>0, which contradicts the affine upper bound and the two exact moment
+identities. Positive weights and a nonempty probability space are essential
+for the strict average step.
+
+Connection to E5, still a separate obligation
+For large-side mass y, alpha=1/(2y), j=y^2*mu, and T=R/y^2.
+Extending pi by zero on the smaller cut side gives a fractional half.
+The explicit two-quadratic complete-square criterion must instantiate the
+pointwise inequalities. Then connect exact cover, BCL, rounding and blowup.
+Do not call the weighted lemma the final .0251 graph endpoint.
+
+Review gate
+One45-60minute milestone if selected. Fresh-source build, theorem statement
+and axiom audit, separate kernel replay, preserved source pins, and semantic
+negatives for triangle-free input, profile mean and normalization. A decisive
+small graph should check the branch boundary and zero-degree cases. Derive
+the real adjacency identities in Lean; no sorry or new axioms.
+Stop with the precise missing API or proof obligation if the bridge will not
+fit this milestone. Do not duplicate unrelated upstream development.
+
+Nonvacuity preflight
+For K2 with weights(1/2,1/2), take alpha=4/5,mu=1/4,T=3/20,L=-1/2.
+Then b=1/5. The high-branch difference phi-L*(d-2mu) is -(d-1/2)^2.
+The low difference is(-15+62d-79d^2)/64. It increases on[0,1/5] and
+has maximum-9/100 there. The actual high-branch profile(1,3/5) has mean
+4/5 and edge objective3/20. Thus the intended certificate has a simple
+nonzero example. Check these facts independently in the formal milestone.
+
+Draft correction before assignment
+The first draft accidentally reversed the strict inequality after assuming
+that every profile cost exceeds T. It was corrected to phi>s-delta^2 before
+dispatch or acceptance. The derivation must be audited from the cost formula;
+the corrected contradiction is E[phi]>0 versus the affine bound E[phi]<=0.
+
+Independent statement-preflight clarifications
+Use rational T and L in the existing rational API, or state every cast.
+For the E5 object map, L_normalized=L_ambient/y, since ambient phi is
+ y^2*normalized_phi and ambient(d-mean)=y*(normalized_d-2mu).
+The balanced y=1/2 case gives alpha=1 and is outside this lemma. Keep the
+separate completion/uniform endpoint from E5; do not force it through a
+positive-b denominator. Symmetric adjacency supplies the moment identity;
+triangle-freeness supplies the candidate objective formulas.

@@ -1,0 +1,13 @@
+--- failed CriticControls.lean
++++ repaired CriticControls.lean
+@@ -22,8 +22,9 @@
+     weightedMean unequal (fun v => weightedDegree edge unequal v ^ 2) = 2 / 9 ∧
+     (weightedMean unequal (weightedDegree edge unequal)) ^ 2 = 16 / 81 := by
+   rw [mean_second_degree]
++  simp only [weightedMean]
+   simp_rw [unequal_degrees]
+-  norm_num [weightedMean, unequal, Fin.sum_univ_succ]
++  norm_num [unequal, Fin.sum_univ_succ]
+ 
+ theorem unequal_candidates :
+     IsUnitProfile (lowProfile edge unequal (2 / 3) 1) ∧

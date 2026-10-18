@@ -1,0 +1,69 @@
+NEXT POSSIBLE BRIDGE: SENSOR-ROBUST ENTRY FROM CONTINUED BRAKING
+Root derivation,18 October2026. Not assigned or proved in Lean.
+Reconsider only after C5 independent acceptance. This is a proposed test,
+not a claim that the existing C1 already supplies C5's guard.
+
+Exact current obstruction
+C1 permits initial speed zero, unbounded negative initial acceleration and
+arbitrarily strong negative effective braking. Its rate has a lower bound
+but no ceiling. C5 needs a measured acceleration range and a rate ceiling.
+Therefore C1-to-C5 cannot be an unconditional corollary. An initial state
+with zero speed and positive acceleration already defeats the proposed
+negative-acceleration guard at the first zero. Preserve C1's broader theorem.
+
+A declared common physical contract worth testing
+Add explicit bounds, not hidden premises: initial speed in[.39,.41],
+initial acceleration in[-1.22,.1], initial position<=.001;
+loss duration .05, nonnegative continuous response rate and effective
+command in[-1.22,.1]; after recovery command in[-1.22,-1.2] and rate in[8,12].
+This is a bounded subset of C1. Constant actuator command -1.21 with target
+error at most .01 supplies the braking command interval. Use a supplied
+continued braking execution through at least .530 seconds for this test.
+No all-data execution-existence theorem is implicit.
+
+Candidate proof with exact coarse constants
+The lower acceleration barrier -1.22 follows from the physical ODE and
+nonnegative rate, since the command and initial acceleration are no lower.
+Thus v(t)>=.39-1.22t, so any first zero tau satisfies tau>=39/122>.1.
+C1 gives a first zero by .529 and x(t)<=.142 through that zero.
+The recovery comparison gives
+ a(t)<=-1.2+1.3*exp(-8*(t-.05)).
+For t>=.1, exp(-8*(t-.05))<=exp(-.4)<=1/(1+.4)=5/7.
+Hence a(t)<=-19/70<-.25 for t>=.1 while braking persists.
+For any sample sigma in[tau,tau+.001], a stays in[-1.22,-19/70],
+ v(sigma) in[-.00122,0], and x(sigma)<=x(tau)<=.142.
+Every reading with errors(.001,.01,.05) then satisfies
+ mx<=.143; |mv|<=.01122; ma in[-1.27,-31/140],
+which lies inside C5's proposed guard ma in[-1.27,-.2].
+These guard inequalities are robust to every error in the box.
+
+Sampling, earliest hit and actual handoff remain separate steps
+An ordered sample sequence with a maximum1ms gap must supply such sigma.
+A finite first guard-hit index would occur no later, but can occur before
+physical zero. The full-time braking position envelope, not merely a bound
+ending at the first zero, must protect that earlier prefix and pending delay.
+At guard reading, select C5's center and keep -1.21 pending until its dispatch.
+If the gap plus arrival latency matters, preserve the full original age;
+translation to a local time origin is allowed only with every timestamp
+translated together. No stale sample is made fresh by this coordinate change.
+A real hybrid execution must share the same prefix and state at handoff.
+A continued-braking counterfactual is not itself the switched robot execution.
+Do not put the existence of a detector hit or a correct switch into a hidden
+premise and label the result liveness. The proposed first test can isolate
+continued-braking guard reachability before that hybrid construction.
+
+Falsifiers and baseline
+Remove the lower acceleration/command bounds: |a| and sensor guard fail.
+Remove positive initial speed: the zero can occur before negative acceleration.
+Remove the sample-gap bound: a qualifying near-zero window can be missed.
+Keep C5's exact sensor and startup budgets. A larger guard must be rechecked.
+Compare with the current conditional C3/C4/C5 admission statements: the new
+information is a guaranteed guard reading for a declared braking family,
+not a smaller decimal or a universal stopping theorem. No hardware result.
+
+Potential45-60minute milestone after C5 review
+Derive lower acceleration and zero-time bounds, prove the robust measured
+guard at every sample within1ms after the first zero, and prove existence of
+such a sample from a concrete schedule contract. State the added assumptions
+visibly. Independent statement and copied-source review must precede any
+hybrid-composition claim. Stop if the temporal/existence interface is unclear.

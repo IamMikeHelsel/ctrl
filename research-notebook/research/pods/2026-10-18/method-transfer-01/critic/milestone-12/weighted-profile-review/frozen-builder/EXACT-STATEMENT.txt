@@ -1,0 +1,56 @@
+E8: RATIONAL WEIGHTED GRAPH TO ACTUAL PROFILE
+
+The Lean endpoint is Erdos128.ProfileBridge.exists_affine_profile in
+WeightedProfiles.lean. Audit.lean prints its full elaborated statement and
+the definitions below. All numbers and profile values are rational.
+
+Let V be a finite type and H a simple graph on V. Let W assign strictly
+positive weights w_v with sum_v w_v=1. Assume H is triangle-free.
+Define from the graph, rather than from input moment data,
+  d_v = sum_{u adjacent v} w_u,
+  s_v = sum_{u adjacent v} w_u*d_u,
+  mu  = (1/2)*sum_v w_v*d_v,
+  cost(pi) = (1/2)*sum_v sum_{u adjacent v} w_v*w_u*pi_v*pi_u.
+Thus each unordered edge is counted once. The linear potential is zero.
+
+Let alpha,T,L be rational and assume 0<alpha<1. Set b=1-alpha.
+The only scalar certificate assumptions are
+  mu-(T/alpha^2)*(1-d)^2-d^2 <= L*(d-2*mu), for every 0<=d<=b;
+  d*(mu-T)/b-d^2 <= L*(d-2*mu), for every b<d<1.
+Then there is a rational profile pi with
+  0<=pi_v<=1 for every v,
+  sum_v w_v*pi_v=alpha,
+  cost(pi)<=T.
+There is no hidden regularity, cut-optimality, profile-cost, moment-identity,
+or graph-realizability assumption. T and L have no additional sign premise.
+
+Derived graph facts
+  E[d]=2*mu and E[s]=E[d^2].
+The second identity follows by swapping symmetric adjacent sums and needs
+no triangle-free premise. Looplessness and positive weights give 0<=d_v<1.
+The normalization implies that V is nonempty.
+
+Actual profiles and exact costs
+For each root v, if d_v<=b, use pi=0 on N(v) and alpha/(1-d_v) elsewhere.
+Its mean is alpha and its cost is alpha^2*(mu-s_v)/(1-d_v)^2.
+If d_v>b, use pi=1-b/d_v on N(v) and 1 elsewhere. Its mean is alpha and
+its cost is mu-b*s_v/d_v. The proof derives both costs by expanding the
+actual edge sum. Triangle-freeness makes N(v) independent.
+
+The low branch includes d_v=0 and d_v=b. Its denominator is positive.
+The high branch has d_v>b>0. At d_v=b, both profile definitions agree.
+The proof uses the low branch at equality; it does not divide by zero.
+
+Contradiction argument
+If every candidate cost exceeds T, each root satisfies
+  s_v-d_v^2 < L*(d_v-2*mu).
+Positive weighted summation gives a strict inequality. Both sums equal
+zero by the two graph moment identities. This proves the endpoint.
+The source proves capacities, exact means, exact costs and the averaging
+step; none of these are replaced by premises.
+
+Scope
+This is a graph-derived rational profile of prescribed mass alpha. It is
+not an integral half theorem. Alpha=0 and alpha=1 are outside this statement.
+No BCL input or cubic-saving inequality is needed by this lemma. The full
+.0251 graph endpoint, cut-side normalization and rounding remain separate.

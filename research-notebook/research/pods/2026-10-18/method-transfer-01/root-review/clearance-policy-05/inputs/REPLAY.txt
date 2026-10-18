@@ -1,0 +1,53 @@
+C5 REPLAY AND NEGATIVE-CONTROL SCOPE
+
+Complete local closure, in dependency order:
+DigitalHold, WeightedEntry, ClearancePolicy, ClearanceAdmission,
+AdaptiveAdmission, DelayedEntry, ClearanceEntry, AdaptiveWitness,
+ClearanceWitness.
+
+verification.json records source and executable hashes, import graph, exact
+commands, toolchain/package pins, axiom closures, exit codes and log hashes.
+The verifier copies every source into an empty fresh-replay directory.
+LEAN_PATH includes that directory and pinned external package products only;
+no cached local project proof is used. Each of the nine modules receives a
+separate leanchecker replay. Every declared theorem closure is audited
+against only propext, Classical.choice and Quot.sound.
+
+For independent review, copy the frozen sources to a reviewer-owned scratch
+directory, preserve the pins and package paths, build in the recorded order,
+recreate the audit, run each kernel check and replay the negative files.
+Do not rerun the verifier over this frozen packet. It refuses to overwrite
+its recorded fresh-replay directory. arithmetic.py can be copied and run in
+reviewer scratch to reproduce arithmetic.json; it uses exact Fractions only.
+
+Nine negative controls
+1. WiderVelocityGuard changes the measured-speed guard from .01122 to .02.
+   The unchanged full-guard policy certificate is false. The accepted
+   wider_speed_fails theorem gives its exact .15213033 tube counterexample.
+   This rejects a certificate, not an actual sampled trajectory.
+2. FiveMillisecondAge changes total age .001 to .005 in the generalized
+   admission source. The retained-history and expiry proof rejects it.
+   This does not prove every possible controller at .005 is impossible.
+3. FalseSmallCubeBudget asserts .111<=2*.045. Exact arithmetic rejects it;
+   this is why the old R cube must precede the weighted proof.
+4. FalseOldReferenceClearance asserts the fair old-center interval tube is
+   <=.15. Its exact value .1514125366 rejects the assertion. This does not
+   establish a physical crossing of the ceiling.
+5. FalseOldEquilibriumGuard asserts that (0,0,0) meets the new guard. Its
+   acceleration zero fails the required upper bound -.2. The old C4 witness
+   cannot supply this milestone's nonvacuity.
+6. FalseDigitalLeftAtDispatch asserts the new digital command on the LEFT
+   at D. The genuine nominal witness still has pending command -1.21 there.
+7. FalseRenewedAge asserts that a stamp-zero reading at original time .002
+   has age<=.001. Exact arithmetic rejects renewal at dispatch. The actual
+   first-cell no-extra-time theorem is retained and audited.
+8. FalseWiderPositionClearance uses mx=.144 with the worst forward corner
+   and asserts its policy tube<=.15. Exact rational policy evaluation rejects
+   it. The explicit absolute-position guard is material.
+9. FalseLargerMargin asserts a .0001 m clearance margin for the guard-wide
+   maximum. The proved margin is only 1277551/20100000000 m.
+
+Missing modules, unknown identifiers and missing files do not count as
+negative evidence. Failed development sources/logs remain under attempts/.
+No remote job, paid API, new package, source download or Git operation was
+used. Builder verification is distinct from independent acceptance.

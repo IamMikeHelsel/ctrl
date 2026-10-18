@@ -1,0 +1,50 @@
+E8 SOURCE AND TRUST BOUNDARY
+
+Attributed upstream repository:
+  https://github.com/aimir/erdos-128-sparse-halves
+Revision: ba85f319ebb33ec2194ef4c2929a12916329e1e7
+Source modules: Erdos128/WeightedGraph.lean, CubicNeighborhood.lean,
+OneStepSaving.lean. All three are copied byte-for-byte from the E3 input.
+Their hashes, imports and preserved package pins are recorded in INPUTS.json.
+
+The graph API, symmetric sum lemma and neighborhood endpoint construction
+are existing work. The latter is the negative feasible endpoint of the
+upstream onestep construction, as recorded in E1/comparison-02. The E8
+bridge exposes exact profile costs and graph moments, then proves the
+accepted affine criterion. This packet makes no novelty claim for the
+construction, the averaging method or the numerical constants.
+
+Import chain:
+  Mathlib -> WeightedGraph -> CubicNeighborhood -> OneStepSaving
+  -> WeightedProfiles -> ProfileControls -> Audit.
+WeightedProfiles uses the existing graph definitions, degree bounds,
+two_mul_edgeMass and weighted_neighbor_sum_swap. Its endpoint does not
+invoke exists_cubic_neighborhood or exists_oneStepSaving. Those sources
+remain in the declared import closure and are rebuilt and audited too.
+The K3 lower-bound proof is reused from the E3 semantic control, with its
+exact minimizer added here. This reuse is also marked in the Lean source.
+
+Upstream declared Lean 4.30.0 and mathlib
+  c5ea00351c28e24afc9f0f84379aa41082b1188f.
+This run uses the already installed Lean 4.35.0 and existing mathlib pin
+  56a005855ea17e0b0958f73ec801ae140b0a1679.
+No upstream source edits or compatibility patch were needed. This is an
+unchanged-source build under the current pin, not a replay of Lean 4.30.
+Both sets of pins are preserved separately. No package was installed or
+modified. Existing cached mathlib dependency products are used; this is
+not a rebuild of the complete mathlib dependency tree.
+
+replay.py copies all five local source modules to a new empty directory,
+then builds them and Audit. Its LEAN_PATH includes only that fresh copy
+and the recorded package dependency directories. It does not import E8
+development products or prior research modules. Each of the six resulting
+modules is separately checked with leanchecker. All public theorem axiom
+closures are printed and checked against propext, Classical.choice and
+Quot.sound. This does not replace independent statement review.
+
+There are no sorry, admit, new axiom, native_decide, trustCompiler or unsafe
+proof shortcuts in the accepted source set. Earlier failed source attempts
+and their compiler diagnostics remain in their own attempt directories.
+Build binaries are excluded from the frozen artifact manifest; their hashes
+are retained in the successful verification record. Source and log files
+remain preserved. Root owns repository sync, commits and pushes.

@@ -1,0 +1,123 @@
+POSSIBLE C7: CONSTRUCT A CHANGING-RESPONSE HOLD EXECUTION
+18 October 2026. Root proposal only. Not assigned or independently accepted.
+C6 acceptance and an independent statement gate must come first.
+
+Question
+C5 proves safety for a supplied execution. Its explicit witness lasts only
+1 ms. Can we construct a whole finite execution for a useful class of varying
+response, errors and measured samples, instead of assuming continuation?
+This is a missing interface test, not a new controls-method claim.
+
+Source mechanism and object map
+C5's ClearanceWitness uses exact constant-command exponential phases and
+one-sided join lemmas from AdaptiveWitness. Replace its two fixed phases by
+a finite recurrence. Each command depends on the preceding physical sample.
+A common one-step delay makes the recurrence causal and avoids an implicit
+algebraic equation. C5 supplies the resulting safety theorem after the
+constructed functions satisfy its Execution and IsSchedule structures.
+C6 may later supply the actual braking prefix and initial reading.
+
+Deliberately restricted model
+Let h=D=1/2000 seconds. Retain the common sample/dispatch clock. Begin with
+a supplied actual braking prefix on [0,h], continuous and satisfying the
+pending -1.21 command ODE, initial sensor box and response/error bounds.
+Do not assume any invariant or final box for this prefix. The bounds must
+follow as in C5. This prefix can be a restriction of the C6 braking motion.
+
+For each subsequent cell [n*h,(n+1)*h], n>=1, choose a constant response
+rate r_n in [8,12] and a constant target error delta_n in [-.01,.01].
+Allow their values to change at every cell boundary. Choose any bounded
+sensor-error sequence e_n with component bounds (.001,.01,.05).
+The initial reading m is the actual supplied reading, with e_0=m-f(0).
+Later readings are m_n=f(n*h)+e_n. Use only those fresh indexed samples.
+The command on cell n is clip(command(c,m_(n-1))). The first cell retains
+the actual pending braking prefix. No pre-start queued reading is relabeled.
+
+This is a piecewise-constant response subclass of the C5 execution contract.
+It is not existence for every arbitrary bounded or discontinuous rate signal.
+The first braking prefix need not have a constant rate. Its actual state at
+h initializes the digital recurrence. No physical state is reset.
+
+Exact phase formula to verify
+For a fixed command u, target q=u+delta, rate r>0, initial state (x,v,a)
+and elapsed time s>=0, write E=exp(-r*s). The state is
+  a(s)=q+(a-q)*E
+  v(s)=v+q*s+(a-q)*(1-E)/r
+  x(s)=x+v*s+q*s^2/2+(a-q)*(s/r-(1-E)/r^2).
+Prove its initial value and derivative. Then recursively obtain the next
+cell state by evaluating at h. A cell's input uses m_(n-1), already known
+before that cell begins. Initial sample m_0 drives the cell starting at h.
+
+Proposed finite endpoint
+For every natural N>=2, bounded rate/error sequences and valid initial
+braking prefix, construct f, stamps, readings and one-sided rate/error
+functions through H=N*h. Prove actual Execution and IsSchedule, first
+reading m, continuity and both command sides at every boundary. Total
+incoming age is <=2*h=.001. Invoke the unchanged C5 theorem to conclude
+its forward ceiling on the full [0,H]. Preserve the narrower guard.
+This would prove arbitrary finite continuation in the stated subclass;
+it would not prove convergence to rest or the hybrid detector's prefix.
+
+Falsifiers and baseline
+- n instead of n-1 uses an unavailable sample and changes the delay.
+- At a dispatch, the incoming derivative uses the old command; the outgoing
+  derivative uses the new command. Check a nonzero command jump.
+- A sample period of 1 ms with this .5 ms delay exceeds the 1 ms age limit.
+- Replacing the actual state at h by the initial state breaks continuity.
+- A source-defined rate jump within [8,12] and nonzero bounded sensor noise
+  should produce a nonconstant example with at least three digital cells.
+The matched baseline is the same finite recursion with fixed rate and zero
+noise. Compare the constructed contracts, not sampled trajectories alone.
+
+Full hybrid boundary
+A braking trajectory continued past a hypothetical switch is counterfactual.
+A later composition must choose the first qualifying sample, retain its
+actual braking prefix through dispatch, and attach this constructed hold.
+It must prove agreement on that prefix and restrict the original timestamp
+consistently. Existence of a guard sample on a different execution is not
+sufficient. Nor is a general assumption that a desired hybrid execution
+exists. Keep these as named obligations if they do not fit one milestone.
+
+Dispatch gate
+Do not assign before C6 actual proof acceptance and independent mathematical
+review of this recurrence, interfaces and boundary cases. Allow one 45-60
+minute milestone only if it fits the round deadline and still resolves a
+useful gap. Do not start after 21:00. If a required source interface or
+existence step remains unresolved, freeze the precise obstruction.
+
+Possible composition repair to review, not an accepted theorem
+A liveness proof for a supplied hybrid execution need not equate it to a
+separate counterfactual after the switch. Suppose no sample up to the
+finite deadline meets the guard. The controller's stated policy then keeps
+braking throughout that interval. Its actual trajectory therefore satisfies
+C6's continued-braking contract. C6 produces a guard reading, a contradiction.
+Thus some actual sample meets the guard. A finite least-index argument gives
+the first one. This needs a formal policy premise linking absence of prior
+guard readings to the actual pending command, not a presumed guard hit.
+
+For any qualifying sample sigma, the sensor box gives |v(sigma)|<=.02122.
+The derived braking lower bound gives v(sigma)>=.39-1.22*sigma. Hence
+sigma> .05; the handoff cannot occur in the loss-response phase. This is
+needed before transporting the restored response-rate and command bounds.
+At a first hit after the first zero, the late negative-acceleration argument
+bounds the remaining pre-dispatch motion. At an earlier hit, C1 bounds its
+braking prefix through the first zero, with C5 covering the pending interval.
+
+After the first hit, translate ALL times by sigma and use the actual shared
+state. The holding reference is computed from that sample alone. This may
+supply a safety/liveness theorem for a supplied policy execution without an
+unproved uniqueness claim. It still does not prove existence of that global
+hybrid execution. The finite recurrence above is a separate constructive
+route for a restricted response subclass. Have the critic check both scope
+and causality before turning either sketch into a builder assignment.
+
+Correction to the preceding early-hit sentence
+Do not apply a theorem that needs braking through a future first zero when
+the actual controller has already switched. The correct required input is
+a prefix-valid position comparison from C1/C6, proved only from braking
+up to the candidate sample time. It must cover every such prefix before
+the finite detection deadline. If the existing endpoint supplies only a
+first-zero theorem with a longer execution premise, extract and verify its
+prefix comparison first. The earlier sentence is retained as a rejected
+composition shortcut. No actual post-switch motion may be borrowed from
+the counterfactual braking execution.

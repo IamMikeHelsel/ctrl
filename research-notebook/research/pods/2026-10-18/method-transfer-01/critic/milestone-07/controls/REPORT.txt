@@ -1,0 +1,140 @@
+INDEPENDENT C4 REVIEW — DELAYED ADMISSION TO FINITE ENTRY
+18 October 2026. Critic: digital_hold_critic_01.
+
+Verdict
+Accept the actual supplied-execution theorem at its stated finite-horizon
+scope. C4 composes the accepted C3 measured admission with a weighted entry
+bound on the original clock. No new initial cube, endpoint cube, invariant,
+feedback mismatch bound or fresh reading is a premise. This is a proof
+interface result. It is not general execution existence, detector liveness,
+precision standstill, clearance certification, implementation or hardware
+acceptance. No publication or novelty verdict follows.
+
+Frozen inputs
+Builder manifest SHA256:
+529bc733f386713d74eb2bfe039b945b5a339b41f9c5afffeb43bf997ad9e5ea
+All 78 entries matched before copying and after review. Main new sources:
+DelayedEntry.lean
+183d9bb2ea963120b29b4eae17b9ac335b28a615dcf254dc3c841ab7223aa4c5
+DelayedWitness.lean
+076417fcb96106f46297c8277a6e8f1632b7e693d4056d795dcd635999a70f43
+The four older source inputs match the accepted DigitalHold, C3 admission,
+C2 weighted entry and C3 witness sources exactly. I also checked all 326
+entries in the five named prior frozen packets. See preservation-check.json.
+
+Exact accepted contract
+delayed_sampled_finite_entry retains C3 Execution and IsSchedule, actual
+measurement m=q.measurement 0, guard |mv|<=.02 and |ma|<=1.25, and center
+c=mx+mv/4+ma/32 chosen once. It requires 0<=D<=.0005 seconds and
+D+7157/1200<=H. Rate stays in [8,12], target error in [-.01,.01],
+sensor errors in the original box and total reading age at most .001.
+The actual command is -1.21 during startup and on the left at D; it is
+clipped held feedback on the right at D. The physical state is continuous.
+The same schedule, left/right ODE and original timestamps persist through H.
+
+For coordinates z=(x-c,x-c+v/4,x-c+v/2+a/16), the full old cube
+|zi|<=.055525 holds on [0,H]. On [D,H], the weighted radius obeys
+rho(z(t))<=max(.045,.055525-(3/1700)(t-D)), with weights (1.02,1.01,1).
+From D+7157/1200 through H, rho<=.045. Therefore |x-c|<=.0459 m,
+|v|<=.3654 m/s and |a|<=2.9088 m/s^2. D, all later dispatches,
+the plateau kink and H are included. At maximum D, the deadline is
+8947/1500 seconds, about 5.964667 seconds from the original reading.
+
+History and proof audit
+observation_admission gets the true initial box from the actual first
+reading. C3 derives startup containment and then the whole cube. C4 uses
+that proved cube to bound feedback slope: startup uses C3's bound 8;
+the digital branch uses 96R+6(2R)=108R<8. The original age bound then
+gives .093 sensor cost + .01 target error + .001*8 = .111.
+This is the DIGITAL feedback residual even during startup. It is not
+the pending-command residual. The witness proves that distinction physically.
+Clipping inactivity follows from the existing prefix/cube argument; it is
+not a new premise. No circular residual or invariant assumption was found.
+
+The six signed moving faces use an epsilon inflation. The analytic envelope
+is at least R before and at D, while the physical cube already holds there.
+Thus first contact in that interval is impossible. Only after proving t>D
+does the proof replace the incoming actual mismatch by digital mismatch.
+The derivative construction before that split uses the actual left ODE.
+At D+entryTime the envelope has its incoming slope -3/1700; later it is
+constant. This is a change to an analytic bound, not a reset of state or age.
+The first-contact theorem uses interior derivatives and continuity, so the
+closed final endpoint follows too. The epsilons are sent to zero correctly.
+
+I independently checked the all-K face algebra with exact Fractions. Each
+positive-face maximum decreases in K>=.045; each fixed-state expression is
+affine in rate, so the rate endpoints cover [8,12]. The negative faces follow
+by sign reversal. The tight first face has zero remaining margin after the
+specified drift; epsilon supplies strict contact exclusion. The third face
+at rate 12 has margin 33/68000. This confirms the formal theorem's scope,
+not an empirical corner-only argument. See check_budgets.py/exact-budgets.json.
+
+Nonvacuity
+The witness has D=.0005, samples n/2000, dispatches D+n/2000, rate 8,
+zero target error and reading (c,0,0). A prepared backward segment of the
+exact -1.21 flow reaches equilibrium at D. It satisfies the initial sensor
+box and is nonconstant: initial acceleration is positive. The state is
+continuous across D; the incoming command is -1.21 and outgoing command 0.
+It then remains at equilibrium. Both Execution and IsSchedule hold for any
+finite H, with the main theorem instantiated through six seconds.
+
+This is a valid long-horizon, positive-delay witness, but it starts near the
+target. It supplies neither entry from outside the target nor a braking
+detector capture or arbitrary-data existence. My extra theorem checks that
+at the second dispatch .001, the incoming stamp is 0 and outgoing stamp
+.0005. Their ages are .001 and .0005 respectively. Period and latency add;
+dispatch does not renew the retained read.
+
+Rejections and independent counter-control
+All eight submitted negative controls rejected semantically. Their scope
+matters: omitting D is false for this envelope; renewing age/resetting stamps
+is false arithmetic; the witness rejects a digital incoming command at D
+and an actual pending residual <=.111; .15 is a false nominal whole-time
+tube bound. Changing age to .005 breaks the existing proof contract, not
+every possible controller. These are not eight unsafe trajectories.
+
+The .12-residual mutation has a failed face goal, a secondary tactic timeout
+and a failed unchanged equality conversion. I do not use timeout as a
+mathematical falsifier. The separately accepted wider_residual_breaks_face
+gives the exact outward derivative 9/2000 at target radius and rate 12.
+That tuple is an aggregate enclosure obstruction, not a realized history.
+
+The critic's extra RateAndClockScope module proves that the same aggregate
+third face is outward at rate 16 and residual .111, with derivative 3/25.
+FalseFloorOnlyFace then rejects the false inward claim. This checks why C1's
+rate-floor-only contract cannot silently replace C4's [8,12] contract. It
+does not claim that an actual sampled execution realizes the tuple.
+
+Practical limit
+At the same nominal reading (.14,-.01,-1.17), c=.1009375 m. The old full
+cube gives upper tube .1564625 m, which exceeds .15 m. The late weighted
+tube is .1468375 m. A late bound does not repair earlier travel. Position
+is unrestricted by the measured guard, so no universal absolute clearance
+follows. The late speed and acceleration bands remain wide. C1-to-C4
+composition, detector liveness, useful precision tolerances and general
+execution existence remain open.
+
+Independent replay and provenance
+replay_controls.py must run first into empty fresh/ and logs/ directories.
+It rebuilds all six local source modules, uses only pinned package products,
+checks 105 declared theorem axiom closures and separately runs leanchecker
+on all six modules. Only propext, Classical.choice and Quot.sound occur.
+The eight negative runs complete its 21 passing steps. replay-results.json
+records hashes, exact commands, local import order, pins and logs. The local
+project proof cache is excluded. External package products are reused.
+
+Run replay_extra.py second. It binds the main result hash, builds the critic
+module, audits its three declarations, checks its kernel product and rejects
+the false floor-only face: four more passing steps in extra-results.json.
+Combined: 25 steps, 108 declared theorem closures, seven kernel replays.
+The two evidence files remain separate. check_budgets.py prints the separate
+exact arithmetic record. No critic attempt failed or required a repair.
+
+Builder witness attempts and the first replay failure are retained verbatim.
+The inspected repairs add missing simplification/unfolding and fix residual
+normalization; the final witness also adds three explicit counter-controls.
+They do not weaken the main contract. Harmless warnings are not failures.
+No frozen source, pin or Git state was edited. The family-149 connection is
+the earlier C2 method suggestion; no chemical theorem or corpus proof module
+is imported. This review accepts the resulting controls interface, not a
+claim that the method or mathematics is new.

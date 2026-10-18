@@ -1,0 +1,23 @@
+E7 FIXED CPU SCREEN
+
+Inputs: screen.py and INPUT-CONFIG.json, in this directory. The config was
+registered before execution. Seed2026101807,42 cases,7 fixed hosts. No growing
+sample or adaptive weight search after a null result. No external dependencies.
+
+Command: python3 screen.py > screen-results.json 2> screen.stderr
+Resource: one CPU process; deadline60seconds and termination grace5seconds.
+The coordinator must record the process identity and stop it at the cap.
+The program also checks the time cap after each fixed case.
+Outputs: screen-results.json, screen.stderr, and a launch/termination record.
+Keep source/input/output SHA256 hashes with any copied execution.
+
+Local execution is sufficient for this bounded sample. Root alone can dispatch
+on Sparky if useful. Builder will not start a remote process. A complete local
+screen does not justify repeating the job remotely or expanding the sample.
+
+The screen enumerates all maximum-cut ties up to complementation. It evaluates
+both orientations if their masses are equal. It reports best and worst retained
+certificate, excluded budget cases, a local-cut comparison and the true
+fractional-half optimum for every case. The claim being tested is existential:
+some maximum cut and valid orientation must meet1/40. A bad worst tie alone
+does not refute it. The fresh independent checker will reject dropped ties.

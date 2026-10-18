@@ -1,0 +1,163 @@
+E7: FIXED GLOBAL-CUT TEST AND EXACT VERIFICATION
+18 October 2026. Finite evidence only. No universal theorem or new constant.
+
+1. Fixed question and quantifiers
+
+The candidate statement is: every finite simple triangle-free graph whose
+minimum internal cut cost is at most (2/47)n^2 has SOME global maximum cut,
+with a permitted orientation, whose retained certificate is at most .025n^2.
+We test the corresponding rational weighted supports. A failure would require
+the BEST certificate over all tied maximum cuts to exceed .025. Failure of only
+the worst tied certificate would show a tie-selection issue, not refute this
+existential statement. E7 reports both extrema and every tied cut mask.
+
+The retained certificate is the unchanged minimum of uniform-Y cost, the
+completion envelope on its proved domain, and all neighborhood-profile costs.
+It does not denote the best possible output of the full completion theorem.
+E6 showed why that distinction matters. All edges here are counted once.
+
+2. Preregistered sample and explicit host definitions
+
+INPUT-CONFIG.json was written at17:48UTC before the screen. Its SHA256 is
+1a89b7b4657a26c6d33ed1ef8681511403845b5faa897f81e697a033683ab811.
+There are exactly42 cases: seven ordered hosts, six weight vectors each.
+The host order is Clebsch, Mycielski(C5), Petersen, Andrasfai3,4,5,6.
+
+Clebsch has vertices0,...,15 and edges whose bitwise xor is1,2,4,8 or15.
+Mycielski(C5) has original vertices0,...,4 with their5-cycle; clone vertices
+5,...,9; an edge from original i to clone5+j whenever i,j are adjacent in
+the5-cycle; and edges from every clone to vertex10. There are no other edges.
+Petersen has the5-cycle0,...,4, spokes(i,i+5), and the inner edges
+(5+i,5+((i+2) mod5)). For Andrasfai k, there are3k-1 vertices0,...,3k-2;
+u<v are adjacent exactly when k<=v-u<=2k-1. All full edge lists are recorded.
+The independent checker verifies the Andrasfai definition via the equivalent
+standard labeling v->3v modulo3k-1, with absolute difference1 modulo3.
+Both implementations check triangle-freeness directly. No graph-family theorem
+is used to assume it. The largest support has17 vertices.
+
+For each host the first vector is all ones. The second gives weight2 to the
+neighbors of vertex0 and1 elsewhere. The third has a_v=1+(v mod2). The last
+three vectors have entries drawn uniformly from the integers1,...,7 by the
+declared Python PRNG seed2026101807, consuming vectors in that host order.
+All realized integer vectors are recorded, so the evidence does not consist
+only of a seed. Each vector a is normalized by W=sum a_v, giving positive
+vertex masses w_v=a_v/W. The sample was not enlarged after the null result.
+
+3. Exact cut and profile conventions
+
+For a cut X,Y orient the smaller mass as X. If the masses are equal, evaluate
+BOTH orientations. With x=sum_X w, y=sum_Y w, put
+ q=sum_{uv in E(X)}w_u w_v, j=sum_{uv in E(Y)}w_u w_v, c=1/(2y).
+The uniform-Y half costs c^2 j. Here y>=1/2, so its selected masses c*w_v
+lie within capacities and sum to1/2. The completion envelope is available
+exactly when1/3<=x<=1/2:
+ Q(x)=3x^2/2-5x/4+9/32 for1/3<=x<=3/8;
+ Q(x)=x(1/2-x)/2 for3/8<=x<=1/2.
+Use Q(x)+q only on that domain; otherwise omit it. The branches agree at3/8.
+Q(x)+q is a feasible upper bound. It is not asserted to be the cost of every
+completion witness or the true half optimum.
+
+For y>1/2 put b=y-1/2. For v in Y define
+ d_v=sum_{u in N_Y(v)}w_u, s_v=sum_{u in N_Y(v)}w_u*d_u.
+Triangle-freeness makes N_Y(v) independent. The two neighborhood costs are
+ F_v=(j-s_v)/(4(y-d_v)^2) if d_v<=b;
+ F_v=j-b*s_v/d_v if d_v>b.
+The first profile selects w_u/[2(y-d_v)] on Y minus N_Y(v), zero elsewhere.
+Its denominator has y-d_v>=1/2. The second selects w_u off the neighborhood
+inside Y, and (1-b/d_v)w_u on the neighborhood; it uses d_v>b>0.
+Both profiles have mass1/2 and capacities0<=p_u<=w_u. At d_v=0 use the first
+branch; at d_v=b>0 the formulas agree. At y=1/2 use the uniform/completion
+terms and skip neighborhood profiles. No division by zero is performed.
+The verifier computes actual edge costs from the selected masses.
+
+The retained certificate C(X,Y) is the minimum of those available bounds.
+The graph-level neighborhood formula is reused work, not a new E7 construction.
+
+4. All ties, local comparison and true half minimum
+
+The screen enumerates all2^(n-1) support cuts up to complementation by requiring
+vertex0 to lie outside the stored mask. It computes their exact integer
+internal cost before any division by W^2. Every mask attaining the minimum is
+retained. No random max-cut heuristic or tolerance is used. For each mask the
+permitted orientation rule is then applied. The filter for the proposed
+conclusion is47*minimum_internal_numerator<=2W^2. Excluded cases would remain
+listed with their cost and reason. There are none in this fixed sample.
+
+For comparison, all single-vertex-locally-optimal support cuts are identified
+by internal weighted degree<=external weighted degree at each vertex. Every
+eligible local orientation has its retained certificate evaluated. This is
+finite comparison data; E6 already supplies an exact contrary local example
+outside this fixed sample.
+
+The true fractional-half minimum is computed on every case, not just on a
+candidate failure. Selected masses p_v satisfy0<=p_v<=w_v, sum p_v=1/2,
+with cost sum_{uv in E}p_u*p_v. A minimum exists on the compact box slice.
+If two coordinates i,j are fractional, transfer t between them. The cost is
+concave or linear in t: its quadratic coefficient is-1 if ij is an edge,
+and0 otherwise. One endpoint has no larger cost and makes at least one
+coordinate equal0 or its capacity. Repeating produces a minimum with at most
+one partial cluster. This argument does not assume regularity.
+
+Thus enumerate a full subset S and a possible partial vertex v outside it.
+Let r=W-2sum_{u in S}a_u. For0<=r<=2a_v the selected partial mass is r/(2W),
+and the cost is
+ [2sum_{ij in E(S)}a_i*a_j + r*sum_{i in S,i~v}a_i]/(2W^2).
+The generator visits full subsets first. The independent verifier visits the
+partial vertex first. Endpoint duplicates do not affect the minimum. Every
+reported optimum includes its full selected-mass vector and is checked by
+direct edge summation. These are exact rational minima, not relaxation guesses.
+
+5. Finite simple realization and what was enumerated
+
+For each case replace vertex v by an independent cluster of2a_v vertices and
+each support edge by all edges between its endpoint clusters. The resulting
+simple triangle-free graph has even order N=2W. Every support cut has exactly
+N^2 times its normalized internal edge cost. Its selected half witness has
+integer counts N*p_v and total N/2. The output records these cluster sizes and
+counts for all42 cases.
+
+A global cut minimum in this blowup is attained by a pure-cluster cut. With
+all other cluster allocations fixed, the cut cost is affine in the number of
+vertices of one cluster placed on a side, because there are no intracluster
+edges. Move that allocation to an endpoint without increasing cost, and repeat.
+The final pure-cluster cut has no larger cost. Hence a global optimum from the
+support enumeration is also global in the full blowup.
+
+Likewise any actual half maps to a feasible weighted mass profile, while the
+minimum extreme profile above has integer counts at N=2W. The recorded
+fractional minimum therefore equals the normalized actual half minimum in
+this even blowup. This is a direct proof; no unverified rounding assumption
+is substituted.
+
+The tie list is complete for the ATOMIC WEIGHTED SUPPORT. Split-cluster global
+ties in the blowup are not enumerated. This does not weaken a passing existential
+case: its exhibited pure-cluster cut is global in the blowup and has the stated
+certificate. A putative failure on all pure ties would need an additional check
+of split-cluster global ties before it could refute the full finite-graph
+existential statement. No such failure occurred, and none is claimed.
+
+6. Independent verification, controls and trust boundary
+
+The verifier imports no screen code. It enumerates all cuts in Gray-code order
+and updates integer internal costs using the flipped vertex's degrees. The
+screen instead builds subset masses and induced edge costs. Their complete
+tie lists agree, including both equal-side orientations. The verifier checks
+actual profiles, every recorded optimum witness, graph definitions, all local
+comparison counts and the derived coverage diagnostic.
+
+Six semantic mutations are rejected: a false maximum-cut optimum, one dropped
+tie, doubled edge normalization, a triangle added to Clebsch, a false half
+optimum and one dropped equal-mass orientation. The exact truth table with
+certificate values3/125 and13/500 also distinguishes a bad worst tie from an
+existential failure at1/40. These controls are not added search cases.
+
+replay.py copies screen.py, diagnostic.py, verify.py and INPUT-CONFIG.json into
+a fresh directory. It reruns the fixed screen and both checks with a60second
+cap plus5second termination grace per command. All mathematical outputs must
+match; only the elapsed-time field is ignored. Source and result hashes,
+commands, process identities, Python version and exit status are recorded.
+No remote job, dependency install, new toolchain or Lean endpoint is used.
+
+The output is exact finite evidence. It supplies no probability of the universal
+hypothesis, no new numerical constant and no novelty claim. Independent review
+belongs to the critic. The sample stays closed after this milestone.

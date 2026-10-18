@@ -1,0 +1,88 @@
+C5 PROPOSED MILESTONE: CHOOSE A HOLDING POSITION FOR FORWARD CLEARANCE
+Root preflight, 18 October 2026. Not yet an accepted dynamics theorem.
+
+Missing step and source
+C4 closes original-clock admission-to-entry, but its center and starting
+radius give an upper tube beyond .15 m. A delayed bound that is safe only
+later does not solve the transient problem. Adjust the reference once from
+the actual reading, then retain it and all original timestamps.
+The source pattern is a reference governor: select a feasible reference to
+meet constraints. Garone, Di Cairano and Kolmanovsky, Automatica75(2017),
+306-328, MERL TR2016-102, abstract and introduction. Root read these sections.
+https://www.merl.com/publications/docs/TR2016-102.pdf
+The new interval formula below is our elementary reconstruction for this
+three-coordinate box. Do not claim a new reference-governor principle.
+C4 supplies the independently accepted weighted-face drift lemma.
+
+Proposed supplied-execution contract
+Keep the same actual pending command -1.21 until dispatch D, digital clipped
+feedback afterward, rate in [8,12], target error .01, sensor errors
+(.001,.01,.05), total reading age at most .001, 0<=D<=H and D<=.0005, continuous
+physical state and left/right dynamics, original schedule and initial read.
+Change only the one-time reference policy and explicit admission guard:
+mx <= .143 m; |mv| <= .01122 m/s; ma in[-1.27,-.2] m/s^2. No lower mx is needed for a
+forward-only ceiling. This is a chosen guard, not a proved detector result.
+Use |mv|<=.02 and |ma|<=1.27 for the coarser pending envelope below.
+
+Exact interval construction
+During pending startup derive |a|<=A=1.32, |v|<=V=.03066 and |jerk|<=J=30.48
+from dynamics and the actual reading. Consequently measurement errors on
+[0,D] are e=(.00101533,.01066,.06524). Define
+ a0=mx, a1=mx+mv/4, a2=mx+mv/2+ma/16,
+ E=(.00101533,.00368033,.01042283), w=(1.02,1.01,1), target=.045.
+Let
+ K=max(target, max over i,j ((ai-aj+Ei+Ej)/(wi+wj))),
+ c=max over i (ai+Ei-wi*K).
+Then c<=min_i(ai-Ei+wi*K); derive this, not assume feasibility.
+It follows |ai-c|+Ei<=wi*K. Startup is inside this weighted box.
+K is the least possible box radius with the specified target floor and
+uncertainty enclosure; c is the least admissible center at that radius.
+Optimality is optional in this milestone; feasibility and safety are required.
+This changes the commanded target. It is not a coordinate relabeling.
+
+Dynamic bridge that MUST be proved
+The preflight gives 1.02K<R=.055525 for all admitted readings. Generalize the
+C3 proof to the new reference and startup constants. Derive the full old cube
+from the actual measured guard and startup flow; do not assume it. The exact
+pending feedback-slope range is[11967/6250,48533/6250], contained in[-8,8].
+Derive W=.111 from the complete pending/digital history. Do not take W or a
+weighted invariant as a premise and do not renew a reading at dispatch.
+Adapt C4's barrier to max(target,K-drift*(t-D)), drift=3/1700. Before and at D,
+exclude contact using the derived STARTUP weighted box; the old unweighted
+cube alone is insufficient here. For t>D use the original incoming digital
+branch. Prove all times including dispatches, plateau kink and final endpoint.
+Conclude x(t)<=c+1.02K<=.15 for all t in[0,H]. Entry into the target weighted
+box follows by D+(K-target)/drift if H reaches it. No general existence claim.
+
+Preflight evidence and falsifiers
+check.py/result.json use exact rational arithmetic, no simulations.
+K is a maximum of affine functions in (mv,ma). The upper bound is
+ U=max_i(ai+Ei+(1.02-wi)K), hence convex since 1.02-wi>=0.
+Checking the four rectangle corners proves its maximum, after spelling out
+this convexity or giving a finite affine certificate. mx shifts U linearly.
+Maximum K=2407079/50250000. Maximum U=3013722449/20100000000<.15.
+Margin=1277551/20100000000 m, about63.56 micrometres. Do not round it upward.
+At nominal reading(.14,-.01,-1.17): K=.045,c=.09573033,U=.14163033.
+Under the SAME error bounds and variable-radius analysis, old center .1009375
+requires K=.04948533 and gives U=.1514125366. Report this fair comparison,
+not only the old, looser R tube. Same plant, clocks, gains and sensors;
+the reference differs. Neither failed bound proves a physical violation.
+Negative: mx=.143,mv=.02,ma=-1.27 gives U=.15213033. Do not widen the guard.
+Retain older fixed-coefficient preflight and its failure unchanged.
+
+Potential recovery connection, NOT proved
+A true first zero at x<=.142 with |a|<=1.22, then a reading within1ms, could
+supply mx<=.143 and |mv|<=.01122, subject to a precise hybrid timing argument.
+ma<=-.2 needs actual acceleration<=-.25; C1 has not supplied that detector
+bound here. C1's rate-floor-only contract also differs from this[8,12] range.
+Do not advertise C1-to-C5 composition or liveness until these are derived.
+
+Milestone and independent acceptance
+One45-60minute builder milestone after a critic statement gate. New directory
+controls/clearance-policy-05/, old sources unchanged. Fresh source build,
+statement/axiom/kernel checks, exact arithmetic and meaningful negatives.
+Aim for an actual positive-delay nominal short-horizon witness under this
+policy; preserve limits if long-horizon existence remains open. Witness must
+use the new guard and center; C4's near-equilibrium guard witness will not do.
+Keep proof, interval enclosure, numerical motion, hardware and novelty separate.
+Stop with the exact unsatisfied obligation if the combined proof will not fit.

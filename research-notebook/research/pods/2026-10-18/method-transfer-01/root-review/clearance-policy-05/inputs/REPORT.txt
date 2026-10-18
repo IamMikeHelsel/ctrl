@@ -1,0 +1,86 @@
+C5 — INTERVAL CENTER POLICY WITH A WHOLE-HORIZON CLEARANCE BOUND
+18 October 2026. Builder packet; independent acceptance is pending.
+
+Result
+For the explicit new measured guard, the supplied-execution theorem proves
+x(t)<=.15-1277551/20100000000 m at every real time in [0,H], including startup,
+dispatch boundaries and H. The ceiling is about .149936440249 m. Its exact
+margin is about 63.56 micrometres, with no allowance for unspecified error.
+The same proof gives a shrinking weighted envelope and variable-time entry.
+See CLAIMS.txt for the complete mathematical contract.
+
+The guard requires m_x<=.143 m, |m_v|<=.01122 m/s and m_a in[-1.27,-.2] m/s^2.
+The policy chooses the center once by intersecting three uncertainty
+intervals at the radius specified by the explicit pair formula and .045
+floor. Feasibility is proved. We do not claim a physically optimal
+reference or trajectory, or formalize a separate optimality theorem.
+The gains, lag model, sensors, rates [8,12], pending command, clipping and
+clock contract remain unchanged. The reference changes the actual input.
+
+Engineering comparison
+At the SAME nominal reading (.14,-.01,-1.17), the new policy gives center
+.09573033 m, radius .045 and forward tube .14163033 m. Its first digital
+command is .29084264, instead of .3325 for the old C3 center.
+Using the SAME interval errors and weights, the old center .1009375 needs
+radius .04948533 and gives forward tube .1514125366. Thus this policy closes
+the 15 cm tube test that the fair old-center certificate misses. This is a
+comparison of certificates for different reference policies; the failed old
+bound is not proof that its physical trajectory crosses 15 cm. Older failure
+records remain unchanged. The new guard is narrower and includes an explicit
+absolute-position ceiling. No detector is proved to reach or observe it.
+
+Noncircular dynamic bridge
+The true initial sensor box and pending dynamics first prove |a|<=1.32,
+|v|<=.03066 and |jerk|<=30.48. The resulting coordinate uncertainty intervals
+give the startup weighted box. All admitted policy radii fit inside the OLD
+R=.055525 cube. The generalized C3 proof then derives that old cube through
+the full mixed history, and only afterward derives digital mismatch .111.
+It never uses 2K at the smaller policy radius, where the budget would fail.
+
+The final moving-face argument uses the startup WEIGHTED box to exclude
+contact before and at D. It invokes C4's weighted face lemma only after D,
+when the incoming command is digital. The actual left command at D remains
+-1.21. Neither sample age nor physical state is reset. The analytic envelope
+has the correct incoming derivative at its plateau kink. All-time clearance
+here means the complete supplied finite horizon [0,H].
+
+Finite entry and nonvacuity
+The weighted radius satisfies max(.045,K-(3/1700)*(t-D)) on [D,H]. Entry is
+at D+(K-.045)/(3/1700), when H is long enough. The guard-wide algebraic duration
+bound is about 1.644506136 seconds. The late position, speed and acceleration
+bands remain .0459 m, .3654 m/s and 2.9088 m/s^2. They do not prove rest.
+
+A nonconstant nominal witness has positive .5 ms delay and a 1 ms horizon.
+Its two exact exponential phases retain one full state, original timestamp,
+new center and new command. C4's prepared equilibrium reading is formally
+rejected by the new acceleration guard. No long-horizon witness or general
+existence result is claimed. The nominal radius is already the .045 floor,
+so its entry duration is zero; it does not illustrate outside-to-inside entry.
+
+Exact arithmetic, falsifiers and replay
+The policy proof covers the full continuous guard by finite affine
+inequalities in Lean. The four corner values, nominal policy and fair
+baseline are also exact Lean statements. arithmetic.py independently checks
+all 120 rational affine corner values and the pending-slope extrema. It is
+an algebraic screen, not a trajectory simulation or a substitute for Lean.
+Widening measured speed to .02 at (.143,.02,-1.27) gives tube .15213033 and
+fails the proposed clearance certificate. It is not a realized unsafe
+trajectory. Other controls reject the old equilibrium witness, larger
+position/error allowances, clock renewal, the wrong command side at D and
+the invalid small-cube residual budget. See REPLAY.txt.
+
+The complete nine-module local closure is freshly rebuilt, audited for
+allowed axioms and separately kernel-checked. Pinned external package
+products are reused. Development failures are preserved. The verification
+summary gives completed evidence; independent review decides acceptance.
+
+Method and scope
+This is a standard reference-governor pattern with an elementary interval
+policy, coupled to the accepted comparison proofs. Root's preflight cites
+the Garone, Di Cairano and Kolmanovsky survey (Automatica 75, 2017); the
+builder uses the disclosed local reconstruction, not a theorem from that
+survey. C4's family-149-inspired active-face proof remains standard weighted
+comparison mathematics. No new control-theory or corpus-transfer novelty
+is claimed. C1 composition, sampled detector liveness, arbitrary-data
+existence, precision standstill, lower-travel safety, physical contact and
+hardware acceptance remain open. Root owns the next integration decision.

@@ -1,0 +1,55 @@
+C6 CANDIDATE AFTER THE DETECTOR STATEMENT REVIEW
+18 October 2026. Not assigned. C5 proof review must pass first.
+
+Use the physical contract and algebra in DETECTOR-BRIDGE-PREFLIGHT.txt,
+with the corrections independently checked in
+critic/milestone-10/detector-gate/REPORT.txt.
+The original card and its failures remain unchanged.
+
+Fixed test
+For a supplied continued-braking execution on[0,.530], prove an actual
+sensor-box reading that meets C5's explicit guard. Add visibly to C1:
+initial v in[.39,.41], initial a in[-1.22,.1], loss effective command
+in[-1.22,.1], restored command in[-1.22,-1.2], restored rate in[8,12].
+Retain phase ODEs, continuity and the shared physical state. No invariant,
+small terminal velocity, negative terminal acceleration or guard hit is a
+premise. Continued braking after a hypothetical early handoff is an explicit
+counterfactual input, not a switched-execution existence claim.
+
+Sampling repair
+Use the finite physical sample grid t_n=n/2000 through .530 seconds.
+Given the proved first zero tau, use N=ceil(2000*tau), sigma=N/2000.
+Prove tau<=sigma<=tau+.0005 and that the chosen index lies in the finite grid.
+For each sensor reading at those sample times, assume only the original error
+box(.001,.01,.05). Prove the reading at N meets the C5 guard. If useful,
+finite minimization then supplies the first qualifying index no later than N.
+This is a sample existence result, not full detector/actuator liveness.
+
+To prepare the subsequent hold schedule, take a common fixed latency
+0<=D<=.0005. Original absolute samples are sigma+n/2000 and dispatches are
+sigma+D+n/2000. In local coordinates subtract sigma from every state time,
+sample and dispatch. Incoming age is at most .0005+D<=.001. Do not accept
+queued samples from before sigma by relabeling them. A latency bound alone
+with independently varying latencies can tie dispatches; this card uses a
+common latency to preserve strict order. sigma+D<=.530 covers pending time.
+
+Required physical conclusions
+Derive a>=-1.22 and v(t)>=.39-1.22t; then tau>=39/122>.1.
+Use recovered comparison and exp(.4)>=1+.4 to derive a(t)<=-19/70 for t>=.1.
+Between tau and sigma, derive v in[-.00122,0] and x<=.142. Every allowed
+reading at sigma must satisfy mx<=.143, |mv|<=.01122,
+ma in[-1.27,-31/140] subset[-1.27,-.2]. Use exact rational bounds.
+
+Meaningful failures
+A max-gap condition without coverage permits a Zeno sequence that never
+reaches tau. A1ms period plus .5ms delay gives1.5ms incoming age. C1 alone
+also permits a zero at time0 with positive acceleration, or arbitrarily
+negative acceleration. Preserve these failures and do not weaken the guard.
+
+Independent gate and stop condition
+One45-60minute milestone only after C5 acceptance. Fresh-source proof,
+statement/axiom/kernel checks and a nonvacuous braking example with readings.
+Freeze for independent review. If a temporal or existence interface remains
+open, state it. No hybrid, hardware, precision-rest or novelty conclusion.
+The later composition must prove actual prefix agreement and post-switch
+execution; a counterfactual braking trajectory does not supply those facts.

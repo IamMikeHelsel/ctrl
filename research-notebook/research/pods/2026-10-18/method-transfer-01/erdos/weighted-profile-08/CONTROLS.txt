@@ -1,0 +1,42 @@
+E8 EXACT SEMANTIC CONTROLS
+
+All positive statements in this file are proved in ProfileControls.lean.
+The replay also tries four false statements and requires Lean to reject
+them with mathematical unsolved goals, not parser or missing-name errors.
+
+1. Nonzero full-endpoint instance: K2, weights (1/2,1/2).
+   d=1/2, s=1/4, mu=1/4, alpha=4/5, T=3/20, L=-1/2.
+   The low certificate holds for 0<=d<=1/5. The high certificate holds for
+   every rational d, hence on its required domain. The endpoint is invoked.
+   The explicit high profile at root 0 is (1,3/5), with mean 4/5 and
+   cost exactly 3/20. This is a nonzero cost example, not an empty graph.
+
+2. Boundary: K2, alpha=1/2, d=1/2=1-alpha.
+   Low and high profiles agree. The selected low profile has mean 1/2,
+   unit capacities and cost zero. This checks the branch boundary; it is
+   not an assertion of the full affine criterion at these parameters.
+
+3. Zero degree: the one-vertex edgeless graph with weight 1.
+   Its degree is zero. The low profile at alpha=4/5 is feasible, has mean
+   4/5 and has zero cost. No high-branch division is used.
+
+4. Wrong branch: K2 at alpha=4/5.
+   The low profile gives value 8/5 at the root, so it is not a unit profile.
+   BadBranch.lean asserts feasibility and must be rejected.
+
+5. Missing scaling: on K2, profile (4/5,0) has mean 2/5, not 4/5.
+   BadMean.lean asserts the wrong mean and must be rejected.
+
+6. Invalid normalization: two vertices cannot both have weight 1 in a
+   RatProbabilityWeight. BadNormalization.lean asserts such a weight
+   object exists and must be rejected.
+
+7. Triangle-free premise: K3 with positive weights (1/3,1/3,1/3).
+   Set alpha=1/2, mu=1/3, T=0, L=-2/3. The low difference between phi
+   and the affine upper bound is -(d-1/3)^2; the high difference is
+   -(d-2/3)^2. Both inequalities hold for every rational d and therefore
+   on 0<=d<=1/2 and 1/2<d<1, respectively. Nevertheless every unit profile
+   of mean 1/2 has cost at least 1/18. Profile (1,1/2,0) attains 1/18.
+   BadTriangle.lean asserts existence of cost<=0 and must be rejected.
+   This gives a graph counterexample to dropping triangle-freeness. It is
+   not just a failed proof tactic or a scalar infeasibility example.

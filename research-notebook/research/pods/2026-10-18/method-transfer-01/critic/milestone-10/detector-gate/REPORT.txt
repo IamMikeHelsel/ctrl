@@ -1,0 +1,103 @@
+DETECTOR BRIDGE: INDEPENDENT FEASIBILITY GATE
+18 October 2026. Preparation only; no Lean or hybrid theorem acceptance.
+
+Verdict
+The continued-braking guard calculation is mathematically feasible under
+the added physical bounds. The original sample-gap sentence needs a coverage
+condition. Root's optional 0.5 ms periodic repair supplies one and resolves
+the worst-case sample-plus-arrival horizon. C5 is still a candidate proof;
+this gate neither accepts C5 nor assigns a new builder route.
+
+Input binding and actual C1
+Original preflight CARD.txt SHA256:
+c2ee171e1efb20ce9154d79015e7665d4c03bd469ae0482f93459d5dcf291ee0
+It is preserved unchanged. Copied RecoveryPeak, Recovery and IsTrajectory
+sources bind the comparison interface. Actual old_contract_first_zero allows
+0<=v0<=.41, a0<=.1 and x0<=.001; loss q<=.1 and r>=0; recovered q<=-1.2
+and r>=8. It has no lower acceleration/command bound or upper rate bound.
+It uses one continuous state, classical ODEs inside the two phases, and
+continuous rate in each phase. The recovered clock is t-.05. It supplies a
+first zero by .529 and a position bound .142 through that first zero.
+
+The proposed v0>=.39, a0>=-1.22, q>=-1.22 and recovered r<=12 are new
+premises. The supplied continued-braking horizon through .530 is also
+stronger than C1's .529 horizon. Retain the shared-state and phase regularity
+premises; bounds on signals alone do not supply an ODE trajectory. Restricting
+this stronger family recovers C1's hypotheses. The rate ceiling is for C5
+compatibility; it is not needed for the scalar guard calculation below.
+
+Exact guard derivation
+The lower acceleration comparison follows from a0>=-1.22, q>=-1.22 and
+r>=0. Apply it in both phases with continuity at recovery. Thus a>=-1.22
+and v(t)>=.39-1.22t, so every zero satisfies tau>=39/122>.1.
+C1 gives the required first zero tau<=.529 and x(tau)<=.142.
+
+The existing recovered comparison, starting from a(.05)<=.1, gives
+a(t)<=-1.2+1.3 exp(-8(t-.05)). For t>=.1,
+exp(-8(t-.05))<=exp(-.4)<=5/7, using exp(.4)>=1+.4.
+Hence a(t)<=-19/70<-.25 while continued braking persists. There is no
+invalid replacement of a variable rate below the target in this argument.
+
+For sigma in [tau,tau+.001], integration gives
+  a(sigma) in [-1.22,-19/70], v(sigma) in [-.00122,0],
+  x(sigma)<=x(tau)<=.142.
+Every measurement in the exact sensor box then satisfies
+  mx<=.143, |mv|<=.01122, ma in [-1.27,-31/140].
+The acceleration upper endpoint is below -.2 by 3/140. These are universal
+sensor-box bounds, not a favorable error choice. sigma<=.530 keeps this
+test inside the proposed continued-braking horizon. check.py/result.json
+verify the exact algebra; they do not prove the ODE comparisons in Lean.
+
+Why the original C1 is insufficient
+For example, v0=0,a0=.1 with constant loss target .1 has first zero at time
+zero and positive acceleration throughout the next millisecond. It meets
+the concrete C1 upper premises but cannot supply the negative acceleration
+guard. Alternatively, v0=.4,a0=qLoss=-100 gives a zero at .004 during loss;
+its acceleration is outside the guard. C1 allows that initial value and
+effective loss target. These show why the new lower bounds and positive
+initial speed must be visible, rather than hidden in a detector corollary.
+
+Sampling gap and optional repair
+An ordered sequence with gaps at most 1 ms need not reach the window.
+The sequence sigma_n=(1/2000)*(1-1/(n+1)) starts at zero and increases
+strictly, with gaps 1/(2000(n+1)(n+2))<=1/4000, yet all samples precede
+.0005<tau. A late first sample is another coverage failure. A concrete
+finite schedule reaching the required endpoint avoids these issues.
+
+Root's proposed refinement uses physical sample times n/2000 seconds.
+N=ceil(2000*tau) gives sigma=N/2000 in [tau,tau+.0005]. A finite sample
+list through .530 suffices; no infinite schedule theorem is needed for this
+one existence claim. Exact grid coincidence at tau is allowed by the guard
+proof. A strictly later grid point also fits the conservative .530 budget.
+With delay D<=.0005, sigma+D<=tau+.001<=.530. The earlier 1 ms sample
+window alone could need pending braking through .5305 instead.
+
+After selecting sigma, absolute samples are sigma+n/2000. Local samples
+are n/2000 after subtracting sigma from ALL physical times and stamps.
+A fixed latency D gives absolute dispatches sigma+D+n/2000 and local
+dispatches D+n/2000. Incoming age is at most .0005+D<=.001; outgoing
+age is D. This supplies strict dispatch order. Independently varying delays
+in [0,.0005] can tie neighboring dispatches and need an additional strict
+ordering or coalescing rule. A 1 ms period plus .5 ms latency gives 1.5 ms
+incoming age and fails the C5 contract. No retained sample is renewed.
+
+Remaining hybrid gaps
+A supplied sequence of sensor-box readings has a finite first qualifying
+index no later than the guaranteed post-zero index. That first index can
+precede zero. Protect its physical prefix and pending interval, not just the
+late holding tube. The .142 prefix bound plus subsequent negative velocity
+can protect continued braking up to the guaranteed sample; the actual
+pending interval and later controller still need their own proof.
+
+The continued-braking execution is a counterfactual after an earlier switch.
+A real hybrid argument must construct a shared prefix/state, causal detection
+and arrival, a single selected center, and a valid post-dispatch execution.
+It must justify prefix agreement (or the appropriate uniqueness argument)
+and avoid making a detector hit an input premise to a liveness claim.
+Old queued readings cannot acquire nonnegative local times by being renamed;
+the post-handoff schedule must retain or reject them consistently with C5.
+The finite braking horizon does not supply existence for the later hold.
+
+This gate supports a continued-braking reachability test after C5 review.
+It does not establish hybrid liveness, arbitrary-data existence, C1-to-C5
+composition, hardware safety or novelty. No new Lean module was built.

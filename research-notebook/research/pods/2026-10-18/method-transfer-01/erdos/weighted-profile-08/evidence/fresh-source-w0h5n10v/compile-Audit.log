@@ -1,0 +1,145 @@
+'Erdos128.weightedMean_one' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Erdos128.weightedMean_const' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Erdos128.weightedDegree_nonneg' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Erdos128.weightedDegree_pos_of_adj' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Erdos128.weightedDegree_lt_one' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Erdos128.edgeMass_nonneg' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Erdos128.weightedSecondDegree_nonneg' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Erdos128.two_mul_edgeMass' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Erdos128.weightedMean_eq_sum_filter' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Erdos128.weighted_neighbor_sum_swap' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Erdos128.exists_cubic_neighborhood' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Erdos128.exists_oneStepSaving' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Erdos128.ProfileBridge.mean_affine' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Erdos128.ProfileBridge.mean_indicator' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Erdos128.ProfileBridge.mean_twoLevel' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Erdos128.ProfileBridge.neighbor_affine' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Erdos128.ProfileBridge.mean_degree' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Erdos128.ProfileBridge.mean_second_degree' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Erdos128.ProfileBridge.indicator_degree' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Erdos128.ProfileBridge.mean_neighbor_indicator' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Erdos128.ProfileBridge.indicator_quadratic_zero' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Erdos128.ProfileBridge.objective_twoLevel' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Erdos128.ProfileBridge.low_profile_unit' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Erdos128.ProfileBridge.low_profile_mean' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Erdos128.ProfileBridge.low_profile_cost' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Erdos128.ProfileBridge.high_profile_unit' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Erdos128.ProfileBridge.high_profile_mean' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Erdos128.ProfileBridge.high_profile_cost' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Erdos128.ProfileBridge.profile_boundary' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Erdos128.ProfileBridge.exists_affine_profile' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Erdos128.ProfileControls.edge_triangle_free' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Erdos128.ProfileControls.edge_degree' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Erdos128.ProfileControls.edge_second' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Erdos128.ProfileControls.edge_mass' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Erdos128.ProfileControls.edge_low_certificate' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Erdos128.ProfileControls.edge_high_certificate' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Erdos128.ProfileControls.edge_affine_instance' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Erdos128.ProfileControls.edge_explicit_high_values' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Erdos128.ProfileControls.edge_explicit_high_profile' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Erdos128.ProfileControls.edge_branch_boundary' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Erdos128.ProfileControls.isolated_zero_degree' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Erdos128.ProfileControls.wrong_low_branch_not_unit' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Erdos128.ProfileControls.unscaled_complement_has_wrong_mean' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Erdos128.ProfileControls.two_unit_masses_not_probability' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Erdos128.ProfileControls.triangle_mass' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Erdos128.ProfileControls.triangle_affine_low' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Erdos128.ProfileControls.triangle_affine_high' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Erdos128.ProfileControls.triangle_mean' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Erdos128.ProfileControls.triangle_cost' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Erdos128.ProfileControls.triangle_half_cost_lower' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Erdos128.ProfileControls.triangle_refutes_missing_triangle_free' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Erdos128.ProfileControls.triangle_exact_min_witness' depends on axioms: [propext, Classical.choice, Quot.sound]
+@Erdos128.ProfileBridge.exists_affine_profile.{u_1} : ∀ {V : Type u_1} [inst : Fintype.{u_1} V]
+  (H : SimpleGraph.{u_1} V) (W : Erdos128.RatProbabilityWeight.{u_1} V),
+  SimpleGraph.CliqueFree.{u_1} H 3 →
+    ∀ (α T L : ℚ),
+      LT.lt.{0} 0 α →
+        LT.lt.{0} α 1 →
+          (∀ (d : ℚ),
+              LE.le.{0} 0 d →
+                LE.le.{0} d (HSub.hSub.{0, 0, 0} 1 α) →
+                  LE.le.{0}
+                    (HSub.hSub.{0, 0, 0}
+                      (HSub.hSub.{0, 0, 0} (Erdos128.edgeMass.{u_1} H W)
+                        (HMul.hMul.{0, 0, 0} (HDiv.hDiv.{0, 0, 0} T (HPow.hPow.{0, 0, 0} α 2))
+                          (HPow.hPow.{0, 0, 0} (HSub.hSub.{0, 0, 0} 1 d) 2)))
+                      (HPow.hPow.{0, 0, 0} d 2))
+                    (HMul.hMul.{0, 0, 0} L
+                      (HSub.hSub.{0, 0, 0} d (HMul.hMul.{0, 0, 0} 2 (Erdos128.edgeMass.{u_1} H W))))) →
+            (∀ (d : ℚ),
+                LT.lt.{0} (HSub.hSub.{0, 0, 0} 1 α) d →
+                  LT.lt.{0} d 1 →
+                    LE.le.{0}
+                      (HSub.hSub.{0, 0, 0}
+                        (HDiv.hDiv.{0, 0, 0}
+                          (HMul.hMul.{0, 0, 0} d (HSub.hSub.{0, 0, 0} (Erdos128.edgeMass.{u_1} H W) T))
+                          (HSub.hSub.{0, 0, 0} 1 α))
+                        (HPow.hPow.{0, 0, 0} d 2))
+                      (HMul.hMul.{0, 0, 0} L
+                        (HSub.hSub.{0, 0, 0} d (HMul.hMul.{0, 0, 0} 2 (Erdos128.edgeMass.{u_1} H W))))) →
+              ∃ π,
+                Erdos128.IsUnitProfile.{u_1} π ∧
+                  Eq.{1} (Erdos128.weightedMean.{u_1} W π) α ∧
+                    LE.le.{0} (Erdos128.weightedObjective.{u_1} H W (fun x => 0) π) T
+@Erdos128.ProfileBridge.mean_second_degree.{u_1} : ∀ {V : Type u_1} [inst : Fintype.{u_1} V] (H : SimpleGraph.{u_1} V)
+  (W : Erdos128.RatProbabilityWeight.{u_1} V),
+  Eq.{1} (Erdos128.weightedMean.{u_1} W (Erdos128.weightedSecondDegree.{u_1} H W))
+    (Erdos128.weightedMean.{u_1} W fun v => HPow.hPow.{0, 0, 0} (Erdos128.weightedDegree.{u_1} H W v) 2)
+@Erdos128.ProfileBridge.objective_twoLevel.{u_1} : ∀ {V : Type u_1} [inst : Fintype.{u_1} V] (H : SimpleGraph.{u_1} V)
+  (W : Erdos128.RatProbabilityWeight.{u_1} V),
+  SimpleGraph.CliqueFree.{u_1} H 3 →
+    ∀ (v : V) (a b : ℚ),
+      Eq.{1} (Erdos128.weightedObjective.{u_1} H W (fun x => 0) (Erdos128.ProfileBridge.twoLevel.{u_1} H v a b))
+        (HAdd.hAdd.{0, 0, 0} (HMul.hMul.{0, 0, 0} (HPow.hPow.{0, 0, 0} a 2) (Erdos128.edgeMass.{u_1} H W))
+          (HMul.hMul.{0, 0, 0} (HMul.hMul.{0, 0, 0} a b) (Erdos128.weightedSecondDegree.{u_1} H W v)))
+structure Erdos128.RatProbabilityWeight.{u} (V : Type u) [Fintype.{u} V] : Type u
+number of parameters: 2
+fields:
+  Erdos128.RatProbabilityWeight.weight.{u} : V → ℚ
+  Erdos128.RatProbabilityWeight.positive.{u} : ∀ (v : V), LT.lt.{0} 0 (Erdos128.RatProbabilityWeight.weight.{u} self v)
+  Erdos128.RatProbabilityWeight.sum_eq_one.{u} : Eq.{1} (∑ v, Erdos128.RatProbabilityWeight.weight.{u} self v) 1
+constructor:
+  Erdos128.RatProbabilityWeight.mk.{u} {V : Type u} [Fintype.{u} V] (weight : V → ℚ)
+    (positive : ∀ (v : V), LT.lt.{0} 0 (weight v)) (sum_eq_one : Eq.{1} (∑ v, weight v) 1) :
+    Erdos128.RatProbabilityWeight.{u} V
+def Erdos128.IsUnitProfile.{u} : {V : Type u} → (V → ℚ) → Prop :=
+fun {V} π => ∀ (v : V), LE.le.{0} 0 (π v) ∧ LE.le.{0} (π v) 1
+def Erdos128.weightedMean.{u} : {V : Type u} →
+  [inst : Fintype.{u} V] → Erdos128.RatProbabilityWeight.{u} V → (V → ℚ) → ℚ :=
+fun {V} [Fintype.{u} V] W f => ∑ v, HMul.hMul.{0, 0, 0} (Erdos128.RatProbabilityWeight.weight.{u} W v) (f v)
+def Erdos128.weightedDegree.{u} : {V : Type u} →
+  [inst : Fintype.{u} V] → SimpleGraph.{u} V → Erdos128.RatProbabilityWeight.{u} V → V → ℚ :=
+fun {V} [Fintype.{u} V] H W x => ∑ y ∈ SimpleGraph.neighborFinset.{u} H x, Erdos128.RatProbabilityWeight.weight.{u} W y
+def Erdos128.weightedSecondDegree.{u} : {V : Type u} →
+  [inst : Fintype.{u} V] → SimpleGraph.{u} V → Erdos128.RatProbabilityWeight.{u} V → V → ℚ :=
+fun {V} [Fintype.{u} V] H W x =>
+  ∑ y ∈ SimpleGraph.neighborFinset.{u} H x,
+    HMul.hMul.{0, 0, 0} (Erdos128.RatProbabilityWeight.weight.{u} W y) (Erdos128.weightedDegree.{u} H W y)
+def Erdos128.edgeMass.{u} : {V : Type u} →
+  [inst : Fintype.{u} V] → SimpleGraph.{u} V → Erdos128.RatProbabilityWeight.{u} V → ℚ :=
+fun {V} [Fintype.{u} V] H W =>
+  HMul.hMul.{0, 0, 0} (1 / 2) (Erdos128.weightedMean.{u} W (Erdos128.weightedDegree.{u} H W))
+def Erdos128.weightedObjective.{u} : {V : Type u} →
+  [inst : Fintype.{u} V] → SimpleGraph.{u} V → Erdos128.RatProbabilityWeight.{u} V → (V → ℚ) → (V → ℚ) → ℚ :=
+fun {V} [Fintype.{u} V] H W ψ π =>
+  HAdd.hAdd.{0, 0, 0}
+    (HMul.hMul.{0, 0, 0} (1 / 2)
+      (∑ x,
+        HMul.hMul.{0, 0, 0} (HMul.hMul.{0, 0, 0} (Erdos128.RatProbabilityWeight.weight.{u} W x) (π x))
+          (∑ y ∈ SimpleGraph.neighborFinset.{u} H x,
+            HMul.hMul.{0, 0, 0} (Erdos128.RatProbabilityWeight.weight.{u} W y) (π y))))
+    (Erdos128.weightedMean.{u} W fun x => HMul.hMul.{0, 0, 0} (ψ x) (π x))
+def Erdos128.ProfileBridge.lowProfile.{u} : {V : Type u} →
+  [inst : Fintype.{u} V] → SimpleGraph.{u} V → Erdos128.RatProbabilityWeight.{u} V → ℚ → V → V → ℚ :=
+fun {V} [Fintype.{u} V] H W α v =>
+  Erdos128.ProfileBridge.twoLevel.{u} H v
+    (HDiv.hDiv.{0, 0, 0} α (HSub.hSub.{0, 0, 0} 1 (Erdos128.weightedDegree.{u} H W v)))
+    (HDiv.hDiv.{0, 0, 0} (Neg.neg.{0} α) (HSub.hSub.{0, 0, 0} 1 (Erdos128.weightedDegree.{u} H W v)))
+def Erdos128.ProfileBridge.highProfile.{u} : {V : Type u} →
+  [inst : Fintype.{u} V] → SimpleGraph.{u} V → Erdos128.RatProbabilityWeight.{u} V → ℚ → V → V → ℚ :=
+fun {V} [Fintype.{u} V] H W α v =>
+  Erdos128.ProfileBridge.twoLevel.{u} H v 1
+    (HDiv.hDiv.{0, 0, 0} (Neg.neg.{0} (HSub.hSub.{0, 0, 0} 1 α)) (Erdos128.weightedDegree.{u} H W v))

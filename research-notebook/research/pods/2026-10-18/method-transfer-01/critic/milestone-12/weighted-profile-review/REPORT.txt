@@ -1,0 +1,158 @@
+E8 INDEPENDENT WEIGHTED-PROFILE REVIEW
+18 October 2026
+VERDICT: ACCEPT at the rational weighted-graph affine-profile theorem scope.
+Independent copied-source, axiom, kernel and semantic checks passed. No builder
+repair was needed. The full finite-graph .0251 endpoint remains open.
+
+Statement assessment
+The actual endpoint matches the accepted statement gate. For a finite simple
+triangle-free graph H with strictly positive rational probability weights W,
+and rational alpha,T,L with 0<alpha<1, two scalar inequalities with one common
+slope L produce a rational unit profile of mean alpha and edge cost <=T.
+The low inequality covers 0<=d<=1-alpha; the high inequality covers
+1-alpha<d<1. T and L need no extra sign premise. The cost uses zero linear
+potential and counts each unordered edge once.
+
+The public theorem is Erdos128.ProfileBridge.exists_affine_profile. I read the
+complete 318-line main source and 215-line controls source, the imported sum
+symmetry proof, the definitions and degree bounds, and the elaborated endpoint
+in my own audit. There is no profile-feasibility, moment, candidate-cost,
+regularity, maximum-cut, BCL or graph-realizability premise. H is an actual
+finite graph. The local dependencies are rebuilt from copied source.
+
+Why the graph argument works
+The identity E[d]=2mu follows from the definition of edge mass. Symmetry of
+adjacency and finite sum interchange give E[s]=E[d^2], without triangle-free
+assumptions. Strictly positive normalized weights and looplessness give d<1.
+The proof derives nonemptiness from the weight sum rather than assuming that
+an empty type has a normalized weight.
+
+For a two-level profile a+b*1_N(v), the actual edge cost expands to
+ a^2*mu+a*b*s_v.
+Triangle-freeness makes N(v) independent and removes the b^2 term. This is the
+substantive graph condition. It is not supplied as an assumed cost formula.
+
+The low profile is zero on N(v) and alpha/(1-d_v) elsewhere. Its branch gives
+unit capacities, exact mean alpha, and cost alpha^2*(mu-s_v)/(1-d_v)^2.
+The high profile is 1-(1-alpha)/d_v on N(v) and one elsewhere. Its branch gives
+unit capacities, exact mean alpha, and cost mu-(1-alpha)*s_v/d_v.
+The low denominator is positive. The high branch implies d_v>1-alpha>0.
+At d_v=1-alpha, both definitions agree and the proof uses the low branch.
+At d_v=0, only the low branch is used.
+
+If every candidate cost exceeded T, positive denominator arithmetic and the
+stated scalar bounds would give, for every vertex,
+ s_v-d_v^2 < L*(d_v-2mu).
+Positive weighted summation is strict, since the type is nonempty. Both sums
+are zero by the graph moments. This gives 0<0. The inequality direction is
+correct; no circular invariant or assumed existence conclusion is used.
+
+Nonvacuity and semantic challenges
+The full endpoint is invoked on K2 with weights (1/2,1/2), alpha=4/5,
+T=3/20 and L=-1/2. Both scalar certificates are proved over their full required
+domains. The explicit high profile (1,3/5) has that mean and nonzero cost.
+Separate controls verify the branch boundary at alpha=d=1/2 and the zero-degree
+low profile on the one-vertex graph.
+
+The K3 test is an actual counterexample to removing triangle-freeness. With
+weights 1/3, alpha=1/2,T=0,L=-2/3, both scalar inequalities hold everywhere:
+their differences are -(d-1/3)^2 and -(d-2/3)^2. Every unit profile of mean 1/2
+has cost >=1/18, and (1,1/2,0) attains it. The lower bound follows from
+nonnegativity of xyz and (1-x)(1-y)(1-z), together with x+y+z=3/2.
+This is more than a failed proof tactic.
+
+My four added theorems use K2 with unequal weights (1/3,2/3), then the isolated
+vertex. They establish degrees (2/3,1/3), E[s]=E[d^2]=2/9, and (E[d])^2=16/81.
+Thus the actual second moment cannot be replaced by a regular-degree shortcut.
+At alpha=2/3, a low boundary candidate has mean 2/3 and cost zero, while the
+other root's high candidate has cost 1/9. On the isolated vertex, the high
+profile has mean one, so the nonzero-degree premise of high_profile_mean
+cannot be dropped. Its false mean-4/5 assertion is an independent rejection.
+
+Trust and attribution
+The five frozen proof-source hashes match the builder manifest. The three
+upstream modules match the recorded E3 bytes and revision
+ba85f319ebb33ec2194ef4c2929a12916329e1e7. The weighted graph API, sum symmetry,
+and neighborhood construction remain attributed upstream work. The new
+endpoint does not invoke the cubic or one-step saving theorem, although both
+remain in its import closure and are checked.
+
+The executed toolchain is Lean 4.35.0, with mathlib revision
+56a005855ea17e0b0958f73ec801ae140b0a1679. LEAN_PATH contains only the review's
+fresh products and recorded package dependency products. No builder development
+or earlier research products are imported. The upstream Lean 4.30 declaration
+is preserved separately; this is not a 4.30 replay or a full mathlib rebuild.
+No new axiom, sorry/admit, native_decide, trustCompiler or unsafe shortcut was
+found in the six reviewed proof modules. Axiom closures are restricted to
+propext, Classical.choice and Quot.sound. The raw universe-qualified names are
+preserved as well as their normalized constant names.
+
+Verification
+verification.json records 19 accepted verification steps: seven successful
+builds (five frozen source modules, my controls and the audit), seven separate
+leanchecker passes, and five expected mathematical rejections. All 56 public
+theorem axiom closures pass the three-constant allowlist: 12 upstream, 18 main,
+22 builder control and four critic declarations. These are my executed results.
+
+The five rejected claims fail with mathematical unsolved goals, without timeout,
+missing-name, parser or typeclass-setup errors. The first four are the frozen
+triangle, wrong-mean, wrong-normalization and wrong-branch controls. The fifth
+is my isolated-vertex high-mean claim. These are five rejected assertions, not
+five distinct graph counterexamples.
+
+The first five source builds are retained from the initial fresh run and bound
+by their source, log and product hashes. Only the critic module and audit were
+rebuilt after the two reviewer harness failures below. The accepted 19-step
+record excludes the failed critic compile and the two superseded successful
+compile calls before the parser failure; their original records remain intact.
+All final local source hashes are stable. The original builder manifest and
+all 75 entries match, as do 242 entries across the eight prior builder freezes.
+The three upstream modules match E3; toolchain and package pins are unchanged.
+
+Preserved reviewer failures
+The first critic compile failed because the unequal-moment test rewrote degrees
+before unfolding weightedMean. The source, log, failed result, runner and
+compiled-product bindings are preserved in attempts/critic-moment-unfold/.
+Only the proof tactic order changed. Its four theorem statements are unchanged.
+The five frozen source modules had already compiled successfully and their
+source, logs and compiled-product hashes were bound for reuse.
+
+The next run compiled the repaired critic module and full audit, but my parser
+rejected printed universe suffixes such as Classical.choice.{u}. Its source,
+logs, raw audit and failed record are preserved in attempts/axiom-universe-format/.
+The repair removes only the displayed universe suffix before applying the same
+three-constant allowlist; raw names remain in the result. It changes no theorem.
+The repaired critic module and audit are rebuilt, followed by every kernel and
+negative check. The failed records are not relabeled as passing evidence.
+
+Builder development failures are also copied intact. Comparing statement headers
+shows all 18 main statements and 21 original control statements unchanged across
+those repairs; the final control adds the exact K3 minimizer. The reviewer's four
+headers are unchanged. See statement-preservation.json and critic-repair.diff.
+
+Reproduction
+In a separate copy, retain the recorded fresh/ tree and verification.json as
+historical evidence, then run replay.py with no fresh/ directory. It builds all
+seven local modules, audits 56 declarations, runs seven separate leanchecker
+calls, and tries five false claims. It uses the final repaired CriticControls.
+The original local run used resume_after_critic_repair.py to bind and reuse the
+five unchanged successful builds after the preserved failures. Do not run that
+resume script as the clean reproduction entry. Run check_statements.py to repeat
+header comparisons and check_preservation.py to recheck original inputs. These
+scripts write only the review copy. No network, Git or package update is needed.
+
+Acceptance boundary
+The completed replay supports this rational weighted-graph construction
+bridge. It does not supply an ambient finite-graph half, an integral half,
+the full 872-cell scalar cover, BCL transport, all-order descent, rounding,
+or a final .0251 Lean endpoint. It does not establish novelty or best-known
+status. The external stronger-cut premise remains unaccepted. An efficient
+implemented selector is not proved here; the Lean result is existential.
+Root owns notebook sync, commits and pushes. No write outside the assigned
+critic review area was made.
+
+Exact input bindings
+Builder manifest: fe60ad304a8e66638b31bce37677ee158c52135b08a4aa128a59c03c58987e26
+WeightedProfiles.lean: 31e89a547ef3fa040a08de08956fc79a1ba25a4b101bc9c88414ccb349b8decd
+ProfileControls.lean: a302754a7b54269fc915ff1d6b698980c86b295bc6b64aa96ce6871ca406c4c3
+CriticControls.lean: df49322d7597825cce04083d4312bab3d11bb87bd40c9b999cfdd417dc230cf9
