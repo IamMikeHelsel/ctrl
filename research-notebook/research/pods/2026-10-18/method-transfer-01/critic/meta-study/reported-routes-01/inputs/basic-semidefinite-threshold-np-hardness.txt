@@ -1,0 +1,738 @@
+PAGE 1
+BasicSDP threshold and Unique Games 1
+Summarized chain of thought (Ordinary NP-Hardness at the Basic
+Semidefinite Threshold)
+OpenAI
+Original prompt (excerpts)
+# Problem
+Prove or refute the following ordinary NP-hardness assertion for the basic-SDP approximation
+threshold of every fixed finite Max-CSP. The intended improvement is to obtain matching NP-hardness
+without the Unique Games Conjecture. The deterministic inapproximability consequence, and the
+interpretation of an algorithmic counterexample, use the assumption P != NP.
+FIXED LANGUAGE AND FINITE INPUTS. Fix a nonempty finite alphabet D and a finite nonempty collection
+Gamma of predicates f:D^(k_f)->{0,1}, with positive integer arities k_f. The alphabet, all
+predicate truth tables, and k=max_f k_f are fixed independently of the input size; they are not
+growing-alphabet or growing-arity parameters.
+An instance I has finitely many variables x_1,...,x_n in D and a finite nonempty list of constraint
+occurrences e=1,...,m. Discard unused variables and relabel the variables that occur as
+x_1,...,x_n; thus n is at most the total number of argument positions in the listed constraints.
+Occurrence e specifies f_e in Gamma, an ordered tuple (v_(e,1),...,v_(e,k_fe)) of variable indices,
+and a positive rational weight w_e, with sum_e w_e=1. Variable indices may repeat within a tuple,
+and different occurrences may have the same tuple or the same underlying scope. Rational numerators
+and denominators and variable indices are encoded in binary. This weighted input convention is part
+of the problem; zero-weight occurrences can be discarded before normalization. Unweighted instances
+are the special case w_e=1/m.
+For an assignment a:{1,...,n}->D define
+val_I(a) = sum_e w_e f_e(a(v_(e,1)),...,a(v_(e,k_fe))),
+and define OPT(I)=max_a val_I(a). Thus the objective is the normalized weight of satisfied
+predicates. There is no promise that all constraints can be simultaneously satisfied.
+THE BASIC SDP. Use the following specific relaxation, in the vector/local-distribution form of
+Raghavendra's SDP(I) and its standard BasicSDP formulation. Let S_e be the set of distinct variable
+indices appearing in occurrence e. Introduce real vectors u_0 and u_(v,d), for v in {1,...,n} and d
+in D. Introduce a separate probability distribution mu_e on D^(S_e) for every constraint occurrence
+e. Here beta in D^(S_e) means a map beta:S_e->D. Maximize
+sum_e w_e sum_(beta in D^(S_e)) mu_e(beta)
+f_e(beta(v_(e,1)),...,beta(v_(e,k_fe)))
+subject to all of the following:
+dot(u_0,u_0) = 1;
+sum_(d in D) u_(v,d)=u_0 for each variable v;
+dot(u_(v,d),u_(v,d')) = 0 for d != d';
+mu_e(beta)>=0 and sum_beta mu_e(beta)=1 for every e;
+dot(u_(v,d),u_(w,d'))
+= sum_(beta: beta(v)=d, beta(w)=d') mu_e(beta)
+for every e, v,w in S_e and d,d' in D, including v=w;
+dot(u_(v,d),u_0)
+= sum_(beta: beta(v)=d) mu_e(beta)
+for every e, v in S_e and d in D.
+Here dot denotes the real inner product. The vectors have a common finite-dimensional real
+inner-product space; equivalently their Gram matrix is positive semidefinite. Dimension n|D|+1
+suffices to express all such Gram matrices. The value BasicSDP(I) is the maximum of this
+relaxation. No higher-round consistency or other strengthening is added.
+
+PAGE 2
+BasicSDP threshold and Unique Games 2
+Repeated positions refer to the same beta(v), not independently sampled copies. Even when S_e=S_e',
+the distributions mu_e and mu_e' are separate: they must agree with the shared vectors on the
+specified singleton and pairwise marginals, but are not required to agree on their entire joint
+distributions. This convention fixes the relaxation even for duplicate scopes.
+RATIO THRESHOLD. Use the reward-ratio convention, in which larger ratios are better, and define the
+real constant
+alpha_Gamma = inf { OPT(I)/BasicSDP(I) : I is an instance over Gamma and BasicSDP(I)>0 }.
+Set alpha_Gamma=1 if this set is empty, in particular when all allowed predicates are identically
+false. Zero-SDP instances are excluded from the quotient; their objective does not create a
+division-by-zero convention. This constant lies in [0,1]. It is a threshold: the problem does not
+require exact attainment by a single rounding algorithm or a uniform algorithm for computing
+alpha_Gamma.
+ASSERTION TO ESTABLISH. For every fixed D,Gamma as above and every fixed rational number r with
+alpha_Gamma < r < 1,
+there exist rational constants s,c with
+0 <= s < c < 1 and s < r c,
+such that the following promise problem is NP-hard under deterministic polynomial-time many-one
+reductions from Boolean satisfiability:
+YES: OPT(I) >= c;
+NO: OPT(I) <= s.
+A reduction must map every satisfiable Boolean formula into the YES set and every unsatisfiable
+formula into the NO set, using only instances of this same fixed Gamma and the stated weight
+encoding. Behavior outside the two promised sets is unrestricted. The reduction, its polynomial
+bound, and c,s may depend on D,Gamma,r; they are fixed before the input formula size grows.
+This is a single worst-case multiplicative-ratio assertion. It does not require hardness at every
+point of an SDP approximation curve, for every SDP-gap witness, or with perfect completeness c=1.
+The strict slack in r and the existence of some separated constants c,s are intentional. For
+alpha_Gamma=1 there is no r in the stated interval and no hardness claim is required. If
+alpha_Gamma<1, an exact polynomial-time optimizer would also achieve every r<1, so a separate
+endpoint assertion for r=1 is unnecessary.
+COMPLEXITY INTERPRETATION. Such a gap reduction excludes, under P != NP, a deterministic
+polynomial-time algorithm that returns an assignment of value at least r OPT(I) on every instance:
+YES instances would yield a verifiable value above s and NO instances could not. No claim excluding
+bounded-error randomized approximation algorithms follows here from P != NP alone, and no stronger
+randomized-complexity hypothesis is silently imposed.
+A complete affirmative resolution establishes the displayed NP-hardness statement for every fixed
+language and every indicated r. A complete negative resolution rigorously refutes that universal
+hardness assertion under the stated P != NP interpretation. For example, a fixed language together
+with a deterministic polynomial-time algorithm and a proved guarantee val_I(a)>=beta OPT(I) for all
+its instances, for some constant beta>alpha_Gamma, would suffice under P != NP. A resolution is not
+required to prove the assumed separation P != NP itself. Failure of one rounding rule or one
+attempted reduction is not a negative resolution. No proof or candidate algorithm is supplied here.
+1 From the BasicSDP threshold to projection leakage
+The assistant first checks whether repeated variables or occurrence-specific local distributions weaken
+the relaxation enough to admit a counterexample. The assistant finds no apparent escape through
+those conventions in Raghavendra’s optimal CSP approximation theorem [ 50]. Its dependence on the
+Unique Games Conjecture (UGC) instead motivates a proposed converse. Alphabet-dependent round-
+ing bounds for Unique Games [17] constrain one attempted baseline construction; the finite-valued CSP
+
+PAGE 3
+BasicSDP threshold and Unique Games 3
+dichotomy [55] also gives the assistant no tractable-language loophole.
+The key distinction is between a small soundness/completeness ratio and completeness near one. The
+assistant observes that the Khot–Minzer–Safra 2-to-2 Games theorem [ 39] does not directly supply the
+latter. The assistant first considers the Goemans–Williamson near-satisfiable Max-Cut guarantee [ 29]
+and the odd-cycle obstruction to strong repetition [ 52]. A baseline gadget then adds three dummy
+labels, guaranteeing value at least 𝑇 = 1/3 while retaining a Khot–Vishnoi SDP gap [38]. If the universal
+assertion forces hardness close to this baseline, the assistant argues that completeness must approach
+one:
+VERBA TIM EXCERPT
+Wait insight: baseline T constant and hardness YES near1 NO ≤T+o(1) is already enough for UGC via
+parallel repetition! NO needs val bounded from1, not tiny, then repeat constant power depending δ
+alphabet.
+The assistant invokes Rao’s alphabet-independent projection-game repetition bound [51], leaving quan-
+titative parameters as a further step in the proposed equivalence. For an algorithmic alternative, the as-
+sistant recalls constant-round sum-of-squares treatment of noisy-cube gaps [7] and contrasts the Arora–
+Barak–Steurer subexponential algorithm [1] with the desired polynomial running time. Results for certi-
+fied small-set expanders and globally hypercontractive graphs [5, 4] prompt the objection that arbitrary
+constraint graphs need not satisfy those assumptions. It considers extending Trevisan’s spectral partial-
+assignment method [ 56] and uses the Khot–Kindler–Mossel–O’Donnell reduction [ 40] to motivate an
+aﬀine-game approach, while questioning the precise field formulation. Hashing and coordinatewise
+Boolean recovery encounter accumulating errors or inconsistent cluster shifts.
+Attention then turns to hardness gadgets. The Rich 2-to-1 equivalence [16] suggests hiding the match-
+ing structure. The assistant examines the Dinur–Khot–Kindler–Minzer–Safra composition [ 21] and
+Minzer–Zheng’s alphabet–soundness tradeoff [ 46] as possible outer constructions, and invokes Hås-
+tad’s near-one versus one-half parity-equation hardness [ 32]. Using the shortcode framework of Khot–
+Minzer–Safra and Barak–Kothari–Steurer [39, 8], the assistant explores a matrix test and a tensor exten-
+sion whose honest acceptance can rise from one-half to three-quarters. Yet projected tensor queries can
+reveal the outer constraint: an answer may adapt to that constraint instead of encoding a fixed label. Re-
+stricting monomials to individual blocks and using sparse noise fails to hide recognizable duplications:
+VERBA TIM EXCERPT
+Thus at most one informative i. So cheater chooses arbitrary g_{v_i}, on exact duplicated input
+matches and passes, independent of actual satisfiability!
+Dense noise obstructs this response but loses the desired completeness. The assistant therefore retains
+the proposed Unique Games route while turning to the problem of hiding projections without sacrificing
+completeness.
+2 Hidden structure and the search for a stability gap
+The proposed Unique Games route to the original BasicSDP-threshold assertion repeatedly confronts
+one requirement: honest assignment encodings must survive perturbations much better than arbitrary
+answers. Tensor products make honest errors rare, but low-rank representations reveal projected coordi-
+nates or recoverable constants. A prover can exploit that information without decoding an assignment.
+Availability flags for selecting successful constraints also encounter a counting obstruction from unique-
+ness. These attempts repeatedly return to the aﬀine 2-to-2 and inverse-shortcode framework [ 39, 8].
+
+PAGE 4
+BasicSDP threshold and Unique Games 4
+After considering Khot and Moshkovitz’s real-code candidate route [ 41], the assistant turns to Sub-
+spaces Near-Intersection in Eldan and Moshkovitz’s Reduction From Non-Unique Games T o Boolean Unique
+Games as an alternative starting point [ 25]. Gaussian queries offer small geometric perturbations, but
+nonlinear Lipschitz responses can be similarly stable:
+VERBA TIM EXCERPT
+So stability comparable to honest. Thus noise-based Gaussian tester fails because low-degree linear
+dependence not enforced; need linearity test via rank-one transformations that preserves F_x more
+than smooth functions.
+Compressed tensors with independent linear masks then offer a possible repair. Fourier eigenvalues
+suggest how rank-one frequencies might encode assignments, but the assistant cannot yet establish con-
+sistency across projected questions. The assistant consults Minzer and Zheng’s Near Optimal Alphabet-
+Soundness T radeoff PCPs for its composed construction and subspace identifications [ 46]. A BLR-style
+linearity step is proposed to extract aligned labels [ 13]. It also considers Friedgut’s junta theorem for
+extracting a small set of relevant coordinates, but finds that sparse-noise control does not constrain the
+singular padded inputs used by projection tests [ 28].
+An amplification insight changes the target: if undesirable frequencies lose increasingly more than
+honest encodings per step, repeated noise might create constant dishonest loss while honest loss van-
+ishes. The assistant does not find a suitable higher-degree walk. Recoverable components defeat mask-
+ing, and majority blocks are less stable than competing dictators under sparse noise. The Kasami–
+T okura low-weight Reed–Muller classification guides a search for structured, highly biased multilinear
+forms [36]. A more abstract equivariant-decoder proposal would still need inverse-shortcode decoding
+and adaptation of the Dinur–Khot–Kindler–Minzer–Safra outer construction [ 21].
+The assistant also sketches a conditional connection between the BasicSDP threshold and UGC, us-
+ing the Khot–Vishnoi construction [ 38] and Raghavendra-style dictatorship tests [ 50]. The gap calcu-
+lation uses Bonami–Beckner hypercontractivity [ 14, 12]; Rao and Dinur–Steurer projection-game rep-
+etition are considered for alphabet-independent amplification [ 51, 22]. For the dictatorship-test trans-
+fer, the assistant invokes the low-influence multilinear invariance principle of Mossel, O’Donnell and
+Oleszkiewicz [47].
+A final proposal uses rounding on a long cyclic group ℤ𝑀: small increments rarely cross interval
+boundaries. The assistant considers Khot and Moshkovitz’s hardness result for real linear equations
+as a possible starting point [ 42]. Exact integer equations appear to improve projection hiding, while
+incompatible winding numbers on local tori might force cheating functions to lose stability. The assistant
+identifies a diﬀiculty with smoothing: it may leave exceptional regions where outputs cease to be circle-
+valued. It leaves extracting winding numbers and controlling correlated strategies as the next obstacles
+to obtaining the desired completeness–soundness separation.
+3 From winding obstructions to global consistency
+The proposed Unique Games route toward the BasicSDP threshold encounters a recurring problem:
+local consistency does not supply one global labeling. A cyclic construction based on scalar winding
+appears vulnerable to vector-valued maps into higher-dimensional spheres. Tensoring these maps and
+projecting through a shared Gaussian could correlate their singularities and achieve the honest strategy’s
+error scale. The assistant considers this a possible failure mechanism for the cyclic construction.
+The assistant therefore explores an algorithmic alternative for nearly satisfiable aﬀine Unique Games,
+with constraints 𝑥𝑢 + 𝑥 𝑣 = 𝑐 𝑒 over 𝔽ℓ
+2. The desired approximation must remain useful as the alpha-
+bet grows. The assistant invokes the Khot–Vishnoi noisy-cube construction [ 38] against a universal
+equivariant rounding map. Separately solving Boolean character projections by Goemans–Williamson
+
+PAGE 5
+BasicSDP threshold and Unique Games 5
+rounding [ 29] leaves their errors unsynchronized; graph squaring compounds error instead of elimi-
+nating it. The conditional hardness route continues to use Raghavendra’s framework [ 50] and Rao’s
+alphabet-independent projection-game repetition [ 51].
+The assistant also recalls Khot–Saket hierarchy gaps [ 43] while assessing stronger relaxations. The
+algorithmic search contrasts parity and random-CSP hierarchy lower bounds associated with Grigoriev
+and Schoenebeck [31, 54] with the sum-of-squares hypercontractive refutation of noisy-cube and short-
+code gaps [ 7]. Algorithms for Unique Games on expanders [ 2] and the subexponential algorithm of
+Arora, Barak and Steurer [ 1] motivate graph decomposition, while the condition-and-round method
+for certified small-set expanders [ 5] motivates a collision potential for differences of two pseudolabel-
+ings. The assistant does not obtain the desired alphabet-uniform rounding from these approaches.
+Alpha-expansion graph cuts [ 15] encounter the unknown gauge of shifted Potts constraints.
+Connection-Laplacian Cheeger inequalities [ 6] suggest partial synchronization, but continuous
+rotations still need conversion into discrete group labels. A separate proposed hardness route would
+combine a hypothetical stable coloring with the Khot–Minzer–Safra inverse framework [ 39]; the
+assistant leaves the coloring construction unresolved.
+Shared error locations suggest interleaved-code decoding, but syndrome rank can remain small while
+the number of errors grows. Another proposal geometrically separates bad edges while charging pro-
+gressively smaller costs to good edges.
+Its embedding, however, depends on the unknown true labels. The assistant considers Papadimitriou–
+Yannakakis expander degree reduction [49], splitting variables into copies joined by equality constraints.
+Forest compression then suggests reducing the task to finding linearly many compatible cycles beyond a
+spanning forest. The assistant leaves both that solver and the required deterministic sampling argument
+unresolved, and uses high-girth examples to examine limitations of local algorithms.
+Barto and Kozik’s robust satisfiability theorem [ 11] offers a fixed-language comparison, but the assis-
+tant questions whether the relevant constants can be made alphabet independent. Orthogonal separa-
+tors [19] similarly expose alphabet-dependent losses in the proposed collision-based clusters. The as-
+sistant also considers using Barak–Kelner–Steurer sum-of-squares rounding [ 9] to extract a high-norm
+moment matrix, then encounters dimension-dependent conditioning costs. A more concrete attempt
+conditions semidefinite pseudolabels on random linear-hash fibers. Surviving residuals seem less fre-
+quent, but the restricted vectors no longer sum to a common reference vector:
+VERBA TIM EXCERPT
+Missing mass could be filled, but to shrink p need *renormalize* near intersection and **realign**
+\(u'_0(v)\).
+Repairing this defect may restore the discarded error. Holenstein’s correlated sampling [ 33] offers a
+coupling of fiber-conditioned labels, but its mismatch cost also threatens the proposed error reduction.
+Finally , countably many approximately consistent character projections do not ensure a coherent mea-
+surable labeling: their common kernel and dependence on the selected lift remain obstacles. BLR linear-
+ity testing [ 13] would decode jointly additive scalar potentials, but the assistant has not obtained that
+joint coherence. The assistant ends this exploration with the global consistency obstacles unresolved
+and continues searching for an alphabet-independent algorithm or a route to the BasicSDP threshold.
+4 Nonlinear decoders and the amplification barrier
+The attempt to match the BasicSDP threshold for unconditional hardness continued through a proposed
+Unique Games reduction. Honest encodings needed to withstand noise while inconsistent answers be-
+came decodable or unstable. Tensor constructions made honest error exponentially small by using rare
+gates, but the same gates protected arbitrary functions of a surviving matrix channel:
+
+PAGE 6
+BasicSDP threshold and Unique Games 6
+VERBA TIM EXCERPT
+Thus soundness gap ≈ε, not enough. Need ensure dummy axes themselves hard so no arbitrary gating.
+Imbalanced cycle obstacle.
+Reconsidering the Khot–Minzer–Safra construction [ 39] focused attention on representations
+compatible with many projections and noise that disrupts adaptive choices among them. The assistant
+revisited the outer reduction of Dinur, Khot, Kindler, Minzer and Safra [ 21] and Minzer–Zheng’s
+equivalence-class construction [ 46], and inspected the Barak–Kothari–Steurer shortcode formula-
+tion [ 8]. Rich pairings [ 16] suggested scrambling labels, but fixed permutations preserved the
+obstruction and edge-dependent permutations exposed it. Smooth-code alternatives prompted an
+analogy with Khot–Moshkovitz’s Boolean noise test [ 41]; Gowers–Hatami stability [ 30] was another
+comparison, without a demonstrated application to the proposed nonuniform directions. Nonlinear
+equivariant decoders became the main alternative. The target was an unbounded separation between
+nonlinear stability and the best compatible linear decoding, suﬀicient for the proposed reduction.
+T wo diﬀiculties then evolved together. Projection aliases Fourier frequencies, so low rank need not
+yield agreeing decoded labels. A proposed inclusion–exclusion formula bounded Fourier truncation
+independently of the number of outer coordinates, but controlling projected queries and extracting con-
+sistent labels remained unresolved. Meanwhile, concatenating nonlinear decoders allowed linear com-
+petitors to split into separate scalar lifts. Recalled Grassmann hypercontractivity of Ellis, Kindler and
+Lifshitz [26] motivated seeking stronger rank bounds. Dinur’s gap amplification [23] suggested exploit-
+ing structured completeness errors; Dumer–Micciancio–Sudan code-distance hardness [ 24] suggested
+sparse outer solutions. Neither idea removed the projection obstacle, which the assistant contrasted
+with the uniform query marginals in Håstad’s Max3Lin reduction [ 32]. Generic OR amplification en-
+countered equality’s transitivity , and sparse-column encodings exposed their projections through du-
+plicated entries.
+Perfect colorings suggested decoders whose output characters occupy a single Fourier degree. The
+Nisan–Szegedy degree bound [ 48] limited the number of relevant Boolean coordinates, prompting a
+distinction between Boolean degree and degree over larger alphabets. Writing 𝑝 for nonlinear noise
+failure and ℎ(𝑟) for the least noise cost of simultaneous linear lifts of 𝑟 independent logical characters,
+the desired advantage was a growing ratio ℎ(𝑟)/𝑝. A simplex-mixing proposal sought to combine small
+decoders through symmetric injections into a larger logical space, preserving an existing advantage
+while enlarging the output. Recursive amplification again met fragmentation:
+VERBA TIM EXCERPT
+But after many levels rank may collapse along branches; fixed b implies stabilization at factor≤b.
+Need increasing b or avoid collapse via mixing outer layers.
+Symmetry-based sections still admitted componentwise cheating, while permutation-valued path en-
+codings could reveal projection pairings through a single comparison. The assistant retained simplex
+mixing as a way to preserve an existing advantage, while continuing to seek amplification and a sound-
+ness argument that would turn the decoder separation into the requested BasicSDP hardness reduction.
+The assistant also retained a conditional fallback: combine the Khot–Vishnoi gap [ 38] with
+Raghavendra’s dictatorship-test framework [ 50] and the Mossel–O’Donnell–Oleszkiewicz invariance
+principle [47], using Rao’s or Dinur–Steurer’s alphabet-independent repetition [ 51, 22] for the reverse
+implication to Unique Games. Its algorithmic alternative recalled the condition-and-round approach of
+Bafna and collaborators [ 5], while continuing to confront the small-set expansion barrier.
+
+PAGE 7
+BasicSDP threshold and Unique Games 7
+5 From coordinated-error barriers to a candidate decoder gap
+The assistant revisited Raghavendra’s conditional CSP theorem and the Khot–Vishnoi gap [ 50, 38], and
+considered improving Goemans–Williamson rounding as an algorithmic alternative [ 29]. Tensoring
+nonlinear decoders spread errors across logical coordinates, defeating amplification.
+Comparisons with Ellis–Keller–Lifshitz edge-isoperimetric stability [ 27] and Gowers–Hatami stabil-
+ity of approximate representations [ 30] did not yield the desired decoder. Graphical encodings offered
+local consistency but required exponentially many Fourier queries. Håstad’s parity gap [ 32] and Rao’s
+repetition [ 51] supplied a proposed hardness route. The assistant questioned expander links against
+Bafna and collaborators’ sum-of-squares algorithms [ 5]. It also noted that one label determines a con-
+nected perfectly satisfied unique-game component.
+T o coordinate scalar errors in nearly satisfiable aﬀine games, it considered combining Goemans–
+Williamson rounding with Blum–Luby–Rubinfeld linearity testing [ 29, 13]. Random hashing invoked
+Charikar–Makarychev–Makarychev’s smaller-alphabet guarantee [ 17], but incompatible projected
+solutions prevented a geometric-progress argument. It contrasted polynomial time with Arora–Barak–
+Steurer’s subexponential algorithm and questioned the hierarchy strength of Khot–Saket gaps [ 1, 43].
+Its proposed use of Karger’s cut-counting bound involved a potentially unbounded approximation
+factor [35]; Friedgut’s cube junta theorem lacked the needed general-graph analogue [ 28].
+Independently controlled transposition words failed to generate the required transitive period action.
+Barrington’s theorem suggested both an expressivity obstruction and an escape through repeated con-
+trol bits [ 10].
+The assistant considered Croot–Lev–Pach polynomial methods and Lovett’s analytic-rank work, but
+found its contemplated inverse-rank estimate too weak [ 20, 45]. It then set 𝑋 = 𝐾 = 𝔽 3𝑞, 𝑞 = 2 𝑑, and
+𝐶(𝑥, 𝑦) = 𝑦 + (𝑥 2𝑥3, 𝑥1𝑥3, 𝑥1𝑥2).
+It compared nonlinear error 𝑝 with compatible linear-decoder error ℎ, arguing that cubic monomials
+and finite-field specialization bound exceptional cancellations by 3𝑟 for rank-𝑟 observable families. Con-
+catenating through all binary-linear isomorphisms randomized observable subspaces while enforcing
+a common parent lift. The assistant argued that its harmonic-potential estimate kept ℎ ≥ 1/4 while 𝑝
+vanished; the assistant checked specialization and conditioning.
+T o convert this separation into polynomial-size hardness, it returned to Khot–Minzer–Safra sound-
+ness through Barak–Kothari–Steurer [ 39, 8], the Dinur–Khot–Kindler–Minzer–Safra agreement frame-
+work and its smoothness/query-size obstacle [21], and Minzer–Zheng’s Near Optimal Alphabet-Soundness
+T radeoff PCPs[46]. Outer-PCP composition remained its next task.
+6 Shared aﬀine tables and frequent decoding advice
+The original BasicSDP threshold problem now motivates a proposed route through Unique Games hard-
+ness. The assistant combines its nonlinear encoding with shared aﬀine tables, then develops a transfer
+to finite constraint languages.
+The encoding seeks an equivariant decoder on a binary space containing 𝐾 = 𝔽 ℓ
+2: carefully chosen
+noise should rarely change the decoded value, while every suﬀiciently high-rank family of linear char-
+acters detects it with constant probability. Concatenated quadratic constructions and a harmonic rank
+potential are offered to establish this separation.
+The assistant studies subspace identifications in Minzer–Zheng’s PCP construction [ 46] and clique
+folding in the Dinur–Khot–Kindler–Minzer–Safra reduction [ 21]. The proposed reduction replaces ap-
+proximate consistency checks by exact identification of tables with the same reduced support. This mat-
+ters because consistency errors could otherwise concentrate on the small slices used by the published
+
+PAGE 8
+BasicSDP threshold and Unique Games 8
+shortcode soundness results of Khot–Minzer–Safra and Barak–Kothari–Steurer [ 39, 8]. Conditional
+agreement suggests decoding an aﬀine class rather than enumerating individual candidates. Fourier
+sampling is proposed to recover a compatible projected label.
+A further obstacle is that existence of one favorable slice does not guarantee useful random advice:
+VERBA TIM EXCERPT
+Existence tiny row fiber via theorem not enough because advice U gets random A,S=AM. Need positive
+probability independent k of hitting a whole fiber.
+The proposed repair randomizes the union of favorable row fibers and argues that too little total measure
+would contradict shortcode soundness. Starting from Håstad’s parity-equation hardness theorem [ 32],
+sparse projections and coordinates with zero advice slopes are intended to expose repeated equation-
+versus-variable games.
+For BasicSDP , the assistant uses Raghavendra’s dictatorship-test framework [ 50]: smoothing and
+Gaussian comparison aim to bound low-influence test performance by the integral optimum; influen-
+tial coordinates instead decode the outer game. It develops a direct Lindeberg comparison instead of
+invoking the Mossel–O’Donnell–Oleszkiewicz invariance theorem [ 47]. The assistant identifies two
+remaining concerns: repeated variables may obstruct the intended projection-game formulation, and
+ordinary Raz repetition [ 53] introduces an alphabet dependence that risks circular parameter choices.
+Alphabet-independent projection-game repetition from Rao and Dinur–Steurer [ 51, 22] is checked as a
+remedy.
+The assistant also compares the proposed parameters with the alphabet-dependent guarantees of
+Charikar–Makarychev–Makarychev [17], finding no contradiction in that comparison. It revisits a fall-
+back converse based on the Khot–Vishnoi integrality gap [ 38], extended with dummy labels to force a
+baseline objective value.
+7 Uniformity in rectangular shortcode parameters
+Combining the nonlinear gadget with Unique Games decoding requires bounds that remain uniform as
+the outer construction grows.
+The assistant asks whether translation constraints over𝔽ℓ
+2 admit an algorithmic obstruction. It revisits
+Khot’s Unique Games formulation [ 44] and recalls the Max-2-Lin hardness results of Khot–Kindler–
+Mossel–O’Donnell [ 40], while questioning their relevance to this particular group. Coordinatewise
+Goemans–Williamson rounding [ 29] incurs a union-bound loss in ℓ; the alphabet dependence in the
+Charikar–Makarychev–Makarychev algorithms [17] also enters the comparison. The entangled-prover
+result Unique Games with Entangled Provers are Easy [37] does not directly give an algorithm for the clas-
+sical game.
+The gadget has an equivariant decoder 𝐶 ∶ 𝒱 → 𝐾 : shifting its input by 𝑘 ∈ 𝐾 shifts its output by
+𝑘. Proposed noise almost preserves this nonlinear decoder while remaining detectable by suﬀiciently
+large families of linear characters. A finite-field quadratic map, a bound of 3𝑟 simultaneous alignments
+for generic rank-𝑟 character spaces, and concatenation tracked by a harmonic potential are used by the
+assistant to argue for the separation. The assistant checks why specialization cannot increase matrix
+rank:
+VERBA TIM EXCERPT
+Matrix rank cannot rise under specialization because all larger minors zero *as polynomials*, even
+with rational combinations; rank over function field r implies determinants identically zero in
+F2[x]. yes. Good.
+
+PAGE 9
+BasicSDP threshold and Unique Games 9
+The assistant uses the Khot–Vishnoi integrality gap [ 38] to check simple SDP rounding objections. It
+invokes the Khot–Minzer–Safra inverse result [ 39], consulted through Barak–Kothari–Steurer’s short-
+code formulation [8]. It scrutinizes whether the constants remain uniform for the construction’s highly
+rectangular matrices and provisionally accepts that they do.
+For soundness, the assistant uses Håstad’s parity-equation hardness theorem [ 32] and checks
+a cloning modification to make the three variables within each equation distinct. Ordered local
+copies preserve compatibility without merging repeated variable positions across blocks. It credits
+Minzer–Zheng [46] for the smooth variable-versus-equation game with advice that informs its sparse-
+projection construction. Sparse singleton projections, with probability 𝛽 = 𝑘 −2/3, are intended both to
+make distributional error vanish and to leave increasingly many coordinates available for decoding.
+Fourier agreement, bounded row and column advice, and projection-game repetition must then rule
+out cheating. The assistant notes that conditioning on successful witnesses would compromise the
+independence needed for decoding. T o avoid circular parameter choices, the assistant compares the
+alphabet-dependent repetition bounds of Raz and Holenstein [ 53, 33] with the alphabet-independent
+projection-game bounds of Rao and Dinur–Steurer [ 51, 22].
+The BasicSDP transfer follows Raghavendra’s framework [ 50], using shared answers for repeated
+variables, smoothing, low-influence Gaussian comparison based on pair moments, and influential-
+coordinate decoding. Rational approximations require reserved slack.
+8 Row-fiber abundance and threshold transfer
+The next issue is whether useful decoding advice occurs with constant probability. The proposed argu-
+ment invokes Håstad’s parity-equation hardness result [32], the Khot–Minzer–Safra shortcode theorem
+in the Barak–Kothari–Steurer formulation [39, 8], and projection-game parallel repetition [ 51, 22]; their
+applicability depends on the uniformity and conditioning requirements below.
+The proposed gadget separates a shift-equivariant nonlinear map’s small noise sensitivity from con-
+stant detection by suﬀiciently high-rank linear observables. Its quadratic seed, 𝑄(𝑥) = (𝑥 2𝑥3, 𝑥1𝑥3, 𝑥1𝑥2),
+operates over a characteristic-two field. A polynomial anti-alignment argument and harmonic rank-loss
+potential were intended to amplify that separation. The argument must account for random orienta-
+tions, quotient shifts, and possible representations of nonlinear derivatives by mixtures of linear maps
+before controlling the frequency of useful decoding advice.
+Soundness exposed a sharper issue: the shortcode theorem’s existence of a correlated slice did not
+immediately make useful row advice suﬀiciently frequent.
+VERBA TIM EXCERPT
+Row fiber abundance lemma is important to avoid conditioned advice rare due row values S0
+exponential m. KMS just existence of one fiber, probability 2^{-m r}. Need union randomization
+argument ensure many.
+The proposed repair randomized the union of good row fibers to argue abundance by contradiction.
+Another correction made the goodness probability explicitly averaged over questions, rather than valid
+for each question. The sparse-projection and matrix-advice construction drew on the smooth variable-
+versus-equation game with advice of Minzer and Zheng [46]. The assistant argues that sparse projection
+at rate 𝛽 = 𝑘 −2/3 gives vanishing distributional error while retaining many coordinates with zero advice
+slopes. Applying parallel repetition then depended on those hidden coordinates remaining independent
+under public conditioning. For this fixed-alphabet outer game, the assistant also considered the general
+repetition theorems of Raz and Holenstein [ 53, 33]; alphabet-independent amplification remained the
+role of Rao or Dinur–Steurer [ 51, 22].
+
+PAGE 10
+BasicSDP threshold and Unique Games 10
+The BasicSDP transfer followed Raghavendra’s dictatorship-test framework [50] and used a finite gap
+instance with integral optimum 𝐴∗, feasible SDP value 𝐵∗, and 𝐴∗/𝐵∗ < 𝑟 . Smoothing, Fourier trun-
+cation, and Gaussian replacement were intended to bound low-influence acceptance by 𝐴∗; influential
+coordinates supplied candidate Unique Games labels. Parameter ordering and rational approximation
+also received scrutiny. For comparison, the assistant considered applying Goemans–Williamson round-
+ing separately to binary coordinates [ 29]; its union-bound estimate accumulated a factor equal to the
+number of coordinates, so this did not supply the desired alphabet-independent obstruction.
+9 Scalar detection and conditional independence
+The relation between scalar noise cost and simultaneous linear decoding becomes the next obstacle. The
+proposed reduction continues to use Håstad’s parity-equation gap [ 32], the Khot–Minzer–Safra inverse
+shortcode result [39] through Barak–Kothari–Steurer’sSmall-Set Expansion in Shortcode Graph and the 2-to-
+2 Conjecture [8], projection-game parallel repetition [ 22], and Raghavendra’s BasicSDP framework [50].
+In checking that the starting gap reduction remains deterministic and polynomial for fixed parameters,
+it invokes the PCP constructions of Dinur [ 23] and Arora–Safra [ 3].
+The gadget seeks a perturbation that rarely changes an equivariant nonlinear encoding but remains
+detectable by high-rank linear observations. The algebraic argument identifies which monomial evalua-
+tions generate a function space; the recursive argument seeks to control exceptional rank losses through
+a harmonic estimate. Searching for an obstruction, the assistant observes:
+VERBA TIM EXCERPT
+Aha! We don't actually need simultaneous union per z; detection prob for subspace G equals \(2\)
+times average over its characters of scalar nonzero probability (because for each a with some g≠0,
+exactly half of linear subspace maps a to1).
+The assistant thus reformulates the possible contradiction through average scalar cost, but still needs
+compatible linear extensions to complete this obstruction to the nonlinear separation. It also tests the
+gadget against the Kahn–Kalai–Linial influence theorem [ 34]: small average influence across an enor-
+mous number of leaves does not give the sought contradiction. Comparing binary translation games
+with the Goemans–Williamson near-satisfiable Max-Cut guarantee [ 29] likewise leaves the diﬀiculty of
+controlling simultaneous errors across all label coordinates.
+The smooth variable-versus-equation game with advice in Minzer–Zheng [ 46] supplies the inspira-
+tion for sparse projections and zero-advice coordinates. Decoding imposes two consistency require-
+ments. Shared aﬀine tables must choose translation representatives from their reduced keys alone. Also,
+bounded row information must live in the fixed output dimension, while column witnesses may be se-
+lected using the equation prover’s information; blindly guessing directions in a growing domain would
+destroy a constant decoding probability. The assistant argues that sparse projection with probability
+𝛽 = 𝑘 −2/3 makes advice distributions close while leaving increasingly many coordinates with zero ad-
+vice slopes. Conditional independence on those coordinates remains essential to the repetition argu-
+ment. The assistant considers Raz’s general repetition theorem [ 53] for the fixed-alphabet clean game,
+while using the alphabet-independent projection-game bounds of Rao and Dinur–Steurer [ 51, 22] for
+the final amplification.
+An alternative amplification using several perturbations is explored and left unused. The retained
+BasicSDP transfer smooths and truncates functions, matches singleton and pair moments with Gaus-
+sian variables, and requires one assignment across the gap instance and alphabet-independent influence
+bounds.
+
+PAGE 11
+BasicSDP threshold and Unique Games 11
+10 Compatibility of labels and pair moments
+Local decoding must yield compatible labels before the Unique Games gap can be transferred to a fixed
+constraint language.
+The central proposal separates nonlinear stability from linear detectability. A map 𝐶 ∶ 𝒱 → 𝐾 obeys
+𝐶(𝑥 + 𝑘) = 𝐶(𝑥) + 𝑘 ; carefully chosen noise should rarely change 𝐶 while detecting every suﬀiciently
+high-rank family of characters restricted to 𝐾. The recursive quadratic gadget uses
+𝑄(𝑥) = (𝑥 2𝑥3, 𝑥1𝑥3, 𝑥1𝑥2), 𝑥 ∈ 𝔽 3
+2𝑑.
+A generic-subspace argument is intended to limit aligned characters, and a harmonic rank potential
+should control extinction while nonlinear sensitivity decreases. Attempts to contradict this separation
+through coordinatewise linear rounding encounter a diﬀiculty: separately corrected coordinates need
+not remain in the required linear code.
+The outer reduction starts with Håstad’s parity-triple hardness [ 32]. Sparse projections and matrix
+advice follow the smooth-game idea discussed by Minzer and Zheng [ 46]. The assistant checks repeti-
+tion on the clean coordinates using Raz’s theorem [ 53], and alphabet-independent amplification using
+Rao or Dinur–Steurer [ 51, 22].
+The proposed soundness bridge invokes the shortcode results of Khot–Minzer–Safra and Barak–
+Kothari–Steurer [ 39, 8]. The proposed application decodes on bounded row and column slices and
+transfers useful events by unconditional total-variation comparison. Folding should select valid aﬀine
+answers; coordinates with zero advice should recover an ordinary repeated projection game. Repeated
+variables retain separate local coordinates, a convention essential to the claimed independence.
+The assistant also considers algorithms for Unique Games on expanding constraint graphs [ 2], but ar-
+gues that its graph need not have the required expansion. It considers coordinatewise Boolean rounding
+associated with Goemans–Williamson and Charikar–Wirth [ 29, 18]; a union bound over many coordi-
+nates does not give the desired alphabet-independent guarantee. It compares translation-game exam-
+ples from Khot–Vishnoi [38] with the proposed construction, distinguishing SDP stability from stability
+of an actual labeling.
+Finally , the transfer to the BasicSDP threshold in Raghavendra’s framework [ 50] is checked for
+matched pair moments, Gaussian replacement after smoothing and truncation, and simplex projection
+producing one globally consistent assignment across constraints. Rational weights and fixed-parameter
+ordering are also revisited.
+11 Parameter order and uniform slice bounds
+The order of parameter choices is essential to the proposed route from Håstad’s parity-equation gap [32]
+through a nonlinear noise gadget and Unique Games hardness to each fixed finite constraint language.
+The gadget aims to make an equivariant decoder nearly invariant under noise while high-rank linear
+observables detect that noise with constant probability. Rechecking the finite-field construction leads
+through independence of square-root monomials, polynomial specialization, and a harmonic potential
+controlling rank loss under recursive restrictions.
+A concrete counterstrategy assigns fixed bits on small table supports and chooses satisfying local
+answers elsewhere. The assistant argues that simultaneous perturbation directions impose incompatible
+demands on unsatisfied equations, while uniform subspace noise obstructs concentrating on favorable
+directions.
+The assistant next checks a literature dependency: the shortcode result attributed to Khot–Minzer–
+Safra through the Barak–Kothari–Steurer formulation [39, 8] must provide slice bounds independent of
+
+PAGE 12
+BasicSDP threshold and Unique Games 12
+a subsequently enlarged output dimension. Otherwise the row constraints might consume the kernel
+needed for decoding. The assistant considers rectangular padding and projection as possible ways to
+obtain the required uniform bounds.
+The soundness audit draws on the smooth variable-versus-equation game with advice in Minzer and
+Zheng’s Near Optimal Alphabet-Soundness T radeoff PCPs [46], and examines whether zero advice slopes
+conceal singleton projections. The assistant argues that with projection probability 𝛽 = 𝑘 −2/3, distri-
+butional disturbance vanishes while the number of usable repeated-game coordinates grows. Decoder
+dependencies and parameter order are clarified. The assistant checks the alphabet-independent rep-
+etition bounds of Rao and Dinur–Steurer [ 51, 22] for amplifying the resulting Unique Games gap; it
+also notes that Raz’s theorem [ 53] suﬀices for the fixed-alphabet game on the clean coordinates. An
+alternative amplification by summing perturbations remains unused because inconsistent loops require
+additional control.
+For comparison with known algorithms, it revisits the Khot–Vishnoi integrality gap [ 38]: the binary
+translation structure of the constraints does not by itself supply a dimension-independent SDP rounding
+argument.
+Finally , the assistant checks the BasicSDP transfer in Raghavendra’s framework [ 50] through full-
+support marginals, smoothing, Gaussian moment matching, and influence-list decoding. The dimen-
+sion dependence of the imported shortcode bounds remains under examination.
+12 Assembling the proposed reduction
+The proposed reduction has two stages: first obtain Unique Games with nearly perfect completeness
+and arbitrarily small soundness, then transfer that gap to the BasicSDP threshold for each fixed finite
+constraint language.
+The quadratic gadget is checked through a harmonic potential measuring surviving character rank.
+A key local observation is that nongeneric character spaces need only have small constant probability:
+fresh outgoing randomness supplies a further factor proportional to the loss parameter. This step also
+requires trace duality , character alignment, and conditional uniformity of gadget outputs.
+The assistant uses the inverse-shortcode results of Khot–Minzer–Safra and the Barak–Kothari–Steurer
+formulation [39, 8]. It explains an equality-test consequence through value fibers and justifies dimension
+padding by projecting aﬀine tensor-product slices.
+The parity-triple reduction starts from Håstad’s nearly satisfiable parity-equation hardness
+theorem [ 32]. The assistant credits Minzer and Zheng’s PCP construction as inspiration for the
+variable-versus-equation game with advice [ 46]. Its proposed soundness analysis compares gadget
+noise with uniform rank-one noise, then seeks aﬀine structure on bounded row-and-column slices.
+Its parameter order fixes gadget and advice dimensions before increasing the number 𝑘 of parity
+blocks. Sparse projection with 𝛽 = 𝑘 −2/3 is intended to make 𝑘𝛽2 → 0 while 𝑘𝛽 → ∞ , simultaneously
+suppressing distributional error and producing many clean singleton blocks. Uniform bounds and
+alphabet-independent projection-game repetition, supplied by Rao or Dinur–Steurer, are essential
+dependencies [51, 22]. The assistant also considers an alternative amplification using Raz’s theorem on
+a small base game, but retains the projection-game route [ 53].
+Finally , using Raghavendra’s SDP and dictatorship-test framework, the assistant transfers a fixed-
+language SDP gap witness through a smoothed dictatorship test, low-influence replacement, list de-
+coding, and rational sampling weights [ 50]. It also compares the claimed threshold with Goemans–
+Williamson approximation for Max-Cut and finds no contradiction [ 29].
+The assistant concludes with its proposed aﬀirmative argument for the Unique Games consequence
+and the BasicSDP threshold claim.
+
+PAGE 13
+BasicSDP threshold and Unique Games 13
+References
+[1] Sanjeev Arora, Boaz Barak, and David Steurer. Subexponential Algorithms for Unique Games and Re-
+lated Problems. In Proceedings of the 51st Annual IEEE Symposium on Foundations of Computer Science
+(2010), 563–572. https://doi.org/10.1109/FOCS.2010.59.
+[2] Sanjeev Arora, Subhash Khot, Alexandra Kolla, David Steurer, Madhur T ulsiani, and Nisheeth K.
+Vishnoi. Unique Games on Expanding Constraint Graphs are Easy. In Proceedings of the 40th Annual ACM
+Symposium on Theory of Computing (STOC) (2008), 21–28. https://doi.org/10.1145/1374376.1374
+380.
+[3] Sanjeev Arora and Shmuel Safra. Probabilistic Checking of Proofs: A New Characterization of NP . Jour-
+nal of the ACM 45(1) (1998), 70–122. https://doi.org/10.1145/273865.273901.
+[4] Mitali Bafna and Dor Minzer. Solving Unique Games over Globally Hypercontractive Graphs . In 39th
+Computational Complexity Conference (CCC) , Leibniz International Proceedings in Informatics 300
+(2024), 3:1–3:15. https://doi.org/10.4230/LIPIcs.CCC.2024.3 . Full version: https://arxiv.org/
+abs/2304.07284.
+[5] Mitali Bafna, Boaz Barak, Pravesh K. Kothari, Tselil Schramm, and David Steurer. Playing Unique
+Games on Certified Small-Set Expanders. In Proceedings of the 53rd Annual ACM SIGACT Symposium on
+Theory of Computing (2021), 1629–1642. https://doi.org/10.1145/3406325.3451099.
+[6] Afonso S. Bandeira, Amit Singer, and Daniel A. Spielman. A Cheeger Inequality for the Graph Con-
+nection Laplacian . SIAM Journal on Matrix Analysis and Applications 34(4) (2013), 1611–1630.
+https://doi.org/10.1137/120875338.
+[7] Boaz Barak, Fernando G. S. L. Brandão, Aram W. Harrow , Jonathan Kelner, David Steurer, and
+Yuan Zhou. Hypercontractivity, Sum-of-Squares Proofs, and their Applications. In Proceedings of the 44th
+Annual ACM Symposium on Theory of Computing (STOC) (2012), 307–326. https://doi.org/10.114
+5/2213977.2214006.
+[8] Boaz Barak, Pravesh K. Kothari, and David Steurer. Small-Set Expansion in Shortcode Graph and the
+2-to-2 Conjecture. In 10th Innovations in Theoretical Computer Science Conference (ITCS), Leibniz Inter-
+national Proceedings in Informatics 124 (2019), 9:1–9:12. https://doi.org/10.4230/LIPIcs.ITCS.
+2019.9. Full version: https://arxiv.org/abs/1804.08662v1.
+[9] Boaz Barak, Jonathan Kelner, and David Steurer.Rounding Sum-of-Squares Relaxations. In Proceedings
+of the 46th Annual ACM Symposium on Theory of Computing (STOC) (2014), 31–40. https://doi.or
+g/10.1145/2591796.2591886.
+[10] David A. Barrington. Bounded-width polynomial-size branching programs recognize exactly those lan-
+guages in NC1. Journal of Computer and System Sciences 38(1) (1989), 150–164. https://doi.org/
+10.1016/0022-0000(89)90037-8.
+[11] Libor Barto and Marcin Kozik. Robustly Solvable Constraint Satisfaction Problems . SIAM Journal on
+Computing 45(4) (2016), 1646–1669. https://doi.org/10.1137/130915479.
+[12] William Beckner. Inequalities in Fourier analysis . Annals of Mathematics 102(1) (1975), 159–182. ht
+tps://doi.org/10.2307/1970980.
+[13] Manuel Blum, Michael Luby , and Ronitt Rubinfeld.Self-testing/correcting with applications to numer-
+ical problems. Journal of Computer and System Sciences 47(3) (1993), 549–595. https://doi.org/10
+.1016/0022-0000(93)90044-W.
+
+PAGE 14
+BasicSDP threshold and Unique Games 14
+[14] Aline Bonami. Étude des coeﬀicients de Fourier des fonctions de 𝐿𝑝(𝐺). Annales de l’Institut Fourier
+20(2) (1970), 335–402. https://doi.org/10.5802/aif.357.
+[15] Yuri Boykov , Olga Veksler, and Ramin Zabih.Fast Approximate Energy Minimization via Graph Cuts .
+IEEE Transactions on Pattern Analysis and Machine Intelligence 23(11) (2001), 1222–1239. https:
+//doi.org/10.1109/34.969114.
+[16] Mark Braverman, Subhash Khot, and Dor Minzer. On Rich 2-to-1 Games . In 12th Innovations in
+Theoretical Computer Science Conference (ITCS) , Leibniz International Proceedings in Informatics
+185 (2021), 27:1–27:20. https://doi.org/10.4230/LIPIcs.ITCS.2021.27 . Full version: https:
+//eccc.weizmann.ac.il/report/2019/141/.
+[17] Moses Charikar, Konstantin Makarychev , and Yury Makarychev .Near-Optimal Algorithms for Unique
+Games. In Proceedings of the Thirty-Eighth Annual ACM Symposium on Theory of Computing (2006),
+205–214. https://doi.org/10.1145/1132516.1132547.
+[18] Moses Charikar and Anthony Wirth. Maximizing quadratic programs: extending Grothendieck’s in-
+equality. In 45th Annual IEEE Symposium on Foundations of Computer Science (FOCS) (2004), 54–60.
+https://doi.org/10.1109/FOCS.2004.39.
+[19] Eden Chlamtac, Konstantin Makarychev , and Yury Makarychev .How to Play Unique Games Using
+Embeddings. In 47th Annual IEEE Symposium on Foundations of Computer Science (FOCS) (2006), 687–
+696. https://doi.org/10.1109/FOCS.2006.36.
+[20] Ernie Croot, Vsevolod F. Lev , and Péter Pál Pach. Progression-free sets in ℤ𝑛
+4 are exponentially small .
+Annals of Mathematics 185(1) (2017), 331–337. https://doi.org/10.4007/annals.2017.185.1.7.
+[21] Irit Dinur, Subhash Khot, Guy Kindler, Dor Minzer, and Muli Safra. T owards a Proof of the 2-to-1
+Games Conjecture? . Theory of Computing 21(11) (2025), 1–50. https://doi.org/10.4086/toc.2025
+.v021a011.
+[22] Irit Dinur and David Steurer.Analytical Approach to Parallel Repetition. In Proceedings of the Forty-Sixth
+Annual ACM Symposium on Theory of Computing (2014), 624–633. https://doi.org/10.1145/259179
+6.2591884.
+[23] Irit Dinur. The PCP Theorem by Gap Amplification. Journal of the ACM 54(3) (2007), Article 12. https:
+//doi.org/10.1145/1236457.1236459.
+[24] Ilya Dumer, Daniele Micciancio, and Madhu Sudan. Hardness of Approximating the Minimum Dis-
+tance of a Linear Code . IEEE Transactions on Information Theory 49(1) (2003), 22–37. h t t p s :
+//doi.org/10.1109/TIT.2002.806118.
+[25] Ronen Eldan and Dana Moshkovitz. Reduction From Non-Unique Games T o Boolean Unique Games. In
+13th Innovations in Theoretical Computer Science Conference (ITCS), Leibniz International Proceedings
+in Informatics 215 (2022), 64:1–64:25. https://doi.org/10.4230/LIPIcs.ITCS.2022.64.
+[26] David Ellis, Guy Kindler, and Noam Lifshitz. An analogue of Bonami’s Lemma for functions on spaces
+of linear maps, and 2-2 Games . arXiv:2209.04243v2 (2026). https://arxiv.org/abs/2209.04243v2.
+[27] David Ellis, Nathan Keller, and Noam Lifshitz.On the structure of subsets of the discrete cube with small
+edge boundary. Discrete Analysis 2018 (2018), Paper No. 9, 29 pp. https://doi.org/10.19086/da.36
+68.
+[28] Ehud Friedgut. Boolean Functions With Low Average Sensitivity Depend On Few Coordinates . Combi-
+natorica 18(1) (1998), 27–35. https://doi.org/10.1007/PL00009809.
+
+PAGE 15
+BasicSDP threshold and Unique Games 15
+[29] Michel X. Goemans and David P . Williamson. Improved Approximation Algorithms for Maximum Cut
+and Satisfiability Problems Using Semidefinite Programming . Journal of the ACM 42(6) (1995), 1115–
+1145. https://doi.org/10.1145/227683.227684.
+[30] William Timothy Gowers and Omid Hatami. Inverse and stability theorems for approximate representa-
+tions of finite groups . Sbornik: Mathematics 208(12) (2017), 1784–1817. https://doi.org/10.1070/
+SM8872.
+[31] Dima Grigoriev .Linear Lower Bound on Degrees of Positivstellensatz Calculus Proofs for the Parity . The-
+oretical Computer Science 259(1–2) (2001), 613–622. https://doi.org/10.1016/S0304-3975(00)0
+0157-2.
+[32] Johan Håstad. Some optimal inapproximability results . Journal of the ACM 48(4) (2001), 798–859. ht
+tps://doi.org/10.1145/502090.502098.
+[33] Thomas Holenstein. Parallel repetition: simplifications and the no-signaling case. Theory of Computing
+5(8) (2009), 141–172. https://doi.org/10.4086/toc.2009.v005a008.
+[34] Jeff Kahn, Gil Kalai, and Nathan Linial. The Influence of Variables on Boolean Functions. In Proceedings
+of the 29th Annual Symposium on Foundations of Computer Science (FOCS) (1988), 68–80. https://do
+i.org/10.1109/SFCS.1988.21923.
+[35] David R. Karger. Global Min-cuts in RNC, and Other Ramifications of a Simple Min-Cut Algorithm . In
+Proceedings of the Fourth Annual ACM–SIAM Symposium on Discrete Algorithms (SODA) (1993), 21–
+30. https://people.csail.mit.edu/karger/Papers/mincut.pdf.
+[36] Tadao Kasami and Nobuki T okura. On the weight structure of Reed-Muller codes . IEEE Transactions
+on Information Theory 16(6) (1970), 752–759. https://doi.org/10.1109/TIT.1970.1054545.
+[37] Julia Kempe, Oded Regev , and Ben T oner.Unique Games with Entangled Provers are Easy. SIAM Jour-
+nal on Computing 39(7) (2010), 3207–3229. https://doi.org/10.1137/090772885.
+[38] Subhash Khot and Nisheeth K. Vishnoi.The Unique Games Conjecture, Integrality Gap for Cut Problems
+and Embeddability of Negative T ype Metrics into ℓ1. Journal of the ACM 62(1) (2015), 8:1–8:39. https:
+//doi.org/10.1145/2629614.
+[39] Subhash Khot, Dor Minzer, and Muli Safra. Pseudorandom sets in Grassmann graph have near-perfect
+expansion. Annals of Mathematics 198(1) (2023), 1–92. https://doi.org/10.4007/annals.2023.198.
+1.1.
+[40] Subhash Khot, Guy Kindler, Elchanan Mossel, and Ryan O’Donnell. Optimal Inapproximability Re-
+sults for MAX-CUT and Other 2-V ariable CSPs?. SIAM Journal on Computing 37(1) (2007), 319–357.
+https://doi.org/10.1137/S0097539705447372.
+[41] Subhash Khot and Dana Moshkovitz. Candidate Hard Unique Game. In Proceedings of the 48th Annual
+ACM Symposium on Theory of Computing (STOC) (2016), 63–76. https://doi.org/10.1145/2897518.
+2897531.
+[42] Subhash Khot and Dana Moshkovitz. NP-Hardness of Approximately Solving Linear Equations Over
+Reals. SIAM Journal on Computing 42(3) (2013), 752–791. https://doi.org/10.1137/110846415.
+[43] Subhash Khot and Rishi Saket. SDP Integrality Gaps with Local ℓ1-Embeddability. In Proceedings of the
+50th Annual IEEE Symposium on Foundations of Computer Science (FOCS) (2009), 565–574. https:
+//doi.org/10.1109/FOCS.2009.37.
+
+PAGE 16
+BasicSDP threshold and Unique Games 16
+[44] Subhash Khot. On the Power of Unique 2-Prover 1-Round Games . In Proceedings of the Thirty-Fourth
+Annual ACM Symposium on Theory of Computing (2002), 767–775. https://doi.org/10.1145/509907
+.510017.
+[45] Shachar Lovett. The analytic rank of tensors and its applications . Discrete Analysis 2019 (2019), Paper
+No. 7, 10 pp. https://doi.org/10.19086/da.8654.
+[46] Dor Minzer and Kai Zhe Zheng. Near Optimal Alphabet-Soundness T radeoff PCPs. arXiv:2404.07441v4
+(2026). https://arxiv.org/abs/2404.07441v4.
+[47] Elchanan Mossel, Ryan O’Donnell, and Krzysztof Oleszkiewicz. Noise stability of functions with low
+influences: Invariance and optimality. Annals of Mathematics 171(1) (2010), 295–341. https://doi.or
+g/10.4007/annals.2010.171.295.
+[48] Noam Nisan and Mario Szegedy. On the Degree of Boolean Functions as Real Polynomials . Computa-
+tional Complexity 4(4) (1994), 301–313. https://doi.org/10.1007/BF01263419.
+[49] Christos H. Papadimitriou and Mihalis Yannakakis. Optimization, approximation, and complexity
+classes. Journal of Computer and System Sciences 43(3) (1991), 425–440. https://doi.org/10.1
+016/0022-0000(91)90023-X.
+[50] Prasad Raghavendra. Optimal Algorithms and Inapproximability Results for Every CSP? . In Proceedings
+of the Fortieth Annual ACM Symposium on Theory of Computing (2008), 245–254. https://doi.org/10
+.1145/1374376.1374414.
+[51] Anup Rao. Parallel Repetition in Projection Games and a Concentration Bound . SIAM Journal on Com-
+puting 40(6) (2011), 1871–1891. https://doi.org/10.1137/080734042.
+[52] Ran Raz. A Counterexample to Strong Parallel Repetition . SIAM Journal on Computing 40(3) (2011),
+771–777. https://doi.org/10.1137/090747270.
+[53] Ran Raz. A Parallel Repetition Theorem . SIAM Journal on Computing 27(3) (1998), 763–803. https:
+//doi.org/10.1137/S0097539795280895.
+[54] Grant Schoenebeck. Linear Level Lasserre Lower Bounds for Certain k-CSPs . In Proceedings of the 49th
+Annual IEEE Symposium on Foundations of Computer Science (FOCS) (2008), 593–602. https://doi.
+org/10.1109/FOCS.2008.74.
+[55] Johan Thapper and Stanislav Živný. The Complexity of Finite-V alued CSPs. Journal of the ACM 63(4)
+(2016), Article 37. https://doi.org/10.1145/2974019.
+[56] Luca Trevisan.Max Cut and the Smallest Eigenvalue. SIAM Journal on Computing41(6) (2012), 1769–
+1786. https://doi.org/10.1137/090773714.

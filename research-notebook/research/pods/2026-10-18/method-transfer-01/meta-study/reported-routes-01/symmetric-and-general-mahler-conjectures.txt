@@ -1,0 +1,2034 @@
+PAGE 1
+Geometric Mahler conjectures 1
+Summarized chain of thought (Symmetric and general Mahler
+conjectures)
+OpenAI
+These three attempts address complementary parts of the Mahler problem. Part I concerns the sharp
+symmetric lower bound. Part II takes that bound as a supplied premise and seeks the Hanner equality
+classification; its supplied premise and candidate reasoning are not identified with the particular proof
+in Part I. Part III develops a separate general-body argument for the simplex bound and its equality
+cases, rather than deriving it from the symmetric attempts. The three parts retain separate arguments
+and hypotheses.
+Part I: The symmetric lower bound
+Original prompt (excerpts)
+# Problem
+For an integer $n\ge4$, let $K\subset\mathbb R^n$ be a compact convex set with nonempty interior,
+with $K=-K$ and $0$ in its interior. Define its polar by
+$$
+K^\circ=\{y\in\mathbb R^n:\langle x,y\rangle\le1\text{ for every }x\in K\},
+\qquad \langle x,y\rangle=\sum_{i=1}^n x_i y_i.
+$$
+Writing $\operatorname{vol}_n$ for $n$-dimensional Lebesgue volume, is it true that
+$$
+\operatorname{vol}_n(K)\operatorname{vol}_n(K^\circ)\ge\frac{4^n}{n!}
+$$
+for every $n\ge4$ and every such $K$?
+1 Boundary laws and the symmetric bound
+The symmetric attempt begins by recalling the three-dimensional result of Iriyeh–Shibata, Meyer’s un-
+conditional argument, and the lower bounds of Bourgain–Milman, Kuperberg, and Nazarov [ 36, 46,
+15, 39, 49]. It tries section induction, face flags, equal-measure cone partitions, entropy , and tensoriza-
+tion, but finds no sharp constant along these routes. In the polytope approach, it invokes Stanley’s
+lower bound for the ℎ-vector of centrally symmetric simplicial polytopes, but still needs a bound for the
+associated volume fractions [ 62]. It revisits Kuperberg’s neck construction and Berndtsson’s complex-
+integral proof, examines Nazarov’s Bergman-kernel approach, and considers Klartag’s relation between
+isotropic constants and Mahler volumes [ 39, 9, 49, 38].
+Lundin’s extremal-function formula and the Baran metric lead it toward planar boundary laws and
+complexified slabs [44, 5, 6]. It chooses
+𝑓 (𝜁 ) = 8
+𝜋2 ∑
+𝑘≥1, 𝑘 odd
+𝜁 𝑘
+𝑘2 ,
+whose boundary real part is a triangle wave, hence uniformly distributed on [−1, 1]. For each row basis
+of a slab presentation of 𝐾, it defines a feasibility probability 𝑃𝐼 using independent boundary values.
+
+PAGE 2
+Geometric Mahler conjectures 2
+It uses powers of the inverse conformal map, positivity of the complex Hessian of a logarithmic po-
+tential, Stokes’ theorem, and a homogeneous flux calculation to derive ∑𝐼 𝑃𝐼 ≥ 1 . For the opposite
+inequality , it associates feasible bases with disjoint simplices in 𝐾∘, obtaining ∑𝐼 𝑃𝐼 ≤ 𝑛!|𝐾||𝐾 ∘|/4𝑛. It
+repeatedly checks normalization, genericity , boundary ties, and Hanner examples, then presents the
+argument with approximation from slab polytopes to arbitrary symmetric bodies.
+Part II: Equality and Hanner polytopes
+Original prompt (excerpts)
+# Symmetric Mahler–Hanner: remaining equality classification
+Let \(|\cdot|\) denote Lebesgue measure in \(\mathbb{R}^n\), and let \(\langle\cdot,\cdot\rangle\)
+be the standard inner product. A convex body in \(\mathbb{R}^n\) is a compact convex set with
+nonempty interior. Write
+\[
+\mathcal K_0^n=\{K\subset\mathbb{R}^n: K\text{ is a convex body and }K=-K\}.
+\]
+For \(K\in\mathcal K_0^n\), define its polar body by
+\[
+K^\circ=\{y\in\mathbb{R}^n:\langle x,y\rangle\le 1\text{ for all }x\in K\},
+\]
+and its volume product by
+\[
+P(K)=|K|\,|K^\circ|.
+\]
+For convex bodies \(K\subset E\) and \(L\subset F\) in finite-dimensional real vector spaces,
+define their \(\ell_\infty\)- and \(\ell_1\)-sums in \(E\oplus F\) by
+\[
+K\oplus_\infty L=K\times L,
+\qquad
+K\oplus_1 L=\operatorname{conv}\bigl((K\times\{0\})\cup(\{0\}\times L)\bigr).
+\]
+The class of Hanner polytopes is the smallest class of origin-symmetric convex polytopes containing
+all origin-symmetric line segments and closed under \(\oplus_\infty\) and \(\oplus_1\).
+Open problem: For every integer n >= 4 and every origin-symmetric convex body K in \(\mathcal
+K_0^n\), prove or disprove that
+\[
+P(K)=\frac{4^n}{n!}
+\quad\Longleftrightarrow\quad
+K\text{ is linearly equivalent to an }n\text{-dimensional Hanner polytope}.
+\]
+A negative answer must give a mathematically valid counterexample to this equivalence. A positive
+answer must establish it in every dimension n >= 4.
+2 A lens argument for Hanner equality
+The attempt takes a previously supplied sharp symmetric lower bound as a premise and reconstructs an
+earlier candidate argument for the equality case. That argument includes a lens construction and routes
+from its equality conditions to the three-ball intersection property.
+It first checks that polarity interchanges the two Hanner sums and that either sum in dimensions 𝑘, 𝑙
+
+PAGE 3
+Geometric Mahler conjectures 3
+has volume product 𝑃(𝐴)𝑃(𝐵)/(𝑘+𝑙
+𝑘 ). Induction from segments therefore gives the Hanner direction.
+For the converse, the assistant studies the analytic map
+𝐹(𝑧) = 8
+𝜋2 ∑
+𝑗≥0
+(−1)𝑗𝑧2𝑗+1
+(2𝑗 + 1)2 .
+It checks convexity of its inner image curves through the positivity of Re(1+𝑧𝐹 ″/𝐹′). The limiting bound-
+ary has branches ±𝜆(𝑡) + 𝑖𝑡 , with uniform height under uniform phase and 𝜆″(𝑡) = − sec(𝜋𝑡/2). For
+spanning real rows it forms a sum 𝑆(𝑟) of basis-feasibility probabilities. Splitting a smoothed complex
+Hessian determinant into minors containing a constant row and those omitting it, it derives monotonic-
+ity: the latter terms decrease with 𝑟, integration by parts makes total cutoff-mass differences tend to zero,
+and the former terms converge to feasibility probabilities. It checks extra-row ties through a rank-two
+phase map and uses dominated convergence at the circle and lens endpoints.
+The assistant obtains the circle value 𝑆(0+) = 1 by randomizing squared radii exponentially , integrat-
+ing complex Gaussians, and applying Cauchy–Binet. It also considers a deterministic explanation, but
+finds phase choices for which two bases are feasible simultaneously:
+VERBA TIM EXCERPT
+Then some phase none to balance. Thus no deterministic. Laplace solution concise.
+At the lens endpoint, the assistant bounds the total volume of the disjoint feasible simplices by the vol-
+ume of the polar body. Integrating over the original body yields the symmetric lower bound 𝑃(𝐾) ≥
+4𝑛/𝑛!. It then examines the equality conditions.
+For an equality body the assistant lifts to 𝐾 ⊕ 1 [−1, 1], whose polar is 𝑄 × [−1, 1], where 𝑄 = 𝐾 ∘. It
+uses inscribed product approximations and vanishing integrated missing volume to extract cost-optimal
+representations with minimum total mass. The asymptotic 𝜆(1 − 𝜂) = (2/𝜋)𝜂 log(1/𝜂) + 𝑂(𝜂) turns
+those costs into aﬀine expressions. Comparing two representations and separating their compact convex
+aggregate set yields, in its reconstruction, a metric median for any three points in the norm with unit
+ball 𝑄. Moving such a median toward a center whose ball misses it gives a common point of three
+pairwise-intersecting balls.
+The earlier candidate argument also discusses a facial route using Lima’s intersection characteriza-
+tion [43]; the assistant chooses the median route and checks the real, finite-dimensional hypotheses of
+Hansen–Lima’s structure theorem, particularly Corollary 7.4 [ 35]. It concludes that 𝑄 is an iterated ℓ1-
+and ℓ∞-sum of segments and applies polarity to conclude the stated classification for 𝐾.
+Part III: General convex bodies
+Original prompt (excerpts)
+# Problem
+For an integer $n\ge2$, a convex body $K\subset\mathbb R^n$ is a compact convex set with nonempty
+interior $\operatorname{int}K$. Write $|A|$ for the $n$-dimensional Lebesgue volume of a measurable
+set $A\subset\mathbb R^n$ and $\langle x,y\rangle=\sum_{j=1}^n x_jy_j$ for the Euclidean inner
+product.
+For $z\in\operatorname{int}K$, define
+$$
+
+PAGE 4
+Geometric Mahler conjectures 4
+(K-z)^\circ=\{y\in\mathbb R^n:\langle y,x-z\rangle\le1\text{ for every }x\in K\},
+\qquad
+P(K)=\inf_{z\in\operatorname{int}K}|K|\,|(K-z)^\circ|.
+$$
+The infimum is attained at a unique interior point, called the Santaló point. A simplex is the
+convex hull of $n+1$ points $v_0,\ldots,v_n\in\mathbb R^n$ for which $v_1-v_0,\ldots,v_n-v_0$ are
+linearly independent.
+Resolve the conjecture that, for every integer $n\ge2$ and every convex body $K\subset\mathbb R^n$,
+$$
+P(K)\ge\frac{(n+1)^{n+1}}{(n!)^2},
+$$
+with equality if and only if $K$ is a simplex. The quantifier includes arbitrary convex bodies; no
+central symmetry, smoothness, or polytope assumption is imposed.
+3 Conic reformulation and the first failed reductions
+The assistant first considered whether tensor powers could turn an asymptotically sharp bound into the
+simplex constant, comparing this possibility with Kuperberg’s symmetric lower bound [ 39]. It homog-
+enized the body into a cone of dimension 𝑑 = 𝑛 + 1 , and rewrote the target as
+𝜒𝐶(𝑣)𝜒𝐶∗(𝑢) ≥ 1, 𝜒 𝐶(𝑣) = ∫
+𝐶
+𝑒−⟨𝑣,𝑥⟩ 𝑑𝑥, ⟨𝑢, 𝑣⟩ = 𝑑.
+The orthant supplied the equality model. Klartag’s logarithmic Laplace formulation [ 38] led it to covari-
+ance restrictions at projective minima. It then noticed that smooth bodies could have interior projective
+minima, defeating its hoped-for universal trace estimate.
+Triangulations expressed the two integrals through determinants of slack matrices. Matching oppo-
+site face flags gave equality for the orthant. The assistant then found that fine approximations to a
+smoothed simplex could make the matched sum small: long, nearly flat primal pieces corresponded to
+tiny dual pieces. A transport built from exponential quantiles encountered another obstruction. Redun-
+dant generators changed the auxiliary Cauchy–Schwarz bound without changing the cone. The assistant
+abandoned this estimate and examined complementary subspaces, Gale transforms, and a zonoid com-
+parison. Although the zonoid theorem [ 55] suggested a route through projections of cubes, its proposed
+determinant comparison lost too much on round cones. It also considered the reflection-symmetry the-
+orem of Barthe and Fradelizi [ 7], but observed that permutations of multidimensional blocks were not
+hyperplane reflections.
+Induction over tangent cones produced a sum of ratios between the body’s volume and truncated
+tangent-cone volumes. In the simple-polytope case, the assistant recognized its reformulation:
+VERBA TIM EXCERPT
+So tangent inequality for simple B exactly Mahler. Any B can approximate simple. Not progress
+unless geometry helps.
+It next compared the deficits in direct and reverse Brascamp–Lieb inequalities, developing Barthe’s trans-
+port argument [ 8] into determinant and heat-flow formulas. Separate bounds on the two integrals did
+not give it the required bound on their product. Dirichlet representations likewise concentrated too
+strongly at the center of round sections.
+The assistant returned to a maximal-simplex position, recalling local minimality at the simplex [ 37],
+and placed the cone above the positive orthant. It tried to connect the resulting lower sets with the
+entropy identity for anti-blocking corners [ 22]. Saint-Raymond’s inequality and Meyer’s coordinate-
+induction method [ 59, 46] then suggested repeated-coordinate lifts of a convex corner. The primal
+
+PAGE 5
+Geometric Mahler conjectures 5
+weighted integral approached the desired cone integral, but the dual weights concentrated at one point
+of the exposed face. The assistant ended by asking whether varying the replication proportions could
+recover the whole dual section.
+4 Localization losses and stationary incidence measures
+The assistant continued trying to transfer anti-blocking inequalities to the conic target 𝜒𝐶(𝑣)𝜒𝐶∗(𝑢) ≥ 1 .
+Repeating nearly radial coordinates led it to incompatible scales: broad primal fluctuations sampled the
+tangent cone, while the dual integral concentrated near one point of its section 𝐵. After computing the
+two asymptotics, it wrote:
+VERBA TIM EXCERPT
+Need |B| factor, not obtained.
+It also tested translated corners, power transformations, and permutation chambers. Consulting
+Artstein-Avidan, Sadovsky , and Sanyal’s treatment of anti-blocking bodies relative to cones, it found
+definitions and decompositions but no direct bound for its proposed reduction [ 1]. Tensor amplifi-
+cation was another possibility: a suﬀiciently strong volume comparison could magnify a deficit until
+it contradicted a reverse Santaló bound. The assistant found determinant losses in its column-slicing
+estimate and questioned whether tensoring preserved the required centers, while keeping Kuperberg’s
+bound as a possible comparison [ 39].
+Next it used the projective covariance conditions associated with Klartag’s approach [ 38]. Normaliz-
+ing one covariance to the identity placed two cone sections inside a unit ball. The assistant investigated
+whether an exponential marginal at a contact point would force a ray factor and permit induction. First
+variations then led it to propose vertex–facet incidence measures with facet centroids as conditional
+means, cross-moment identities, and a stochastic matrix with eigenvalues 1, −1/𝑛, 0. It found that its
+determinant estimate lost too much to reach the target.
+Section–projection induction brought a different obstruction: simplex sections chosen by a natural
+partition could have the wrong Santaló center. The assistant instead considered unequal orthant parti-
+tions and tracked their section and projection weights. It also developed an entropy projection onto a
+subset of the probability simplex, then noticed that projecting exterior points onto boundary faces made
+the proposed change of variables degenerate.
+Reading Chen, Li, Xi, and Xu’s shadow-flow argument and its use of Meyer–Reisner polar-volume con-
+vexity [19, 47], the assistant tried to extend the count of admissible vertex speeds. Higher-dimensional
+incidence counts, including the 24-cell, led it to reconsider universal elimination by deformation:
+VERBA TIM EXCERPT
+Need lower bound for rigid cases, not classification.
+It returned to stationary incidence measures, interpreting them through random facet triangulations
+and random choices of an apex. These constructions supplied further covariance and determinant iden-
+tities. It then tried to extend vertex–facet transport to complete dual face flags and noticed that artificial
+faces introduced by triangulation had no corresponding dual faces.
+5 Barycentric coupling and the covariance gap
+The assistant rewrote the face-flag estimate as a volume factor times the aﬀinity of two flag distributions.
+It observed that vertex–facet stationarity did not specify transitions through intermediate faces. Return-
+ing to the covariance comparison associated with Klartag’s projective variations [ 38], it set 𝑧 = 𝑥 ⋅ 𝑦 for
+
+PAGE 6
+Geometric Mahler conjectures 6
+independent cone-boundary points and 𝑟 = 𝑞(𝑥) ⋅ 𝑝(𝑦) for their normalized normals. Boundary inte-
+gration gave 𝔼[𝑟𝑧] = 1/𝑛 ; the desired estimate was 𝔼[𝑧2] ≤ 1/𝑛 . A barycentric construction produced
+another variable with the law of 𝑟 and conditional mean 𝑧, but the assistant rejected a deduction from
+scalar convex order alone:
+VERBA TIM EXCERPT
+So no scalar alone. Need coupling constraints relating r and r' and z conditional facets.
+It then proposed replacing vertices by small clusters and separating two convex sets of incidence mea-
+sures to obtain one coupling satisfying both barycentric requirements. It explicitly distinguished unre-
+stricted minimization from minimization with a fixed vertex count, and worked through approximate-
+contact constraints, limiting derivatives, and measurable selection for a continuum extension.
+With that coupling assumed, the assistant examined reversible incidence walks, added-vertex mo-
+ment bounds, and conditional determinant–entropy estimates obtained from Barthe’s reverse Brascamp–
+Lieb inequality [ 8]. It found losses for rounded facets. Meyer–Reisner shadow systems [ 47] motivated
+attempts to flatten vertices, replace bodies by pyramids, or use perspective sections; the assistant kept
+encountering changes in facet structure or constants below its target. A proposed common-random-
+vector factorization failed its regular-simplex test. Tangent degenerations led to reciprocal slack mo-
+ments, while the assistant noted that Jensen’s inequality had the opposite direction from the estimate it
+wanted.
+Further tests used regular polygons, the Birkhoff polytope, the 24-cell, and sections of positive-
+semidefinite cones. The assistant combined the zero-curvature condition for minimizers [ 56] with its
+proposed coupling to investigate supporting faces of positive dimension. It also considered pruning
+long vertices using Paouris’s concentration bound [ 51], and using local simplex stability [ 37] to
+separate geometries near the simplex. Tensor amplification invoked the exponential lower bound
+of Bourgain–Milman [ 15]. Symmetric suspensions and difference bodies brought in Kuperberg’s
+linking-integral bound and Rogers–Shephard’s inequality [ 39, 57]; the assistant calculated that the
+suspension comparison still lost an exponential factor on the simplex. It considered reflection-group
+lifts [ 7] and revisited the anti-blocking arguments of Saint-Raymond and Meyer [ 59, 46], tracking the
+opposing concentration effects of coordinate replication.
+The incidence coupling next yielded an oblique projection on functions of contact pairs: its kernel
+was 𝑛𝑞 ⋅ 𝑝 ′, and the complementary stochastic kernel was 1 − 𝑞 ⋅ 𝑝 ′. The assistant identified a relation
+between a simplex projection and a simplex section. It explored a connection with Ball’s reverse isoperi-
+metric argument [ 2], then tried Dirichlet barycenters with concentration invariant under replication.
+The concentration giving the uniform simplex was too large for the ball model. Finally , it expressed
+the covariance comparison through conditional-expectation operators and a Hilbert–Schmidt inequal-
+ity , observing that the remaining inner product had no sign supplied by the preceding identities.
+6 Symmetric lifts and the negative contact graph
+The assistant expressed the incidence coupling through a conditional-expectation operator 𝑆 and a non-
+negative slack kernel 𝐿. It obtained 𝐾 = 𝑆𝐿𝑆 , with zero diagonal and prescribed eigenvalues for 𝐿𝑆, then
+tested the desired Hilbert–Schmidt comparison. For a permutation coupling, it found that the compar-
+ison required an additional symmetry. Nonlinear weighted-centroid maps had derivative −𝑛𝐶𝑌; their
+composition suggested extra fixed points, but the assistant could not connect those points to a decrease
+in volume product. It also developed a separation argument for simultaneous barycentric transport on
+contact pairs and revisited the projective covariance condition from Klartag’s work [ 38].
+The next calculations sought to amplify cone-volume bounds through tensor powers and symmetric
+
+PAGE 7
+Geometric Mahler conjectures 7
+lifts. The assistant revisited reverse Brascamp–Lieb transport, anti-blocking corners, and shadow varia-
+tions [8, 59, 46, 1, 47, 19]. It examined Kuperberg’s positive and negative contact graphs and bottleneck
+construction [39, 40]. For asymmetric bodies, the negative graph entered 𝐾 × (−𝐾 ∘), and fitting it into
+𝐾 × 𝐾 ∘ introduced sign or volume losses. Order intervals, difference bodies, and permutation-invariant
+lifts were tested against the simplex. In considering reflection symmetries [7], it found that permutations
+of whole vector blocks did not provide the scalar reflections it wanted.
+Zonoids offered another route through their volume-product inequality; the assistant recalled
+Gordon–Meyer–Reisner’s proof while remaining uncertain about its method [ 31]. The assistant
+identified a natural zonoid with a normalized projection body , but noticed that Zhang’s reverse
+Petty inequality gave the opposite direction from the estimate it needed [ 67]. It realized arbitrary
+polyhedral cones as tangent cones at zonotope vertices and varied generators projectively while keeping
+denominators fixed. The attempted induction then returned to the original cone problem:
+VERBA TIM EXCERPT
+Realize proving global minima for projective zonoid by reducing to boundary leads tangent arbitrary
+unknown, no induction.
+The assistant next paired the positive subgradient graph of 𝑔 = 𝑝 2
+𝐾/2 with a flat negative graph over
+𝐾∩(−𝐾 ∘). It calculated equality in the normalized regular-simplex model, but did not establish a general
+comparison.
+This led it to seek a convex, degree-two control potential satisfying
+ℎ𝐾(−∇𝜓(𝑥)) = 𝑝 𝐾(𝑥),
+so that the negative gradient graph would lie in the required polar product.
+VERBA TIM EXCERPT
+This is promising universal negative conical graph with no shrinking, unlike Kuperberg.
+It examined optimal-control, subgradient, Legendre-duality , and Hamiltonian descriptions of this equa-
+tion, and sought a lower bound for the join through mixed Hessian determinants. A complex Gaussian
+contour identity suggested retaining oscillatory cancellation instead of discarding it. The reasoning then
+turned to the special case 𝐾 = −𝐾 ∘ and to self-dual cones.
+7 Negative-contact tests and stochastic entropy methods
+The assistant tested a covariance trace bound for centered negatively self-polar bodies, against the pro-
+jective covariance conditions in Klartag’s approach [ 38]. Its spherical expansion gave a positive second-
+order change for degree-three harmonics. It therefore rejected its expected sign, while leaving realization
+of the smooth centered perturbations as a further question.
+Returning to Kuperberg’s linking-integral approach [ 39], it studied the eikonal potential 𝜓, with
+ℎ𝐾(−∇𝜓) = 𝑝 𝐾, and a mixed-Hessian integral intended to bound the volume product. A Gaussian
+change of variables left a determinant integral that it found too small for a simplex and potentially zero
+for symmetric polytopes. Expanding 𝜓 near the ball suggested evenness through third order. It then
+derived a polygonal compatibility condition that it thought would fail generically , and sought an ex-
+plicit polygon to test it. Changing the complex contour corrected the Gaussian weight but also changed
+the determinant statistic; its simplex calculation gave an exponential gap between the two statistics. It
+also compared the graph-volume loss with a Rogers–Shephard difference-body estimate in the simplex
+case [57].
+
+PAGE 8
+Geometric Mahler conjectures 8
+The assistant next consulted transport–entropy formulations of inverse Santaló inequalities [32, 26] and
+rederived a target involving differential entropies and maximal score correlation. For densities propor-
+tional to 𝑒−𝑉 and 𝑒−𝑊, it sought
+ℎ(𝑋) + ℎ(𝑌) + sup
+𝜋
+𝔼𝜋[∇𝑉(𝑋) ⋅ ∇𝑊(𝑌)] ≥ 3𝑑.
+One-dimensional slicing introduced an infimum over profiles whose integral it could not control
+sharply. Gaussian observations produced score martingales with increment matrices 𝐼 − 𝑡 Cov(𝑋 ∣ 𝑍 𝑡).
+Reparametrizing their paths appeared to give a constant larger than the target, until it noticed an
+endpoint problem:
+VERBA TIM EXCERPT
+That would even stronger than Mahler (contradiction extremal). Issue endpoints r∞ random unequal,
+can't align log scales pathwise causally. Explore.
+Its matrix version likewise exhausted one eigendirection before accounting for the full entropy end-
+point.
+After considering entropic transport, the assistant returned to coordinate couplings.
+Opposite triangular transports canceled the unwanted terms for Gaussian laws, but left cross terms
+of uncontrolled sign for general densities. It revisited Barthe’s transport proof of reverse Brascamp–
+Lieb [8], finding that the separate direct and reverse estimates still did not compare the required product.
+Further stochastic calculations used conditional entropy , covariance, and third moments in a Bellman
+candidate. Allowing adaptive observation speeds and either sign of innovation correlation led it to the
+scalar feasibility condition |1 − 𝐺𝑋𝐺𝑌| ≥ 𝐷 𝑋𝐷𝑌 when both squared quantities 𝐷2
+𝑋, 𝐷2
+𝑌 were nonnegative.
+8 Gaussian regularization and failed tensor amplification
+The assistant found that its scalar stochastic-localization controls did not settle the terminal compari-
+son: conditioning an exponential law reduced entropy , keeping the proposed stopping ratio above one.
+Replacing conditional entropy by the maximum entropy at the current mean repaired the scalar expres-
+sion, but radial observations preserved the problematic ratio and left angular information unresolved. It
+considered Poisson observations and entropy monotonicity on upper convex sets, using Berwald’s mo-
+ment inequality and questioning whether Caffarelli’s contraction principle gave the needed direction of
+comparison [12, 17].
+It then introduced the centered Gaussian barrier
+𝐹𝑄(𝑎) = max𝑚 log ∫
+𝐶
+exp(−𝑎 ⋅ 𝑥 − 1
+2 (𝑥 − 𝑚)𝑇𝑄(𝑥 − 𝑚)) 𝑑𝑥.
+The optimizing center was the posterior mean. Differentiation gave an inflated covariance Hessian,
+(Σ−1 − 𝑄)−1, suggesting that an integrated covariance comparison might replace the sharp slicing es-
+timate associated with Klartag’s approach [ 38]. Unrestricted minimization let the scales escape; fixed
+metrics also made the balanced orthant a maximum along some opposing coordinate variations. The
+assistant therefore optimized over mutually inverse metrics. A strengthened Poincaré calculation gave
+it a covariance correction and a derivation of geodesic concavity. It used this concavity to argue that the
+optimized profile tensorized for cone products.
+Differentiating through the metric optimum introduced an inverse Hessian correction involving third
+and fourth moments. Half-line computations matched the desired orthant profile:
+
+PAGE 9
+Geometric Mahler conjectures 9
+VERBA TIM EXCERPT
+Exact equality E=p/r all scalar (due scaling invariance).
+The assistant sought a corresponding matrix or trace estimate, developed an inductive boundary-
+degeneration argument, and explored Ehrhard’s inequality [ 24]. It found that the resulting bounds
+and repeated Bochner estimates were too weak, particularly when covariance was small. It connected
+the missing estimate to sharp third-moment bounds and continued testing possible scalar extremizers.
+Returning to amplification, it observed that direct cone products preserved the normalized deficit.
+Projective tensor cones offered a different construction, but ellipsoid estimates based on reverse
+Brascamp–Lieb [ 8] did not control the injective dual with the required constants. The assistant then
+reconsidered symmetry and zonoid comparisons [ 39, 7, 55], noting that permutations of multidimen-
+sional blocks were not hyperplane reflections. It revisited entropy and anti-blocking lifts [ 22, 1, 59, 46].
+Repeated coordinate constraints could retain a fixed neighborhood and so failed to force the desired
+amplification. Localizing coordinate induction near a vertex, meanwhile, lost the matching dual
+projections; the assistant looked for additional coordinates that would preserve them.
+9 Tensor circuits and configuration bodies
+The assistant applied simplicial matrices along tensor-array coordinates, obtaining determinant sums
+with the desired repeated volume factors. It then found that convexifying the circuit outputs allowed
+adaptive conditional distributions whose volume lost the intended amplification. Arbitrary diagonal
+weights also broke positivity between paired primal and dual circuits. This prevented its proposed
+application of the Bourgain–Milman bound to the circuit sets [ 15].
+It next sought a stationary distribution for positive slack-matrix dynamics, hoping to compare branch
+entropy with logarithmic determinants. The assistant identified the missing absolute continuity assump-
+tion:
+VERBA TIM EXCERPT
+Need avoid circularity (ac impossible if α<1).
+Unnecessary subdivision of a simplex already made its proposed stationary-law argument fail at equal-
+ity. Tensor arrays gave independent inputs to individual fibers and bounded scalar moments, but the
+assistant could not infer a lower bound on joint entropy. It considered entropy-power estimates for
+convex measures [13], while observing that mixtures after a circuit layer need not remain log-concave.
+The next construction fixed the sum of cone points:
+𝑆𝑚 = {(𝑥 1, … , 𝑥𝑚) ∈ 𝐶 𝑚 ∶ ∑𝑖 𝑥𝑖 = 𝑚𝑢}.
+After translation to the zero-sum subspace, the assistant described its polar as a projection of a trun-
+cated product of dual cones. It used the Rogers–Shephard projection–section inequality [ 58] to bound
+the projection loss polynomially in 𝑚, with the cone dimension fixed. Decomposing the points among
+generating rays expressed 𝑆𝑚 as a union of Minkowski sums of aligned simplices. Optimizing over this
+finite-dimensional family led it to seek an asymptotic Mahler estimate for those sums.
+The assistant compared generator-length variations with Reisner’s zonoid argument and Meyer–
+Reisner shadow systems [ 55, 47]. Entropy optimization showed why independent exponential
+lifts were too concentrated for diffuse generators; correlated lifts were needed. Direct and reverse
+Brascamp–Lieb comparisons [8] again left the product of their two factors uncontrolled. Returning to a
+functional shadow formulation, it recognized the same restriction on moving vertices:
+
+PAGE 10
+Geometric Mahler conjectures 10
+VERBA TIM EXCERPT
+To move a vertex maintaining existing facets, need shadow admissibility across nonsimplicial facets
+as in Mahler. Fat obstruction dimension d≥5. Functional formulation not escaping.
+Binary splitting produced centrally symmetric fibers, prompting comparisons with Kuperberg’s
+bound and Saint-Raymond’s unconditional inequality [ 39, 59]; the assistant found that its paired fibers
+were not polars. A subsequent basis-entropy formulation related facet densities to basis-inclusion
+probabilities. It considered random box sections and Vaaler’s cube-section theorem [ 65], but noted the
+difference between central sections and the sections through a vertex arising here. Finally , exponential
+tilts of Cartesian powers gave it the covariance condition (𝑛 + 1)(𝑛 + 2) Cov𝐾 Cov𝐾∘ ⪰ 𝐼 at the
+corresponding formal minimum; it observed that the improvement over its earlier condition became
+small in high dimension.
+10 Exponential face decompositions and complex analysis
+The assistant decomposed an exponential cone law by subtracting the minimum normalized slack. The
+minimum had an exponential distribution independent of the boundary residual:
+VERBA TIM EXCERPT
+Exactly memoryless along v! Because all s_i v=1 and D+t v. Great.
+It first coupled the facet label to a triangulation, then chose a full apex triangulation separately for each la-
+bel to remove information loss. Lower-dimensional induction reduced its entropy comparison to bound-
+ing average projection losses by the entropy of the facet probabilities. It recognized that this comparison
+returned to the original Mahler inequality. Conditional facet hazards gave a reversible graph identity;
+threshold variations suggested bounds on vertex degrees, but it noticed that changing triangulations
+produced upward kinks. Deleting a vertex instead related the degree to the volume of the removed
+corner.
+The assistant next represented points by exponentially filtered trajectories of a Markov chain on
+vertices. The simplex produced the uniform law. Covariance calculations supported a conditional-
+barycenter identity , but higher moments introduced resolvents for which it could not justify that
+identity. Centroid bounds gave transition rates at least one along every edge. It also tried Lawrence’s
+vertex-volume formula, where it encountered cancellation between signed terms [ 41]. Revisiting the
+shadow-flow arguments of Chen, Li, Xi, and Xu and Meyer–Reisner, it returned to the diﬀiculty of
+deforming nonsimple minimizers [ 19, 47].
+T urning to Nazarov’s complex-analytic approach [49], the assistant proposed
+𝐽𝑝(𝑣) = ∫
+𝐶
+𝑒−(𝑝+1)𝑣⋅𝑥𝜒𝐶∗(𝑥)−𝑝 𝑑𝑥.
+An orthant-sharp upper bound for these moments would recover the desired inequality as 𝑝 → ∞ . It
+tested convolution and derivative arguments; a square-cone calculation gave a negative third derivative,
+contradicting its proposed higher-derivative positivity. In the inverse-polar moment calculation, it ap-
+plied Berwald’s normalized-moment comparison to a concave geometric mean, but found that treating
+dual cells separately lost their shared constraint [12]. Fourier sections and Vaaler’s cube-section inequal-
+ity led it to seek a sharper dependence on the generating directions [ 65].
+The assistant then tried Hardy-space functions built from facet denominators and found excessive
+concentration for round cones. Herglotz representations led it to a complex moment body 𝐵𝐶(𝑢), retain-
+ing simultaneous decompositions of 𝑢 into cone vectors. Using the multidimensional Suita comparison
+
+PAGE 11
+Geometric Mahler conjectures 11
+as a starting point [ 50], it sought the two bounds
+𝜒𝐶∗(𝑢)2|𝐵𝐶(𝑢)| ≥ 𝜋 𝑑, |𝐵 𝐶(𝑢)| ≤ 𝜋 𝑑𝜒𝐶(𝑣)2.
+Its comparisons revisited Kuperberg’s bound, Reisner’s zonoids, Barthe–Fradelizi symmetries,
+Saint-Raymond’s inequality , and Barthe’s reverse Brascamp–Lieb theorem [ 39, 55, 7, 59, 8], along-
+side Klartag’s covariance formulation [ 38]. Higher-rank moment bodies reduced to determinant
+optimization, prompting the assistant’s assessment:
+VERBA TIM EXCERPT
+Mahler target becomes compare χ products to m_B/m ratios (taut).
+It next considered Laplace operators and Gurvits’s capacity inequalities [ 34]. Returning to slack matri-
+ces, it observed that permanent estimates did not directly control the signed determinants in the volume
+formulas.
+11 Complex transport and weighted zonotope bounds
+The assistant sought an upper volume bound for the complex moment body 𝐵(𝐶, 𝑢) = { ∑𝑗 𝑥𝑗ℎ𝑗 ∶ 𝑥 𝑗 ∈
+𝐶, ∑𝑗 𝑥𝑗 = 𝑢, |ℎ 𝑗| ≤ 1} . It compared this problem with Gurvits’s capacity inequalities, higher-order
+difference bodies, and Barthe’s transport proof of reverse Brascamp–Lieb [ 34, 60, 8]. On a simplicial
+piece, transporting each disk to a positive quadrant gave the desired Jacobian estimate; the assistant
+could not make the images from different bases disjoint or control the regions where several bases tied.
+Holomorphic disk maps reproduced the scalar calculation, but their first derivative alone lost a constant
+and a global choice of holomorphic lifts remained missing.
+It next adapted the Kuperberg–Berndtsson contour argument [ 39, 9] to the complementarity graph
+Γ = {(𝑥, 𝑦) ∈ 𝐶 × 𝐶 ∗ ∶ 𝑥 ⋅ 𝑦 = 0} . Pairing this graph with a positive linear graph gave an orthant-exact
+lower bound involving an intersection cone and determinants on dual faces. Summing two complemen-
+tarity graphs kept both outputs in their cones but introduced multiplicity. The assistant tried rank-one
+penalties and different complex phases, finding that discarding the oscillatory terms still lost the orthant
+constant.
+In parallel, it considered Vaaler’s section theorem [ 65] and a toric formulation: one cone integral
+became the volume of a Reinhardt domain, while the other became a fraction of integrable monomi-
+als. It compared this formulation with the multiplicity–log-canonical-threshold inequality and strong
+openness [25, 33]. It rejected unrestricted subadditivity by splitting a simplex into pieces, then consid-
+ered restricted subdivisions, polynomial maps, and Bergman traces. A projected Cauchy-to-exponential
+transport also failed its proposed pointwise Jacobian test, first near the axis for symmetric examples and
+then along a two-level direction of a square cone.
+The assistant formed an overlap kernel with Cauchy marginals in dual-cone directions. Its nega-
+tive logarithm 𝑓 was even and convex. It compared the homogeneous case with Schoenberg’s positive-
+definiteness criterion and the zonoid volume-product bound [61, 55], but observed that infinite divisibil-
+ity of this particular kernel would force order intervals to be zonoids. After considering Bergman-kernel
+subharmonicity [10], it tested holomorphic contraction of Laplace mean maps on a square cone and con-
+cluded:
+VERBA TIM EXCERPT
+Thus no holomorphic contraction on any bounded fixed domain in general. Need exploit station
+(global volume vary body). Hess alone not enough.
+
+PAGE 12
+Geometric Mahler conjectures 12
+For a polyhedral cone 𝐷 = 𝐶 ∗ = {𝑦 ∶ 𝑎 𝑖 ⋅ 𝑦 ≥ 0} , it then expressed 𝑓 ∗ through the zonotopes 𝑍𝑐 =
+∑𝑖[−𝑐𝑖𝑎𝑖, 𝑐𝑖𝑎𝑖], where 𝑐𝑖 ≥ 0 and ∑𝑖 𝑐𝑖𝑎𝑖 = 𝑢 . The cost assigned to each coeﬀicient vector came from
+maximizing an exponentially weighted section over translated inequalities. With 𝐽 = 2 −𝑑 ∫ 𝑒−𝑓 ∗
+, the
+assistant sought 1/𝜒𝐷(𝑢) ≤ 𝐽 ≤ 𝜒 𝐶(𝑣). It noticed that arbitrary unions of the zonotopes could encode
+bipyramids over arbitrary symmetric bodies:
+VERBA TIM EXCERPT
+So pure union Mahler as hard as symmetric general!
+It therefore retained the section-derived costs. Its Lorentz-cone asymptotics gave (𝐽/𝜒𝐶(𝑣))1/𝑑 ∼ 𝑒/4
+and (𝐽𝜒𝐷(𝑢))1/𝑑 ∼ 𝜋/2 . For the upper estimate it finally wrote an entropy identity for the density
+proportional to 𝑒−𝑓 ∗(2𝑤−𝑢) on [0, 𝑢]𝐶, reducing the desired inequality to a lower bound of 𝑑(1 −log 2) on
+the sum of its mean cost and its relative entropy against the cone exponential law.
+12 Facet hazards, eikonal flow, and phase losses
+The assistant sought an induction for the overlap potential of an exponential cone law. On a facet hy-
+perplane it obtained 𝑐𝑖(𝑠)𝑒−𝑓 (𝑠) = 𝑐 𝑖(0)𝑒−𝑓𝑖(𝑠), identifying the hazard-weighted restriction with a lower-
+dimensional overlap potential. It compared this with Meyer’s divergence argument and the zonoid
+case [ 46, 55]. Kinks supplied intervals of subgradients and polar-fiber volume, but the resulting esti-
+mate required averages of squared hazards at tilted optimizers. The assistant could not obtain these
+averages from offset variations: the proposed stationarity condition concerned a larger family than the
+original cone problem. It also considered reciprocal section–projection estimates inspired by Vaaler [65].
+Returning to the eikonal potential 𝜓, with 𝑔 = 𝑝 2
+𝐾/2, the assistant corrected its comparison of joins. If
+𝐸𝑘 denotes an integrated mixed-Hessian coeﬀicient, the ordinary join uses ∑𝑘 𝐸𝑘, whereas the conic con-
+struction weights coeﬀicients by 1/(𝑛
+𝑘). Simplex and ball calculations distinguished the two expressions.
+It pursued Kuperberg’s contour construction and Berndtsson’s complex-integral formulation [ 39, 9],
+seeking compensation between the contour’s 𝜓-weight, the desired 𝑔-weight, and oscillatory cancella-
+tion. It also used a Golden–Thompson heat-trace bound to reduce another proposed volume estimate
+to controlling a ground-state energy [ 29, 63].
+Cayley coordinates converted the gradient graph into a homogeneous field with Hessian eigenvalues
+in [−1, 1]. Gaussian determinant integrals represented the primal and polar volumes. Scaling this field
+toward zero gave a local second-variation estimate; the assistant found that nearly singular directions
+prevented its extension to the endpoints. It examined Brascamp–Lieb variance bounds [16] and recalled
+Klartag’s covariance conditions [38]. For the simplex, it expressed the field by projecting coordinatewise
+absolute values onto the zero-sum hyperplane, exposing the competition between radial expansion and
+collapsing determinants.
+The assistant next differentiated along the eikonal characteristic field. It obtained Riccati-type identi-
+ties for 𝐷2𝜓, relating radial growth, divergence, and weighted curvature. A proposed contour deforma-
+tion then reproduced the same graph under a new parametrization. Simplex asymptotics led it to insist
+on recovering the cancellation lost by taking absolute values.
+An elliptic Hamiltonian gave a quarter-turn map from the vertical plane to the horizontal plane
+through Legendre duality. The assistant found that the accompanying action and billiard-length
+estimates fell below its target scale. For self-dual cones it tried orthogonal decompositions, but iteration
+required additional structure on faces; a proposed Moreau-map multiplicity bound failed for an odd-
+polygon cone. Its volume comparisons using Rogers–Shephard, Ball’s reverse isoperimetric inequality ,
+and Barthe’s reverse Brascamp–Lieb inequality retained losses it could not remove [ 57, 2, 8]. It also
+revisited anti-blocking and Bergman-kernel routes through Saint-Raymond and the multidimensional
+Suita inequality [ 59, 50].
+
+PAGE 13
+Geometric Mahler conjectures 13
+Finally , rare large scalar matrices contradicted an unrestricted reverse Cauchy–Schwarz inequality for
+averaged mixed determinants:
+VERBA TIM EXCERPT
+Fails! Hess homogeneous distributions may not allow scalar mass jump. Geometric path prevents.
+The assistant retained the possibility of a geometrically constrained version and turned to a face-pair
+formula: orthogonal tangent spaces of polar faces made their contributions to the volume of (𝜆𝐼 +𝜕𝑔)(𝐾)
+explicit.
+13 Transport moments and a weaker constant
+After considering Kuperberg’s contour argument and Saint-Raymond’s unconditional result, the as-
+sistant expanded the eikonal potential around a quadratic gauge [ 39, 59]. For the odd perturbation
+ℎ = 𝑟 2 cos(3𝜃), it obtained a nonzero fifth-order odd term and used subsolutions, supersolutions, and
+characteristic decay to compare the expansion with the control value. It therefore rejected its proposed
+evenness of the potential. In the anti-polar case, it applied a moment estimate attributed to Berwald,
+with a binomial factor, but found that its high-moment bound lost the constant scale it needed [ 12].
+It then reconsidered transport–entropy approaches [ 32], seeking a replacement for the degenerating
+eikonal Hessian.
+The replacement was uniform Brenier transport from 𝐾 to −𝑄, where 𝑄 = 𝐾 ∘. Its constant Jacobian
+led the assistant to write:
+VERBA TIM EXCERPT
+Great! We can choose **any monotone map \(T\) K→−Q**, not eikonal, no homogeneity.
+Combining this negative graph with the positive gradient graph, it derived caps on mixed-Hessian mo-
+ments. It then selected a balanced linear position with |𝐾| = |𝑄| = 𝑝𝜅 𝑛, writing 𝑐𝑘 ≤ poly(𝑛)(𝑛
+𝑘)
+2
+. Ball
+inclusion gave only the scale 𝑝1/𝑛 ≥ 1/2. For 𝐾 = −𝑄 , it also used Rogers–Shephard on the inclusion of
+its positive-gradient image in 𝐾 − 𝐾 to bound that image’s volume [ 57]. A uniform-direction gradient
+argument also failed its simplex test: the assistant found that the volume depended on rare directions
+missed by that coupling.
+Weighted angular integration produced recurrences for negative support moments. The assistant
+found that nonnegative kernels could not propagate the recurrence through the lower half of the expo-
+nent range. Projection estimates, spherical neighborhoods, and exponential kernels then led it back to
+curvature moments. With ℎ = ℎ 𝑄, 𝐵ℎ = ∇ 2
+𝑆ℎ + ℎ𝐼 , and normalized elementary symmetric functions ̄ 𝜎𝑘,
+it wrote
+𝑍𝑘 = 𝔼ℎ 𝑘−𝑛 ̄ 𝜎𝑘(𝐵ℎ), 𝑍 𝑘 ≥
+𝑤𝑛−𝑘+1
+𝑘
+𝑤𝑛−𝑘
+𝑘+1
+, 𝑍 𝑘 ≤ poly(𝑛)(𝑛
+𝑘)𝑝,
+where 𝑤𝑘 denotes the corresponding normalized intrinsic volume. Telescoping the middle ratios, it
+concluded that 𝑝1/𝑛 ≥ 𝑒 −1/2 + 𝑜(1) , and checked the coeﬀicient normalization, metric selection, and
+transport regularity. It compared this with its target √𝑒/(2𝜋), identifying an accumulated logarithmic
+gap of about 0.081𝑛2.
+A conic calculation with shifted Gaussian face integrals returned the same constant. The assistant
+sought the missing contribution in Hölder slack, but found that abstract curvature-measure recurrences
+allowed sharply concentrated moving distributions. It introduced joint primal–dual face measures and
+
+PAGE 14
+Geometric Mahler conjectures 14
+tracked the support gradients lost when passing to adjacent faces. Signed perpendicular heights pre-
+vented an immediate positive coupling of complete face chains. Finally , it used the angular partition
+generated by 𝜆𝑌 + 𝑋 , for paired polar-face points 𝑌, 𝑋. Its hypothetical zero-slack profile supplied too
+little angular volume. It continued by expressing the angular integral through joint negative moments
+of |𝑌|2 and |𝑋|2, looking for simultaneous lower-tail contributions.
+14 Centered orthoschemes and the remaining general-case obstruction
+The assistant compared angular saddle constraints with the regular-simplex profile, then sought a sharp
+estimate for individual orthoschemes. For decreasing squared face-foot lengths 𝐴𝑖, it wrote their Gaus-
+sian cone integral as
+𝐼(𝐴) = ∫
+𝑟𝑖≥0
+exp⎛⎜⎜
+⎝
+− 1
+2 ∑
+𝑖,𝑗
+𝐴max(𝑖,𝑗)𝑟𝑖𝑟𝑗
+⎞⎟⎟
+⎠
+𝑑𝑟.
+It applied Prékopa’s marginal log-concavity theorem in logarithmic coordinates [54]. At 𝐴𝑖 = (𝑛−𝑖)/(𝑖+
+1), Gaussian order statistics represented the logarithmic derivatives through ordered beta distributions.
+Monotonicity of the two Gaussian mean-excess functions supplied the desired derivative ordering:
+VERBA TIM EXCERPT
+Thus H decreasing. Nice. Beta stoch increasing. g monotonic all n exact! Let's note.
+The assistant concluded that the resulting flag estimate could be summed for perfectly centered poly-
+topes. It then identified two obstacles to its intended application: general flags carry signs, and the
+metric furnishing the transport bounds need not make the face feet lie inside their faces. A calibration
+using adjacent-face recurrences led it to incompatible equations on overlapping simplex regions. Re-
+placing face feet by nearest points restored positive subdivisions but introduced zero transition heights
+and mismatched flag weights.
+The next approach used Gaussian Moreau projection paths. Integrating projections along shifted
+Gaussian lines produced convex transport maps into the two cones, in the spirit of Barthe’s transport
+proof [ 8]. A determinant comparison reduced the proposed estimate to a scalar rank-profile inequal-
+ity. It explored arbitrary translations, convexified cost profiles, and signed walks through face sub-
+spaces. These walks retained positive quadratic energy formulas, but thin angular regions defeated the
+proposed local comparison. Gaussian distance profiles and the Wills functional provided further con-
+straints; the assistant found that the resulting estimates still lost the sharp constant. It also revisited the
+Kuperberg bound and Berndtsson’s complex-integral approach while comparing Gaussian regulariza-
+tion and conic contour constructions [ 39, 9].
+The next construction transported exponential measures directly. Writing 𝛼 = 𝜒 𝐶(𝑣)𝜒𝐷(𝑢), 𝑀 = 𝐷𝑇 ,
+and Δ = 𝑢 ⋅ 𝑇 − 𝑣 ⋅ 𝑡 , the assistant derived the candidate averaged bound
+𝔼[𝑍𝑀(𝑝)𝑒(1/2−𝑝)Δ] ≤ √𝛼.
+Since 𝔼Δ = 0 , it sought simultaneous bounds from typical products of transport Hessians. It proposed
+aligning the resulting axes by a change confined to a subspace of small dimension, while recording the
+need to control integrability , uniformity in 𝑝, and the effect on face determinants. A tilted face-balance
+identity then gave the expected projected energy in the aligned position. The assistant still needed nested
+face distributions and control of rare contributions to the angular integrals.
+Finally it varied a weighted curvature functional. At a hypothetical minimizer, it interpreted its signed
+first-variation measure through a martingale coupling between incident faces:
+
+PAGE 15
+Geometric Mahler conjectures 15
+VERBA TIM EXCERPT
+So station imposes mass strictly flows from negative faces F to positive cofaces H!
+From this proposed stationarity condition it inferred conditional bounds on vertex norms and facet dis-
+tances, then began translating the signed face masses into conic notation.
+15 Slicing profiles and the missing sharp constant
+The assistant tried to use stationarity to balance the face coeﬀicients of an amplified cone. Minimizing
+their geometric mean appeared to force the signed first-variation masses to vanish rank by rank. It
+then checked the proposed lower bound against the ball and changed the objective back to the largest
+normalized coeﬀicient.
+VERBA TIM EXCERPT
+Ball violates desired geometric mean inequality!
+It next expressed exterior-power coeﬀicients through complementary projections of primal–dual con-
+tact pairs. For a fiber 𝑄𝑏, its support function ℎ(𝑠, 𝑏) gave the tangent intercept
+𝜏(𝑠, 𝑏) = ℎ(𝑠, 𝑏) − 𝑏 ⋅ ∇ 𝑏ℎ(𝑠, 𝑏).
+The assistant interpreted this intercept through a linear program, then enlarged the slicing subspace to
+obtain integrals involving Hessian minors. Centering each fiber at its Santaló point suggested a concave
+scalar profile 𝑊, with a lower estimate involving (𝑊 − 𝑏 ⋅ ∇𝑊) −𝑘. Rogers–Shephard projection–section
+bounds and Berwald’s inequality entered the comparison with fiber volumes [ 58, 12]. A radial profile
+flat near the origin and proportional to −𝑟 log 𝑟 farther out obstructed the proposed entropy-scale con-
+stant. Combining the weaker estimate with projection bounds did not yield the sought contradiction.
+One-coordinate recursions also lost factors, and mixed derivatives obstructed transferring the scalar cal-
+culation to general fibers.
+The assistant returned to a directional criterion of the form 𝑓𝑣(0)𝑒𝜈(𝑣) ≤ 1/𝑒 , pairing a central marginal
+density with a positive-part moment of a polar normal measure. It examined covariance restrictions
+associated with Klartag’s approach and a dimension-independent lower rate supplied by Bourgain–
+Milman [ 38, 15]. Meyer-style hyperplane partitions led it back to weighted versions of the same di-
+rectional criterion, while Zhang’s reverse projection inequality left a dimension-dependent loss [ 46, 67].
+Cuts through product cones did not strengthen a single cut. Adding points from complementary aﬀine
+slices to contact pairs then produced a directional upper bound for an exterior coeﬀicient; inserting
+lower-dimensional volume-product estimates again lost a binomial factor.
+For prismatoids, the assistant wrote the fibers as (1 − 𝑞)𝐴 + 𝑞𝐵 and compared their mixed-volume dis-
+tribution with a binomial law. Homothetic summands gave the desired scale, whereas complementary
+lower-dimensional summands concentrated the distribution and lost a square-root factor. It sought
+compensation for this loss in the volume product of 𝐿 = 𝐶 + 𝐷 , considering mixed subdivisions and
+variations of the summands. Looking at Reisner’s zonoid method, Meyer–Reisner shadow systems, and
+Saint-Raymond’s antiblocking inequality , it made further attempts to reduce sums of aligned simplices;
+it also revisited reverse Brascamp–Lieb comparisons [ 55, 47, 59, 8]. The assistant also revisited Kuper-
+berg’s symmetric bound and Barthe–Fradelizi’s reflection-symmetry method, asking whether repeated
+nonsymmetric factors could acquire enough symmetry without losing the volume-product informa-
+tion [ 39, 7]. Finally , slicing a cone along an extreme ray produced an ordinary convex body with a
+distinguished vertex; the assistant recognized the resulting inequality as the original Mahler problem
+
+PAGE 16
+Geometric Mahler conjectures 16
+in that description.
+16 Flags, Gale densities, and degenerating decompositions
+The assistant tried to combine tensor induction with projection estimates, but found that conditioning
+produced truncated exponentials or nonlinear gauges outside the proposed induction class. Adding a
+Euclidean ball through a support-function interpolation recovered the mixed-volume constraint it was
+trying to strengthen. Its comparisons used Kuperberg’s bound and Klartag’s covariance framework,
+while a projection–section calculation used the Rogers–Shephard inequality [ 39, 38, 58].
+For a simple polytope, it expressed the volume product through the relative entropies of incident
+facet-slack coordinates against independent exponentials. It explored a reversible walk on the vertices
+and the Lawrence volume formula, then used face flags to assemble simplices [ 41]. A lower bound that
+retained only flags anchored at the same vertex failed on regular polygons with increasingly many sides.
+Returning to a common decomposition of the whole body , it found an omitted inverse vertex probability.
+With 𝜋𝑖 proportional to the determinant associated with vertex 𝑖, the revised identity had the form
+𝑛!|𝐾||𝐾 ∘| = ∑
+𝑖
+𝜋−1
+𝑖 𝔼𝜎 ∏
+𝑗
+ℓ𝐹𝑗(𝑦𝑆𝑗).
+The corresponding Jensen estimate contained twice the entropy of 𝜋. The assistant then noticed that
+vertices could coalesce while their determinant weights stayed positive: vanishing flag slacks drove the
+logarithmic estimate downward. It retained an exact face recurrence with relative-entropy corrections
+and looked for a bound that would accommodate this degeneration.
+The next approach differentiated the volume polynomial with respect to facet offsets, invoking the
+Hodge–Riemann framework for simple polytopes [ 64]. Under an additional nonnegativity condition
+on repeated edge coeﬀicients, the assistant derived that every two-dimensional face was a triangle or
+parallelogram. It then propagated the local edge structure to describe an aﬀine product of simplices
+and checked its factored volume product. It identified signed repeated coeﬀicients as the obstacle to
+applying this argument generally.
+Gale duality recast a slack fiber using the density of a projected Dirichlet distribution and a sum of
+determinants over feasible bases. The assistant considered complementary simplex projections, reverse
+Brascamp–Lieb estimates, centroid-section bounds, and Vaaler’s section inequality [ 8, 27, 65]. It found
+that separately bounding the density and determinant sum lost their dependence on the same config-
+uration. A wall-crossing calculation then led it to conclude that the weighted determinant sum was
+maximal at the weighted center. Deleting one coordinate and integrating all slices turned the induction
+into a reciprocal-section integral requiring a factor tending to 𝑒. Along a chosen line of centers, the assis-
+tant recovered that factor in the near-maximal-asymmetry regime; for smaller asymmetry it recorded a
+deficit and returned to covariance and stationarity conditions.
+17 Stationary hazards and a translation instability
+The assistant returned to its simultaneous boundary coupling at a hypothetical global Mahler minimizer.
+It sought deformations whose costs were aﬀine on both primal and dual faces, but dense incidence
+patterns and projectively unique polytopes obstructed the proposed shadow motions. It revisited the
+shadow-system arguments of Meyer–Reisner and Chen–Li–Xi–Xu in this connection [ 47, 19]. Facet haz-
+ards of exponential cone measures then produced a reversible graph with a prescribed drift. Filtering its
+stationary process recovered a uniform Dirichlet law for a simplex; the assistant still needed an entropy
+estimate for general cones.
+
+PAGE 17
+Geometric Mahler conjectures 17
+It next expressed slicing induction through integrals of reciprocal polar section masses. Primal and
+dual fiber endpoints shared a projected variable, allowing it to compare their Laplace transforms. When
+only one facet coeﬀicient was positive, a width variable 𝑊 satisfied 𝔼𝑊 = 1/𝑝 and 𝔼𝑊2 = 2/𝑝 , forcing
+𝑝 ≥ 1/2 . It could not guarantee such directions. Testing positive-semidefinite cones, it found large
+inflation between the normal measure and the uniform section measure:
+VERBA TIM EXCERPT
+Thus direct criterion fails globally for PSD cones!
+It therefore sought volume-product gains outside this central-density criterion, returning to Kuper-
+berg’s symmetric estimate, Reisner’s zonoid argument, hyperplane symmetries, and anti-blocking induc-
+tion [39, 55, 7, 59, 46]. Its projection and configuration comparisons used Rogers–Shephard projection–
+section bounds [ 58]. In recalling its graph-volume argument, it also invoked their difference-body
+bound through the inclusion 𝑆 ⊂ 𝐾 − 𝐾 [57]. Its covariance normalization followed the isotropic-
+constant approach [38]. Applying reverse Brascamp–Lieb to normalized ray frames gave a determinant
+lower bound whose missing factor it hoped to recover from the coupling [ 8].
+The assistant then studied the stronger functional objective
+𝑒−𝑑𝑑!|𝐿|𝑍(𝐿∘), 𝑍(𝑄) = inf𝑧 ∫
+𝑄
+𝑒𝑧⋅𝑦 𝑑𝑦.
+Facet conditioning suggested dimension induction, with conditional hazards constraining a rescaling of
+the projected generators. The assistant tracked local simplex determinants and graph rates, but nons-
+mooth changes of triangulation continued to block the proposed second-variation argument.
+Translating 𝐿 preserved its volume and isolated 𝑍. Writing 𝑄 = 𝐿 ∘, it used the projective change
+𝑦 ↦ 𝑦/(1 − 𝑡𝑥 ⋅ 𝑦) . At an interior stationary translation it obtained 𝑧 = 0 ; minimizing over the tilt then
+gave
+𝑑2
+𝑑𝑡2 log 𝑍((𝐿 − 𝑡𝑥)∘)∣∣∣∣𝑡=0
+= −(𝑑 + 2)𝑥 TΣ𝑌𝑥.
+VERBA TIM EXCERPT
+Thus stationary translation is **strict local maximum**!
+It first explored whether the normalized-moment log-concavity attributed to Berwald extended jointly
+to dilation and moment power, to control the drift between weights [ 12]. For a boundary chord, it
+rewrote the second derivative as a residual quadratic moment. Joint log-concavity of lifted integrals
+weighted by (±𝑥 ⋅ 𝑦 − 𝑡)2+ led it to the more general inequality 𝑔″ ≤ (𝑔 ′)2, where 𝑔 = log 𝑍. It concluded
+that 1/𝑍 was convex along translations and pursued strictness at stationary points through a reflected-
+gamma comparison. It then tried to extend this argument to shadow deformations and to compare that
+convexity with the changes of primal volume across triangulation boundaries.
+18 Scalar Gaussian progress and the matrix obstruction
+The assistant continued the Meyer–Reisner translation approach [ 47] by moving every nonzero vertex
+of a pyramid. It initially expected the resulting Hessian equality to restrict the cone, then recognized
+that the motion was already a linear transformation:
+
+PAGE 18
+Geometric Mahler conjectures 18
+VERBA TIM EXCERPT
+Right translation of all vertices equivalent GL! Thus Hess equality automatically for pyramid all
+x.
+Moving the distinguished origin onto the base instead gave a lower-dimensional functional product.
+The assistant calculated a square-root dimensional loss and found that a ball did not supply the com-
+pensating decrease it wanted. It also derived a polynomial comparison between the value at the original
+vertex and at the centroid, but its attempts to combine this with Kuperberg’s symmetric bound retained
+an exponential loss [ 39].
+The Gaussian route balanced primal and dual covariances by optimizing a metric. The assistant used
+Brascamp–Lieb and Bochner estimates for metric concavity , considered Ehrhard’s inequality , and revis-
+ited Barthe’s direct/reverse comparison [ 24, 8]. Optimizing the metric added positive terms involving
+third moments to the tilt Hessian; fixing a common metric allowed anisotropic escape even for orthants.
+Quadratic penalties restored bounded minimization but weakened the spectral estimate. Recalled en-
+tropy arguments also used Berwald’s moment inequality and transport–entropy formulations of inverse
+Santaló inequalities [ 12, 32, 26].
+The assistant then concentrated on a centered random variable 𝑊 with density proportional to
+𝑒−𝑥2/2−𝜙(𝑥), where 𝜙 is convex and 𝑊 has variance 𝑠. It compared this law with two Gaussian tails
+joined at a kink, matching its first three moments. It assembled sign-change arguments, differential
+barriers for a half-line Gaussian parameter, and polynomial coeﬀicient estimates into an argument for
+Var(𝑊2) + 1 + 𝐵−1𝑠
+1 − 𝑠 (𝔼𝑊3)2 ≤ 2𝑠, 𝐵 𝑠 = 𝑚 2𝑠 − 𝑠,
+where 𝑚𝑠 is the mean of a half-line Gaussian law with variance 𝑠. It described this as a proof of the scalar
+estimate, then tried to extend it through successive one-dimensional Gaussian smoothings.
+Earlier optimized slices introduced additional mixed Hessian terms, and fixed generic subspaces again
+admitted anisotropic escape. The assistant connected the remaining covariance problem with Klartag’s
+conic formulation [38] and returned to section arguments, including Meyer’s method [46]. A dimension
+reduction still lost a factor of order √𝑑:
+VERBA TIM EXCERPT
+Can't ignore .5log d per step.
+It next rejected its proposed single-cone matrix moment bound: the radial component already exhausted
+the allowance, while an asymmetric tangential component could remain. The subsequent calculations
+sought cancellation between the primal and dual third-moment tensors, Gaussian boundary stationarity ,
+and possible Jordan-algebra structure when the projective Hessian was degenerate.
+19 Activation transport and polar proximal maps
+The assistant returned to Gaussian regularization and the isotropic-constant approach associated with
+Klartag [ 38]. Rank-one elimination led back to a one-dimensional functional Mahler inequality , but
+exchanging a supremum and an integral introduced a loss from varying conditional maximizers. It
+revisited the transport–entropy formulation [ 32, 26] and tried averaging directions across independent
+copies. Its Gaussian approximation produced a criterion involving directional Fisher information times
+variance; steep approximations to exponential laws defeated that criterion.
+
+PAGE 19
+Geometric Mahler conjectures 19
+VERBA TIM EXCERPT
+For sharply truncated Exp, Fisher huge. CLT route fails.
+Random perturbations of replicated tilts removed a first-order metric response, but the assistant found
+that the same perturbations lowered the objective at orthant equality and therefore required confinement
+or boundary control.
+It next organized shifted cone projections by expected active-face dimension. A Legendre transforma-
+tion of their cost profiles converted the desired estimate into an integral comparison with the orthant.
+The assistant calibrated a heat-flow trajectory to that reference, then found that its adjoint weighting
+measure was not even, whereas complementary terminal projections paired opposite shifts. A cosine
+seed density formally removed an asymmetry but introduced bounded-support requirements. It also
+obtained a Gaussian projection bound from a positive tight frame and asked how such a frame could be
+supplied in the dual cone 𝐷. Narrow circular cones obstructed that representation; the assistant argued
+that simultaneous positive tight frames on both polar sides would force orthant structure. Reflected
+Brownian motion suggested another construction through boundary local times, but singular distribu-
+tions and dependence between stopping clocks prevented the desired entropy estimate.
+Returning to moments, the assistant expanded the joint objective to fourth order at covariance equality.
+Cubic perturbations of a ball then led it to reject a universal covariance-product upper bound without
+additional shape conditions. It considered Caffarelli’s contraction theorem [ 17] for controlling the third-
+moment tensor, and an algebra built from that tensor, but could not obtain positivity of the relevant
+multiplication operator. It also recalled local minimality at the simplex [ 37] while considering shape
+variations of the projection profiles.
+The final branch used polar proximal maps, writing
+𝑦𝜏 = Π 𝜏𝐾 ∘𝐺, 𝑥 𝜏 = 𝐺 − 𝑦 𝜏 = prox𝜏𝑝𝐾
+(𝐺).
+For a fixed Gaussian vector, the assistant related the dilation parameter to the gauge of the residual and
+interpreted the same residual as projection onto a dilation of 𝐾. Adaptive matching of the two gauge
+costs yielded an entropy expression for the distribution of logarithmic scales. It investigated whether
+changes of metric, determinant estimates, and strictness in gauge subadditivity could control broad scale
+distributions. It asked whether the resulting homogeneous gauge was convex.
+20 Centered kernels and a sharpness gap
+The assistant translated the Gaussian input to make the primal proximal image have mean zero. Writing
+𝑃 for its Jacobian, 𝐵 = 𝔼𝑃 , 𝑡 = tr 𝐵/𝑛, and 𝑝 = 𝔼⟨𝑥, 𝑦⟩/𝑛 , it derived 𝑑𝑡/𝑑𝑠 = 𝑝 even with the moving center.
+Gaussian chaos estimates gave
+𝐶 = 𝐵 − Cov(𝑥), 1
+2 𝐵(𝐼 − 𝐵) ⪯ 𝐶 ⪯ 𝐵(𝐼 − 𝐵),
+and it interpreted small 𝑝 as proximity to complementary linear projections. It then corrected its treat-
+ment of convex envelopes: averaging slopes could increase the logarithmic slope integral needed for the
+entropy bound.
+The assistant considered extending Borell’s Gaussian noise-stability inequality through the semigroup
+approach of Mossel and Neeman [14, 48]. It questioned whether noncommuting Hessians admitted the
+scalar comparison, testing Clifford and Jordan examples and the restrictions imposed by symmetry of
+third derivatives. It also considered Gaussian comparison and regular ellipsoid positions [ 30, 52].
+
+PAGE 20
+Geometric Mahler conjectures 20
+A cross-scale calculation instead led it to the kernels
+𝑚(𝑡, 𝑢) = min(𝑡, 𝑢) − 𝑡𝑢, 𝑘(𝑡, 𝑢) = √𝑝(𝑡)𝑝(𝑢) exp(− 1
+2 ∣∫
+𝑢
+𝑡
+𝑑𝑣
+𝑝(𝑣) ∣) .
+Assuming 𝐵𝑡 = 𝑡𝐼 , it used second-order Gaussian Poincaré estimates to obtain 𝑚 ≤ 2𝑘 against nonnega-
+tive weights. It identified 𝑘 with the Green kernel of −𝑑2/𝑑𝑡2 + 𝑉, where 𝑉 = (1 − 𝑝 ′2 + 2𝑝𝑝″)/(4𝑝2). For
+the orthant profile, 𝐼(𝑡) = 𝜙(Φ −1(𝑡)) satisfied −𝐼″ = 1/𝐼 , giving equality in the associated Hardy inequal-
+ity. The assistant then calculated the entropy variation and found that its weight was not proportional
+to 𝐼2:
+VERBA TIM EXCERPT
+Ratio varies ~.5 tails >.386 center. Not stationary ⇒ Hardy alone insufficient even close to orth
+if V redistribution.
+It pursued higher Gaussian chaoses, approximate nesting of Hessian projections, antipodal comparisons,
+and metric changes intended to remove the linear Gaussian component.
+The assistant next tried to exploit the exponential law as the sum of two squared Gaussians. Integrat-
+ing one-sided proximal paths and pairing opposite Gaussian inputs reproduced the orthant’s quadratic
+map. For general maps, it encountered a change-of-variables obstruction:
+VERBA TIM EXCERPT
+General can have singularities and many preimages (non-gradient in r).
+It investigated complex quadratic forms and self-dual cone order intervals. It revisited its use of the
+Rogers–Shephard difference-body bound [57]. In revisiting these routes, it recalled Kuperberg’s linking
+construction, Klartag’s covariance approach, reflection and zonoid inequalities, reverse Brascamp–Lieb,
+and Zhang’s projection inequality [39, 38, 7, 55, 8, 67]; it also returned to contraction transport, Gaussian
+tube concavity , and polynomial-degree formulas [17, 24, 11]. Finally , it rewrote the calculation directly
+for cone projections with means 𝑀, 𝑁, obtaining 𝑑𝑡 = (𝑁 ⋅ 𝑑𝑀 − 𝑀 ⋅ 𝑑𝑁)/𝑑 , and explored paths with
+nonconstant mean directions to adjust the cross-kernel and entropy costs.
+21 Entropy concavity, convexification, and fixed tests
+The assistant rewrote the Gaussian projection slope entropy using 𝑔 = 𝐴 ′, ℎ = −𝐵 ′, and 𝑟 = 𝑔/ℎ . The
+Wronskian identity made 𝑄(𝑡, 𝑣) = 𝑔( min(𝑡, 𝑣))ℎ(max(𝑡, 𝑣)) doubly stochastic. A relative-entropy vari-
+ational formula then expressed 𝐽 = ∫ log(𝑔ℎ) as a concave functional of log 𝑟, with an orthant tangent
+involving a weight that changed sign. It tried harmonic-mean estimates for the averaged projection Hes-
+sian, but the sign change prevented the proposed direct comparison. Convexifying the costs created
+another obstruction:
+VERBA TIM EXCERPT
+But total Q mass slack may offset? J_env≥J_raw usually, cannot assume.
+The assistant next convexified the planar curve𝐵(𝐴), mixing complementary projection maps at chord
+endpoints. It obtained a modified Wronskian density 0 < 𝑤 ≤ 1 , monotone virtual slopes, and a dual
+Neumann Green operator −𝜕(𝑉−1)𝜕 + 𝑤. Assuming a full Hardy inequality for 𝑉, it derived a compar-
+ison reducing the entropy expression to 𝑤 = 1 . It pursued metric balancing through truncated positive
+
+PAGE 21
+Geometric Mahler conjectures 21
+eigenfunction tests and rank-dependent bounds on the costs, while retaining questions about continu-
+ity , singular measures, and endpoint limits. A positive-frame comparison using reverse Brascamp–Lieb
+gave a one-sided potential bound, whose entropy variation again changed sign [ 8].
+Under the Hardy assumption, its orthant tangent estimate still left a positive gap. The assistant there-
+fore studied near equality: an integrated Hessian close to a linear Gaussian matrix, nearly nested pro-
+jections, and a contact kernel that separated into a product off the diagonal. Wick expansions and a
+quadratic test gave different coeﬀicients for variance heterogeneity , which it hoped to turn into a quanti-
+tative contradiction. It considered local minimality at the simplex [ 37], but noted the dimension depen-
+dence of the required neighborhood. It also revisited scalar noise stability , Gaussian tube inequalities,
+and the loss in a symmetric-suspension comparison [ 14, 24, 39].
+T o make the perturbation more explicit, the assistant replaced the potential-dependent eigenfunction
+by the fixed Gaussian profile 𝐼(𝑡) = 𝜙(Φ −1(𝑡)). With 𝑇 = 1 − ℒ 𝐺, 𝛿 = 𝐼 2𝑉 − 1, 𝑢 = 𝑇 −1𝛿, and 𝜂 = 𝑧𝑢 − 𝑢′,
+its balanced test gave the quadratic condition2𝔼𝛿+𝔼𝜂 2 ≤ 0. Polynomial tests suggested a way to control
+anisotropy , but it still needed bounded tests and tail estimates. The assistant then noticed that this single
+fixed test did not provide the full Hardy spectral gap used in the convexification comparison. It explored
+hybrid tests combining the fixed profile with a positive eigenfunction, including how their mixed terms
+and balancing conditions would change.
+22 Resolvent cancellation and mismatched Gaussian paths
+The assistant decomposed an integrated Hessian as a linear Gaussian matrix plus higher Gaussian
+chaoses. It used eigenvalue-pair measures to compare matrix Dirichlet energy with a scalar Stein form,
+then sought to cancel first-order residuals through an auxiliary primitive whose derivative was a squared
+test derivative. It found that the proposed test class could fail to remain regular for induced measures
+with atoms, and returned to smooth Gaussian-reference tests. A direct spectral-layer calculation then
+canceled several nesting-error terms.
+The assistant next considered multiplying a hypothetical counterexample by many orthant factors. It
+expected the nonorthant contribution to become a small perturbation, making squared displacement
+terms negligible to first order. Rewriting this calculation directly on the original cone produced
+proposed identities relating contact, nesting, and Gaussian-chaos errors. The assistant still needed
+a dimension-independent bound for the spectral trace error. Commuting Gaussian-mixture models
+exposed variance heterogeneity; noncommuting matrices added divided-difference errors. It tried
+logarithmically oscillating tests, complementary squared derivatives, and separate estimates for even
+and odd Gaussian degrees. It also found that some additional compatibility identities merely restated
+relations already available.
+In these comparisons, the assistant reused the projective covariance restrictions associated with
+Klartag’s conic approach, revisited Borell’s scalar noise-stability comparison, and recalled why
+Kuperberg’s symmetric bound already exceeded the nonsymmetric asymptotic constant [ 38, 14, 39]. It
+returned to its earlier Gaussian projection and heat-calibration calculations rather than obtaining the
+remaining trace estimate.
+A sign-changing entropy weight prompted a different path construction. The assistant tried splicing
+a primal-centered path to a dual-centered path; at the central junction, however, its Fenchel calculation
+produced the opposite boundary sign from the one it wanted:
+VERBA TIM EXCERPT
+Boundary ≥0 UNFAVORABLE!
+For a straight aligned path it derived an expression involving expected Jacobian trace minus longitudinal
+
+PAGE 22
+Geometric Mahler conjectures 22
+curvature, weighted by an odd function. It found that extreme horizontal stretching and compression
+could both make the expression unfavorable. Reversing the splice gave a favorable central boundary
+term, but the assistant still sought control of the negative Gaussian projection energies. It considered
+positive tight frames and reverse Brascamp–Lieb bounds as possible compensation for a poor dual pro-
+file [8].
+Finally , the assistant separated the two centered paths altogether, prescribing primal and dual means
+independently and driving their projections by opposite Gaussian inputs. It noticed that their cross-cost
+bound now used the unperturbed orthant kernel:
+VERBA TIM EXCERPT
+This is huge: cross-cost kernel is *exactly orth reference*, not perturbed.
+It began combining this contact bound with Hessian cross-products to seek the integrated rank compar-
+ison required by its entropy estimate.
+23 Stitched kernels and a failed Gamma interpolation
+The assistant joined a primal-centered Gaussian projection path below zero to a dual-centered path
+above zero. It found that ordered contact products retained the form 𝐴(𝑧)𝐵(𝑣) for 𝑧 ≤ 𝑣 , even when
+the path jumped at the junction. Fixing 𝐴 on one half and 𝐵 on the other eliminated the quadratic
+perturbation of this kernel. Writing 𝐽(𝑧) for the sum of the two scalar barrier differences on the negative
+half-line, it expressed the primary deficit as
+𝑆 = −2𝐽(0) − 4 ∫
+0
+−∞
+𝑧𝐽(𝑧) 𝑑𝑧.
+The entropy expression used a different weight. The assistant obtained a favorable junction term from
+the Fenchel gap, but still needed to control a trace defect associated with unequal Gaussian variances.
+Adding the decaying homogeneous solution (𝐴0/𝜑)2 preserved the bulk differential identity; its even
+extension introduced a cusp and a single-layer term that the assistant could not bound by the existing
+deficit. It also explored staggered switches through increasing subspaces.
+The assistant then revisited Gale densities, orthant sections and projections, and direct and reverse
+Brascamp–Lieb comparisons, including Barthe’s transport argument [ 16, 8]. Its recalled alternatives
+included Klartag’s covariance condition, Kuperberg’s symmetric bound, zonoid volume products, and
+shadow-system convexity [ 38, 39, 55, 47]. It also considered Vaaler-type section estimates, centroid-
+density estimates and log-concavity , while identifying losses in the resulting density bounds [ 65, 27,
+54]. Separate direct and reverse inequalities bounded their integrals in opposite directions; the assistant
+sought a comparison of their deficits instead.
+Centered Gamma potentials suggested such an interpolation. For normalized rays 𝑞𝑖, positive weights
+𝑝𝑖 summing to 𝑑, and dual cones 𝐶, 𝐷, it defined
+𝑃𝐷(𝑥) = ∏
+𝑖
+(𝑞𝑖 ⋅ 𝑥)𝑝𝑖, 𝑃 𝐶(𝑦) = sup
+𝑦=∑𝑖 𝑝𝑖𝑞𝑖𝑠𝑖
+∏
+𝑖
+𝑠𝑝𝑖
+𝑖 ,
+with positive 𝑠𝑖. It divided the product of the corresponding weighted exponential integrals byΓ(𝑎+1) 2𝑑,
+calling the result 𝑅(𝑎), and asked whether it decreased to its Gaussian limit. Laplace expansions, Gamma
+Stein identities, and variations of the weights produced further conditions to check; the assistant also
+considered Ball’s cube-slicing bound as a possible density estimate [ 3]. Rare-tail comparisons for extra
+rays then suggested that 𝑅(𝑎) could fall below one for arbitrary balanced bases, including choices the
+
+PAGE 23
+Geometric Mahler conjectures 23
+assistant had hoped to justify by determinant optimization. It therefore redirected the argument toward
+small positive powers and optimized weights.
+Splitting a ray could produce a negative direct-integral variation of order |𝑡|1+𝑎𝑝𝑖; the assistant com-
+pared this with dual gains governed by masses outside adjacent facets. It still needed control of the
+optimizing weights and of existence when the number of rays increased.
+VERBA TIM EXCERPT
+If m unrestricted, existence may nonpoly.
+24 Canonical barriers and aﬀine-sphere volume targets
+The assistant first paired Gamma potentials through a stochastic channel on normalized cone rays.
+Relative-entropy contraction ordered the potentials, but the two partition functions still used different
+Gibbs measures. Gale coordinates then expressed the volume product through feasible bases and
+projected slack volumes. The assistant explored centroid-section estimates, complementary projec-
+tions, and random shifted constraints, drawing on Fradelizi’s section bound and Rogers–Shephard
+comparisons; it found that independent thresholds could discard too much determinant mass for
+round bodies [ 27, 58]. Regular upper hulls gave an exact slope-density identity , which the assistant
+recognized as another form of its separable gradient map. It also revisited stationary covariance
+constraints from Klartag’s approach and reverse Brascamp–Lieb estimates [ 38, 8].
+The cubic term in the Gamma expansion suggested replacing a chosen logarithmic barrier by the
+canonical potential 𝐹, with
+𝐹(𝑡𝑦) = 𝐹(𝑦) − 𝑑 log 𝑡, det 𝐷2𝐹 = 𝑒 2𝐹.
+Using the Cheng–Yau aﬀine-sphere framework, the assistant sought the stronger comparison 𝜒𝐶(𝑥) ≥
+𝑒𝐹𝐶∗ (𝑥), where 𝜒𝐶 is the cone Laplace integral [ 20]. For a cone over 𝐾 ⊂ ℝ 𝑛, with 𝑑 = 𝑛 + 1 , it rewrote
+this as a maximum-height bound for the positive concave solution
+det(−𝐷2𝑢) = 𝑢 −𝑛−2, 𝑢| 𝜕𝐾 = 0, ‖𝑢‖ 𝑛+1∞ ≤ 𝑛!|𝐾|
+(𝑛 + 1)(𝑛+1)/2 .
+The assistant checked simplex equality and ball slack, then tried to evolve the volumes of the level sets of
+𝑢. Its proposed differential inequality required their normal speed to be a support function; examining
+simplex gradients overturned that requirement.
+VERBA TIM EXCERPT
+Thus p is *far* from support precisely near simplex, ODE fails drastically, can't bootstrap.
+It next integrated the Hessian along a cone ray , 𝐵(𝑦, 𝑎) = ∫
+∞
+0 𝐷2𝐹(𝑦 + 𝑡𝑎) 𝑑𝑡 , obtaining a chart that
+becomes coordinatewise logarithms on the orthant. Invoking Calabi’s nonpositive-Ricci estimate, it de-
+rived determinant and trace comparisons, then sketched a cubic-tensor calculation using completeness
+and an Omori–Yau maximum principle [ 18, 66]. In normalized horizontal coordinates it obtained a
+convex function 𝑓 satisfying
+det 𝐷2𝑓 ≥ 𝑒 −𝑓 , Δ𝑓 + |∇𝑓 |2
+𝑑 ≤ 𝑛.
+The remaining target was a lower bound for the volume of ∇𝑓 (ℝ𝑛). The assistant related the two deficits
+through a radial differential identity and considered whether a nearly vanishing deficit forced simplex
+structure. Gaussian entropy trials retained an exponential loss. Marginalization trials used Prékopa and
+Brascamp–Lieb estimates; the assistant also returned to Bergman-kernel and Kuperberg comparisons
+while looking for a different integral argument [ 54, 16, 50, 39]. Finally , ellipsoidal fibers over the aﬀine-
+sphere graph led to weighted Gamma integrals and a proposed monotonicity question.
+
+PAGE 24
+Geometric Mahler conjectures 24
+25 Canonical comparisons tested beyond the orthant
+The assistant pursued the orthant-calibrated inequality
+𝜒𝜈(𝑎) = ∫
+𝐶
+𝑒−𝑎⋅𝑦−(𝜈−1)𝐹(𝑦) 𝑑𝑦 ≥ Γ(𝜈) 𝑑
+for a normalized canonical potential. It compared angular integration by parts with the required
+trigamma variance, using Brascamp–Lieb estimates and considering Berwald moment normalization;
+its first gradient-moment test left a gap [ 16, 12]. A translated-barrier vector field reproduced the
+orthant identities, suggesting a pointwise divergence bound. The pointwise divergence bound
+remained unproved; the assistant turned to weighted or cumulative averages of its deficit.
+A beta-convolution route paired complementary points and introduced an even potential whose or-
+thant model was ∑𝑖 log cosh 𝑠𝑖. For the paired averaged Hessian, the assistant used a determinant com-
+parison it had derived assuming Calabi’s nonpositive-Ricci bound [ 18]. Lorentz-cone calculations re-
+versed the proposed trace inequality , while Gaussian trial measures left a nonzero gap even for the
+orthant. The assistant considered Vaaler’s cube-section bound, revisited Kuperberg’s graph construc-
+tion, and explored diffusion and integrated-Hessian coordinates as alternative ways to compare the
+integrals [65, 39].
+Next it sought an exponential-to-Gaussian quantile map built from positive mixtures of translated
+Hessians. The local second variation had the desired sign under the same Calabi curvature bound.
+The global transport comparison remained unresolved, and the assistant considered radial corrections,
+determinant mixtures, and an Onofri-type energy comparison.
+Laguerre tests led to a two-point Hessian target,
+tr(𝑀(𝑝)−1𝑀(𝑞)) ≤ 𝑝 𝑇𝑀(𝑞)𝑝.
+The assistant derived a gamma comparison that would follow from this bound. Maximum-principle
+calculations gave signs the assistant could not use. Linearizing the orthant potential then produced
+mixed signs for some proposed deformation modes; it treated their realization by actual cones as a
+further question.
+The assistant shifted toward averaged deficits and complementary pairs, while also revisiting shadow-
+system convexity , reverse Brascamp–Lieb transport, and Suita-type kernel estimates [47, 8, 50]. Gamma-
+ratio calculations suggested positive integral corrections despite the changing pointwise signs. For a
+symmetric pair it proposed summing the two trace deficits. It continued by asking how the paired
+inequality would enter the beta-convolution argument.
+26 Toric residues and random supporting planes
+The assistant examined a symmetrized barrier comparison and noticed that boundary terms prevented
+its proposed specialization to uniform density. It returned to Calabi’s nonpositive-Ricci bound in its
+trace comparison, but recognized that the Laplacian control did not supply the directional convexity
+it wanted [ 18]. It then represented a rational cone by height-one lattice rays, writing 𝑁 = 𝜒 𝐶(𝑣) and
+seeking 𝑁𝜒𝐷(𝑢) ≥ 1 when 𝑢 ⋅ 𝑣 = 𝑑 . The multiplicity–log-canonical-threshold inequality suggested
+a toric analogue, but it found obstructions to finite smooth covers and to applying local multiplicity
+estimates on resolution charts [ 25].
+A determinant polynomial led to zonotope and random-simplex comparisons. The assistant rejected
+a proposed reciprocal-volume bound after checking its dimensional scale for a ball. It next used polyno-
+mial degree and toric residues to formulate a suﬀicient norm–residue estimate [ 11]. One-dimensional
+examples exposed cancellation and conditioning problems. Replacing the signed trace by geometric
+
+PAGE 25
+Geometric Mahler conjectures 25
+means of inverse Jacobians led to entropy criteria; a linear exponential-map criterion then failed for
+crosspolytopes. Its related comparisons revisited reverse Brascamp–Lieb, antiblocking, central-section,
+and reverse-isoperimetric bounds [ 8, 59, 65, 2].
+The assistant assigned independent exponential heights to vertices and sampled a cell of the lower
+regular triangulation by its volume. With rays 𝑟𝑖 = (𝑝 𝑖, 1) and rates satisfying ∑𝑖 𝛼𝑖 = 𝑑 and ∑𝑖 𝛼𝑖𝑝𝑖 = 0,
+it set 𝑀 = ∑𝑖 𝛼𝑖𝑟𝑖𝑟T
+𝑖 . It calculated
+Pr(sampled supporting plane is nonnegative on 𝑃) = det 𝑀
+𝑁 𝜒𝐷(𝑢),
+so its target became a lower bound of det 𝑀/𝑁 2 for this probability. Sparse rates returned it to the
+original polar integral. An event using the first Poisson arrivals yielded only a slab estimate; comparing
+that slab with a difference body and Kuperberg’s bound retained a loss [ 57, 39]. For random upper
+constraints it also obtained 𝔼|𝑄(𝑏)| = 𝜒 𝐷(𝑢), but recognized that these sections passed through a corner,
+preventing a direct use of central cube-section bounds.
+The assistant recalled Banaszczyk’s Euclidean transference bounds and Gaussian method [ 4]. Its lat-
+tice argument suggested another suﬀicient asymptotic constant, which it questioned through simultane-
+ous packing and simplex examples. It examined Hilbert series, toric wall relations, and radial variations,
+while recalling the covariance and shadow-flow approaches [ 38, 19]. The crosspolytope obstructed its
+hope that radial stationarity would force a simplex:
+VERBA TIM EXCERPT
+If global min proof must compare all stationary including Hanner.
+It also revisited volume localization, polynomial-capacity bounds, and Bergman-kernel comparisons [41,
+34, 50]. Finally , it decomposed the random section’s normal cones by upper and lower active constraints.
+The lower-dimensional terms entered with the opposite sign from the one it needed for induction. Pair-
+ing primal and dual random boxes produced covariance determinants; its spherical calculation contra-
+dicted the proposed guaranteed existence of a mutually maximizing pair with only upper constraints
+active.
+27 Random optimization and Gaussian replacement formulas
+The assistant represented a random linear program on a dual cone by independent exponential
+constraint heights. Conditional on an optimizer stratum with 𝑘 active upper constraints, it derived a
+gamma law for the optimum and a uniform law on the corresponding normalized face. Rescaling the
+heights made the survival event a Minkowski sum of a simplex section with the positive orthant. Its
+survival polynomial then had normalized mixed-volume coeﬀicients; the highest coeﬀicient measured
+the probability that the optimizer avoided the cone boundary. Complementary section–projection
+comparisons using Rogers–Shephard and moment comparisons using Berwald lost the constants the
+assistant needed [58, 12].
+It next combined reverse Brascamp–Lieb estimates with a contact coupling having zero means and pre-
+scribed cross-covariance [8]. A test using two identically oriented simplices satisfied these moment con-
+ditions while omitting vertices of the actual polar. The omitted polar vertices showed why these moment
+conditions alone were insuﬀicient. It examined an associated positive transition matrix, anti-blocking
+bodies, and the convex hull of contact pairs, comparing these constructions with Saint-Raymond’s vol-
+ume inequality and Kuperberg’s linking-integral approach [59, 39]. Surface-normal covariances and av-
+eraged Hessians suggested another interpolation; projection estimates again left a dimension-dependent
+loss. Its return to Gaussian projections also recalled the covariance condition associated with Klartag’s
+isotropic-constant approach [38].
+
+PAGE 26
+Geometric Mahler conjectures 26
+For these Gaussian spectral comparisons,𝑑 denotes a scalar profile independent of the cone dimension.
+With standard Gaussian density 𝜙 and distribution function 𝑝, write
+𝑋 = 𝑝/𝜙, 𝑌 = (1 − 𝑝)/𝜙, 𝑓 = −(1 − 𝑝) − log 𝑝, 𝑗 = −𝑝 − log(1 − 𝑝).
+The profile is
+𝑑(𝑥) = (1 + 𝑥𝑋(𝑥)) 2𝑓 (𝑥) + (1 − 𝑥𝑌(𝑥)) 2𝑗(𝑥).
+For a linear Gaussian symmetric matrix 𝐿, the remaining spectral term was
+Δ𝜓 = 𝔼𝜏𝜓(𝐿) − 𝔼𝜓(𝐺), 𝜓 ″ = 𝑁𝑑,
+with standard Gaussian scalar 𝐺, normalized trace 𝜏, and Gaussian number operator 𝑁 = 𝑥𝜕 𝑥 − 𝜕2𝑥. The
+assistant explored bounded diagnostic functions, changes of metric, and exact centering of the projec-
+tion path. In a commuting model, exact centering appeared to force equal variances. It then noticed that
+small matrix errors could contribute coherently across coordinates, so this argument did not immedi-
+ately give the desired quantitative bound.
+Gaussian doubling suggested expressing the spectral discrepancy through two independent replace-
+ments. Averaging over variance splits removed the oscillations of a fixed split and gave an auxiliary
+profile
+𝜑″∗ = (𝑁 + 4)(𝑑 − 1/2).
+In the commuting case, the assistant obtained quadratic Fourier expressions in mean characteristic-
+function discrepancies. In comparing noncommuting sums with spectral-overlap averages, the assis-
+tant invoked Golden–Thompson for real exponentials and hyperbolic cosines, then explored analogous
+trace comparisons for its profile [ 29, 63]. It also inferred a square-root trace comparison from Golden–
+Thompson through a Laplace integral and considered combining it with a lower Khintchine estimate [29,
+63]. The assistant returned to the exact layer and contact identities, checked their algebra, and pursued
+a Duhamel expansion in which trace symmetry canceled a first-order commutator term. It still needed
+an estimate tying the remaining commutator terms to its nonnegative defects.
+28 Commuting evidence and Hessian structure
+The assistant pursued a dimension-independent bound for the Gaussian spectral discrepancy , writing
+𝐿 = ∑𝑖 𝐺𝑖𝑀𝑖 and 𝑆 = ∑𝑖 𝑀2
+𝑖 . It compared scalar and matrix Ornstein–Uhlenbeck operators through the
+defect
+̃𝑑ℎ = (1 + 𝑁 𝐺)−1(𝑁𝑧ℎ(𝐿) − 𝑁𝐺ℎ(𝐿)).
+It hoped that this defect, together with the Dirichlet gap 𝐽ℎ, would control variance heterogeneity and
+noncommutativity. Revisiting its own earlier calculations, it considered quadratic maps from pairs of
+Gaussians, tail constraints, and alternative metric balances. A rotating-projector example led it to reject
+a trace-norm reconstruction bound for arbitrary projection layers and to seek additional control from
+cone contact positivity.
+Perturbing the cross-covariance of two Gaussian inputs, the assistant derived a quadratic-test inequal-
+ity in which a residual square cancelled. It then encountered unbounded test functions, the restriction
+to positive covariance decrements, and diﬀiculties controlling matrix errors. It proposed allocating di-
+agnostics across dyadic variance scales, but observed that compressing away high-variance directions
+could reintroduce large derivative errors. In the commuting case, it considered a two-component profile
+involving hyperbolic functions.
+The assistant next tried to change the balancing condition so that the remaining even discrepancy
+would disappear. Its Hermite calculation produced a positive adjoint compatibility condition, which it
+
+PAGE 27
+Geometric Mahler conjectures 27
+took as an obstruction to a monotone replacement. A further proposal to offset the mean by a nonlinear
+scalar balance failed its own test at extreme scalings. It also derived a resolvent identity expressing a
+noncommutative comparison error as a product of commutators, then found that spectral cancellations
+obstructed the desired localization estimate. Revisiting Golden–Thompson, the assistant compared a
+square-root matrix trace with a spectral-overlap average, but cautioned against assuming the desired
+deterministic sign [29, 63]. Hermite triangularity suggested formulas quadratic in lower-chaos leakage;
+the assistant found that positive factorizations introduced polynomial tails incompatible with bounded
+diagnostics.
+Returning to the full symmetry of the coeﬀicient tensor, the assistant noticed that the comparison
+field in 𝑑ℎ was a Hessian. It therefore used the failure of ∇ℎ(𝐿) to be fully symmetric as an additional
+contribution to the Dirichlet defect.
+It then investigated calibrating 𝑆, diagonalizing an independent Gaussian reference matrix, and fac-
+toring a classical two-variable comparison kernel. It continued to identify anisotropic variance, transfer
+to actual projection layers, and global estimates as obstacles to its proposed bound.
+29 Parity estimates and the limits of path averaging
+The assistant tried angular averaging to factor the Gaussian trace discrepancy into squares of mean
+discrepancies. Hermite–Laguerre expansions suggested positive moment kernels, but its Taylor expan-
+sion gave signs incompatible with complete monotonicity of the required scalar profile. It therefore
+considered signed representations and approximate profiles. Recalling its reverse Brascamp–Lieb and
+aﬀine-sphere routes, it again found missing comparisons between the primal and dual quantities [8, 18].
+It next tried bounded non-Gaussian inputs so that linear diagnostics would remain bounded. For a
+cosine density , it obtained a constant product of the two scalar hazards. It then noticed that the centered
+primal mean reached a finite endpoint while the dual hazard diverged, potentially making the dual
+entropy cost infinite. Logistic inputs gave complementary derivative matrices, but the cost comparison
+remained unresolved in its calculation.
+Returning to Gaussian inputs, it split the higher-chaos remainder into even and odd parts. The even
+part began at degree two and the odd part at degree three; the assistant used these different degrees to
+assign separate quadratic estimates. It retained more of the companion diagnostic’s square instead of
+replacing everything by a constant bound. Variance-dependent Stein equations and threshold decompo-
+sitions then targeted the remaining matrix errors. One threshold Cauchy–Schwarz estimate developed
+a logarithmically divergent tail.
+Hessian symmetry supplied another term: the assistant compared divided differences along the three
+edges determined by a symmetric third-order tensor. It recognized additional local control from the part
+of a diagnostic that was not itself a Hessian:
+VERBA TIM EXCERPT
+Thus Codazzi doubles J locally!
+In comparing matrix and commuting Gaussian laws, it considered Golden–Thompson and Lieb trace
+inequalities, then explored an averaged commutator-moment estimate near identity covariance [ 29, 63,
+42]. Star-shaped matrix examples obstructed its proposed extension to heterogeneous covariance; its
+attempted use of Lieb’s concavity for skew information likewise left a scaling problem.
+The assistant finally revisited paths that switched from primal centering to dual centering at a cutoff.
+It derived the cutoff boundary terms and asked whether averaging the cutoff could remove the trouble-
+some profile. Matching the coeﬀicients of both barriers forced their averaged profile back to the original
+one:
+
+PAGE 28
+Geometric Mahler conjectures 28
+VERBA TIM EXCERPT
+So smooth profiles no help;
+It then expressed the Fenchel gap as a squared mismatch of centered projections plus a nonnegative
+contact term. From an identically zero gap it recovered the Gaussian rank profile. For small gaps, how-
+ever, it noticed that scalar barrier perturbations could change the entropy expression at first order while
+changing the gap only quadratically. It turned to the vector mean constraints and independently cen-
+tered primal and dual maps for additional control.
+30 Variance rigidity, large spectral rows, and smoothing
+The assistant compared independently centered primal and dual projection paths, then tried a deter-
+ministic shift with a common mean residual. Cancelling its integral in a commuting model forced unit
+spectral variances, but it still needed a calibration realizing that cancellation. Anisotropically scaled or-
+thants defeated the proposed entropy tangent. A contact identity relating mean rank to covariance sug-
+gested another route: exact reflection parity would force the Gaussian profile. Its quantitative version
+encountered a positive adjoint compatibility condition, while scale-dependent Fourier tests recreated
+the unbounded triangular-kernel obstruction.
+The assistant next asked whether high-variance rows of a Gaussian matrix could retain a definite ag-
+gregate fraction of their variance in the diagonal of 𝔼|𝐿|. Star-shaped examples ruled out the individual-
+row estimate. It considered noncommutative Khintchine duality [45], then grouped variances by dyadic
+scale and charged interactions with larger rows through their rank.
+Positive-part spectral tests offered a second approach, using the Powers–Størmer inequality and Dou-
+glas factorization [ 53, 23]. The assistant estimated the constants needed by its entropy argument and
+found that a small positive universal bound would not suﬀice.
+It returned to Gaussian regularization of cone Laplace integrals. Optimizing primal and dual metrics
+matched posterior covariances, but the resulting Hessian contained third-moment corrections. Reexam-
+ining its earlier scalar truncated-Gaussian argument, it distinguished that calculation from the multidi-
+mensional bound it still sought. The recalled approaches used Ehrhard’s inequality and Brascamp–Lieb
+estimates [24, 16], Caffarelli contraction and Borell noise stability [ 17, 14], and Berwald’s moment com-
+parison [12]; the assistant continued to encounter tensor or conditional-centering obstructions.
+Its review also returned to Klartag’s covariance framework [ 38], canonical Cheng–Yau barriers and
+Calabi curvature estimates [ 20, 18], and reverse Brascamp–Lieb bounds [ 8]. Kuperberg’s symmetric
+bound and Saint-Raymond’s inequality remained possible inputs to lifts [39, 59], but the assistant noted
+that fixed exponential losses prevented its proposed transfer from being sharp at the simplex.
+Moreau decomposition expressed the product integral through translated primal–dual intersections.
+The assistant checked that replacing each intersection by the fixed cone intersection was exact for the
+orthant, then found that this replacement could discard needed slack for other models. A proposed
+covariance monotonicity met a more explicit obstruction. For
+𝐶 = {(𝑧 1, 𝑧2, 𝑥) ∶ 𝑧 1, 𝑧2 ≥ 0, 0 ≤ 𝑥 ≤ 𝑧 1 + 𝑧2}, 𝜒 𝐶(𝑎, 𝑎, 𝜆) = 2𝑎 + 𝜆
+𝑎2(𝑎 + 𝜆)2 ,
+it differentiated twice in 𝑎 and then in 𝜆. The variance of 𝑧1 + 𝑧2 increased when 𝜆 was suﬀiciently large,
+and it rejected the universal curvature principle:
+
+PAGE 29
+Geometric Mahler conjectures 29
+VERBA TIM EXCERPT
+Thus T_v not PSD globally.
+The assistant then proposed realizing smoothing by higher-dimensional cone lifts, hoping to turn
+covariance improvement into amplification of a hypothetical deficit.
+31 Canonical entropy and the failure of scalar induction
+The assistant first reconsidered perturbations of product cones, then compared maximal entropy on a
+cone with its canonical potential 𝐹, normalized by det 𝐷2𝐹 = 𝑒 2𝐹. Its intended suﬀicient inequality was
+𝐻0(𝑦) + 𝐹(𝑦) ≥ 𝑑 . It relied on Cheng–Yau completeness and a Calabi curvature calculation, and used
+Brascamp–Lieb variance estimates to organize Gaussian regularization at fixed mean into a positive trace
+term, a negative square, and variance deficits [20, 18, 16]. Completing the square still left aggregate con-
+trol of third moments unresolved. Covariance caps made the covariance isotropic when every direction
+was active; inactive directions and mixed precision terms remained obstacles.
+It then calibrated a spectral penalty against the half-line entropy profile. Testing off-diagonal precision
+matrices on an orthant reversed the desired comparison:
+VERBA TIM EXCERPT
+Thus J negative near non-diagonal orthant! Not valid for all Q.
+The assistant next pursued one-dimensional slices. Retaining the variation of the maximizing eigen-
+vector in a Bochner calculation led it to announce a two-functional bound. It used this to restrict recip-
+rocal endpoint distances and attempted to compare interval entropy with half-line entropy , leaving an
+elementary hyperbolic inequality and a damping argument to prove. Partial Legendre elimination then
+exposed a failure of dimensional induction: an oblique first slice of an orthant gives a strict surplus, al-
+though the total orthant entropy is exact, so the remaining factor must fall below the proposed inductive
+target.
+VERBA TIM EXCERPT
+So iterative scalar ≥e false.
+Further covariance-cap calculations controlled radial third moments but left transverse contributions
+unresolved. The assistant explored approximate simultaneous diagonalization of the canonical cubic
+tensor, including a reformulation in terms of completely positive maps, to relate these contributions
+to curvature. It also revisited reverse Brascamp–Lieb estimates, hyperplane-symmetry arguments, and
+Saint-Raymond’s antiblocking inequality from its earlier calculations, without finding the missing com-
+parison [8, 7, 59]. A gradient-coordinate approach led it back to moment-measure equations [ 21]. Its
+proposed containment by a spectrahedron defined by the cubic tensor failed on centrally symmetric
+nonspherical sections.
+The final sustained pivot used the symmetric order interval 𝐾 = {𝑧 ∶ 𝑎 ± 𝑧 ∈ 𝐶} and a beta-integral
+comparison, with the orthant as the equality model. The assistant considered whether Kuperberg’s
+symmetric volume-product bound could handle suﬀiciently round cases [ 39]. Symmetry removed odd
+posterior moments, but determinant control alone admitted radial constructions below the intended
+constant. Splitting the averaged chord Hessian into two halves then gave the assistant a trace bound:
+after normalizing 𝐷2𝐹(𝑎) = 𝐼 , it obtained tr 𝑃 ≤ 𝑑 for the inverse averaged Hessian 𝑃. It ended by trying
+to combine this trace bound with determinant slack and finite-parameter beta estimates.
+
+PAGE 30
+Geometric Mahler conjectures 30
+32 Beta convolution and failed positivity certificates
+The assistant continued the canonical-potential route, invoking Cheng–Yau completeness, Calabi’s Ricci
+estimate and an Omori–Yau maximum principle [ 20, 18, 66]. With 𝐹(𝑎) = 0 and 𝐹″(𝑎) = 𝐼 , it sought
+𝐼𝜈(𝑎) = ∫
+𝑎±𝑧∈𝐶
+𝑒−2(𝜈−1)𝑈(𝑧) 𝑑𝑧 ≥ 𝐵(1/2, 𝜈) 𝑑, 𝑈(𝑧) = 1
+2 (𝐹(𝑎 + 𝑧) + 𝐹(𝑎 − 𝑧) ).
+It calculated that the corresponding convolution inequality would give 𝑅2𝜈 ≥ 𝑅 2𝜈; a saddle-point limit
+would then give the desired cone bound. In its gradient coordinates, an inverse averaged Hessian 𝑃
+produced the correction 𝜃 = log det 𝑃 + 2𝑈 . Splitting the chord into halves expressed this correction
+through three nonnegative terms.
+It hoped small slack would permit approximation by commuting matrices and the orthant’s product
+density , but still needed quantitative control. Optimized Gaussian trial laws did not reach the orthant
+constant at 𝜈 = 1 . A proposed pointwise bound demanded a fourth-derivative inequality the assistant
+could not justify. Vinberg-cone boundary asymptotics also led it to reject a Gaussian-quantile certificate
+for some exponents. Revisiting reverse Brascamp–Lieb and Saint-Raymond arguments did not supply
+its missing comparison [ 8, 59]; ordinary Brascamp–Lieb covariance control gave a weaker convolution-
+Hessian estimate even on the orthant [ 16].
+Integration by parts next yielded an ordinary differential equation with an extra term whose sign
+would control 𝔼(2𝑈). Formal perturbations of the orthant produced negative first variations. Integrat-
+ing against a positive Green weight still left adverse boundary examples. It changed the determinant
+weight:
+VERBA TIM EXCERPT
+w=0.5 may fix both:
+The half-weight represented Riemannian volume for the averaged Hessian. Subsequent spectral de-
+compositions isolated positive logarithmic terms, while their expected values remained to be controlled.
+The assistant also withdrew a derivative estimate after testing the dilation direction:
+VERBA TIM EXCERPT
+Oops B_gamma HS bound impossible unless θ gradient zero:
+It then used stationarity in the center to derive endpoint moment constraints, revisiting the covari-
+ance viewpoint associated with Klartag [ 38]. A Poisson equation represented the convolution Hessian
+through transport energy. Determinant concavity led back to an entropy expression with the opposite
+variational direction from the one needed.
+At the uniform-density endpoint, the assistant’s gradient-covering argument likewise gave an upper
+bound. Kuperberg’s estimate left the same constant gap in its difference-body calculation [ 39]. It fi-
+nally turned to varying the cone itself and wrote the transformed Monge–Ampère equation for shadow
+deformations, asking which comparison direction the fiber interpolation would provide.
+33 Amplification and almost-pyramidal reduction
+The assistant first tried a partial Legendre transform of a shadow deformation, but the resulting de-
+terminant comparison did not give the interpolation inequality it needed. It then sought to amplify a
+hypothetical Mahler deficit through products and canonical-potential truncations. An explicit barrier
+
+PAGE 31
+Geometric Mahler conjectures 31
+gave a determinant estimate with a polynomial loss; the assistant noticed that the induced concentra-
+tion bound became easier to satisfy when the characteristic volume was small. Dual truncation, viewed
+as primal expansion, led it back to the same direction of comparison. A collective concave constraint
+on a product cone gave a proposed multiplier involving a Chernoff bound and a weighted Minkowski
+volume. Radial integration expressed that multiplier through polar Minkowski sums, and the assistant
+recognized the original Mahler minimization inside the proposed amplification.
+It next reconsidered random simplex determinants and stationary boundary couplings. Indepen-
+dent sampling lost the probability of selecting distinct simplex vertices, while squared determinants
+brought it back to covariance estimates. Its comparisons recalled Klartag’s isotropic-constant frame-
+work, reverse Brascamp–Lieb and reverse-isoperimetric bounds, Kuperberg’s symmetric estimate, and
+centroid-section estimates [38, 8, 2, 39, 27]. It also revisited shadow systems and the three-dimensional
+argument [47, 19]. While seeking a deformation beyond the available stationarity identities, it recalled
+curvature restrictions on local minimizers [ 56].
+For a body close to a pyramid, the assistant chose opposite extremal points with asymmetry parameter
+𝑠 ≤ 𝑛 . A perspective change of the section height produced sublevel bodies 𝐿𝑥 = {𝑓 ≤ 𝑥} and 𝑀𝑦 =
+{𝑓 ∗ ≤ 𝑦} in dimension 𝑛 − 1 . It derived weighted formulas for both volumes and isolated a prefactor
+minimized at 𝑠 = 𝑛 . Applying the lower-dimensional Mahler benchmark left a product of expectations:
+primal mass sampled small heights, whereas the dual integral sampled much larger ones. Mixtures of
+directional thresholds defeated its first scalar comparison, so it sought compensation from the geometry
+of the level bodies and their centers.
+With symmetrically rescaled heights 𝑔, ℎ and 𝑟 = 𝑛/𝑠 − 1 , the assistant obtained an envelope estimate
+that avoided its earlier tail-divergence objection. It then revisited the scaling Hessian condition in the
+exponential limit and derived
+Var(𝑔) + Var(ℎ) ≥ 2𝑟.
+VERBA TIM EXCERPT
+This kills mixed small-threshold model (both variances O(r²)!);
+It compared this constraint with information-content variance bounds [ 28], but rare large heights and
+the heights of contacting boundary points still escaped the control it sought. It pursued size-weighted
+contact couplings and clipping variations without obtaining the proposed near-pyramid induction. Fi-
+nally , it turned to the nonnegative kernel𝑇(𝑝, 𝑞) = 1−𝑝⋅𝑞 : its spectrum suggested a comparison between
+nearly Euclidean components and components resembling joins, while reverse Brascamp–Lieb still left
+a covariance determinant to recover.
+34 Random heights and unused entropy slack
+The assistant returned to contact geometry and rejected a fixed-sign rule for products of primal and
+dual simplex determinants: a four-by-four nonnegative slack matrix with zero diagonal could have the
+opposite determinant sign. It found that taking absolute values discarded cancellations needed at the
+simplex. Revisiting direct and reverse Brascamp–Lieb transport, it sought extra determinant gain from
+nonorthogonal frames, but found neither its Gaussian construction nor its inball estimate controlled the
+intermediate covariance regime [ 16, 8]. It also reconsidered the shadow-flow obstruction, Kuperberg’s
+linking construction, and Rogers–Shephard comparisons [ 19, 39, 57].
+Triangulating a cone led it to an entropy formulation. A basis had probability proportional to its
+absolute determinant, and its inclusion probabilities supplied rates for independent exponential heights.
+Integrating the height residuals related the probability of a lower supporting plane being nonnegative
+to the dual Laplace integral. For the resulting random linear program, it wrote:
+
+PAGE 32
+Geometric Mahler conjectures 32
+VERBA TIM EXCERPT
+Conditional on "good", density \(y\sim Exp_D(u)\) independent of x!
+The assistant still needed a probability estimate for the weighted triangulation, rather than a sum over
+all bases. It connected the construction to a zonotope and its normal cones, hoping to use the zonoid
+volume-product inequality , but suspected that its proposed local comparison merely restated the origi-
+nal diﬀiculty [ 55].
+It next sought a matrix extension of Borell’s Gaussian noise-stability comparison [ 14]. Projection Hes-
+sians and their rank-one jumps across polyhedral walls offered additional structure. Scalar rearrange-
+ment gave directional mean bounds, but the assistant found that a positive decomposition of the identity
+using directions from both cones would already impose simplicial structure. It also recalled local sim-
+plex minimality , while noting the dimension dependence of that approach [ 37].
+The assistant then audited its earlier Hardy–entropy argument: convexification of the cost curve, met-
+ric balancing, Gaussian Poincaré estimates, endpoint integrability , and smoothing of the transport maps.
+A nonzero entropy correction remained.
+Returning to Klartag’s projective covariance condition [ 38], it looked for unused relative entropy be-
+tween its transport laws and tilted cone laws. Unequal coordinate rates might create a useful mean
+discrepancy. Splitting exponentials into independent gamma variables preserved the orthant distribu-
+tion, but conditioning on their proportions produced Jacobians whose positivity and injectivity it could
+not control.
+Finally , cumulative positive matrices gave it a proposed logarithmic-determinant comparison without
+simultaneous diagonalization. Its reaction was:
+VERBA TIM EXCERPT
+exact rearrangement! Orth equality when support pure threshold simultaneously; no dephasing. Nice.
+It developed compact metric perturbations and positive spectral tail jumps, using conditional Gaussian
+averaging to estimate their entropy gain. Its remaining tasks included controlling finite perturbations,
+intermediate variances, tail constants, and the equality case.
+35 Anisotropic inputs and quadratic layer control
+The assistant returned to its earlier scalar Hardy and matrix-diagnostic calculations, seeking the entropy
+gain that those estimates had left missing. It examined constant and varying projection metrics, with
+the mean of each projected Gaussian still constrained to a prescribed ray. A constant metric gave a
+matrix diagnostic equal to the identity in the orthant model. The assistant sought a uniform bound for
+its response, especially on small subspaces with large covariance eigenvalues.
+For a varying metric, it found that an odd coeﬀicient would cancel the reflected covariance term of
+the ideal spectral-threshold family , including noncommuting thresholds. Transferring that cancellation
+to the actual projections led to inverse spectral-distance weights:
+VERBA TIM EXCERPT
+Log divergence near z=λ_i.
+It tried subtracting threshold values, integrating matrix primitives at column-dependent cutoffs, and us-
+ing nonnesting and commutator estimates. The assistant could not obtain the needed uniform estimate
+from these reformulations.
+
+PAGE 33
+Geometric Mahler conjectures 33
+It then reconsidered polynomial diagnostics, alternative input distributions, and its earlier doubling
+argument for the Gaussian matrix series. Polynomial derivatives introduced weighted errors beyond the
+available deficit; smoothing changed the orthant equality calculation. The assistant also revisited cone-
+contact inequalities at individual pairs of thresholds, hoping their signs would distinguish mixtures of
+different variances. It repeatedly encountered transfer errors proportional to the square root of a deficit.
+A change to the Gaussian input covariance produced a new first-variation calculation. For covariance
+𝐼 + 𝐸, it expressed the variation using only the mean projection Hessian 𝐻𝑧, with 𝑗 = 𝐴/Φ :
+𝜏𝐸 [ 1
+2 𝐼 − ∫ 𝑗(𝑧)𝑗′(𝑧)(𝐼 − 𝐻 𝑧) 𝑑𝑧] .
+The assistant regarded this as a simpler moment diagnostic, but its attempts to control a finite pertur-
+bation encountered concentrated responses and tail terms. Matching the projection metric to the input
+transformation left diagonal orthant projections unchanged, which prompted it to seek estimates that
+retained this exact cancellation.
+Rather than continue comparing two changing projection paths, the assistant rebuilt the complemen-
+tary identities at an anisotropic covariance Σ = 𝐼 + 𝑇 . It separated the weighted trace defining the mean-
+rank measure from the ordinary trace used in the spectral-layer estimates. When it allowed 𝜏Σ ≠ 1 , it
+noticed that its formulas needed additional centering constants and corrected them. Positive covariance
+directions could be tested through cone contact; negative directions still required an upper estimate for
+a quadratic layer error.
+For that error, the assistant subtracted a positive kernel within each side of a spectral threshold. It
+found that the remaining kernel decayed in the tails:
+VERBA TIM EXCERPT
+Thus no divergence for **quadratic** unlike saturated.
+It then proposed controlling the remainder by the square root of the misalignment deficit times a com-
+mutator norm, and comparing that cost with the remaining entropy estimates. It continued working out
+this bound and its constants.
+36 Riccati cancellation and explicit Gaussian profiles
+The assistant continued the adaptive-covariance approach, writing the integrated projection statistic as
+𝐴 = 𝐿 + 𝑅 and the covariance as 𝐼 + 𝑇 . It checked that the trace identities survived insertion of the
+covariance, but found that the weighted Jensen defect could have either sign. An even companion and
+bounded oscillating diagnostics were meant to control endpoint errors without consuming the available
+layer estimates.
+A negative scalar Stein profile led the assistant to choose 𝑇 through a matrix Riccati equation,
+𝜆𝑇2 + sym(𝑇𝐶) = −𝐷.
+It derived a cancellation of the leading variance discrepancy and sought to use the resulting quadratic
+penalties to absorb the remaining terms. Moving the main quadratic layer calculation from 𝐿 to the
+full statistic 𝐴 let it charge an error to nonnesting instead of using only the smaller projection-mismatch
+allowance. It also retained the weighted residual term long enough to cancel part of the covariance
+correction.
+The assistant next examined the scalar identities underlying the conic formulation. With the Gaussian
+ratios 𝑋, 𝑌 and logarithmic functions 𝑓 , 𝑗 defined above, the companion profiles are
+𝑔 = 1
+2 (1 − 𝑋 2𝑓 − 𝑌 2𝑗), 𝑣 = log(𝑋𝑌).
+
+PAGE 34
+Geometric Mahler conjectures 34
+For the Gaussian number operator 𝑁, it recovered (𝑁 + 2)𝑔 = 𝑑 together with
+2𝑔′ = 2𝑧𝑑 − 𝑑 ′ − 𝑣′.
+The assistant used this identity to express the resolvent profiles directly through Gaussian densities,
+distribution functions, and logarithms. In particular, it obtained 𝑟0 = −𝑑 − 𝑔 ″, expressing the Riccati
+profile in explicit functions.
+Its equality discussion depended on strict residual estimates: it reasoned that equality would force
+𝑇 = 0 , commuting coeﬀicient matrices, and vanishing projection mismatch. A coordinatewise cone
+projection would then identify an orthant and hence a simplex. It also revisited smoothing and boundary
+terms for arbitrary cones.
+Next, a pointwise weighted Cauchy estimate combined the same-side and opposite-side layer integrals
+into a coeﬀicient involving log 2 + 1/4. The uniform scalar bounds remained to be established.
+It explored small-interval derivative estimates, hyperbolic coordinates for the rotating diagnostics,
+and tail bounds from Mills-ratio integrals. The diﬀiculty was to control intermediate intervals and can-
+cellation in the tails. The assistant then sought analytic estimates for those remaining terms.
+37 Scalar estimates and renewed algebraic scrutiny
+The assistant pursued uniform Gaussian-profile inequalities in the coordinate 𝑥 = 3.6 sinh 𝑡. It used the
+profiles K = 𝑑 − 2𝑔 and C = −𝑑 + 6.5𝑔 ″, also written 𝐾, 𝐶, and combined their Mills-ratio formulas
+with complex-strip estimates and analytic interpolation bounds. The proposed division separated short
+endpoint intervals, a compact region, and tails. Peano kernels improved the short-interval estimates; for
+the compact region, the assistant retained correlations between profiles instead of adding their separate
+maxima. It also corrected its interpolation plan to account for the fact that the two coordinate curvatures
+could attain their maxima at different points.
+It then rederived the cone-projection and entropy identities before continuing the scalar estimates. In
+this audit it identified the positive covariance-contact term as the expected inner product of the appro-
+priately ordered primal and dual projections, correcting a description in its own earlier reasoning. It
+checked the matrix Stein calculation’s endpoint ordering: the outer eigenvalue supplies the endpoint
+value of 𝐶, while the shared eigenvalue supplies the endpoint of the squared probe difference. This
+ordering determined the sign in the asymmetric endpoint term. It also revisited the Riccati equation,
+commutator estimates, and the proposed deduction of orthant rigidity from equality.
+For the scalar estimates, the assistant studied zero-free complex strips, Gaussian-tail bounds, and
+interpolation errors. It retained correlated profile estimates, which were needed to control the endpoint
+terms uniformly.
+The assistant assembled the scalar estimates and added tail bounds to the argument.
+38 A conditional proof chain and its remaining obligations
+The assistant developed the segment estimate linking averages of the scalar profiles K, C and a rotating
+diagnostic 𝑢 = (𝜋, 𝑞) to the variance of 𝑢. Here
+𝑏 = .602, 𝑐 = .365, 𝑘 = √𝑏 − 𝑐, 𝑟 = .22, 𝑞(𝑥) = 𝑘 − √𝑏 − 𝑟2 − 𝑑(𝑥).
+In the coordinate 𝑥 = 3.6 sinh 𝑡, the circular component is 𝜋(𝑡) = 𝑟( cos(4.6𝑡), sin(4.6𝑡)). It separated
+short intervals, analytic tails, and a compact region, seeking uniform control of second derivatives and
+endpoint errors.
+
+PAGE 35
+Geometric Mahler conjectures 35
+The assistant reconstructed the cone reduction and the Gaussian argument. For the cone over 𝐾 − 𝑧 ,
+in dimension 𝑚 = 𝑛 + 1 , it calculated
+𝜒𝐶(𝑉)𝜒𝐷(𝑈) = (𝑛!)2|𝐾| |(𝐾 − 𝑧) ∘|
+𝑚𝑚 .
+It sought a lower bound of one by integrating biased complementary projections against Gaussian haz-
+ard weights. It replaced direct differentiation of the full integrals by truncation followed by smoothing,
+then worked through the log-Jacobian surplus and the entropy costs. Its proposed surplus contributed
+𝑁/8, where 𝑁 integrated the nonnegative kernel measuring failure of the projection derivatives to be
+nested.
+The subsequent reconstruction kept the covariance Σ = 𝐼 + 𝑇 , the change of metric, and the pro-
+jection bias separate. The assistant used a simultaneous fixed-point argument to seek zero mean for
+the integrated derivative field and a matrix Riccati equation for 𝑇. It rederived the covariance, contact,
+and layer identities, checked the orientation of matrix indices, and split the residual into even and odd
+Gaussian degrees. Geometric subtraction on the two sides of a spectral threshold produced the constant
+2 log 2 − 1/3; another integral gave log 2 + 1/4. These estimates were intended to pay for commutators
+and leave the segment variance available for the final comparison.
+The assistant assembled a draft in which the Riccati identity supplied a quadratic penalty of at least
+1.94 𝜏𝑇 2, against a stated error allowance of 1.8 𝜏𝑇 2. It argued that equality would force the coeﬀicient
+matrices of the linear Gaussian field to commute and the projection mismatch to vanish, making the
+cone projection coordinatewise and its image an orthant. It then calculated the simplex volume product
+directly.
+39 Recovering variance in the scalar estimates
+For transformed endpoints 𝑚 − ℎ, 𝑚 + ℎ , with 𝑥 = 3.6 sinh 𝑡, the assistant used physical averaging with
+density proportional to cosh 𝑡. Its circle 𝜋(𝑡) = .22( cos(4.6𝑡), sin(4.6𝑡)) provided variance against which
+it charged the chord error of 𝐾, endpoint differences, and squared discrepancies involving 𝐶, 𝑞. Sepa-
+rate estimates lost correlations between derivative and curvature profiles. It tried joint rearrangement,
+Hölder bounds, and piecewise secant majorants for squared averages.
+The assistant then returned to variance omitted from its suﬀicient inequality:
+VERBA TIM EXCERPT
+Maybe improve variance term by using discarded q variance.
+It set 𝑞𝑑 = (𝑞 + − 𝑞−)/2, 𝑒𝑞 = ̄ 𝑞 − (𝑞+ + 𝑞−)/2, and 𝑉𝑞 = 𝑞2 − ̄ 𝑞2, obtaining
+𝑏𝑎 = 𝑉 𝑞 + 𝑒2𝑞 + 𝑞2
+𝑑, 𝑏 𝑑 = −2𝑞 𝑑𝑒𝑞.
+It observed that the endpoint penalty left a subtraction of 𝑉𝑞, while expanding the residual squares
+consumed only part of that subtraction under its proposed bounds. From a Lipschitz bound on 𝑞 and a
+lower bound on the averaging density , it derived a cubic lower estimate for variance in terms of endpoint
+displacement. It also examined the extra circular variance proportional to 𝐵2
+ℎ sech2 𝑚. These gains led it
+back toward simpler separate profile estimates.
+The assistant next sought concentration bounds of the form ∫𝐸 𝐴 ≤ 2𝐻(𝛼 − 𝛽𝐻) for |𝐸| = 2𝐻 . It
+reduced them to excess integrals ∫(𝐴 − 𝑧)+, and used layer-cake integration to bound weighted averages.
+For larger intervals and intervals crossing zero, it expressed averages through weighted primitives and
+compared the endpoint correction with a one-variable function. It continued choosing thresholds and
+estimating chord errors, approximate monotonicity tolerances, and the remaining corrections needed to
+establish uniform bounds.
+
+PAGE 36
+Geometric Mahler conjectures 36
+40 Bernstein positivity and the conditional cone reduction
+The assistant sought scalar bounds through concentration estimates, primitive bounds, and polynomial
+inequalities. For middle widths .16 ≤ ℎ ≤ .54 , it retained the variance of 𝑞, obtaining
+𝑉𝑞
+ℎ2 ≥ (ℎ coth ℎ − ℎ)𝑧3
+3 ⋅ .193 , 𝑧 = |𝑞+ − 𝑞−|
+2ℎ .
+It used this cubic gain to absorb endpoint penalties, then multiplied the remaining deficits by(sinh ℎ/ℎ)2
+to remove hyperbolic denominators. Taylor bounds reduced the remaining estimates to positivity of
+polynomials of degrees 30 and 32. It handled larger widths through concentration, monotonicity , and
+sign-dependent angular bounds. The required positivity of the resulting polynomials remained part of
+the scalar estimate.
+It then reread its geometric argument from the beginning. With 𝑚 = 𝑛+1 , the cone 𝐶 over a translated
+body and its positive dual 𝐷 reduced the proposed bound to
+𝜒𝐶(𝑉)𝜒𝐷(𝑈) ≥ 1, 𝑈 ∈ int 𝐶, 𝑉 ∈ int 𝐷, 𝑈 ⋅ 𝑉 = 𝑚.
+The assistant checked biased Gaussian projections realizing prescribed means, their tail estimates, and
+a Brouwer argument choosing coordinates and a covariance perturbation. It corrected wording that
+appeared to give 𝑝𝑟1 the same total mass as ℎ′(𝑧) 𝑑𝑧: the former was asserted to be integrable with all
+moments, while the latter had mass 𝑠0.
+The audit followed the entropy estimate through truncated, smoothed projection maps, positive Ja-
+cobians, and Gaussian covariance identities. The assistant rederived the decomposition 𝐴 = 𝐿 + 𝑅 ,
+separated the even and odd parts of 𝑅, and checked how weighted Cauchy–Schwarz estimates and a
+matrix Riccati relation paid for the terms involving matrices that did not commute. The argument re-
+mained conditional on the scalar inequalities; the assistant continued checking signs, constants, and
+equality deductions.
+For equality , the assistant reasoned that diagonal support of the endpoint measure would force the
+coeﬀicients of 𝐿 to commute, while vanishing layer error would make the projection derivative diagonal.
+It explicitly identified the next step:
+VERBA TIM EXCERPT
+Need argument all j≠i simultaneously yields dependence only i, continuity extends full slices.
+It used mollification and vanishing cross derivatives to obtain coordinatewise dependence, then a prod-
+uct cone, an orthant, and a simplex section. Finally , it returned to complex-strip interpolation, profile
+derivatives, and the tail expansion.
+41 Following the error estimates from tails to middle widths
+The assistant continued checking the scalar estimates for its proposed projection-field argument. With
+𝜉 = 𝑥 −2 and 𝐷 = 𝑥𝜕 𝑥, it differentiated Laplace integrals through order four and used binomial convolu-
+tion to track products of derivative bounds. It checked the resulting estimates for K, 𝑑, and C, including
+the square root defining 𝑞. For the positive-part integral beyond 64, it used K(𝑥) ≤ 𝑥 −2 log 𝑥.
+Under 𝑥 = 3.6 sinh 𝑡, uniform physical-length averages acquire a cosh 𝑡 weight. The assistant inte-
+grated the circular component explicitly , obtaining a lower bound 𝑓 ∗
+0 for its variance, and derived a
+positive chord kernel for the averaging error. For half-width ℎ ≤ .16 , it bounded the joint curvature and
+endpoint cost by .54𝑢0, where 𝑢0 = 𝑟 2𝑤2ℎ2/3; its remaining allowance was approximately .555109𝑢0. It
+
+PAGE 37
+Geometric Mahler conjectures 37
+then checked three tail configurations, using positive-part integrals, narrow profile ranges, and convex-
+ity to leave a bounded middle region.
+For that region, the assistant used threshold integrals to bound concentration and integrated piecewise
+linear profiles to estimate weighted primitives. Almost-monotonicity estimates controlled endpoint dis-
+crepancies. Retaining the scalar variance 𝑉𝑞, rather than dropping it, gave
+𝑉𝑞/ℎ2 ≥ 𝑣ℎ𝑧3
+3 ⋅ .193 , 𝑧 = |𝑞+ − 𝑞−|
+2ℎ , 𝑣 ℎ = ℎ coth ℎ − ℎ.
+It reduced the excess cost to a cubic maximization and reported 𝑅/ℎ2 ≤ .027 . Hyperbolic and trigono-
+metric expansions then produced deficit polynomials of degrees 32 and 30; it reduced their positivity
+on [.16, .54] to Bernstein-coeﬀicient inequalities. For larger widths it separated signs of the angular term
+and checked the rounded error bounds individually.
+42 Checking transport, noncommutation, and equality
+The assistant continued checking the scalar estimates and the cone argument. It bounded Gaussian
+tails, differentiated the profiles 𝑑, 𝑔, K, C, 𝑞, and examined the positivity needed before taking the square
+root in 𝑞. Concentration estimates and polynomial bounds were used to organize the remaining scalar
+inequalities.
+It then rederived the cone normalization: with 𝑚 = 𝑛 + 1, positive dual cones and 𝑈 ⋅ 𝑉 = 𝑚, the target
+became 𝜒𝐶(𝑉)𝜒𝐷(𝑈) ≥ 1 . For the biased Gaussian projection field it checked coercivity , positivity of
+the smoothed Hessian, tail convergence, and continuity under changes of coordinates. The covariance
+choice Σ = 𝐼 + 𝑇 used a matrix square root and a fixed-point argument; the assistant explicitly expanded
+the quadratic relation without assuming that its matrices commute.
+Truncation and Gaussian smoothing gave the maps whose Jacobians entered its entropy calculation.
+It tracked the determinant factors, change of variables, conditional averaging, and integration-by-parts
+terms. The orthant served as a check: its projection layers became spectral thresholds, the residual
+vanished, and the proposed entropy identities matched the reference case.
+The assistant also rederived the Gaussian covariance identities through Hermite expansions, intro-
+duced positive measures on layers and spectral pairs, and checked the commutator estimates used to
+absorb noncommuting errors. Its equality argument made the coeﬀicient matrices commute, then made
+the projection derivative diagonal in a fixed basis. Vanishing weak cross derivatives led it to a coordinate
+product cone, hence an orthant and a simplex section.
+In revisiting prior work, it distinguished its cone normalization from the covariance and Hessian ideas
+it had examined in Klartag’s work [38]. It returned to complex-strip nonvanishing, Cauchy interpolation,
+and Gaussian-tail expansions in the scalar estimates.
+43 Scalar positivity and the scope of the cone reformulation
+The assistant audited the scalar estimates by separating short segments, tails, and middle widths. It
+checked the circle averages, the weighted trapezoid kernel, concentration bounds, and errors in the
+weighted primitives. In the middle range it retained the variance of 𝑞: a bound on | ̇ 𝑞|, together with
+a lower bound on the averaging density , gave a cubic lower bound for that variance in terms of end-
+point displacement. After accounting for the residual squares, it reduced the remaining inequalities to
+positivity of two polynomials, for which the Bernstein basis gives a suﬀicient criterion:
+
+PAGE 38
+Geometric Mahler conjectures 38
+VERBA TIM EXCERPT
+if \(T(l+d u)=\sum c_i u^i\), then representation \(\sum_{r=0}^n b_r \binom nr u^r(1-u)^{n-r}\),
+\(b_r=\sum_{i≤r}\binom ri/\binom ni c_i\). all \(b_r>0\) ensures.
+The geometric audit also questioned whether the cone statement had inadvertently strengthened the
+original problem. The assistant concluded:
+VERBA TIM EXCERPT
+Cone Laplace inequality exactly equivalent for hyperplane sections, not all log-concave.
+With 𝑚 = 𝑛 + 1 , it checked that the cone over 𝐾 − 𝑧 0, evaluated at 𝑈 = (0, 𝑚) and 𝑉 = (0, 1) , gives
+the Laplace-product factor (𝑛!)2/𝑚𝑚. It revisited arbitrary nonsmooth cones through Lipschitz projec-
+tion maps and Gaussian smoothing, rederived the covariance identities, and checked that squaring the
+matrix-square-root update yields the symmetrized Riccati equation without a commutation assumption.
+The assistant began another derivation of the bias construction and Brouwer normalization, reaching the
+inward-pointing estimates for eigenvalues of the coordinate-change matrix.
+44 The orthant model and directional Gaussian tails
+The assistant continued checking the proposed cone normalization, beginning with an inward-pointing
+estimate for the matrix parameter. It used this estimate in a Brouwer argument to impose both mean
+balance and covariance feedback. It then rederived the entropy comparison: integrated projection
+derivatives supplied Jacobians, a logarithmic determinant calculation supplied a surplus, and Gaussian
+smoothing and truncation preceded change of variables. Decomposing the centered layer field as
+𝐴 = 𝐿 + 𝑅 , it checked the Gaussian covariance identities, parity bounds, and commutator estimates
+intended to control the residual and the noncommuting covariance correction. Its equality argument
+proceeded from vanishing layer errors to commuting linear coeﬀicients, coordinate thresholds, and an
+orthant after a linear transformation.
+The orthant became an explicit consistency check and then an illustration in the draft. For 𝐶 = ℝ 𝑚+ ,
+all-ones 𝑈, and covariance correction 𝑇 = 0 , the assistant obtained
+𝜉𝑧 = 𝑧𝑈, 𝑃 𝑧 = diag(1{−𝐺𝑖≤𝑧}), 𝐴 = 𝐿 = diag(−𝐺𝑖).
+Integration of the transport weights gave coordinates − log 𝑝(−𝐺𝑖) and − log 𝑝(𝐺𝑖), where 𝑝 is the stan-
+dard Gaussian distribution function. It emphasized that general projection layers were not assumed to
+form a nested family of projections.
+The tail estimates require different arguments at the two ends. For 𝑠 ≥ 0 , the assistant wrote
+𝑎(−𝑠) = 𝜙(𝑠) ∫
+∞
+0
+𝑢𝑒−𝑠𝑢−𝑢2/2 𝑑𝑢 ≍ 𝜙(𝑠)
+(1 + 𝑠)2 .
+This controlled the negative tail of 𝑃𝑧 and 𝑋𝑧. At the positive end it instead used the bias deep inside
+the cone to control 𝐼 − 𝑃 𝑧 and 𝑌𝑧. The vanishing statement concerns convergence as 𝑧 → −∞ .
+45 Separability, variance recovery, and profile growth
+The assistant reexamined its proposed general Mahler argument from the cone reduction through the
+scalar estimates.
+
+PAGE 39
+Geometric Mahler conjectures 39
+It checked the biased Gaussian projection construction, the simultaneous choice of coordinates and
+covariance, and the entropy surplus involving traces of𝑃𝑥(𝐼 −𝑃𝑧). Recomputing Gaussian integration by
+parts and the decomposition 𝐴 = 𝐿 + 𝑅 , it followed the covariance identities, parity estimates, and layer
+errors through the noncommuting matrix terms. It checked that the matrix square-root update solved
+the symmetrized Riccati equation and that the resulting commutator costs matched the scalar endpoint
+inequality.
+For equality , the assistant reasoned that vanishing off-diagonal spectral defect forces the coeﬀicients of
+𝐿 to commute. Vanishing layer defect would then make the projection derivative diagonal in a fixed basis
+almost everywhere. It expanded the final geometric step: Lipschitzness and vanishing cross derivatives
+make each component of Π𝐶 depend only on its corresponding coordinate, so its image 𝐶 is a product.
+Solidity and pointedness restrict the coordinate factors to half-lines; undoing the transformation and
+slicing the cone would give a simplex.
+The scalar audit tracked interpolation errors, weighted primitives, and separate error bounds for short
+intervals and tails. In the bounded middle range it retained𝑉𝑞 = 𝑞2− ̄ 𝑞2. A lower bound on the averaging
+density and a Lipschitz bound for 𝑞 gave
+𝑉𝑞/ℎ2 ≥ 𝑣ℎ𝑧3
+3 ⋅ .193 , 𝑧 = |𝑞+ − 𝑞−|
+2ℎ , 𝑣 ℎ = ℎ coth ℎ − ℎ.
+The assistant checked how this cubic gain paid for the endpoint-error terms, then reduced the remaining
+polynomial inequalities to Bernstein-coeﬀicient inequalities. For larger widths it revisited angular signs
+and rounded error bounds.
+It also replaced a verbal allocation of variance with an explicit residual inequality.
+A later rereading found an overbroad growth statement:
+VERBA TIM EXCERPT
+Potential ambiguity: \(X=p/\phi\) grows like \(e^{x²/2}\), not polynomial.
+The assistant revised the statement to name the test profiles whose derivatives have polynomial growth,
+excluding the temporary ratios 𝑋, 𝑌. It also clarified the cone’s positive heights, fixed-coordinate matrix
+expectations, and aﬀine invariance, then continued checking signs, convergence, and equality deduc-
+tions in the assembled candidate argument.
+46 Reexamining the entropy bound and its matrix dependencies
+The assistant returned to its general Mahler candidate, reconstructing the cone normalization, the en-
+tropy inequality , and the scalar estimates. For the cone over 𝐾 − 𝑧 0, its positive dual 𝐷, and 𝑚 = 𝑛 + 1 ,
+it checked that the vertical choices 𝑈 = (0, 𝑚) , 𝑉 = (0, 1) give
+𝜒𝐶(𝑉)𝜒𝐷(𝑈) = (𝑛!)2
+𝑚𝑚 |𝐾| |(𝐾 − 𝑧 0)∘|.
+It rederived the existence and tails of the biased Gaussian projection field, then the simultaneous choice
+of coordinates and covariance Σ = 𝐼 + 𝑇 . In particular, it checked that squaring the matrix square-root
+relation produced the intended quadratic equation without assuming that its coeﬀicients commute. It
+also reconstructed the log-Jacobian surplus and the smoothing argument for the entropy transport.
+The assistant next tracked the diagonal jump in the mixed derivative of 𝑎(min(𝑥, 𝑧))𝐵(max(𝑥, 𝑧)), the
+Gaussian resolvent identity , and the signs and factors in the quadratic identities. Spectral thresholds
+supplied a positive layer measure even though the projection derivatives were not assumed nested. It
+
+PAGE 40
+Geometric Mahler conjectures 40
+checked the Hermite-degree estimates, completed squares, and commutator bounds used to absorb the
+residual terms. Following its candidate’s equality argument, it reasoned that vanishing losses would
+force commuting coeﬀicient matrices and coordinatewise projection, hence an orthant cone and a sim-
+plex section.
+It then expanded the argument for log-determinant integrability and clarified the Gaussian spectral
+form domain and endpoint orientation. In particular, it clarified that the clipped product in the bound
+for 𝐵1 was convex as a function of one varying argument, with the other quantity fixed.
+47 Cone normalization and matrix cancellation
+The assistant continued auditing its general-case argument through the cone inequality
+𝜒𝐶(𝑉)𝜒𝐷(𝑈) ≥ 1, ⟨𝑈, 𝑉⟩ = 𝑚 = 𝑛 + 1.
+It rederived the biased-projection identities, the normalization by a linear transformation and Gaussian
+covariance Σ = 𝐼+𝑇 , and the entropy comparison. Particular checks concerned noncommuting matrices,
+determinant limits, convergence of the layer integrals, and differentiation for arbitrary nonsmooth cones.
+The assistant repeatedly tested whether a sign, normalization, or interchange of integrals had been lost;
+its orthant model supplied a case in which the proposed inequalities should become equalities.
+Writing the integrated projection field as 𝐴 = 𝐿 + 𝑅 , it checked the separation into Gaussian degrees,
+the contact terms, and the two spectral estimates controlling commutators. Direct integration repro-
+duced the constants 2 log 2 − 1/3 and log 2 + 1/4 . Gaussian integration by parts on the linear field 𝐿,
+together with the quadratic equation for 𝑇, was then used to cancel the covariance term and leave the
+proposed scalar segment inequality. The assistant followed the equality argument from vanishing losses
+to commuting coeﬀicient matrices, diagonal projection derivatives, and an orthant after transformation:
+VERBA TIM EXCERPT
+Equality from negative losses doesn't require proving uniqueness of fixed point Q,T; for any one,
+if product=1 then all inequalities saturate, support yields transformed cone orthant.
+48 Explicit projection maps and scalar dependencies
+The assistant expanded the analytic steps of its general-case argument. It wrote the smoothed maps ex-
+plicitly as integrals of biased cone projections, with 𝑍 = Σ 1/2𝐺 and Σ = 𝐼 + 𝑇. It used strict monotonicity
+for injectivity , then change of variables and Jensen’s inequality for the entropy estimate. Its checks sep-
+arated convergence of the linear costs from monotone convergence of the positive Jacobian factors and
+examined integrability of the limiting logarithmic determinants.
+For covariance feedback it revisited the deterministic matrix equation
+𝜆𝑇2 + C ∘ 𝑇 + K = 0, 𝐵 ∘ 𝐸 = (𝐵𝐸 + 𝐸𝐵)/2.
+It emphasized that expanding the square and comparing positive square roots did not require simulta-
+neous diagonalization:
+VERBA TIM EXCERPT
+None of these matrices need commute; update uses completing square with sym product, and
+square-root comparisons are in Loewner order.
+
+PAGE 41
+Geometric Mahler conjectures 41
+It then rederived Gaussian covariance identities, Hermite estimates, spectral threshold comparisons, and
+the cancellation of the term involving 𝜆 tr(S𝑇2). It checked the pointwise identity 𝐹 = 𝑑 + |𝑢| 2 = 𝑐 + 2𝑘𝑞
+while distinguishing it from a multiplicative rule for the Ornstein–Uhlenbeck operator.
+In its equality argument, strictness of the scalar segment inequality forced the spectral pair measure
+onto the diagonal, hence commutation of the linear Gaussian coeﬀicients. Vanishing layer error then
+made the cone projection coordinatewise. The assistant concluded that the transformed cone was an
+orthant and its bounded section a simplex. It also checked the normalization on a two-dimensional
+simplex, obtaining volume product 27/4.
+The subsequent review returned to scalar estimates for Gaussian tails and expansions in 𝑥−2. Interme-
+diate segments required the variance of the auxiliary profile 𝑞, a lower bound from endpoint separation,
+and positivity of Bernstein coeﬀicients.
+49 The general-body conclusion
+The assistant ends the general-case attempt by checking the fixed-point normalization, Gaussian covari-
+ance identities, entropy Jacobians, and noncommuting trace products. It emphasizes that the coeﬀicients
+of the linear Gaussian matrix field are deterministic expectations, although chosen jointly with the covari-
+ance correction. It checks orthant and simplicial-cone cases, then follows vanishing layer and spectral
+errors to an orthant and a simplex. It adds details about Gaussian smoothing, boundary integrability ,
+and the Hermite covariance formula. Its proposed conclusion remains dependent on the uniform scalar
+inequalities used in the entropy comparison.
+References
+[1] Shiri Artstein-Avidan, Shay Sadovsky , and Raman Sanyal. Geometric Inequalities for Anti-Blocking
+Bodies. Communications in Contemporary Mathematics 25(3) (2023), 2150113. https://doi.org/
+10.1142/s0219199721501133.
+[2] Keith Ball. V olume ratios and a reverse isoperimetric inequality . Journal of the London Mathematical
+Society (2) 44(2) (1991), 351–359. https://doi.org/10.1112/jlms/s2-44.2.351.
+[3] Keith Ball. Cube slicing in ℝ𝑛. Proceedings of the American Mathematical Society 97(3) (1986),
+465–473. https://doi.org/10.1090/s0002-9939-1986-0840631-0 .
+[4] Wojciech Banaszczyk. New bounds in some transference theorems in the geometry of numbers. Mathema-
+tische Annalen 296(1) (1993), 625–635. https://doi.org/10.1007/bf01445125.
+[5] Mirosław Baran. Siciak’s extremal function of convex sets in ℂ𝑁. Annales Polonici Mathematici 48(3)
+(1988), 275–280. https://doi.org/10.4064/ap-48-3-275-280 .
+[6] Mirosław Baran. Complex equilibrium measure and Bernstein type theorems for compact sets in ℝ𝑛. Pro-
+ceedings of the American Mathematical Society 123(2) (1995), 485–494. https://doi.org/10.109
+0/S0002-9939-1995-1219719-6 .
+[7] Franck Barthe and Matthieu Fradelizi. The volume product of convex bodies with many hyperplane sym-
+metries. American Journal of Mathematics 135(2) (2013), 311–347. https://doi.org/10.1353/ajm.
+2013.0018.
+[8] Franck Barthe. On a reverse form of the Brascamp–Lieb inequality . Inventiones Mathematicae 134(2)
+(1998), 335–361. https://doi.org/10.1007/s002220050267.
+
+PAGE 42
+Geometric Mahler conjectures 42
+[9] Bo Berndtsson. Complex integrals and Kuperberg’s proof of the Bourgain–Milman theorem . Advances in
+Mathematics 388 (2021), 107927. https://doi.org/10.1016/j.aim.2021.107927.
+[10] Bo Berndtsson. Subharmonicity properties of the Bergman kernel and some other functions associated to
+pseudoconvex domains. Annales de l’Institut Fourier 56(6) (2006), 1633–1662. https://doi.org/10.5
+802/aif.2223.
+[11] David Naumovich Bernshtein. The number of roots of a system of equations . Functional Analysis and
+Its Applications 9(3) (1975), 183–185. https://doi.org/10.1007/bf01075595.
+[12] Ludwig Berwald. V erallgemeinerung eines Mittelwertsatzes von J. Favard für positive konkave Funktionen.
+Acta Mathematica 79 (1947), 17–37. https://doi.org/10.1007/bf02404692.
+[13] Sergey Bobkov and Mokshay Madiman. Reverse Brunn–Minkowski and reverse entropy power in-
+equalities for convex measures . Journal of Functional Analysis 262(7) (2012), 3309–3339. h t t p s :
+//doi.org/10.1016/j.jfa.2012.01.011.
+[14] Christer Borell. Geometric bounds on the Ornstein–Uhlenbeck velocity process . Zeitschrift für
+Wahrscheinlichkeitstheorie und Verwandte Gebiete 70(1) (1985), 1–13. https://doi.org/10.1
+007/bf00532234.
+[15] Jean Bourgain and Vitali D. Milman. New volume ratio properties for convex symmetric bodies in ℝ𝑛.
+Inventiones Mathematicae 88(2) (1987), 319–340. https://doi.org/10.1007/BF01388911.
+[16] Herm Jan Brascamp and Elliott H. Lieb. On extensions of the Brunn–Minkowski and Prékopa–Leindler
+theorems, including inequalities for log concave functions, and with an application to the diffusion equation .
+Journal of Functional Analysis 22(4) (1976), 366–389. https://doi.org/10.1016/0022-1236(76)900
+04-5.
+[17] Luis A. Caffarelli. Monotonicity properties of optimal transportation and the FKG and related inequalities .
+Communications in Mathematical Physics 214(3) (2000), 547–563. https://doi.org/10.1007/s002
+200000257.
+[18] Eugenio Calabi. Complete aﬀine hyperspheres. I . In Symposia Mathematica, vol. X, Academic Press
+(1972), 19–38.
+[19] Shibing Chen, Yuanyuan Li, Dongmeng Xi, and Zhe-Feng Xu. The Mahler Conjecture in Three Dimen-
+sions. Preprint, arXiv:2605.09334v3 (2026). https://arxiv.org/abs/2605.09334v3.
+[20] Shiu-Yuen Cheng and Shing-T ung Yau.Complete aﬀine hypersurfaces. Part I. The completeness of aﬀine
+metrics. Communications on Pure and Applied Mathematics 39(6) (1986), 839–866. https://doi.
+org/10.1002/cpa.3160390606.
+[21] Dario Cordero-Erausquin and Bo’az Klartag. Moment measures . Journal of Functional Analysis
+268(12) (2015), 3834–3866. https://doi.org/10.1016/j.jfa.2015.04.001.
+[22] Imre Csiszár, János Körner, László Lovász, Katalin Marton, and Gábor Simonyi. Entropy splitting
+for antiblocking corners and perfect graphs. Combinatorica 10(1) (1990), 27–40. https://doi.org/10.1
+007/bf02122693.
+[23] Ronald G. Douglas. On majorization, factorization, and range inclusion of operators on Hilbert space .
+Proceedings of the American Mathematical Society 17(2) (1966), 413–415. https://doi.org/10.1
+090/s0002-9939-1966-0203464-1 .
+
+PAGE 43
+Geometric Mahler conjectures 43
+[24] Antoine Ehrhard. Symétrisation dans l’espace de Gauss . Mathematica Scandinavica 53 (1983), 281–
+301. https://doi.org/10.7146/math.scand.a-12035.
+[25] T ommaso de Fernex, Lawrence Ein, and Mircea Mustaţă. Multiplicities and log canonical threshold .
+Journal of Algebraic Geometry 13(3) (2004), 603–615. https://doi.org/10.1090/s1056-3911-04-0
+0346-7.
+[26] Matthieu Fradelizi, Nathaël Gozlan, Shay Sadovsky , and Simon Zugmeyer.T ransport-entropy forms
+of direct and converse Blaschke–Santaló inequalities . Preprint, arXiv:2307.04393v1 (2023). https://ar
+xiv.org/abs/2307.04393v1.
+[27] Matthieu Fradelizi. Sections of convex bodies through their centroid . Archiv der Mathematik 69(6)
+(1997), 515–522. https://doi.org/10.1007/s000130050154.
+[28] Matthieu Fradelizi, Mokshay Madiman, and Liyao Wang. Optimal Concentration of Information Con-
+tent For Log-Concave Densities. In High Dimensional Probability VII, Progress in Probability , vol. 71,
+Birkhäuser (2016), 45–60. https://doi.org/10.1007/978-3-319-40519-3_3 .
+[29] Sidney Golden. Lower Bounds for the Helmholtz Function . Physical Review 137(4B) (1965), B1127–
+B1128. https://doi.org/10.1103/physrev.137.b1127.
+[30] Yehoram Gordon. On Milman's inequality and random subspaces which escape through a mesh in ℝ𝑛.
+In Geometric Aspects of Functional Analysis, Lecture Notes in Mathematics, vol. 1317, Springer
+(1988), 84–106. https://doi.org/10.1007/BFb0081737.
+[31] Yehoram Gordon, Mathieu Meyer, and Shlomo Reisner.Zonoids with minimal volume-product—a new
+proof. Proceedings of the American Mathematical Society 104(1) (1988), 273–276. https://doi.or
+g/10.1090/S0002-9939-1988-0958082-9 .
+[32] Nathaël Gozlan. The deficit in the Gaussian log-Sobolev inequality and inverse Santalo inequalities . Inter-
+national Mathematics Research Notices 2022(17) (2022), 12940–12983. https://doi.org/10.1093/
+imrn/rnab087.
+[33] Qi'an Guan and Xiangyu Zhou. Strong openness conjecture and related problems for plurisubharmonic
+functions. Preprint, arXiv:1401.7158 (2014). https://arxiv.org/abs/1401.7158.
+[34] Leonid Gurvits. Van der Waerden/Schrijver–V aliant like conjectures and stable (aka hyperbolic) homoge-
+neous polynomials: one theorem for all . The Electronic Journal of Combinatorics 15(1) (2008), R66.
+https://doi.org/10.37236/790.
+[35] Allan B. Hansen and Åsvald Lima. The structure of finite dimensional Banach spaces with the 3.2. inter-
+section property. Acta Mathematica 146 (1981), 1–23. https://doi.org/10.1007/BF02392457.
+[36] Hiroshi Iriyeh and Masataka Shibata. Symmetric Mahler’s conjecture for the volume product in the 3-
+dimensional case. Duke Mathematical Journal 169(6) (2020), 1077–1134. https://doi.org/10.1215/
+00127094-2019-0072.
+[37] Jaegil Kim and Shlomo Reisner. Local minimality of the volume-product at the simplex . Mathematika
+57(1) (2011), 121–134. https://doi.org/10.1112/S0025579310001555.
+[38] Bo’az Klartag. Isotropic constants and Mahler volumes . Advances in Mathematics 330 (2018), 74–108.
+https://doi.org/10.1016/j.aim.2018.03.009.
+[39] Greg Kuperberg. From the Mahler conjecture to Gauss linking integrals . Geometric and Functional
+Analysis 18(3) (2008), 870–892. https://doi.org/10.1007/s00039-008-0669-4 .
+
+PAGE 44
+Geometric Mahler conjectures 44
+[40] Greg Kuperberg. The bottleneck conjecture. Geometry & T opology 3(1) (1999), 119–135. https://do
+i.org/10.2140/gt.1999.3.119.
+[41] Jim Lawrence. Polytope volume computation. Mathematics of Computation 57(195) (1991), 259–271.
+https://doi.org/10.1090/S0025-5718-1991-1079024-2 .
+[42] Elliott H. Lieb. Convex trace functions and the Wigner–Y anase–Dyson conjecture. Advances in Mathe-
+matics 11(3) (1973), 267–288. https://doi.org/10.1016/0001-8708(73)90011-X.
+[43] Åsvald Lima. Intersection properties of balls in spaces of compact operators. Annales de l’Institut Fourier
+28(3) (1978), 35–65. https://doi.org/10.5802/aif.700.
+[44] Magnus Lundin. The extremal PSH for the complement of convex, symmetric subsets of ℝ𝑁. Michigan
+Mathematical Journal 32(2) (1985), 197–201. https://doi.org/10.1307/mmj/1029003186.
+[45] Françoise Lust-Piquard and Gilles Pisier. Non commutative Khintchine and Paley inequalities . Arkiv
+för Matematik 29(1–2) (1991), 241–260. https://doi.org/10.1007/bf02384340.
+[46] Mathieu Meyer. Une caractérisation volumique de certains espaces normés de dimension finie . Israel Jour-
+nal of Mathematics 55(3) (1986), 317–326. https://doi.org/10.1007/BF02765029.
+[47] Mathieu Meyer and Shlomo Reisner.Shadow systems and volumes of polar convex bodies. Mathematika
+53(1) (2006), 129–148. https://doi.org/10.1112/S0025579300000061.
+[48] Elchanan Mossel and Joe Neeman. Robust optimality of Gaussian noise stability . Journal of the Euro-
+pean Mathematical Society 17(2) (2015), 433–482. https://doi.org/10.4171/jems/507.
+[49] Fedor Nazarov . The Hörmander proof of the Bourgain–Milman theorem . In Geometric Aspects of
+Functional Analysis, Lecture Notes in Mathematics, vol. 2050, Springer (2012), 335–343. https:
+//doi.org/10.1007/978-3-642-29849-3_20 .
+[50] Zbigniew Błocki and Włodzimierz Zwonek. Estimates for the Bergman kernel and the multidimensional
+Suita conjecture. New York Journal of Mathematics 21 (2015), 151–161. https://nyjm.albany.edu/
+j/2015/21-6.html.
+[51] Grigoris Paouris. Concentration of mass on convex bodies . Geometric and Functional Analysis 16(5)
+(2006), 1021–1049. https://doi.org/10.1007/s00039-006-0584-5 .
+[52] Gilles Pisier. The V olume of Convex Bodies and Banach Space Geometry . Cambridge Tracts in Mathe-
+matics, vol. 94. Cambridge University Press, 1989. https://doi.org/10.1017/CBO9780511662454.
+[53] Robert T. Powers and Erling Størmer. Free states of the canonical anticommutation relations . Commu-
+nications in Mathematical Physics 16(1) (1970), 1–33. https://doi.org/10.1007/bf01645492.
+[54] András Prékopa. On logarithmic concave measures and functions . Acta Scientiarum Mathematicarum
+(Szeged) 34 (1973), 335–343. https://acta.bibl.u-szeged.hu/14411/.
+[55] Shlomo Reisner. Zonoids with minimal volume-product . Mathematische Zeitschrift 192(3) (1986),
+339–346. https://doi.org/10.1007/BF01164009.
+[56] Shlomo Reisner, Carsten Schütt, and Elisabeth M. Werner.Mahler’s conjecture and curvature. Interna-
+tional Mathematics Research Notices 2012(1) (2012), 1–16. https://doi.org/10.1093/imrn/rnr003.
+[57] Claude Ambrose Rogers and Geoffrey Colin Shephard. The difference body of a convex body . Archiv
+der Mathematik 8(3) (1957), 220–233. https://doi.org/10.1007/bf01899997.
+
+PAGE 45
+Geometric Mahler conjectures 45
+[58] Claude Ambrose Rogers and Geoffrey Colin Shephard. Convex bodies associated with a given convex
+body. Journal of the London Mathematical Society (1) 33(3) (1958), 270–281. https://doi.org/10
+.1112/jlms/s1-33.3.270.
+[59] Jean Saint-Raymond. Sur le volume des corps convexes symétriques . In Séminaire d’initiation à
+l’analyse, 20e année, 1980–1981, Publications Mathématiques de l’Université Pierre et Marie Curie,
+vol. 46, Université Paris VI (1981). Exposé no. 11, 25 pp.
+[60] Rolf Schneider. Eine V erallgemeinerung des Differenzenkörpers . Monatshefte für Mathematik 74(3)
+(1970), 258–272. https://doi.org/10.1007/bf01303445.
+[61] Isaac Jacob Schoenberg. Metric spaces and positive definite functions . Transactions of the American
+Mathematical Society 44(3) (1938), 522–536. https://doi.org/10.1090/S0002-9947-1938-1501980
+-0.
+[62] Richard P . Stanley. On the Number of Faces of Centrally-Symmetric Simplicial Polytopes . Graphs and
+Combinatorics 3(1) (1987), 55–66. https://doi.org/10.1007/bf01788529.
+[63] Colin J. Thompson. Inequality with Applications in Statistical Mechanics . Journal of Mathematical
+Physics 6(11) (1965), 1812–1813. https://doi.org/10.1063/1.1704727.
+[64] Vladlen Timorin. An analogue of the Hodge–Riemann relations for simple convex polytopes . Russian
+Mathematical Surveys 54(2) (1999), 381–426. https://doi.org/10.1070/rm1999v054n02abeh000134.
+[65] Jeffrey D. Vaaler.A geometric inequality with applications to linear forms. Pacific Journal of Mathematics
+83(2) (1979), 543–553. https://doi.org/10.2140/pjm.1979.83.543.
+[66] Shing-T ung Yau.Harmonic functions on complete Riemannian manifolds . Communications on Pure
+and Applied Mathematics 28(2) (1975), 201–228. https://doi.org/10.1002/cpa.3160280203.
+[67] Gaoyong Zhang. Restricted chord projection and aﬀine inequalities. Geometriae Dedicata 39(2) (1991),
+213–222. https://doi.org/10.1007/bf00182294.

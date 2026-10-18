@@ -17,8 +17,10 @@ The reading at D is still m with stamp zero. Startup consumes its age budget.
 
 Engineering benefit and cost
 The old theorem requires the first reading exactly (.14,-.01,-1.17), with
-c=.088125. Some admissible braking diagnostics never reach its required
-position range. C3 removes that absolute-position restriction. Translation
+c=.088125. The existing binary64 cases at rates 10 and 12/s peak below the
+fixed reading's necessary position interval [.139,.141]. This is diagnostic
+evidence, not a formal nonreachability theorem. C3 removes that absolute-position
+restriction. Translation
 of position, reading and center preserves the full execution and schedule.
 It does not prove that a detector samples the guard or that a prior stopping
 trajectory supplies the required continuation.
@@ -66,8 +68,10 @@ closure builds, all theorem-closure audits, separate kernel replays and seven
 negative controls. No corpus code or new external source is imported.
 
 The old three-rate diagnostic now passes the guard and sensor sub-band for
-each first-zero state. Those values remain binary64 evidence. They do not
-construct a sampled detector or a post-handoff execution. See admission-screen.
+each first-zero state. Its nominal tube upper bounds are .1596209201 m at
+rate 8, .1509877192 m at rate 10, and .1450042998 m at rate 12. The first two
+still fail .15 m. These values remain binary64 evidence. They do not construct
+a sampled detector or a post-handoff execution. See admission-screen.json.
 
 Scope
 This is a conditional measured-admission repair using standard translation

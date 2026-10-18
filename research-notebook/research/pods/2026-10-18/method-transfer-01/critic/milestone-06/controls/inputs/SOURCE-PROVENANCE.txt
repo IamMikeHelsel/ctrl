@@ -1,0 +1,50 @@
+C3 SOURCE PROVENANCE
+
+INPUTS.json records all exact source hashes. DigitalHold is copied unchanged
+from the accepted handoff input; it is the only local imported old module.
+  DigitalHold SHA256 aa91b649affc0906c79dd7a017b34d6f729d1c16f50117ab87daaa1ed2fadc03.
+
+AdaptiveAdmission is adapted from the accepted BrakingDelayedHold source:
+  research/pods/2026-10-18/recovery-handoff-02/handoff-builder/BrakingDelayedHold.lean
+  SHA256 732d19f00b43e9c58cd1b06fca490d0a32fd7b025fd2235bd1372ec6ecbcf059.
+The changes parameterize the first reading and center, replace exact-reading
+admission with a measured guard, derive its larger initial acceleration/speed
+box, and update the exact startup bounds. The schedule, pending/digital ODE,
+two-pass history estimate and first-contact proof retain their structure.
+
+AdaptiveWitness adapts the accepted BrakingDelayedWitness:
+  SHA256 f26093927ed755de679468676425382d1f75d23217c763d28795b300d9f7b6c1.
+The center is selected from the same nominal reading; the resulting held
+command changes to 133/400. The physical piecewise exponential flow is rebuilt
+with that command. AdmissionInterface adds full translation checks, the sensor
+sub-band, exact comparison and widened-guard sensor-box counterexamples.
+
+Complete local build order:
+  DigitalHold, AdaptiveAdmission, AdaptiveWitness, AdmissionInterface.
+Only pinned external Mathlib/package products are reused. No cached local
+project proof module is in the fresh verifier's LEAN_PATH. Toolchain, compiler,
+checker, package revisions and executable hashes are in verification.json.
+
+Old packet preservation
+The verifier checks all 49 files in the old handoff artifact-sha256.json,
+all 25 shortlist files, all 153 C1 files, and all 40 C2 files, before and after
+replay. Old source files, pins and proof evidence remain unchanged.
+
+Method scope
+C3 is a standard translation-symmetry and measured-admission repair of the
+accepted delayed-hold result. It does not use a new corpus theorem or make a
+new-control-theory claim. C1 and C2 are preservation references, not proof
+dependencies. There was no new source download or external code execution.
+
+Diagnostic input
+admission_screen.py reads the old root-admission-reachability-screen.json,
+records its hash, and applies the new guard to its existing binary64 states.
+It performs exact rational budget arithmetic separately. This is not an
+interval trajectory proof or sampled-detector simulation.
+
+Development repairs
+attempts/ retains an initial mechanical fraction-replacement error, corrected
+before any final proof was accepted by Lean, plus a redundant continuity
+unfolding attempt. A verifier lexical guard rejected the English word admit
+in a comment; that comment was changed to include without changing a theorem
+or verifier check. The unsuccessful partial source copies are preserved.

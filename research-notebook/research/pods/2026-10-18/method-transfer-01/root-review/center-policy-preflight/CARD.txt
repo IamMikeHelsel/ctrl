@@ -1,0 +1,61 @@
+CANDIDATE AFTER C4: CHOOSE THE HOLDING CENTER FOR THE TRAVEL TASK
+Root exact arithmetic preflight only. Not assigned or independently accepted.
+
+Why test this
+C3 chooses c=measured_x+measured_v/4+measured_a/32. This balances two transformed
+coordinates, but does not directly minimize forward travel. Its nominal full
+cube reaches156.4625mm. A reference chosen for a symmetric norm need not fit
+an asymmetric travel limit. Changing c changes the commanded physical target.
+
+Fixed algebraic test
+Use alpha=1/28 instead of1/32 in c=m_x+m_v/4+alpha*m_a. Test acceleration
+guard1.27 instead of1.25. Keep speed guard.02, errors(.001,.01,.05), delay.5ms,
+total age1ms, pending-1.21, rates[8,12], target error.01 and old radius.055525.
+check.py derives a pending-state enclosure from the widened guard:
+A=1.32,V=.03066,J=30.48. Exact corners still bound pending feedback slope
+by8. The sensor/startup coordinate budgets with alpha1/28 fit the old cube.
+These are algebraic checks, not a changed Lean execution theorem.
+
+More useful comparison to ask for
+Keep the old cube to derive history error. Then allow the moving weighted
+barrier to start from the actual measured startup enclosure, rather than the
+single worst-case radius R. Its proposed later radius is at least.045, with
+the same weights(1.02,1.01,1). This needs a new variable-initial-radius proof;
+the current C4 fixed-R conclusion does not supply it automatically.
+
+At the old nominal reading(.14,-.01,-1.17), this proposed comparison gives
+upper position .141630488854314m for alpha1/28. The same proposed comparison
+with alpha1/32 gives .1514125366m. Both use the same widened sensor/guard
+enclosures. No new integration was run. Neither number is yet a trajectory
+certificate or a comparison of simulated controller performance.
+
+Important negative
+At measured_x=.143, measured_v=.02, measured_a=-1.1, the alpha1/28 proposed
+upper envelope is .1546142857142857m. Thus this center change alone still
+does not guarantee150mm across the declared larger measurement rectangle.
+Do not select the favorable nominal row and call the recovery task solved.
+Translation also prevents any absolute ceiling without a position premise.
+
+Possible next gate, not current authorization to build
+After C4 review, decide between a proved measured clearance guard, a task-aware
+center selected from the feasible interval, or a less conservative invariant.
+A clearance guard must be derived and its reachability checked separately.
+The widened acceleration guard could remove the1.20versus1.22 mismatch in
+the proposed robust detector band, but it does not prove sampled detector
+liveness or hybrid continuation. Preserve old C3/C4 sources and commands.
+
+Value and novelty
+This is a concrete task-design issue: choose a safe target that can actually
+be admitted, then prove the same trajectory remains within its travel budget.
+It resembles established reference-governor and invariant-set work. No new
+control principle, novelty claim, hardware result or completed composition is
+established by this arithmetic screen. Do not spend on a new optimizer yet.
+
+Primary comparison checked18October
+Garone, Di Cairano and Kolmanovsky, Reference and Command Governors for
+Systems with Constraints, MERL TR2016-102 / Automatica75(2017),306-328.
+https://www.merl.com/publications/docs/TR2016-102.pdf
+Read abstract and introduction, PDF pages1 and3-4. They describe reference
+modification based on state and constraint prediction; they also distinguish
+static and dynamic schemes. This supports the established-method comparison,
+not a claim that their theorem covers our exact mixed-history assumptions.

@@ -1,0 +1,70 @@
+{
+  "passed": true,
+  "main_result_sha256": "00bbfd792c7828c832f4a95a661367736905a55cd75b44766c5dde2272897977",
+  "runner_sha256": "8bfbf5ee38c3a808d2e41c515e47e0425b2971b5eb84c3af11a476d3b44c827a",
+  "steps": [
+    {
+      "label": "build-translated-scope",
+      "command": [
+        "/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/.tools/elan/toolchains/leanprover--lean4---v4.35.0/bin/lean",
+        "--root=/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/pods/2026-10-18/method-transfer-01/critic/milestone-06/controls/fresh",
+        "-o",
+        "/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/pods/2026-10-18/method-transfer-01/critic/milestone-06/controls/fresh/TranslatedScope.olean",
+        "/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/pods/2026-10-18/method-transfer-01/critic/milestone-06/controls/fresh/TranslatedScope.lean"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "expected": "success",
+      "seconds": 16.5856,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "audit-translated-scope",
+      "command": [
+        "/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/.tools/elan/toolchains/leanprover--lean4---v4.35.0/bin/lean",
+        "/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/pods/2026-10-18/method-transfer-01/critic/milestone-06/controls/fresh/AuditExtra.lean"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "expected": "success",
+      "seconds": 2.3101,
+      "log_sha256": "962f7d63a28811a0feb396ee00ed8f1d79398ec141bfa8cc75976cf6e54b67dc"
+    },
+    {
+      "label": "kernel-translated-scope",
+      "command": [
+        "/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/.tools/elan/toolchains/leanprover--lean4---v4.35.0/bin/leanchecker",
+        "TranslatedScope",
+        "-v"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "expected": "success",
+      "seconds": 7.439,
+      "log_sha256": "343de11d7eec49d862cbd3e333891343ac2f6713c5380c77aa63f62fa08fd9a8"
+    },
+    {
+      "label": "reject-false-absolute-clearance",
+      "command": [
+        "/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/.tools/elan/toolchains/leanprover--lean4---v4.35.0/bin/lean",
+        "/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/pods/2026-10-18/method-transfer-01/critic/milestone-06/controls/fresh/FalseAbsoluteClearance.lean"
+      ],
+      "exit_code": 1,
+      "passed": true,
+      "expected": "semantic rejection",
+      "seconds": 9.4555,
+      "log_sha256": "bd597fdc5f420421acc6d0eda6f44b5c611be1a80160eca3e298064619f04c7b"
+    }
+  ],
+  "axioms": {
+    "CriticAdmission.translated_execution_rejects_absolute_clearance": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ]
+  },
+  "sources": {
+    "TranslatedScope.lean": "2a646d5b57ae7bf9741955fdb692d802aec13f462372905c75575161df58f101",
+    "FalseAbsoluteClearance.lean": "9da56cc73cefbb0a7dae3c4360c92ec910e0e6c2672bc707a9bd674376c5895d"
+  }
+}

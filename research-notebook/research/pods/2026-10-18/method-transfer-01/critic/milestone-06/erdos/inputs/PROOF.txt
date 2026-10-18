@@ -1,0 +1,230 @@
+E6: LOCAL CUT OPTIMALITY DOES NOT REPAIR THE RETAINED CERTIFICATE
+18 October 2026. Written exact argument and rational computation.
+Builder submission for independent review. No self-acceptance or novelty claim.
+
+1. Statement tested and result
+
+The following statement is false. For every finite simple triangle-free graph,
+every single-vertex-locally-optimal cut X,Y with |X|<=|Y| and at most
+(2/47)n^2 internal edges has retained certificate at most (1/40)n^2.
+The retained certificate means the minimum of the uniform-Y cost, the existing
+completion envelope Q(x)+q on its valid domain, and all neighborhood-profile
+costs F_v on Y. It does not mean the best output one could extract from the
+whole proof of the completion theorem. Section 6 explains this distinction.
+
+We give a rational weighted support on 28 vertices and its exact finite simple
+blowup. Its bad cut is strictly locally optimal, meets the BCL cut budget with
+equality, and has retained certificate
+  240199/9600000 = 1/40 + 199/9600000 > 1/40.
+On this SAME graph the global maximum cut has certificate zero. Its true
+fractional-half minimum is zero. Thus this is not a counterexample to the
+sparse-half conjecture or any positive universal bound.
+
+2. Conventions and retained constructions
+
+A support is a finite simple graph with positive rational vertex masses w_v
+of sum 1. An edge is counted once. For selected masses p_v in [0,w_v] with
+sum p_v=1/2, its half cost is sum_{uv in E} p_u p_v. Equivalently the usual
+profile is z_v=p_v/w_v in [0,1]. For a cut X,Y let
+  x=sum_X w_v, y=sum_Y w_v, q=sum_{E(X)} w_u w_v, j=sum_{E(Y)} w_u w_v.
+Orient x<=y, so y>=1/2. Put c=1/(2y). Uniform selection on Y costs c^2 j.
+
+The existing completion theorem supplies Q(x)+q when 1/3<=x<=1/2, where
+  Q(x)=3x^2/2-5x/4+9/32   if 1/3<=x<=3/8;
+  Q(x)=x(1/2-x)/2         if 3/8<=x<=1/2.
+The branches agree at 3/8. Below x=1/3 we omit this term. This is a feasible
+upper bound, not an asserted cost of every completion procedure.
+
+For y>1/2 put b=y-1/2. For each v in Y put
+  d_v=sum_{u in N_Y(v)} w_u,
+  s_v=sum_{u in N_Y(v)} w_u d_u.
+Since the graph is triangle-free, N_Y(v) is independent. Its incident edge
+mass is s_v. The reused neighborhood profiles have costs
+  F_v=(j-s_v)/(4(y-d_v)^2)  if d_v<=b;
+  F_v=j-b*s_v/d_v          if d_v>b.
+In the first branch select mass w_u/[2(y-d_v)] on Y minus N_Y(v).
+In the second select w_u off the neighborhood and (1-b/d_v)w_u on it.
+Set all selected masses on X to zero. Both profiles have mass 1/2 and remain
+within the vertex capacities. The first denominator has y-d_v>=1/2; the
+second uses d_v>b>0. For d_v=0 use only the first branch. At d_v=b>0 both
+formulas agree. For y=1/2 the uniform-Y half is enough, and no b denominator
+or neighborhood branch is used. The scripts check actual profile costs.
+
+The retained certificate is the minimum of these available numerical bounds.
+The neighborhood construction is already the negative endpoint in Sarid's
+one-step lemma. E6 adds no new construction or constant.
+
+3. Exact graph
+
+Set y=599/1000, x=401/1000, j=5y^2/48=358801/9600000,
+and q=2/47-j=2336353/451200000. There are four X vertices and 24 Y vertices.
+Their masses are
+  w_0=1/20,
+  w_1=20q=2336353/22560000,
+  w_2=x/2-1/20=301/2000,
+  w_3=x/2-20q=2186927/22560000,
+  w_v=y/24=599/24000 for 4<=v<=27.
+Every mass is positive. Their sum is 1. Both pairs {0,2} and {1,3} have
+mass x/2. Both Y groups L={4,...,15}, T={16,...,27} have mass y/2.
+
+The complete edge list is specified by these disjoint rules:
+  (0,1);
+  (4+i,16+((i+t) mod 12)) for 0<=i<12 and 0<=t<5;
+  all edges from {0,2} to T;
+  all edges from {1,3} to L.
+There are 1+60+48=109 edges. There are no other edges. The global color
+classes A={0,2} union L and B={1,3} union T each have mass 1/2. Every edge
+joins A to B. Thus the graph is bipartite and triangle-free. The verifier
+also checks simplicity and absence of a common neighbor on every edge.
+
+Take the bad cut X={0,1,2,3}, Y={4,...,27}. Its internal X cost is
+w_0 w_1=q. The Y subgraph is 5-regular on equal masses y/24, so its cost is
+60(y/24)^2=5y^2/48=j. Hence q+j=2/47 exactly.
+
+4. Strict local optimality and certificate failure
+
+For a positive-mass vertex v, moving that vertex to the other cut side cannot
+increase crossing edge mass exactly when its internal weighted degree is at
+most its external weighted degree. On Y the two degrees are
+  internal mu=5y/24=599/4800,
+  external x/2=401/2000.
+Their difference is 1817/24000>0. On X, vertices 0 and 1 have internal
+degrees w_1 and w_0; vertices 2 and 3 have internal degree zero. Every X
+vertex has external degree y/2=599/2000. These differences are all positive
+and exceed 1817/24000. Thus the cut is strictly locally optimal at all 28
+vertices. The verifier checks each degree without relying on symmetry.
+
+For this cut c=500/599. Its uniform cost is
+  c^2 j=5/192 > 1/40.
+Here x=401/1000>3/8>1/3, so the second completion branch is valid. It gives
+  Q(x)+q=56462237/2256000000
+         =1/40+62237/2256000000 > 1/40.
+Every Y vertex has d_v=mu and s_v=mu^2. Also
+  b=99/1000 < mu, with mu-b=619/24000>0.
+Thus every neighborhood profile uses the high branch and costs
+  F_v=j-b*mu=(5/48)y(1-y)=240199/9600000
+       =1/40+199/9600000 > 1/40.
+The last cost is less than each of the two previous bounds. It is therefore
+the retained certificate, and every entry of that certificate fails the target.
+
+5. True half optima and global maximum cut on the same host
+
+Take the global cut A,B from section 3. It has internal cost zero. Internal
+edge costs cannot be negative, so this is a global maximum crossing cut.
+It is balanced, and the uniform profile on either side is an independent
+half with cost zero. This certifies the global half minimum as zero without
+enumerating 2^28 subsets. It also proves the global-cut retained certificate
+is zero. No appeal to a maximum-cut search heuristic is involved.
+
+The true half minimum RESTRICTED TO Y is exactly the bad neighborhood value.
+To see this, let p be any half supported on Y and let t_v=w_v-p_v on Y.
+Its deleted mass is b. Since all Y degrees equal mu, expansion gives
+  cost_Y(p)=j-sum_v t_v*d_v+cost_Y(t)=j-b*mu+cost_Y(t)>=j-b*mu.
+This lower bound is attained by deleting mass b only in L, which is
+independent. Such deletion is possible because b<y/2. The script deletes
+whole clusters in order, then one partial cluster. It records the selected
+mass at all 28 vertices and checks its actual cost. Hence the failure on Y
+is structural; a better Y-only profile cannot meet 1/40 on this graph.
+
+6. Completion-envelope scope
+
+The example refutes the stated retained-envelope/profile test at a locally
+optimal cut. It does NOT show that the complete existing deletion/completion
+proof has no better witness. In PiecewiseCompletion.lean,
+independent_set_completion_even selects a maximum independent set internally;
+it is not required to keep the original X in the selected half. On this graph,
+after deleting the X edge, the color class A is still an independent half.
+It stays independent when the edge (0,1) is restored, because only vertex 0
+lies in A. Thus a zero-cost completion witness is available. The scalar
+envelope Q(x)+q discards that information. There is no conflict between the
+failure of this retained bound and that zero-cost witness.
+
+7. Exact finite simple graph and parity
+
+Let N=22560000 and replace each support vertex by an independent cluster of
+Nw_v vertices. The four X cluster sizes are
+  1128000, 2336353, 3395280, 2186927;
+each Y cluster has 563060 vertices. Join two clusters completely exactly when
+their support vertices are adjacent. These positive integer sizes sum to N.
+This is an explicit finite simple triangle-free graph, described implicitly;
+the large adjacency matrix is not materialized. Every support edge contributes
+N^2 w_u w_v edges. Each normalized cut or profile cost above is therefore the
+finite graph cost divided by N^2.
+
+N is even. Each global color class has N/2=11280000 vertices. The bad cut has
+|X|/N=x and |Y|/N=y and exactly (2/47)N^2 internal edges. For every individual
+vertex in a cluster, the internal and external degrees are N times the
+weighted degrees. Their minimum difference is N*(1817/24000)=1707980>0.
+Thus strict local optimality holds for moving ONE actual finite-graph vertex,
+not just moving a whole support cluster. All neighborhood profiles and the
+uniform profile reproduce the same normalized certificate.
+
+The zero half and the Y-restricted optimum witness use integer cluster counts
+at this N. For the latter, deleting full clusters and a remaining amount bN
+uses integer counts, so its cost is also an actual integral-half cost. E6 does
+not need the eventual BCL theorem or a rounding theorem to assert its explicit
+counterexample: its cut budget and parity are checked directly. The constant
+2/47 and normalization are unchanged. No stronger external cut input is used.
+
+8. Exact small-host sanity tests and the enumeration lemma
+
+The script checks K2, C4, C5, C7, Petersen, and Andrasfai supports of orders
+8, 11 and 14. For each support it tests the uniform weights and two seeded
+positive integer weight vectors with entries 1,...,7, normalized by their sum.
+The seed is 2026101806. This is a fixed 24-case harness, not a broad search.
+It enumerates all pure-cluster cuts up to complementation: 29838 total.
+Of these, 82 are locally optimal and meet the BCL cut budget. None of these
+82 has retained certificate above 1/40. Every global maximum pure-cluster cut
+on these hosts is also checked; no eligible global-cut certificate fails.
+These positive checks are finite evidence only. The separate 28-cluster graph
+is the negative result. No universal global-maximum-cut statement is proved.
+
+For completeness the fractional-half minimum on each small host is computed
+exactly, not by restricting arbitrarily to integral cluster choices. A minimum
+exists on the compact feasible box slice. If two coordinates p_i,p_j are
+strictly between their capacities, replace them by p_i+t,p_j-t. The objective
+as a function of t has quadratic coefficient -1 if ij is an edge, and zero
+otherwise. It is concave or linear on the permitted closed interval. One
+endpoint therefore has value no larger and makes at least one coordinate
+integral relative to its capacity. Repeating terminates with at most one
+partial cluster. This argument works for every finite simple support.
+
+For integer weights a_i with W=sum a_i, enumerate a full subset S and one
+possible partial vertex v outside S. Put r=W-2sum_{i in S}a_i. A feasible
+partial choice has 0<=r<=2a_v and p_v=r/(2W). Its cost is
+  [2 sum_{ij in E(S)}a_i a_j + r sum_{i in S, i~v}a_i] / (2W^2).
+The generator enumerates full subsets first; the independent verifier
+enumerates the partial vertex first. The latter also checks the recorded
+half witness directly. On the blowup with cluster sizes 2a_i and order 2W,
+this fractional optimum is an actual integer half. The exact uniform costs
+include C5=1/50 and Petersen=1/50; K2 and C4 have optimum zero.
+
+All-cut enumeration here covers cuts constant on support clusters. A global
+cut minimum is attained among these: with all other allocations fixed, its
+cost is affine in one cluster's allocation, as no intracluster edges exist;
+round to an endpoint without increasing cost and repeat. No claim is made
+that the enumerated local cuts include every split-cluster local optimum.
+The explicit counterexample cut is pure, so that limitation cannot remove it.
+
+9. Verification and limits
+
+All deciding arithmetic uses Python Fraction or integers. The independent
+verifier imports no experiment code. It rechecks the full graph, weights,
+local degrees, cut costs, each actual neighborhood profile, optimum witnesses,
+finite blowup and small-host enumeration. replay.py copies both scripts into
+a fresh directory and reruns them. It compares every mathematical output;
+only the nondeterministic elapsed-time field is excluded from equality.
+
+Six counter-controls remove the cross edges, add a triangle, forge a profile
+cost, change the half mass, falsely label the bad cut a zero-cost global cut,
+and forge the C5 optimum. Each is rejected for the relevant mathematical fault.
+The first development verifier stopped two controls at an edge-count check.
+That weaker output is retained. The final verifier tests local optimality
+and triangle-freeness before the exact edge count and records those reasons.
+
+This is a written exact finite counterexample with replayable rational evidence.
+No new Lean endpoint or kernel-checked formalization is claimed. Independent
+review and acceptance belong to the critic. The local-cut hypothesis is
+rejected within its stated retained-certificate scope. A universal positive
+statement for global maximum cuts remains open. No further search, optimization,
+or structural route is started in this packet.

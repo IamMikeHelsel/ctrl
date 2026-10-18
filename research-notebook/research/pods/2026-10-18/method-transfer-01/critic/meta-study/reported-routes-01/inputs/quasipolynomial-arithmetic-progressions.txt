@@ -1,0 +1,1808 @@
+PAGE 1
+Quasipolynomial bounds for arithmetic progressions 1
+Summarized chain of thought (Quasipolynomial bounds for
+arithmetic progressions)
+OpenAI
+The two tasks seek progressively stronger density bounds for arithmetic progressions. The first devel-
+ops an argument for the reciprocal-sum problem; the second seeks a quasipolynomial bound for every
+fixed progression length, using the previous reciprocal-sum bound and reorganizing the precision costs
+of successive density increments.
+Part I: The reciprocal-sum problem
+Original prompt (excerpts)
+# Problem
+Let N_0={0,1,2,...}, and let A be a subset of N_0 such that sum_{n in A, n>=1} 1/n diverges to
+infinity.
+Prove or disprove that A contains arithmetic progressions of every finite length: for every integer
+k>=1, there are integers a>=0 and d>=1 such that a,a+d,...,a+(k-1)d all belong to A. The
+requirement d>=1 makes the progression nontrivial for k>=2.
+A disproof must provide a set with divergent reciprocal sum and some fixed length k>=3 for which no
+such progression exists.
+1 Seeking structure without losing the density gain
+The assistant begins by asking whether a divergent reciprocal sum forces arithmetic progressions of ev-
+ery finite length. It uses Bloom and Sisask’s three-term reciprocal-sum result [ 3] as a baseline, alongside
+Green and Tao’s polylogarithmic bound for 𝑟4(𝑁) [17] and Gowers’s general quantitative bound [ 13],
+then seeks stronger bounds for longer progressions.
+Let 𝑟𝑘(𝑁) be the largest size of a subset of {1, … , 𝑁} with no nontrivial 𝑘-term progression. Convergence
+of
+∑
+𝑗≥1
+𝑟𝑘(2𝑗)
+2𝑗
+would suﬀice for the reciprocal-sum conclusion. Qualitative density decay alone does not supply this
+summability. Reading the Leng–Sah–Sawhney bound [ 35] directs attention to losses incurred when
+structured density increments are converted into ordinary progressions. The underlying quasipolyno-
+mial inverse theorem [ 36] offers controlled nilsequence dimension, but the assistant identifies the ac-
+cumulation of many weak correlations as a further cost. The assistant proposes retaining structured
+ambient sets through successive increments and borrowing sparse counting and high-moment ideas
+from Kelley–Meka methods [ 33].
+For sparse counting it studies Filmus, Hatami, Hosseini, and Kelman’s grid norms and binary-system
+counting lemma [ 12], seeking a higher-order analogue. It also consults the relative sifting argument
+for corners of Jaber, Liu, Lovett, Ostuni, and Sawhney [ 28], particularly the need to avoid losses from
+the density of a sparse ambient set. The proposed extension encounters several obstacles. The positivity
+
+PAGE 2
+Quasipolynomial bounds for arithmetic progressions 2
+mechanism useful for three-term progressions does not directly extend to longer rooted counts. A tensor-
+product sketch questions whether fixed uniformity norms can control sparse normalized functions, but
+the assistant does not complete the sketch. The assistant therefore turns toward relative correlations,
+higher moments, and compression of many dependent polynomial phases.
+Bloom and Sisask’s exposition [ 4] supplies the unbalancing, sifting, and almost-periodicity frame-
+work, including the Schoen–Sisask almost-periodicity input [ 49]. The assistant tries to combine the
+linearization and symmetry steps familiar from the 𝑈3 inverse theorem [18] with Croot–Sisask smooth-
+ing [ 9], while preserving relative correlation on a selected set of shifts. For higher orders it considers
+quantitative inverse theory , including Manners’s bounds [41], as a possible ingredient without complet-
+ing that extension. The assistant proposes aligning several frequency functions simultaneously , instead
+of accumulating losses through sequential alignment:
+VERBA TIM EXCERPT
+No iterative losses if align all frequencies at once. Great. Need ensure S_h can be recovered from
+frequencies with large correlations ≥exp(-poly).
+This would organize correlations of pair products 𝑓 (𝑥)𝑓 (𝑥 + ℎ) , where 𝑓 = 1 𝐴/𝛼 and 𝛼 = |𝐴|/𝑁 . The
+assistant still needs to preserve relative correlation and complete the counting argument.
+The assistant then identifies an obstruction: upper density bounds on structured pieces permit rare
+empty pieces. Centered products can concentrate on those holes. Adding a constant background briefly
+appears to furnish a pseudorandom majorant, but the resulting error is too large relative to the diluted
+density. Adaptive filling introduces further feasibility conditions that the assistant has not proved:
+VERBA TIM EXCERPT
+However majorant on *all* rare atoms likely unrealistic due to impossible upper and lower
+simultaneously for constructions with systematic holes.
+It returns to simultaneous frequency alignment while continuing to seek a counting lemma.
+2 Sparse counting, product obstructions, and an entropy route
+With 𝜇 = 1 𝐴/𝛼, 𝔼𝜇 = 1 , and 𝑀 = 𝛼 −1, the central question was whether upper bounds on structured
+concentration could force positive progression counts with affordable dependence on 𝑀. The assis-
+tant considered Green–Tao transference [ 20], inspected Zhao’s arithmetic transference proof [ 53], and
+studied Conlon–Fox–Zhao densification [7]; it found that the latter relied on two-sided linear-forms es-
+timates. The sparse graph counting lemma of Filmus, Hatami, Hosseini, and Kelman [ 12] supplied the
+model for asymmetric grid moments and positive-semidefinite unbalancing.
+Upper bounds alone repeatedly encountered sparse holes. Large centered grid moments could reflect
+missing mass rather than upward concentration, while weighted Cauchy–Schwarz retained factors that
+obstructed induction. The assistant considered allowing small power losses in 𝑀 if localization costs
+accumulated additively , but obtained no suitable counting theorem. It also considered Croot–Sisask
+smoothing [9], finding its required accuracy too costly in the proposed application.
+Product amplification offered another route. A suﬀiciently strong recurrence for extremal progression-
+free densities might yield summability across exponential scales. Fiber bounds did not multiply automat-
+ically , however, and constant-norm spheres obstructed the hoped-for strong decay over fixed digit alpha-
+bets. The assistant compared Green–Tao four-term bounds over finite fields and integers [ 19, 17] with
+the Leng–Sah–Sawhney progression bound and quasipolynomial inverse theorem [ 35, 36]; attempted
+
+PAGE 3
+Quasipolynomial bounds for arithmetic progressions 3
+lifting and iteration still lost too much quantitatively.
+Returning to hypergraph links, the assistant proposed high-moment control of common-neighbor
+degrees:
+VERBA TIM EXCERPT
+Excellent, products degree fluctuations handled with polynomial precision! Then for fixed u, H'
+path common-neighbor also concentrated for y,z even weighted. Can we use to control signed g' vs
+path distribution with required precision c^p?
+The assistant noticed that signed expansions could have absolute mass of order 2𝑝, overwhelming poly-
+nomial accuracy. The assistant explored using the quasipolynomial corners bound of Jaber, Liu, Lovett,
+Ostuni, and Sawhney [28] on parameters of partial progressions, but the resulting corners did not auto-
+matically assemble longer progressions, while positivity of the four-term box count did not control its
+exceptional diagonal.
+The investigation then turned toward entropy at scale 𝑝 = log 𝑀, drawing on the Kelley–Meka use of
+high moments [ 33]:
+VERBA TIM EXCERPT
+So can leverage entropy instead of L² by nonnegativity and frequency dissociative (Chang).
+Kelley-Meka essentially accounts for many tiny biases via Lp.
+The assistant next sought a Fourier restriction estimate ‖̂ 𝜇𝑔‖𝑞 = 𝑂(1) for bounded 𝑔 and fixed 𝑞 > 2 ,
+under suitable local upper bounds. Independent-frequency estimates suggested a starting point, but ex-
+tracting structure from high moments lost too much mass. The final calculation tried to express sampled-
+character moments positively so local bounds could apply. The assistant left the calculation unfinished,
+without deriving either the restriction lemma or the sparse counting principle.
+3 Endpoint restriction and the limits of sparse counting
+With normalized density 𝜇 = 1 𝐴/𝛼 and logarithmic sparsity 𝑝 = log(1/𝛼), the aim is to exploit upper
+density bounds on small structured factors without repeatedly paying powers of 1/𝛼.
+The assistant first tries Fourier restriction for four-term progressions. The assistant considers the Ben-
+Sasson–Ron-Zewi approximate-duality approach [ 2] to extract structured frequency subsets, but finds
+the contemplated iteration loses too much quantitatively. Truncating rare coherent peaks works for
+independent frequency clusters, but extending that argument to dependent clusters remains unresolved.
+The assistant uses Kelley–Meka convolution estimates [ 33] and high convolution moments to propose
+an endpoint Fourier ℓ3 estimate:
+VERBA TIM EXCERPT
+Aha! Exactly weak ℓ^3 from convolution and cap. Need strictly better (<3) for interpolation.
+The calculation subsequently reaches a full endpoint bound under its convolution hypotheses, but fails
+to cross the exponent-three threshold needed by the proposed counting argument. Longer progressions
+introduce further higher-order obstructions.
+The assistant then asks whether upper counts alone can force lower progression counts. Complete
+box norms offer a possible mechanism, whereas negative cubic contributions obstruct a straightforward
+extension to progression systems. A separate reduction to colored additive matchings encounters a pro-
+posed linear-algebraic barrier: for 𝑡 blocks with 𝑚 parameters each, generic diagonal scaling forces the
+
+PAGE 4
+Quasipolynomial bounds for arithmetic progressions 4
+relation rank to satisfy 𝑅 ≥ 𝑚𝑡/2 . The assistant finds that this defeats the specified closure construction’s
+intended slice-rank saving.
+It also considers discretizing Keleti’s full-dimensional progression-avoiding construction [ 31], but
+does not obtain the logarithmic-density lower bound that this counterexample route would need.
+Returning to sparse counting, the assistant revisits the quasipolynomial inverse theorem of Leng, Sah,
+and Sawhney and their density-increment argument [ 36, 35]. It calculates how repeated progression
+restrictions can exhaust the available length, and recalls Green and Tao’s density-increment approach in
+New bounds for Szemerédi’s theorem, II [21] while considering whether stronger increments or localization
+could reduce this loss.
+It also reexamines Conlon, Fox, and Zhao’s densification argument [7]: the required two-sided linear-
+forms information would already include the lower counts sought here, so the assistant does not obtain
+them from upper bounds alone. Returning to Bloom and Sisask’s exposition of Kelley–Meka [ 4], it
+studies whether sifting and almost-periodicity can instead supply a suitable positive convolution com-
+parison.
+The assistant identifies two linked diﬀiculties in sparse counting. Repeated density increments can
+consume too much progression length, while greedy removal of dense cosets creates holes that manufac-
+ture further apparent increments. The assistant therefore considers a bounded Fourier model 0 ≤ 𝑔 ≤
+1 + 𝑂(𝜀) approximating a nonnegative 𝐺 in Fourier ℓ3. In an adaptive partition calculation, it observes:
+VERBA TIM EXCERPT
+Great! Norm q≥2 localizes by averaging across disjoint equal subspace partitions.
+Allowing different refinement directions in different cells might control complexity along each branch.
+Yet an increment can occur on an extremely rare child, leaving typical branches almost unchanged and
+refinement depth uncontrolled. The assistant leaves the proposed dense-model theorem and the needed
+quantitative counting estimates conjectural, with refinement depth still uncontrolled.
+4 Polynomial factors and lower progression counts
+Most calculations used a finite-field model: a nonnegative density 𝜇 of mean one, bounded by 𝑀 = 𝑒 𝑝,
+and its centered function 𝑔 = 𝜇 − 1. The desired structural hypothesis prohibited large density increases
+on suitably simple cells.
+An initial proposal used Kelley–Meka methods [ 33] to turn Fourier concentration into an absolute
+variance increment. The assistant revisited Bloom and Sisask’s exposition [ 4], using its almost-
+periodicity statement, drawn from Schoen and Sisask [ 49], to seek a subspace preserving mass on a
+large-autocorrelation set. Adaptive partitions and polynomial-phase alignment were then intended
+to keep approximation costs polynomial in 𝑝. For polynomial factors, it invoked the polynomial
+bounds relating partition rank and analytic rank of Janzer and Milićević [ 29, 44], proposing to replace
+biased top-degree combinations by lower-degree polynomials. The quantitative inverse estimates
+needed for phase alignment were less certain: the assistant recalled Gowers and Milićević’s 𝑈4 inverse
+theorem [14] and Milićević’s work on approximate quadratic varieties [ 45], while leaving its proposed
+general finite-field estimate conditional. It also compared the intended complexity costs with the
+inverse theorem and density-increment bounds of Leng, Sah, and Sawhney [ 36, 35]. The assistant also
+observes that upper bounds could fail to detect missing configurations:
+
+PAGE 5
+Quasipolynomial bounds for arithmetic progressions 5
+VERBA TIM EXCERPT
+Testing upper over subfunctions and anchoring constants can't rule holes.
+For progression counting, eliminating a sparse factor incurred a loss of order 𝑀−1. It then tries interpo-
+lating moments of
+𝑍(𝑦1, … , 𝑦𝑞) = 𝔼 𝑥
+𝑞
+∏
+𝑗=1
+𝑔(𝑥 + 𝑦 𝑗).
+Conditional on the proposed positive-product estimates, this suggested cancellation for grids with one
+long axis. Rare structured holes nevertheless defeated stronger moment bounds: taking a large root
+could erase the benefit of their small probability. Weighted Cauchy–Schwarz preserved useful support
+restrictions only until the weights were replaced by approximations; completion weights could vanish ex-
+actly where 𝜇 was supported. The relative Szemerédi framework of Conlon, Fox, and Zhao [7] suggested
+a transfer route, but the assistant found that the needed lower estimates for linear forms reintroduced
+the counting problem it was trying to solve.
+The exploration then turned to an ideal jointly high-rank quadratic factor. Its four-term relation pro-
+duced Fourier terms | ̂𝑓 (𝜉 )|2| ̂𝑓 (3𝜉 )|2 for a common real-valued factor function 𝑓 , suggesting positivity:
+VERBA TIM EXCERPT
+Good! Degree2 polynomial structure *doesn't obstruct same-set 4AP lower* when high-rank jointly.
+Obstruction roots in low-rank/lower-degree factors.
+The assistant next seeks quantitative estimates for that ideal model. A subsequent spectral-growth argu-
+ment encountered a product-set counterexample, prompting an additional stability requirement under
+conditioning. Entropy-based extraction still lost too much density. The assistant was still seeking a lower
+counting theorem and a transfer from the finite-field model to integers.
+5 From rare holes to a conditional convexity gain
+The assistant’s sparse progression-counting arguments repeatedly encountered one obstruction: upper
+bounds on concentration do not stop a sparse set from occupying rare holes in a completion function.
+Proposed entropy projections sought to remove a small structured subspace; padding sought a non-
+negative majorant with two-sided pseudorandomness. The padding proposal invoked Conlon–Gowers
+transference [ 8]; the relative Szemerédi argument of Conlon, Fox, and Zhao [ 7] sharpened the con-
+cern that an upper linear-forms bound alone would not fill these holes. The assistant did not complete
+either construction. The assistant also considered Rankin’s progression-free constructions as possible
+counterexamples [ 47], whose known density scale left a large gap to the desired logarithmic bound.
+A decision-tree argument looked promising for complements of disjoint aﬀine subspaces, but overlap-
+ping weighted constraints remained unresolved. Yannakakis’s clique-versus-stable-set communication
+argument [52] suggested a related way to split disjoint rectangles; extending it to higher-order cylinder
+intersections remained uncertain.
+The spectral approach similarly recovered only a cubic singular-value bound. Gaussianizing corre-
+lated directions consumed additional entropy along with the apparent gain. Hypergraph reformula-
+tions exposed dependent links, and controlling positive moments of a completion function still failed to
+control its zeros where the target weight concentrated:
+
+PAGE 6
+Quasipolynomial bounds for arithmetic progressions 6
+VERBA TIM EXCERPT
+Need lower tail at μ_H. Upper moments no.
+Redundant arithmetic witnesses and Croot–Sisask almost-periodicity [ 9] were then considered as ways
+to fill those holes. Revisiting the graph-counting mechanism of Filmus, Hatami, Hosseini, and Kelman
+[12] highlighted the diﬀiculty of replacing graph common neighborhoods by cyclic hypergraph links. A
+proposed sumset of missing endpoints required Cartesian families of partial progressions too large to
+expect even in random sparse sets.
+The assistant next used independent shifts of a normalized density 𝜇, with 𝑔 = 𝜇 − 1 . Expanding
+∏𝑗 𝜇(𝑥 + 𝑢 𝑗) into products of shifted copies of 𝑔, the assistant proposed applying uniform convexity
+in Fourier ℓ3. The Kelley–Meka method and Bloom–Sisask exposition [ 33, 4] motivated the positive-
+product bound needed here. Conditional on that bound, exchangeability would supply an inverse bino-
+mial factor and hence exponential decay for centered products. The assistant reacts:
+VERBA TIM EXCERPT
+This solves k=4 counting lemma via Holder! Also arbitrary matrices S3 via cotype martingale? Need
+positive upper binomial-type *norm* for patterns.
+It next examines the positive-product bound needed for this gain. Extending the argument to longer
+progressions generated shift grids whose cycles destroyed independence. Inside a quadratic atom 𝐵,
+centering also had to use 1𝐵/ dens(𝐵), introducing costly density factors. Local Fourier norms and a
+relative Bessel inequality suggested repairs, but the resulting ambient transfer could be signed. The
+assistant also revisited the polynomial analytic-rank-to-partition-rank bounds of Janzer and Milićević
+[29, 44] as a possible route from bias to lower-degree structure. The bounds of Leng, Sah, and Sawhney
+[35] remained a quantitative comparison; their inverse theorem and Manners’s cyclic-group inverse
+theorem [36, 41] were considered as inputs, with the required finite-field analogue still uncertain. The
+assistant was left seeking positivity , spread, controlled iteration, and a passage to the integers.
+6 From random restrictions to the cancellation barrier
+For a nonnegative function of mean one bounded by 𝑒𝑝, the target was a positive progression count with
+losses at most exponential in a polynomial in 𝑝. The working assumption excluded density increments
+on factors generated by relatively few polynomial tests. The assistant kept Green–Tao’s four-term bound
+and the Leng–Sah–Sawhney bounds and inverse theorem as quantitative benchmarks, while questioning
+the finite-field inverse input needed by its proposed transfer [ 17, 35, 36].
+Building on its own preceding proposals, the assistant first sampled aﬀine subspaces contained in a
+polynomial atom. Restricting to these spaces preserved progression avoidance, but transferring local
+structure back to the ambient space threatened excessive complexity. The assistant then tries Hahn–
+Banach separation: measure the residual by its average restricted phase correlation, and require bound-
+edness only of the separating functional. It observes:
+VERBA TIM EXCERPT
+no need residual cap except in dual where bounded. Excellent!
+The proposed decomposition still lacked an affordable iteration. Counting also produced repeated-point
+contributions that could overwhelm the progression signal.
+
+PAGE 7
+Quasipolynomial bounds for arithmetic progressions 7
+The convolution estimates continued to draw on Kelley–Meka sifting, Bloom–Sisask’s exposition, and
+Croot–Sisask almost-periodicity [ 33, 4, 9]. The assistant also noted that the linear-forms hypotheses in
+Conlon–Fox–Zhao’s relative theorem supplied more than its upper-only spread assumption [ 7].
+Attention shifted to higher-order norms. Fixed cube norms appeared to undercount many indepen-
+dent polynomial modes, while repeated Hölder inequalities amplified rare structured holes. The next
+proposal replaced a potentially exponential spectral-energy budget by an entropy budget of order 𝑝. In-
+dependent structured projections could share that smaller budget; dependencies among them prevented
+a completed argument.
+The final stage tried polynomial spectral models and penalized least-squares approximations. Match-
+ing moments did not preserve positivity. Approximating progression dual functions directly in 𝐿2,
+through bias and the partition-rank bounds of Janzer and Milićević [ 29, 44], led it to a further diﬀiculty:
+grouping nearby phases could destroy cancellations. Small partition-boundary probabilities became
+inadequate after multiplication by large coeﬀicient sums:
+VERBA TIM EXCERPT
+Need a norm-based operator bound for Schur multiplier error rather than entry absolute.
+The remaining target was sharper control of four-factor Fourier sums through energies on low-
+dimensional aﬀine subspaces. The assistant had not resolved the cancellation problem: its proposed
+route still required an affordable decomposition, control of repeated-point contributions, and a
+norm-based estimate that survived grouping phases. It therefore left the finite-field counting target
+and the subsequent transfer to integers as further steps.
+It also reconsidered the binary-system counting theorem of Filmus, Hatami, Hosseini and Kelman
+and the corners bounds of Jaber, Liu, Lovett, Ostuni and Sawhney as possible reductions [ 12, 28]. Its
+proposed lifts still failed to force a longer collinear progression: a corner supplied a parallelogram, and
+the simple-graph representation encountered a rank obstruction.
+7 From adaptive holes to compressed polynomial constraints
+The assistant sought lower bounds for longer progression counts from upper bounds on conditional
+densities. For a set of density 𝛼 = 𝑒 −𝑝, its normalized indicator 𝜇 = 1 𝐴/𝛼 has mean one but can reach 𝑒𝑝.
+This large cap made rare exceptional holes decisive: estimates adequate for ordinary averages could fail
+when tested against the sparse set itself.
+Kelley–Meka moment estimates remained a model for controlling convolution and Fourier en-
+ergy [33]. The assistant also considered Sanders’s small-doubling structure [ 48], but did not obtain the
+desired small-codimension control from it. Adaptive Fourier projections briefly offered a way to avoid
+enumerating all structured factors. An empirical Fourier multiplier controlled projected energy in
+expectation, but the required exponentially small tails remained unavailable. Hypergraph containers
+needed too many moments; the Conlon–Fox–Zhao densification framework [ 7] risked assuming the
+lower count it was supposed to prove. Croot–Sisask almost-periodicity [ 9] suggested sampling shifted
+completions, but preserving a deficit on a sparse test set required more accuracy than the assistant could
+supply. Weighted Cauchy–Schwarz produced facet-weighted cubes, yet their needed high-moment
+estimates recreated the original diﬀiculty. Spectral entropy and martingale proposals likewise failed
+to prevent complexity or entropy from concentrating in unfavorable places. The assistant explored
+the global hypercontractivity of Keevash, Lifshitz, Long, and Minzer [ 30] as a source of Fourier level
+bounds; concentrated dependencies and high levels still obstructed the proposed counting argument. It
+compared the goal with Green–Tao’s polylogarithmic four-term bound [ 17] and Leng–Sah–Sawhney’s
+longer-progression bounds [35], without finding an amplification that closed the gap.
+
+PAGE 8
+Quasipolynomial bounds for arithmetic progressions 8
+The assistant next asks how to iterate a finite-field increment, assuming it can obtain the increment
+lemma. In an atom defined by polynomial equations, aligning local phases introduced many lower-
+degree corrections. The proposed repair retained the original equations as expressions in auxiliary
+variables, then averaged substitutions for discarded directions. Processing variables by degree might
+preserve both polynomial degree and the number of constraints.
+Nested aﬀine flats were then proposed to separate rank requirements by degree. The assistant tried to
+use Lampert–Ziegler relative rank and regularization [34] to make each layer’s rank requirement depend
+on that layer and the higher ones. It invoked the polynomial analytic-rank/partition-rank comparisons
+of Janzer and Milićević [29, 44] when turning biased polynomial combinations into lower-degree pieces.
+The quantitative inverse input remained uncertain: it recalled the Gowers–Milićević finite-field 𝑈4 the-
+orem [14], contrasted finite-field needs with the Leng–Sah–Sawhney integer inverse theorem [ 36], and
+still needed the appropriate hypotheses and bounds for the proposed iteration.
+Finally , summing lifted field coordinates suggested that integer carries might cancel with polynomial
+rather than exponential probability loss. Its image was too small, and enlarging it left collapsed progres-
+sions and carry constraints unresolved. The assistant ended with the increment theorem still assumed
+and with unresolved steps in both its iteration and the transfer to integers.
+8 From slab collapse to entropy counting
+The assistant moved from finite-field embeddings toward an entropy-based counting principle for inte-
+ger arithmetic progressions, motivated by its earlier candidate four-term argument.
+The embedding proposal restricted sums of canonical coordinate representatives to intervals of width
+less than half the field size. This forced their second differences to vanish, so vector progressions mapped
+to integer progressions. But nonzero vector directions could lie in the kernel of every block sum, pro-
+ducing constant images. Density increments on simple residue classes reinforced this collapse:
+VERBA TIM EXCERPT
+Finite-field linear tests fully expose residue at small cost (log q bits), so reduction fails
+structurally, not just counts.
+The assistant revisited the Leng–Sah–Sawhney density-increment and inverse-theorem inputs [ 35, 36],
+while continuing to question the quantitative finite-field inverse statement its proposed transfer would
+require. It also retained the limitation of the binary-system counting theorem: the simple-graph encod-
+ing did not directly handle longer progressions [ 12]. Its polynomial-factor calculations used the poly-
+nomial analytic-rank/partition-rank bounds of Janzer and Milićević [29, 44]; the relative-rank approach
+of Lampert and Ziegler remained an input whose precise applicability it wanted to check [ 34].
+Attention returned to normalized sparse densities bounded by 𝑀 = 𝑒 𝑝. Upper spread constrained
+their averages on structured sets, but could not directly exclude a completion function vanishing on
+the entire target set. The exploration reused Kelley–Meka convolution and sifting ideas, including
+the almost-periodicity formulation in Bloom–Sisask’s exposition [ 33, 4], and considered Croot–Sisask
+smoothing of partial-completion functions [ 9]. Positive covering certificates, weighted localization, and
+phase-based norms were explored. Repeated Hölder amplification created correlated grids, whose
+aligned holes defeated the hoped-for independent cancellation; subgroup-block examples also defeated
+a proposed spectral comparison.
+The assistant contrasted its upper-only hypotheses with the linear-forms conditions used by Conlon,
+Fox, and Zhao’s relative Szemerédi theorem [ 7]; the missing lower estimates blocked a direct densifica-
+tion argument. An abstract replacement asked whether normalized simplex-facet kernels, with uniform
+proper marginals and upper control on large cylinder intersections, must have positive joint count. The
+
+PAGE 9
+Quasipolynomial bounds for arithmetic progressions 9
+assistant did not find a proof of this lower bound or a derivation of its hypothesis from polynomial
+spread.
+A coordinate-filtration approach then exploited pairwise independence: surviving progression correc-
+tions involved at least three innovations. Absolute innovation estimates nevertheless counted irrelevant
+late spikes:
+VERBA TIM EXCERPT
+Thus simple martingale fails. Maybe choose **adaptive basis via polynomial inverse** such that
+relevant frequencies revealed early before spikes materialize.
+A proposed comparison retaining two arbitrary weighted marginals might charge each correction to
+𝑒3/2
+𝑗 , with ∑𝑗 𝑒𝑗 ≲ 𝑝 . Small steps 𝑒𝑗 ≤ 𝑡 would then cost 𝑂(𝑝√𝑡). Large steps remained dependent on
+enormous previously revealed prefixes, and transferring them recursively escalated complexity. It turns
+to compressing the previously revealed prefixes while preserving the proposed comparison.
+9 From entropy jumps to positive grids and integer obstacles
+The assistant sought progression-count estimates for a normalized density 𝜇 ≤ 𝑀 = 𝑒 𝑝. Entropy incre-
+ments along finite-field coordinates summed to at most 𝑝, suggesting that suﬀiciently small increments
+might have a controllable total effect. The assistant considered transference through the linear-forms
+conditions of Conlon, Fox and Zhao [ 7], but large revelations resisted this argument: repeated transfer-
+ence magnified errors, and backward coordinate deletion failed because parity-type dependencies could
+force every coordinate to remain.
+Random subspaces and graph-label formulations concentrated the diﬀiculty but introduced too
+many Fourier modes or left a new counting problem. It also considered the same-set hitting frame-
+work of Hązła, Holenstein and Mossel [ 26], observing that exact progression relations fell outside
+the straightforward product-space route. Continuous revelation did not remove the obstruction:
+pairwise-independent endpoints can have zero joint product, whereas bounded continuous orthogonal
+martingales would preserve its expectation.
+The direction changed when correlated aﬀine functions produced individually nonnegative covari-
+ance kernels,
+𝔼𝜎 𝜈𝑖(𝑢)𝜈𝑖(𝑣) = 1 − 𝑡 + 𝑡𝑢𝑣, 0 < 𝑡 < 1
+2 ,
+while their cross kernel had a negative 𝑢𝑣-coeﬀicient. A deficit in the full progression count could con-
+sequently become an excess in a mixed average.
+The assistant then identified what this proposal still required. It proposed Hölder and Cauchy–
+Schwarz bounds for the excess through positive additive-grid averages, but still needed the grid bounds
+or a structural consequence of their failure.
+The next stage made that dependency explicit:
+VERBA TIM EXCERPT
+This is big. Need convert single-grid excess to density increment over integers with manageable
+complexity, avoid previous integer relative transfer burden.
+Isolating a grid cell suggested a positive correlation against functions of proper subsums. Proposed in-
+teger conversions used nilsequences, multidimensional boxes, or direct comparison with a structured
+baseline. Repeated interval restrictions accumulated excessive losses. Large boxes might reduce degen-
+eracy , but conditioning and lifting remained unresolved; Bohr neighborhoods introduced exponential
+
+PAGE 10
+Quasipolynomial bounds for arithmetic progressions 10
+geometric normalization losses, while coeﬀicient heights could grow despite dimension control. The
+assistant continues to seek an integer density increment from the kernel reduction.
+In pursuing the integer conversion, the assistant returned to Kelley–Meka sifting, Bloom–Sisask’s ex-
+position, and Croot–Sisask almost-periodicity as models for controlling sparse convolutions [ 33, 4, 9].
+It recalled the three-term reciprocal-sum consequence of Bloom–Sisask and the polylogarithmic four-
+term bound of Green–Tao [ 3, 17], while keeping the graph-specific scope of the binary-systems result
+of Filmus, Hatami, Hosseini and Kelman in view [ 12]. For longer progressions it examined the nilse-
+quence inverse theorem and density-increment argument of Leng, Sah and Sawhney [36, 35]: repeatedly
+localizing to intervals still accumulated excessive losses.
+For a possible finite-field transfer, it proposed using the polynomial analytic-rank-to-partition-rank
+bounds of Janzer and Milićević [ 29, 44] to reduce biased polynomial combinations to lower degrees,
+and Lampert–Ziegler relative rank and regularization [ 34] to control successive constraint layers. It
+treated the required sampling and complexity estimates as dependencies still to check. For the integer
+analogue it identified Leng’s eﬀicient equidistribution of nilsequences [ 37] as a possible source of a
+degree-reduction step, but did not establish that the needed form followed.
+10 Degree reduction and alternating local decompositions
+If 𝑟𝑘(𝑁) is the largest size of a subset of [𝑁] without a nonconstant 𝑘-term arithmetic progression, the
+target was 𝑟𝑘(𝑁) ≪ 𝑁/( log 𝑁)2. The assistant combined the Leng–Sah–Sawhney inverse theorem with
+their progression-decomposition strategy [36, 35]. With 𝑝 = log(1/𝛼) for density 𝛼, repeated restrictions
+had to consume only polynomial complexity in 𝑝.
+The assistant examined Leng’s quantitative nilsequence equidistribution results [ 37], but found that
+their horizontal-character obstructions did not supply the required degree reduction: lowering nilpotent
+step can leave polynomial degree unchanged. It also reconsidered the step-lowering mechanism for
+periodic nilsequences [ 38]. The assistant proposed a suspension:
+VERBA TIM EXCERPT
+Key idea! Linearize polynomial nilsequence via suspension to linear sequence in s-step nilmanifold
+with standard lower central series, preserving dimension and complexity.
+The assistant then notices that an integral drift can disappear modulo the lattice, defeating its proposed
+subgroup restriction. Derivative representations offered another route, yet dividing by a small phase
+mean incurred prohibitive costs.
+Green–Tao local quadratic inverse methods and their polylogarithmic four-term progression argu-
+ment suggested working in local charts [18, 17]. Green–Tao–Ziegler nilcharacter calculus then informed
+the proposed derivative representations [ 22].
+Attention shifted to domination against positive lower-degree tests and then to a convolution com-
+parison with an arbitrary nonnegative baseline. Simultaneous derivative bias and anchoring suggested
+alignment mechanisms, but closure under translated weights remained unproved. Variance also failed
+to guarantee useful progress when concentrated on rare spikes. Attempts to construct convolution
+predictors used Croot–Sisask sampling and Sanders’s Bogolyubov–Ruzsa mechanism, but encountered
+label-entropy and difference-set obstacles [ 9, 48].
+The proposed repair alternated independent Bohr-set pieces, used to remove spikes, with matched
+pieces, used to detect convolution nonuniformity. A concave potential (ℎ𝑤)𝜃, where ℎ, 𝑤 are local means
+and 0 < 𝜃 < 1/2 , was intended to control dependent refinements and unfinished branches. Kelley–
+Meka autocorrelation estimates and dependent random choice supplied the model for variance incre-
+
+PAGE 11
+Quasipolynomial bounds for arithmetic progressions 11
+ments [ 33]. The assistant examined the finite-field and local Bohr almost-periodicity statements in
+Bloom–Sisask, including their Schoen–Sisask input, as the analytic bridge [4, 49]. The assistant accepted
+the local comparison at this stage, but repeated conditioning on structured atoms could still multiply
+complexity. Flattening existing phases incurred excessive losses; a hierarchy of local coordinates became
+the next proposal. The assistant left the comparison proof and the higher-degree iteration unfinished.
+Reconsidering the finite-field comparison also brought back the Janzer and Milićević polynomial rank
+bounds and Lampert–Ziegler relative regularization as possible controls on nested sampling [29, 44, 34].
+The assistant still needed to check their quantitative dependencies. It also retained the earlier obstacle
+to applying Conlon–Fox–Zhao relative counting: the required control of linear forms in the envelopes
+was missing [7].
+11 Keeping relative density increments affordable
+The assistant next considers the cost of repeating density increments. If 𝑟𝑘(𝑁) denotes the largest size of
+a subset of [𝑁] without a nonconstant 𝑘-term arithmetic progression, the desired bound was 𝑟𝑘(𝑁) ≪
+𝑁/(log 𝑁)2. With relative density 𝛼 = 𝑒 −𝑝, repeatedly replacing structural dimension 𝐷 by 𝐷𝐶 would
+consume the available scale. Building on its own earlier proposals, the assistant sought new complexity
+controlled by relative density rather than the rarity of an existing structured region 𝐵:
+VERBA TIM EXCERPT
+Need relative inverse theorem *increment count* depending only relative density*, rather than
+black-box HB paying b.
+Here HB denotes Hahn–Banach decomposition. The assistant used the inverse-theorem framework of
+Leng, Sah, and Sawhney [ 36] as background and sought a relative extension.
+The principal construction sampled aﬀine boxes𝜓(𝑡) = 𝑥+𝑣⋅𝑡 on which 𝐵 was nearly constant. A local
+test into a small nilmanifold would then have to become a global test into the same target. Interpolation
+alone could not preserve correlation: a character nearly constant on a small box might average to zero
+globally. Conditioning boxes to stay inside 𝐵 could also make the sampling event too rare. Encoding
+finite-field progressions in integers brought separate carry and collapsed-direction obstructions.
+The finite-field comparison invoked Lampert–Ziegler relative rank and regularization [ 34], while
+retaining uncertainty about the precise regular-tower hypotheses, and Janzer’s polynomial compari-
+son of partition and analytic rank [ 29]. For nilsequences, the assistant examined Leng’s periodic and
+multiparameter equidistribution results [ 38, 37], hoping to lower degree without repeated dimension-
+dependent factorization. It contrasted this with the cost of quantitative Leibman factorization [ 23] and
+recalled the nilcharacter-symbol framework of Green, Tao, and Ziegler [ 22]; the required compatibility
+of the lifted coeﬀicients remained a proposed step.
+The assistant proposes representing 𝐵 as a product of smooth tests. If every added test retained suf-
+ficient relative mass and stable output size, logarithmic mass and complexity costs could accumulate
+additively. It therefore asks for a transfer theorem supplying those hypotheses. Ordinary polynomial
+phases offered a simpler setting for coeﬀicient matching before confronting nilpotent structure.
+The assistant used the Schmidt-type recurrence and progression decomposition of Leng, Sah, and
+Sawhney [35] to estimate neighborhood mass and the losses from repeated localization. Green–Tao’s
+local 𝑈3 inverse theorem [ 18] suggested a model for adding structure on Bohr sets, and Manners’s
+periodicization construction [ 42] was considered for cyclic versions. Recalled comparison arguments
+combined Kelley–Meka sifting [ 33], Croot–Sisask convolution smoothing [ 9], and the Bohr-set almost-
+periodicity theorem in Bloom–Sisask’s exposition [ 4]. The assistant also retained its objection to the
+
+PAGE 12
+Quasipolynomial bounds for arithmetic progressions 12
+Conlon–Fox–Zhao transference route [7]: the required linear-forms control was precisely what its sparse
+argument had not supplied.
+The assistant then asks to preserve only correlations needed for one density increment. A variance
+estimate of order 𝐿−𝑚 still could not control a candidate family of size 𝐿𝑂(𝑑𝑚𝑠) for degree-𝑠 maps:
+VERBA TIM EXCERPT
+However to correlate with f∘ψ, h must align with f model (low entropy) in top tensor space,
+constraints leave free components not needed (prune).
+This suggested discarding irrelevant coeﬀicients and lifting the remaining coordinates layer by layer
+while respecting commutators. The assistant left the quantitative lifting theorem and the full iteration
+as tasks still to be completed.
+12 Why controlling dimension does not control width
+The assistant sought a density increment inside a structured region 𝐵. With density 𝛼 = 𝑒 −𝑝, the goal
+was to add only poly(𝑝) coordinates per increment while preventing their required precision from over-
+whelming the iteration.
+Local nilsequence tests were first to be lifted from aﬀine boxes to the integers. The assistant consid-
+ered Leng’s eﬀicient equidistribution and periodic step-reduction results, while questioning whether
+their hypotheses covered the required multiparameter boxes [ 37, 38]. It also tested a recollection of
+high-characteristic nilspace splitting against explicit periodic Heisenberg examples [ 6]. A proposed
+simplification used global coeﬀicient lifts and one random constant in a projection kernel to reproduce
+a joint distribution. Incompatible lattice gauges still obstructed simultaneous lifting. Using Leng–Sah–
+Sawhney inverse estimates and progression localization as quantitative inputs [ 36, 35], the assistant ob-
+tained a conditional budget calculation by grouping increments before resetting the structured region,
+but nonlinear dependence on previous precision could defeat it.
+The assistant revisited Kelley–Meka sifting and Bloom–Sisask almost-periodicity in its proposed pos-
+itive convolution comparison [33, 4], and recalled Green–Tao’s locally quadratic approach to four-term
+bounds as another model [ 17]. The next route conditioned progression counts on 𝐵, generating addi-
+tive grids through repeated Hölder inequalities. Their final two positions remained coupled. A bounded
+coupling density could favor positive inner products even when the separate Gram kernels were non-
+negative, invalidating the hoped-for independence substitute. Taking absolute values erased the useful
+negative contribution.
+Ordinary polynomial models suggested absorbing some lifted frequencies into existing coordinates.
+Later, selecting independent frequency equations gave a proposed pointwise alignment between a local
+test, a global polynomial, and a slow drift. This simplified algebraic compatibility without controlling
+the drift’s oscillation. Fixed weighted degree likewise suggested polynomial dimension growth, yet
+hidden floor variables and localization costs remained unresolved.
+A proposed relative inverse principle also raised the question whether Conlon–Fox–Zhao transfer-
+ence and its linear-forms hypotheses could remove losses depending on the width [ 7]. Sampling whole
+atoms, traversing short discrete labels with long kernel directions, and using high-dimensional boxes
+each encountered further obstacles. A positive quadratic phase, modeled by ‖𝑢‖2/𝐿, forced substantial
+shortening:
+VERBA TIM EXCERPT
+Positivity smooth irrational low-rank counterexample forces log cost factor 2 independent d!
+
+PAGE 13
+Quasipolynomial bounds for arithmetic progressions 13
+The assistant then pulled the integer set back from a finite-field aﬀine space, where kernel directions
+create degenerate progressions. Their proportion alone did not settle the necessary comparison with
+progression bounds. The assistant was still seeking a width-stable increment theorem, with the finite-
+field comparison unresolved.
+13 Amplifying density gains without multiplying dimension
+With density 𝛼 and 𝑝 = log(1/𝛼), the obstacle was the expense of conditioning on an increasingly narrow
+structured region: inverse-theorem accuracy and subsequent localization depended too strongly on that
+region’s tiny mass.
+The quantitative inverse and progression-decomposition estimates of Leng–Sah–Sawhney framed this
+cost problem [36, 35]. Seeking cheaper inverse estimates, the assistant recalled the polynomial Freiman–
+Ruzsa results of Gowers, Green, Manners and Tao in characteristic two and bounded torsion, but did
+not obtain the needed integer-group analogue [ 15, 16].
+The proposed escape was to increase the gain per iteration. Several small increments might form a
+packet giving a large fixed factor 𝐾.
+VERBA TIM EXCERPT
+Then multiplicative increment factor K per iteration, choose K huge enough to absorb block
+constants! This is extremely important.
+The assistant distinguishes coordinate count from precision. Widths might deteriorate rapidly , provided
+the exponent controlling their recurrence remained independent of 𝐾, and the number of coordinates
+stayed polynomial with a similarly uniform exponent. The assistant needed a packet lemma with these
+uniform exponents for the parameter calculation to apply.
+One route toward a larger gain sought a bounded model: a suitable positive majorant would permit
+Conlon–Fox–Zhao relative Szemerédi transference [7], but the proposed domination argument encoun-
+tered rare overlapping tests. A second route considered the Lovász–Szegedy graph-limit characteriza-
+tion through homomorphism densities and reflection positivity [ 40]; the assistant could not obtain the
+mixed-sign positivity or counting transfer needed for its sparse weights.
+Attempts to lift local tests globally exposed scale feedback. Short coordinates became frozen labels;
+accounting for them demanded greater approximation accuracy and hence larger sampling boxes, which
+encountered further scales. Enlarging an ambient cyclic group created many apparent directions but
+only a short effective progression in the original integers. Finite-field and product models likewise left
+unresolved whether a detected progression would collapse to one point or incur excessive losses when
+controlling carries. A direct, density-dependent large increment also failed its cost comparison: the next
+test’s complexity outgrew the gain.
+For finite-field regularization, the assistant revisited a construction conditional on Lampert–Ziegler
+relative rank estimates, using Janzer’s analytic-rank to partition-rank bounds in its proposed rank
+checks [34, 29]. On the integer side, it considered Green–Tao’s local quadratic inverse theorem and their
+polylogarithmic four-term progression bound, while questioning whether the local inverse costs could
+fit its logarithmic-density budget [ 18, 17]. Leng’s periodic and multiparameter nilsequence equidistri-
+bution results remained candidates for aligning local tests, with their precise lifting application still
+unresolved [38, 37].
+The exploration returned to conditional counting, using Gaussian weights or polynomial coeﬀicient
+data to seek replication costs depending on 𝑝, rather than the conditioning mass. The underlying com-
+parison proposal combined Kelley–Meka variance and sifting ideas with Bloom–Sisask Bohr almost-
+periodicity [33, 4]. The remaining task was to control the number of new structural coordinates in the
+comparison and inverse steps.
+
+PAGE 14
+Quasipolynomial bounds for arithmetic progressions 14
+The assistant thus focused the relative lifting problem on uniform coordinate bounds, while retaining
+its doubts about the absolute comparison argument on which the proposed density iteration depended.
+14 Controlling dimension through repeated density increments
+The assistant sought a density-increment proof of Erdős’s reciprocal-sum conjecture. Its central diﬀiculty
+was quantitative: structure detected inside an already constrained region had to be transferred to the
+ambient integers without making the number of coordinates grow too quickly. Writing 𝑝 = log(1/𝛼) for
+density 𝛼, repeated updates 𝑑 ↦ 𝑑 𝐶 could exhaust the dimension budget long before enough fixed-factor
+density gains accumulated.
+The assistant tried conditioning polynomial Taylor coeﬀicients to construct a sampling law , then iden-
+tified uncontrolled sparse marginals and exceptional fibers. Linear Bohr regions admitted progression
+charts; higher-degree regions did not have comparable aﬀine charts with the required cube distributions.
+Finite-field encodings introduced wraparound and carry losses, while grouping increments into packets
+still retained excessive dimension growth.
+The dimension calculations revisited the inverse-theorem and progression-decomposition bounds of
+Leng–Sah–Sawhney [36, 35]. For the convolution stage, the assistant considered Kelley–Meka concentra-
+tion arguments [ 33], Bloom–Sisask almost-periodicity [ 4], Croot–Sisask smoothing [ 9], and Sanders’s
+Bogolyubov–Ruzsa lemma [48]; the diﬀiculty was keeping their costs under control inside the old con-
+straints. It also reconsidered a bounded-majorant route to the Conlon–Fox–Zhao relative Szemerédi
+theorem [7], but the needed two-sided control was missing.
+Green–Tao’s polylogarithmic four-term bound suggested examining local quadratic methods [ 17].
+The assistant considered whether the binary-system counting method of Filmus, Hatami, Hosseini, and
+Kelman could bypass higher-order structure, but could not encode the required longer progression that
+way [12]. It also recalled possible distinct-degree polynomial methods without settling their bounds or
+a reduction to ordinary progressions. In the finite-field model, it revisited relative-rank regularization
+in the style of Lampert–Ziegler, leaving the needed sampling and threshold dependencies open [ 34].
+Polynomial charts led to a more concrete idea for short coordinate directions. For an ordinary degree- 𝑟
+polynomial, comparison with a fixed short-coordinate slice gives
+𝑃(𝑡) − 𝑃(𝑡long, 𝑎) = ∑
+𝑗
+(𝑡𝑗 − 𝑎𝑗)𝐷𝑗(𝑡), deg 𝐷𝑗 ≤ 𝑟 − 1.
+The assistant proposed descending through these lower-degree terms:
+VERBA TIM EXCERPT
+For degree r≥2, if difference has fast variations depending short axes, can express via
+lower-degree polynomials t_j and mixed terms without Weyl!
+The assistant then encountered further obstacles in extending this ordinary-polynomial proposal to
+nilsequences. Rational and smooth corrections introduced floor coordinates whose number was still
+uncontrolled. The assistant considered Leng’s periodic nilsequence step reduction [ 38] and reread the
+multiparameter equidistribution estimate [37], observing that its constants depended on the number of
+parameters. Separating quadratic coeﬀicients into oscillatory and structured components led to circular
+precision requirements.
+The absolute comparison remained unverified.
+A subsequent proposal maintained a high-dimensional unconstrained box, spending dimension to
+preserve side length. The assistant found that its initial encoding cost exceeded the budget. It then tried
+
+PAGE 15
+Quasipolynomial bounds for arithmetic progressions 15
+noninjective aﬀine maps, but observed that localized progression directions could all lie in the map’s
+kernel. Ensuring nonzero image directions reintroduced the missing relative sampler. The assistant next
+considered prime-power digits and entropy , while still seeking the relative sampler needed to continue
+the density-increment argument.
+15 From relative smoothing to positive sampling laws
+The assistant shifted from relative counting to transferring local gains, seeking density increments strong
+enough for Erdős’s reciprocal-sum conjecture. Hilbert cubes did not force arithmetic progressions, and
+a replicated-grid calculation left a small but consequential excess exponent. The assistant tried asym-
+metric Gaussian profiles and retained support indicators, then sought comparison estimates for them.
+Before this smoothing proposal, the assistant considered Green–Tao transference through a pseudo-
+random majorant, but did not find a suitable majorant for an arbitrary progression-free set [ 20]. It also
+considered Conlon–Fox–Zhao densification [ 7] and a dense-model argument; the required accuracy
+appeared to demand excessive pseudorandomness. Kelley–Meka sifting and the Bloom–Sisask almost-
+periodicity theorem supplied the comparison framework [ 33, 4].
+A proposed relative adaptation of Croot–Sisask sampling [ 9] then used reference-measure autocor-
+relations and Fourier uniformity to seek smoothing costs independent of sparse support density. The
+assistant proposed the following local analogue:
+VERBA TIM EXCERPT
+For local Bohr, similar using relative convolution and locally embedded group with support. This
+yields relative Croot-Sisask almost-periodicity under mere β autocorr and β' Fourier. Major
+progress.
+For finite-field sampling, the assistant revisited Lampert–Ziegler relative-rank regularization and
+Janzer’s rank bounds, while explicitly questioning the required uniformity in the earlier layers [ 34, 29].
+It considered local quadratic inverse arguments and Sanders’s local Bogolyubov–Ruzsa approach
+to controlling new directions. Green–Tao’s polylogarithmic four-term bound suggested a separate
+amplification route, but tensor products and fiber bounds did not supply the desired improvement [ 17].
+The weaker bound for longer progressions remained a benchmark [ 35].
+The assistant still needed a local argument and turned to retaining fixed widths for quadratic constraints
+while shrinking their effective rational subspace. This was intended to prevent repeated coordinate elimi-
+nation from multiplying precision costs. For structured approximation it continued to use the Leng–Sah–
+Sawhney inverse theorem [ 36]. It examined Leng’s multiparameter nilsequence estimates, but did not
+assume that they supplied the stronger degree-reduction statement or the dependence on the number
+of parameters that it needed [ 37]. A lattice-based alignment proposal sought a decomposition of hor-
+izontal coordinates into isotropic, rational, and slowly varying components. The assistant questioned
+how to extend that quadratic mechanism to higher degrees.
+The next obstacle was sampling: an aﬀine chart could overweight ambient points, invalidating separa-
+tion estimates taken with uniform ambient measure. Truncating exceptional sampling weights required
+bounds independent of chart length. Pair concentration also encountered congruence correlations and
+circular choices of sampling dimension. Studying rational characters annihilating the chart’s slope ma-
+trix suggested a common denominator in place of many unrelated moduli:
+
+PAGE 16
+Quasipolynomial bounds for arithmetic progressions 16
+VERBA TIM EXCERPT
+This implies finite group generated by needed annihilators has exponent <D0 (or |group|≤D0^n),
+eliminating lcm! This is key.
+That proposed typicality argument motivated a positive ambient weighting reproducing a chart’s posi-
+tion, residue class, and polynomial labels. Including such weightings in the approximation norm might
+transfer a local gain under the assumption that no ambient density increment exists. The assistant left
+uniform Fourier bounds, independence from polynomial constraints, smoothing of lattice labels, and
+consistent parameter ordering as unresolved requirements for this transfer proposal.
+16 Controlling dimension through graded lifting
+The assistant addressed the dimension growth obstructing a density-increment approach to Erdős’s
+reciprocal-sum conjecture. The desired conclusion was progressions of every finite length. Motivated by
+Leng’s periodic and multiparameter nilsequence estimates [ 38, 37], it sought a relative lifting theorem.
+For density 𝛼, put 𝑝 = log(1/𝛼). Grouping increments into a fixed multiplicative gain could tol-
+erate narrower sampling regions, but required structural dimension polynomial in 𝑝. A recurrence
+𝑑𝑖+1 ≤ 𝑑 𝐶
+𝑖 𝑝𝐶 defeated this strategy. Moreover, replacing a small local nilsequence by a large ambi-
+ent comparison sequence imported hidden integer-part coordinates. The construction still had to cover
+every fixed progression length, rather than only four-term progressions.
+The assistant revisited several ingredients behind the proposed iteration. Kelley–Meka concentration
+methods and Bloom–Sisask almost-periodicity supported its degree-one comparison strategy [ 33, 4]; it
+also explored a weighted adaptation of Croot–Sisask sampling [ 9]. It considered applying the relative
+Szemerédi theorem of Conlon, Fox, and Zhao after constructing a suitable majorant, but still lacked
+the required two-sided control [ 7]. For a finite-field alternative, it relied conditionally on Lampert–
+Ziegler relative-rank regularization and Janzer’s polynomial relation between partition and analytic
+rank [34, 29]. Green–Tao’s local inverse approach to four-term progressions suggested another route,
+whose quantitative dependence remained an obstacle [ 17]. The Leng–Sah–Sawhney inverse theorem
+supplied candidate structured models, while their progression decomposition supplied the proposed
+reset to ordinary progressions [ 36, 35].
+Alternative routes through overlapping shorter progressions, Chinese-remainder independence, and
+coordinate fibers produced no replacement argument. Bracket phases retained troublesome floor inter-
+actions, and fiberwise bounds did not automatically multiply. Attention returned to a graded factoriza-
+tion that would iterate over degree rather than ambient dimension. The assistant examined the dimen-
+sion losses in Green–Tao factorization [23] and Leng’s comparison with the sunflower and linearization
+steps in Green–Tao–Ziegler’s 𝑈4 inverse argument [ 37, 24]. It noted that Leng’s multiparameter theo-
+rem allowed its exponent to depend on the number of parameters, leaving a further uniformity question.
+Smooth and rational factors were to leave a subgroup annihilated in its highest layer by a vertical char-
+acter. The assistant tried coeﬀicientwise adjustments to improve compatibility , then returned to the
+derivative character and its quantitative bounds.
+Conditioning on existing constraints introduced weighted floor variables. It briefly considered
+nilprogression-based dimension control for subgroup charts. A semidirect polynomial model sug-
+gested rational potentials for these corrections; pruning Fourier modes before freezing short sampling
+axes was intended to preserve useful correlation. T o prevent recursive corrections from accumulating
+coordinates, the assistant proposed:
+
+PAGE 17
+Quasipolynomial bounds for arithmetic progressions 17
+VERBA TIM EXCERPT
+Better: align entire map g_P (auxiliary okay large) into SAME via iterative Fourier pruning and
+simultaneous splittings, preserving local tests as modifications of one map into original target
+with Y fixed.
+Here 𝑌 denotes fixed ambient data. Quotienting a compatible central subgroup and reconstructing
+the original target offered a more specific lifting scheme. The assistant still needed to resolve lattice
+compatibility , well-defined actions, global bias, and eﬀicient factorization to complete this lifting scheme.
+17 From graded regularization to a structured comparison problem
+The density-increment strategy for Erdős’s reciprocal-sum conjecture shifted from controlling polyno-
+mial complexity to confronting arithmetic sampling obstructions. The assistant had proposed lifting lo-
+cal tests while preserving marked projections. A graded revision would transfer a deficient top-degree
+component to lower degree, bounding the total number of reductions. Integer-coordinate compression
+was intended to limit the number of floor variables, but the assistant had not resolved its interaction
+with boundaries and density.
+The assistant revisited the finite-field regularization route using Lampert–Ziegler’s relative rank and
+Janzer’s analytic-to-partition-rank bounds [34, 29]. For the integer problem, it contrasted Green–Tao’s lo-
+cal inverse argument [17] with the quasipolynomial inverse theorem of Leng–Sah–Sawhney [ 36], while
+retaining the latter authors’ effective recurrence/localization input for a later return to a one-dimensional
+progression [35]. Leng’s periodic nilsequence estimates remained a proposed source of subgroup iden-
+tities [38]; the assistant also recalled that the multiparameter theorem’s exponent depended on the num-
+ber of parameters [ 37].
+The sampler had to accommodate both short and long lattice coordinates. Choosing its length only
+after regularization appeared to replace an expensive power separation by a multiplicative gap:
+VERBA TIM EXCERPT
+This previous failure was *power gap* L^{poly} requiring log L multiplying D times ->tower. Here
+gap only factor A independent L!
+The assistant noticed that narrow coeﬀicient jitter could leave discrete labels sparse and that real smooth-
+ing lost rational oscillations. The proposed comparison weight therefore combined continuous informa-
+tion with compatible congruence residues, seeking relative rather than absolute approximation for tests
+of very small mass. A further simplification allowed the final density-increment region to replace the
+old region, potentially reducing inherited complexity.
+The assistant then encountered a dimensional diﬀiculty: an aﬀine sampler with ℓ < 𝑛 directions has
+a singular image modulo every prime in an 𝑛-dimensional ambient box. In an ideal Chinese remainder
+model, orthogonal decompositions offered useful contraction estimates, but too many singleton-prime
+contributions survived. The assistant proposed using global hypercontractivity [ 30], later identifying
+the sharp inequalities of Keller–Lifshitz–Marcus [ 32] as a possible ingredient, without yet deriving the
+needed comparison estimate. It also reconsidered Kelley–Meka’s weighted energy and sifting argu-
+ments [33], together with the finite-field and Bohr-set almost-periodicity statements in Bloom–Sisask [4],
+as models for adaptive comparison.
+A counterexample then concentrated an arbitrary baseline on a union of rare congruence events. Small
+restrictions left many events unseen, while a typical low-dimensional sampler missed the union.
+The proposed repair used the actual baseline’s bounded-complexity nilsequence structure. Repeated
+congruence sensitivity might force rational constraints, eventually producing stable averages. The assis-
+
+PAGE 18
+Quasipolynomial bounds for arithmetic progressions 18
+tant left three steps to establish: this regularization, the hypercontractive comparison, and transfer from
+ideal prime independence to finite boxes.
+18 From physical residue mixing to symbol regularization
+Continuing the attempt at Erdős’s reciprocal-sum conjecture, the assistant sought quantitative bounds
+on progression-free sets strong enough to force arithmetic progressions of every length. Several lemmas
+in the proposed density-increment plan remained unverified.
+The assistant recalled the contrast between Green and Tao’s polylogarithmic four-term bound [ 17]
+and the longer-progression estimates, and the restriction that had prevented it from directly applying
+the sparse graph-counting result of Filmus, Hatami, Hosseini, and Kelman [ 12] to longer progressions.
+The immediate challenge was transferring averages from a low-dimensional aﬀine sample 𝜓(𝑡) =
+𝑥 + 𝑉𝑡 to a larger integer box. A formal product of prime-power residue spaces need not match the
+physical distribution, and arbitrary comparison functions could concentrate on rare congruence events.
+The proposed repair combined nilsequence stability under residue refinements with direct moment
+estimates. For two sampled points, the greatest common divisor of the coordinates of 𝑡 − 𝑡 ′ controls
+their shared congruence condition. Small gcds suggested lattice-counting approximations; large gcds
+required a tail estimate. Approximate orthogonality and 𝐿2 control were intended to avoid inflated point-
+wise bounds. For low-degree components, it considered global level estimates associated with Keller,
+Lifshitz, and Marcus [ 32], and checked their applicability while developing a separate mixed Hölder
+argument for dimension-independent bounds.
+Attention then turned to the nilsequence stability needed by this transfer. Recalling its concern about
+the parameter dependence in Leng’s multiparameter equidistribution approach [ 37], the assistant pur-
+sued an elementary reduction in degree based on lattice calculations. Transporting full factorizations
+across residue branches introduced conjugations and potentially new denominator primes. The pro-
+posed alternative tracked leading homogeneous symbols, whose behavior under translation was sim-
+pler. Independent rational constraints would shrink their common space; bounded degree and rank
+decreases were intended to control repeated reductions:
+VERBA TIM EXCERPT
+Number of modes dimension poly. Iteration depth d bounded, so logS growth polynomial okay. This
+could solve! Let's formulate hierarchical nil regularity.
+The assistant proposed canceling earlier scaling denominators after further residue refinement as the
+arithmetic mechanism for regularization. The assistant next considered smooth weights excluding
+wrapped cyclic progressions and an induction transferring domination by degree- 𝑑 nilsequence tests to
+translated products tested at degree 𝑑 − 1. The planned inverse-theorem input was the quasipolynomial
+result of Leng, Sah, and Sawhney [ 36]; their nilsequence recurrence estimate was to support the
+eventual return to progressions [ 35]. The assistant still needed to justify common-anchor alignment
+and lattice reconstruction. It reached the degree-one base as the final obstruction. Returning to the
+Kelley–Meka method [ 33], it reread Theorem 17 of Bloom and Sisask [ 4] to obtain regular Bohr sets of
+almost-periods for sifted convolutions, without completing the application.
+19 From absolute increments to the relative lifting bottleneck
+The sustained attempt to prove Erdős’s reciprocal-sum conjecture now concentrated on transferring
+density increments into regions already defined by structured tests. The assistant continued develop-
+ing the proposed absolute machinery. A shift-comparison argument used Bohr-set refinement and the
+
+PAGE 19
+Quasipolynomial bounds for arithmetic progressions 19
+concave potential (𝑢𝑣)1/4, where 𝑢, 𝑣 were local means, to pay for extracting unusually dense pieces.
+High-moment unbalancing from Kelley–Meka and the local almost-periodicity theorem in Bloom–Sisask
+(Theorem 17) were intended to produce further refinements [ 33, 4]; a proposed nilsequence degree-
+reduction argument would extend the comparison beyond degree one. The assistant also used the
+Leng–Sah–Sawhney quasipolynomial inverse theorem to seek nilsequence correlations with polynomial
+logarithmic dimension bounds [ 36]. The proposed sampler remained unverified.
+Positive-grid counting was then organized into packets of density increments. The relative step had to
+keep rank growth linear in the old and incoming dimensions, with suitable polynomial bounds on loga-
+rithmic complexity. Resetting the resulting structured region to an ordinary interval required a partition
+into arithmetic progressions, rather than isolated recurrence points. While checking the needed dimen-
+sion dependence, the assistant recalled Green–Tao’s quadratic approximation argument [21] and consid-
+ered Maynard’s simultaneous polynomial approximation bounds, questioning whether their constants
+would fit the iteration [ 43]. The assistant used the Leng–Sah–Sawhney progression-decomposition
+lemma, whose polynomial dimension dependence supported this reset [ 35]. The assistant calculated
+that suﬀiciently large packet gains, together with its transfer and reduction steps, would establish
+𝑟𝑘(𝑁) ≪ 𝑁
+(log 𝑁)3 ,
+where 𝑟𝑘(𝑁) is the largest size of a subset of {1, … , 𝑁} without a nontrivial 𝑘-term progression. Dyadic
+summation would then imply the reciprocal-sum conclusion.
+The transfer itself exposed two obstructions: sampled nilsequence tests varied too freely to select a
+small fixed candidate family , and the sampler’s marginal density lacked the bound needed for a Hahn–
+Banach separator argument. The proposed repairs localized tests before discretizing their parameters
+and randomized constant polynomial labels to bound the marginal. The local-slice distribution still
+needed checking:
+VERBA TIM EXCERPT
+Yes! Need ensure t distribution for cap when local slices?
+A weighted semidirect-group calculation subsequently sought the identity 𝐹(𝑏) = 𝑉(𝑏) − 𝑉(𝑏 − 𝑥) ,
+integrating a closed polynomial one-form to obtain a controlled decomposition into slow and rational
+components. The assistant still needed cube comparison, scalar transfer, and uniform estimates for the
+conditioned sampler to complete the proposed route to the density bound and the reciprocal-sum con-
+clusion.
+20 Sampling geometry and the limits of the alignment framework
+The attempt sought a density-increment proof that a set of positive integers with divergent reciprocal
+sum contains arbitrarily long arithmetic progressions. It proposed grouping local increments into pack-
+ets and lifting each packet while increasing the number of floor coordinates only linearly. A reset invok-
+ing the Leng–Sah–Sawhney Schmidt decomposition [ 35] was then intended to produce a longer-scale
+progression with increased density. The assistant sought the bound 𝑟𝑘(𝑁) ≪ 𝑁/( log 𝑁)3 through this
+lifting step and used dyadic summation to connect it to reciprocal-sum convergence on progression-free
+sets.
+The assistant also revisited a finite-field model: it hoped to regularize polynomial towers using
+Lampert–Ziegler’s relative-rank bounds [ 34], while explicitly leaving their required dependence
+on layer widths to be checked, and invoked Janzer’s polynomial comparison of partition rank and
+analytic rank [29] to transfer rank information from small restrictions. For the integer argument it used
+
+PAGE 20
+Quasipolynomial bounds for arithmetic progressions 20
+the Leng–Sah–Sawhney quasipolynomial inverse theorem [ 36] to turn Gowers-norm detection into
+nilsequence correlation, and Bloom–Sisask’s local almost-periodicity theorem [ 4] for the degree-one
+shift comparison.
+The main obstacle became a constrained aﬀine sampler 𝜓(𝑡) = 𝑥 + 𝑉𝑡 . Polynomial constraints were
+split into small continuous lifts and integer parts; rational subspaces introduced projected lattices whose
+heights could be enormous. Cancellation between continuous covolume and lattice spacing suggested
+a route to estimates independent of orientation, but the assistant had not resolved chart counting and
+normalization. Parameter order was equally consequential:
+VERBA TIM EXCERPT
+We cannot choose m after post-b because b may be (p+m)^D from all recursion. Need m fixed function
+p before defining b.
+Here 𝑚 is the sampling dimension, 𝑝 structural complexity , and 𝑏 a later accuracy budget. The devel-
+oping construction classified lattice directions by scale, randomized polynomial coeﬀicients, and used
+disjoint product blocks to seek Fourier decay. Cube comparisons would discard non-site Fourier modes
+through high rank and represent the remainder by separated site factors.
+The assistant simplified the proposed density comparison to total variation control:
+VERBA TIM EXCERPT
+Can avoid integration by parts many derivatives; just one L¹ variation. Yes. Need ensure cofactor
+inverse stable for actual and ideal on good support in v, boundaries smoothing.
+A second simplification used two-point comparisons for scalar transfer, avoiding classification of arbi-
+trary ambient linear frequencies. Positive weights combining real densities and congruence laws were
+meant to preserve density excess after removing large good primes.
+The final scrutiny shifted to alignment: sample-dependent maps had to be replaced by one ambi-
+ent polynomial map preserving a marked projection. Central quotients and fiber products offered an
+induction mechanism, but the assistant still needed to prove compatible slice refinements, uniform re-
+construction, and quantitative thresholds to complete the sampler theorem.
+21 From weighted lifting to contraction audits
+The attempt on Erdős’s reciprocal-sum conjecture moved from constructing a relative lifting mechanism
+to testing its analytic foundations. The immediate objective was to convert structured tests that vary
+across aﬀine samples into one ambient test while keeping the number of integer floor coordinates under
+control.
+For a weighted homogeneous polynomial 𝐷(𝑢, 𝑏), the proposed decomposition separated a slowly
+varying polynomial from a bounded-denominator rational polynomial, but only on specified rational
+spaces 𝐾ℎ containing the existing high-rank directions. The assistant used the Leng–Sah–Sawhney in-
+verse theorem [ 36] to turn local structured correlations into an ambient nilsequence correlation. A
+semidirect nilpotent group encoded the calculation. Bracket differentiation and a weighted Euler iden-
+tity were intended to supply a rational potential. The assistant found that obtaining slow variation
+required substituting full constraint polynomials rather than just their leading terms.
+Relative lifting then processed the floor coordinates by increasing weight. Tagged lower-degree copies
+were introduced so that the potential ∑ℎ ℎ dim 𝑊ℎ decreased without uncontrolled growth of rational
+heights. The assistant proposed a final coordinate bound 𝑑0 + 𝑠𝑑, with recursive budgets fixed before the
+late rank and sampling thresholds. The proposed iteration reset to long progressions using the Schmidt
+
+PAGE 21
+Quasipolynomial bounds for arithmetic progressions 21
+decomposition in Leng–Sah–Sawhney , Lemma 2.1 [35]. The assistant questioned whether this recursion
+preserved positivity.
+The audit first examined scalar transfer: conditioning on prime-power residues, restarting after new
+denominator primes appeared, and controlling aﬀine-sample correlations through moment estimates.
+It then concentrated on degree-one comparison over regular Bohr sets. Spike extraction was intended
+to pay for exceptional cells through the concave potential (𝑢𝑣)1/4, where 𝑢, 𝑣 are cell means. For the
+remaining cells, convolution moments and dependent random choice in the Kelley–Meka approach [33],
+together with Bloom–Sisask’s almost-periodicity theorem (Theorem 17) [ 4], were meant to produce
+variance and hence strict contraction.
+The assistant found these checks locally favorable but continued to scrutinize extension of products to
+the higher-degree square construction after interval restrictions, together with quotient-kernel normal-
+ization. It continued checking the lifting and comparison arguments used to derive 𝑟𝑘(𝑁) ≪ 𝑁/( log 𝑁)3
+and hence reciprocal-sum convergence of progression-free sets.
+The assistant recorded the resulting sign of the contraction:
+VERBA TIM EXCERPT
+terminal zero. Thus γ positive.
+22 Testing the proposed transfer architecture
+The assistant now tests its proposed proof of Erdős’s reciprocal-sum conjecture. Its quantitative target
+is 𝑟𝑘(𝑁) ≪ 𝑁/( log 𝑁)3, where 𝑟𝑘(𝑁) is the largest size of a subset of [𝑁] without a nontrivial 𝑘-term
+arithmetic progression. Dyadic summation would then give the conjectured implication.
+The assistant recalls the Kelley–Meka three-term bounds and their possible extension to higher-order
+boosting [33], alongside Green–Tao’s bound 𝑟4(𝑁) ≪ 𝑁/( log 𝑁)𝑐 [17]. It also recalls why the sparse
+graph counting approach of Filmus, Hatami, Hosseini and Kelman does not directly handle longer pro-
+gressions: the binary-system argument requires an underlying simple graph [ 12].
+The audit follows a dependency chain. First, bias in polynomial nilsequence tests should force a re-
+duction of the structured path’s top-degree algebra. The assistant checks shift comparisons, lattice co-
+volumes, and removal of slow and rational coeﬀicients against elementary nilpotent examples. Next,
+one-sided domination should propagate to lower-degree tests after multiplication by translated posi-
+tive weights. A Bohr-set argument uses the concave potential (𝑢𝑣)1/4; higher degrees require derivative
+correlations and positive reconstructions. The assistant also uses Bloom–Sisask Theorem 17 on local
+almost-periodicity [4] while developing these propagation arguments.
+For the structural modeling step, the assistant checks and uses the quasipolynomial inverse theorem
+of Leng, Sah and Sawhney: at threshold 𝑒−𝑝, the nilsequence dimension is polynomial in 𝑝, while com-
+plexity and inverse correlation are exponential in a polynomial [ 36]. Positive counting estimates would
+yield an absolute density increment. The assistant finds that iteration still depends on a relative lifting
+statement whose rank grows linearly with the previous rank. Without that control, the length losses
+could overwhelm density amplification. T o reset a block of increments on an unconditioned progres-
+sion, it uses Lemma 2.1 of Leng–Sah–Sawhney’s Improved Bounds for Szemerédi’s Theorem , partitioning
+into progressions on which the niltest oscillates little, then discarding short pieces using the average-
+length bound [ 35].
+Attention then narrows to scalar transfer along aﬀine samples𝑡 ↦ 𝑥+𝑉𝑡 . Prime-power conditioning is
+intended to stabilize a bounded niltest baseline. Degree descent and strict reductions of a fast subalgebra
+should terminate this process.
+The assistant then reconstructs orthogonal residue-coordinate expansions, checks exceptional pairs
+
+PAGE 22
+Quasipolynomial bounds for arithmetic progressions 22
+with large common divisors or small separation, and distinguishes complete coupling levels from in-
+complete levels requiring contraction. It recognizes that conditioning costs must be fixed before choos-
+ing the truncation cutoff. Revisions clarify lattice covers, covolumes, and separation arguments. It then
+returned to the transfer and relative lifting statements used in its iteration.
+23 Parameter uniformity in the proposed density increment
+The assistant continued auditing its own developing argument for Erdős’s reciprocal-sum conjecture.
+The intended quantitative endpoint was
+𝑟𝑘(𝑁) ≪ 𝑁/( log 𝑁)3,
+where 𝑟𝑘(𝑁) is the largest size of a set in [1, 𝑁] without a nontrivial 𝑘-term arithmetic progression.
+Dyadic summation would then force every such progression-free set to have convergent reciprocal sum.
+The assistant also revisited the Bohr-set almost-periodicity input from Bloom and Sisask [ 4] in its
+degree-one shift comparison.
+The first audit sought to turn frequently observed local polynomial structure into one ambient patch.
+A weighted polynomial was to admit a slow-plus-rational decomposition. Encoding translations in a
+polynomial group produced a closed polynomial one-form, whose potential supplied the proposed
+integrability step. Marked projections, central averaging, and induction on degree were intended to
+preserve positivity and control the number of patch coordinates.
+Attention then shifted to the sampling machinery on which that lifting depended. Cube comparisons
+were supposed to eliminate Fourier modes that failed to factor through the sampled vertices, using
+repeated Cauchy–Schwarz and a high-rank hypothesis. Product blocks supplied smoothing; Jacobian
+estimates supported total-variation control. The proposed passage from a large ambient Gowers norm to
+an ordinary nilsequence test used the Leng–Sah–Sawhney quasipolynomial inverse theorem [ 36]. The
+assistant emphasized comparing individual structured twists separately:
+VERBA TIM EXCERPT
+This comparison for **each** twist J no global joint test, so no lcm growth.
+For scalar transfer, a positive forecasting weight combined continuous densities, inactive grid constraints,
+and conditional congruence laws. Removing good-prime factors required pointwise control. A concrete
+correction replaced a floor threshold by a ceiling threshold in the permanent sublevel argument.
+The consolidated proposal combined these ingredients with an induction that lowered a weighted di-
+mension potential whenever an old layer failed the rank test. Density amplification and decomposition
+onto long progressions were then meant to make density gains pay for length losses. For that decomposi-
+tion, the assistant used Lemma 2.1 of Leng–Sah–Sawhney [ 35], seeking long progressions on which the
+nilsequence test varied negligibly compared with the score. But approximation bounds had to remain
+independent of late sampling scales, lattice heights, and prime-depth cutoffs.
+24 Auditing transfer, lifting, and quantitative rank control
+The assistant subjects its proposed route toward Erdős’s reciprocal-sum conjecture to a sustained audit,
+moving from constrained sampling through scalar transfer to weighted lifting.
+The intended density increment turns surplus density on a structured patch into another patch with
+controlled additional rank. Polynomial constraints take values in rational spaces 𝑊ℎ, with small real lifts
+
+PAGE 23
+Quasipolynomial bounds for arithmetic progressions 23
+and integer carries. Disjoint product blocks, smoothing, and Fourier cancellation are intended to com-
+pare sampled cubes with ambient cubes while keeping early complexity bounds independent of later
+sampling scales and rational heights. Carry consistency and the regularity of the resulting densities
+receive particular scrutiny. The cube-to-ambient comparison uses Leng, Sah, and Sawhney’s quasipoly-
+nomial inverse theorem to turn a large ambient Gowers norm into nilsequence correlation [ 36]; the
+assistant also retains their effective Schmidt estimates among its stated inputs [ 35].
+The next bottleneck is scalar transfer: positive scores on many local paths should yield a positive
+ambient score using only ∑ℎ dim 𝑊ℎ extra patch coordinates. A forecasting weight combines continu-
+ous, inactive discrete, and modular distributions. The assistant examines prime-power divisibility and
+Fourier tails to avoid paying for an enormous common modulus. The assistant continued seeking ex-
+plicit estimates.
+Weighted lifting then uses a rational potential and successive graded factorizations to align local
+patches. Positive localization selects standard small bumps, avoiding an excessive count of arbitrary
+Lipschitz functions. Rank preparation moves failed directions down one weight, with termination con-
+trolled by a decreasing potential:
+VERBA TIM EXCERPT
+Potential many cuts \(O(jD)\) because \(\sum h\dim W_h\) starts jD, each violation reduces
+dimension h by1 and adds dimension h−1 line, net drop1.
+Here 𝐷 counts the old slots at their lowest weight 𝑗. The assistant continues to check the proposed slot
+bound, simultaneous Fourier approximations, and product errors.
+25 Quantitative repairs followed by a foundational audit
+The assistant revises and audits its proposed proof of Erdős’s reciprocal-sum conjecture. Its target is
+𝑟𝑘(𝑁) ≪ 𝑁/( log 𝑁)3,
+where 𝑟𝑘(𝑁) is the largest size of a subset of [1, 𝑁] without a nontrivial 𝑘-term arithmetic progression.
+Dyadic summation would then force every such progression-free set to have convergent reciprocal sum.
+The initial repairs concern quantitative dependence. Taylor arrays are compared with Haar measure
+through controlled Fourier or Lipschitz tests, without claiming total-variation convergence. Lattice-fiber
+estimates keep exponents dependent on a fixed number of output rows, rather than an expanding num-
+ber of input coeﬀicients. Slow and rational factor adjustments are elaborated before attention returns to
+the foundational step-drop and shift-comparison claims.
+The audit checks how lattice covolumes, horizontal directions, and nested derivative brackets support
+the proposed reduction of nilsequence degree. For degree-one shift comparison, the key danger is rank
+growth: repeated increments must avoid dependence on the parent rank that would accumulate into a
+tower. Regular Bohr sets, density extraction, and almost-periodicity are examined with this requirement
+in view.
+The assistant checks the hypotheses of Bloom–Sisask’s local almost-periodicity theorem, especially its
+rank increment, while auditing degree-one shift comparison [4]. It also checks the progression-partition
+lemma of Leng–Sah–Sawhney: the proposed iteration uses nearly constant nilsequences on long progres-
+sions to reset a structured density increment [ 35]. Its nilsequence detection and modeling arguments
+use their quasipolynomial inverse theorem for the Gowers norm [ 36].
+The subsequent synthesis organizes positive structured patches, scalar transfer, constrained sampling,
+and lifting into a proposed density-increment architecture. It targets rank linear in existing and newly
+
+PAGE 24
+Quasipolynomial bounds for arithmetic progressions 24
+introduced patch slots; packaged density gains are intended to pay for progression-length losses. The
+assistant also requires higher-degree reconstruction to preserve positivity. The assistant ends by formu-
+lating detailed claims linking transfer, sampling, lifting, and the inverse theorem within this proposed
+architecture.
+26 Quantitative audits and a renewed circularity concern
+The assistant now audits whether its proposed proof of Erdős’s reciprocal-sum conjecture can support all
+its quantitative dependencies, including its use of Bloom–Sisask almost-periodicity (Theorem 17) [ 4].
+It rechecks the quasipolynomial inverse theorem of Leng, Sah, and Sawhney for the bounds on nilse-
+quence dimension, complexity , and correlation [ 36], and their Schmidt decomposition lemma for the
+progression reset and its length and oscillation estimates [ 35].
+First, scalar transfer must preserve correlation with a nonnegative structured nilsequence under aﬀine
+sampling. Residue conditioning and an orthogonal decomposition by coordinate subsets are intended to
+control exceptional slices. A normalization issue appears: the sampling-density domination may exceed
+the error budget unless the logarithmic parameter is enlarged first. The assistant proposes that repair
+while also checking a novel step-drop lemma, positive progression counting, and whether repeated
+refinements leave enough interval length for a final density contradiction.
+The audit then reconstructs the polynomial sampler, separating lattice coordinates into inactive, mod-
+erate, and enormous scales, alongside continuous directions. Dedicated products of variables generate
+polynomial terms; differencing and rational approximation are supposed to suppress unwanted Fourier
+modes.
+The assistant identified cube-density comparison as the next diﬀiculty: its regularity bounds deteri-
+orated as perturbations shrank, so it could not use them to dismiss those perturbations. The proposed
+alternative compares the ideal and perturbed pushforward laws using Jacobian bounds and total varia-
+tion. Further checks concern modular forecast weights, parameter ordering, and nilpotent lifting with-
+out inflating the rank of the resulting structured patch.
+The assistant calculated that its assembled iteration would give
+𝑟𝑘(𝑁) ≪ 𝑁/( log 𝑁)3,
+where 𝑟𝑘(𝑁) is the largest size of a subset of [𝑁] without a nonconstant 𝑘-term progression. Dyadic
+summation would then force every such set’s reciprocal sum to converge.
+A remaining concern is that a physical mesh depends on a truncated expansion whose bound already
+depends exponentially on the truncation parameter. The assistant leaves this circularity concern unre-
+solved.
+27 Closing scrutiny of the proposed reciprocal-sum proof
+The attempt ended by auditing its candidate proof of Erdős’s reciprocal-sum conjecture. Its target re-
+mained
+𝑟𝑘(𝑁) ≪ 𝑘 𝑁(log 𝑁)−3,
+where 𝑟𝑘(𝑁) is the largest size of a subset of an interval of length 𝑁 without a nonconstant 𝑘-term arith-
+metic progression. Dyadic summation would then force every such progression-free set to have conver-
+gent reciprocal sum.
+Closing checks examined whether shifted polynomial nilsequence paths retained the filtration needed
+for degree reduction after normalization and quotienting. They revisited conditional moment inequali-
+
+PAGE 25
+Quasipolynomial bounds for arithmetic progressions 25
+ties, Chinese remainder theorem comparisons, rational lattices, constrained aﬀine sampling, and poten-
+tially circular parameter choices. A correction used pigeonholing to obtain a common cube slice from
+short-axis choices.
+Batching density increments risked excessive rank growth. With 𝑝0 a logarithmic inverse-density scale
+and 𝐺 a fixed density-gain factor, the proposed packet-rank bound was 𝐶𝐺(2 + 𝑝 0)𝐷𝑠, with exponent
+independent of 𝐺. The assistant calculated that repeating 𝑂(log 𝑝0) packets would preserve polynomial
+rank, letting density gain exceed the loss when nilsequence decomposition reset the patch to an interval
+progression. The assistant checked for hidden dependence that could defeat this calculation.
+The assistant rechecked the Leng–Sah–Sawhney inverse theorem’s dimension and Lipschitz bounds
+for its nilsequence correlations [36], and the progression decomposition in their quantitative Szemerédi
+paper for resetting patches [ 35]. It also examined the relative-density and regularity hypotheses of
+Bloom–Sisask Bohr almost-periodicity in the degree-one comparison [ 4]. Its final response presented
+the proposed argument.
+Part II: The quasipolynomial strengthening
+Original prompt (excerpts)
+# Problem
+Please give quasipolynomial bounds for k-th arithmetic progressions for all k>=3. Use the previous
+bounds you have done.
+28 The stronger target and the cost of precision
+The assistant seeks 𝑟𝑘(𝑁) ≤ 𝐶 𝑘𝑁 exp(−𝑐𝑘(log 𝑁)𝑐𝑘), equivalently a threshold 𝑁 ≥ exp(𝑝𝐶𝑘) at density
+𝑒−𝑝. Starting from the earlier argument, it isolates a quantitative obstruction: relative lifting adds patch
+ranks, but repeatedly raises logarithmic resource bounds to a fixed power. The recurrences
+𝐻𝑗+1 = 𝜅𝐻 2
+𝑗 , 𝑃 𝑗+1 = 𝑃 𝑗 + (2 + 𝑃𝑗)𝐸
+amplify density rapidly while still giving log 𝑃𝑗 ≪ 𝐸 𝑗 log(2 + 𝑝).
+Leng–Sah–Sawhney’s inverse theorem [ 36] supplies nilsequence structure, and their progression
+partition [ 35] resets a positive patch score to an ordinary density increment. Schoen–Sisask’s
+radius-sensitive almost-periodicity , Theorem 5.4 [49], and Bloom–Sisask’s Theorem 17 [ 4] support the
+degree-one comparison; Bohr widths must be tracked separately from rank.
+The assistant seeks constant-factor growth of logarithmic resources through 𝑂(log 𝑝) levels; a factor
+𝑝𝐶 per level would already exceed its budget. Structured positive models offer another route, but smaller
+counting errors could enlarge their complexity. It returns to positive grids and bilinear kernels.
+The assistant isolated the difference between additive rank growth and repeated precision loss. The ear-
+lier lifting argument returned at most 𝑑+𝑑 0 slots from 𝑑 old slots, but could replace a logarithmic budget
+𝑃 by (2+𝑃) 𝐸. Preparing and freezing successive weights controlled one lifting operation; iterating whole
+operations still threatened the desired threshold exp ((log(1/𝛼))𝑂𝑘(1)).
+It explored local inverse theorems normalized by patch mass, tensor amplification, reductions to
+shorter progressions, and multidimensional aﬀine boxes. Tensor products multiplied the density loss,
+
+PAGE 26
+Quasipolynomial bounds for arithmetic progressions 26
+while carry avoidance spoiled the apparent economy of sphere constructions. Kelley–Meka’s large-
+moment method [33] inspired polynomial-size grid ideas, but binary cubes did not themselves contain
+the needed progression. Retaining box volume looked promising for linear Bohr sets; quadratic mixed-
+coeﬀicient constraints appeared to consume that advantage.
+Encoding precision in unrestricted coeﬀicients introduces unwanted integer branches. Auxiliary slots
+do not exclude them automatically. Height-independent lattice charts suggest treating continuous and
+discrete directions separately , while the assistant continues seeking density gains without repeatedly
+powering the old precision budget.
+The assistant seeks to separate the precision needed inside scalar transfer from the complexity of its
+output patch. In the earlier argument, slot counts remain additive, but residue slicing, lattice heights,
+and torus-cell selection feed old precision into new widths and scores. The desired replacement would
+charge those costs to side lengths while shrinking old residual coordinates only by exp (−𝑝𝑂(1)).
+It explores normalized polynomial tubes, generic-path independence, and degree-stratified losses. The
+quantitative benchmarks are Szemerédi’s theorem and Gowers’s proof [ 50, 13], together with Green–
+Tao, Kelley–Meka, and Leng–Sah–Sawhney [ 17, 33, 35]. Entropy , high moments, and simultaneous
+increments suggest possible alternatives to repeatedly conditioning on tiny cells, but no suitable global
+model is obtained. Seminorm modelling with the Leng–Sah–Sawhney inverse theorem [ 36] and cube
+lifting supplied by OpenAI in Monochromatic finite sums and products in the positive integers [46], in the
+Host–Kra framework [27], motivate further transfer ideas.
+Tensor powers dilute gains; translated intersections fail to align differences; latent coordinates in-
+troduce vertical progressions. The assistant seeks large internal dependence on old precision 𝑄 with
+output-width costs polynomial in 𝑝.
+VERBA TIM EXCERPT
+Height encoded but pre-precision governs occupancy; to target a rare high-density cell cannot
+ignore tiny mass for detection/global inverse. Could use full old complexity in proof of
+existence/globalization without incurring it in output patch Lip!
+VERBA TIM EXCERPT
+Need domains retain structure for each of O(p) increments at cost exp(-p^C) factor independent of
+old precision.
+29 Normalized symbols and relative lifting
+The assistant sought a two-budget strengthening of the earlier lifting mechanism: new density gains
+should cost poly (𝑝) even when old chart widths are 𝑒−𝑄, with 𝑄 ≫ 𝑝 . Substitutions, sampling, and
+entropy models threatened degree, scale, and intersection control. The reference framework retained
+Leng–Sah–Sawhney’s inverse and partition results [ 36, 35], Schoen–Sisask almost-periodicity [ 49],
+Bloom–Sisask’s three-term comparison [ 4], and Kelley–Meka’s multiplicative increment perspec-
+tive [33].
+A possible separation appeared when a degree- ℎ chart was tested by degree- 𝑟 functions with 𝑟 < ℎ .
+The assistant proposed using independence of polynomial tensors on cube grids to transfer normal-
+ized correlations. A signed dense model with cap 𝑒poly(𝑝), obtained through quadratic rather than high-
+product comparisons, might avoid the costs of a model bounded by one; Conlon–Fox–Zhao’s relative-
+removal framework [7] was a point of comparison. For 𝑟 ≥ ℎ , dependencies among constrained cube
+vertices blocked the same argument.
+
+PAGE 27
+Quasipolynomial bounds for arithmetic progressions 27
+The assistant then seeks a shadow domain where the narrow chart has bounded width. Pulling in-
+crements back would require matching slow , rational, and fast statistics while preserving integrality ,
+boundedness, progression counts, and joint laws.
+The assistant sought to widen a tube |𝐶ℎ(𝑢) − 𝛽| ≤ 𝑒 −𝑄 while preserving its normalized polynomial
+statistics. Such a shadow might make the earlier relative-lifting framework usable with losses controlled
+by density rather than accumulated precision. Doubling chains connected local identities to integral
+endpoints. Altering denominators raised congruence and product constraints.
+Marginal face-symmetry lifts supplied by OpenAI in Monochromatic finite sums and products in the positive
+integers [46] suggested randomized joint shears, still obstructed by rational periods.
+It then tried to keep internal algebraic matching at fine precision while returning a coarser test. Large
+rational slopes could restore precision feedback. Leng–Sah–Sawhney inverse-theorem models [ 36] did
+not automatically avoid that loss.
+Direct counting on highest-degree factors borrowed positive comparison from Kelley–Meka [33]. The
+assistant found that variation in lower coordinates could encode four-term coloring problems. Positive
+models faced clipping costs.
+The assistant targets 𝑂(𝑝) fixed increments with additive width losses and linear rank growth. Green–
+Tao’s local 𝑈3 inverse method [ 18] and four-term bound [ 17] suggested a derivative-based route, but
+integrating those derivatives through sparse tubes remained unresolved.
+VERBA TIM EXCERPT
+Violation cannot be distributed; amplification pointed from first slow requirement to endpoint. So
+simultaneous realization fails even approximate.
+The assistant tried to preserve a useful density gain while confining old precision costs to a separate
+cold budget. Here the warm budget tracks the less expensive width losses, while the cold budget tracks
+more expensive algebraic costs. Instead of freezing a local test on tiny slices, it proposed a hybrid 𝐸𝑃𝑅:
+a slow real factor, an ambient polynomial map, and a rational residue factor. The propagation archi-
+tecture from the previous argument, the Leng–Sah–Sawhney inverse theorem [ 36], and Leng’s eﬀicient
+equidistribution theorem [ 37] supplied the contemplated detector and symbol-reduction tools.
+Factoring the ambient map suggests replacing its fast state by an independent Haar variable. Simul-
+taneously treating old constraints might limit added coordinates to the new local group. The assistant
+still needs globalization preserving weighted degree and positive score.
+Composition can increase weighted degree, while residue representatives may require one new coor-
+dinate per old variable. The assistant seeks periodic outputs, then considers degree 𝑠2 and averaging
+away coordinates above 𝑠. Positivity and the rank cost of high-weight residue slots remain obstacles.
+VERBA TIM EXCERPT
+Real mesh of u can be in slice cost only; width of y_h determined by chart-relative smooth
+derivatives e^{poly(p)} if t-slice simple.
+30 Aﬀine restrictions and degree control
+The assistant allows ambient degree 𝐷 ≈ 𝑠 2 with detector degree 𝑠 = 𝑘 − 2 . Positive conditional av-
+eraging would remove high-weight coordinates. Aﬀine-plane inverses, Hensel lifting, and the Chinese
+remainder theorem might preserve the test group without adding residue slots for every old coordinate.
+
+PAGE 28
+Quasipolynomial bounds for arithmetic progressions 28
+The unresolved issue was simultaneous preparation. Processing old layers separately could yield 𝑠2𝐷
+>
+𝐷, defeating a fixed degree bound. The assistant returned to the sampler, fixed-group globalization, and
+descending rank potential of the previous argument, seeking losses independent of old widths.
+The recalled benchmarks were Gowers, Green–Tao, Bloom–Sisask, and Kelley–Meka [ 13, 17, 3, 33,
+5]; inverse and partition inputs were Leng–Sah–Sawhney’s general and five-term work [ 36, 35, 39].
+Nilsequence and positive-comparison foundations were attributed to Green–Tao, Green–Tao–Ziegler,
+Schoen–Sisask, and Bloom–Sisask [ 23, 22, 49, 4]. Historical density , prime, and coloring results were
+attributed to Erdős–T urán, Szemerédi, Green–Tao, and van der Waerden [10, 11, 50, 20, 51].
+The assistant sought to replace repeated polynomial resource growth by a hierarchy of width bud-
+gets. Reviewing the machinery of the previous argument, it contrasted the manageable rank recurrence
+𝑅𝑗 = 2 𝑗𝑝𝑂(1) with 𝑃𝑗+1 = 𝑃 𝑗 + (2 + 𝑃 𝑗)𝐸. The reset based on Leng–Sah–Sawhney’s nilsequence de-
+composition [35] made dimension especially important: its progression-length exponent deteriorated
+polynomially with dimension.
+Finite-field and box models lose density when preventing wraparound. The assistant instead
+processes constraints by increasing weight, retaining top-weight coordinates and charging precision
+to lower determining coordinates. Added coordinates would flow downward through finitely many
+weights, but their total rank still needs control.
+Tiny higher-layer support can concentrate scores on rare paths, defeating normalized-density esti-
+mates. Replacing 𝐸(𝜃)ℎ𝐷(𝜃) by weighted polynomial factors also needs uniformity in unbounded ℎ. Av-
+eraging additional coordinates suggests a route, with lattice covariance and dimension still unresolved.
+The assistant focused on preserving rank while replacing local tests by ambient ones. The earlier
+triangular-patch conversion separates unrestricted coeﬀicients from kernel precision and rank. Re-
+cursive amplification seemed affordable in rank, but repeated path-length losses could turn a fixed
+polynomial budget into 𝑝𝐶 log 𝑝. Constant increments therefore required additive or strictly hierarchical
+rank growth.
+For a hybrid test 𝐹(𝐸(𝜃)𝑃(𝑢, 𝛽)𝑅(𝜃)), the desired replacement would eliminate 𝜃 without increasing
+weighted degree or introducing slots for bounded representatives of the fast variable. Large lattice shifts
+and small continuous smoothing were explored, but transferring the resulting arbitrary test required
+conditional distribution estimates with potentially circular precision costs. Symbol reduction used the
+framework of Leng’s eﬀicient equidistribution theorem [ 37] and the Leng–Sah–Sawhney inverse theo-
+rem [36].
+Reduction modulo 𝐵(𝜃) − 𝑋 suggests comparing exact fibers with coarse neighborhoods uniformly
+in the fast variable. Products recreate eliminated components, and subpower Fourier decay does not
+give summable tails. The assistant therefore revisits relative strength and independent product-block
+estimates.
+VERBA TIM EXCERPT
+At depth log p yields p^{C log p}. Need avoid using amplified rule recursively (side length
+multiplication). Thus constant increment iteration only: rank growth must be additive/hierarchical,
+widths same.
+VERBA TIM EXCERPT
+Could use Hensel linearization of polynomial map along some structured affine subspace of t to
+right-inverse low-coordinate variables as genuine linear polynomials with rational coefficients mod
+M plus small-modulus restrictions.
+
+PAGE 29
+Quasipolynomial bounds for arithmetic progressions 29
+31 Separating internal precision from output width
+The assistant compares exact fibers 𝐵(𝜃) = 𝑋 with coarse neighborhoods under tests 𝐹(𝑔(𝜃, ℎ)Γ) uniform
+in ℎ. Coupling between blocks defeats independence. Fiber ideals, oscillatory estimates, and aﬀine
+sampling face recreated product terms and integer denominators.
+Using the symbol and globalization framework of the previous argument, it next considered a smoothed
+model 𝐸(𝑋)𝐽(ℎ)𝑅(𝑋) . A candidate depending on latent ℎ still had to become a polynomial expression
+in the actual variables. Preserving that projection became a central requirement.
+The surrounding quantitative benchmarks were Szemerédi [50], Gowers [13], Green–Tao [17], Kelley–
+Meka [ 33], and Leng–Sah–Sawhney [ 35]. The assistant sought to avoid repeated losses by retaining
+passive old constraints and transforming only active low-degree data. A finite palette with 𝐽 layers
+might replace repeated multiplication by layer weights with 𝑟 ↦ 𝑂(𝑟 2), giving a cap 𝑠2𝐽
+. The final idea
+preserved a dependency graph between levels. Rank-preparation downgrades, integer carries, and short
+parameter directions remained obstacles to closing that scheme.
+VERBA TIM EXCERPT
+Cannot tensor independence B blocks with arbitrary nf test coupling all blocks. But can
+Cauchy-Schwarz and apply high-rank inverse estimate with dimensions m huge; exponent degrades
+poly(m), rank maybe enough but circular.
+Separating active variables from passive masks still permits 𝑅𝑖 ≃ 𝑅 2
+𝑖+1. The assistant proposes simul-
+taneous preparation by effective degree, charging rank failures to lower-layer widths.
+Cube comparison, detection, and strong-projection refiltration from the reciprocal-sum argument
+supplied the starting mechanisms. The assistant also reconsidered Conlon–Fox–Zhao relative transfer-
+ence [ 7], Kelley–Meka boosting [ 33], and shift comparison with its Schoen–Sisask almost-periodicity
+input [49]; these did not resolve the dependence on old chart precision.
+Intermediate integer directions are too expensive to freeze and too short for approximation. Linear
+sampling recovers parameters but leaves path-dependent translations. Fixing them introduces deriva-
+tive constraints; polynomial families instead encounter refiltration across different sites. The assistant
+returns to fixed translations.
+Expanding 𝛽𝑖(𝑥 + 𝑉𝑡) = ∑|𝛼|≤𝑖 𝑏𝑖,𝛼(𝑥)𝑡𝛼 lowers coeﬀicient weights to 𝑖 − |𝛼|. The assistant seeks down-
+ward dimension flow , but conditional rank and density need control. Simultaneous sampling may again
+charge narrow lower widths to higher layers.
+The main alternative was algebraic elimination. For a smoothed model 𝑃∗ = Φ(𝑋, ℎ) , a replacement
+depending on latent ℎ would not automatically transfer to the original variables. The assistant sought
+a multiplicative substitution 𝐿 satisfying 𝐿(𝐵(𝑡)) = 𝑋 , preserving slow-factor bounds, rational denom-
+inators, and nilpotent reconstruction identities. The assistant considered Ananyan–Hochster, Stillman,
+and strength ideas as possible approaches to this substitution [ 1].
+Detection continued to use Leng–Sah–Sawhney’s quasipolynomial inverse theorem [ 36]; its dimension
+dependence created a potential circularity between partner complexity and sampler strength. The earlier
+lifting framework supplied the structural starting point. Simultaneously respecting real smallness and
+rational integrality remained the central diﬀiculty. The assistant continues comparing these elimination
+routes and their cumulative costs.
+
+PAGE 30
+Quasipolynomial bounds for arithmetic progressions 30
+VERBA TIM EXCERPT
+Need handle macro elimination on integer fibers.
+32 The problem of repeatedly returning to intervals
+The assistant seeks relative comparison independent of scale: additive rank alone cannot prevent re-
+peated precision losses from defeating 𝑁 ≥ exp(𝑝𝑂(1)).
+It revisited the counting and lifting mechanism of the earlier reciprocal-sum argument. The recurrence
+𝐻𝑗+1 = 𝜅𝐻 2
+𝑗 amplifies gain, but 𝑃𝑗+1 = 𝑃 𝑗 + (2 + 𝑃 𝑗)𝐸 compounds resources. Proposed alternatives
+included direct comparison on normalized thin patches, a hierarchy of residual widths, averaging en-
+riched cells, and digit-box embeddings. Rare-cell mass losses, spherical layers, and integer carries frus-
+trated these routes; no scale-independent replacement was completed. Each proposal still needed uni-
+form control before later sampling parameters were chosen.
+The reviewed historical context comprised Erdős–T urán, Szemerédi, Erdős’s reciprocal-sum question,
+Green–Tao on primes, Green’s survey , and van der Waerden [10, 50, 11, 20, 25, 51]. Quantitative bench-
+marks were Gowers, Green–Tao, Bloom–Sisask, Kelley–Meka, and Leng–Sah–Sawhney [13, 17, 3, 33, 4, 5,
+39, 35]. Nilmanifold equidistribution, inverse theorems, and almost-periodicity supplied the structural
+background [23, 22, 49, 36]. The assistant’s closing direction was to seek a larger density gain at fixed
+degree without repeatedly conditioning on exceptionally small cells.
+The assistant revisited the earlier reciprocal-sum argument’s sampling, lattice-chart, and lifting founda-
+tions. Rank preparation lowers the potential ∑ℎ ℎ dim 𝑊ℎ, but this dimension accounting alone does
+not control the precision costs of successive density increments. Inactive integer projection coordinates
+were the main obstruction: their bounded ranges prevent polynomial variation along arbitrarily long
+paths.
+Fixing a lattice sheet simplifies identities but makes thresholds depend on covolume. Positive char-
+acter tests cannot isolate it cheaply. Keeping sheet variables requires replacement tests to use partner
+information from one ambient site; dummy variables and shadow models do not resolve this.
+Full shear groups could repeatedly replace rank by a polynomial. The assistant separates orientation
+from approximation: relation rows remain bounded at original resolution, while denominators depend
+on conditional mass. Sampling frequencies may still enlarge those rows, motivating separate ensembles
+or scales.
+VERBA TIM EXCERPT
+We need decisive simplification. Let's attempt direct path selection global via *exact polynomial
+maps on high-rank varieties* and L map applied to cold globalization without macro separate.
+Short integer directions can remain family parameters, but differentiation risks rank feedback. Produc-
+tive paths may carry only a tiny fraction of mass. The assistant seeks prefix-by-prefix mass comparisons
+that survive globalization.
+Kelley–Meka’s degree-one method [ 33] motivated another examination of concentration removal, con-
+cave potentials, and matched local scales. The earlier reciprocal-sum argument’s relative-lifting and
+refiltration mechanisms offered additive rank, but still allowed old widths to drive subsequent complex-
+ity.
+For short-parameter families, the proposed repair used evaluation pivots and filtration slack. Its un-
+resolved point was reconstructing all marked functions at one common spatial site when pivot relations
+
+PAGE 31
+Quasipolynomial bounds for arithmetic progressions 31
+involved different sites. Freezing sheets was also costly: for 𝐶 = (𝑃, 𝐵𝑃) , fixing 𝑏′ − 𝐵𝑏 can impose a
+width of order 1/𝐵 on the fractional part of 𝑃.
+Enlarged domains, finite-field models, and surrogate laws leave a recurring obstacle: tiny structured
+correlations do not force alignment on short paths.
+VERBA TIM EXCERPT
+Old slot complexity maybe rank O(poly(p)) widths tiny exp(-poly(p)); losses in outputs depending
+old widths lead runaway recursion.
+33 Constrained sampling and scalar transfer
+The assistant rejects an ultraproduct shortcut because 𝑝𝐶𝐸𝑗
+does not give a uniform exponent. A factor-
+ization stable in conditional total variation would tolerate oscillatory tests, but higher-degree constraints
+and tiny residual coeﬀicients obstruct polynomial transversality.
+Using the step-drop framework of the earlier reciprocal-sum argument, with antecedents in Leng’s eﬀi-
+cient equidistribution theorem [ 37] and Leng–Sah–Sawhney’s degree reduction [ 36], it proposed split-
+ting integer outputs into long directions and short coordinates 𝑧. Extracting the least short-weight term
+𝑧𝛼𝐷𝛼 was intended to sharpen slow bounds without allowing narrow earlier widths to enlarge rational
+denominators. Rank failures would then move downward in degree.
+A test variable 𝜁 and family variable 𝑧′ permit a marked-data correction that vanishes on the diagonal
+and preserves the leading long-variable symbol. The assistant seeks recursive degree reduction with
+diagonal reconstruction, while checking degree caps, constant terms, and productive mass.
+VERBA TIM EXCERPT
+To show there exists c>0 all N, need uniform exponent, cannot overspill with varied E.
+The assistant developed an aﬀine-section approach within the earlier reciprocal-sum argument’s sam-
+pling and modular-forecasting framework. For inactive coordinates it proposed retaining the degree- ℎ
+product blocks while adding a free linear variable. Fixing the product variables would then make exact
+inversion possible without sacrificing the leading-degree structure.
+Active outputs need many aﬀine sections with controlled incidence. Exceptional probabilities can
+swamp tiny scores, while increasing dimension risks circularity. Independent coeﬀicients on disjoint
+columns, second moments, and nonsingular Hensel lifting suggest weights bounded everywhere and
+near one outside exceptional residues.
+The assistant tests 𝑓 1good, using mixed centers to protect mass and truncated inclusion–exclusion to
+replace primewise masks by bounded-modulus tests. Degree relaxation threatens passive-layer separa-
+tion, prompting another examination of warm detection and signed models.
+The assistant sought to prevent narrow old charts from making each density increment polynomially
+more expensive than its predecessor. Starting from the earlier reciprocal-sum lifting mechanism, it pro-
+posed a buffered invariant
+𝔼𝑓 𝐵strict ≥ 𝑎 𝔼𝐵buffer.
+This would protect positive mass from tangencies to chart boundaries. Passive determining masks
+would remain ambient functions; active ones would be preserved exactly by a marked projection while
+new coordinates alone acquired larger degree. The recalled progression-reset comparison with Leng–
+
+PAGE 32
+Quasipolynomial bounds for arithmetic progressions 32
+Sah–Sawhney [35] motivated this stricter accounting.
+A signed dense-model approach then encountered a circularity: improving approximation enlarged
+the model cap, and the Leng–Sah–Sawhney inverse theorem [36] could return a correlation smaller than
+the approximation error. An 𝐿2 model merely shifted the diﬀiculty to truncation.
+Drawing on Conlon–Fox–Zhao densification [ 7], the assistant proposed replacing non-root cube fac-
+tors sequentially by bounded signs of conditional dual functions. Weighted grid estimates would pre-
+serve correlation; after only the root remained sparse, bounded duals could be replaced successively by
+niltests using the ordinary inverse theorem. This was intended to detect the root without simultaneously
+matching a large test family.
+A further proposed free linear parameter would make inactive integer outputs invertible after freez-
+ing nonlinear parameters. The assistant continued checking rank preparation, buffered normalization,
+boundary estimates, and the quantitative savings.
+VERBA TIM EXCERPT
+Absence of AP is global strong deficit, requires correlation affecting almost all f or severe
+concentration.
+34 Rank preparation and layered width budgets
+The assistant reopened the earlier reciprocal-sum argument’s sampler and globalization machinery. For
+constraints 𝐶ℎ − 𝑐ℎ = 𝑦 ℎ + 𝛽ℎ, detection bounds had to be fixed before the sampling length, rank thresh-
+old, and subspace heights entered. The rereading emphasized height-independent lattice charts, the
+distinction between abstract coeﬀicient normalization and normalization of the actual tilted law , and
+cube-image errors controlled by total mass rather than a large density supremum.
+Globalization selected polynomially many significant top-frequency pivots, approximated masked
+inputs uniformly over path-dependent tests, and reconstructed exact marked projections through lower-
+degree induction. Yet amplification still paid
+𝐻𝑗+1 = 𝜅𝐻 2
+𝑗 , 𝑃 𝑗+1 = 𝑃 𝑗 + (2 + 𝑃𝑗)𝐸,
+so repeated polynomial resource composition limited the useful depth. The reset relied on Leng–Sah–
+Sawhney’s Improved Bounds for Szemerédi’s Theorem, Lemma 2.1 [35], to convert positive nilsequence score
+into a long-progression density increment.
+The assistant therefore sought a recurrence linear in old resources, or a normalized weighted-major
+decomposition avoiding repeated powers of thin chart widths. A recalled macro-transfer route also con-
+sidered the Leng–Sah–Sawhney inverse theorem [36], with weighted-degree and discretization diﬀicul-
+ties. Revisited candidates included preparing constraints globally by effective degree, treating high tags
+as passive, allowing bounded degree overshoot, and substituting low tags through aﬀine fibers. The as-
+sistant identifies simultaneous preparation, residue periodicity , normalized transfer, and repeated rank
+growth as obstacles to these candidates.
+Inactive directions can be too short for symbol matching yet too costly to freeze. Polynomial families
+need common reconstruction, and lattice sheets risk circular dependence between rank thresholds and
+covolumes.
+It revisited the rank-preparation and constrained-sampling mechanisms of the earlier reciprocal-sum
+argument. Moving a removed direction from tag ℎ to ℎ−1 decreases ∑ℎ ℎ dim 𝑊ℎ, bounding the number
+
+PAGE 33
+Quasipolynomial bounds for arithmetic progressions 33
+of failures. Solving all relation rows at a tag jointly was intended to avoid repeated height exponentiation.
+Extending this bookkeeping to changing lower-layer charts remained unresolved.
+Strict and buffered boxes satisfy 𝔼𝑓 1strict ≥ 𝑎𝔼1 buffer. Their gap protects against tangency during
+refinements. Mixing feasible centers should normalize chart mass and retain productive paths, while
+non-site Fourier modes and torus covers still require treatment.
+VERBA TIM EXCERPT
+Instead of replacing B with selecting chart cells immediately, insert new slots with unrestricted
+centers and update evaluation map candidate masks. Need measure concentrations only after prep
+complete.
+The assistant investigated whether global rank preparation could preserve relative patch widths without
+charging narrow lower layers to higher ones. Using the earlier reciprocal-sum argument’s triangular-
+patch, polynomial-image, modular-exception, and pathwise-detection machinery , it sought a failed-rank
+decomposition into a slow polynomial, a rational polynomial with controlled denominator, and a lower-
+degree remainder.
+The assistant separates real bounds in normalized residual coordinates from rational denominators
+independent of lower widths. Formal-slot descent suggests subtracting slow and rational terms sepa-
+rately. Short axes and spatial rescaling motivate degree induction and modular nondegeneracy before
+pigeonholing.
+Translated boxes preserve fixed strict/buffer margins. Rank removal moves directions downward
+while retaining exact higher substitutions. A two-variable family correction preserves the common-site
+projection on the diagonal; the assistant checks compatibility when additional axes become short.
+VERBA TIM EXCERPT
+Maybe choose W full always (avoid inactive) by keeping lowered directions as independent
+coordinates but altering polynomial to generic high-rank perturbations?
+35 A triangular density-increment proposal
+The assistant refined a layered density-increment scheme using the earlier reciprocal-sum foundations.
+It found that restoring a polynomial map through a quotient section could destroy the required regular-
+ity. Its proposed repair postponed all kernel-translation averages until after scalar transfer and aﬀine-
+plane inversion, imposing regularity only on the averaged bottom-level test.
+The assistant retains modular good flags to protect tiny scores, using truncated inclusion–exclusion
+over small prime products. Free linear parameters invert inactive integer coordinates; aﬀine sections
+and real smoothing address normalization and boundaries.
+For passive layers, the assistant proposed densifying a sparse cube average one vertex at a time before
+applying Leng, Sah and Sawhney’s quasipolynomial inverse theorem [ 36] to bounded dual functions.
+This avoided directly inverting a function with the large cap imposed by a narrow chart. The resulting
+strict/buffered patch certificate was𝔼𝑓 𝐵− > 𝑎𝔼𝐵 +. The intended bookkeeping let dimensions grow from
+higher blocks and each logarithmic width loss depend only on higher widths. The assistant calculated
+that, with those preparation and transfer bounds, repeated constant multiplicative increments would
+yield the desired quasipolynomial progression bound.
+
+PAGE 34
+Quasipolynomial bounds for arithmetic progressions 34
+VERBA TIM EXCERPT
+Cannot ensure at least many V for all t if B level set singular at some t. Flags needed.
+The assistant tried to keep rationality costs from becoming width losses. Using the earlier reciprocal-
+sum machinery , it separated bounded real inverse substitution from denominator control by exceptional
+prime powers. The recalled detector used Leng–Sah–Sawhney’s quasipolynomial inverse theorem [ 36]
+for ambient nilsequence partners.
+Sharpening slow-plus-rational splitting precedes expansion in excluded coordinates. Degree induc-
+tion should cancel side losses without iterating once per coordinate. Tensor terms require separate exact
+agreement; constants use pigeonholing. Rank failures move downward, and translated boxes preserve
+surplus.
+Aﬀine sections satisfy 𝑏(𝑥 + 𝑉(𝑠, ℎ), 𝑟 0 + ℎ) = 𝑏(𝑥, 𝑟 0) + 𝑠. Plane-invariant selection and nonsingular
+lifts should give near-one weights outside rare flags. Forecasting truncates flag inclusion–exclusion by
+small witness moduli to retain terminal paths.
+Backward lifting keeps passive masks as site functions and active projections exact. Actual and
+dummy short variables support corrections. Representative selection waits until averaging supplies
+smoothness and periodicity; bounded active degree inflation should close the hierarchy.
+The assistant separated its forward construction from the backward globalization still to be supplied.
+Using the earlier reciprocal-sum foundations, it sought to iterate certificates 𝔼𝑓 𝐵− > 𝑎𝔼𝐵 + for strict and
+buffered polynomial patches. The crucial requirement was that the loss in 𝑄𝑖 = log(2/𝑤𝑖) depend on
+higher widths, not on 𝑄𝑖 itself; descending induction would then control 𝑂(log(1/𝑎)) increments.
+Normalized residuals control slow coeﬀicients separately from exceptional denominator factors.
+Failed relations move lower-degree remainders downward while preserving exact higher substitutions.
+Shifted coverings are intended to protect surplus without inverse-mass losses.
+Scalar transfer retains inactive parameters while duplicating parallel ones into real and residue vari-
+ables. Aﬀine planes and nonsingular lifts control modular flags through bounded witness moduli. The
+assistant obtains a forward fraction 𝑐𝑎 of productive terminal paths and turns to restoring their gain
+backwards.
+VERBA TIM EXCERPT
+Any mid axes v newly short after choosing later threshold; restricted symbols pure-long independent
+their values because g has deg≤layer in v, so discarded v only lowers.
+36 Globalizing the active and passive layers
+The assistant inspected the earlier reciprocal-sum machinery , concentrating on exact projections and
+costs that must remain independent of later sampling scales. Globalization selects a basis of significant
+top frequencies, attaches ambient partners through uniform masked-input approximation, and inter-
+sects rational fast algebras. Injectivity at the top permits reconstruction through
+𝐻 ≃ (𝐻/𝐻 𝑟) ×𝐻𝐹/𝐻𝐹,𝑟 𝐻𝐹.
+Slow and rational factors require corrections in the actual kernel, followed by compatible lattice refine-
+ments and controlled nets of the resulting test families.
+
+PAGE 35
+Quasipolynomial bounds for arithmetic progressions 35
+Polynomial translation groups connect symbolic factorization to slow-plus-rational decomposition.
+The sampler tracks coeﬀicient normalization, spatial equidistribution, and residues. Scalar transfer dis-
+counts good-prime density factors and postpones orientation costs until recovery.
+The assistant keeps passive masks external and active slots exactly marked. It must preserve higher
+widths through candidate replacement, congruences, and degree changes. Same-weight dependencies
+wait until final descent; it next checks these inherited estimates.
+VERBA TIM EXCERPT
+Major issue replacing candidates (globalization) without consuming w_j. For active j layers r maybe
+high, detection cold in Q_j; symbolic lifting uses P_j coefficients unconstrained; want paired
+score width lower at j = w_j exp(-poly(warm)), at all >j same.
+The assistant audited the earlier reciprocal-sum machinery , including the use of Leng–Sah–Sawhney’s
+quasipolynomial inverse theorem [36]. It checked cube-count normalization, path-dependent detection,
+weighted densification, and clipping of separating functionals. The guiding concern was whether nar-
+row current-layer widths could contaminate bounds meant to depend only on higher-weight data.
+The modular audit permits bounded products of witness prime powers, avoiding one oversized mod-
+ulus. It checks coeﬀicient independence, real/grid perturbations, sublevel depths, primitive-lattice de-
+nominators, and preservation of additive rank 𝑑 + 𝑑0.
+For a passive layer 𝑗 > 𝑠 , degree prevented the new degree- 𝑠 symbol from involving degree- 𝑗 lift
+variables. The proposed globalization first obtained a decomposition with width-dependent bounds,
+then sharpened it through long spatial columns and sequential modular filters. T o preserve signed
+scores, it tracked both nonnegative components of
+(𝑓 𝐿−)Φ− − 𝜆𝐿+Φ+,
+using finite nets of site-dependent fields. The remaining passive-transfer plan removed good-prime
+density factors through 1 + 𝑂(𝑝 −2) estimates while retaining exceptional primes and stride divisors.
+The assistant then turns from these parameter choices to the ascent.
+Inactive columns and continuous pivots reduce reconstruction to constraints in 𝑋 = (𝑢, 𝛽) . Boundary
+strips are removed only from positive terms; short integer ranges retain exact membership. Smooth-cell
+averaging should then produce a parent certificate.
+For active layers, selected aﬀine planes give𝑥 = 𝑎+𝑉(𝐵, 𝑟) . The assistant argues that bounded total plane
+measure permits selection without a loss depending on the huge modulus. Exact periodicity under
+changing residue representatives is essential. The nilpotent-degree induction uses polynomial families
+in short variables, significant vertical Fourier modes, and central averaging. Its symbol-splitting and
+reconstruction inputs come from the earlier reciprocal-sum argument.
+Correlation subslices identify symbols without altering the objective slice. The assistant separates final
+thresholds from later induction and unions over individual approximants to avoid excessive complexity.
+It checks projections and periodicity recursively , while still needing to preserve the widths on already
+processed layers.
+
+PAGE 36
+Quasipolynomial bounds for arithmetic progressions 36
+37 Iterating with separate degree budgets
+The assistant proposed a downward iteration preserving a signed, full-box-mass score, drawing on the
+earlier reciprocal-sum argument. Paired smooth cutoffs allowed small target discounts to absorb cover-
+age losses, while old determining equations remained exact.
+Passive layers use a common ambient orbit and retained modulus. Active layers use stochastic re-
+placements with short-variable polynomial labels, common-input correction, refiltration, and fiber re-
+construction. Only expected evaluations must be independent of residue representatives.
+Extraction solves inactive coordinates, removes determinant and boundary exceptions, and uses aﬀine
+residue sections. Averaging fixes constants while preserving surplus; spatial cells restore two cutoffs
+with inflation confined to absolute slots.
+The assistant claimed a recurrence in which the logarithmic width cost at each layer depends polyno-
+mially on higher-layer widths, permitting 𝑂𝑘(1 + 𝑝) increments and the bound
+𝑟𝑘(𝑁)/𝑁 ≤ 𝑂 𝑘(1) exp(−𝑐𝑘(log 𝑁)1/𝐶𝑘).
+It then reopened the argument for detailed scrutiny , particularly sparse-cube densification, warm-cost
+detection and the sharpening of the major decomposition needed to avoid feeding excessive preliminary
+costs into width losses.
+The assistant worked out how a positive density surplus could survive the return from sampled paths.
+Using the reciprocal-sum foundations, it distinguished inexpensive “warm” width losses from more ex-
+pensive “cold” algebraic costs. Relation removal descended through weighted layers, introduced lower
+coordinate copies, and preserved higher integer arguments by exact substitution.
+A comparison measure separates real and residue copies while retaining inactive parameters. Prime
+flags and aﬀine-plane counts avoid the full combined modulus. Passive globalization remains ordinary;
+active replacements use short-variable families, vertical-frequency quotients, and common-site correc-
+tions. Representative independence concerns expected payoffs.
+Selected aﬀine planes then parameterized residue matching by 𝑥 = 𝑎 + 𝑉(𝐵, 𝑟) . Positive averaging
+fixed the remaining parameters; small boxes restored the determining constraints exactly. The assistant
+claimed that bounded weight inflation and controlled width losses closed a multiplicative density in-
+crement, hence a quasipolynomial iteration. Its subsequent rereading of the foundations retained the
+conditional shift-comparison input and the additive relative-rank requirement 𝑑 + 𝑑0, rather than treat-
+ing a merely polynomial rank bound as interchangeable.
+The assistant audited the sampling and globalization foundations of the earlier reciprocal-sum argu-
+ment, with particular attention to repeated width losses. Its proposed accounting charged substantial
+refinements to strictly lower layers, leaving a rank cut’s own width loss independent of its rank thresh-
+old.
+The proposed decomposition 𝐷1 = 𝑆(𝑢/(𝐻𝑎𝜁 ), (𝑏 − 𝐴(𝑢))/(𝑣𝜁 𝑗)) + 𝑅(𝑢, 𝑏) separates real interpola-
+tion from denominator control. Here 𝑆 is the slowly varying polynomial written in normalized spatial
+and residual coordinates, while 𝑅 is the rational polynomial whose denominators must be controlled.
+The factors 𝐻𝑎𝜁 and 𝑣𝜁 𝑗 set the normalization scales. Degree induction recovers short directions. Back-
+ward lifting requires exact tensor separation because coeﬀicients are unrestricted; constant tensors use
+pigeonholing.
+Failed relations reduce weight- ℎ space and may add weight- ℎ − 1 blocks. Exact substitutions propa-
+gate upward; shifted coverings preserve surplus. The assistant next checks frequency selection, patch
+
+PAGE 37
+Quasipolynomial bounds for arithmetic progressions 37
+conversion, cube comparison, convex separation, and independence after conditioning.
+VERBA TIM EXCERPT
+Need check thresholds from *lower or same layer repeatedly* charged as cost of width resetting w_i.
+Need independent Q_i. In preparation tests multiple cuts potentially need shrink h width by
+direction scaling 1/(||e||) etc.
+VERBA TIM EXCERPT
+width budgets additive-by-layer enables O(p) steps polynomial.
+38 Auditing density detection and family parameters
+The assistant scrutinized the forecasting and globalization machinery inherited from the earlier
+reciprocal-sum argument. Its analytic inputs included the Leng–Sah–Sawhney inverse theorem [ 36]
+and Leng’s eﬀicient equidistribution theorem [ 37], used in the proposed step-drop framework.
+Weighted Cauchy–Schwarz duplicates grid variables and requires sparse boundary control. Modular
+Fourier decay is truncated by individual character order to avoid one large modulus. Scalar forecasts
+combine densities, congruences, and exact inactive constraints, with errors fixed before the prime cutoff.
+A common top symbol need not give a common marked map after freezing short variables. The
+assistant constructs a diagonal-identity correction preserving pure-long symbols and aligning dummy
+projections at one input. Kernel corrections, lattice covers, and family nets follow; pure-long threshold
+comparisons precede charges for new short lengths.
+The assistant audited the proposed bound 𝑟𝑘(𝑁) ≪ 𝑘 𝑁 exp(−𝑐𝑘(log 𝑁)𝑐′
+𝑘) by following weighted de-
+termining polynomials through sampling, symbol matching, and ascent. The earlier reciprocal-sum
+foundations supplied the machinery being adapted. Separate residue moduli for different blocks were
+intended to prevent lower-layer costs from contaminating higher-layer width bounds. Fixing a common
+gap from an advance dimension estimate was meant to avoid circularity across density increments.
+The key correction distinguished warm approximation from whole-box detection: the detector could
+be large only relative to normalized chart measure. The proposed argument used a mean-one sparse
+chart weight, bounded-grid linear-forms estimates, and weighted Cauchy–Schwarz to replace sparse
+factors by bounded ones before applying inverse theory. The inherited niltest-to-Gowers estimate was
+specifically attributed to Leng, Sah, and Sawhney , Lemma B.5 [36].
+The assistant checks pivot densities, inactive constraints, and cube-image errors in normalized Haar
+𝐿1, charging Fourier complexity to later scales. For passive globalization, degree 𝑑 < 𝑗 excludes weight-𝑗
+arguments, suggesting sharper bounds from separation and modular goodness.
+VERBA TIM EXCERPT
+Cube comparison and dual Gowers bound might require all parameter sides sufficiently large
+depending on pre complexity, especially very short \(t_I\) in active or passive paths.
+The assistant made the iteration’s resource ordering more explicit, using the absolute increment, symbol
+calculus, and sampling arguments from the previous bound. It revised the prime-power sublevel argu-
+ment to use a degree-bounded number of variables, intermediate valuation depths, and a univariate
+determinant test.
+
+PAGE 38
+Quasipolynomial bounds for arithmetic progressions 38
+Forward sampling normalizes strict mass by feasible-center proportions. A stop before ℎ divides by
+∏𝑖≥ℎ 𝑒𝑖; later discards divide by ∏𝑖>ℎ 𝑒𝑖. The assistant checks terminal density and modular flag thresh-
+olds through second moments and derivatives.
+After preparation cuts, the assistant regenerates samplers from the new root. Dimensions and cut
+counts precede widths and accuracies. It concludes that 𝑄out
+𝑗 ≤ 𝑞 𝑗 + poly(𝑝, 𝑑∗, 𝑞>𝑗) excludes current
+width from added losses and permits 𝑂𝑘(1 + 𝑝) rounds, while continuing to check circularity and sub-
+stitutions.
+VERBA TIM EXCERPT
+Need flag bad probability \(\le c_* \mathbb E\phi +\epsilon\) with centers Haar, not c_*
+unconditional, due thin strict sets at layers all; cannot pick c_* depending on widths because v_f
+structural.
+39 The proposed quasipolynomial bound
+The assistant closed its weighted-cell argument with a sustained audit of the loss hierarchy , using the
+earlier reciprocal-sum argument. It clarified that canonical-lift identities were required only on the actual
+orbit and exactly projected output; arbitrary group points instead retained independent site multipliers.
+A common vertical Fourier expansion preserved the meshes used to group paths.
+For transported residual boxes, it used
+𝑟old
+ℎ = 𝑟 new
+ℎ + 𝑟in − 𝑐 − err
+and centered the new box near 𝑙ℎ + 𝑐 − 𝑙 in, with errors much smaller than the old enlargement gap.
+It examined possible excessive denominator growth, short-axis effects on symbols, and sparse-chart
+normalization losses. It also specified that internal residue subdivisions disappear before the active
+return, and that buffered charts remain comparable in radius with the current width.
+The assistant presented the construction as its proposed proof. It asserted that 𝑝 ≍ 𝑘 2 + log(1/𝛼), a
+fixed multiplicative density gain, and only 𝑂𝑘(1 + 𝑝) rounds yield
+𝑟𝑘(𝑁) ≪ 𝑘 𝑁 exp(−𝑐𝑘(log 𝑁)𝑐′
+𝑘)
+when log 𝑁 exceeds a suitable polynomial in 𝑝. It also stated the equivalent quasipolynomial density
+threshold and the coloring consequence obtained from a largest color class.
+VERBA TIM EXCERPT
+Given incoming center \(l_\mathrm{in}\in[0,1]^{d_h}\), new width-in τ, want \(r_h^n\) center around
+\(l_h+c-l_\mathrm{in}\).
+References
+[1] Tigran Ananyan and Melvin Hochster. Small subalgebras of polynomial rings and Stillman’s conjecture.
+Journal of the American Mathematical Society 33(1) (2020), 291–309. https://doi.org/10.1090/
+jams/932.
+[2] Eli Ben-Sasson and Noga Ron-Zewi. From Aﬀine to T wo-Source Extractors via Approximate Duality .
+SIAM Journal on Computing 44(6) (2015), 1670–1697. https://doi.org/10.1137/12089003x.
+[3] Thomas F. Bloom and Olof Sisask. Breaking the logarithmic barrier in Roth’s theorem on arithmetic pro-
+gressions. arXiv:2007.03528 (2020), revised 2021. https://arxiv.org/abs/2007.03528v2.
+
+PAGE 39
+Quasipolynomial bounds for arithmetic progressions 39
+[4] Thomas F. Bloom and Olof Sisask. The Kelley–Meka bounds for sets free of three-term arithmetic pro-
+gressions. Essential Number Theory 2(1) (2023), 15–44. https://doi.org/10.2140/ent.2023.2.15 .
+Revised version (May 13, 2025): https://arxiv.org/abs/2302.07211v3.
+[5] Thomas F. Bloom and Olof Sisask. An improvement to the Kelley–Meka bounds on three-term arithmetic
+progressions. arXiv:2309.02353 (2023). https://arxiv.org/abs/2309.02353.
+[6] Pablo Candela, Diego González-Sánchez, and Balázs Szegedy. On higher-order Fourier analysis in
+characteristic 𝑝. Ergodic Theory and Dynamical Systems 43(12) (2023), 3971–4040. https://doi.or
+g/10.1017/etds.2022.119.
+[7] David Conlon, Jacob Fox, and Yufei Zhao. A relative Szemerédi theorem . Geometric and Functional
+Analysis 25(3) (2015), 733–762. https://doi.org/10.1007/s00039-015-0324-9 .
+[8] David Conlon and William Timothy Gowers. Combinatorial theorems in sparse random sets. Annals of
+Mathematics 184(2) (2016), 367–454. https://doi.org/10.4007/annals.2016.184.2.2.
+[9] Ernie Croot and Olof Sisask. A probabilistic technique for finding almost-periods of convolutions . Geo-
+metric and Functional Analysis 20(6) (2010), 1367–1396. https://doi.org/10.1007/s00039-010-0
+101-8.
+[10] Paul Erdős and Paul T urán.On some sequences of integers. Journal of the London Mathematical Soci-
+ety 11 (1936), 261–264. https://doi.org/10.1112/jlms/s1-11.4.261.
+[11] Paul Erdős. Problems. Mathematica Balkanica 4 (1974), 203–204, Problem 4.33.6. https://www.reny
+i.hu/~p_erdos/1974-27.pdf.
+[12] Yuval Filmus, Hamed Hatami, Kaave Hosseini, and Esty Kelman. Sparse graph counting and Kelley-
+Meka bounds for binary systems . In 2024 IEEE 65th Annual Symposium on Foundations of Computer
+Science (FOCS) (2024), 1559–1578. https://doi.org/10.1109/FOCS61266.2024.00098.
+[13] William Timothy Gowers. A new proof of Szemerédi’s theorem. Geometric and Functional Analysis 11
+(2001), 465–588. https://doi.org/10.1007/s00039-001-0332-9 .
+[14] William Timothy Gowers and Luka Milićević.A quantitative inverse theorem for the𝑈4 norm over finite
+fields. arXiv:1712.00241 (2017). https://arxiv.org/abs/1712.00241.
+[15] William Timothy Gowers, Ben Green, Frederick Manners, and Terence Tao.On a conjecture of Marton.
+Annals of Mathematics 201(2) (2025), 515–549. https://doi.org/10.4007/annals.2025.201.2.5.
+[16] William Timothy Gowers, Ben Green, Frederick Manners, and Terence Tao. Marton’s Conjecture in
+abelian groups with bounded torsion. Annales de la Faculté des Sciences de T oulouse: Mathématiques
+35(1) (2026), 1–33. https://doi.org/10.5802/afst.1839.
+[17] Ben Green and Terence Tao.New bounds for Szemerédi’s theorem, III: A polylogarithmic bound for𝑟4(𝑁).
+Mathematika 63(3) (2017), 944–1040. https://doi.org/10.1112/S0025579317000316.
+[18] Ben Green and Terence Tao. An inverse theorem for the Gowers 𝑈3(𝐺) norm. Proceedings of the Edin-
+burgh Mathematical Society 51(1) (2008), 73–153. https://doi.org/10.1017/S0013091505000325.
+[19] Ben Green and Terence Tao. New bounds for Szemerédi’s theorem, Ia: Progressions of length 4 in finite
+field geometries revisited. arXiv:1205.1330 (2012). https://arxiv.org/abs/1205.1330.
+[20] Ben Green and Terence Tao.The primes contain arbitrarily long arithmetic progressions. Annals of Math-
+ematics 167(2) (2008), 481–547. https://doi.org/10.4007/annals.2008.167.481.
+
+PAGE 40
+Quasipolynomial bounds for arithmetic progressions 40
+[21] Ben Green and Terence Tao.New bounds for Szemerédi’s theorem, II: A new bound for 𝑟4(𝑁). In Analytic
+Number Theory: Essays in Honour of Klaus Roth , Cambridge University Press, 2009, 180–204. Revised
+version: https://arxiv.org/abs/math/0610604v2.
+[22] Ben Green, Terence Tao, and Tamar Ziegler.An inverse theorem for the Gowers𝑈𝑠+1[𝑁]-norm. Annals
+of Mathematics 176(2) (2012), 1231–1372. https://doi.org/10.4007/annals.2012.176.2.11.
+[23] Ben Green and Terence Tao. The quantitative behaviour of polynomial orbits on nilmanifolds . Annals of
+Mathematics 175(2) (2012), 465–540. https://doi.org/10.4007/annals.2012.175.2.2.
+[24] Ben Green, Terence Tao, and Tamar Ziegler. An inverse theorem for the Gowers 𝑈4 norm. Glasgow
+Mathematical Journal 53(1) (2011), 1–50. https://doi.org/10.1017/S0017089510000546.
+[25] Ben Green. Arithmetic progressions at the Journal of the LMS . Journal of the London Mathematical
+Society 113(3) (2026), e70483. https://doi.org/10.1112/jlms.70483.
+[26] Jan Hązła, Thomas Holenstein, and Elchanan Mossel. Product Space Models of Correlation: Between
+Noise Stability and Additive Combinatorics. Discrete Analysis 2018 (2018), Paper No. 20, 63 pp. https:
+//doi.org/10.19086/da.6513.
+[27] Bernard Host and Bryna R. Kra. Nonconventional ergodic averages and nilmanifolds . Annals of Math-
+ematics 161(1) (2005), 397–488. https://doi.org/10.4007/annals.2005.161.397.
+[28] Michael Jaber, Yang P . Liu, Shachar Lovett, Anthony Ostuni, and Mehtaab Sawhney. Quasipolyno-
+mial bounds for the corners theorem . arXiv:2504.07006 (2025). https://arxiv.org/abs/2504.07006.
+[29] Oliver Janzer. Polynomial bound for the partition rank vs the analytic rank of tensors . Discrete Analysis
+2020 (2020), Paper No. 7, 18 pp. https://doi.org/10.19086/da.12935.
+[30] Peter Keevash, Noam Lifshitz, Eoin Long, and Dor Minzer. Global hypercontractivity and its applica-
+tions. arXiv:2103.04604 (2021). https://arxiv.org/abs/2103.04604.
+[31] Tamás Keleti. A 1-dimensional subset of the reals that intersects each of its translates in at most a single
+point. Real Analysis Exchange 24(2) (1998/1999), 843–844. https://doi.org/10.2307/44153003.
+[32] Nathan Keller, Noam Lifshitz, and Omri Marcus.Sharp hypercontractivity for global functions. Journal
+of the European Mathematical Society , published online January 9, 2026. https://doi.org/10.417
+1/JEMS/1762. https://arxiv.org/abs/2307.01356v2.
+[33] Zander Kelley and Raghu Meka. Strong bounds for 3-progressions . In 2023 IEEE 64th Annual Sympo-
+sium on Foundations of Computer Science (FOCS) (2023), 933–973. https://doi.org/10.1109/FOCS57
+990.2023.00059. Revised version (2024): https://arxiv.org/abs/2302.05537v6.
+[34] Amichai Lampert and Tamar Ziegler. Relative Rank and Regularization . Forum of Mathematics,
+Sigma 12 (2024), e29, 1–26. https://doi.org/10.1017/fms.2024.15.
+[35] James Leng, Ashwin Sah, and Mehtaab Sawhney. Improved Bounds for Szemerédi’s Theorem .
+arXiv:2402.17995 (2024). https://arxiv.org/abs/2402.17995v2.
+[36] James Leng, Ashwin Sah, and Mehtaab Sawhney. Quasipolynomial bounds on the inverse theorem for
+the Gowers 𝑈𝑠+1[𝑁]-norm. arXiv:2402.17994v3 (2024). https://arxiv.org/abs/2402.17994v3.
+[37] James Leng. Eﬀicient equidistribution of nilsequences. arXiv:2312.10772v5 (2023, revised 2024). https:
+//arxiv.org/abs/2312.10772v5.
+
+PAGE 41
+Quasipolynomial bounds for arithmetic progressions 41
+[38] James Leng. Eﬀicient equidistribution of periodic nilsequences and applications. arXiv:2306.13820 (2023).
+https://arxiv.org/abs/2306.13820.
+[39] James Leng, Ashwin Sah, and Mehtaab Sawhney.Improved bounds for five-term arithmetic progressions.
+Mathematical Proceedings of the Cambridge Philosophical Society 177(3) (2024), 371–413. https:
+//doi.org/10.1017/S0305004124000264.
+[40] László Lovász and Balázs Szegedy. Limits of dense graph sequences. Journal of Combinatorial Theory ,
+Series B 96(6) (2006), 933–957. https://doi.org/10.1016/j.jctb.2006.05.002.
+[41] Frederick Manners. Quantitative bounds in the inverse theorem for the Gowers 𝑈𝑠+1-norms over cyclic
+groups. arXiv:1811.00718v2 (2018, revised 2024). https://arxiv.org/abs/1811.00718v2.
+[42] Frederick Manners. Periodic nilsequences and inverse theorems on cyclic groups. arXiv:1404.7742 (2014).
+https://arxiv.org/abs/1404.7742.
+[43] James Maynard. Simultaneous small fractional parts of polynomials . Geometric and Functional Analy-
+sis 31(1) (2021), 150–179. https://doi.org/10.1007/s00039-021-00559-3 .
+[44] Luka Milićević. Polynomial bound for partition rank in terms of analytic rank. Geometric and Functional
+Analysis 29(5) (2019), 1503–1530. https://doi.org/10.1007/s00039-019-00505-4 .
+[45] Luka Milićević. Approximate quadratic varieties. arXiv:2308.12881 (2023). https://arxiv.org/abs/23
+08.12881.
+[46] OpenAI. Monochromatic finite sums and products in the positive integers . 2026.
+[47] Robert Alexander Rankin. Sets of Integers Containing not more than a Given Number of T erms in Arith-
+metical Progression. Proceedings of the Royal Society of Edinburgh, Section A 65(4) (1961), 332–344.
+https://doi.org/10.1017/S0080454100017726.
+[48] T om Sanders.On the Bogolyubov–Ruzsa lemma . Analysis & PDE 5(3) (2012), 627–655. https://doi.
+org/10.2140/apde.2012.5.627.
+[49] T omasz Schoen and Olof Sisask. Roth’s theorem for four variables and additive structures in sums of
+sparse sets . Forum of Mathematics, Sigma 4 (2016), e5. https://doi.org/10.1017/fms.2016.2 .
+https://arxiv.org/abs/1408.2568.
+[50] Endre Szemerédi. On sets of integers containing no 𝑘 elements in arithmetic progression . Acta Arith-
+metica 27 (1975), 199–245. https://doi.org/10.4064/aa-27-1-199-245 .
+[51] Bartel Leendert van der Waerden. Beweis einer Baudetschen V ermutung . Nieuw Archief voor
+Wiskunde (Second Series) 15 (1927), 212–216.
+[52] Mihalis Yannakakis. Expressing combinatorial optimization problems by linear programs . Journal of
+Computer and System Sciences 43(3) (1991), 441–466. https://doi.org/10.1016/0022-0000(91
+)90024-Y.
+[53] Yufei Zhao. An arithmetic transference proof of a relative Szemerédi theorem. Mathematical Proceedings
+of the Cambridge Philosophical Society 156(2) (2014), 255–261. https://doi.org/10.1017/S03050
+04113000662.

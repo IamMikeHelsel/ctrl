@@ -1,0 +1,2 @@
+import TranslatedScope
+#print axioms CriticAdmission.translated_execution_rejects_absolute_clearance

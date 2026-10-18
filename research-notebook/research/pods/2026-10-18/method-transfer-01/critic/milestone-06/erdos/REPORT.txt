@@ -1,0 +1,120 @@
+INDEPENDENT E6 REVIEW — SCOPED LOCAL-CUT COUNTEREXAMPLE ACCEPTED
+18 October 2026
+
+Verdict
+The explicit finite simple bipartite graph has a strictly single-vertex-locally
+optimal cut with internal cost 2/47 and retained certificate
+240199/9600000=1/40+199/9600000. The retained certificate is the minimum of
+uniform-Y cost, Q(x)+q and all specified neighborhood costs. This exactly
+refutes the proposed local-cut repair of THAT certificate at .025.
+
+The same graph has a global maximum cut of internal cost zero and an
+independent half of cost zero. Its Y-restricted half optimum equals the failed
+neighborhood value. This is not a sparse-half counterexample or a universal
+.025 lower bound. The full completion construction has a zero-cost witness
+here; only its retained numerical envelope fails. No new positive graph bound,
+Lean endpoint, novelty or global-maximum-cut theorem is accepted.
+
+Frozen evidence and replay
+Builder artifact-sha256.json:
+6a726f074da6b536229d38a4b01d941d4835a348208bae6f3bb21b9a2cb2e70e.
+All 21 entries match and are copied under inputs/. The data hash is
+a2a29715861acc3e6633c484574bc58f1cd12374555682e265927563c2ae9a4d.
+I also checked the 12 listed source inputs and all 188 prior frozen builder
+entries. They remain intact. Preservation results are recorded separately.
+Fresh copied experiment and verifier runs pass and reproduce all mathematical
+outputs, excluding elapsed time only. Replay record:
+replay/evidence/copied-source-el1n3c8s/replay.json, SHA256
+e5f414a084af142cfc03fbbff2d9c3c5c73b51bf16833d206fcac5eeac0d1c4b.
+No remote job or large adjacency matrix was used.
+
+Independent graph reconstruction
+independent_check.py reconstructs the 28 positive rational masses and all 109
+edges from the formulas, without importing either builder script. It compares
+them to the frozen data. The color classes {0,2} plus Y-left and {1,3} plus
+Y-right each have mass 1/2. Every edge crosses these classes, so simplicity,
+triangle-freeness and the zero global half follow directly.
+
+The bad cut has X mass .401 and Y mass .599. Its Y subgraph is a 5-regular
+bipartite circulant on 24 equal masses. Internal Y degree is 599/4800 and
+external degree is 401/2000. On X, each external degree is 599/2000 and
+exceeds its internal degree. This strict inequality is the correct local-cut
+condition: moving one vertex changes crossing cost by its positive mass times
+(internal degree minus external degree).
+
+The finite blowup has N=22560000 vertices in independent clusters, with complete
+links exactly on support edges. I checked every integer cluster size. Every
+single ACTUAL vertex has internal and external degrees N times the weighted
+degrees. The smallest external-minus-internal difference is 1707980>0. Thus
+the example is locally optimal for single finite-graph vertex moves, not just
+for moving a whole cluster. Its exact internal edge count divided by N^2 is
+2/47. This explicit budget needs no appeal to the eventual BCL theorem.
+
+All retained costs and true optima
+The bad cut gives uniform cost 5/192 and completion envelope
+56462237/2256000000. The latter uses the valid branch x=.401>3/8. Every Y
+vertex has d=599/4800>b=.099 and s=d^2. I construct all 24 actual high-branch
+profiles and check their capacities, mass 1/2 and edge cost. Each costs
+240199/9600000, which is less than the two other bounds and exceeds .025.
+Positive denominators are explicit. The general zero-degree and y=1/2 cases
+are handled by low/uniform branches in the verifier, not by division by zero.
+
+For any half supported in Y, deleted masses t have sum b. Regularity gives
+cost(selected)=j-b*d+cost(t)>=j-b*d. Removing mass b inside one independent
+Y color class attains equality. Aggregating selected individual vertices by
+cluster is exact because links are complete and clusters independent. Thus
+this lower bound applies to ALL fractional halves in the finite Y, not just
+profiles constant on each cluster. Both the Y-optimum witness and the global
+zero witness have integer selected counts at the stated N; I checked this
+explicitly. N is even and both select exactly N/2 vertices.
+
+Completion distinction checked more closely
+After deleting edge (0,1), the global color class remains an independent half.
+It can also be chosen as a MAXIMUM independent set, as the formal completion
+proof requests: a perfect matching exists without that X edge. In each Y
+cluster reserve 376940 vertices for matching to the opposite X side. Each X
+side has exactly 12 times that many vertices, and all needed cross links are
+complete. The 186120 remaining vertices per Y cluster match to the corresponding
+opposite Y cluster by the shift-zero link. This covers every finite vertex.
+A perfect matching bounds an independent set by N/2, attained by the global
+color class. Restoring edge (0,1) adds no selected edge to that class. Thus a
+zero-cost output is available within the existing completion logic itself.
+E6 must not be relabeled as failure of every completion output.
+
+Enumeration and negative controls
+The small-host harness checks 24 seeded weighted cases and 29838 pure-cluster
+cuts up to complementation. Its separate verifier re-enumerates all 82 eligible
+local cuts and all global cuts and half optima. These finite positive tests
+are sanity evidence only. They cannot prove a universal global-cut statement.
+The independent verifier imports no experiment module.
+
+The half-enumeration lemma is sound. On the compact capacity box slice, moving
+two partial selected masses by +t and -t makes cost concave (edge coefficient
+-t^2) or affine (no edge). An endpoint does not increase cost and makes at
+least one coordinate a capacity endpoint. Repetition leaves at most one
+partial cluster. The enumerated formula counts full-full and full-partial
+edges once, with denominator 2W^2. It covers exact half mass even for odd W.
+All-cut enumeration covers pure clusters; coordinatewise affine rounding
+proves some global cut optimum is pure. It does not enumerate every local
+split-cluster optimum, and the proof makes no such claim.
+
+My separate endpoint enumeration reproduces uniform K2 and C4 optimum zero,
+and C5 and Petersen optimum 1/50. An independent odd-support control shows
+why the partial coordinate is necessary: two nonadjacent full C5 clusters
+cost zero but have mass 2/5, not 1/2. Omitting the partial coordinate would
+confuse a floor-half of clusters with a fractional half of total mass.
+
+All six builder negatives reject at the relevant semantic checks: lost local
+optimality, triangle, forged profile cost, wrong half mass, false global zero
+cut, and false C5 optimum. The earlier weaker shape-check output is retained
+and disclosed. It is not the accepted semantic-control record.
+
+Replay and accepted boundary
+Run python3 replay/replay.py, then python3 independent_check.py. The first
+preserves each new run in its own evidence directory; the second regenerates
+independent-results.json. This is exact rational computation and independently
+reviewed written mathematics, not a new kernel-checked graph theorem.
+The result closes the local-cut retained-certificate hypothesis. It does not
+refute E5, BCL, the full completion theorem or the sparse-half conjecture. A
+universal positive statement using global maximum cuts remains open. No new
+search or structural route is started by this review.

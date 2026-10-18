@@ -1,0 +1,72 @@
+C4 EXACT CONDITIONAL CONTRACT
+
+Main theorem: LeanControls.DelayedEntry.delayed_sampled_finite_entry.
+Let R=2221/40000=.055525, target=9/200=.045, drift=3/1700,
+and E=7157/1200 seconds. Choose c=m_x+m_v/4+m_a/32 once from the actual
+first reading m=q.measurement 0. Define
+  z=(x-c, x-c+v/4, x-c+v/2+a/16),
+  rho(z)=max(|z0|/1.02, |z1|/1.01, |z2|).
+
+Premises, all unchanged from accepted C3
+  0<=D<=1/2000 and D+E<=H.
+  AdaptiveAdmission.Execution H D m f r d stamp read.
+  AdaptiveAdmission.IsSchedule H D q stamp read.
+  q.measurement 0=m; |m_v|<=.02 and |m_a|<=1.25.
+Execution supplies one continuous physical state f=(x,v,a), the actual
+one-sided ODE, causal nonnegative stamps with total age<=.001, sensor errors
+(.001,.01,.05), response rate in [8,12]/s, and target error magnitude<=.01.
+The pending command is -1.21 until D; the left channel keeps it at D. The
+right channel switches at D to clipped feedback -8*(x-c)-6*v-a/2 using the
+held reading; clipping is to [-2,2]. All conditions persist through H.
+The first sample is at zero and the first dispatch at D. The schedule keeps
+strict locally finite dispatch order, causal samples and held-cell semantics.
+Position is unrestricted by the measured guard. The center is not updated.
+
+Conclusions
+  Both readings at D still equal m with original timestamp zero.
+  |zi(t)|<=R for all i and all t in [0,H].
+  rho(z(t))<=max(.045,.055525-(3/1700)*(t-D)) for every t in [D,H].
+  For every t in [D+E,H]: rho(z(t))<=.045, and
+    |x(t)-c|<=.0459 m, |v(t)|<=.3654 m/s, |a(t)|<=2.9088 m/s^2.
+All dispatch boundaries, D, the plateau kink D+E and final H are included.
+The deadline is D+5.964166666... seconds. At maximum startup delay it is
+5.964666666... seconds on the original clock.
+
+What is derived, not assumed
+The initial true box follows from the actual first reading and sensor box.
+The startup cube follows from the pending ODE. C3 then proves the full cube.
+derived_history_residual proves |digital feedback mismatch|<=.111 for both
+channels on [0,H], using the actual whole-history slope and original age.
+This digital budget is NOT the actual pending-command mismatch before or
+on the left at D. The explicit witness formally separates these quantities.
+weighted_face proves the six inward inequalities for ALL K>=.045, all
+r in [8,12], all |w|<=.111, and the full weighted box. No corner-only screen,
+new rate ceiling, endpoint box, supplied invariant or residual premise is used.
+
+Boundaries and proof order
+The moving envelope is extended analytically before D, where it is >=R.
+An epsilon-inflated first-contact proof excludes contact at or before D using
+the already proved cube. Only contact strictly after D uses the digital left
+ODE. The actual left ODE is used everywhere before that case split. The
+incoming envelope derivative at D+E is -3/1700; after the kink it is zero.
+The proof changes an analytic function, not the state, clocks or timestamps.
+
+Witness and counter-controls
+DelayedEntry.Witness.actual_execution and actual_schedule give a special
+positive-delay execution for every finite H. D=.0005, sample n=n/2000,
+dispatch n=D+n/2000, r=8 and target error zero. The first reading (c,0,0)
+fits its original sensor box. A tiny prepared nonconstant pending phase
+joins the exact equilibrium (c,0,0) at D, then stays there. The left command
+at D is -1.21 and the right command is zero. six_second_instance instantiates
+the main theorem through 6 seconds. This is not a nominal braking capture,
+entry from outside the target, or existence for arbitrary admissible data.
+A positive physical startup acceleration proves nonconstancy; its digital
+feedback residual does not bound the pending-command residual.
+
+Limits retained
+The nominal C3 whole-time tube still reaches .1564625 m and fails .15 m.
+For that same reading its late tube reaches .1468375 m; this does not repair
+the earlier travel bound. The guard is position-translation covariant, so
+there is no universal absolute clearance. There is no detector liveness,
+precision standstill, arbitrary-data existence, C1 floor-only-rate handoff,
+coupled robot/contact model, implementation validation or novelty claim.

@@ -1,0 +1,61 @@
+C3 EXACT CONTRACT
+
+Main theorem: LeanControls.AdaptiveAdmission.delayed_sampled_hold.
+The center is chosen once from m=q.measurement 0:
+  center m = m 0+m 1/4+m 2/32.
+The measured guard is |m 1|<=1/50 and |m 2|<=5/4.
+There is no measured-position restriction and no re-centering at later updates.
+
+Premises
+  0<=D<=H, D<=1/2000.
+  Execution H D m f r d stamp read and IsSchedule H D q stamp read.
+  q.measurement 0=m and Guard m.
+Execution is one continuous f=(x,v,a). It has the actual pending/digital ODE
+on the stated left and right sides, causal nonnegative stamps, age<=1/1000,
+sensor errors (.001,.01,.05), rates 8<=r<=12, and target error<=.01.
+The pending target is exactly -1.21. Thereafter use clipped feedback
+command(c,s)=-8*(s0-c)-6*s1-s2/2, with clipping to [-2,2]. Target error is
+added after the command. IsSchedule keeps the first sample at 0, first
+dispatch at D, strictly increasing locally finite dispatches, causal samples,
+and the stated held half-open/half-closed cells. All premises persist through H.
+
+Conclusions
+  Both readings at D equal the original m and retain timestamp 0.
+  Every transformed coordinate stays within R=2221/40000 on [0,H].
+  For all t in [0,H], including every dispatch:
+    center m-R <= x(t) <= center m+R;
+    |v(t)|<=8R=.4442 and |a(t)|<=64R=3.5536;
+    effective target magnitude<=3589/2500=1.4356.
+The true initial sensor box, startup cube, mixed-history mismatch and clipping
+inactivity are proved internally. They are not main theorem premises.
+
+Exact comparison that must remain visible
+  Old nominal m=(.14,-.01,-1.17): fixed c=.088125, upper tube .14365.
+  C3 at that SAME m: c=.1009375, lower tube .0454125, upper tube .1564625.
+  .1564625 > .15. The new center is .0390625 m behind measured position.
+  Initial held command changes from +.23 to +.3325, with unchanged gains.
+The interface removes absolute-position admission rigidity; it is not a
+stronger forward-clearance certificate or hold-at-current-position theorem.
+
+Additional formal evidence
+  observation_admission derives the true initial box from the actual reading.
+  startup_acceleration derives |a|<=1.30 from the pending ODE.
+  startup_cube derives admission through the entire startup interval.
+  prefix_budget covers the original mixed pending/digital measurement history.
+  first_cell_age and no_first_hold_after_full_age retain original-clock expiry.
+  Interface.execution_translation and schedule_translation preserve the full
+    execution and schedule under position translation, with the same stamps.
+  Interface.sensor_subband proves every allowed sensor error accepts true
+    |v|<=.01 and |a|<=1.20. It makes no claim that a detector observes that band.
+  Interface.guard_nonempty gives exact guard readings at every position.
+  Interface.wider_velocity_rejects_initial_cube and the acceleration counterpart
+    give exact time-zero sensor-box obstructions to the proposed widened guards.
+  Witness.positive_delay_witness supplies a nonconstant physical execution on
+    [0,.001], with D=.0005. The state is not reset at dispatch.
+
+Not proved
+  General initial-value existence or a sampled detector's eventual admission;
+  persistence of the witness beyond 1 ms; C1 floor-only-rate composition;
+  C2 finite-entry under this mixed history; .15 m clearance; permanent rest;
+  lower-travel safety beyond the stated tube; robot/contact/implementation
+  acceptance; novelty of the underlying mathematics.

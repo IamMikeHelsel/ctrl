@@ -1,0 +1,152 @@
+INDEPENDENT C3 REVIEW — CONDITIONAL MEASURED ADMISSION ACCEPTED
+18 October 2026
+
+Verdict
+AdaptiveAdmission.delayed_sampled_hold passes statement review, copied-source
+build, axiom audit and separate kernel replay. It derives delayed admission
+from the actual first reading and its sensor box. No endpoint cube, ongoing
+invariance or aggregate mismatch bound is a main premise. It removes the old
+fixed measured-position requirement. It does not prove that a detector reaches
+the guard, that all guarded initial states have the required future execution,
+or that a prior stopping trajectory supplies that execution.
+
+The center policy is part of the result. It is chosen once as
+c=m_x+m_v/4+m_a/32. The guard is |m_v|<=.02 and |m_a|<=1.25. This is not a
+hold-at-measured-position policy. For the same old nominal reading, the new
+center is .1009375 m and the position tube is [.0454125,.1564625] m. The old
+fixed case had center .088125 and upper tube .14365. C3 does not retain the
+.15 m clearance certificate. No complete stop-and-hold, C1/C2 composition,
+permanent rest, hardware or novelty claim is accepted.
+
+Frozen inputs and replay
+Builder frozen-manifest SHA256:
+7d56bd57f0a340107ad04e2c3b0e06aa7a11329757fa241598845294a58a302a.
+All 59 entries match and are copied under inputs/, including development
+attempts and negative controls. Three recorded source dependencies also match.
+All 267 entries in the four prior control/handoff packets remain intact.
+The only imported old local module is the unchanged DigitalHold:
+aa91b649affc0906c79dd7a017b34d6f729d1c16f50117ab87daaa1ed2fadc03.
+New source hashes:
+ AdaptiveAdmission: 8bea4736a6e49f22fc682b80729a71e93f11e8ac5361c445c4b72497cc5d6ab8
+ AdaptiveWitness: 0db91ac1fe90c6fdc1c6790842e83d7ff529089192a49cbb6ca77223508ba318
+ AdmissionInterface: 61a1e57628e77ef4aae6489f7fc1e8d0635f0e7b30e998ac887469602b14d11a
+
+replay_controls.py builds all four modules from frozen copies in fresh/.
+LEAN_PATH contains only that fresh directory and the pinned external package
+products. It excludes the old local project build cache. Lean 4.35, compiler,
+leanchecker and package hashes match the builder pin. Four builds, one full
+75-theorem axiom audit, four separate kernel checks and seven semantic rejects
+all pass: 16 main steps. Every audited closure uses only propext,
+Classical.choice and Quot.sound. Main evidence is replay-results.json.
+
+replay_extra.py runs AFTER the main replay and binds its unchanged result hash.
+It builds the critic's TranslatedScope theorem, audits its one closure, checks
+its kernel product, and rejects FalseAbsoluteClearance: four extra steps.
+Extra evidence is extra-results.json. Total accepted replay steps: 20;
+total audited theorem declarations: 76. The main and extra counts remain in
+separate JSON records. No critic proof repair or failed run was needed.
+
+Actual contract and ordering
+The global clock starts at the actual first sample, time zero. Require
+0<=D<=H and D<=.0005 s. One continuous physical state f=(x,v,a) obeys
+x'=v, v'=a, a'=r*(u+d-a), with the stated left and right derivative channels.
+Rates on both channels lie in [8,12]/s; target error has magnitude <=.01.
+The pending command is exactly -1.21, so its effective target lies in
+[-1.22,-1.20]. It applies before D and on the left at D. Digital feedback
+applies on the right at D, clips to [-2,2], and adds target error afterward.
+The center is fixed for the whole execution, including all later readings.
+
+The schedule has sample 0 at time zero, dispatch 0 at D, strict locally
+finite dispatches, causal samples and shared held measurements on the stated
+half-open/half-closed cells. Startup indices are zero for both channels.
+Thus both readings at D still equal m and both stamps remain zero. There is
+no fresh-at-dispatch substitution. Every stamp is nonnegative, no later than
+the current time, and at most .001 s old. Startup consumes that total age.
+The theorem does not assume a sampling period alone or reset the clock at D.
+The first-cell age theorem forbids continued use of stamp zero past age 1 ms.
+
+Proof order and noncircularity
+observation_admission uses the actual schedule/read link and the sensor box
+at time zero. Guard plus errors gives |v(0)|<=.03 and |a(0)|<=1.30. A separate
+pending-command barrier proves |a|<=1.30 throughout startup. Integrating its
+bounded derivative gives |v|<=.03065 and jerk magnitude <=30.24. The three
+startup coordinate bounds at .5 ms are, exactly,
+ .045077825, .042740325, .054472825.
+All are below R=.055525; the smallest margin is .001052175. This derives the
+whole startup cube, including dispatch, instead of assuming an endpoint box.
+
+The feedback slope during the pending interval is derived from its actual
+ODE. Independent exact corner arithmetic gives the enclosing interval
+[1.9548,7.7252], so the proof's absolute bound 8 is valid. Under a temporary
+cube prefix with R<=K<=1/16, clipping is proved inactive. The first history
+pass uses the coarse digital residual and the separately derived pending
+slope. The second yields slope <=8 over the entire original sample history.
+Sensor and target errors then give residual <=.103+.008=.111. The remaining
+inward-face margin is 2R-.111=.00005.
+
+The global first-contact proof uses epsilon-inflated cube faces. Startup
+contact is impossible by the derived startup cube. Later contact uses the
+prefix residual, the incoming left ODE and the old cube-face inequality.
+The prefix premise is discharged by the barrier argument and epsilon tends
+to zero. No future-state bound or already-proved smaller tube is assumed.
+The final result holds at all admitted real times, including dispatches and
+the finite horizon endpoint. It retains |v|<=.4442, |a|<=3.5536 and effective
+target magnitude <=1.4356. Those bounds do not express precision rest.
+
+Witness and translation
+The witness is genuinely nonconstant: pending command -1.21 with rate 8
+changes acceleration before D=.5 ms. At D it joins the exact held solution
+with command +.3325 at the same full state. Right and left derivatives use
+the proper command sides. The original nominal reading remains stamped zero.
+Its second scheduled dispatch is exactly H=1 ms; its index remains zero on
+the first cell and at the endpoint as allowed by the left contract. No
+post-H execution or correctness of unused future measurements is claimed.
+
+AdmissionInterface proves translation of the full execution and schedule,
+including the derivatives, commands, measurements and unchanged timestamps.
+It also proves a positive-width sufficient true-state sub-band: every allowed
+sensor reading passes the guard when |true v|<=.01 and |true a|<=1.20. This is
+not sampled-detector liveness or reachability of that band.
+
+The critic's TranslatedScope uses that full translation on the nonconstant
+witness, with a .1 m shift. It meets Execution, IsSchedule, first-measurement
+identity and Guard, but starts at .24 m>.15. Its proof and kernel replay pass.
+The opposing absolute-clearance claim rejects. This is a real supplied finite
+execution counter-control. It shows that unrestricted position admission
+cannot imply a fixed absolute clearance, not that the relative C3 tube fails.
+
+Controls, diagnostics and practical scope
+The seven builder negatives reject for mathematical reasons, not missing
+modules. Wider speed .03 and acceleration 1.4 guards have explicit initial
+sensor-box states outside the cube; independent arithmetic reproduces excess
+13/80000 and 47/20000. These are time-zero certificate counterexamples, not
+constructed later unsafe executions. The 5 ms age/startup mutations fail
+inside the history/startup proof. They do not prove that every such execution
+is physically unsafe. Fixed-center translation, nominal .15 clearance and
+renewed stamp claims also reject; the renewed-stamp control is scalar age
+arithmetic, not an additional trajectory counterexample.
+
+check_budgets.py reproduces the exact budgets, residual and nominal comparison.
+It also recomputes the three old binary64 diagnostic rows from their hash-bound
+input; it performs no new integration. Their nominal new upper tubes are
+.1596209201, .1509877192 and .1450042998 m at rates 8, 10 and 12, respectively.
+The first two still exceed .15. They are numerical diagnostics, not detector,
+continuation or formal reachability proofs. The nominal center is 39.0625 mm
+behind measured position and the first held command changes from +.23 to
++.3325. This tradeoff must remain visible in integration.
+
+Replay order and remaining work
+Run python3 replay_controls.py into empty fresh/ and logs/ output folders,
+then python3 replay_extra.py, then python3 check_budgets.py. Preserve recorded
+outputs separately before a clean replay. Compiled caches are excluded from
+the review manifest; sources, logs, attempts and JSON evidence are included.
+The builder's earlier mechanical/comment/continuity development attempts are
+preserved in inputs/attempts/ and were not accepted evidence.
+
+C3 is a conditional interface repair under the stated scalar model. It adds
+an upper response-rate assumption relative to C1's floor-only recovery and
+keeps a different mixed-history residual from C2. Neither composition is
+proved. A detector, suitable continued sampled execution, task-specific
+clearance and a declared useful terminal condition remain necessary. This
+review claims no general existence theorem, new control theory, robot/contact
+safety or hardware acceptance. No further route is started here.
