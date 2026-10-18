@@ -1,0 +1,125 @@
+MORNING REPORT — completed research round
+18 October 2026
+
+We have a complete technical-review draft, a replayable proof package and an
+explanatory animation. The strongest result is a checked link from a new motion
+request to the history it will actually follow. A second proof carries one
+physical scalar trajectory into a final hold under changing response.
+
+The paper is ready for a human specialist to judge its value. It is not yet a
+submission-ready claim of a new robot smoother. Related methods already address
+these concerns. The open question is whether this precise formalization, its
+failure examples and its reusable checking tool add enough value to publish.
+
+Start here
+Paper: publication/robot-motion/checked-motion-paper-v2/main.pdf
+Title: Treating the Tremors We Built into Robots
+Author: Mike Helsel. AI assistance is disclosed. Nine pages, 13 references.
+Animation: publication/robot-motion/execution-contract-animation-v3/
+  same-goal-different-motion.mp4
+Proof package: publication/robot-motion/overnight-reviewer-bundle-v4/START-HERE.txt
+Decisions: research/overnight/2026-10-18/QUESTIONS-BEFORE-SUBMISSION.txt
+
+Robot motion — proved within the reference model
+A new reference can take over only when its certificate matches the exact live
+history, task, goal, limits, deadline and declared execution time. The proof
+covers its reference speed, acceleration and jerk bounds, unchanged past motion,
+and final target. Late, stale or duplicate commits are rejected. Rejection keeps
+the old plan; it does not guarantee that the new task will finish.
+
+The prototype accepts clock values and atomic-state assumptions as inputs. It
+does not measure a real controller or implement its atomic handoff. A speed
+check is sufficient and can reject a safe reference. A failed finite search is
+not proof that no feasible motion exists.
+
+Other controls — proved within the scalar physical model
+One trajectory carries through the return and hold, without resetting physical
+state. The supplied classical trajectory is defined on [0,H], with H at least
+3.42 s. Under the declared initial-error, response and disturbance bounds, actual
+position is within 0.2 mm of the zero goal from 1.42 s through H. From 3.42 s
+through H, speed is at most 1 mm/s and acceleration at most 0.02 m/s². The response
+can change within its bounds. This is a conditional settling-band result, not an
+emergency stopping-distance certificate. A checked witness shows that exact rest
+at 3.42 s cannot be guaranteed.
+The proof does not establish the faster 1.70 s sampled task.
+
+Comparison — numerical evidence
+All methods share the same moving state when the new request arrives. Retained
+FIR lowers the squared-jerk integral against the native baselines but adds
+forward travel. A stronger offline smooth plan lowers both measures relative to FIR,
+while raising peak jerk. It still travels farther than the native methods. Native fast alone passes the tight task. No method wins
+all measures. Squared jerk is a motion metric, not physical energy.
+
+Independent 80-digit checks support the saved comparisons. The stronger study
+contains 90 traces and 363,564 saved state rows. It omits planning latency. A
+10 mm reference cap allowed actual travel slightly above 10 mm in two cases.
+The three inaccurate optimizer attempts are retained as status records; their
+raw vectors were not saved. These limits remain explicit in the paper.
+
+Geometric Unity — accepted algebra, source-specific work stopped
+The checked standard algebra includes an actual real and complex matrix
+representation, its adjoint, and an explicit 64+64 split signature on the
+128-dimensional spinor space. This differs from the 7+7 generator form.
+It does not validate GU physics or establish a new mathematical result.
+Further theory-specific work needs fixed operators, normalization, brackets,
+domains and variation data. The source contains an action. Missing choices were
+not supplied silently. The exact questions are in the submission question list.
+
+Verification and repairs
+The final manuscript passed independent claim, source and nine-page visual
+review. The animation passed independent data and presentation review.
+The final V4 package passed an independent copied-source replay: 63 modules,
+3,944 declaration audits, 22 separate kernel checks and 33 false-claim controls.
+Ten JSON proof clients passed; 19 malformed inputs rejected. Missing or changed
+evidence and both concrete input-file race tests gave the required outcomes.
+Public dependency caches, compiler/checker binaries, parsing, clocks and atomic
+state remain stated trust boundaries. The full ecosystem was not bootstrapped
+from source. These are independent agent checks, not external human peer review.
+Earlier defects in dependency pin binding and saved-input provenance have
+preserved counterexamples and repair records. A proof count is audit coverage,
+not a score for novelty or physical success.
+
+Next useful step
+Have a human controls/formal-methods specialist judge the contribution, then
+choose release scope and venue. A Franka demonstration needs the exact robot
+interface, measured timing and a coupled tracking argument. The scalar proof
+alone does not establish robot safety, contact performance or PL d/e.
+
+No robot was available. No outside contact, submission, public release, purchase,
+paid API, billing change or PR merge occurred. The repository remains private
+and PR 26 remains a draft. All three research branches have stopped at their
+accepted scope or exact source obstruction. The overnight heartbeat is paused and research jobs are stopped. The temporary
+keep-awake process is stopped. Final repository preservation is recorded below.
+
+Review records
+Paper: publication-review-02/paper-review/REPORT.txt
+Package: publication-review-02/package-review/REPORT.txt
+Handoff scientific scope: publication-review-02/handoff-review/REPORT-FINAL.txt
+Animation: animation-review-01/REPORT.txt
+These paths are relative to research/overnight/2026-10-18/.
+
+Repository and usage
+Private repository: IamMikeHelsel/ctrl. Draft PR 26:
+https://github.com/IamMikeHelsel/ctrl/pull/26
+The final snapshot is on branch target/research-notebook-20261017. The assistant
+handoff records its exact commit after push and remote verification.
+
+The last completed library CI run was 39115920933 at commit 2901af8fd3234d144a45878814d1942528f3d4b9.
+It ran on ctrl-local-sparky-arm64. Lean and documentation generation passed.
+The later documentation script failed because sudo required an interactive
+password. This is separate from the research proof package. A final snapshot
+push may trigger another library run; no unobserved CI success is claimed.
+
+At 10:08 UTC, the shared weekly meter was 70% used, up from 43% at round start.
+The credit balance was unchanged at 66235.333017. The account meter cannot
+attribute usage to an individual agent. Work stopped because the bounded gates
+were complete or blocked, with exact next questions, not to consume the budget.
+
+Final preservation
+All 74 named frozen manifests passed. Their 12,610 stored files match exactly;
+36 excluded compiled products were also checked in the working source. The
+notebook sync check found zero live-source differences. All stored snapshot
+hashes passed. After writing this closing metadata, the checks are repeated
+before commit. See preservation-index-07.json and the repository record
+research-notebook/_sync/overnight-checkpoint-07.json. Old failures and toolchain
+pins remain preserved. No merge or public release is part of this checkpoint.

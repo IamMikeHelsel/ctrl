@@ -1,0 +1,126 @@
+PAPER REVIEW 02 — CLAIM AND SOURCE MAP
+Input: paper-input-01/main.tex, SHA256
+b913913184a4ddcd0f0a6f3e212e15c7656d96ddb9650ec1deacf3429ca38b49.
+Line numbers refer to that frozen input. No new Lean build was run here.
+The separate package reviewer owns the combined fresh build and client audit.
+
+1. Exact jerk and acceleration, lines 82–128; Theorem 1
+Source: RationalGuard.check_real_iff; AccelerationGuard.future_acceleration_iff
+and checkAcceleration_real_iff; SuccessorGuard.same_acceptance.
+The rational guards reject nonpositive width and negative limits. The real
+all-future contracts include the current point, future knots and the final tail.
+The successor proof preserves the all-pairs decision. Critical-point reasoning
+is exact for piecewise quadratic acceleration; no sample grid is substituted.
+Read the source definitions and theorem statements. ACCEPT the bounded claim.
+Optional precision: say S consists of the specified points, not merely contains
+them, to exclude an unintended reading with extra past points.
+
+2. Completed history, lines 130–157; Theorem 2
+Source: HistoryPruning.future_jet_eq, rational_future_jet_eq,
+jerk_guard_pruned and acceleration_guard_pruned.
+Completed increments move into the offset; their future derivatives vanish.
+The result is future-only and does not bound retained event count. ACCEPT.
+The paper correctly does not transfer this guard equivalence to the speed
+checker or claim that zero-size events preserve the whole timed selector.
+
+3. Sufficient speed, lines 139–157
+Source: VelocityBernstein.velocity_blend and velocity_cell_bound;
+VelocityGuard.checkVelocity_real_sound; VelocityFixtures.
+The four displayed Bernstein coefficients match source. They provide a
+sufficient bound. The safe rejected example and partition sensitivity are
+visible. ACCEPT. No exact cubic-extremum or complete planner claim is made.
+
+4. Timed selection and reversal, lines 159–188
+Source: VelocityAdmission.chosen_velocity_reference_contract and
+choose_velocity_none_iff; VelocityFixtures.delayed_full_candidate_selected,
+tight_deadline_no_candidate and delayed_full_reference_contract.
+The selected event is from the supplied finite list, with V/A/J bounds from
+request time, unchanged reference through execution and reference rest by D.
+none means certificate rejection, not physical infeasibility. ACCEPT.
+REPAIR: the immediate reversal's acceleration is -21/32 at 0.77 seconds.
+Its magnitude reaches 21/32. exact_spot_check.py independently reconstructs
+all knot-cell extrema and confirms the positive maximum is only 1/3.
+
+5. Future atomic commit, lines 190–218
+Source: FutureCommit structures Base, Task, Pending and Timing;
+certificateOK, commitOK_iff, successful_commit_contract,
+committed_base_invalidates_pending and every_commit_preserves_executed_prefix.
+Source: critic-05/ReviewClients.lean, REPORT.txt and negative controls.
+Full structural Base and Task equality is checked, not version equality alone.
+The signed increment is bound to the live desired goal. Acceptance applies the
+certificate to the actual appended Base; rejection retains the whole live Base.
+The same pending certificate cannot be reused after its accepted transition.
+Timing uses declared request <= completion <= commit and commit + dispatch <=
+execution, with nonnegative dispatch. The unchanged prefix is exact reference
+equality; no physical reset is assumed. ACCEPT.
+The text correctly labels 0.52/0.57/0.01/0.62 as a formal scenario, not measured
+latency; ideal clock and atomic state assumptions are explicit. It correctly
+states that universal rejection need not yield progress. Optional: add that
+the contract concerns the returned fixed history; later accepted requests can
+supersede it. No liveness, distributed-system or clock-verification claim follows.
+
+6. Continuous physical tracking and hold, lines 220–295; Theorem 3
+Source: ScaledTracking.tracking_cube_scaled and scaled_cube_physical_bounds;
+Composition.checked_tracking; FIRHold.delayed_return_physical_terminal.
+Physical coefficients and units match. The initial cube is in transformed
+errors, not three independent component limits with identical units. The
+classical actual trajectory, response bounds and disturbance bounds remain
+premises. The tracking bound and progress use one initial condition at t=0.
+The fixed proof carries the same state, r and w through the shift at t0=1.42.
+It gives position from 1.42 and residual velocity/acceleration from 3.42 to H.
+H >= 3.42 excludes an empty terminal interval. ACCEPT the statement.
+Source: QuadraticTrajectory.qState_ode, energy_envelope,
+cube_energy_initial and two_seconds_actual_changing_input; QuadraticAlgebra.
+The displayed Q has the inverse used in the actual proof. Independent Fraction
+matrix multiplication verifies both inverse identities and positive leading
+principal minors. The coordinate thresholds printed in the paper are valid.
+REPAIR the explanation: define y(s) from x/v/a(t0+s) and E(s) on this local
+hold clock. Current y=(80000x,2000v,50a), then E(0), is ambiguous. The Lean proof
+does not make this clock error. Display the exponential envelope as one equation.
+Source: controls/critic-05/ReviewClients.lean residual witness and wrong-clock
+contradiction. The draft correctly allows residual motion, does not claim exact
+rest, and does not replace the 1.70-second sampled task with the 3.42-second proof.
+It also preserves the classical-existence premise for changing bounded inputs.
+
+7. Three-method numerical comparison, lines 298–373
+Source: robot-motion/critic-03/summary-review.json and frozen replay records.
+The 72 traces, 271884 state rows, 1356 event rows and 7922 native queries agree
+with the accepted review. Ranges and ratios agree at their printed precision.
+The initial reference jet is independently reconstructed in exact arithmetic.
+Equal prefix, reference state and actual state are distinct and correctly stated.
+Native matched is not a squared-jerk optimizer. Rejection counts as task failure.
+The 0.5/1 ms grids and event sides are numerical evidence, not an all-time physical
+bound. Jerk squared has the right units and is not called mechanical energy.
+The Figure 2 caption correctly separates integral and maximum excursion. ACCEPT.
+
+8. Stronger smooth comparison, lines 375–429
+Source: smooth-review-01/REPORT.txt, exact-review.json, summary-review.json;
+smooth-baseline-01/ERRATA-01 and ERRATA-02.
+The exact repaired reference, six fixed solver attempts, 90 traces, 363564
+state rows, 3294 event records, and printed table ranges match accepted records.
+One optimal, two infeasible, three optimal_inaccurate statuses are reported.
+The missing raw arrays/residuals for the inaccurate attempts remain disclosed.
+No solver status is promoted to a mathematical infeasibility or optimum claim.
+The lower jerk integral/travel but higher peak and native travel advantage are
+kept visible. The 10 mm bound is explicitly a reference cap; actual 10.0033 mm
+is disclosed. Both tasks use the same planned return; tight task fails. ACCEPT.
+The roughly 0.138-second planning attempt is not charged in the simulation.
+The draft labels this offline and does not claim the new commit theorem repairs
+the existing optimizer run. This is essential to the accepted comparison scope.
+
+9. Artifact, runtime and application, lines 431–494
+The numbers 63/6/22/33 describe the expanded package plan, while combined replay
+and the new input-snapshot wrapper still have separate review gates in this input.
+Do not change pending to passed until that review is complete and frozen.
+The old wrapper race is stated accurately. Parser meaning, real clocks and atomic
+runtime behavior remain outside Lean. The 32-event timing applies to the older
+J/A checker, not the added speed/commit pipeline or a 1 kHz deployment. ACCEPT
+these qualifications, with the package-status delta reserved for later review.
+No Franka, VLA, contact, payload, PL d/e, hardware or original smoothing-method
+result is claimed. Affiliation/release/license/venue remain owner decisions.
+
+Review boundary
+This review checks paper-to-source fidelity, selected arithmetic, reference
+attribution and presentation. It does not replace the independent component
+proof checks or numerical replays. It does not certify novelty, practical robot
+performance, human peer review, release rights or publication acceptance.

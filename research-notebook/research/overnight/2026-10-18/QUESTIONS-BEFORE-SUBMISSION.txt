@@ -1,6 +1,6 @@
-QUESTIONS BEFORE SUBMISSION — integration working list
+QUESTIONS BEFORE SUBMISSION — final handoff
 18 October 2026. These are collected decisions, not requests to interrupt tonight.
-The final morning report will bind them to the accepted artifacts.
+MORNING-REPORT.txt lists the accepted artifacts and their review records.
 
 Owner decisions
 1. The author is Mike Helsel. What affiliation and disclosure wording should the
@@ -18,15 +18,16 @@ Scientific value and scope
    claim is a checked case study with failure witnesses, not a new smoother.
 5. Which real task benefits from these tradeoffs? Retained FIR lowers a sampled
    squared-jerk integral against the native baselines but adds forward travel.
-   A stronger offline smooth plan improves both measures while increasing peak
-   jerk. Native fast alone passes the tight task. There is no universal winner.
+   A stronger offline smooth plan improves both measures relative to FIR while
+   increasing peak jerk. It still travels farther than the native methods.
+   Native fast alone passes the tight task. There is no universal winner.
 6. Is a conservative physical terminal bound useful for the intended task?
    The same-trajectory proof reaches position tolerance at 1.42 s and guarantees
    speed/acceleration bands at 3.42 s. It does not prove the sampled 1.70 s deadline.
    The reference deadline and physical terminal deadline must remain distinct.
 7. What measured evidence supports the response interval and disturbance bound?
-   Both can change within the theorem's limits, conditional on its classical
-   solution premise. Friction loss, saturation, contact and coupled axes are
+   Both can change within the theorem's limits, conditional on its declared
+   initial-error bounds and classical solution on [0,H], with H at least 3.42 s. Friction loss, saturation, contact and coupled axes are
    not covered by merely renaming the scalar parameters.
 
 Implementation and later Franka demonstration
@@ -47,8 +48,9 @@ Resolved within the current proof scope
 - The same physical FIR trajectory is carried into a hold without a reset or
   a new endpoint-cube assumption. The response and disturbance clocks shift too.
 - The accepted commit proof binds the exact history and task and has late, stale
-  and duplicate failure witnesses. The final portable package and replacement
-  input-recording tool are under independent integration review.
+  and duplicate failure witnesses. The final V4 portable package and replacement
+  input-recording tool passed independent integration review. Its local evidence,
+  parser, clock and atomic-state trust boundaries remain explicit.
 
 Geometric Unity: exact missing inputs
 11. Supply fixed Phi tensor/operator definitions, normalization, brackets and

@@ -1,0 +1,390 @@
+[
+  {
+    "path": "negative-controls/physical-arrival/FalseExactArrivalFromBand.lean",
+    "contains_sorry": false,
+    "contains_false": false,
+    "last_lines": [
+      "import PhysicalArrival",
+      "example : |(1/10000:\u211d)| \u2264 1/5000 \u2192 (1/10000:\u211d) = 0 := by norm_num"
+    ]
+  },
+  {
+    "path": "negative-controls/physical-arrival/FalseTightSelection.lean",
+    "contains_sorry": false,
+    "contains_false": false,
+    "last_lines": [
+      "open RobotMotion RobotMotion.AccelerationAdmission",
+      "example : chooseExecution (1/5) (1/2) (15/2) (13/25) (13/10)",
+      "    [(11/50,1/50)] (-1/50) [13/25,31/50] = some (31/50) := by",
+      "  rw [insufficient_candidate_deadline]",
+      "  norm_num"
+    ]
+  },
+  {
+    "path": "negative-controls/physical-arrival/FalseTighterBudget.lean",
+    "contains_sorry": false,
+    "contains_false": false,
+    "last_lines": [
+      "import PhysicalArrival",
+      "example : (1/100:\u211d)+(15/2)/(48*10) \u2264 2*10^2*(1/100000) := by norm_num"
+    ]
+  },
+  {
+    "path": "negative-controls/physical-arrival/FalseZeroProgress.lean",
+    "contains_sorry": false,
+    "contains_false": false,
+    "last_lines": [
+      "import PhysicalArrival",
+      "open RobotMotion RobotMotion.AccelerationAdmission",
+      "example : position 0 (1/5) (realEvents deferredReturn) (1/2) = 0 := by",
+      "  rw [delayed_reference_progress]",
+      "  norm_num"
+    ]
+  },
+  {
+    "path": "negative-controls/history-pruning/FalsePositionOffset.lean",
+    "contains_sorry": false,
+    "contains_false": false,
+    "last_lines": [
+      "import HistoryPruning",
+      "open RobotMotion RobotMotion.HistoryPruning",
+      "example : position 0 1 [(0,1)] 4 = 0 := by",
+      "  rw [completed_nonzero_position]",
+      "  norm_num"
+    ]
+  },
+  {
+    "path": "negative-controls/history-pruning/FalsePrematureRemoval.lean",
+    "contains_sorry": false,
+    "contains_false": false,
+    "last_lines": [
+      "import HistoryPruning",
+      "open RobotMotion.HistoryPruning",
+      "example : qRetained 1 1 [(0,1)] = [] := by",
+      "  rw [premature_event_retained]",
+      "  norm_num"
+    ]
+  },
+  {
+    "path": "negative-controls/history-pruning/FalseQueuedRemoval.lean",
+    "contains_sorry": false,
+    "contains_false": false,
+    "last_lines": [
+      "import HistoryPruning",
+      "open RobotMotion.HistoryPruning",
+      "example : qRetained 1 4 [(10,1)] = [] := by",
+      "  rw [queued_event_retained]",
+      "  norm_num"
+    ]
+  },
+  {
+    "path": "negative-controls/history-pruning/FalseUnsignedOffset.lean",
+    "contains_sorry": false,
+    "contains_false": false,
+    "last_lines": [
+      "import HistoryPruning",
+      "open RobotMotion.HistoryPruning",
+      "example : qCompletedOffset 1 4 [(0,2),(0,-3),(1,4),(10,5)] = 5 := by",
+      "  rw [signed_repeated_offset]",
+      "  norm_num"
+    ]
+  },
+  {
+    "path": "negative-controls/successor-check/FalseCurrentAcceptance.lean",
+    "contains_sorry": false,
+    "contains_false": false,
+    "last_lines": [
+      "import SuccessorGuard",
+      "open RobotMotion.AccelerationAdmission.SuccessorCheck",
+      "example : checkSuccessor 1 (1/10) (7/2) [(0,1)] = true := by",
+      "  rw [current_time_rejected]",
+      "  norm_num"
+    ]
+  },
+  {
+    "path": "negative-controls/successor-check/FalseInteriorAcceptance.lean",
+    "contains_sorry": false,
+    "contains_false": false,
+    "last_lines": [
+      "import SuccessorGuard",
+      "open RobotMotion.AccelerationAdmission.SuccessorCheck",
+      "example : checkSuccessor 1 (1/2) 0 [(0,1)] = true := by",
+      "  rw [interior_peak_rejected]",
+      "  norm_num"
+    ]
+  },
+  {
+    "path": "negative-controls/successor-check/FalseQueuedAcceptance.lean",
+    "contains_sorry": false,
+    "contains_false": false,
+    "last_lines": [
+      "import SuccessorGuard",
+      "open RobotMotion.AccelerationAdmission.SuccessorCheck",
+      "example : checkSuccessor 1 (1/2) 0 [(10,1)] = true := by",
+      "  rw [queued_peak_rejected]",
+      "  norm_num"
+    ]
+  },
+  {
+    "path": "negative-controls/successor-check/FalseSuccessor.lean",
+    "contains_sorry": false,
+    "contains_false": false,
+    "last_lines": [
+      "import SuccessorGuard",
+      "open RobotMotion.AccelerationAdmission.SuccessorCheck",
+      "example : qNext [3,0,1,1,2] 1 = some 3 := by",
+      "  rw [unsorted_repeated_successor]",
+      "  norm_num"
+    ]
+  },
+  {
+    "path": "negative-controls/velocity/FalseConservativeAcceptance.lean",
+    "contains_sorry": false,
+    "contains_false": false,
+    "last_lines": [
+      "import VelocityFixtures",
+      "open RobotMotion.VelocityAdmission",
+      "example : checkVelocity 1 (1/6) 0 [(0,1),(1/4,-1)] = true := by",
+      "  rw [conservative_rejection]",
+      "  norm_num"
+    ]
+  },
+  {
+    "path": "negative-controls/velocity/FalseCurrentAcceptance.lean",
+    "contains_sorry": false,
+    "contains_false": false,
+    "last_lines": [
+      "import VelocityFixtures",
+      "open RobotMotion.VelocityAdmission",
+      "example : checkVelocity 1 0 (7/2) [(0,1)] = true := by",
+      "  rw [current_inside_tail_rejected]",
+      "  norm_num"
+    ]
+  },
+  {
+    "path": "negative-controls/velocity/FalseEndpointSufficiency.lean",
+    "contains_sorry": false,
+    "contains_false": true,
+    "last_lines": [
+      "  intro t ht",
+      "  have h := interior_real_violation",
+      "  have bad : |RobotMotion.velocity 1 [(0,1),(1,-1)] (9/5)| \u2264 1/2 := by",
+      "    norm_num [RobotMotion.velocity,RobotMotion.response,RobotMotion.F1,RobotMotion.P]",
+      "  exact False.elim (not_le_of_gt h bad)"
+    ]
+  },
+  {
+    "path": "negative-controls/velocity/FalseNoSafeRejectedHistory.lean",
+    "contains_sorry": false,
+    "contains_false": false,
+    "last_lines": [
+      "import VelocityFixtures",
+      "open RobotMotion.VelocityAdmission",
+      "example : \u00ac (\u2200 t : \u211d, 0 \u2264 t \u2192 |RobotMotion.velocity 1 [(0,1),(1/4,-1)] t| \u2264 1/6) := by",
+      "  rw [iff_true_intro rejected_history_is_safe]",
+      "  norm_num"
+    ]
+  },
+  {
+    "path": "negative-controls/velocity/FalseQueuedAcceptance.lean",
+    "contains_sorry": false,
+    "contains_false": false,
+    "last_lines": [
+      "import VelocityFixtures",
+      "open RobotMotion.VelocityAdmission",
+      "example : checkVelocity 1 (1/2) 0 [(10,1)] = true := by",
+      "  rw [queued_history_rejected]",
+      "  norm_num"
+    ]
+  },
+  {
+    "path": "negative-controls/velocity/FalseTightDeadlineSelection.lean",
+    "contains_sorry": false,
+    "contains_false": false,
+    "last_lines": [
+      "open RobotMotion.VelocityAdmission",
+      "example : chooseVelocityExecution (1/5) (1/15) (1/2) (15/2) (13/25) (13/10)",
+      "      [(11/50,1/50)] (-1/50) [13/25,31/50] = some (31/50) := by",
+      "  rw [tight_deadline_no_candidate]",
+      "  norm_num"
+    ]
+  },
+  {
+    "path": "negative-controls/fir-hold/drop-wait-before-speed-band.lean",
+    "contains_sorry": false,
+    "contains_false": false,
+    "last_lines": [
+      "import FIRHoldWitness",
+      "open RobotMotion RobotMotion.AccelerationAdmission RobotMotion.FIRHoldWitness",
+      "example : |biasedReference (1/100) (1/2) 1| \u2264 1/1000 := by",
+      "  norm_num [biasedReference,velocity,response,realEvents,realEvent,deferredReturn,F1,P]"
+    ]
+  },
+  {
+    "path": "negative-controls/fir-hold/erase-inherited-state.lean",
+    "contains_sorry": false,
+    "contains_false": false,
+    "last_lines": [
+      "import FIRHoldWitness",
+      "open RobotMotion.FIRHoldWitness",
+      "example : biasedReference (1/100) (71/50) 0 = 0 := by",
+      "  rw [biased_endpoint_not_reset]",
+      "  norm_num"
+    ]
+  },
+  {
+    "path": "negative-controls/fir-hold/erase-initial-error.lean",
+    "contains_sorry": false,
+    "contains_false": false,
+    "last_lines": [
+      "open RobotMotion RobotMotion.AccelerationAdmission RobotMotion.FIRHoldWitness",
+      "example : coordinates 0 (scaledError 10 (biasedReference (1/100))",
+      "    (referenceState 0 (1/5) (realEvents deferredReturn)) 0) 0 = 0 := by",
+      "  rw [initial_error_not_erased]",
+      "  norm_num"
+    ]
+  },
+  {
+    "path": "negative-controls/fir-hold/exact-physical-arrival.lean",
+    "contains_sorry": false,
+    "contains_false": false,
+    "last_lines": [
+      "import FIRHoldWitness",
+      "open RobotMotion.FIRHoldWitness",
+      "example : |biasedReference (1/100) (171/50) 0| \u2264 0 := by",
+      "  rw [biased_terminal_not_exact_goal]",
+      "  norm_num"
+    ]
+  },
+  {
+    "path": "negative-controls/fir-hold/unshifted-physical-inputs.lean",
+    "contains_sorry": false,
+    "contains_false": false,
+    "last_lines": [
+      "import FIRHoldWitness",
+      "open RobotMotion.FIRHoldWitness",
+      "example : wrongClockRHS = 0 := by",
+      "  rw [wrong_clock_rhs_nonzero]",
+      "  norm_num"
+    ]
+  },
+  {
+    "path": "negative-controls/fir-hold/wrong-reference-clock.lean",
+    "contains_sorry": false,
+    "contains_false": false,
+    "last_lines": [
+      "import FIRHoldWitness",
+      "open RobotMotion RobotMotion.AccelerationAdmission RobotMotion.FIRHoldWitness",
+      "example : position 0 (1/5) (realEvents deferredReturn) (1/2) = 0 := by",
+      "  rw [wrong_clock_is_nonzero]",
+      "  norm_num"
+    ]
+  },
+  {
+    "path": "negative-controls/future-commit/FalseDelayedCommitAcceptance.lean",
+    "contains_sorry": false,
+    "contains_false": false,
+    "last_lines": [
+      "import FutureCommitFixtures",
+      "open RobotMotion RobotMotion.FutureCommit",
+      "example : commitOK pendingReturn movingBase returnTask delayedCommit = true := by",
+      "  rw [rejects_delayed_commit]",
+      "  norm_num"
+    ]
+  },
+  {
+    "path": "negative-controls/future-commit/FalseDuplicateGoal.lean",
+    "contains_sorry": false,
+    "contains_false": false,
+    "last_lines": [
+      "import FutureCommitFixtures",
+      "open RobotMotion RobotMotion.FutureCommit",
+      "example : position 0 (1/5) (realEvents (appendPending pendingReturn onceCommitted).events) (17/10) = (returnTask.goal:\u211d) := by",
+      "  rw [duplicate_real_deadline_failure.1]",
+      "  norm_num [returnTask]"
+    ]
+  },
+  {
+    "path": "negative-controls/future-commit/FalseLateAcceptance.lean",
+    "contains_sorry": false,
+    "contains_false": false,
+    "last_lines": [
+      "import FutureCommitFixtures",
+      "open RobotMotion RobotMotion.FutureCommit",
+      "example : commitOK pendingReturn movingBase returnTask tooLate = true := by",
+      "  rw [rejects_late]",
+      "  norm_num"
+    ]
+  },
+  {
+    "path": "negative-controls/future-commit/FalseLatePrefix.lean",
+    "contains_sorry": false,
+    "contains_false": false,
+    "last_lines": [
+      "import FutureCommitFixtures",
+      "open RobotMotion RobotMotion.FutureCommit",
+      "example : position 0 (1/5) (realEvents (appendPending pendingReturn movingBase).events) (7/10) = position 0 (1/5) (realEvents movingBase.events) (7/10) := by",
+      "  norm_num [appendPending,pendingReturn,movingBase,realEvents,realEvent,position,response,F0,P]"
+    ]
+  },
+  {
+    "path": "negative-controls/future-commit/FalseReusedHistoryVersion.lean",
+    "contains_sorry": false,
+    "contains_false": false,
+    "last_lines": [
+      "import FutureCommitFixtures",
+      "open RobotMotion RobotMotion.FutureCommit",
+      "example : commitOK pendingReturn {changedBase with version := movingBase.version} returnTask onTime = true := by",
+      "  rw [rejects_reused_history_version]",
+      "  norm_num"
+    ]
+  },
+  {
+    "path": "negative-controls/future-commit/FalseReusedTaskVersion.lean",
+    "contains_sorry": false,
+    "contains_false": false,
+    "last_lines": [
+      "import FutureCommitFixtures",
+      "open RobotMotion RobotMotion.FutureCommit",
+      "example : commitOK pendingReturn movingBase {changedTask with version := returnTask.version} onTime = true := by",
+      "  rw [rejects_reused_task_version]",
+      "  norm_num"
+    ]
+  },
+  {
+    "path": "negative-controls/future-commit/FalseStaleHistoryGoal.lean",
+    "contains_sorry": false,
+    "contains_false": false,
+    "last_lines": [
+      "import FutureCommitFixtures",
+      "open RobotMotion RobotMotion.FutureCommit",
+      "example : position 0 (1/5) (realEvents (appendPending pendingReturn changedBase).events) (17/10) = (returnTask.goal:\u211d) := by",
+      "  rw [stale_base_real_deadline_failure.1]",
+      "  norm_num [returnTask]"
+    ]
+  },
+  {
+    "path": "negative-controls/future-commit/FalseSupersededGoal.lean",
+    "contains_sorry": false,
+    "contains_false": false,
+    "last_lines": [
+      "import FutureCommitFixtures",
+      "open RobotMotion RobotMotion.FutureCommit",
+      "example : position 0 (1/5) (realEvents (appendPending pendingReturn movingBase).events) (17/10) = (changedTask.goal:\u211d) := by",
+      "  rw [stale_task_real_deadline_failure.1]",
+      "  norm_num [changedTask,returnTask]"
+    ]
+  },
+  {
+    "path": "negative-controls/future-commit/FalseTightAcceptance.lean",
+    "contains_sorry": false,
+    "contains_false": false,
+    "last_lines": [
+      "import FutureCommitFixtures",
+      "open RobotMotion RobotMotion.FutureCommit",
+      "example : commitOK tightPending movingBase tightTask onTime = true := by",
+      "  rw [tight_commit_rejected]",
+      "  norm_num"
+    ]
+  }
+]

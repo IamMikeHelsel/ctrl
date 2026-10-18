@@ -1,0 +1,85 @@
+CURRENT FINAL REVIEW TARGET: VERSION 4
+
+The V4 package manifest is:
+73f004177733a1384a2bb7f22417d910c9da6b359088159c8d58f46ab13b23ed
+All 153 files are independently checked. The proof replay code, source bytes,
+plans, pins and parser are unchanged from V3. Only the client input snapshot
+check/digest and corresponding documentation changed.
+
+Final fresh replay command, from the workspace:
+python3 research/overnight/2026-10-18/publication-review-02/package-review/package-v4/replay.py --dependency-project lean-controls --lake .tools/elan/bin/lake --elan-home .tools/elan --output research/overnight/2026-10-18/publication-review-02/package-review/fresh-replay-v4
+
+After that replay passes:
+python3 research/overnight/2026-10-18/publication-review-02/package-review/client_checks_v4.py
+python3 research/overnight/2026-10-18/publication-review-02/package-review/output_snapshot_race_v4.py
+python3 research/overnight/2026-10-18/publication-review-02/package-review/object_failure_checks_v4.py
+python3 research/overnight/2026-10-18/publication-review-02/package-review/finalize_review_v4.py
+
+Each script requires fresh output paths. The two race/client scripts may run
+concurrently because they only read the proof replay and use separate outputs.
+Run object_failure_checks_v4.py only after both finish, since it temporarily
+changes and restores this reviewer's proof objects/record. The finalizer requires
+all final evidence and checks before it writes the acceptance report.
+
+The output-snapshot test changes only its newly created input.json after the
+probe appears. V3 wrongly records that new hash for the old proof. V4 must stop
+with 'Input snapshot changed during proof' and must not write result.json.
+The original external-input-path race remains a separate successful test.
+
+The following historical section records V2 and V3 work. These files remain
+preserved; use the versioned final commands above for current acceptance.
+
+Independent reviewer reproduction record
+
+Workspace:
+/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes
+Review folder:
+research/overnight/2026-10-18/publication-review-02/package-review
+
+The package-v3 folder is the copied portable package. Its artifact manifest is
+1d8ff565bcb9afcc89b2f6ad363b60f81e7de8698d8de7834891932f40530dd7.
+All 152 named files were checked before the copy was used.
+
+Fresh replay command, run from the workspace:
+python3 research/overnight/2026-10-18/publication-review-02/package-review/package-v3/replay.py --dependency-project lean-controls --lake .tools/elan/bin/lake --elan-home .tools/elan --output research/overnight/2026-10-18/publication-review-02/package-review/fresh-replay-v3
+
+Use a different new output directory for another run. The script refuses an
+existing output directory. Fresh local build products are under that output.
+Public pinned dependency caches are reused; no installer or paid service runs.
+
+mutation_checks.py reproduces the V2 tests. mutation_checks_v3.py reproduces
+those tests against V3. Each script creates fresh mutant directories and will
+refuse to overwrite existing ones. Exact commands and results are saved in
+mutation-results.json and mutation-results-v3.json. Additional tests of the
+other two canonical pin files are in all-pin-mutations-v3.json.
+
+The initial mutation harness used the wrong workspace parent index. Its failures
+and script are preserved under attempt-01. They were not counted as passing
+negative tests. The corrected tests use the actual dependency project path.
+The V2 fresh replay was stopped at root's request after its binding defect was
+confirmed. v2-replay-interruption.json retains its partial status. It is not a
+complete independent V2 acceptance.
+
+The mutation harness temporarily linked provisioned dependency caches for
+preflight only. No linked content was changed or copied. Those links were removed
+after their paths and targets were recorded in removed-temporary-symlinks.json.
+If rerunning the scripts, remove only those temporary .lake symlinks before
+notebook sync, or create those test directories under the excluded .cache tree.
+
+client_checks.py invokes the unmodified V3 client for six examples, malformed
+inputs, three additional semantic/normalization cases and a concurrent input-path
+replacement. It requires the completed fresh-replay-v3 result first. It emits
+real Lean proofs and runs leanchecker for each valid JSON case. Exact commands,
+decisions and hashes are recorded in client-results.json and each output folder.
+
+object_failure_checks.py changes only this reviewer's fresh replay temporarily,
+then restores the exact bytes in a finally block. It checks changed/missing
+objects, an incomplete replay and a missing object record. Original and restored
+hashes are saved. Never run it concurrently with another client using that same
+replay. It also invokes client_failure_injection.py for two fail-closed execution
+tests: a nonzero kernel step and a suppressed theorem-axiom log. Those injected
+tests are implementation tests, not mathematical proof replays.
+
+All proof and client executions use the current local provisioned runtime. No
+shared source, manuscript, state, Git checkout, hardware or external service was
+changed by this reviewer.

@@ -91,7 +91,8 @@ $E=((\tau_i,\delta_i))_{i=1}^{n}$, define
  q_E(t)=g_0+\sum_i\delta_i F((t-\tau_i)/h).
 \]
 The reference is $C^3$. Its velocity is piecewise cubic, acceleration piecewise
-quadratic, and jerk piecewise affine. Signed cancellation remains in the
+quadratic, and jerk piecewise affine. We call position and these first three
+derivatives the reference jet. Signed cancellation remains in the
 reference; we do not replace it by a sum of absolute event magnitudes.
 
 At current time $c$, let $S$ consist of $c$ and every future knot $\tau_i+kh$,
@@ -444,7 +445,8 @@ checks 22 module kernels, and requires 33 false clients to fail for mathematical
 reasons. The replay fixes the source, reviewer, root, kernel and negative-test
 plans. Public dependency caches remain a declared trust boundary. The permitted
 axioms are \texttt{propext}, \texttt{Classical.choice}, and \texttt{Quot.sound}.
-The expanded package's combined fresh replay is under independent review.
+An independent copied-path replay passed the same source, declaration, kernel
+and false-claim checks.
 
 An offline client reads an exact rational JSON request. It saves the input bytes,
 emits Lean literals, proposes a Boolean result by evaluation, then proves that
@@ -452,8 +454,10 @@ result and its consequence. Acceptance yields the reference contract; rejection
 yields only unchanged live state. A separate kernel check follows. The parser,
 truthful timing inputs and atomic runtime state are outside the proof. An earlier
 client could report a changed input file's hash after proving its old contents.
-The replacement snapshots the bytes it parses and proves; this repair has a
-separate end-to-end review gate.
+The replacement records the digest of the parsed bytes and rejects a saved
+input copy that changes during verification. Fresh output files remain trusted
+local evidence, not authenticated attestation. The portable artifact records
+the separate input-tool integration review.
 
 \begin{center}\small
 \begin{tabular}{p{.36\linewidth}p{.56\linewidth}}
