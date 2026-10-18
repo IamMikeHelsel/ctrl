@@ -1,0 +1,265 @@
+E1: A UNIFORM MOMENT CERTIFICATE AT R = 1293/50000
+18 October 2026. Written proof and exact arithmetic; not a Lean theorem.
+Builder submission for independent review. No self-acceptance or priority claim.
+
+1. Exact proposed theorem and external input
+
+Let hBCL be the following proposition: there exists N such that every finite
+simple triangle-free graph H with at least N vertices has a bipartition with
+at most (2/47)|V(H)|^2 internal edges. This is the same eventual BCL input
+used by PublishedBCL.lean, definition BCLEventual. It is a hypothesis here.
+
+Conditional on hBCL, every finite simple triangle-free graph G on n vertices
+has a set S of floor(n/2) vertices with
+  e_G(S) <= (1293/50000)n^2 = .02586 n^2.
+Each edge is counted once. There are no loops, multiple edges, edge weights,
+regularity assumption, maximum-degree assumption, or optimal-cut premise.
+The coefficient 1/50 is not claimed. The new argument first constructs a
+fractional half, then uses the unchanged rounding interface in section 7.
+
+It suffices first to prove this statement for n>0 even, given any oriented
+cut X,Y with |X|<=|Y| and internal cost at most I n^2, where I=2/47. Section 7
+removes evenness and obtains this cut from hBCL. The n=0 case is the empty set.
+
+2. Existing graph constructions and their exact scalar domain
+
+Put x=|X|/n, y=|Y|/n, c=1/(2y), q=e(X)/n^2, j=e(Y)/n^2. Thus
+  x+y=1, 0<=x<=1/2, 1/2<=y<=1, 1/2<=c<=1,
+  x=1-1/(2c), q>=0, j>=0, q+j<=I, and hence j<=I.
+Let beta be the minimum normalized fractional-half cost on G. A profile z
+is a fractional half if 0<=z_v<=1 and sum_v z_v=n/2. Its normalized cost is
+n^(-2) sum_{uv in E(G)} z_u z_v. A minimum exists by compactness.
+
+The uniform profile c on Y and zero on X gives beta<=c^2 j. For c>=3/4,
+x>=1/3. Delete the edges inside X, apply the existing independent-set
+completion theorem, and restore those edges at cost at most q. This gives
+  beta <= Q(x)+q,
+where, on the domain used here,
+  Q(x)=3x^2/2-5x/4+9/32 for 1/3<=x<=3/8;
+  Q(x)=x(1/2-x)/2       for 3/8<=x<=1/2.
+The two definitions agree at x=3/8. These are existing graph constructions,
+not assumptions about beta. They are described in PMA sections 2--3 and
+proved in the local completion modules listed in INPUTS.json. The local
+CutScalar wrapper asks for its second witness only above c0=7797/10000.
+Every use of that wrapper's domain below has c>=781/1000>c0>3/4.
+
+Adding the first bound to c^2 times the second gives
+  beta <= c^2 (I+Q(x))/(1+c^2),  c>=3/4.                 (OLD)
+The addition bounds the same minimum beta by two feasible costs; it does not
+assert that one profile has both costs. Equivalently choose the cheaper of
+the two profiles. All denominators here are positive.
+
+3. Reused neighborhood profile and actual graph moments
+
+In this section Y can have arbitrary positive vertex masses w_v summing to
+y>1/2. Its adjacency is still that of a finite simple triangle-free graph.
+For the unweighted graph in section 2, w_v=1/n. Let
+  b=y-1/2>0,
+  j=sum_{uv in E(Y)} w_u w_v,
+  d_v=sum_{u in N_Y(v)} w_u,
+  s_v=sum_{u in N_Y(v)} w_u d_u.
+The neighborhood N_Y(v) is independent. Therefore s_v is exactly the edge
+mass incident to N_Y(v); it has no internal edges. The mass of edges in its
+complement is j-s_v. The following two feasible profiles are the negative
+endpoint from Sarid's existing one-step lemma; they are not a new construction.
+
+If d_v<=b, put z=1/[2(y-d_v)] on Y minus N_Y(v), and z=0 elsewhere. Since
+y-d_v>=1/2, its values lie in[0,1], its selected mass is1/2, and its cost is
+  F_v=(j-s_v)/[4(y-d_v)^2].                            (LOW)
+If d_v>b, put z=1 outside N_Y(v) within Y and z=1-b/d_v on N_Y(v), zero on X.
+Now 0<b/d_v<1. The selected mass is y-b=1/2 and its cost is
+  F_v=j-(b/d_v)s_v.                                   (HIGH)
+The cost follows because all edges meet N_Y(v) at most once. At d_v=b>0
+the profiles and formulas agree. At d_v=0 use LOW, with no division by d_v.
+Zero-mass vertices can be removed. Positive masses give d_v<y. The case
+y=1/2 is excluded from this lemma and is covered by OLD, with c=1, below.
+
+Take expectation with probability w_v/y over vertices of Y. Finite double
+counting, with no regularity assumption, gives
+  E[d_v]=mu=2j/y,
+  E[s_v]=(1/y) sum_v w_v sum_{u~v} w_u d_u
+        =(1/y) sum_u w_u d_u sum_{v~u} w_v
+        =(1/y) sum_u w_u d_u^2=E[d_v^2].                (MOMENTS)
+
+4. Affine moment majorant
+
+Fix R=1293/50000. Define the continuous piecewise function
+  psi(d)=j-4R(y-d)^2       when d<=b;
+  psi(d)=(j-R)d/b         when d>=b;
+and phi(d)=psi(d)-d^2. If every F_v>R, LOW and HIGH imply s_v<psi(d_v),
+because all denominators used in the rearrangement are positive. MOMENTS
+then implies E[phi(d_v)]>0.
+
+Define
+  mu=2j/y,
+  L=8R(y-mu)-2mu,
+  C=j-4R(y-mu)^2-mu^2,
+  B=(j-R)/(y-1/2)-L,
+  S=B^2/4+Lmu-C.
+Expansion gives the following identities, for every real d:
+  j-4R(y-d)^2-d^2
+    =C+L(d-mu)-(4R+1)(d-mu)^2;                       (ID-LOW)
+  (j-R)d/(y-1/2)-d^2-[C+L(d-mu)]
+    =-(d-B/2)^2+S.                                  (ID-HIGH)
+Thus C<0 and S<=0 imply phi(d)<=C+L(d-mu) on both branches. By MOMENTS,
+E[phi(d_v)]<=C<0, a contradiction. At least one feasible fractional half F_v
+has cost<=R. In fact the strict C bound excludes all F_v>=R as well, but the
+stated theorem only uses the non-strict conclusion.
+
+This is not an application of Jensen to phi. Its derivative can jump up at b.
+The negative control below records that failure. The affine majorant works
+across the jump and uses the actual graph second-moment identity.
+
+5. Complete parameter cover, with exact margins
+
+Set a=1559/2000, h=781/1000, j0=423/10000. The following five closed regions
+cover every c in[1/2,1] and j in[0,I]. Boundary overlaps are intentional.
+No condition on q beyond q>=0 and q+j<=I is added.
+
+A. 1/2<=c<=a. Then beta<=I c^2<=I a^2<R, since
+   R-I a^2=359/94000000>0.
+   This includes c=1/2, where X is empty and y=1.
+
+B. a<=c<=h and 0<=j<=j0. Then beta<=c^2 j<=h^2 j0<R, since
+   R-h^2 j0=586497/10000000000>0.
+
+C. a<=c<=h and j0<=j<=I. The map y=1/(2c) reverses order because c>0.
+   This region lies in the whole closed rectangle
+     y in[500/781,1000/1559], j in[423/10000,2/47].    (RECT)
+   Its lower y endpoint is greater than1/2. Thus y and b=y-1/2 are uniformly
+   positive. Section 4 applies once C<0 and S<=0 are proved on RECT.
+
+   certificate.json is an exact rational interval certificate for all of RECT.
+   It contains543 tree nodes and272 accepted leaves, maximum depth9. At each
+   internal node one interval is split at an interior rational midpoint; the
+   two closed children have exactly the parent union and intersect only at
+   their common boundary. Every accepted leaf has interval upper(C)<0 and
+   interval upper(S)<=0. All arithmetic uses fractions, including reciprocals.
+   No acceptance decision uses a floating-point number or a sampled grid.
+
+   verify_certificate.py reads the stored tree without importing the generator.
+   It recomputes the interval bounds, verifies every parent/child edge, rejects
+   cycles/repeated/unreachable nodes, checks every leaf, checks pairwise
+   disjoint interiors, and checks that the summed leaf area is357/1144524260,
+   exactly the rectangle area. Tree coverage proves the absence of gaps;
+   the area check is an additional control, not the coverage argument.
+
+   The largest leaf upper bounds are about C=-.00172090809 and
+   S=-.000000530806218. These decimal displays are for orientation only;
+   their exact fractions are stored in certificate.json. Sections 3--4 now
+   give a fractional half of cost<=R throughout region C.
+
+D. h<=c<=4/5. Here c>=h>c0>3/4, so OLD is available under both the graph
+   theorem's domain and the older wrapper's stricter domain. Since
+   x=1-1/(2c)<=3/8, use the first Q branch. The numerator of R-OLD is
+     P(c)=(R-I-17/32)c^2+7c/8+R-3/8.
+   Its leading coefficient is -2575333/4700000<0, so it is concave. Its
+   minimum on[h,4/5] occurs at an endpoint, and
+     P(h)=51807987/4700000000000>0,
+     P(4/5)=10361/58750000>0.
+   The denominator1+c^2 is positive, hence beta<R. At the endpoint c=4/5,
+   either Q branch is valid. At c=a=.7795 the first Q branch would also be
+   the graph formula, but its old scalar proof threshold c0 is not met.
+   Regions A--C use no completion witness below h; there is no missing cell
+   from[a,c0] or[c0,h]. In particular a<c0<h is checked exactly.
+
+E. 4/5<=c<=1. Use the second Q branch. The numerator of R-OLD is
+     A c^2-D c+E,
+   where A=R+1/4-I=548271/2350000>0, D=3/8, E=R+1/8.
+   Its exact discriminant margin is
+     4AE-D^2=2374389/14687500000>0.
+   The identity4A(Ac^2-Dc+E)=(2Ac-D)^2+(4AE-D^2) makes the numerator
+   positive for every real c. Again1+c^2>0. This includes c=1 and y=1/2,
+   without dividing by y-1/2.
+
+These regions cover more than the dangerous old scalar region. If an old
+bound exceeds R, neither A, B, D nor E can contain it; it must lie in C.
+Thus the certificate covers the entire unresolved scalar region without
+approximating its curved boundary or assuming that scalar points are graphs.
+
+6. Preserved failures and negative controls
+
+The first broader neighborhood window used c in[a,.79]. At c=.79,
+y=50/79 and j=I, the same tangent has C<0 but S>0. Its high-branch maximum
+occurs at d=B/2=14201544709/97466250000, which is greater than b=21/158 and
+less than y. Thus the proposed affine majorant really fails on the relevant
+degree branch, not just as an interval enclosure. Its exact violation is S.
+This is a failure of this tangent, not a counterexample graph and not a
+failure of the neighborhood construction. P(.79)>0, so OLD already covers
+the point. We narrowed the neighborhood window and kept the same tangent.
+All exact values are retained in certificate.json.
+
+The global concavity shortcut fails at the original obstruction: the
+one-sided derivatives at b jump upwards because j>R(4y-1). The earlier
+point-moment-screen.json retains this exact test. No Jensen step is used.
+
+The old scalar obstruction beta=6256019367/241832986336 is greater than R
+and meets both old witness inequalities. Its x,q,j coordinates are realized
+by an explicit six-cluster triangle-free graph whose actual minimum half
+cost is0. That frozen negative control rules out conflating a scalar beta
+with a realizable graph optimum. The full graph moment/profile argument is
+the extra ingredient here.
+
+The new read-only verifier rejects a missing child, false S enclosure,
+wrong rectangle, and changed target. mathematical_controls.py checks the
+old scalar obstruction, the upward derivative jump, the real failed-tangent
+degree, and a triangle showing that the profile cost formula requires an
+independent neighborhood. See its exact output for each witness.
+
+7. Integral halves, all orders, and the unchanged BCL input
+
+For n>0 even, sections 2--5 give a rational fractional profile at cost<=Rn^2.
+Every neighborhood profile is rational for the unweighted finite graph.
+The reused completion witnesses are rational as well. There is no limiting
+step and no divisibility condition on d_v: selected fractions are permitted.
+
+For arbitrary n>0, first use the positive balanced two-fold blowup G[2].
+It is triangle-free and has even order. The old BCL transport argument
+obtains a BCL cut for it from hBCL: take a sufficiently large positive
+balanced blowup to meet N, then descend the normalized internal-cut bound.
+The descent works because the cut cost is affine in the number of twins
+on one side when the other classes are fixed. Successively choose class
+endpoints without increasing cost. This gives a cut of the original graph
+with the same normalized bound. No optimality of the chosen cut is needed.
+
+Apply sections 2--5 to G[2]. Average each independent twin class to descend
+the fractional profile to G. This preserves its selected mass n/2 and its
+normalized quadratic edge cost exactly. The retained formal interface is
+  Erdos128.hasNormalizedFractionalHalfBoundQ_balancedBlowup_iff
+in Erdos128/BalancedBlowup.lean:417, for any positive k and rational bound.
+
+Finally use the existing rounding theorem
+  Erdos128.hasSparseHalf_of_hasFractionalHalfBound
+in Erdos128/RoundingFinal.lean:84. Its argument transfers mass between two
+fractional coordinates. The objective is concave along the transfer, so a
+feasible endpoint does not increase cost. Iteration leaves at most one
+fractional coordinate. For even n none remains; for odd n it is1/2, and
+deleting it does not increase cost. The resulting set has floor(n/2) vertices.
+This proves the stated mathematical implication from hBCL.
+
+The existing PublishedBCL.lean uses these exact interfaces for .02587.
+E1 has not changed that source, imported a new axiom, or built a new Lean
+endpoint for .02586. The graph argument and interval certificate here still
+need independent review before root decides whether to formalize them.
+
+8. Attribution and novelty boundary
+
+Sarid's lemma onestep already contains the profile in section 3. Under the
+normalization w'_v=w_v/y, alpha=1/(2y), delta=d_v/y, its direction is
+1_N-delta and its negative endpoint radius is
+min(alpha/(1-delta),(1-alpha)/delta). The two cases reduce exactly to LOW
+and HIGH. Razborov's Lemma4.1, pages10--11, also uses a neighborhood-complement
+fractional half. The old cut/completion envelope is PMA's combination of BCL
+and Razborov's completion argument. These ingredients are reused.
+
+The candidate delta is the specific affine second-moment majorant C,L,S and
+the exact uniform cover which combines it with OLD at R=.02586. It is our
+reconstruction, prompted by the source study; it is not described as a
+discovery mechanism reported by a released reasoning summary.
+
+The focused primary-source check found no explicit .02586 statement or this
+same affine separator in the sections read. Sarid states.0262; Razborov
+states27/1024; PMA's latest pinned main still states.02587. This does not
+establish priority. The new numerical implication could be a corollary of
+known ingredients, and related arguments may exist elsewhere. See
+PRIOR-WORK.txt for exact locations, source hashes, and reading limits.

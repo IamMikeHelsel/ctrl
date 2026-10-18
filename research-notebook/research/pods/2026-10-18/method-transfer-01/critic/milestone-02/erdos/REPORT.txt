@@ -1,0 +1,117 @@
+INDEPENDENT E1 REVIEW — CONDITIONAL WRITTEN THEOREM ACCEPTED
+18 October 2026
+
+Verdict and exact scope
+Accept the submitted mathematical implication: under the unchanged eventual
+BCL cut hypothesis, every finite simple triangle-free graph G on n vertices
+has a set of floor(n/2) vertices spanning at most (1293/50000)n^2 edges.
+The acceptance rests on the inspected graph argument, exact rational cover,
+and existing completion/blowup/rounding interfaces. This packet contains no
+new Lean endpoint or independent kernel check for .02586. BCL remains an
+explicit premise. The .02 conjecture is not proved.
+
+Correctness is separate from value. The neighborhood profile is reused. The
+uniform affine majorant is a candidate addition, but its necessity, novelty
+and best-known status remain open. A stronger use of Sarid's existing one-step
+lemma is being compared separately. The adjacent max-cut paper is also a
+comparison lead, with an unverified stronger premise. Neither is imported into
+this accepted E1 implication. This verdict does not authorize a priority claim.
+
+Frozen input binding
+Builder manifest: erdos/milestone-01/artifact-sha256.json
+SHA256 6a97c8589f085873c70f229719e5f373901728ca197ae95b2a3fbb0f8a962441.
+PROOF.txt: 71ad7dbb78222c1442234dc3cc225db4a60372877ec8a438712ca9f945fde35b.
+certificate.json: cf0ccfc738cf5673a61a574a23dcca4dfc5eaacdcd56aa0c3b430a76d2820a2d.
+All 28 manifest entries were checked and copied to inputs/. All 20 named
+prior inputs in INPUTS.json also matched and were copied to prior-inputs/.
+No frozen source or toolchain pin was changed.
+
+Graph proof audit
+The cut is arbitrary subject to the stated internal-edge bound; it need not
+be optimal. Orientation gives 1/2<=c<=1, q,j>=0 and q+j<=2/47. The smaller
+side may be empty. The uniform Y profile gives c^2 j. The old completion
+witness applies only where c>=3/4; E1 actually uses it above .781, also above
+the old wrapper threshold .7797. Deleting edges inside X preserves triangle-
+freeness and makes X independent. Restoring them costs at most q because the
+profile lies in [0,1]. Adding inequalities for the same optimum is valid.
+Equivalently, at least one of the two rational witness profiles meets the
+resulting bound. No profile is asserted to realize both costs at once.
+
+The reused neighborhood profiles have the claimed mass and cost. Independence
+of N_Y(v) is essential. Weighted double counting gives E[s]=E[d^2] exactly.
+The affine majorant is applied to this actual graph law, not to an arbitrary
+scalar beta. Both denominator signs and the d=0 and branch-join cases are
+handled. The rectangle stays above y=1/2. That excluded endpoint is covered
+by the old upper branch. There is no regularity or hidden degree assumption.
+
+If every candidate cost exceeds R, then E[phi]>0. The whole-rectangle
+certificate gives phi(d)<=C+L(d-mu), with C<0 and E[d]=mu, a contradiction.
+This avoids the invalid global-concavity shortcut. It provides a rational
+candidate in the finite unweighted case. All other witness constructions are
+also rational. Compactness language in the proof does not introduce a new
+assumption or prevent selecting these explicit rational witnesses.
+
+Full parameter coverage
+The five regions A–E in PROOF.txt cover all c in[1/2,1] and j in[0,2/47].
+The four outer regions use exact positive cap/chord/discriminant margins.
+Region C maps exactly to the stated closed rectangle because y=1/(2c) is
+decreasing for positive c. It is not a sampled approximation to a curved
+dangerous region. Boundary overlaps are deliberate, and no interval below
+the completion threshold is assigned to that theorem.
+
+The copied generator, verifier and mathematical controls all pass. The new
+certificate is byte-identical to the submitted one. The builder verifier
+checks the entire 543-node tree and 272 leaves, with four rejected mutations.
+
+Independent_cover.py uses different bounds and a different coverage check.
+After exact algebraic expansion, with K=4(4R+1), it uses
+  C=(1+16R)j-4Ry^2-Kj^2/y^2,
+  L=8Ry-Kj/y,
+  B=(j-R)/(y-1/2)-L,
+  S=B^2/4-j+4Ry^2-Kj^2/y^2.
+A small rational polynomial engine verifies the expanded identities after
+clearing the positive denominators. Monotone endpoint bounds certify C<0
+and S<0 on every leaf. The largest independent upper bounds are about
+-.0017193291 and -.0000178625; only exact fractions decide acceptance.
+
+For coverage, the checker cuts at every distinct y endpoint and tiles each
+of 20 vertical strips with exact contiguous j intervals. Closed rectangles
+then cover all boundaries too. It does not rely on the generator's parent
+pointers or on an area-only argument. Its area is exactly 357/1144524260.
+Deleting a leaf is rejected. Changing the target is rejected. The independent
+checker also verifies the four outer-region margins and polynomial identities.
+
+All orders and integer halves
+The actual prior source has the claimed interfaces. PublishedBCL's eventual
+cut argument descends a sufficiently large balanced blowup by selecting twin-
+class endpoints for an affine cut objective. The two-fold blowup supplies
+even order. BalancedBlowup's rational fractional-half equivalence preserves
+mass and normalized cost exactly by averaging twin classes. RoundingFinal's
+hasSparseHalf_of_hasFractionalHalfBound then yields floor(n/2), including odd
+n, by pairwise mass transfer and removal of the sole possible half coordinate.
+The empty graph is separate. E1 changes the constant and the even-order
+witness argument, not those interfaces. Their statement match was inspected;
+their old proof closures were not rebuilt in this arithmetic-only milestone.
+
+Failures remain evidence
+The broad-window tangent fails at c=.79 at a degree inside its HIGH branch.
+The old bound already covers that parameter. This rejects that tangent there,
+not the graph construction. The upward derivative jump rejects Jensen. The
+six-cluster graph realizes x,q,j but has true half cost zero, so it rejects
+confusion between density realizability and objective realizability. The
+triangle test shows that dropping triangle-freeness breaks the cost formula.
+Copied mathematical controls preserve these exact witnesses.
+
+Replay and record boundaries
+replay-results.json records the three fresh copied runs. To reproduce, copy
+certificate.py, verify_certificate.py and mathematical_controls.py from
+inputs/ to an empty scratch folder; run them in that order. Compare the new
+certificate.json with inputs/certificate.json. Their outputs are in replay/.
+Then run independent_cover.py from this review folder. It reads frozen inputs
+and writes independent-cover-results.json. Preserve the recorded results
+before rerunning. No external solver, network, Lean cache or paid API is used.
+
+There is no unresolved correctness condition inside this written E1 argument
+beyond its explicit BCL premise and the reused proved interfaces. Formal
+implementation remains separate work. Root should resolve the comparison gate
+before deciding whether this particular certificate merits formalization.

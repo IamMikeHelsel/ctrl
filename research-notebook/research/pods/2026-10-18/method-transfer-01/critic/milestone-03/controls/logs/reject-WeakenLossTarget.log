@@ -1,0 +1,97 @@
+/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/pods/2026-10-18/method-transfer-01/critic/milestone-03/controls/inputs/negative-controls/WeakenLossTarget.lean:39:72: error: Application type mismatch: The argument
+  ha
+has type
+  f 0 2 ≤ A
+but is expected to have type
+  f 0 2 ≤ A + 1
+in the application
+  loss_acceleration_upper hT hrLossC hrLoss hqLoss hLoss ha
+
+Note: The following definitions were not unfolded because their definition is not exposed:
+  Real.instLE ↦ 2
+/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/pods/2026-10-18/method-transfer-01/critic/milestone-03/controls/inputs/negative-controls/WeakenLossTarget.lean:47:6: error: Type mismatch: After simplification, term
+  hend.left
+ has type
+  f T 0 ≤ X + v0 * T + (A + 1) * T ^ 2 / 2
+but is expected to have type
+  f T 0 ≤ X + v0 * T + A * T ^ 2 / 2
+
+Note: The following definitions were not unfolded because their definition is not exposed:
+  Real.instAdd ↦ 2
+  Real.instLE ↦ 2
+/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/pods/2026-10-18/method-transfer-01/critic/milestone-03/controls/inputs/negative-controls/WeakenLossTarget.lean:48:6: error: Type mismatch: After simplification, term
+  hend.right
+ has type
+  f T 1 ≤ v0 + (A + 1) * T
+but is expected to have type
+  f T 1 ≤ v0 + A * T
+
+Note: The following definitions were not unfolded because their definition is not exposed:
+  Real.instAdd ↦ 2
+  Real.instLE ↦ 2
+/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/pods/2026-10-18/method-transfer-01/critic/milestone-03/controls/inputs/negative-controls/WeakenLossTarget.lean:49:6: error: Type mismatch: After simplification, term
+  haLoss T ⟨hT, le_rfl⟩
+ has type
+  f T 2 ≤ A + 1
+but is expected to have type
+  f T 2 ≤ A
+
+Note: The following definitions were not unfolded because their definition is not exposed:
+  Real.instAdd ↦ 1
+  Real.instLE ↦ 2
+/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/pods/2026-10-18/method-transfer-01/critic/milestone-03/controls/inputs/negative-controls/WeakenLossTarget.lean:62:6: error: linarith failed to find a contradiction
+case pos
+X v0 A T b k S B : ℝ
+hv0 : 0 ≤ v0
+hA : 0 ≤ A
+hT : 0 ≤ T
+hb : 0 < b
+hk : 0 < k
+hS : 0 ≤ S
+hEnd : heldSolution k S (-b) ![X + v0 * T + A * T ^ 2 / 2, v0 + A * T, A] 1 ≤ 0
+hPeak : ∀ s ∈ Icc 0 S, heldSolution k s (-b) ![X + v0 * T + A * T ^ 2 / 2, v0 + A * T, A] 0 ≤ B
+f : ℝ → State
+rLoss qLoss rBrake qBrake : ℝ → ℝ
+hfc : ContinuousOn f (Icc 0 (T + S))
+hLoss : IsTrajectory T rLoss qLoss f
+hrLossC : ContinuousOn rLoss (Icc 0 T)
+hrLoss : ∀ t ∈ Icc 0 T, 0 ≤ rLoss t
+hqLoss : ∀ t ∈ Icc 0 T, qLoss t ≤ A + 1
+hx : f 0 0 ≤ X
+hv : 0 ≤ f 0 1
+hvHi : f 0 1 ≤ v0
+ha : f 0 2 ≤ A
+hBrake : IsTrajectory S rBrake qBrake fun s => f (T + s)
+hrBrakeC : ContinuousOn rBrake (Icc 0 S)
+hrBrake : ∀ s ∈ Icc 0 S, k ≤ rBrake s
+hqBrake : ∀ s ∈ Icc 0 S, qBrake s ≤ -b
+haLoss : ∀ t ∈ Icc 0 T, f t 2 ≤ A + 1
+hDelay : ActualStop.IsDelayTrajectory T f
+hprefix : ∀ t ∈ Icc 0 T, f t 0 ≤ X + v0 * t + (A + 1) * t ^ 2 / 2 ∧ f t 1 ≤ v0 + (A + 1) * t
+hend : f T 0 ≤ X + v0 * T + (A + 1) * T ^ 2 / 2 ∧ f T 1 ≤ v0 + (A + 1) * T
+hinit : ∀ (i : Fin 3), f (T + 0) i ≤ ![X + v0 * T + A * T ^ 2 / 2, v0 + A * T, A] i
+hflow : ∀ t ∈ Icc 0 S, ∀ (i : Fin 3), f (T + t) i ≤ heldSolution k t (-b) ![X + v0 * T + A * T ^ 2 / 2, v0 + A * T, A] i
+hvend : f (T + S) 1 ≤ 0
+hP : X + v0 * T + A * T ^ 2 / 2 ≤ B
+t : ℝ
+ht : t ∈ Icc 0 (T + S)
+hpre : t ≤ T
+hp : f t 0 ≤ X + v0 * t + (A + 1) * t ^ 2 / 2
+hlin : v0 * t ≤ v0 * T
+hsq : t ^ 2 ≤ T ^ 2
+hquad : A * t ^ 2 ≤ A * T ^ 2
+a✝ : B < f t 0
+⊢ False
+failed
+/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/pods/2026-10-18/method-transfer-01/critic/milestone-03/controls/inputs/negative-controls/WeakenLossTarget.lean:159:53: error: Application type mismatch: The argument
+  hqLoss
+has type
+  ∀ t ∈ Icc 0 (1 / 20), qLoss t ≤ 1 / 10
+but is expected to have type
+  ∀ t ∈ Icc 0 (1 / 20), qLoss t ≤ 1 / 10 + 1
+in the application
+  first_zero_of_envelope_certificate ?m.1023 ?m.1024 ?m.1025 ?m.1026 ?m.1027 ?m.1028 hend hpeak hc hLoss hrLossC hrLoss
+    hqLoss
+
+Note: The following definitions were not unfolded because their definition is not exposed:
+  Real.instLE ↦ 2

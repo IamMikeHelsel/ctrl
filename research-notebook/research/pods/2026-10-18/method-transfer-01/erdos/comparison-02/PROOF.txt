@@ -1,0 +1,152 @@
+COMPARISON 02: EXISTING CUBIC SAVING BEATS THE E1 COEFFICIENT
+18 October 2026. Written composition plus exact arithmetic, for review.
+
+Result
+Sarid's existing one-step saving lemma, combined with the unchanged PMA
+completion construction and the same BCL input I=2/47, gives the conservative
+coefficient R=323/12500=.02584. This is smaller than E1's.02586 by1/50000.
+No optimization or best-known claim is made. This comparison does not use
+the E1 moment certificate. E1 is frozen and unchanged.
+
+1. Graph and input conventions
+
+Let G be a finite simple triangle-free graph of positive even order n.
+Use any cut X,Y with |X|<=|Y| and e(X)+e(Y)<=I n^2. It need not be a maximum
+cut. Put y=|Y|/n, c=1/(2y), x=1-y, q=e(X)/n^2, j=e(Y)/n^2. Thus
+  1/2<=c<=1, q>=0, j>=0, q+j<=I, 0<=j<=I.
+Let beta be the minimum normalized fractional-half cost. Edges are counted
+once. The old construction gives beta<=c^2 j. For c>=3/4 it also gives
+  beta<=Q(x)+q,
+where Q(x)=3x^2/2-5x/4+9/32 for x<=3/8 and
+Q(x)=x(1/2-x)/2 for x>=3/8, on the applicable domain x>=1/3.
+Therefore the unchanged old envelope is
+  beta<=c^2(I+Q(x))/(1+c^2),  c>=3/4.                (OLD)
+
+The BCL input is exactly the previous eventual statement: some N works for
+every finite triangle-free graph of order at least N, giving such a cut with
+I=2/47. The prior balanced-blowup transport removes N. The two-fold blowup
+and fractional-profile descent remove the even-order restriction. The prior
+rounding theorem then gives floor(n/2) vertices at the same normalized cost.
+The empty graph is immediate. No new BCL theorem or better cut input is used.
+
+2. Correct normalization of Sarid's existing lemma
+
+Define ell(c)=min(4r^2,r(1-r)), where r=min(c,1-c).
+The cited one-step lemma takes a finite triangle-free graph H with strictly
+positive rational probability weights and edge mass mu. From a constant
+profile alpha it constructs a[0,1] profile with the same weighted mean,
+saving at least4 ell(alpha) mu^3. An arbitrary linear objective term is
+allowed. Here take H=G[Y], weights1/|Y|, alpha=c, and linear term zero.
+Y is nonempty because n>0 and |Y|>=n/2.
+
+The edge mass inside this probability space is
+  mu=e(Y)/|Y|^2=j/y^2=4c^2 j.
+The weighted mean c corresponds to selected mass c|Y|=n/2. Extend the new
+profile by zero on X. All X-internal and X--Y contributions vanish. Its
+ambient normalized cost is y^2 times its cost in H. Hence the saving is
+  y^2 * 4 ell(c) mu^3
+    = [1/(4c^2)] * 4 ell(c) * (4c^2 j)^3
+    = 64 ell(c)c^4 j^3.
+We obtain the genuine feasible-profile bound
+  beta<=A_c(j):=c^2 j-64 ell(c)c^4 j^3.              (CUBIC)
+
+There is no global edge-density restriction on this use. Sarid's lemma
+onestep precedes his low-density cut section and has no such hypothesis.
+Only his later combination with another baseline imposes a density split.
+The comparison uses neither that other baseline nor the flag-algebra bound.
+
+3. A safe cap in j, without a calculus assumption
+
+For c in[1/2,1], 0<=ell(c)<=1/4. For 0<=j<=I,
+  A_c(I)-A_c(j)
+    =(I-j)c^2[1-64 ell(c)c^2(I^2+Ij+j^2)]
+    >=(I-j)c^2(1-48I^2)>=0,
+because I^2+Ij+j^2<=3I^2, c^2<=1, ell(c)<=1/4, and
+  1-48I^2=2017/2209>0.
+Thus CUBIC implies beta<=c^2 I-64 ell(c)c^4 I^3. No regularity or equality
+of degrees is used. This argument also handles j=0 and j=I.
+
+4. Four exact regions cover every parameter
+
+Set a=779/1000 and h=783/1000. Then
+  1/2<a<h<4/5<1 and h>7797/10000>3/4.
+The older scalar wrapper only asks for its second witness above7797/10000;
+every use of OLD here is above h and satisfies that domain.
+
+A. For1/2<=c<=a, use the unmodified uniform cap:
+   beta<=I a^2<R,
+   R-I a^2=399/23500000>0.
+
+B. For a<=c<=h, c<=4/5 implies ell(c)=c(1-c). Indeed r=1-c and
+   c(1-c)<=4(1-c)^2 precisely when c<=4/5. Therefore
+   ell(c)>=a(1-h), c^4>=a^4, c^2<=h^2. Section3 gives
+     beta<=I h^2-64a^5(1-h)I^3
+          =5228036405019791917/202779296875000000000
+          <R,
+   with exact margin11780626230208083/202779296875000000000>0.
+   The displayed bound is about.0257819042. The decimal is not used to accept.
+
+C. For h<=c<=4/5, use OLD's first Q branch. The numerator of R-OLD is
+     P(c)=(R-I-17/32)c^2+7c/8+R-3/8.
+   It is concave, with leading coefficient -2575427/4700000. Its minimum
+   on the closed interval is at an endpoint. Both endpoint values are positive:
+     P(h)=69535997/4700000000000,
+     P(4/5)=4217/29375000.
+   The denominator1+c^2 is positive.
+
+D. For4/5<=c<=1, use OLD's second Q branch. Its gap numerator is
+     Ac^2-Dc+E,
+   A=R+1/4-I=34264/146875>0, D=3/8, E=R+1/8,
+   4AE-D^2=3846033/29375000000>0.
+   Completing the square proves positivity for every real c. The endpoint
+   c=1 is included; the cubic saving is zero there and is not needed.
+
+These four closed intervals cover the entire allowed c domain. Their shared
+endpoints are harmless. There is no grid, uncovered interval, or hidden
+condition on j. They prove beta<R for positive even order. The unchanged
+interfaces in section1 give the stated non-strict integral bound for every
+finite order, conditional on BCL and the validity of the cited saving lemma.
+
+5. Falsifiers and limits of this comparison
+
+At the old scalar obstruction c=7797/10000 and
+j=2172228946875000/51047928060481223, the exact saving is about.000313050624.
+The improved cap is about.0255561224, below R. Thus the gain at that point
+is much larger than the.00001 change sought by E1. comparison.json stores
+the exact fractions and the normalization identity.
+
+The old scalar-only point still exceeds.02586. Omitting the cubic term cannot
+establish this comparison. A normalization control records that omitting the
+factor y^2 overstates the saving by1/y^2=4c^2 at that point.
+
+At c=.78 and neighborhood degree delta=.01, the actual feasible radii have
+product less than4(1-c)^2 but at least ell(c). Hence replacing the min in ell
+by its first branch would be wrong. These parameters can occur in a weighted
+two-vertex edge. This rejects an incorrect strengthening of the lemma.
+
+Changing only the target to.02583 while keeping this fixed split makes P(h)
+negative. That is a failed certificate, not a counterexample to.02583 or a
+claim of the optimal coefficient. No smaller constant was searched for.
+
+6. Trust and novelty boundary
+
+The cited theorem has upstream Lean source as exists_oneStepSaving, with
+direct import CubicNeighborhood, which imports WeightedGraph, which imports
+Mathlib. See UPSTREAM-STATEMENT.txt and source-dependencies.json. The upstream
+repository pin declares Lean4.30.0. Our accepted completion endpoint used
+Lean4.35.0 and does not import these three saving modules. Source availability
+and a theorem name do not establish a checked trust closure.
+
+No saving-module build, axiom audit, or kernel replay was done in comparison02.
+Thus the comparison uses one additional cited mathematical lemma relative
+to the accepted formal baseline. It is not yet a new theorem whose only
+external formal parameter is BCL. The next gate, if root selects it, is to
+acquire/copy the exact source closure and replay its actual statement under
+an appropriate preserved pin, then build the finite-Y normalization bridge.
+
+The arithmetic result is enough to reject E1's numerical advantage over this
+existing-ingredient benchmark, subject to validating that lemma. E1 may
+remain a distinct direct moment argument, but.02586 is not the preferred
+numerical milestone. Neither construction is claimed as new. No primary
+source is claimed to state this exact.02584 composition, and no priority or
+best-known claim follows from this bounded comparison.

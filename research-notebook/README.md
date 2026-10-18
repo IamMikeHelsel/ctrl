@@ -6,6 +6,7 @@ and final animations. Start with the reports below.
 
 | Area | Start here |
 |---|---|
+| Active method-transfer research round | [Current review packet](research/pods/2026-10-18/method-transfer-01/REVIEW-ME.txt), [method map](research/pods/2026-10-18/method-transfer-01/METHOD-MAP.txt), [complete catalogue inventory](research/pods/2026-10-18/method-transfer-01/corpus/CORPUS-MAP.txt), [state and limits](research/pods/2026-10-18/method-transfer-01/state.json) |
 | Recovery and delayed handoff: accepted conditional proofs | [Review packet](research/pods/2026-10-18/recovery-handoff-02/REVIEW-ME.txt), [handoff review](research/pods/2026-10-18/recovery-handoff-02/critic/handoff/REPORT.txt), [recovery review](research/pods/2026-10-18/recovery-handoff-02/critic/grip/REPORT.txt), [scope and value grade](research/pods/2026-10-18/recovery-handoff-02/ROOT-GRADE.txt), [next decisions](research/pods/2026-10-18/recovery-handoff-02/QUESTIONS-BEFORE-SUBMISSION.txt) |
 | Digital hold: accepted conditional 1 ms theorem | [Team review packet](research/pods/2026-10-18/digital-hold-01/REVIEW-ME.txt), [independent proof review](research/pods/2026-10-18/digital-hold-01/critic/REPORT.txt), [scope and value grade](research/pods/2026-10-18/digital-hold-01/grader/FINAL-GRADE.txt), [next matched comparison](research/pods/2026-10-18/digital-hold-01/grader/COMPARISON.txt) |
 | Completed overnight round | [Runbook](research/overnight/2026-10-18/README.txt), [live state](research/overnight/2026-10-18/state.json), [current checkpoint](research/overnight/2026-10-18/checkpoint-02.txt), [claim map](research/overnight/2026-10-18/claim-map.txt), [submission requirements](research/overnight/2026-10-18/submission-readiness.txt) |
@@ -47,6 +48,14 @@ The papers and animations also have direct file links. Nothing in this import su
 claims a prize, or establishes publication novelty.
 
 ## Evidence and toolchains
+
+The active method-transfer round inventories 372 recent result families and reads a
+disclosed subset for useful proof mechanisms. It does not validate that external corpus.
+Its first Erdős candidate and stronger existing-ingredient comparison have independent
+written and exact-arithmetic reviews. They are conditional on their stated inputs;
+no new formal endpoint or publication novelty is claimed. A tighter recovery certificate
+and further graph and sampled-control tests have separate, changing review states.
+Use the round's current review packet before treating any candidate as accepted.
 
 The accepted digital-hold follow-up proves all-time containment for supplied sampled
 executions with total measurement age at most 1 ms, changing response, bounded sensor

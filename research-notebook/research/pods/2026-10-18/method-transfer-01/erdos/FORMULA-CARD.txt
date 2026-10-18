@@ -1,0 +1,90 @@
+ERDOS128 — SMALL STATEMENT PACKET FOR INDEPENDENT CHECK
+18 October 2026. Status: candidate argument and exact local arithmetic.
+No new universal graph bound or Lean proof is claimed.
+
+1. Exact negative control: the scalar density point is graph-realizable.
+Run preflight.py. Its six weights are
+  aX=x/2, bX=2q/x, cX=x/2-2q/x,
+  aY=y/2, bY=2j/y, cY=y/2-2j/y,
+where x,y,q,j are the exact fractions in preflight-results.json. Join only
+(aX,bX) and (aY,bY) as complete bipartite cluster pairs. The other clusters
+are isolated. Put the first three clusters in X and the rest in Y.
+All weights are positive and sum to1. Their internal edge costs are exactly
+q and j. Their part masses are x and y. The clusters aX and aY form an
+independent half because aX+aY=1/2. Thus actual minimum half cost is0.
+The JSON gives a common even integer order and every integer cluster count.
+This is an exact finite simple triangle-free blowup construction, without
+materializing its enormous adjacency matrix. Its chosen cut is not maximum:
+a maximum cut has internal cost0. The scalar beta is not its half optimum.
+
+2. A third actual half construction.
+Let G be a finite simple graph and Y an induced triangle-free subgraph. Give
+its vertices positive real masses w_v, with total y>1/2. Edges have adjacency
+0 or1; these are VERTEX weights, not fractional edge weights. Set t=1/2,
+b=y-t, j=sum_{uv in E(Y)} w_u*w_v,
+d_v=sum_{u in N_Y(v)} w_u,
+s_v=sum_{u in N_Y(v)} w_u*d_u.
+Then N_Y(v) is independent, so its incident edge cost is exactly s_v and
+j-s_v is the edge cost on Y minus N_Y(v).
+
+If d_v<=b, put selection fraction t/(y-d_v) on Y minus N_Y(v), zero elsewhere.
+Its selected mass is t and its cost is
+  F_v=t^2*(j-s_v)/(y-d_v)^2.
+If d_v>b, put fraction1 outside N_Y(v) and fraction1-b/d_v on N_Y(v).
+Its mass is t and its cost is
+  F_v=j-(b/d_v)*s_v.
+Both fractions lie in[0,1]. Outside Y all selection fractions are zero.
+At d_v=b the two formulas agree. At d_v=0 use the first formula (no division
+by d_v). The case y=1/2 is separate: select all Y, with cost j. It is excluded
+from the tangent certificate because b=0. Zero-mass vertices can be deleted.
+
+For the original finite unweighted graph take w_v=1/n. This gives a fractional
+half of the original graph. The retained rounding theorem is needed to pass
+to an integral half, with its even-order convention; no new rounding claim is
+silently used. For rational vertex weights a common even blowup denominator
+makes a simple graph. If exact selected cluster fractions are to be realized,
+include their denominators too. The construction itself makes no parity claim
+for odd n; the existing balanced blowup bridge is the separate interface.
+
+3. Actual graph moments, absent from the old scalar relaxation.
+Sample a vertex v of Y with probability w_v/y. Then
+  E[d_v]=mu=2j/y, and E[s_v]=E[d_v^2].
+The second identity follows by interchanging the finite sum and using the
+symmetry of adjacency. It does not assume regularity or a maximum cut.
+
+For a target R>0 define
+  psi(d)=j-4R(y-d)^2 if d<=b; psi(d)=(j-R)d/b if d>=b;
+  phi(d)=psi(d)-d^2.
+If every F_v>R then every s_v<psi(d_v), hence E[phi(d_v)]>0.
+A sufficient exclusion certificate is an affine majorant
+  phi(d)<=C+L*(d-mu) for every d>=0, with C<=0.
+It implies E[phi]<=C<=0, a contradiction. Thus some actual half has cost<=R.
+
+4. Exact check at the known obstruction, with R=2586/100000.
+Use y=5000/7797 and j=2172228946875000/51047928060481223.
+Set L=8R(y-mu)-2mu,
+C=j-4R(y-mu)^2-mu^2,
+B=(j-R)/b-L,
+S=B^2/4+L*mu-C.
+The lower branch satisfies the polynomial identity
+  phi(d)=C+L*(d-mu)-(4R+1)*(d-mu)^2.
+The upper branch satisfies
+  phi(d)-(C+L*(d-mu))=-(d-B/2)^2+S.
+The exact point_moment_screen.py gives C<0 and S<0. Decimal displays are
+C=-.00181303124999397 and S=-.00007648702507127.
+So the displayed moment argument excludes the scalar beta at this single
+(y,j), using actual graph construction and moments. This is a written
+argument plus exact arithmetic, pending independent statement checking.
+
+5. Missing scope and falsifier.
+We have NOT yet proved a uniform certificate over all (c,q,j) where the old
+scalar bound exceeds .02586, nor composed it with the other envelope branches.
+That is the proposed 45-60 minute experiment. Global concavity of phi FAILS
+at this point: its derivative jumps up at b. The valid affine majorant above
+is stronger evidence than a naive Jensen assertion and avoids that error.
+The separate stronger claim min_v F_v<=F_regular(y,j) has only finite tests:
+all6,228 labelled triangle-free graphs through6 vertices and3,000 seeded
+rational C5/C7/Petersen weightings. It is not needed by the target certificate.
+The first falsifier for the proposed uniform certificate is C>0 or S>0 at
+any rational parameter in the actual dangerous scalar region. A graph with
+min_v F_v>.02586 is a stronger falsifier of the construction route there.

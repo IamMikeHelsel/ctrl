@@ -1,0 +1,111 @@
+INDEPENDENT SHORTLIST REVIEW — ERDOS 128
+18 October 2026. First formula packet, before the uniform-region experiment.
+
+Verdict
+Accept the written fractional-half construction, its weighted moment identity,
+and the sufficient affine certificate. Exact arithmetic verifies the certificate
+at the supplied single density pair for R=.02586. This is enough to justify the
+bounded uniform-region experiment. It is not a universal .02586 graph theorem,
+a new Lean proof, or a novelty finding.
+
+Bound input
+erdos/shortlist-sha256.json:
+99af7097b82126d9b0592cd7de3845da697ce4d0eb9fcdac511e8711444d50e3.
+All 17 entries were checked and copied to inputs/ before review. The frozen
+FORMULA-CARD.txt hash is
+3ea80f2d2ef14a728caee65f5d2ca17e524c1961e7544094d6edcb92f782bca0.
+
+Statement review
+Let Y carry positive vertex masses of total y>1/2, with simple triangle-free
+adjacency. The neighborhood N_Y(v) is independent. Thus s_v counts each edge
+incident to that neighborhood once, and j-s_v is the remaining edge cost.
+Both proposed profiles have selected mass 1/2 and values in [0,1]. Their
+displayed costs follow by expanding the actual edge objective. The branches
+meet at d_v=y-1/2. Zero degree uses the first branch. The y=1/2 case is separate.
+
+With v drawn with probability w_v/y, finite sum interchange gives
+E[d_v]=2j/y and E[s_v]=E[d_v^2]. If all candidate costs exceed R, each s_v is
+strictly below psi(d_v). Hence E[psi(d_v)-d_v^2]>0. An affine majorant with
+mean C<=0 contradicts this. No regularity assumption or Jensen step is needed.
+The certificate's domain d>=0 is stronger than the actual degree domain.
+
+At the supplied y,j, independent coefficient comparison checks both completed
+squares exactly. C<0 and S<0, so the majorant holds on both entire branches.
+The derivative jumps upward at the join. Global concavity is false; it cannot
+replace the majorant argument. The regular-profile cost is not needed here.
+
+The six-cluster example has positive rational masses, an exact finite even
+blowup order, the stated x,q,j, and an independent half of mass 1/2. Its true
+minimum half cost is zero. Its chosen cut is not a maximum cut. It refutes
+the idea that bare x,q,j realizability will remove the scalar obstruction;
+it does not realize the scalar beta as the graph optimum or satisfy a claim
+that this particular cut is optimal.
+
+Independent evidence
+Three scripts ran from fresh copies in replay/: preflight.py, followed by
+point_moment_screen.py, and neighborhood_screen.py. All three result files are
+byte-identical to their frozen inputs. The builder's finite screen covers
+6,228 labelled triangle-free graphs through six vertices and 3,000 seeded
+weighted C5/C7/Petersen tests. No counterexample appeared. This is finite
+evidence only, not proof of the regular-profile majorant.
+
+independent_check.py uses separate code and exact fractions. It checks all
+polynomial coefficients, the six-cluster integer realization, and 439 labelled
+triangle-free graphs through five vertices with unequal rational weights.
+It directly computes each selected profile's mass and edge cost, both moment
+identities, both branches, zero degree, and a branch-boundary example. On a
+triangle the claimed neighborhood formula fails, as expected; this checks
+that triangle-freeness is a material premise. Results are in
+independent-results.json. No external package or proof kernel is needed for
+these small checks. The general statement is supported by the argument above,
+not by finite enumeration.
+
+Prior-work overlap changes the novelty description
+The construction F_v already occurs as one feasible endpoint of the local
+source sparse_halves_simple.tex, lemma onestep (lines about 490–545).
+Normalize Y weights by y, set alpha=1/(2y), delta=d_v/y, and use direction
+1_N-delta. The negative endpoint radius is
+  min(alpha/(1-delta), (1-alpha)/delta).
+Its two cases give exactly the two F_v formulas. Our independent code checks
+this identity on every tested profile. The source's treatment also includes
+an arbitrary linear term and a barycentric comparison of both endpoints.
+The candidate addition here is the affine moment certificate and uniform
+composition with the old envelope. The construction itself is reuse.
+
+The external literature also uses weighted halves and neighborhood-based
+profiles. Norin–Yepremyan, arXiv:1311.5818v2, Section 2 and Lemma 2.1, defines
+weighted half mass and rounds the uniform case. Razborov,
+arXiv:2104.09406v2, Lemma 4.1, uses a fractional half on a neighborhood
+complement. These targeted readings do not establish whether the proposed
+affine certificate is new. No complete literature review was done.
+https://arxiv.org/abs/1311.5818
+https://arxiv.org/abs/2104.09406
+
+Copies and hashes of the local prior source, its rounding interface, and the
+two primary PDFs are in prior-work/. Only the listed sections were inspected.
+
+Required scope corrections for the next builder packet
+Use 'fractional half' until an integral rounding theorem is invoked. The
+existing RoundingFinal.lean has hasSparseHalf_of_hasFractionalHalfBound for
+floor(n/2), including odd n; the card's even-order restriction is conservative,
+not a proof defect. Its exact interface still must be composed with new code.
+SOURCE-NOTES overstates the critic's 102 reading: the reading was selected
+sections 1–3 and 10–12, not the complete summary. Both points were sent to the
+builder. Frozen inputs remain unchanged.
+
+Next acceptance gate
+Give the full dangerous parameter region from the actual old piecewise
+envelope, including endpoints. Prove its coverage and all denominator signs.
+Prove C<=0 and S<=0, or an explicitly justified replacement majorant, on every
+remaining cell. Keep failed cells and distinguish failure of a chosen tangent
+from failure of the graph construction. Then compose the actual graph profile,
+the BCL assumption and the existing rounding interface. A finer numerical grid
+does not satisfy this gate. The .02 conjecture and unconditional BCL closure
+remain outside this milestone.
+
+Replay
+From this directory, copy inputs/preflight.py, inputs/point_moment_screen.py
+and inputs/neighborhood_screen.py into a fresh replay directory. Run them in
+that order, then run independent_check.py. Preserve recorded results before
+repeating a replay. All writes stay within this critic packet. The independent
+script expects the recorded input/replay layout and compares every result.

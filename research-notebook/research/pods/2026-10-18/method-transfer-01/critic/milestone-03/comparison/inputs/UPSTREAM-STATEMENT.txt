@@ -1,0 +1,23 @@
+EXACT UPSTREAM STATEMENT, NOT A TRUST-CLOSURE ACCEPTANCE
+Revision: ba85f319ebb33ec2194ef4c2929a12916329e1e7
+Module: Erdos128.OneStepSaving
+Namespace: Erdos128
+URL: https://github.com/aimir/erdos-128-sparse-halves/blob/ba85f319ebb33ec2194ef4c2929a12916329e1e7/lean/Erdos128/OneStepSaving.lean#L463
+Context: universe u; variable {V : Type u} [Fintype V]; noncomputable section
+
+theorem exists_oneStepSaving
+    (H : SimpleGraph V) (W : RatProbabilityWeight V)
+    (htri : H.CliqueFree 3) (ψ : V → ℚ) (α : ℚ)
+    (hα0 : 0 ≤ α) (hα1 : α ≤ 1) :
+    ∃ π : V → ℚ,
+      IsUnitProfile π ∧ weightedMean W π = α ∧
+        weightedObjective H W ψ π ≤
+          weightedObjective H W ψ (fun _ ↦ α) -
+            4 * savingLQ α * edgeMass H W ^ 3
+
+RatProbabilityWeight requires strictly positive rational weights with sum1.
+weightedObjective is one half the ordered adjacency sum plus a linear term.
+IsUnitProfile bounds each rational coordinate in[0,1].
+savingLQ(alpha)=min(4*min(alpha,1-alpha)^2, min(alpha,1-alpha)*(1-min(alpha,1-alpha))).
+Exact definitions are in the copied upstream WeightedGraph.lean.
+No build, full theorem-closure axiom audit or kernel check was run here.

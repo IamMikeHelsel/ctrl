@@ -1,0 +1,60 @@
+'Erdos128.weightedDegree_nonneg' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Erdos128.weightedDegree_pos_of_adj' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Erdos128.weightedDegree_lt_one' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Erdos128.edgeMass_nonneg' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Erdos128.weightedSecondDegree_nonneg' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Erdos128.two_mul_edgeMass' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Erdos128.weightedMean_eq_sum_filter' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Erdos128.weightedMean_one' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Erdos128.weightedMean_const' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Erdos128.weighted_neighbor_sum_swap' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Erdos128.exists_cubic_neighborhood' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Erdos128.exists_oneStepSaving' depends on axioms: [propext, Classical.choice, Quot.sound]
+@Erdos128.exists_oneStepSaving.{u_1} : ∀ {V : Type u_1} [inst : Fintype.{u_1} V] (H : SimpleGraph.{u_1} V)
+  (W : Erdos128.RatProbabilityWeight.{u_1} V),
+  SimpleGraph.CliqueFree.{u_1} H 3 →
+    ∀ (ψ : V → ℚ) (α : ℚ),
+      LE.le.{0} 0 α →
+        LE.le.{0} α 1 →
+          ∃ π,
+            Erdos128.IsUnitProfile.{u_1} π ∧
+              Eq.{1} (Erdos128.weightedMean.{u_1} W π) α ∧
+                LE.le.{0} (Erdos128.weightedObjective.{u_1} H W ψ π)
+                  (HSub.hSub.{0, 0, 0} (Erdos128.weightedObjective.{u_1} H W ψ fun x => α)
+                    (HMul.hMul.{0, 0, 0} (HMul.hMul.{0, 0, 0} 4 (Erdos128.savingLQ α))
+                      (HPow.hPow.{0, 0, 0} (Erdos128.edgeMass.{u_1} H W) 3)))
+structure Erdos128.RatProbabilityWeight.{u} (V : Type u) [Fintype.{u} V] : Type u
+number of parameters: 2
+fields:
+  Erdos128.RatProbabilityWeight.weight.{u} : V → ℚ
+  Erdos128.RatProbabilityWeight.positive.{u} : ∀ (v : V), LT.lt.{0} 0 (Erdos128.RatProbabilityWeight.weight.{u} self v)
+  Erdos128.RatProbabilityWeight.sum_eq_one.{u} : Eq.{1} (∑ v, Erdos128.RatProbabilityWeight.weight.{u} self v) 1
+constructor:
+  Erdos128.RatProbabilityWeight.mk.{u} {V : Type u} [Fintype.{u} V] (weight : V → ℚ)
+    (positive : ∀ (v : V), LT.lt.{0} 0 (weight v)) (sum_eq_one : Eq.{1} (∑ v, weight v) 1) :
+    Erdos128.RatProbabilityWeight.{u} V
+def Erdos128.IsUnitProfile.{u} : {V : Type u} → (V → ℚ) → Prop :=
+fun {V} π => ∀ (v : V), LE.le.{0} 0 (π v) ∧ LE.le.{0} (π v) 1
+def Erdos128.weightedMean.{u} : {V : Type u} →
+  [inst : Fintype.{u} V] → Erdos128.RatProbabilityWeight.{u} V → (V → ℚ) → ℚ :=
+fun {V} [Fintype.{u} V] W f => ∑ v, HMul.hMul.{0, 0, 0} (Erdos128.RatProbabilityWeight.weight.{u} W v) (f v)
+def Erdos128.edgeMass.{u} : {V : Type u} →
+  [inst : Fintype.{u} V] → SimpleGraph.{u} V → Erdos128.RatProbabilityWeight.{u} V → ℚ :=
+fun {V} [Fintype.{u} V] H W =>
+  HMul.hMul.{0, 0, 0} (1 / 2) (Erdos128.weightedMean.{u} W (Erdos128.weightedDegree.{u} H W))
+def Erdos128.weightedObjective.{u} : {V : Type u} →
+  [inst : Fintype.{u} V] → SimpleGraph.{u} V → Erdos128.RatProbabilityWeight.{u} V → (V → ℚ) → (V → ℚ) → ℚ :=
+fun {V} [Fintype.{u} V] H W ψ π =>
+  HAdd.hAdd.{0, 0, 0}
+    (HMul.hMul.{0, 0, 0} (1 / 2)
+      (∑ x,
+        HMul.hMul.{0, 0, 0} (HMul.hMul.{0, 0, 0} (Erdos128.RatProbabilityWeight.weight.{u} W x) (π x))
+          (∑ y ∈ SimpleGraph.neighborFinset.{u} H x,
+            HMul.hMul.{0, 0, 0} (Erdos128.RatProbabilityWeight.weight.{u} W y) (π y))))
+    (Erdos128.weightedMean.{u} W fun x => HMul.hMul.{0, 0, 0} (ψ x) (π x))
+def Erdos128.centerRadiusQ : ℚ → ℚ :=
+fun α => min.{0} α (HSub.hSub.{0, 0, 0} 1 α)
+def Erdos128.savingLQ : ℚ → ℚ :=
+fun α =>
+  min.{0} (HMul.hMul.{0, 0, 0} 4 (HPow.hPow.{0, 0, 0} (Erdos128.centerRadiusQ α) 2))
+    (HMul.hMul.{0, 0, 0} (Erdos128.centerRadiusQ α) (HSub.hSub.{0, 0, 0} 1 (Erdos128.centerRadiusQ α)))

@@ -1,0 +1,112 @@
+RANKED METHOD-TRANSFER CANDIDATES — FIRST MILESTONE
+18 October 2026. Builder shortlist; independent selection is required.
+Corpus pin: 1581d4cbdd69a0faf34b2089614fe2a814316a6a.
+Only two candidates are proposed. The generic entropy/SDP shortcut is rejected.
+
+1. PRIORITY: neighborhood-conditioned half + exact moment separation.
+
+Source mechanism and citation:
+Family113, Entropy and Face Dimension of the Perfect-Matching Polytope,
+Lemma3.2 pp11 and Lemma3.3 pp12-13:
+https://github.com/openai/math/blob/1581d4cbdd69a0faf34b2089614fe2a814316a6a/preprints/Entropy-and-Face-Dimension-of-the-Perfect-Matching-Polytope-September-23-2026/main.pdf
+It combines polytope-face geometry, finite probability laws, and covariance
+identities. The transferable step is to retain a joint-law/moment identity
+and test an affine/quadratic obstruction within the correct feasible domain.
+The matching-specific entropy coefficient and odd-cut rank theorem do NOT
+transfer to half sets. Our graph construction and scalar certificate are a
+reconstruction inspired by the mechanism, not a reported discovery history.
+
+Actual translation:
+The old beta<=min(c^2*j,Q(x)+q) loses the neighborhood profile of Y. Restore
+that profile through d_v and s_v, and use the exact half F_v in FORMULA-CARD.
+Its graph identity E[s]=E[d^2] supplies information absent from the scalar
+point. The proposed conclusion is beta_actual<=.02586 for every dangerous
+parameter tuple, by an affine majorant of psi(d)-d^2 with nonpositive mean.
+This is a construction bound; BCL remains the explicit q+j<=2/47 input.
+
+Current check:
+At the exact old obstruction, C<0 and S<0 prove the needed point arithmetic.
+A hypothetical regular Y gives .02410748023 versus the old .02586917303.
+Regularity is not assumed by the point majorant. A naive Jensen proof is
+invalid because the piecewise derivative jumps upward. That exact negative
+is recorded. The required uniform parameter certificate is still missing.
+
+First falsifier and fair baseline:
+Find a rational tuple in the actual old dangerous region where C>0 or S>0;
+then determine whether a different affine majorant exists before claiming the
+construction fails. Stronger falsifier: an exact weighted triangle-free host
+with all F_v>.02586 and both old constructions also>.02586. Compare with the
+unchanged exact old envelope and actual half optimum on the same host.
+
+45-60 minute experiment:
+0-10: independently verify the graph formulas, domains and moment identity.
+10-25: isolate the exact dangerous scalar region; do rational interval or
+polynomial-sign checks on C and S, preserving every failed cell.
+25-45: prove a uniform certificate on covered cells; attempt one justified
+alternative affine majorant only if the fixed tangent fails.
+45-60: test exact weighted hosts, write the all-parameter claim or exact
+remaining cell, and send it for review. No scalar-only improvement claim.
+Stop if no uniform separation is obtained and no concrete failed cell suggests
+one bounded repair. Lean construction needs a later gate after this milestone.
+
+2. BACKUP DIAGNOSTIC: weighted blowups with exact cut and half objectives.
+
+Source mechanisms and citations:
+Family161, A counterexample to Sidorenko's conjecture, Lemma3.6 p16:
+https://github.com/openai/math/blob/1581d4cbdd69a0faf34b2089614fe2a814316a6a/preprints/A-counterexample-to-Sidorenkos-conjecture-September-23-2026/paper.pdf
+Family102, A Direct Proof of Optimal Max-Cut Hardness, AppendixB,
+LemmaB.1 pp35-36:
+https://github.com/openai/math/blob/1581d4cbdd69a0faf34b2089614fe2a814316a6a/preprints/A-Direct-Proof-of-Optimal-Max-Cut-Hardness-September-23-2026/paper.pdf
+These separate a weighted/kernel construction from a finite simple host and
+control the actual objective during the transfer. The latter uses finite-field
+Fourier orthogonality to control every rectangle, including cuts that split
+clusters. For our first test, rational vertex weights on0/1 triangle-free
+supports give exact blowups, so no random sampling error is needed.
+
+Actual translation and proposed construction:
+For a triangle-free support H on k vertices, use positive rational masses
+w_i summing to1. A half is z_i in[0,w_i], sum z_i=1/2, with cost
+sum_{ij in E(H)} z_i*z_j. Enumerate the exact minimum; pairwise mass transfer
+makes the objective concave or linear, so a minimum has at most one partial
+cluster. Compare it with every oriented maximum cut and with min_v F_v.
+Maximum-cut optimality adds the valid constraint that flipping any cluster
+subset cannot improve the cut. Plain cut-density feasibility is insufficient.
+
+Exact negative already obtained:
+preflight.py constructs a six-cluster bipartite blowup realizing x,q,j of the
+old scalar point but with an independent exact half and true beta0. Thus
+merely adding graph realizability of x,q,j cannot break the relaxation. One
+must tie the bound to actual halves or specify a better chosen cut.
+
+Missing assumption and first falsifier:
+No finite template list is known to cover all triangle-free graphs. A finite
+search can falsify a proposed inequality or isolate equality patterns; it
+cannot certify the universal graph conjecture. Refute the cluster-extreme
+claim on a small rational support before using the enumeration. Also check
+that no support triangle or order/parity error enters a reported blowup.
+
+45-minute experiment:
+10 minutes: verify exact cut/half enumeration on K2, C4 and balanced C5.
+20 minutes: test fixed C5,C7,Petersen and triangle-free supports through6
+vertices under bounded seeded rational weight grids. Preserve worst profiles.
+15 minutes: compare the actual objective with the old bound and candidate1;
+return an exact counterexample or a finite evidence table. Stop without a
+universal claim if the supports only confirm known examples.
+
+METHODS ASSESSED BUT NOT SELECTED
+- Flags/SOS: local distributions and a common PSD moment matrix are useful
+  only with graph-consistent semantics and the actual half objective. No new
+  basis or exact positivity witness is presently supplied. The earlier BCL
+  coefficient/PSD package is still missing. A generic solver run is not a
+  candidate theorem. Candidate1 uses one explicit graph moment instead.
+- Entropy alone: on C4, two exact-half laws have identical singleton means,
+  covariance row sums and covariance trace, yet expected edge costs0 and1.
+  The maximum-entropy uniform-half law has cost2/3. This rejects an entropy-only
+  shortcut from means to the required edge cost. See preflight-results.json.
+- Spectral approximation: family102's general Max-Cut hardness/rounding ratio
+  does not improve a triangle-free BCL input. No special spectral hypothesis
+  for our graphs has been established. Use its all-cut transfer lemma only.
+- The finite-field/Lagrangian machinery in family161 controls a specific
+  incidence-pattern correlation. No map from that rank geometry to our
+  triangle-free support constraint has been found. Do not transfer its theorem
+  or its claimed counterexample to Erdos128 by analogy.

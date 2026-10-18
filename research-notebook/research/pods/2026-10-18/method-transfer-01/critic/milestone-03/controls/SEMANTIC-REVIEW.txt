@@ -1,0 +1,75 @@
+C1 SEMANTIC REVIEW
+18 October 2026
+
+Read in full: RecoveryPeak.lean and RecoveryPeakWitness.lean. Rechecked the
+actual IsTrajectory, linear comparison, recovered_upper_flow and FirstStop
+interfaces from copied dependencies. This note does not replace replay results.
+
+The supplied physical model is x'=v, v'=a, a'=r(q-a). q is the effective
+physical acceleration target. A command label alone does not establish it.
+The generic theorem has v0,A,T,S>=0 and b,k>0. It permits any real X,B.
+Initial conditions are x(0)<=X, 0<=v(0)<=v0, a(0)<=A. The loss rate is
+continuous and nonnegative, and loss target <=A, on [0,T]. Recovered rate
+is continuous and >=k, and recovered target <=-b, on [0,S] in local time.
+One f is continuous on [0,T+S]. Its shifted recovery state is f(T+s), not
+an independent trajectory initialized from an assumed box. All coordinates,
+including acceleration, agree at the boundary. Derivatives are required on
+the open phases; jerk need not exist at the target change.
+
+The acceleration loss bound follows from the integrating-factor comparison
+against A. Integrating it gives the upper state
+[P,U,A]=[X+v0*T+A*T^2/2, v0+A*T, A] at T. The recovered acceleration upper
+flow g=-b+(A+b)exp(-ks) stays above -b. This sign permits a rate floor without
+a ceiling. The proof compares a'-g'+r(a-g), not the false inequality
+ a'<=-k(a+b) for arbitrary a below -b. Velocity and position order follow
+by integration. No cube, physical endpoint or physical path bound is supplied.
+
+The generic hEnd and hPeak are analytical certificate premises for the
+explicit heldSolution from [P,U,A]. hPeak includes s=0, hence P<=B. Because
+v0,A,T>=0, this also bounds the entire preceding loss phase by B. The theorem
+then derives a whole-horizon physical path bound and nonpositive terminal
+velocity, and applies the first-zero result. It proves velocity strictly
+positive before tau and position <=B through tau. S=0 and initial-zero cases
+are permitted; the conclusion may return tau=0. No root uniqueness is needed.
+
+The concrete theorem discharges hEnd and hPeak. Parameters are
+X=.001, v0=.41, A=.1, T=.05, b=1.2, k=8, S=.479, B=.142.
+Independent rational calculations match P=173/8000=.021625 and U=83/200=.415.
+Writing C=(A+b)/k=.1625, the recovered upper position is
+ P+(U+C)s-bs^2/2-(C/k)(1-exp(-ks)).
+For s in [0,.2], [.2,.31], [.31,infinity), the independently checked upper
+constants are 181/1600, 203109/1600000, 90867/640000. Each is <.142.
+The last margin is 13/640000 m. The Lean proof uses exp(-1.6)<=.21 and
+exp(-2.48)<=.084; the latter follows from a degree-10 positive Taylor sum.
+At s=.479, exp(-8s)>=256/14641 yields velocity upper
+-20693/146410000<0. No decimal floating-point evaluation is used in the proof.
+The upper flow exceeds .14 at s=.48 by the exact polynomial part alone.
+
+The target and rate guarantees are required through T+S=.529, even when
+first zero occurs earlier. A controller switch at first zero needs a compatible
+continuation or a different event-based theorem. The conclusion does not prove
+maintained rest. The witness zero_speed_not_hold starts with v=0,a=1, targets
+-1 with rate1, has v(1)>0 and v(3)<0. This is an exact relevant counterexample.
+
+The main witness starts at [.001,.41,.1]. During loss, a=q=.1 and rate8,
+so position is quadratic and velocity increases. At .05 its state equals
+[P,U,.1]. It then uses the exact rate8, q=-1.2 flow. The proof explicitly
+checks equality and continuity at the switch. This is a genuine target change,
+not two names for one constant input. The acceleration derivative changes
+from 0 to -10.4 at the boundary; the phasewise model permits this. Existence
+for all allowed signal choices is not proved by this one witness.
+
+Independent rejection: the same upper flow has x(1)<0 and v(1)<0, but
+x(.48)>.14. Thus a late position and velocity test cannot replace the full-time
+peak premise. EndpointTrap.lean proves this exact example; FalseEndpointOnly
+is an expected rejection. This check concerns the same scalar lag flow.
+
+Scope and value. .142 is an upper reference position, not absolute displacement
+from an unspecified initial position. The old .1605859375 relaxed expression
+still fails .15. The old fixed-contract proof already gave .15 with rate[8,12]
+and a supplied delay acceleration bound. C1 improves the number and uses the
+current derived-loss, floor-only contract. These differences must stay visible.
+No 2026 corpus theorem, optimization solver or new cross-field method is used.
+This is a useful local certificate tightening based on scalar comparison.
+General admission, stop-to-hold composition, maintained precision rest, lower
+position safety, coupled dynamics, contact and hardware remain outside scope.

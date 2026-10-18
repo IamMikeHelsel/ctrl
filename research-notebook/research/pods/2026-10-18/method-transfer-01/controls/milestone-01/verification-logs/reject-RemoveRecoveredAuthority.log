@@ -1,0 +1,42 @@
+/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/pods/2026-10-18/method-transfer-01/controls/milestone-01/negative-controls/RemoveRecoveredAuthority.lean:51:49: error: linarith failed to find a contradiction
+X v0 A T b k S B : ℝ
+hv0 : 0 ≤ v0
+hA : 0 ≤ A
+hT : 0 ≤ T
+hb : 0 < b
+hk : 0 < k
+hS : 0 ≤ S
+hEnd : heldSolution k S (-b) ![X + v0 * T + A * T ^ 2 / 2, v0 + A * T, A] 1 ≤ 0
+hPeak : ∀ s ∈ Icc 0 S, heldSolution k s (-b) ![X + v0 * T + A * T ^ 2 / 2, v0 + A * T, A] 0 ≤ B
+f : ℝ → State
+rLoss qLoss rBrake qBrake : ℝ → ℝ
+hfc : ContinuousOn f (Icc 0 (T + S))
+hLoss : IsTrajectory T rLoss qLoss f
+hrLossC : ContinuousOn rLoss (Icc 0 T)
+hrLoss : ∀ t ∈ Icc 0 T, 0 ≤ rLoss t
+hqLoss : ∀ t ∈ Icc 0 T, qLoss t ≤ A
+hx : f 0 0 ≤ X
+hv : 0 ≤ f 0 1
+hvHi : f 0 1 ≤ v0
+ha : f 0 2 ≤ A
+hBrake : IsTrajectory S rBrake qBrake fun s => f (T + s)
+hrBrakeC : ContinuousOn rBrake (Icc 0 S)
+hrBrake : ∀ s ∈ Icc 0 S, k ≤ rBrake s
+hqBrake : ∀ s ∈ Icc 0 S, qBrake s ≤ 0
+haLoss : ∀ t ∈ Icc 0 T, f t 2 ≤ A
+hDelay : ActualStop.IsDelayTrajectory T f
+hprefix : ∀ t ∈ Icc 0 T, f t 0 ≤ X + v0 * t + A * t ^ 2 / 2 ∧ f t 1 ≤ v0 + A * t
+hend : f T 0 ≤ X + v0 * T + A * T ^ 2 / 2 ∧ f T 1 ≤ v0 + A * T
+hinit : ∀ (i : Fin 3), f (T + 0) i ≤ ![X + v0 * T + A * T ^ 2 / 2, v0 + A * T, A] i
+a✝ : A < -?m.827
+⊢ False
+failed
+/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/pods/2026-10-18/method-transfer-01/controls/milestone-01/negative-controls/RemoveRecoveredAuthority.lean:164:6: error: Type mismatch
+  h
+has type
+  qBrake s ≤ -(6 / 5)
+but is expected to have type
+  qBrake s ≤ 0
+
+Note: The following definitions were not unfolded because their definition is not exposed:
+  Real.instLE ↦ 2

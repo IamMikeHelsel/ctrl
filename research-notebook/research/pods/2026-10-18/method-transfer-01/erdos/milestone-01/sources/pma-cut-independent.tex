@@ -1,0 +1,330 @@
+\documentclass[11pt]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage[a4paper,margin=1.15in]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{url}
+\urlstyle{tt}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\hypersetup{
+  colorlinks=true,
+  linkcolor=black,
+  citecolor=black,
+  urlcolor=[rgb]{0.10,0.25,0.55},
+  pdftitle={A cut and independent-set bound for sparse halves},
+  pdfauthor={Pablo Miguel Argudo},
+  pdfsubject={Erdos problem 128: sparse halves in triangle-free graphs},
+  pdfkeywords={extremal graph theory, triangle-free graphs, sparse halves, Erdos 128}
+}
+
+% One shared counter, numbered by section, as in the papers cited.
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+\newcommand{\bh}{\beta_*}
+\title{A cut and independent-set bound for sparse halves}
+\author{Pablo Miguel Argudo}
+\date{9 September 2026}
+\begin{document}
+\maketitle
+\begin{abstract}
+We derive the partial bound $2587/100000=0.02587$ for sparse halves of every
+finite triangle-free graph, assuming the Balogh--Clemen--Lidick\'y max-cut
+theorem. The argument is elementary: no flag algebra or semidefinite
+certificate is used. Its one new ingredient is a combination---apply the
+max-cut theorem, delete the edges inside the smaller side so that it becomes
+independent, and feed the result to an independent-set completion bound. The
+completion bound itself is Razborov's Section~4.5 with a single step changed;
+Section~2 states precisely what is his and what is not. All scalar constants
+are rational and exactly certified. This is not a solution of Erd\H{o}s
+problem~128, and no claim of priority is made.
+\end{abstract}
+
+\section{Statement and normalization}
+For $n>0$ let
+\[
+ \bh(G)=\min\Big\{n^{-2}\!\!\sum_{uv\in E(G)}\!\!z_uz_v \;:\;
+   0\le z_v\le 1,\ \sum_v z_v=n/2\Big\}.
+\]
+
+\begin{proposition}[rounding]\label{round}
+Every graph $G$ on $n>0$ vertices has a set of exactly $\lfloor n/2\rfloor$
+vertices spanning at most $\bh(G)n^2$ edges.
+\end{proposition}
+\begin{proof}
+Fix a minimizer and two coordinates $z_u,z_v\in(0,1)$. Transferring $s$ from
+one to the other changes the objective by an affine function of $s$ when
+$uv\notin E$, and by one with $s^2$-coefficient $-1$ when $uv\in E$; in both
+cases the cost is concave, so some endpoint of the feasible range of $s$ is at
+least as good, and there $z_u$ or $z_v$ leaves $(0,1)$. Iterating gives a
+minimizer with at most one coordinate in $(0,1)$. If $n$ is even that
+coordinate must be $0$ and the minimizer is integral. If $n$ is odd it equals
+$1/2$; deleting it removes only non-negative terms and leaves exactly
+$\lfloor n/2\rfloor$ selected vertices.
+\end{proof}
+
+\begin{proposition}[blow-ups]\label{blow}
+Let $G[t]$ be the balanced $t$-fold blow-up. Then $\bh(G[t])=\bh(G)$ and
+$D_2(G[t])=t^2D_2(G)$, where $D_2$ is the minimum number of edges whose
+deletion makes the graph bipartite.
+\end{proposition}
+\begin{proof}
+Each twin class is independent, so the objective on $G[t]$ depends on a
+profile only through the class sums $t w_u=\sum_{i\in u}z_i$; averaging inside
+classes leaves it unchanged and gives a profile on $G$ of the same normalized
+cost, and lifting is the converse. For $D_2$, a bipartition of $G[t]$ splitting
+class $u$ into $a_u$ and $t-a_u$ has internal cost
+$\sum_{uv\in E(G)}\big(a_ua_v+(t-a_u)(t-a_v)\big)$, which is affine in each
+$a_u$ separately; hence a minimum is attained with every $a_u\in\{0,t\}$, i.e.\
+at a lifted bipartition of $G$, of cost $t^2D_2(G)$.
+\end{proof}
+
+\begin{theorem}\label{main}
+Assume the Balogh--Clemen--Lidick\'y theorem \cite[Theorem~2(a)]{bcl}: for
+$n$ large enough, every triangle-free graph satisfies $D_2(G)\le n^2/23.5$.
+Then every finite triangle-free graph $G$ has a set of $\lfloor n/2\rfloor$
+vertices spanning at most $2587n^2/100000$ edges, strictly so for $n>0$.
+\end{theorem}
+\noindent For $n=0$ the empty set gives the non-strict statement. The target
+$n^2/50$ remains unproved; so does any bound below $2587/100000$.
+
+\begin{remark}
+By Proposition \ref{blow} the hypothesis ``$n$ large enough'' in \cite{bcl}
+costs nothing: given any triangle-free $G$ of order $n$, apply the cited bound
+to $G[t]$ for $t$ large and divide by $t^2$ to get $D_2(G)\le 2n^2/47$. We use
+$I=2/47$ throughout. Similarly, Proposition \ref{round} lets us work with the
+relaxation $\bh$ and only round at the very end.
+\end{remark}
+
+\section{The completion envelope, and what is new in it}
+For $\alpha\in[1/3,1/2]$ put
+\[
+ g_\alpha(p)=2\big(\tfrac12-\alpha\big)(p-\alpha)+p\big(\tfrac12-p\big),
+ \qquad
+ f(\alpha)=\tfrac12\max_{p\in[\alpha,1/2]}g_\alpha(p),
+\]
+and $f(\alpha)=0$ for $\alpha\ge1/2$. Since $g_\alpha$ is concave with
+unconstrained maximum at $p=3/4-\alpha$, and $3/4-\alpha\le\alpha$ exactly when
+$\alpha\ge3/8$,
+\begin{equation}\label{fdef}
+ f(\alpha)=\begin{cases}
+  \frac32\alpha^2-\frac54\alpha+\frac9{32}, & \tfrac13\le\alpha\le\tfrac38
+    \quad\text{(interior maximum at }p=\tfrac34-\alpha),\\[2pt]
+  \frac{\alpha}{2}\big(\frac12-\alpha\big), & \tfrac38\le\alpha\le\tfrac12
+    \quad\text{(maximum at the endpoint }p=\alpha).
+ \end{cases}
+\end{equation}
+$f$ is continuous at $3/8$, where both branches equal $3/128$, and decreasing
+on $[1/3,1/2]$, with $f(1/3)=1/32$ and $f(2/5)=1/50$. Also
+$f(\alpha)-\frac{\alpha}{2}(\frac12-\alpha)=2(\alpha-\frac38)^2\ge0$, so
+$\frac{\alpha}{2}(\frac12-\alpha)\le f(\alpha)$ on the whole interval.
+
+\begin{lemma}\label{ind}
+Let $G$ be triangle-free with normalized independence number
+$\alpha=\alpha(G)$. If $\alpha\ge1/3$ then $\bh(G)\le f(\alpha)$. Consequently
+$\bh(G)\le f(x)$ whenever $G$ has an independent set of size at least $xn$
+with $1/3\le x\le1/2$.
+\end{lemma}
+
+\noindent\textbf{Attribution.} For $\alpha\ge3/8$ this is exactly Razborov
+\cite[Theorem~3.6]{raz}, whose proof occupies his Section~4.5. Our statement
+differs from his only in the range $\alpha\in[1/3,3/8)$, and the proof differs
+from his in exactly one step:
+\begin{itemize}
+\item \emph{Case 1 (the changed step).} Razborov derives the concave bound
+$2\bh\le g_\alpha(p_b)$ and observes that its maximum sits at
+$p_b=3/4-\alpha$, ``which is $\le\alpha$ since we assumed $\alpha\ge3/8$'';
+he therefore substitutes $p_b:=\alpha$. For $\alpha<3/8$ that substitution is
+unavailable, but the maximum is then interior to $[\alpha,1/2]$ and one may
+simply evaluate $g_\alpha$ there. This is the whole of the extension, and it
+is a one-line observation on his own display.
+\item \emph{Case 2 (unchanged).} His Case 2 uses $\alpha\ge3/8$ only in its
+final step, where the requirement is
+$\partial Q_1/\partial p_b|_{p_b=\alpha}=(1-3\alpha)/2\le0$, i.e.\
+$\alpha\ge1/3$. It therefore applies verbatim on the wider range. We reproduce
+it below for self-containedness, not for novelty.
+\end{itemize}
+The genuinely new content of this note is not Lemma \ref{ind} but its
+combination with a max-cut theorem in Section~3.
+
+\begin{proof}[Proof of Lemma \ref{ind}]
+The last sentence follows from the first because $\alpha\ge x$ and $f$ is
+decreasing. If $\alpha\ge1/2$ then $\bh(G)=0$. By Proposition \ref{blow} we
+may assume $n$ even. Densities: all vertex counts and degrees are divided by
+$n$, all edge counts by $n^2$, and each edge is counted once.
+
+Let $A$ be a maximum independent set, $k=\frac12-\alpha$, and grow $B\supseteq
+A$ by repeatedly adding a vertex with at most $k$ neighbours in the current
+set, stopping at size $\frac12$ or when no such vertex exists. In the first
+case the cost is at most $k^2\le\alpha k/2\le f(\alpha)$, using $\alpha\ge1/3$
+for the middle inequality. Otherwise we obtain $B$ with
+\begin{equation}\label{Bprops}
+ b\in[\alpha,\tfrac12),\qquad e(B)\le k(b-\alpha),\qquad
+ e_B(v)>k\ \ \text{for every } v\notin B .
+\end{equation}
+Vertices outside $B$ with more than $b/2$ neighbours in $B$ are pairwise
+non-adjacent---two of them share a neighbour in $B$---so they form an
+independent set $C$ with $|C|/n\le\alpha$. Hence we may pick $D$ disjoint from
+$B\cup C$ with $d=1-\alpha-b$, and every $z\in D$ has $k<s_z\le b/2$, where
+$s_z$ is its normalized degree into $B$. Write $h=\frac12-b>0$ and note
+$d-h=k>0$.
+
+\emph{Case 1: some $v\in B$ has at least $hn$ neighbours in $D$.} Pick $hn$ of
+them; they lie in $N(v)$, hence are independent, and lie in $D$, hence send at
+most $b/2$ each into $B$. Their union with $B$ has size $b+h=\frac12$ and cost
+at most
+\[
+ H=k(b-\alpha)+\tfrac b2 h=\tfrac12 g_\alpha(b)\le f(\alpha),
+\]
+the last step by the definition of $f$ as a maximum over $p\in[\alpha,1/2]$,
+which contains $b$.
+
+\emph{Case 2: every $v\in B$ has fewer than $hn$ neighbours in $D$.} Fix
+$v\in B$, set $E=N(v)\cap D$ and $r=|E|/n<h$, and take the profile equal to
+$1$ on $B\cup E$, to $w=(h-r)/(d-r)\in[0,1]$ on $D\setminus E$, and to $0$
+elsewhere; it sums to $b+r+(h-r)=\frac12$. Accounting for the six kinds of
+pair---inside $B$, $B$ to $E$, inside $E$ (empty, as $E\subseteq N(v)$ is
+independent), $B$ to $D\setminus E$, $E$ to $D\setminus E$, and inside
+$D\setminus E$ (Mantel)---the cost is at most
+\[
+ k(b-\alpha)+m(B,E)+\tfrac b2(h-r)+r(h-r)+\tfrac{(h-r)^2}{4}.
+\]
+For Mantel: in a triangle-free graph of order $N>0$ with $m$ edges every edge
+has endpoint degree sum at most $N$, so
+$4m^2/N\le\sum_v\deg(v)^2\le Nm$ and $m\le N^2/4$.
+
+Now average over $v\in B$. The displayed tail is concave in $r$ (its
+$r^2$-coefficient is $-3/4$), so it may be evaluated at $\bar r$. A vertex
+$z\in D$ enters $E$ with probability $s_z/b$, whence
+$\bar r=\frac1{bn}\sum_{z\in D}s_z\in[0,d/2]$ and, using
+$s_z^2\le(k+\frac b2)s_z-\frac{kb}{2}$---which is exactly
+$(s_z-k)(s_z-\frac b2)\le0$---
+\[
+ \mathbb E\,m(B,E)=\tfrac1{bn}\textstyle\sum_{z\in D}s_z^2
+   \le\big(k+\tfrac b2\big)\bar r-\tfrac{kd}{2}.
+\]
+Collecting terms, some half costs at most
+\[
+ Q=k\big(b-\alpha-\tfrac d2\big)+\tfrac{bh}{2}+\tfrac{h^2}{4}
+   +\big(k+\tfrac h2\big)\bar r-\tfrac34\bar r^{\,2}.
+\]
+$Q$ is concave in $\bar r$ with $\partial Q/\partial\bar r=(b-\alpha)/4\ge0$ at
+$\bar r=d/2$, so it increases on $[0,d/2]$ and
+\[
+ Q\le\tfrac{13}{16}\alpha^2-\tfrac98\alpha b-\tfrac3{16}b^2-\tfrac14\alpha
+     +\tfrac12 b
+   =\tfrac{\alpha k}{2}+\tfrac{1-3\alpha}{2}(b-\alpha)
+     -\tfrac3{16}(b-\alpha)^2 .
+\]
+Both correction terms are $\le0$ because $\alpha\ge1/3$ and $b\ge\alpha$;
+hence $Q\le\alpha k/2\le f(\alpha)$.
+\end{proof}
+
+\section{Deleting one side of a cut}
+This section is the new step. Let $I=2/47$ and take a bipartition $X,Y$ with
+$|X|\le|Y|$ realizing $D_2(G)$, with internal edge densities $q=e(X)/n^2$ and
+$j=e(Y)/n^2$, so $q+j\le I$. Put
+\[
+ c=\frac{n}{2|Y|}\in[\tfrac12,1],\qquad x=\frac{|X|}{n}=1-\frac1{2c}.
+\]
+The profile equal to $c$ on $Y$ and $0$ elsewhere is feasible and gives
+\begin{equation}\label{first}
+ \bh(G)\le c^2 j .
+\end{equation}
+Suppose $c\ge3/4$, equivalently $x\ge1/3$. Delete the edges inside $X$: the
+resulting graph is still triangle-free and now has $X$ as an independent set of
+density $x\in[1/3,1/2]$, so Lemma \ref{ind} applies to it, and restoring the
+deleted edges costs at most $q$ because all weights are at most $1$:
+\begin{equation}\label{second}
+ \bh(G)\le f(x)+q .
+\end{equation}
+Adding \eqref{first} to $c^2$ times \eqref{second} and using $q+j\le I$,
+\begin{equation}\label{combined}
+ \bh(G)\le\frac{c^2\big(I+f(x)\big)}{1+c^2},\qquad c\ge\tfrac34 .
+\end{equation}
+Neither ingredient is new---\cite{bcl} is cited in \cite{raz}---but we have
+not found this combination in the literature. Note that \eqref{first} alone is
+weak near $c=1$ and \eqref{second} alone is weak near $c=3/4$; the point is
+that the two are strong in complementary regimes, and $\eqref{combined}$
+interpolates.
+
+\section{Exact scalar certificate}
+Put $T=2587/100000$ and $c_0=7797/10000$. The three intervals below cover
+$[\frac12,1]$.
+
+For $c\le c_0$, \eqref{first} and $j\le I$ give
+$\bh\le Ic^2\le Ic_0^2$, and
+$T-Ic_0^2=\frac{1291}{2350000000}>0$.
+
+For $c_0\le c\le\frac45$ we have $x\le3/8$, so the first branch of
+\eqref{fdef} applies, and the numerator of $T-c^2(I+f(x))/(1+c^2)$ is
+\[
+ P(c)=\Big(T-I-\tfrac{17}{32}\Big)c^2+\tfrac{7c}{8}+T-\tfrac38 ,
+\]
+concave, hence minimized at an endpoint; both are positive:
+\[
+ P(c_0)=\frac{312483613}{235000000000000},\qquad
+ P\big(\tfrac45\big)=\frac{22649}{117500000}.
+\]
+
+For $\frac45\le c\le1$ the second branch applies and the numerator is
+$Ac^2-Bc+C$ with
+\[
+ A=T+\tfrac14-I>0,\quad B=\tfrac38,\quad C=T+\tfrac18,\quad
+ 4AC-B^2=\frac{442569}{2500000000}>0,
+\]
+so it is positive on all of $\mathbb R$. Proposition \ref{round} converts the
+resulting bound on $\bh$ into the statement of Theorem \ref{main}.
+
+\begin{remark}
+$T$ is not a free choice: the supremum over $c\in[\frac12,1]$ of the bound
+$\min\{Ic^2,\,c^2(I+f(x))/(1+c^2)\}$ equals $0.0258691\ldots$, attained where
+the two branches cross near $c_0$. So $2587/100000$ is this argument's own
+optimum, rounded up, and no better constant follows from it without a new
+ingredient.
+\end{remark}
+
+\section{Verification, scope and limitations}
+The identities, the rational margins and the finite instances are recomputed by
+two independently written verifiers, and the scalar optimization additionally
+carries a machine-checked certificate:
+\begin{center}
+\begin{tabular}{@{}ll@{}}
+\texttt{outputs/verify-cut-independent.py} & standard library only\\
+\texttt{outputs/verify-independent.py}     & requires \texttt{sympy}, \texttt{networkx}\\
+\texttt{formal/verify.py}                  & compiles and replays \texttt{formal/Scalar.lean}
+\end{tabular}
+\end{center}
+\noindent Both verifiers use exact arithmetic only; no floating-point value
+enters any acceptance decision. The Lean~4 development certifies the scalar
+optimization of Section~4 and the polynomial identities of Section~2,
+conditional on scalar hypotheses supplied as arguments.
+
+Not established here: the conjecture $1/50$; any counterexample; a formal proof
+of the graph-theoretic content of Sections 2 and 3; and the Balogh--Clemen--%
+Lidick\'y theorem, which is assumed as published. The literature audit
+underlying the attribution in Section~2 is recorded in \path{LITERATURE.md};
+it is not a substitute for review by a specialist.
+
+\section*{Acknowledgement of method}
+This work was carried out with substantial assistance from AI coding and
+reasoning agents, which produced and checked the algebra, the rational
+certificates and the Lean development, and performed the literature audit
+recorded in \path{LITERATURE.md}. The author takes responsibility for the
+mathematical content. No claim of priority is made and the result has not yet
+been read by a specialist referee.
+
+\begin{thebibliography}{9}
+\bibitem{bcl} J. Balogh, F. C. Clemen, B. Lidick\'y,
+\emph{Max cuts in triangle-free graphs}, arXiv:2103.14179, Theorem~2(a).
+\bibitem{raz} A. A. Razborov,
+\emph{More about sparse halves in triangle-free graphs},
+arXiv:2104.09406, Theorem~3.6 and Section~4.5.
+\end{thebibliography}
+\end{document}

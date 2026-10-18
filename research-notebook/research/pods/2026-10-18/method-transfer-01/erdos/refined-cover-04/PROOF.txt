@@ -1,0 +1,307 @@
+E4: FIXED .0252 COVER WITH THE REFINED MOMENT CONDITION
+18 October 2026. Written candidate proof and exact arithmetic.
+Submitted for independent review. No new Lean endpoint or acceptance claim.
+
+1. Statement and external hypothesis
+
+Set R=63/2500=.0252 and I=2/47. Let hBCL mean: there is an integer N such
+that every finite simple triangle-free graph H of order at least N has a
+vertex cut with at most I|V(H)|^2 internal edges. An internal edge has both
+ends on the same side, and each edge is counted once. This is exactly the
+BCLEventual proposition in PublishedBCL.lean:21. It remains a hypothesis.
+
+Candidate theorem: under hBCL, every finite simple triangle-free graph G
+on n vertices has a set S of floor(n/2) vertices with e_G(S)<=R n^2.
+There are no regularity, maximum-degree, or optimal-cut assumptions. The
+conjectured coefficient 1/50 is not proved. The construction first gives a
+rational fractional half. Section 7 states the unchanged parity, blowup,
+and rounding steps which give the integral conclusion.
+
+First take n>0 even and any cut X,Y with |X|<=|Y| and
+  e(X)+e(Y)<=I n^2.
+Write
+  x=|X|/n, y=|Y|/n, c=1/(2y), q=e(X)/n^2, j=e(Y)/n^2.
+Then x+y=1, 0<=x<=1/2, 1/2<=y<=1, 1/2<=c<=1,
+x=1-1/(2c), q>=0, j>=0, q+j<=I. Thus 0<=j<=I.
+A rational fractional half is a profile z_v in[0,1] with sum z_v=n/2.
+Its normalized cost is n^(-2) sum_{uv in E(G)} z_u z_v.
+All costs below are costs of such profiles. We do not identify a scalar
+feasible value with the minimum over actual graph profiles.
+
+2. Existing feasible bounds and their domains
+
+The profile c on Y and zero on X is a fractional half of cost
+  U(c,j)=c^2 j.                                            (UNIFORM)
+If c>=3/4, then x>=1/3. Delete edges inside X, apply the existing independent
+set completion construction, and restore those edges at cost at most q.
+This produces a fractional half of cost at most
+  Q(x)+q <= Q(x)+I-j,                                     (COMPLETION)
+where
+  Q(x)=3x^2/2-5x/4+9/32,  for 1/3<=x<=3/8;
+  Q(x)=x(1/2-x)/2,        for 3/8<=x<=1/2.
+The formulas agree at x=3/8, which corresponds to c=4/5.
+
+The source theorem deletion_completion_even in PiecewiseCompletion.lean
+requires only n/3<=|X|<=n/2, triangle-freeness and even order. Its proof
+selects a maximum independent set internally after deletion; X need not
+be maximum, and the cut need not be optimal. The old CutScalar wrapper
+uses c0=7797/10000 to prove its older numerical target. That restriction
+is not a premise of deletion_completion_even. We use the actual graph
+construction directly wherever c>=3/4, including c<c0.
+
+Choosing the cheaper of UNIFORM and COMPLETION also gives a profile with
+cost at most
+  E(c)=c^2(I+Q(x))/(1+c^2),  for c>=3/4.                  (OLD)
+Indeed the minimum of two numbers is at most their weighted average, with
+weights 1 and c^2. The average of U and c^2(Q+q) is at most E(c), since
+q+j<=I. The denominator 1+c^2 is positive. This step selects between actual
+profiles; no minimum over a rational compact set is assumed.
+
+The function Q decreases with x on[1/3,1/2]. On the first branch its
+slope is 3x-5/4<0; on the second it is 1/4-x<0. The branches meet. Also
+x=1-1/(2c) increases with c>0. Thus Q(1-1/(2c)) decreases with c>=3/4.
+This is also the normalized form of completionEnvelope_antitone in the
+existing source. It justifies the cell bound used in section 5.
+
+3. The reused neighborhood profile and graph moments
+
+Consider the induced graph on Y. More generally, give its vertices positive
+rational masses w_v with sum y>1/2. For the unweighted graph use w_v=1/n.
+Let
+  b=y-1/2,
+  j=sum_{uv in E(Y)} w_u w_v,
+  d_v=sum_{u in N_Y(v)} w_u,
+  s_v=sum_{u in N_Y(v)} w_u d_u,
+  mu=2j/y.
+Triangle-freeness makes N_Y(v) independent. Hence s_v is exactly the edge
+mass incident to N_Y(v), counted once, and j-s_v is the edge mass outside
+that neighborhood. This is the only cost identity in this step which
+needs triangle-freeness. Double counting alone does not imply it.
+
+For each v construct a profile, zero on X, by these rules:
+
+LOW, when d_v<=b: put 0 on N_Y(v) and 1/[2(y-d_v)] elsewhere in Y.
+Its mass is 1/2. Since y-d_v>=1/2, its values are in[0,1]. Its cost is
+  F_v=(j-s_v)/[4(y-d_v)^2].
+
+HIGH, when d_v>b: put 1-b/d_v on N_Y(v) and 1 elsewhere in Y.
+Here 0<b/d_v<1. Its mass is y-b=1/2, and its cost is
+  F_v=j-(b/d_v)s_v.
+
+At d_v=b>0 the two profiles and costs agree. At d_v=0 use LOW, so no
+reciprocal of zero occurs. Positive masses imply d_v<y because a vertex
+is not its own neighbor. The case y=1/2 does not enter this lemma; the old
+bound in section 5 covers it. For w_v=1/n, mass1/2 means sum z_v=n/2.
+All profile entries are rational. No degree divisibility is needed.
+
+These are the negative feasible endpoint profiles from Sarid's existing
+lemma onestep. They are reused, not a new construction. The normalization
+is w'_v=w_v/y, alpha=1/(2y), delta=d_v/y; the negative endpoint radius is
+min(alpha/(1-delta),(1-alpha)/delta). The two cases reduce to LOW and HIGH.
+Razborov's 2021 Lemma 4.1 also uses a neighborhood-complement fractional
+half. The candidate change here is the refined moment test and its cover.
+
+Take expectation over v with probabilities w_v/y. Finite double counting
+gives the exact identities
+  E[d_v]=2j/y=mu,
+  E[s_v]=(1/y) sum_v w_v sum_{u~v} w_u d_u
+        =(1/y) sum_u w_u d_u sum_{v~u} w_v
+        =E[d_v^2].                                      (MOMENTS)
+No regularity assumption is used.
+
+4. Refined moment implication: C<=0 and T=C+S<=0
+
+For d<=b define psi(d)=j-4R(y-d)^2; for d>=b define
+psi(d)=(j-R)d/b. The branches agree at b. Put phi(d)=psi(d)-d^2.
+If every neighborhood profile has F_v>R, positive denominators give
+s_v<psi(d_v) in both branches. The weights are positive and Y is nonempty,
+so MOMENTS implies E[phi(d_v)]>0.
+
+Define
+  L=8R(y-mu)-2mu,
+  C=j-4R(y-mu)^2-mu^2,
+  B=(j-R)/(y-1/2)-L,
+  T=B^2/4+Lmu.
+For comparison with E1's notation, S=T-C, so T=C+S. Direct expansion gives
+  j-4R(y-d)^2-d^2
+    =C+L(d-mu)-(4R+1)(d-mu)^2;                         (ID-LOW)
+  (j-R)d/(y-1/2)-d^2
+    =T+L(d-mu)-(d-B/2)^2.                              (ID-HIGH)
+Since R>0, if C<=0 and T<=0 both branches satisfy
+  phi(d)<=L(d-mu).
+Taking expectations gives E[phi(d_v)]<=0, a contradiction. Therefore some
+actual neighborhood profile has cost F_v<=R.
+
+Strict C<0 is not required. Also S<=0 is not required. E1 imposed that
+stronger sufficient condition. This proof uses C and T directly. It does
+not use Jensen or a global concavity claim; phi can have an upward jump in
+its derivative at b. mathematical_controls.py verifies both identities
+coefficient by coefficient in a rational polynomial ring, before any point
+or graph tests. The upper check uses B+L=(j-R)/b.
+
+5. Complete domain cover
+
+Let a=769/1000 and h=22/25. The three closed c regions below cover[1/2,1].
+The common endpoints are intentionally covered twice.
+
+LOW EXTERIOR: 1/2<=c<=a. UNIFORM gives cost<=I a^2<R, since
+  R-I a^2=839/23500000>0.
+This includes c=1/2 and y=1.
+
+MIDDLE: a<=c<=h and 0<=j<=I. This is the entire closed rectangle, not a
+sampled dangerous subset. Its c values exceed3/4, so both existing graph
+constructions are available. The y transformation reverses endpoints:
+  25/44<=y=1/(2c)<=500/769,
+  b=y-1/2>=3/44>0.
+Also c>=769/1000>0 and 1-c>=3/25>0. Every denominator used in the moment
+calculation is positive throughout the rectangle.
+
+certificate.json contains an exact binary partition of this rectangle.
+There are 2399 nodes and 1200 accepted leaves, at maximum depth20:
+  98 leaves use UNIFORM;
+  287 leaves use COMPLETION;
+  815 leaves use the refined MOMENT implication.
+The first split is at c=4/5. Every later split is an interior rational
+midpoint in one coordinate. Closed children have exactly their parent's
+union, with no interior overlap. No leaf is unresolved.
+
+For a cell c in[c_l,c_u], j in[j_l,j_u], its sufficient tests are:
+  UNIFORM: c_u^2 j_u<=R;
+  COMPLETION: Q(1-1/(2c_l))+I-j_l<=R;
+  MOMENT: interval_upper(C)<=0 and interval_upper(T)<=0.
+The completion test follows from the monotonicity proved in section 2.
+For MOMENT the certificate evaluates, using rational interval operations,
+  y=1/(2c), mu=4cj, b=y-1/2,
+  L=8R(y-mu)-2mu, C=j-4R(y-mu)^2-mu^2,
+  B=(j-R)/b-L, T=B^2/4+Lmu.
+The identity mu=4cj=2j/y uses y=1/(2c). Reciprocals require intervals
+which avoid zero. Squaring uses lower bound0 when the interval crosses0.
+All acceptance arithmetic uses exact fractions.
+
+The largest stored MOMENT upper bounds are
+  C<=-41507950678148092911337/102124703586058240000000000,
+  T<=-4234905447425507/92754690632000000000000.
+The smallest accepted uniform and completion gaps from R are respectively
+  189/120320000 and 67453/109304140000.
+These are strict margins, though the proof only needs non-strict signs.
+
+verify_cover.py does not import the generator. It checks every enclosure,
+method, parent/child partition and endpoint. It rejects cycles, repeated
+children, missing children and unreachable nodes. It also ignores the tree
+and checks a separate tiling by281 vertical strips. In each open strip the
+active leaf j intervals join exactly from0 to I without gaps or interior
+overlap. Closed leaves include all strip boundaries; the two outer vertical
+edges are checked explicitly. The sum of leaf areas is exactly111/23500,
+which equals (h-a)I. The tree and strip checks prove coverage; area alone
+is not used as a coverage proof.
+
+HIGH EXTERIOR: h<=c<=1. Use OLD. Here c>=4/5, so Q is its second branch.
+The numerator of R-E(c), with positive denominator1+c^2, is
+  P(c)=A c^2-Dc+E,
+  A=R+1/4-I=6834/29375>0, D=3/8, E=R+1/8.
+The exact values at h are
+  P(h)=53123/146875000>0,
+  2Ah-D=202443/5875000>0.
+For c>=h,
+  P(c)=P(h)+(2Ah-D)(c-h)+A(c-h)^2>0.
+Thus OLD gives cost<R. This includes c=1 and y=1/2 without dividing by b.
+
+Every possible c,j pair belongs to one of these regions. There is no extra
+condition on q beyond q>=0 and q+j<=I. Every accepted case supplies a
+rational fractional half at cost<=R. Graph realizability of arbitrary scalar
+points is not assumed or needed for the covering argument.
+
+6. Preserved failures and negative controls
+
+At c=4/5 and j=1/25, both direct old bounds exceed R. The old stronger
+moment test also fails: S>0 and its upper-branch maximum d=B/2 lies between
+b and y. But C<0 and T<0. Thus the refinement removes a real unnecessary
+restriction of that tangent. This is a scalar calculation, not a claim
+that a prescribed scalar beta is a graph optimum. The exact values are
+stored in mathematical-controls-development.json and the fresh replay.
+
+An irregular triangle-free graph on Y with vertex masses(1/5,1/5,9/40)
+and its only edge between the first two vertices realizes that c,j pair.
+The two nonisolated vertex profiles each cost3/200=.015<R. The isolated
+vertex uses LOW at d=0. The exact profiles, masses, degrees, second-degree
+sums and edge costs are recorded. This is finite semantic evidence for
+the construction; the all-graph argument is sections 3--4.
+
+The refined moment test is not valid everywhere by itself. At c=83/100,
+j=1/25, C>0 and T>0; the existing completion bound is already<R. This
+failed moment-only point is retained. It does not refute the construction,
+the complete cover, or the claimed graph bound.
+
+The old scalar envelope alone fails at c=4/5, with
+  j=(I+3/128)/(1+(4/5)^2), q=I-j,
+  beta=(4/5)^2 j=3/128+q>R.
+Also the old all-real positive-quadratic shortcut has discriminant margin
+  4AE-D^2=-999687/1175000000<0.
+We therefore do not reuse E1's all-real tail argument at this target.
+The restricted high exterior proof above has positive checked margins.
+These are exact failures of simpler certificates, not graph obstructions.
+
+The read-only verifier rejects a missing cell, a forced false uniform
+bound on the whole rectangle, a forged moment enclosure, an altered outer
+boundary and a changed target. Their source mutations and reasons are
+recorded. A separate triangle test has y=1 and uniform thirds. MOMENTS
+still holds, but its neighborhood contains an edge. The alleged profile
+cost is0 while its actual cost is1/16. Thus triangle-freeness cannot be
+removed from the neighborhood cost formula. This test does not assert
+that the triangle lies in the BCL-admissible scalar rectangle.
+
+There were no unresolved cells or failed builder runs in the complete
+cover generation. The failures above are deliberate exact shortcut and
+premise tests. They are preserved rather than treated as accepted proofs.
+
+7. All orders and integral halves: unchanged interfaces
+
+The even-order construction above is for any eligible cut, so apply it to
+the positive balanced two-fold blowup G[2]. Triangle-freeness is preserved
+and its order is even. hBCL gives an eligible cut by the existing theorem
+bclCutCertificate_all_of_eventually in PublishedBCL.lean:47. That theorem
+first takes a large enough positive balanced blowup to meet N and descends
+the normalized internal-cut bound. The descent is exact and has no error
+term, density assumption or new external input.
+
+Average a fractional profile over each independent twin class. This
+preserves selected mass and normalized edge cost, yielding a rational
+fractional half of G at normalized cost<=R. The exact existing interface is
+  Erdos128.hasNormalizedFractionalHalfBoundQ_balancedBlowup_iff,
+BalancedBlowup.lean:417, for any positive blowup size and rational bound.
+The even-order use above therefore covers odd original n as well.
+
+Finally invoke
+  Erdos128.hasSparseHalf_of_hasFractionalHalfBound,
+RoundingFinal.lean:84. Moving mass between two fractional coordinates
+makes the edge objective concave in the transfer, so some feasible endpoint
+does not increase cost. Iteration leaves at most one fractional coordinate.
+For even n there is none; for odd n its value is1/2 and removing it does not
+increase cost. The resulting set has floor(n/2) vertices. For n=0 choose
+the empty set. The normalization divides by n^2 only when n>0.
+
+These exact interfaces were already used by the conditional .02587 Lean
+endpoint. E4 changes none of them. This packet gives a written argument and
+exact arithmetic cover for their new even-order input. It does not claim
+to have compiled or kernel checked a new .0252 graph endpoint.
+
+8. Comparison and attribution boundary
+
+The coefficient .0252 is smaller than the old formal .02587 by67/100000,
+and smaller than comparison02's conservative .02584 by16/25000. The latter
+uses Sarid's cubic saving lemma. E4 does not depend on that lemma, its new
+E3 replay, or a finite-Y cubic bridge. The full .02584 graph composition
+also was not a new Lean endpoint in those packets.
+
+The neighborhood construction is prior work. The old completion, BCL,
+blowup and rounding ingredients are prior work. The delta from E1 is the
+weaker sufficient condition C<=0,T=C+S<=0 and the fixed .0252 cover, prompted
+by root's inspection of the two quadratic identities. No priority or best
+known bound is asserted. The focused source study did not exhaust the
+literature or exclude equivalent known inequalities.
+
+Root identified an adjacent 2026 max-cut source, arXiv:2606.28041v1. If its
+claimed stronger global cut premise implied I=1601/40000, the unchanged
+old scalar argument would give .02491. That external premise has not been
+accepted here and is not imported. It prevents a best-known claim without
+further source review. This does not change E4's fixed BCL input I=2/47.

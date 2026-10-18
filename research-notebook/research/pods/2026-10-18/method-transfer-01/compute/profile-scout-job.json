@@ -1,0 +1,25 @@
+{
+  "job": "profile-scout-01",
+  "source_sha256": "373503db9b1d11327d5ed3c6135d90ea42c0f8651d786b76647ccc6d3c5f0fb3",
+  "host": "sparky.local",
+  "remote_directory": "/home/mike/research-method-transfer-20261018/profile-scout-373503db9b1d",
+  "command_argv": [
+    "ssh",
+    "-o",
+    "BatchMode=yes",
+    "-o",
+    "ConnectTimeout=8",
+    "sparky.local",
+    "cd /home/mike/research-method-transfer-20261018/profile-scout-373503db9b1d && echo $$ > runner.pid && exec timeout --signal=TERM --kill-after=5s 45s python3 profile_scout.py"
+  ],
+  "resource_cap": "one CPU process,45second runtime plus5second termination grace,no GPU",
+  "remote_process_identity": "runner.pid in unique source-hash directory; exec replaces shell with timeout supervisor",
+  "termination": "GNU timeout sends TERM at45seconds and KILL5seconds later; do not terminate unrelated processes",
+  "started_utc": "2026-10-18T16:48:57.284599+00:00",
+  "status": "completed",
+  "scope": "numerical scalar proposal screen only",
+  "exit_code": 0,
+  "completed_utc": "2026-10-18T16:49:03.334830+00:00",
+  "remote_python_pid": 2346804,
+  "output_sha256": "49d6ec59fba9ac520862254f0504cd53fa5431961b463ec31c80f553c2e04220"
+}

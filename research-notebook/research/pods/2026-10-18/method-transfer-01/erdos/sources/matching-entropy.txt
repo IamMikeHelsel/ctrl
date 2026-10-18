@@ -1,0 +1,2312 @@
+
+=== PDF PAGE 1 ===
+Entropy and Face Dimension of the Perfect-Matching Polytope
+OpenAI
+September 23, 2026
+Abstract
+We prove the perfect-matching entropy conjecture of Anari, Oveis Gharan, and Vinzant. For
+every feasible vectorx of perfect-matching edge marginals in a loopless labelled multigraph on
+2m≥2vertices, the maximum entropyH(x)of a matching law with marginalsxsatisfies
+F(x)−(2−2/m)B(x)≤H(x)≤F(x),
+whereF (x) =−∑
+exe logx e andB(x) =−∑
+e(1−x e) log(1−x e). This bound holds throughout
+the polytope, including its boundary. We also prove the sharp bound|suppx|−dimF x≤ 3m− 2,
+whereF x is the minimal face of the perfect-matching polytope containingx.
+1 Introduction
+Prescribing the probability that each edge belongs to a random perfect matching does not prescribe
+the distribution of the whole matching. The largest possible entropy of such a distribution measures
+how many matching choices can coexist with those edge probabilities. We bound this entropy by
+explicit sums of one-coordinate functions, at every feasible mean. The result yields lower counts
+from uniform marginals and additive estimates for weighted partition functions.
+Throughout, a graph is finite, undirected and loopless. Parallel edges are distinguished both as
+coordinates and as choices in a matching. A perfect matching covers each vertex by exactly one
+edge. WriteM(G)for the set of perfect matchings,N(G) =|M(G)|, and
+P(G) = conv{1M :M∈M(G)}⊆R E(G)
+for their polytope. Thus a pointx∈P (G)is exactly a feasible vector of edge probabilities. For a
+probability lawpon the matching family, putEnt(p) =− ∑
+MpM logpM, and define
+H(x) = max
+{
+Ent(p) :pis a probability law onM(G),
+∑
+M
+pM 1M =x
+}
+,(1)
+F(x) =−
+∑
+e∈E(G)
+xe logxe, B(x) =−
+∑
+e∈E(G)
+(1−x e) log(1−x e).(2)
+All unqualified logarithms are natural, and0log 0 = 0. The maximum in Equation(1) is attained
+by compactness of the feasible set of laws. No connectedness or bipartiteness is assumed.
+Theorem 1.1(Pointwise entropy bounds).Let G be a loopless multigraph on2m≥ 2vertices with
+at least one perfect matching. For everyx∈P(G),
+F(x)−
+(
+2− 2
+m
+)
+B(x)≤H(x)≤F(x).(3)
+1
+
+=== PDF PAGE 2 ===
+In particular,H≥F− 2B throughout the polytope, including its boundary. Whenm = 1, each
+matching is one of the distinguished edges between two vertices, and the bounds give the exact
+identityH =F. For the empty vertex set the unique empty matching givesF =B =H = 0; the
+formula involving1/mis not used.
+The upper boundH≤F is a direct instance of Shearer’s entropy inequality [5]: each edge occurs
+in two vertex stars, and a matching chooses exactly one edge at each vertex. Our contribution
+to Equation(3) is its lower comparison. The coefficient there is obtained from a geometric rank
+estimate followed by a covariance calculation, with no assumption that the mean is interior to the
+full polytope.
+Edmonds’ matching-polytope theorem [9] describes feasible matching means by degree equa-
+tions, nonnegativity and odd-cut inequalities. The odd cuts distinguish general graphs from
+bipartite graphs and are also central to the entropy bound here. Bipartite graphs admit an
+order-independent coefficient-one comparison: Schrijver’s inequality [22] and the weighted Bethe
+inequality of Gurvits [13, expanded version, Theorem 2.2], together with entropy duality, imply
+H(x)≥F (x)−B (x). Their permanent setting is essential to this comparison. In Section 5 we give
+a simple eight-vertex nonbipartite graph with a feasible mean for whichH <F−B.
+1.1 Entropy and structural consequences
+Anari, Oveis Gharan and Vinzant [2, FOCS version, Conjecture 6] proposed a convex-optimization
+framework for approximate counting and asked whether the maximum binary-coordinate entropy of
+a perfect matching mean exceedslogN (G)by only a linear function of the number of vertices. In
+our notation their objective isF+B. Theorem 1.1 gives the explicit positive answer
+logN(G)≤max
+x∈P(G)
+(F(x) +B(x))≤logN(G) + 3m−2.
+The pointwise statement also controls arbitrary finite edge weights, through the Gibbs variational
+formula. The proposed linear-error estimate is therefore an optimized consequence of the prescribed-
+mean inequality, rather than its definition. Corollary 4.2 proves the optimized bounds, and Section 6
+derives the weighted form.
+If G containsk≥ 2edge-disjoint perfect matchings, their uniform mixture has marginal1/k on
+their union. Substituting that mean into Theorem 1.1 gives
+N(G)≥k m(1−1/k) 2(m−1)(k−1)≥e−2(m−1)km.
+The same estimate holds for ak-regular graph whose every odd cut has at leastk edges, because
+its uniform vector belongs toP (G). These consequences and their endpoint cases are proved in
+Section 4.
+For structural counts, the scale of the degree matters. Esperet, Kardoš, King, Kráľ and Norine [11]
+proved an exponential lower bound for every bridgeless cubic graph. Abdi, Cornuéjols, Dadush and
+Dalirrooyfard [1, Corollary 6.6] proved exponential lower bounds for all regular graphs of degree
+at least four satisfying the corresponding odd-cut condition, including matchings crossing every
+minimum odd cut exactly once. Ebrahimnejad, Nagda and Oveis Gharan [8] gave quantitative
+lower counts for regular nonbipartite graphs under an additional spectral-expansion hypothesis.
+The estimate(k/e2)m obtained here has a base growing with the degreek. At small fixed degree
+these earlier exponential results can be stronger: our displayed homogeneous base is greater than
+one only whenk≥ 8. On the bipartite subclass Schrijver’s bound has the stronger asymptotic
+base k/e per matched pair. Our structural statements concern the explicit odd-cut condition;
+merely requiring every edge to belong to a perfect matching is a different hypothesis. Esperet et
+2
+
+=== PDF PAGE 3 ===
+al. formulate the growing-degree question on the broader matching-covered class [11, corrected full
+version, Conjecture 24]. Our regular odd-cut corollary also establishes the even-order connectivity
+formulation of Ebrahimnejad et al. [8, arXiv version, Conjecture 1.1].1
+1.2 Face dimension and the entropy argument
+For a graph on2m≥ 2vertices and x∈P (G), letFx be its minimal face, the smallest face ofP (G)
+containingx, and letsuppx={e:x e>0}. The geometric input is the sharp estimate
+|suppx|−dimF x≤3m−2.
+Edmonds’ theorem identifies the left side with the rank of the tight odd-cut equations on the
+supported coordinates; singleton cuts supply the degree equations. Abdi et al. [1, Lemmas 6.4–6.5]
+bound this rank by3m− 1using odd laminar families. Their cubic staircase examples already have
+minimum-odd-cut rank|E|−2, attaining3m−2[1, discussion after Corollary 6.6 and Figure 2].
+The dimension of the whole perfect-matching polytope was characterized by Naddef [18] and
+by Edmonds, Pulleyblank and Lovász [10], whose brick decomposition uses cuts crossed once by
+every perfect matching. Here a cut need only be tight at the prescribed mean: it is crossed once by
+every matching in that minimal face, but possibly not by every matching of the graph. Section 2
+proves the supported bound by contracting such a cut. A direction in the parent face can be
+assembled from directions in the two contracted faces when their crossing-edge coordinates agree.
+Each crossing-coordinate sum is zero, by the degree equation at the contracted vertex. Agreement
+therefore imposes at most|C|− 1independent conditions for a cutC, rather than|C|. This saved
+condition closes an induction with bound3m− 2. Appendix A also gives the laminar proof. It uses
+the standard face-restricted uncrossing argument [24, full version, Lemma 2.2 and Appendix A] and
+retains the dependence between complementary root children in the laminar tree.
+The analytic step uses the classical exponential form of a maximum-entropy law under mean
+constraints [14, 23]. Its log-partition Hessian is the covariance matrix, as in standard exponential-
+family theory [26]. We restrict the law to the atoms ofFx. Its covariance then has image equal to
+the direction space of that face, even when it is singular in the ambient edge space.
+Suppose thatF−cB−H has a positive maximum. Removing coordinates fixed at zero or
+one leaves strictly fractional means and preserves this entropy deficit. Exponential tilts within the
+resulting minimal face supply smooth curves through the maximum. First-order stationarity cancels
+the acceleration term in their second derivatives. Summing the second-derivative inequalities over
+positive covariance eigenvalues bounds the face dimension above, contradicting the geometric lower
+bound wheneverc> 2− 2/m for the original graph. Passing to the endpoint proves Theorem 1.1.
+Section 3 carries this out within the face, without inverting an ambient covariance kernel or
+differentiating across faces.
+Section 5 explains both geometric sharpness and the obstruction to coefficient one. We use the
+triangle expansions underlying the Klee graphs of Cygan, Pilipczuk and Škrekovski [6] to construct a
+two-dimensional minimal face on every positive even order. At uniform edge marginals, a matching
+law is forced onto its three vertices even when the graph has further matchings. These examples
+attain the geometric bound and give the coefficient-one counterexample; they do not establish
+optimality of the coefficient two.
+1The cited arXiv version writes the degree as d but prints an undeclared k− 1in the connectivity condition. We
+read it asd−1, consistently with its Section 1.2.
+3
+
+=== PDF PAGE 4 ===
+1.3 Deterministic counting with binary multiplicities
+For the algorithmic problem, the input specifies a vertex set and nonnegative integer multiplicities
+kij in binary for unordered pairs of distinct vertices; omitted pairs have multiplicity zero. Its count
+is
+N(G) =
+∑
+M
+∏
+{i,j}∈M
+kij,
+where M runs over pairings of the vertex set. The input can also list parallel edges explicitly. The
+algorithm uses the binary multiplicities without expanding them into labelled copies.
+Theorem 1.2(Deterministic approximate counting).There is one uniform deterministic algorithm
+which, on a graph onn vertices with nonnegative binary integer pair multiplicities, returns an integer
+A≥0satisfying
+N(G)/512n≤A≤N(G).
+Its running time and output length are polynomial in the input bit length. In particular,A = 0
+exactly whenN(G) = 0. The guarantee includes a compact input consisting of binaryn and a list of
+positive pair records.
+The factor512n permits a complete implementation with integer and rational arithmetic and
+a fixed polynomial number of steps. The degree of this polynomial is large; the theorem gives a
+complexity guarantee, not a practical running-time benchmark. Appendix C treats the different
+convention that a loop covers its one incident vertex. It returns a rational approximation within
+factor2 18n, including when the original vertex count is odd.
+Approximation history and computational models.Exact counting is#P-complete even
+for bipartite perfect matchings, through the permanent of a zero–one matrix [25, Theorem 1]. For
+an r×r nonnegative matrix, Linial, Samorodnitsky and Wigderson give aner-factor deterministic
+strongly polynomial arithmetic algorithm [17, author version, Theorem 1.1]. Jerrum, Sinclair and
+Vigoda give a fully polynomial randomized approximation scheme for the nonnegative permanent
+[15]. For nonnegative rational matrices, Kudria, Luo and Majid give certified rational endpoints in
+polynomial bit time with logarithmic widthO(r(log logr)2/logr )[ 16, Theorem 1.1], while Dong
+and Jain give factor(1 +ε)r for every fixed0<ε≤ 1in a strongly polynomial arithmetic model [7,
+Theorem 1.1 and Section 1.1]. These permanent results concern bipartite graphs on2rvertices.
+The analogous function for a general graph is thehafnian: the sum of products over pairings of the
+indices of a symmetric matrix. Barvinok describes a randomized exponential-factor approximation
+for nonnegative hafnians [3, author preprint, Section 7]. For fixedδ >0and any0 <ε< 1, his later
+theorem approximates ln haf(A)to additive error ε using rOδ(logr+log(1/ε)) arithmetic operations
+when the entries of the symmetric2r× 2r matrix lie in[δ, 1][ 4, Theorem 2.1]. The diagonal may be
+filled arbitrarily in this interval, since a hafnian uses no diagonal entry. Yi gives a deterministic
+fully polynomial approximation scheme for rational hafnian inputs of even order, with zero diagonal,
+when nonzero entries lie in[θ, 1]and the support has minimum degree at least(1/2 +γ)times its
+order, for fixed0 < θ≤ 1and0 < γ <1/2[ 27, Theorem 1.1(a)]. These hypotheses differ from
+arbitrary supports and binary multiplicities in Theorem 1.2. A separate manuscript treats fully
+polynomial randomized relative approximation for arbitrary simple graphs [19, Theorem 1.1].
+The construction follows the entropy-optimization approach of Anari, Oveis Gharan and Vin-
+zant [2, FOCS version, Section I.D], with a rational optimizer and all bit bounds given explicitly
+here. Section 6 establishes the binary-log weighted interface. Sections 7 and 8 first complete the
+input toKn, assigning tiny positive dyadic weights to absent pairs. This keeps the optimization
+4
+
+=== PDF PAGE 5 ===
+polytope nonempty and separates zero from positive original counts. They then replace the weighted
+entropy objective by an integer-slope dyadic interpolant and an exact penalty on a box. OnKn,
+correcting degrees and then mixing with the uniform feasible point repairs constraint violations.
+The resulting fixed-grid iteration needs only an active violated row. Section 9 finds that row by a
+parity-preserving cut recursion, and Section 10 proves the count, zero-detection and bit-complexity
+guarantees. Minimum odd cuts as matching-constraint separators go back to Padberg and Rao [20].
+The exponential matching laws used in the entropy proof remain analytic objects; this algorithm
+does not query them.
+The appendices retain alternative relations between face geometry and entropy. Appendix A
+gives the laminar and quotient-map arguments, then the direct coefficient-three and coefficient-
+four covariance comparisons and their counting consequences. Appendix B proves the nonlinear
+entropy-defect bound by normalizing positive marginals and taking the inverse covariance on the
+face’s direction space; Appendix A also gives its short scalar deduction. Appendix C proves the
+singleton-loop reduction and its rational bit complexity.
+2 Faces and tight cuts of the perfect matching polytope
+The geometric input to the entropy argument is a bound on the number of independent equations
+defining a face on its positive coordinates. We prove the odd-cut description by gluing matching
+laws across a tight cut. The same gluing operation then combines directions in the two contracted
+polytopes. Both directions preserve the total mass on the cut, which saves one compatibility equation
+and yields the sharp bound3m− 2. The laminar proof of the same estimate is given in Appendix A.
+Throughout this section,G = (V,E )is a finite undirected loopless multigraph of even order
+|V| = 2m. Parallel edges have distinct labels and coordinates. WriteM(G)for its perfect matchings,
+puta(M) =1 M∈{0,1} E, and define
+P(G) = conv{a(M) :M∈M(G)}.
+The convex hull of an empty matching family is empty. IfV is empty, its unique perfect matching
+is the empty matching and its polytope is a singleton inR∅. For S⊆V , letδ(S)be the set of
+edges with exactly one endpoint inS, and putχS =1 δ(S). We abbreviateδ({v})to δ(v), and write
+x(A) =∑
+e∈Axe forA⊆E.
+2.1 Contraction and the odd-cut description
+For an odd setS⊊V , formG1 by retainingS and contractingS =V\S to a new vertex, discarding
+edges internal toS. FormG2 by interchanging the two sides. Every edge ofC =δ(S)keeps its
+original label in both graphs; edges that become parallel are not identified. We call the cutnontrivial
+when both sides have at least three vertices. In that case the contracted graphs have smaller even
+orders.
+Lemma 2.1(Gluing across an odd cut).Suppose yi∈P (Gi), fori = 1, 2, and their coordinates
+agree onC. There is a pointy∈P (G)with the internal coordinates of the twoyi and their common
+crossing coordinates.
+Proof. Choose a matching law of meanyi in each contracted graph. A matching uses exactly one
+edge at the contracted vertex, so the common coordinatesqe = (y1)e = (y2)e, e∈C , sum to one.
+Choose a labele with these probabilities, then draw the two matchings independently from their
+5
+
+=== PDF PAGE 6 ===
+respective laws conditioned on usinge. A label withqe = 0is never chosen and needs no conditional
+law.
+Remove the contracted vertices and replace the two copies of the chosen crossing edge by its
+original edge. The internal matchings and this edge cover every original vertex once. The crossing
+marginals areqe, and the law of total probability preserves every internal marginal. The resulting
+matching law therefore has meany.
+The following is the perfect-matching form of Edmonds’ theorem [9, Section 2, Theorem (P)].
+We include the proof for loopless multigraphs, with edge labels retained through contractions.
+Theorem 2.2(Perfect matching polytope).For every graphGas above,
+P(G) =
+
+
+
+x∈R E :
+xe≥0 (e∈E),
+x(δ(v)) = 1 (v∈V),
+x(δ(S))≥1 (S⊆V,|S|odd)
+
+
+
+.(4)
+Proof. Denote the set on the right byQ. Every perfect matching has unit degrees and crosses every
+odd cut, soP (G)⊆Q . The degree equation at either endpoint of an edge gives0≤x e≤ 1for every
+x∈Q. ThusQis bounded. If it is empty there is nothing to prove.
+We use the elementary fact that a nonempty bounded polytope is the convex hull of its extreme
+points. Indeed, unless a point is extreme, there is a nonzero direction annihilating all its active
+constraint rows. The feasible interval in this direction has two endpoints, and the point is a convex
+combination of them. Each endpoint has a new independent active row: the new row has nonzero
+directional change, whereas every old active row annihilates the direction. Repeating within the
+resulting lower-dimensional faces terminates at extreme points.
+We show that the extreme points ofQ belong toP (G), by induction on the even order. The
+assertion for order zero is immediate. At order two,Q is the simplex{x≥ 0 :∑
+e∈Exe = 1} on the
+distinguished parallel edges, which is exactly their matching polytope and is empty if there is no
+edge.
+Now let|V| ≥ 4, and let x be an extreme point of Q. Suppose that an odd set S with
+3≤|S|≤|V|− 3has x(δ(S)) = 1. PutC =δ(S), use the two contracted graphs defined above, and
+letx i be the restriction ofxto the surviving edge labels ofGi.
+Both contracted graphs have smaller even order. The degree equations at retained vertices are
+unchanged, and the degree sum at the new vertex isx(C) = 1. To check an odd-cut inequality
+in a contracted graph, complement its side if necessary so that it excludes the new vertex. The
+complement remains odd because that graph has even order. Its cut then has exactly the same edge
+labels and sum as the cut of the corresponding odd set of original vertices. Thus eachxi satisfies the
+smaller system in Equation (4). By induction, it is the mean of a law on perfect matchings ofGi.
+Their crossing coordinates agree, so Lemma 2.1 givesx∈P(G).
+It remains to consider an extreme point at which every such nontrivial odd cut is slack. A
+nonzero vector supported on the positive coordinates ofx and preserving all degree equations would
+allow sufficiently small feasible perturbations in both signs: the positive coordinates stay positive,
+all nontrivial odd cuts retain positive slack, and singleton cuts and their complements are controlled
+by the degree equations. Therefore the columns of the unsigned vertex-edge incidence matrix on
+the positive edges are linearly independent.
+Consider a connected component of the positive-edge graph. There are no isolated vertices, by
+the degree equations. A vertex incident to only one positive edge forces that edge to have value
+one; its other endpoint then has no other positive incident edge. These vertices therefore occur in
+isolated edge components. Every remaining component has minimum degree at least two. Column
+6
+
+=== PDF PAGE 7 ===
+independence implies that its number of edges is at most its number of vertices. Counting incidences
+forces equality and degree two at every vertex, so the component is a cycle, possibly a two-edge
+parallel cycle. An even cycle gives a nonzero alternating-sign dependence among the incidence
+columns. An odd cycle component has cut sum zero on its odd vertex set, contrary to feasibility.
+Thus only isolated weight-one edge components remain, andx is a perfect matching vector. This
+completes the induction.
+2.2 Directions in the minimal face
+Forx∈P(G), define
+T(x) ={h∈R E :x+th∈P(G)for all sufficiently small|t|}.
+Let Fx be the face obtained by keeping equality in every inequality of Equation(4) that is tight at
+x. Define
+Ax ={a(M) :M∈M(G), a(M)∈F x}.
+The next lemma identifiesT (x)as a linear space and explains why this face is the one relevant to
+laws with meanx.
+Lemma 2.3(Minimal face and its directions).For every x∈P (G), the spaceT (x)consists exactly
+of the vectors satisfying
+he = 0ifx e = 0,
+h(δ(v)) = 0 (v∈V),
+h(δ(S)) = 0if|S|is odd andx(δ(S)) = 1.
+(5)
+Moreover,F x is the minimal face containingx, and
+affFx =x+T(x), F x = convAx, T(x) = span{a−x:a∈A x}.(6)
+The pointx lies in the relative interior ofFx, and every law on perfect matching vectors with mean
+xis supported onA x.
+Proof. Feasibility in both signs forces every active constraint row to annihilate the direction.
+Conversely, the equations in Equation(5) preserve all active constraints, and sufficiently small
+perturbations in both signs preserve every inactive inequality, since there are finitely many and each
+has positive slack. This proves the direction characterization.
+The same argument gives a relative neighborhood ofx in x +T (x)contained in Fx. Explicitly,
+for each inactive inequalitybi·y≥c i with nonzero normal, choose a radius smaller than its slack at
+x divided by2∥bi∥2, and take the minimum of these finitely many positive radii. If no such row
+exists, any positive radius suffices. All active rows stay equalities onx +T (x), and zero-normal
+rows are constant. SinceFx⊆x+T(x), this proves its affine hull and relative interiority.
+For anyy∈F x, a short extension fromy through x remains in this relative neighborhood. Thus
+x lies in the relative interior of a segment inFx havingy as an endpoint. Every face containingx
+must containy, proving minimality.
+Finally, express a point ofFx as a convex combination of matching vectors. Each inequality
+defining Fx has nonnegative slack at every vector and zero average slack. Every positive-weight
+vector must therefore belong toFx. This proves the convex-hull and support assertions. Taking the
+direction space of this affine hull gives the final equality in Equation (6).
+7
+
+=== PDF PAGE 8 ===
+Writed(x) = dimF x = dimT(x). For a point whose coordinates are all positive, let
+Sx ={S⊆V:|S|is odd, x(δ(S)) = 1}.
+There are no active nonnegativity constraints, and the degree rows are already the cut rows of
+singletons. Lemma 2.3 therefore gives the exact identity
+|E|−d(x) = dim span{χ S :S∈S x}.(7)
+We now bound the rank on the right.
+2.3 Sharp codimension from compatible directions
+The gluing lemma controls dimensions as well as feasible means. Directions in the two contracted
+faces can be glued whenever their cut coordinates agree. Their cut-coordinate sums are already
+zero, so this agreement imposes at most|C|−1independent conditions.
+Proposition 2.4(Codimension on positive coordinates).Let |V| = 2m≥ 2, and supposex∈P (G)
+hasx e>0for every edge. Then
+|E|−d(x)≤3m−2.(8)
+Proof. We induct on the even ordern = 2m. At order two, the polytope is the simplex on the
+distinguished parallel edges. A positive point has dimension|E|− 1, giving codimension one as
+required.
+Let n≥ 4. If no nontrivial odd cut is tight, positivity and Lemma 2.3 show that only then
+degree equations restrictT (x). Thus|E|−d (x)≤n≤ 3n/2− 2. Otherwise choose a tight nontrivial
+cut C =δ(S), and letxi be the restricted means in the two contracted graphsGi. The feasibility
+argument in Theorem 2.2 givesxi∈P(G i), and every retained coordinate is positive. Put
+ni =|V(G i)|, s i =|E(G i)|, d i = dimT(x i).
+Each crossing label appears in both graphs, whereas each internal label appears in one. Consequently
+n1 +n 2 =n+ 2, s 1 +s 2 =|E|+|C|,4≤n i<n.(9)
+Consider the space of compatible directions
+W={(h 1,h 2)∈T(x 1)⊕T(x 2) : (h1)e = (h2)e fore∈C}.
+Eachhi preserves the degree at its contracted vertex, so∑
+e∈C(hi)e = 0. The linear map(h1,h 2)↦→
+h1|C−h 2|C therefore takes values in
+{z∈R C :∑
+e∈Cze = 0}.
+Since x(C) = 1, the set C is nonempty and this target has dimension|C|− 1. Its kernel isW,
+whence
+dimW≥d 1 +d 2−|C|+ 1.
+Map( h1,h 2)∈W to the vectorh on the original edges with their internal coordinates and
+common crossing coordinates. This map is injective: restrictingh recovers bothhi. For any such
+pair, chooseε> 0so that xi +thi∈P (Gi)for both i and every|t|<ε . Their crossing coordinates
+agree for eacht, so Lemma 2.1 yieldsx +th∈P (G). Thus h∈T (x)and d(x)≥dimW . In
+8
+
+=== PDF PAGE 9 ===
+particular every parent cut tight atx is preserved, including cuts crossingS, because both signs of
+the perturbation are feasible.
+Using Equation (9) and induction gives
+|E|−d(x)≤(s 1−d 1) + (s2−d 2)−1
+≤(3n 1/2−2) + (3n 2/2−2)−1 = 3n/2−2.
+The saving of one compatibility condition is exactly what closes this recurrence at the stated
+constant.
+No connectedness assumption or strict upper boundxe < 1was used. Section 5 constructs
+positive means attaining this codimension at every positive even order.
+For an arbitrary meanx∈P (G)on2 m≥ 2vertices, deleting just its zero-coordinate edges
+leaves the same vertex set and identifies the supported minimal face with the minimal face in the
+resulting positive-edge graph. Indeed, every law atx omits those edges, and coordinate restriction
+and zero extension are inverse on the corresponding face. Hence the supported form of the estimate
+is
+|suppx|−d(x)≤3m−2.(10)
+The next reduction additionally removes coordinates equal to one.
+2.4 Removing fixed coordinates
+We finally transfer the rank estimate to an arbitrary polytope point. This reduction will also allow
+entropy comparisons to be made entirely on the fractional coordinates. Forx∈P(G), set
+Ef(x) ={e∈E: 0<x e<1}, V f(x) ={v∈V:vmeets an edge ofE f(x)}.
+Lemma 2.5(Fractional coordinates and the minimal face).Let x∈P (G). The number of vertices
+in Vf(x)is even; write|Vf(x)| = 2mf. LetGf = (Vf(x),Ef(x))and ¯x=x|Ef (x). The coordinate
+extension
+ι(z)e =
+{
+ze, e∈E f(x),
+xe, e /∈Ef(x) (11)
+is an affine isomorphism fromP(Gf)onto the face
+Qx ={y∈P(G) :y e =x e fore /∈Ef(x)}.
+It sends the minimal face of¯xonto Fx. For everyz∈P (Gf), removing the fixed edges gives a
+bijection between laws with meanι(z)and laws on perfect matchings ofGf with meanz, preserving
+their probabilities. Moreover,
+∑
+e∈Ef (x)
+xe =m f, d(x)≥|E f(x)|−3m f + 2ifm f≥1.(12)
+Ifm f = 0, thenxis a matching vector andd(x) = 0.
+Proof. An edge with coordinate one exhausts the degree sum at both endpoints, so neither endpoint
+meets a fractional edge. At a vertex outsideVf(x), all incident coordinates are zero or one and sum
+to one; exactly one incident edge therefore has coordinate one. These fixed edges form a perfect
+matching ofV\V f(x), so|Vf(x)|is even.
+9
+
+=== PDF PAGE 10 ===
+Every law of meanx uses each value-one edge and omits each value-zero edge with probability
+one. Deleting the fixed edges gives a perfect matching law onGf with mean ¯x, proving ¯x∈P(Gf).
+Conversely, adjoining the fixed edges to any perfect matching ofGf gives a perfect matching ofG.
+The inequalities0 ≤y e≤ 1hold throughout P (G), so requiring any of these coordinates to
+equal zero or one defines a face; their intersectionQx is a face containingx. The preceding matching
+extension showsι(P (Gf))⊆Q x. For the reverse inclusion, express any point ofQx as a law on
+perfect matchings. Its fixed zero and one marginals force every positive-probability matching to
+omit the zero edges and contain the fixed edges. Removing those edges leaves a perfect matching of
+Gf. This proves both equality of the image withQx and the stated bijection of laws for every mean.
+Coordinate restriction is the affine inverse ofι.
+An affine isomorphism preserves faces and their relative interiors. The image of the minimal face
+at ¯xis thus a face ofQx, and hence ofP (G), containingx in its relative interior. By Lemma 2.3, it
+is exactlyFx. In particular, their dimensions are equal. One can also see this directly on directions:
+a two-sided direction atx vanishes on every fixed zero or one coordinate, and its restriction toEf(x)
+is a two-sided direction at¯x; extension gives the inverse correspondence.
+Ifm f≥1, every coordinate of¯xis positive, and Proposition 2.4 applied toGf gives
+d(x) = dimF ¯x≥|E f(x)|−3m f + 2.
+If mf = 0, all coordinates ofx are integral, and the degree equations identifyx as a single matching
+vector. Finally, at every vertex ofVf(x)the fractional incident coordinates sum to one. Summing
+those degree equations counts each fractional edge twice and gives∑
+e∈Ef (x)xe =m f.
+3 Entropy and the covariance trace
+We now turn the geometric rank estimate into the lower bound of Theorem 1.1. The entropy
+maximizer has a smooth exponential parameterization on each minimal face. At a hypothetical
+positive maximum of the entropy deficit, the second derivative along those parameters bounds the
+face dimension by a covariance trace. The rank estimate makes that trace too small. Boundary
+points require a separate reduction before taking derivatives.
+3.1 Continuity and maximum entropy on a face
+For probability lawsp and q on the same finite set, writeEnt(p) =−∑
+apa logpa. We will use the
+elementary comparison
+Ent(p)≤−
+∑
+a:pa>0
+pa logqa (13)
+wheneverqa> 0on the support ofp; equality holds exactly whenp =q. Indeed, logt≤t− 1gives∑
+pa>0pa log(qa/pa)≤ ∑
+pa>0qa− 1≤ 0, with the asserted equality condition. This also proves
+Ent(p)≤logNfor a law onNatoms, by comparison with the uniform law.
+Lemma 3.1(Continuity at the boundary).For a nonempty perfect-matching polytopeP (G), the
+maximum mean entropyH is attained, nonnegative, concave and continuous on the whole polytope.
+Proof. The laws of a prescribed mean form a nonempty closed subset of the finite probability simplex.
+Compactness and continuity of entropy give attainment. Mixing maximizing laws proves concavity,
+and entropy is nonnegative.
+For upper semicontinuity atx, letyj→x in P (G)and choose maximizing laws atyj. Take a
+subsequence realizing the upper limit of their entropies and then a convergent subsequence of laws.
+Its limit has meanx, so continuity of entropy on the simplex giveslim supjH(yj)≤H(x).
+10
+
+=== PDF PAGE 11 ===
+For lower semicontinuity, takey̸ = x close to x in P (G)and put t =
+√
+∥y−x∥ 2 and z =
+x + (y−x )/t. For sufficiently closey, we have0 < t <1and z∈P (G). To check the latter
+assertion, use the finite linear description of the polytope. Equalities are preserved; an inequality
+tight atx is preserved because its slack atz is its slack aty divided byt; and every inactive
+inequality stays satisfied sincez→x . There are only finitely many inactive inequalities. Since
+y = (1−t )x +tz, concavity and nonnegativity giveH(y)≥ (1−t )H(x). Lettingy→x proves the
+reverse semicontinuity.
+LetA be the set of matching incidence vectors, letFx be the minimal face containingx, and put
+Ax =A∩Fx. The next lemma is the finite maximum-entropy principle on that face. The exponential
+representation is the standard finite maximum-entropy duality; compare Singh and Vishnoi [23, full
+version, Definition 2.1 and Lemma 2.3]. Jaynes [14] gives the historical maximum-entropy principle,
+and the covariance identities are standard in exponential-family theory [26, Proposition 3.1]. We
+work on the minimal face so that the relative-interior condition holds, and include the support and
+boundary arguments needed here.
+Lemma 3.2(Exponential laws on the minimal face).Every law with meanx∈P (G)is supported
+onA x. Its entropy maximizer is positive on every atom ofAx and has the form
+pa = eθ·a
+∑
+b∈Axeθ·b (a∈A x)(14)
+for a finite vectorθ∈R E. For every η∈R E, the law obtained by replacingθ by η maximizes
+entropy at its own mean, and that mean has minimal faceFx.
+Proof. The active inequalities definingFx have nonnegative slack at each matching vector. Their
+expected slack is zero atx, so every positive-probability atom belongs toFx. The geometric
+description also shows thatFx = convAx and thatxis relatively interior to it.
+Let b be the barycenter ofAx. For sufficiently smallε> 0, the point(x−εb )/(1−ε )belongs to
+Fx. Represent it by a law onAx and mix in weightε of the uniform law. This produces a lawq of
+mean x positive on every face atom. If a maximizing lawp vanished on a nonempty setZ⊆A x,
+then
+Ent((1−u)p+uq)−Ent(p) =ulog(1/u)
+∑
+a∈Z
+qa +O(u)>0
+for sufficiently smallu> 0. The summands outsideZ are differentiable atpa> 0, which justifies
+theO(u)term. Thuspis positive.
+Form the matrix with columns(1,a ), indexed bya∈A x. All sufficiently small perturbations of
+p in its kernel preserve positivity, mass and mean. The entropy gradient(−1−logp a)a therefore lies
+in the row space. Because the constant row is present,logpa =c +θ·a for finite real coefficients;
+normalization gives Equation (14). No independence of the constraint rows is required.
+For a law of the displayed form with parameterη, all face atoms have positive probability. An
+inequality is tight at its meany exactly when it is tight at every atom ofAx, equivalently when it is
+tight atx. HenceF y =F x, and every lawq′ of meanyis supported onA x. Equation (13) gives
+Ent(q′)≤log
+∑
+a∈Ax
+eη·a−η·y,
+with equality for the exponential law itself. This proves maximality.
+11
+
+=== PDF PAGE 12 ===
+3.2 The trace obstruction
+For a real numberc, defineJc =F−cB . The following lemma isolates the analytic consequence of
+a maximum; it does not yet choosec.
+Lemma 3.3(Second variation at a fractional maximum).Let G have2 m≥ 2vertices, and suppose
+that x∈P (G)has0 < xe < 1for every edge. If Jc−H has a local maximum atx, then, with
+d= dimF x ands=|E|,
+0≥d−s+ (c+ 1)m.(15)
+Proof. Let p and θ be supplied by Lemma 3.2, and writeT = span(Fx−x ). Forv∈R E and realt,
+set
+Φ(t) = log
+∑
+a∈Ax
+e(θ+tv)·a, p a(t) =e (θ+tv)·a−Φ(t), y(t) =
+∑
+a
+pa(t)a.
+The lemma givesFy(t) =F x and
+H(y(t)) = Φ(t)−(θ+tv)·y(t).(16)
+All sums are finite, so these curves are smooth. Every coordinate ofy(t)remains strictly between
+zero and one, since both coordinate values occur among the positive-probability face atoms.
+Define the covariance matrix
+K=
+∑
+a∈Ax
+pa(a−x)(a−x) T.
+Differentiation gives p′
+a(0) = pav· (a−x )and y′(0) = Kv. For every w, we havewTKw =∑
+apa(w·(a−x)) 2. Positivity ofpand the spanning ofTbya−xtherefore give
+kerK=T ⊥,imK=T,rankK=d.(17)
+Alsoy′′(0)∈T, since the curve stays inx+T.
+Letg=∇J c(x)and letDbe its diagonal Hessian:
+ge =−logx e−clog(1−x e)−(c+ 1), D ee =− 1
+xe
++ c
+1−x e
+.
+SinceΦ′(t) =v·y (t), Equation(16) gives d
+dtH(y(t)) =−(θ +tv)·y′(t). Forr(t) =Jc(y(t))−H (y(t)),
+the first two derivatives at zero are
+r′(0) = (g+θ)·Kv,
+r′′(0) = (Kv) TD(Kv) +v TKv+ (g+θ)·y ′′(0).
+Stationarity givesr′(0) = 0for every v. Since imK = T and y′′(0)∈T , the last term inr′′(0)
+vanishes. The second derivative test is therefore
+0≥(Kv) TD(Kv) +v TKv(v∈R E).(18)
+This cancellation is why differentiating within the minimal face suffices; no smoothness ofH across
+different faces has been assumed.
+Take orthonormal eigenvectorsu1,...,u d ofK with positive eigenvaluesλ1,...,λ d. Substituting
+v=u i in Equation (18), dividing byλi, and summing gives
+0≥d+
+∑
+i
+λiuT
+iDui =d+ tr(KD).
+12
+
+=== PDF PAGE 13 ===
+Only the spectral decomposition ofK is used;K and D need not commute. Ifd = 0, this same
+statement is the empty sum identity. Each coordinate is Boolean, soKee = xe(1−x e). Using∑
+exe =m, we obtain
+tr(KD) =
+∑
+e
+[
+−(1−x e) +cxe
+]
+=−s+ (c+ 1)m,
+which proves Equation (15).
+Lower bound in Theorem 1.1.Write the original vertex count as2M≥ 2, and fixc = 2− 2/M +ε
+with ε> 0. By Lemma 3.1,Jc−H attains a maximum onP (G). Suppose that this maximum is
+positive, atx. Delete its zero edges and the endpoints of its value-one edges. The exact fractional
+reduction in Lemma 2.5 identifies all laws of meanx with laws of the reduced mean and preserves
+F,B,H . An empty reduction would giveF =B =H = 0, contrary to positivity. The reduced graph
+therefore has2m vertices for some1≤m≤M , and all retained coordinates are strictly fractional.
+Every feasible mean in the reduced graph extends by the fixed matching edges to a feasible
+original mean, preserving the same three functions. The reduced mean consequently remains a
+global maximum ofJc−H . The geometric rank bound givesd≥s− 3m + 2, whereas Lemma 3.3
+gives
+0≥d−s+ (c+ 1)m≥2 + (c−2)m= 2
+(
+1− m
+M
+)
++εm>0.
+This contradiction provesH≥F−cB for everyε >0. For each fixed mean,B is finite; letting
+ε↓ 0proves H≥F− (2− 2/M)B. The strict coefficient followed by this limit is essential: the
+displayed geometric comparison can be an equality whenm=Mandε= 0.
+3.3 The upper bound and componentwise refinement
+The upper bound is the vertex-star instance of Shearer’s entropy inequality [5, Section V, inequal-
+ity (22)]. We give the short chain-rule proof to make the counting of parallel edge coordinates
+explicit.
+Upper bound in Theorem 1.1.Let X = (Xe)e∈E be the incidence vector of any matching law with
+meanx, and orderE. For a vertexv, the chain rule gives
+Ent(Xδ(v)) =
+∑
+e∈δ(v)
+Ent
+(
+Xe|X f :f∈δ(v), f <e
+)
+≥
+∑
+e∈δ(v)
+Ent
+(
+Xe|X f :f <e
+)
+.
+Conditioning on additional finite random variables decreases conditional entropy, by concavity
+of entropy applied to the conditional laws. Every edge, including every labelled parallel edge,
+belongs to exactly two vertex stars. Summing and applying the chain rule again therefore gives∑
+v Ent(Xδ(v))≥ 2 Ent(X). At a vertex the star vector makes exactly one choice, with probabilities
+(xe)e∈δ(v), so
+Ent(X)≤ 1
+2
+∑
+v
+
+−
+∑
+e∈δ(v)
+xe logxe
+
+ =F(x).
+Taking the maximum over laws proves the upper bound, including fixed coordinates and disconnected
+graphs.
+13
+
+=== PDF PAGE 14 ===
+Corollary 3.4(Fractional components).For x∈P (G), remove its zero edges and the endpoints
+of its value-one edges. Let the nonempty connected components of the remaining graph have2mi
+vertices, and letBi denote the sum definingBon componenti. Then
+F(x)−
+∑
+i
+(2−2/m i)Bi(x)≤H(x)≤F(x).
+If there are no remaining components,F(x) =B(x) =H(x) = 0.
+Proof. The exact reduction preserves the functions. Every residual component has a perfect
+matching, hence even positive order. A law of a whole matching induces matching laws on the
+components, whose entropies sum to at least the joint entropy. Conversely, the independent product
+of component maximizing laws realizes the prescribed mean and the sum of their entropies. Thus
+H, likeF and B, is additive at these fixed component means. Apply Theorem 1.1 separately to
+each component.
+4 Entropy and counting consequences
+The pointwise entropy bound has two kinds of counting consequences. Maximizing a separable
+entropy objective estimates the total matching count, while evaluating it at a feasible uniform mean
+gives lower counts from structural hypotheses. Throughout this section, unless an empty graph is
+explicitly mentioned,G is a finite loopless multigraph on2m> 0vertices with at least one perfect
+matching. Parallel edges retain their individual labels. WriteP =P (G), N =|M(G)|, and recall
+thatF,B, andHuse natural logarithms. For everyx∈P, Theorem 1.1 gives
+F(x)−
+(
+2− 2
+m
+)
+B(x)≤H(x)≤F(x).(19)
+The elementary scalar estimate
+0≤−(1−u) ln(1−u)≤u(0≤u≤1)(20)
+will be used repeatedly. Indeed,u+(1−u) ln(1−u)vanishes at zero and has derivative−ln (1−u)≥ 0
+on[0,1); continuity gives the endpoint. Every perfect matching hasmedges, so∑
+exe =mand
+0≤B(x)≤m.(21)
+4.1 Entropy defects and separable counting estimates
+Corollary 4.1(Entropy-dependent defect).For everyx∈P,
+0≤F(x)−H(x)≤min{F(x),2m−2}.(22)
+Proof.The first inequality follows fromH≤F. Nonnegativity of entropy givesF−H≤F, while
+Equations (19) and (21) giveF−H≤ (2− 2/m)B≤ 2m− 2. This includesm = 1, when the defect
+is zero.
+Define the binary-coordinate entropy by
+Hbin(x) =
+∑
+e
+[−xe lnxe−(1−x e) ln(1−x e)] =F(x) +B(x).
+The word “binary” refers to an edge indicator’s two values; these entropies are still measured with
+natural logarithms.
+14
+
+=== PDF PAGE 15 ===
+Corollary 4.2(Separable estimates of the matching count).One has
+lnN≤max
+x∈P
+F(x)≤lnN+ 2m−2,(23)
+lnN≤max
+x∈P
+Hbin(x)≤lnN+ 3m−2.(24)
+Proof. The entropy comparison in Equation(13), applied to the uniform law, gives entropy at most
+lnN for every law onN outcomes, with equality for the uniform law. At the mean¯xof the uniform
+matching law we therefore haveH(¯x) = lnN . Equation (19) gives lnN≤F (¯x)≤H bin(¯x), proving
+both lower estimates. Corollary 4.1 givesF (x)≤H (x) + 2m− 2≤lnN + 2m− 2at every x∈P .
+Also,
+Hbin(x)−H(x)≤
+(
+3− 2
+m
+)
+B(x)≤3m−2.
+Taking maxima proves the upper estimates. The maxima exist becauseP is compact and both
+separable functions are continuous.
+4.2 Uniform marginals and structural lower counts
+Theorem 4.3(Many edge-disjoint perfect matchings).Let G be a finite loopless multigraph on
+2m > 0vertices that contains k≥ 1pairwise edge-disjoint perfect matchings. If k = 1, then
+N(G)≥1. Ifk≥2, then
+N(G)≥k m(1−1/k) 2(m−1)(k−1)≥e−2(m−1)km≥(e−2k)m.(25)
+Proof.LetM 1,...,M k be the selected matchings and take their uniform mixture. Its mean
+x= 1
+k
+k∑
+i=1
+1Mi∈P(G)
+is1/k on their union ofkm labeled edges and zero on every other edge. In particular, the hypotheses
+do not require all ambient edges to belong to that union. We haveF (x) = mlnk . If k = 1, the
+selected matching already givesN(G)≥1. Fork≥2, direct evaluation yields
+B(x) =−m(k−1) ln(1−1/k).
+SinceH(x)≤lnN(G), Theorem 1.1 now gives
+lnN(G)≥mlnk+ 2(m−1)(k−1) ln(1−1/k).
+Exponentiating proves the first inequality in Equation(25). The function ln(1−u ) +u/(1−u )
+starts at zero and has derivativeu/(1−u )2≥ 0for0 ≤u < 1. Thus( k− 1) ln(1− 1/k)≥− 1,
+giving the second inequality; the third usesm−1≤m.
+At m = 1, the finite-order estimate is simply N(G)≥k , the exact count on the selected
+parallel-edge subgraph. We keepk= 1separate to avoid an undefined power at zero.
+Only feasibility of the uniform mean enters the preceding proof. It therefore applies to the
+following class without requiring a partition of its edges into perfect matchings.
+Corollary 4.4(Regular graphs with large odd cuts).Let G be a finite looplessk-regular multigraph
+on2 m > 0vertices, where k≥ 1. Suppose |δ(S)|≥k for every odd vertex setS. Then the
+conclusions of Theorem 4.3 hold. In particular, they hold for every(k− 1)-edge-connectedk-regular
+graph of positive even order.
+15
+
+=== PDF PAGE 16 ===
+Proof. The vectorxe = 1/k has unit degree sums, and the cut hypothesis givesx(δ(S))≥ 1for every
+odd S. Theorem 2.2 impliesx∈P (G); in particular,G has a perfect matching. Since|E| =km,
+the evaluations ofF (x)and B(x)in the preceding proof apply unchanged whenk≥ 2. Fork = 1,
+the graph itself is a perfect matching.
+For the final assertion, an oddS is nonempty and proper because|V (G)| is even. Edge
+connectivity gives|δ(S)|≥k−1, while summing degrees inSgives
+k|S|= 2|E(S)|+|δ(S)|.
+Consequently|δ(S)|≡k (mod 2); it cannot equalk− 1and is therefore at leastk. Parallel edges
+are counted with multiplicity in this identity.
+The odd-cut hypothesis is a condition on the uniform vector. Requiring merely that every edge
+lie in some perfect matching does not assert that condition. At small degree the exponential base in
+Equation (25) can be below one, so these estimates do not supply the classical cubic exponential
+lower bound.
+The empty graph has one empty perfect matching. Its count is handled directly, without using
+expressions that divide bym; fork≥ 1, the homogeneous coarse bound(e−2k)m is interpreted
+as one. When k = 0and the vertex set is nonempty, the coarse bound is zero, while formulas
+containing1/k are not asserted. In particular, specifying no selected matchings places no restriction
+on the ambient edge set.
+The weaker separable and nonlinear comparisons and their structural consequences appear with
+the alternative proofs in Appendix A. The next section examines sharp face codimension and the
+obstruction to coefficient one. Section 6 then passes from these entropy estimates to weighted
+partition functions.
+5 Triangle expansions and sharp face codimension
+Extremal rank examples already occur among the cubic staircases of Abdi et al. [1, discussion after
+Corollary 6.6 and Figure 2]. They have exactly three perfect matchings meeting every minimum odd
+cut once, and those cut rows have rank|E|− 2. We give an explicit triangle-expansion construction
+and derive the associated prescribed-marginal entropy formulas. This also gives a necessary lower
+bound on a universal entropy coefficient. The construction underlying Klee graphs is standard; see
+Cygan, Pilipczuk, and Škrekovski [6, Section 1 and Lemma 2.1] on the triangle expansions and
+the unique partition into three perfect matchings, up to permutation. We give the construction
+and the argument needed here. Balanced matching laws on cubic graphs and triangle contractions
+also occur in the corrected full version of Esperet et al. [11, Claim 3 and Lemma 10]. Although an
+expansion can introduce further perfect matchings, the prescribed uniform edge marginals force a
+law to remain on three of them.
+We retainP (G),a(M),Fx, andd(x) = dimFx from Section 2, and the entropy functionsF,B,H
+from Equations (1)–(2). The separable comparison considered below isH(x)≥F(x)−cB(x). All
+edge labels, including parallel-edge labels, are retained.
+5.1 Expansion and contraction
+Let v be a vertex of degree three in a loopless multigraphG that has a perfect matching, with
+incident labelled edgesei =vui,1 ≤i≤ 3. The verticesui need not be distinct. Replacev by a
+triangle on new verticest1,t 2,t 3, reattachei to tiui, and letfi denote the triangle edge oppositeti.
+16
+
+=== PDF PAGE 17 ===
+Call the resulting graphG′, and setT ={t1,t 2,t 3}. Reattached edges keep their old labels; thefi
+receive new labels. Figure 1 shows the local change.
+Every perfect matchingM ofG contains exactly one ofe1,e 2,e 3, sayei. Its unique extension that
+crosses δ(T )once is obtained by retaining its labelled edges and addingfi. Conversely, contracting
+Tin a perfect matching ofG′ that crossesδ(T)once recovers exactly one perfect matching ofG.
+e1
+e2
+e3
+v
+u1
+u2
+u3
+expand e1
+e2
+e3
+f1
+t1
+t2
+t3
+u1
+u2
+u3
+Figure 1: A local triangle expansion. The displayed matching usese1; its unique extension crossing
+the triangle cut once adds the opposite edgef1. Thick blue edges are selected. The rest of the
+graph is unchanged.
+Lemma 5.1(The face of a triangle expansion).The set
+QT ={y∈P(G ′) :y(δ(T)) = 1}
+is a face ofP (G′)affinely isomorphic to P (G). Under this isomorphism an old edge keeps its
+coordinate and
+yfi =y ei (1≤i≤3).
+If x∈P (G)has coordinate1 /3on every edge, its imagex′ has coordinate1/3on every edge ofG′.
+The isomorphism maps the minimal face atxonto the minimal face atx′.
+Proof. Every perfect matching ofG′ crosses the odd cutδ(T )either once or three times. Hence
+y(δ(T ))≥ 1is valid onP (G′), and its equality set is a face. A convex combination lies in this face
+exactly when every matching with positive coefficient crosses the cut once. For these matchings
+the extension and contraction just described are inverse bijections, and the indicator offi equals
+the indicator ofei. They therefore induce the stated affine isomorphism, with inverse given by
+restriction to the old edge labels.
+The coordinate statement follows directly. Finally,QT is a face containingx′. The minimal face
+of P (G′)at x′ is therefore also the minimal face ofQT at x′; affine isomorphisms preserve minimal
+faces.
+5.2 A triangular minimal face for every order
+Begin with two vertices joined by three distinct labelled parallel edges. Its three one-edge perfect
+matchings partition its edge set. Repeatedly expand any vertex as above. Each expansion adds
+two vertices and three edges, and all degrees remain three. Denote any graph obtained afterm− 1
+expansions byGm, so that
+|V(Gm)|= 2m,|E(G m)|= 3m.
+The three initial perfect matchings extend uniquely at each step. Their extensionsM1,M 2,M 3 still
+partition the edge set: the old edges retain their partition, andfi belongs to the extension of the
+matching containingei. In particular,
+x(m) = 1
+3
+(
+a(M1) +a(M 2) +a(M 3)
+)
+17
+
+=== PDF PAGE 18 ===
+has every coordinate equal to1/3and belongs to the full perfect-matching polytope.
+The first expansion givesK4; subsequent expansions preserve simplicity. ThusGm is simple for
+everym≥2, and these are Klee graphs. Only the starting casem= 1needs parallel edges.
+Proposition 5.2(Sharp codimension and prescribed-marginal entropy).For every integer m≥ 1,
+the graphGm and the pointx(m) above satisfy
+Fx(m) = conv{a(M1),a(M 2),a(M 3)}, d(x (m)) = 2.
+The unique law on perfect matchings with meanx(m) is the uniform law onM1,M 2,M 3. Consequently,
+|E(Gm)|−d(x (m)) = 3m−2,
+H(x(m)) = ln 3,
+F(x (m)) =mln 3,
+B(x(m)) = 2mln(3/2).
+(26)
+Proof. Form = 1, the three matching vectors are the three coordinate vectors inR3, andP (G1)is
+their simplex. Its uniform point is in its relative interior. Repeated application of Lemma 5.1 shows
+that the minimal face atx(m) is the image of this simplex, with verticesa(M1),a (M2),a (M3). In
+particular its dimension is two.
+One can also see the restriction on laws directly. For the last inserted triangle, a law with edge
+marginals1 /3has expected cut-crossing count3(1/3) = 1. Since each matching crosses this cut
+once or three times, it must cross once almost surely. Contraction gives a law on the preceding
+graph with the same uniform marginals, and the crossing-one extension is unique. Iterating leaves
+only the three initial matchings. Thus the original law is supported onM1,M 2,M 3. Since these
+matchings partition the edges, the marginal of any edge inMi equals the probability assigned to
+Mi, which must be1/3. This proves uniqueness and the entropy formula.
+There are3m edges, all with marginal1/3. Substitution in the definitions ofF and B gives the
+remaining formulas.
+All coordinates here are strictly between zero and one. Equation(26) therefore attains the
+bound in Proposition 2.4 for everym≥ 1. Equivalently, by Equation(7), the tight odd-cut rows
+have rank3m− 2. The dimension two is the dimension of the minimal face atx(m); the whole
+perfect-matching polytope can have additional vertices.
+Corollary 5.3(Restriction on a universal entropy coefficient).If a constantcsatisfies
+H(x)≥F(x)−cB(x)
+for every finite loopless multigraphGand everyx∈P(G), then
+c≥ ln 3
+2 ln(3/2).
+The same necessary bound holds if the assertion is restricted to simple graphs.
+Proof.Applying the asserted inequality toGm,x (m) gives
+c≥ (m−1) ln 3
+2mln(3/2) .
+Let m tend to infinity. The graphs withm≥ 2are simple, so the same limit applies under that
+restriction.
+18
+
+=== PDF PAGE 19 ===
+The necessary coefficient in Corollary 5.3 lies strictly between1and the universal coefficient2
+supplied by Theorem 1.1. Sharpness of the geometric estimate therefore does not settle the optimal
+entropy coefficient. The next example makes the failure of coefficient one explicit at a fixed order.
+5.3 An eight-vertex obstruction to coefficient one
+For a concrete instance, take vertex set{0,1,...,7}and edge set
+E={01,03,05,14,16,23,24,27,34,56,57,67},
+where ij denotes the undirected edge with endpointsi,j. Contracting the trianglesT ={2, 3, 4}
+and U ={5, 6, 7} givesK4. Thus this graph is obtained by expanding two vertices ofK4, and is an
+instance ofG 4.
+Its five perfect matchings are
+M1 ={01,27,34,56}, M 2 ={03,16,24,57},
+M3 ={05,14,23,67}, N 1 ={03,14,27,56},
+N2 ={05,16,27,34}.
+This list follows without enumeration software. A matching uses one of01, 03, 05. If it uses01, the
+remaining two odd triangles are joined only by27, forcingM1. If it uses03, vertex1is matched by
+14or16, after which the remaining edges are forced, givingN1 or M2. If it uses05, the same two
+choices at vertex1forceM 3 orN 2.
+The cuts
+δ(T) ={03,14,27}, δ(U) ={05,16,27}
+both have total marginal one atxe = 1/3. The matchingN1 crosses the first cut three times, and
+N2 crosses the second cut three times. They therefore have probability zero in every law with
+those marginals. The remaining three matchings partitionE, so their probabilities are all1/3. In
+particular the relevant entropy isln 3, even though the graph has five perfect matchings in total.
+At this feasible point of the full polytope,
+H(x) = ln 3, F(x)−B(x) = 4 ln(4/3)>ln 3,
+because(4 /3)4 = 256/81> 3. The differenceF (x)−B (x)−H (x)is ln(256/243)> 0. This gives a
+simple eight-vertex counterexample to the coefficient-one lower bound.
+6 Weighted partition functions
+Let G be a loopless labelled multigraph onn = 2m≥ 2vertices with at least one perfect matching.
+WriteP =P (G). We pass from natural-log entropy to binary-log weights, so that the resulting
+estimate can be used by the rational counting algorithm.
+Put
+h2(x) = F(x)
+ln 2 =
+∑
+e∈E
+−xe log2xe,0 log 2 0 = 0.
+Forβ∈R E, define
+Zβ =
+∑
+M∈M(G)
+2β·1M, q ∗ = max
+x∈P
+[h2(x) +β·x].(27)
+The maximum exists by continuity on the compact matching polytope.
+19
+
+=== PDF PAGE 20 ===
+Corollary 6.1(Weighted counting estimate).For every finite real vectorβ,
+q∗− 2m−2
+ln 2 ≤log 2Zβ≤q∗.(28)
+Proof. Letpβ(M) = 2β·1M/Zβ, a positive probability law on the matching family. The finite entropy
+comparison with this law gives, for any matching lawpof meanx,
+−∑
+Mp(M) lnp(M)
+ln 2 +β·x≤log 2Zβ,
+with equality forp = pβ. Indeed, this is the nonnegativity of∑
+M:p(M)>0 p(M) ln(p(M)/pβ(M)),
+which follows fromlnt≤t− 1. Taking a maximizing law at each mean and then the maximum over
+means therefore yields
+log2Zβ = max
+x∈P
+[H(x)
+ln 2 +β·x
+]
+.(29)
+Corollary 4.1 saysF (x)− (2m− 2)≤H (x)≤F (x). Divide by ln 2, addβ·x , and maximize to
+obtain Equation (28).
+The analytical comparison does not itself supply a numerical optimizer. The exact-arithmetic
+construction in Sections 7–10 uses the following coarser bracket, with fixed constants that leave
+room for its later rounding and optimization errors.
+Corollary 6.2(Conservative weighted bracket).For every finite loopless labelled multigraph on
+an even numbern≥ 2of vertices with at least one perfect matching, and every finite real vector
+β∈R E,
+q∗−4n≤log 2Zβ≤q∗ +n.(30)
+Proof.Withn= 2m, Corollary 6.1 gives
+q∗− n−2
+ln 2 ≤log 2Zβ≤q∗.
+Since ln 2 =
+∫2
+1 t−1dt≥ 1/2, we have(n− 2)/ln 2≤ 2n− 4≤ 4n. Enlarging both sides of this
+bracket proves the claim.
+For the empty graph, the matching family consists of the empty matching,Zβ = 1and
+q∗ = 0. The counting algorithm handles that input directly. On positive even order it uses exactly
+Equation (30); all constants in the finite optimization and final estimate below refer to this bracket.
+7 A rational objective for counting matchings
+The weighted entropy estimate reduces counting to a continuous maximum. We now replace that
+maximum by one computed from exact rational data. Assume throughout this section thatn≥ 4is
+even. LetN be the number of perfect matchings in the input graph, with parallel edges counted
+as distinct choices. We allow the multiplicityke of each unordered paire∈
+(V
+2
+)
+to be supplied in
+binary; an absent pair haske = 0. For a simple graph, every multiplicity is zero or one.
+We work on the complete simple graphKn, writing
+P=P(K n), p=
+(
+n
+2
+)
+.
+20
+
+=== PDF PAGE 21 ===
+The objective functions below have one coordinate for each of thesep unordered pairs. In particular,
+P is nonempty even when the input graph has no perfect matching. Small positive weights on
+absent pairs will encode the input support in the objective. Completion also provides the uniform
+feasible meanuij = 1/(n− 1), whose nontrivial odd-cut inequalities are strict. Section 8 uses that
+slack to repair cut violations after correcting the degree sums.
+7.1 Completing the graph with small weights
+Set
+bmax = max
+(
+{0}∪{⌊log 2ke⌋:k e>0}
+)
+,
+L= 100(n+b max + 1)3, β e =
+{
+⌊log2ke⌋, k e>0,
+−L, k e = 0.
+(31)
+For a positive integerke, its binary bit length minus one equals⌊log2ke⌋. Thus these coefficients are
+computed exactly by integer arithmetic, and their numerical magnitudes are polynomial inn +bmax.
+Use Zβ and q∗ from Corollary 6.2 forKn with the weights in Equation(31). A term inZβ is
+called valid if its matching uses only pairs with positive input multiplicity; writeZgood and Zbad for
+the sums of valid and remaining terms, respectively.
+Lemma 7.1(Weighted completion).The contribution of matchings using an absent pair satisfies
+0≤Z bad≤2−20n.
+Moreover,
+N= 0 =⇒log 2Zβ≤−20n,
+N >0 =⇒max{1,2 −n/2N}≤Z β≤2N.
+(32)
+Proof.For each pair withke>0, putr e = 2⌊log2ke⌋. Then
+ke
+2 ≤r e≤k e.
+For a valid matching ofKn, the product of itske’s is the number of corresponding perfect matchings
+in the input multigraph. Replacing thesen/2factors byre and summing therefore gives
+2−n/2N≤Z good≤N.(33)
+If N >0, there is at least one valid matching, and its rounded weight is a positive integer. Hence
+Zgood≥1.
+Every remaining matching uses a pair of weight2−L, and each of its other pair weights is at
+most2 bmax. There are at most2p matchings, since each is a subset of theppairs. Thus
+Zbad≤2 p+bmaxn/2−L≤2−20n.
+For the last inequality, putt=n+b max + 1≥5and note that
+p+ bmaxn
+2 + 20n≤t 2 + 20t≤100t 3 =L.
+When N = 0, every term is inZbad; alsoZβ > 0because Kn has a perfect matching and every
+assigned weight is positive. This proves the first implication in Equation(32). When N > 0,
+Equation (33) gives the lower bounds, while
+Zβ≤N+ 2 −20n≤2N
+becauseNis a positive integer.
+21
+
+=== PDF PAGE 22 ===
+7.2 Interpolating entropy on a dyadic grid
+Let K be the least nonnegative integer such that2K≥p . Define ϕ(t) =−tlog 2t on[0 , 1], with
+ϕ(0) = 0, and letψbe its continuous linear interpolant at
+0,2 −K,2 −(K−1), ...,2 −1,1.
+The interpolant has the explicit rational formulas
+ψ(t) =
+{
+Kt,0≤t≤2 −K,
+(k−1)t+ 2 −k,2 −(k+1)≤t≤2 −k,0≤k<K. (34)
+The formulas agree at common endpoints.
+Lemma 7.2(Dyadic entropy approximation).The function ψ is concave, with integer slopes of
+absolute value at mostK. For everyx∈P,
+0≤h 2(x)−
+∑
+e
+ψ(xe)≤ n
+2 + 1≤n.(35)
+Proof. At a positive knot,ϕ(2−k) =k2−k. The chord between2−(k+1) and2−k therefore has slope
+k− 1and intercept2 −k, whereas the chord from zero has slopeK. This proves Equation(34).
+Reading the intervals from left to right, the slopes are nonincreasing, soψ is concave. Sincep≥ 6,
+we haveK≥1, and all its slopes lie between−1andK.
+The concavity ofϕputs every chord below its graph. If2−(k+1)≤t≤2 −k, then
+ψ(t)−kt= 2 −k−t≥0, ϕ(t)≤(k+ 1)t.
+Consequently0 ≤ϕ (t)−ψ (t)≤t on this interval. On the interval adjacent to zero, writet = 2−Kr,
+where0≤r≤1. Then
+ϕ(t)−ψ(t) = 2 −K(−rlog 2r)≤2 −K.
+Here the expression atr = 0is interpreted by continuity; on(0, 1], differentiation gives the maximum
+1/(eln 2)<1.
+Forx∈P , summing the degree equations gives∑
+exe =n/2. Apply the boundxe on intervals
+above2−K, and the bound2−K on the interval below it. The total error is at most
+∑
+e:xe≥2−K
+xe +
+⏐⏐{e:x e<2−K}
+⏐⏐2−K≤ n
+2 +p2−K≤ n
+2 + 1≤n.
+This proves Equation (35).
+Define the concave functionfon the entire box[0,1]p by
+f(x) =
+∑
+e
+ψ(xe) +β·x, f ∗ = max
+x∈P
+f(x).(36)
+Equation (35) givesf(x)≤h 2(x) +β·x≤f(x) +nonP. Taking maxima yields
+f∗≤q∗≤f∗ +n.(37)
+On each affine piece,f has integer coordinate slopes of absolute value at mostK +L, since|βe|≤L .
+All breakpoints and intercepts in Equation(34) have denominators dividing2K < 2p. Thusf can
+be evaluated exactly at rational points using rational arithmetic. Section 8 uses these properties to
+estimatef ∗.
+22
+
+=== PDF PAGE 23 ===
+8 Optimization by an exact penalty
+Retain the notation of Section 7:n≥ 4is even, P =P (Kn), p =
+(n
+2
+)
+, andf∗ = maxx∈Pf(x). We
+first replace optimization overPby optimization over the box[0,1]p. Forxin this box, define
+w(x) = max
+
+
+
+0,max
+i∈V
+⏐⏐x(δ(i))−1
+⏐⏐,max
+S⊆V
+|S|odd
+(
+1−x(δ(S))
+)
+
+
+
+.(38)
+By Theorem 2.2,w(x) = 0exactly whenx∈P.
+Lemma 8.1(Feasibility repair).SetA 0 = 10n2. For everyx∈[0,1] p, there isy∈Psuch that
+∥y−x∥ ∞≤(2 +A 0)w(x).
+Proof.Writew=w(x),d i = 1−x(δ(i)), andd tot =∑
+i∈V di. Correct the degrees by setting
+x′
+ij =x ij + di +dj
+n−2 − dtot
+(n−2)(n−1) (i̸=j).(39)
+The correction sums todi at vertexi, since
+∑
+j̸=i
+(di +dj) = (n−2)d i +d tot.
+Thusx′(δ(i)) = 1for everyi. Since|d i|≤wand|d tot|≤nw,
+∥x′−x∥∞≤
+( 2
+n−2 + n
+(n−2)(n−1)
+)
+w≤2w.
+Consequentlyx′
+e≥−2w, and every odd setSsatisfies
+x′(δ(S))≥1−(1 + 2p)w.(40)
+Letu ij = 1/(n−1). This vector has degree sums one, and
+u(δ(S)) =|S|(n−|S|)
+n−1 .
+Cuts with|S| = 1or |S| =n− 1have value one. For every nontrivial odd cut,3≤|S|≤n− 3, and
+hence, whenn≥6,
+u(δ(S))≥ 3(n−3)
+n−1 ≥ 3
+2.
+There are no nontrivial odd cuts whenn= 4. In particular,u∈P.
+Set
+t= min{1,A 0w}, y= (1−t)x ′ +tu.(41)
+IfA 0w≥1, including equality, theny=u∈P. Otherwiset=A 0w<1. The inequalities
+A0
+n−1 ≥2, A0
+2 ≥1 + 2p
+give
+ye≥−2(1−t)w+ A0w
+n−1 ≥0.
+23
+
+=== PDF PAGE 24 ===
+Equation (40) also gives, for each nontrivial odd cut,
+y(δ(S))≥1−(1−t)(1 + 2p)w+ A0w
+2 ≥1.
+The degree sums remain one, so the trivial odd cuts also have value one. Theorem 2.2 now yields
+y∈Pin this branch as well.
+For either branch, use the identity
+y−x= (1−t)(x ′−x) +t(u−x).
+Bothuandxlie in the box, so
+∥y−x∥ ∞≤2(1−t)w+t∥u−x∥ ∞≤2w+t≤(2 +A 0)w.
+This also coversw= 0.
+The repair bound converts constraint violation into a quantitative distance from feasibility. We
+can therefore penalize violations by a fixed amount large enough to recover exactly the constrained
+optimum.
+Define the positive integersM0,D 0 and the functionΦby
+M0 =p(K+L)(2 +A 0),Φ(x) =f(x)−M 0w(x), D 0 =p(K+L+M 0)2.(42)
+A vectorgis asupergradientofΦatxon the box if
+Φ(z)≤Φ(x) +g·(z−x)for everyz∈[0,1] p.
+Lemma 8.2(Exact penalty and integral supergradients).The functionΦis concave on[0 , 1]p, and
+max
+x∈[0,1]p
+Φ(x) =f ∗.
+At every point of the box,Φhas an integral supergradientgsatisfying∥g∥ 2
+2≤D 0.
+Proof. By Lemma 7.2, the slopes ofψ are integers of absolute value at mostK. Since|βe|≤L , it
+follows that
+|f(x)−f(y)|≤(K+L)
+∑
+e
+|xe−ye|≤p(K+L)∥x−y∥ ∞ (x,y∈[0,1] p).(43)
+For the pointy∈Psupplied by Lemma 8.1, Equation (43) gives
+Φ(x)≤f(y) +p(K+L)∥x−y∥ ∞−M 0w(x)≤f(y)≤f ∗.
+Conversely,Φ = f on P, proving equality of the maxima. The functionw is a maximum of affine
+functions and is therefore convex. Sincefis concave,Φis concave.
+Choose a supporting piece slopeσe of ψ at eachxe; at a knot either adjacent slope is allowed.
+Withb e =σ e +βe, these choices give
+f(z)≤f(x) +b·(z−x) (z∈[0,1] p).
+Write each absolute value in Equation(38) as the maximum of its two affine terms. Choose any
+active affine terma·z +c in this maximum, including the zero term when it is active. Then
+ae∈{−1,0,1}, and
+w(z)≥a·z+c=w(x) +a·(z−x).
+24
+
+=== PDF PAGE 25 ===
+Subtracting the last inequality, multiplied byM0, proves thatg =b−M 0a is a supergradient ofΦ
+on the entire box. The independent choices of supporting pieces and active rows are valid also at
+endpoints and ties. Finally,gis integral and
+|ge|≤K+L+M 0,∥g∥ 2
+2≤p(K+L+M 0)2 =D 0.
+We use the classical projected subgradient method [21, Equation (1)] to approximate the
+maximum ofΦ. Its bounded integral supergradients permit a fixed step size and keep every iterate
+on one rational grid. The next lemma gives the finite iteration count and value guarantee directly.
+Lemma 8.3(Finite projected ascent).Let Nit = pD0, setx(0) = 0, and forj = 0,...,N it− 1
+choose a supergradientg(j) as in Lemma 8.2 and set
+x(j+1) = Π[0,1]p
+(
+x(j) + g(j)
+D0
+)
+,(44)
+whereΠ [0,1]p clips each coordinate to[0,1]. Then
+R=
+⌊
+max
+0≤j<Nit
+Φ(x(j))
+⌋
+satisfiesR≤f ∗≤R+ 2.(45)
+Proof. Choose z∈P with f(z) = f∗; thenΦ(z) = f∗ by Lemma 8.2. Clipping cannot increase
+distance toz∈ [0, 1]p. Expanding the squared distance and using the supergradient inequality
+therefore gives
+∥x(j+1)−z∥ 2
+2≤∥x (j)−z∥ 2
+2 + 2
+D0
+g(j)·(x (j)−z) + ∥g(j)∥2
+2
+D2
+0
+≤∥x (j)−z∥ 2
+2− 2
+D0
+(
+f∗−Φ(x (j))
+)
++ 1
+D0
+.(46)
+Summing Equation (46) over exactly the indicatedNit indices yields
+2
+Nit−1∑
+j=0
+(
+f∗−Φ(x (j))
+)
+≤D 0
+(
+∥x(0)−z∥ 2
+2−∥x (Nit)−z∥ 2
+2
+)
++N it
+≤pD 0 +N it = 2Nit.
+Here∥x(0)−z∥ 2
+2≤p . Thus the largest of the sampled values, sayV, satisfiesf∗− 1≤V≤f ∗.
+SinceR=⌊V⌋,
+R≤V≤f ∗, f ∗≤V+ 1<R+ 2,
+which proves Equation (45).
+Every iterate in Equation(44) has coordinates that are integer multiples of1/D0: the update
+adds an integral vector divided byD0, and clipping inserts only0or1. To evaluatew and choose an
+active row, compare the zero term and the2n signed degree terms with the largest odd-cut violation.
+Lemma 9.2 computes a minimum odd cut from the nonnegative integer capacitiesD0x(j)
+e and returns
+its row in the original edge coordinates. The values ofΦand the floor definingR can then be
+computed exactly using rational arithmetic. Proposition 10.1 gives the resulting bit-complexity
+bound.
+25
+
+=== PDF PAGE 26 ===
+9 Computing an active odd-cut constraint
+The optimization in Section 8 needs both the value ofw(x)and an affine function attaining its
+defining maximum. The degree violations are immediate to compute. We supply the remaining
+ingredient: an exact minimum odd cut, together with its vertex set. The use of minimum odd cuts
+for matching-constraint separation goes back to Padberg and Rao [20]. We prove the recursion and
+its arithmetic bounds here.
+Throughout this section, an auxiliary graph has vertex setW and nonnegative integer capacities
+cij =cji for distincti,j∈W . Absent edges have capacity zero. Parallel capacities are summed and
+loops are discarded. Write
+c(S) =
+∑
+i∈S
+j∈W\S
+cij, C=
+∑
+{i,j}⊆W
+cij, v=|W|.
+We use the classical augmenting-path method of Ford and Fulkerson [12, Section 2], specialized
+here to unit augmentations. The capacity-dependent bound needed below is proved explicitly.
+Lemma 9.1(An integral two-terminal minimum cut).For distinct a,b∈W , a minimum cut
+separatinga fromb can be found deterministically using at mostC unit augmentations andO(v2(C +
+1))arithmetic operations on integers ofO(log2(v+C+ 2))bits.
+Proof. Maintain integers bij =−bji such that bij ≤c ij in both directions and∑
+jbij = 0for
+i /∈{a,b}. The two directional inequalities give−cij≤b ij≤c ij. Start with zero flow. If a simple
+directed path froma to b uses only steps with residual capacitycij−bij > 0, increase the flow on
+each forward step by one and decrease its reverse by one. Integrality makes this feasible, conservation
+is preserved, and the net source outflowq=∑
+jbaj increases by one. Since
+q≤
+∑
+j
+caj≤C,
+there are at mostCaugmentations.
+When no such path exists, letS be the vertices reachable froma by positive-residual steps. Then
+b /∈S, and every step fromS to its complement is saturated. Antisymmetry cancels internal flows,
+so conservation gives
+q=
+∑
+i∈S
+j/∈S
+bij =
+∑
+i∈S
+j/∈S
+cij =c(S).
+For every othera–b cut, the same conservation identity andbij≤c ij give capacity at leastq. Thus
+S is minimum. A graph search with fixed vertex order finds a simple residual path, or the final
+reachable set, inO(v2)operations. There are at mostC + 1searches, and all flows and residual
+capacities have magnitude at most2C. The argument includesC= 0.
+Lemma 9.2(Minimum odd-terminal cut).Let U⊆W have positive even cardinality. One can
+deterministically find a setS⊆W minimizing c(S)subject to |S∩U| being odd. The algorithm
+returns the set itself, uses at most|U|− 1recursive instances, and requires O(|U| 3v2(C + 1))
+arithmetic operations on integers ofO(log2(v+C+ 2))bits.
+Proof. Call a cutterminal-separatingif both sides meet U. Compute a minimum cut for every
+pair of distinct terminals using Lemma 9.1, and take the least-capacity result, with sidesA and
+A =W\A . This is a minimum terminal-separating cut: every such cut separates some terminal
+pair, and every recorded pair cut is terminal-separating.
+26
+
+=== PDF PAGE 27 ===
+If|A∩U| is odd, returnA. Every admissible odd-terminal cut is terminal-separating, so this
+answer is optimal. Otherwise bothA∩U and A∩U have positive even cardinality. Form two
+children:
+(i) keepA, contract Ato a new nonterminal, and use terminal setA∩U;
+(ii) keepA, contractAto a new nonterminal, and use terminal setA∩U.
+For example, in the first child the capacity fromi∈A to the new vertex is∑
+j∈Acij. Recurse
+on both children and return the better lifted cut. Every call strictly decreases the positive even
+terminal count; when|U|= 2, the first cut is already odd.
+Lifting cuts.A child cut lifts by replacing its contracted vertex, if included, with the entire block
+it represents. The crossing capacities are unchanged, and including that block adds an even number
+of parent terminals. Thus the lift has the same capacity and is terminal-odd.
+This remains true through arbitrarily nested contractions. Relative to the initial instance, current
+vertices form a partition into blocks. Every current terminal is an original terminal singleton, and
+every nonterminal block contains an even number of original terminals. Initially the latter count is
+zero; each contraction combines an even number of current terminals with blocks of even parity,
+preserving the assertion. Capacities between current vertices are sums of original capacities between
+their blocks. Consequently every returned subset lifts to an original subset with the same capacity
+and terminal parity. Figure 2 illustrates the parity rule.
+Preserving an optimum.Let S be an optimal odd-terminal side in the current instance. Exactly
+one ofS∩A and S∩ A contains an odd number of terminals; exchange the names of the two sides
+so that it isS∩A . Because|A∩U| is even, replacingS by its complement preserves this odd
+intersection. Make this replacement ifS contains all terminals ofA. NowS∪A contains terminals
+ofAand omits a terminal of A, so
+c(S∪A)≥c(A).
+For any two vertex sets, nonnegative undirected capacities satisfy
+c(S∩A) +c(S∪A)≤c(S) +c(A).(47)
+Indeed, the right side minus the left side is twice the capacity betweenS\A and A\S . It follows
+that c(S∩A )≤c (S). The setS∩A is a feasible odd-terminal side in the first child, avoiding its
+contracted vertex. Hence at least one child has optimum at most the parent’s. Conversely, lifting
+shows that every child optimum is at least the parent’s. Induction on|U| proves that the better
+recursive answer attains the parent optimum.
+Size and running time.Each nonleaf splits its terminal set into two disjoint nonempty even
+sets. There are at most|U|/2leaves and hence at most|U|− 1instances in this binary recursion
+tree. Each contracted side contains at least two terminals, so a child also has fewer vertices than
+its parent. Within any one instance, every surviving capacity sums a disjoint set of original edge
+capacities; original edges internal to blocks are discarded. Its total capacity is therefore at mostC.
+Capacities in different children may overlap, and we account for them by multiplying the cost of an
+instance by the number of instances.
+There are at most O(|U| 2)pair computations per instance, each costing O(v2(C + 1))by
+Lemma 9.1. Contractions and lifted-set bookkeeping fit within the same bound. This proves the
+stated running time. All comparisons and tie choices may use fixed orderings; zero capacities require
+no perturbation.
+27
+
+=== PDF PAGE 28 ===
+A A
+lifted side: three terminals
+contract
+A
+A
+nonterminal
+even number of
+original terminals
+child side: one terminal
+Figure 2: Lifting through an even-terminal contraction. Filled dots are terminals and the open dot
+represents the contracted block. In this schematic instance each side initially has two terminals. The
+shaded child side lifts to the shaded parent side by taking the entire contracted block, preserving
+odd parity. Parallel crossing capacities are added, so the cut capacity is preserved as well.
+Recovering an active row in the original coordinates.At an optimization trial point, D0xe
+is a nonnegative integer for every original complete-graph paire. Indeed, the initial point is zero,
+and an integral supergradient step of size1/D0, followed by clipping to[0, 1], preserves this grid.
+Apply Lemma 9.2 withU =V and capacitiesce =D0xe. Store each contracted vertex’s block of
+original vertices, so the returned cut yields an explicit original setS⊆V of odd cardinality. It
+minimizesx(δ(S)).
+The corresponding affine function in the definition ofwis
+ℓS(y) = 1−
+∑
+e∈δ(S)
+ye.
+Its coefficient is−1oneveryoriginal pair crossing S, including pairs withxe = 0, and zero elsewhere.
+Thus the row is recovered by scanning the original pairs, even if zero-capacity edges were omitted
+during graph searches. Edges discarded as contraction loops have both endpoints in one block and
+do not cross a lifted cut. ComparingℓS(x)with zero and the two signed degree violations for every
+vertex givesw(x)and an affine row attaining it, as required in Section 8.
+Here the initial total capacity is at mostpD0. A merged edge can exceedD0, but the bound on
+each instance’s total capacity remainspD0; likewise a large reverse residual does not change the
+source-outflow bound in Lemma 9.1. One complete violation computation therefore takes
+O
+(
+n5(pD0 + 1)
+)
+arithmetic operations. The numerical bounds onD0 and the resulting bit complexity are recorded
+in Proposition 10.1.
+10 The algorithm and its guarantee
+We now assemble the preceding constructions into a deterministic algorithm. The input consists of
+a vertex setV ={1,...,n} and nonnegative integer multiplicitiesk{i,j} for distinct vertex pairs,
+written in binary; an omitted pair has multiplicity zero. Listing parallel edges individually is also
+allowed, since their multiplicities can first be counted. LetN be the number of perfect matchings,
+with parallel edge choices distinguished. Fix the vertex and pair orderings, and use the deterministic
+cut procedure of Section 9.
+1. Handle the elementary cases.If n = 0, return1. If n is odd, return0. Ifn = 2, returnk{1,2}.
+Sort the endpoint labels occurring in positive-multiplicity pair records and count the distinct
+28
+
+=== PDF PAGE 29 ===
+labels. If fewer thann occur, an isolated vertex forces the count to be zero; return0. This test
+uses the input records even whenn is supplied in binary, before allocating any array indexed by
+all vertices or pairs.
+2. Set up the complete-pair objective.Now n≥ 4is even. Use allp =
+(n
+2
+)
+pair coordinates.
+Compute bmax,L,β from Equation(31), and letK be the least nonnegative integer with2K≥p .
+Define ψ and f by Equations(34) and (36). Set A0 = 10n2, definew by Equation(38), and
+computeM 0,Φ,D 0 from Equation (42). Set
+Nit =pD 0, a (0) = 0∈Z p.
+The integer vectora(j) representsx (j) =a (j)/D0.
+3. Evaluate and updateN it trial points.Forj= 0,...,N it−1, do the following.
+(a) Apply Lemma 9.2 to the integral capacitiesa(j)
+e , with every vertex terminal, obtaining a
+minimum-capacity odd cutSj. Atx=x (j), compare
+0, x(δ(1))−1,1−x(δ(1)), ..., x(δ(n))−1,1−x(δ(n)),1−x(δ(S j)).
+Their maximum isw(x). Select the first maximizing expression in this list and letr(j)∈
+{−1, 0, 1}p be its linear coefficient vector. EvaluateΦ(x)exactly and retain the largest trial
+value seen so far.
+(b) In each coordinate choose the right-hand slopeσ(j)
+e ofψ atx(j)
+e , using the left-hand slope at
+1. Set
+g(j)
+e =σ (j)
+e +βe−M 0r(j)
+e .
+These are the integral supergradients from Lemma 8.2.
+(c) Update the integer numerators by
+a(j+1)
+e = min
+{
+D0,max{0,a (j)
+e +g (j)
+e }
+}
+(e∈E(K n)).
+4. Return the estimate.Let
+R=
+⌊
+max
+0≤j<Nit
+Φ(x(j))
+⌋
+.
+IfR<−10n, return0. Otherwise return
+A= 2 ρ, ρ= max{0,R−5n}.
+The slope convention and the ordering in Step 3 settle all remaining ties. The numerator update
+is exactly the clipped stepx(j) +g (j)/D0 of Lemma 8.3.
+Approximation guarantee in Theorem 1.2.The elementary cases return the exact count, so suppose
+n≥ 4is even and the algorithm reaches the optimization. Lemma 8.3, Lemma 7.2, and Corollary 6.2
+give, respectively,
+R≤f ∗≤R+ 2, f ∗≤q∗≤f∗ +n, q ∗−4n≤log 2Zβ≤q∗ +n.
+Combining them yields
+R−4n≤log 2Zβ≤R+ 2n+ 2≤R+ 3n.(48)
+If N = 0, Lemma 7.1 giveslog2Zβ≤− 20n, henceR≤− 16n<− 10n. IfN >0, the same lemma
+givesZ β≥1, henceR≥−3n>−10n. Thus the zero test is exact.
+29
+
+=== PDF PAGE 30 ===
+Now letN >0. The inequalitiesZ β≤2NandZ β≥2−n/2N, again from Lemma 7.1, imply
+R−5n≤R−4n−1≤log 2N≤R+ 7n
+2 ≤R+ 4n.(49)
+Also log2N≥ 0, so ρ = max{0,R− 5n} ≤log2N. Since ρ≥R− 5n, Equation (49) gives
+log2N−ρ≤9n. Exponentiating provesA≤N≤2 9nA= 512 nA.
+Proposition 10.1(Bit complexity).The algorithm above is uniform and deterministic, and its
+running time and output length are polynomial in the input bit length.
+Proof. The elementary cases require only integer operations on the input. In the remaining case
+put τ = n +bmax + 1, so τ≥ 5. The parameters have polynomial numerical magnitude, not
+just polynomial bit length. Indeedp≤τ 2, K≤n≤τ ,2 K < 2p, L = 100τ 3, andA0≤ 10τ 2.
+Consequently
+M0 =p(K+L)(2 +A 0)≤1212τ 7,
+D0 =p(K+L+M 0)2≤1313 2τ 16,
+Nit =pD 0≤1313 2τ 18.
+(50)
+Here K +L≤ 101τ 3 and2 + A0≤ 12τ 2 give the first inequality, andK +L +M0≤ 1313τ 7
+gives the second. The exponent of each positive multiplicity is obtained from its binary length:
+⌊log2ke⌋= bitlen(k e)−1. No logarithm is evaluated numerically.
+The update preservesa(j)
+e ∈{ 0,...,D 0}, because every supergradient coordinate is integral.
+Thus every iterate has denominator dividingD0. On a noninitial dyadic interval the affine formula
+for ψ is( k− 1)t + 2−k, and on the interval next to zero it isKt. The intercept denominators
+therefore divide2K. Every degree or cut sum, and hencew(x(j)), has denominator dividingD0. A
+single common denominator for all trial objectives is
+Q=D 0 2K.(51)
+This denominator does not grow with the number of iterations or with changes of dyadic piece.
+The piece comparisons, objective comparisons, and the final floor can all be made by exact integer
+arithmetic.
+For an explicit bound on the operands,0≤w(x)≤non the box, and
+|f(x)|≤p(1 +L),|Φ(x)|≤p(1 +L) +nM 0, x∈[0,1] p.
+Together with Equation(50) and2 K < 2p, these bounds show that all objective numerators with
+denominatorQ have polynomial magnitude inτ. The supergradients, scaled capacities, and counters
+do as well. Their bit lengths are thereforeO(logτ).
+At any trial point, the cut oracle receives capacitiesa(j)
+e , not the original multiplicities. Their
+total is at mostpD0. After any sequence of contractions, each surviving capacity is a sum of original
+capacities between two disjoint vertex blocks; internal edges are discarded. Every original edge
+contributes to at most one surviving pair, so the same total bound holds throughout the recursion.
+By Lemma 9.1, each terminal-pair computation uses at mostpD0 unit augmentations. Lemma 9.2
+usesO(n)recursive calls, each withO(n2)terminal-pair computations. Dense residual path searches
+takeO(n 2)elementary operations. The entire optimization thus uses at most
+O
+(
+Nitn5(pD0 + 1)
+)
+=O(τ 41)
+30
+
+=== PDF PAGE 31 ===
+elementary graph and arithmetic operations, on integers ofO(logτ )bits. Standard integer arithmetic
+gives a polynomial bit bound.
+It remains to bound the length of the explicit integer output. Lemma 8.3 givesR≤f ∗. Since
+ψ(t)≤−tlog 2t≤ 1on[0 , 1], βe≤b max, and∑
+exe =n/2on P (Kn), we havef∗≤p +bmaxn/2.
+This upper bound is nonnegative, so the clamped exponent satisfies
+ρ= max{0,R−5n}≤max{0,R}≤max{0,f ∗}≤p+ bmaxn
+2 .(52)
+Writing2 ρ as a binary integer therefore takesO(n2 +nbmax + 1)bits and operations. The zero and
+exact elementary outputs also have polynomial length.
+For an explicit vertex list, bothn and bmax are bounded by the input bit length. The same
+conclusion holds whenn is given in binary and only positive pair records are listed. The coverage
+test in Step 1 takes polynomial time in the input bit length. If it does not return zero, every
+vertex appears in a record, son is at most twice the number of positive pair records. Thus the
+complete-pair allocation and the optimization are polynomial in this encoding as well.
+Theorem 1.2 and Proposition 10.1 give both the approximation guarantee and its uniform
+polynomial bit implementation. If an upper estimate is preferred,512 nA lies between N and
+512nN.
+A Alternative geometric and entropy arguments
+We give two other descriptions of supported face codimension: a laminar family of tight cuts,
+and a quotient-space formulation of contraction. Both recover the bound used in the main proof.
+We then retain the direct coefficient-three and coefficient-four covariance comparisons and their
+counting consequences. These comparisons use weaker dimension estimates; they do not require the
+finite-order entropy theorem.
+Throughout, G = (V,E )is a finite loopless labelled multigraph onn = 2m≥ 2vertices with a
+nonempty matching polytope, denoted byP =P (G). We useFx, T (x), andd(x) = dimT (x)from
+Lemma 2.3. Its direction-space description and Theorem 2.2 are the shared geometric preliminaries.
+Removing the zero coordinates of a mean preserves the dimension of its minimal face: coordinate
+restriction and zero extension are inverse affine maps on that face. We use this identification
+whenever we work only on supported edges.
+A.1 Uncrossing and a laminar rank bound
+This alternative proof uses the laminar uncrossing method for tight odd cuts, as in [24, full version,
+Lemma 2.2 and Appendix A]; compare also the tight-cut rank estimate in [1, Lemma 6.5]. We
+give the spanning argument and the tree count explicitly, retaining the dependence between two
+complementary children of the root.
+Recall thatχS =1 δ(S) and thatSx is the family of odd sets whose cuts are tight atx. Equation(7)
+identifies the supported face codimension with the rank of these cut vectors after zero coordinates
+are removed. We first choose a laminar spanning family, then bound its rank by a tree count.
+A family of sets islaminarif every two of its members are disjoint or one contains the other.
+Two setscrossif they intersect and neither contains the other.
+Lemma A.1(Laminar spanning family).Suppose x∈P (G)and xe> 0for every edge. There is a
+laminar familyL⊆S x whose cut vectors are linearly independent and span all the cut vectorsχS,
+S∈S x.
+31
+
+=== PDF PAGE 32 ===
+Proof.First letA,B∈S x cross, and put
+I=A∩B, D=A\B, D ′ =B\A, O=V\(A∪B).
+The first three regions are nonempty;O may be empty. If|I| is odd, then bothI and A∪B are
+odd, and the coordinatewise cut identity is
+χA +χB =χ I +χA∪B + 21E(D,D′).(53)
+Here E(D,D′)denotes the edges joining those two regions. Taking the dot product withx, the
+left side equals two, the first two terms on the right are at least one each, and the last term is
+nonnegative. Thus both new odd sets are tight andx(E(D,D′)) = 0. Since every coordinate ofx is
+positive, there are no edges inE(D,D′), so its indicator vector vanishes.
+If|I|is even, thenD,D ′ are odd and instead
+χA +χB =χ D +χD′ + 21E(I,O).(54)
+The same argument shows thatD,D′ are tight and that the last indicator vanishes. Both identities
+hold edge by edge, including for parallel edges. All replacement sets are nonempty and proper: in
+the first caseA∪B is odd and so cannot be the even setV, and in the second case the differences
+are nonempty proper subsets. In particular, ifA∪B =V, only the second case can occur. We have
+proved that in either case the two replacementsU,Wbelong toSx and satisfy
+χA +χB =χ U +χW.(55)
+Choose an inclusionwise maximal laminar subfamilyL ofSx with independent cut vectors, and
+let R be their span. Suppose a tight cut vector lies outsideR. Among the corresponding tight sets
+choose A crossing as few members ofL as possible. It crosses someB∈L , for otherwise it could be
+added to the family while preserving both laminarity and independence. UncrossA,B as above. At
+least one replacement vector lies outsideR, since otherwise Equation(55) and χB∈R would give
+χA∈R.
+Each replacement is laminar withB. Also, neither replacement can cross a memberC∈L
+that did not crossA. Indeed, such a setC is laminar with bothA and B. IfC containsA, then
+it meetsB, and laminarity forces it to containB as well: the other nesting direction would imply
+A⊆B . Thus C contains A∪B . If C⊆A , laminarity withB puts C inside I or D; it cannot
+containB, sinceB⊈A . Finally, ifC is disjoint fromA, its relation toB puts it insideD′ or O.
+These cases exhaust the possibilities. Every set amongI,A∪B,D,D ′ is laminar with each set in
+this classification.
+Consequently the replacement whose vector is outsideR crosses only previously crossed members
+ofL, and it no longer crossesB. This contradicts the minimal crossing count ofA. HenceL spans
+every tight cut vector.
+Laminar proof of Proposition 2.4.Take the laminar spanning family from Lemma A.1. Adjoin all
+singleton sets, if missing, and then adjoinV as a root. The resulting inclusion tree has2m singleton
+leaves. Each internal node is the disjoint union of its children, because all singletons are present.
+Every proper node has odd cardinality. A nonroot internal node therefore has an odd number of
+children, at least three. The root has an even numbercof children, at least two.
+Ifqis the number of nonroot internal nodes, the tree identity for the number of leaves gives
+2m−1 =
+∑
+Sinternal
+(
+#children ofS−1
+)
+≥(c−1) + 2q.
+32
+
+=== PDF PAGE 33 ===
+Hence the number of proper nodes is2m +q≤ 3m−c/ 2. Ifc≥ 4, their cut vectors have rank at
+most3 m− 2by this count. Ifc = 2, the two root children are complementary sets, and their cut
+vectors coincide. The rank is then at most the number of proper nodes minus one, again at most
+3m− 2. The original laminar spanning family is contained among these proper nodes. Equation(7)
+now proves the claim.
+A.2 The quotient-space contraction argument
+The main proof assembles compatible directions in the two contracted graphs. The same dimension
+count can instead be expressed as a map to the quotient spaces of child constraints. We include
+both the sharp estimate and the weaker forms used in the entropy comparisons below.
+Proposition A.2(Supported face codimension).For a loopless labelled multigraph onn = 2m≥ 2
+vertices andx∈P (G), putA ={e :xe> 0} and sA =|A|. ThensA−d (x)≤ 3m− 2. In particular,
+sA−d(x)≤2(n−2) (n≥4), s A−d(x) = 1 (n= 2).(56)
+HencesA−d (x)≤ 2n = 4m. For the empty graph,P (G)is a singleton in zero coordinates and the
+codimension is zero.
+Proof. IdentifyT (x)with a subspace Ux of RA. We prove the sharp estimate by induction on the
+even ordern. At order two, the supported matching polytope is a simplex, whose positive point has
+codimension one. Forn≥ 4, if no nontrivial odd cut is tight, only the degree equations constrain
+Ux. Thus its codimension is at mostn≤3n/2−2.
+Otherwise choose a tight nontrivial cutδ(S). Contract each side in turn as in the main geometric
+proof, obtaining xi ∈P (Gi), supported edge sets Ai ={e : (xi)e > 0}, and direction spaces
+Ui =T (xi)⊆R Ai. The restrictions are feasible by the odd-cut check in the proof of Theorem 2.2.
+The orders satisfy4≤n i<n and n1 +n2 =n + 2. LetC =A∩δ (S); this set is nonempty since
+x(C) = 1. Every label inCoccurs in bothA i.
+Letr i :R A→R Ai restrict coordinates, and define
+Q:R A−→(RA1/U1)⊕(R A2/U2),Q(u) = (r 1(u) +U 1,r 2(u) +U 2).(57)
+Foru∈kerQ , both restrictions are child face directions. Choose a common positive radius such
+that xi +tri(u)∈P (Gi)in both signs oft. The perturbed means agree on every cut coordinate.
+Lemma 2.1 glues them to givex +tu∈P (G), so kerQ⊆U x. In particular, all tight parent cuts
+are preserved, including those crossingS: their nonnegative slacks cannot change in opposite signs
+under these two feasible perturbations.
+There is one dependence between the two quotient requirements. The cut-sum functionals
+ℓi :R Ai/Ui−→R, ℓ i(z+U i) =
+∑
+e∈C
+ze
+are well-defined because every child direction preserves the degree of the contracted vertex. Each is
+nonzero, as the class of a unit vector on any cut label has value one. For everyu∈RA,
+ℓ1(r1(u) +U 1) =
+∑
+e∈C
+ue =ℓ 2(r2(u) +U 2).
+Thus the image ofQ lies in the kernel of the nonzero functional(v1,v 2)↦→ℓ1(v1)−ℓ 2(v2). This
+kernel has codimension one in the full quotient target. Rank–nullity and induction now give
+sA−d(x) = codimU x≤codim kerQ= rankQ
+≤codimU 1 + codimU 2−1
+≤(3n 1/2−2) + (3n 2/2−2)−1 = 3n/2−2.
+33
+
+=== PDF PAGE 34 ===
+Forn≥ 4, this is at most2(n− 2). The order-two simplex and the empty graph give the remaining
+assertions.
+A.3 The exact fractional residual cases
+For a general pointx∈P(G), put
+Ef(x) ={e∈E: 0<x e<1}.
+Let Vf(x)be the set of vertices incident to these fractional edges, and putsf =|Vf(x)|. The
+following consequence isolates the coordinates needed for the entropy estimate.
+Corollary A.3(Fractional coordinates).For everyx∈P(G), the integers f is even, and
+d(x)≥
+
+
+
+|Ef(x)|−2(s f−2), s f≥4,
+|Ef(x)|−1, s f = 2,
+0, s f = 0,
+∑
+e∈Ef (x)
+xe = sf
+2 .(58)
+Proof. An edge with value one exhausts the degree equation at both its endpoints, so neither
+endpoint meets a fractional edge. Conversely, at a vertex outsideVf(x), all incident coordinates are
+zero or one and sum to one. Exactly one of those edges has value one. Thus the vertices outside
+Vf(x)are covered by disjoint fixed edges, andsf is even.
+Let H be the graph with vertex setVf(x)and edge set Ef(x), and let¯xbe the restriction of
+x to Ef(x). A matching law with meanx uses every value-one edge and no value-zero edge with
+probability one. Deleting the fixed edges therefore gives a perfect matching law onH with mean ¯x,
+whose coordinates are all positive. Conversely, adjoining the fixed edges to any perfect matching of
+H gives a perfect matching ofG. This affine extension ofP (H)into P (G)sends ¯xto x, and its
+linear part injects the two-sided direction space at¯xintoT(x).
+Ifs f≥4, Proposition A.2 now gives
+d(x)≥dimT(¯x)≥|E f(x)|−2(s f−2).
+If sf = 2, the residual graph consists ofk =|Ef(x)|≥ 2distinguished parallel edges. Its polytope is
+the simplex{z≥ 0 : ∑
+eze = 1}, and the positive point¯xhas direction dimensionk− 1. Hence
+d(x)≥k− 1 =|Ef(x)|− 1. Ifsf = 0, the point is a matching vector and the dimension inequality
+is immediate; the minimal face is the singleton consisting of that matching vector.
+Finally, each vertex ofVf(x)has total fractional incident value one. Summing these degree
+equations counts each fractional edge twice, giving the second identity in Equation (58).
+A.4 The coefficient-three and coefficient-four covariance proofs
+The coarser dimension estimates above already imply the following entropy bounds. We use
+the continuity and face-law results from Lemmas 3.1 and 3.2, and the entropy comparison in
+Equation (13). The calculation keeps fixed coordinates in the ambient space and takes derivatives
+only on the fractional coordinates. It therefore displays directly how the exact residual cases
+distinguish coefficients three and four.
+34
+
+=== PDF PAGE 35 ===
+Theorem A.4(Separable entropy bounds by covariance).Let G be a finite loopless labelled
+multigraph of even ordern = 2m, with a nonempty perfect-matching family. With natural logarithms
+and continuous endpoint conventions, define
+Jc(x) =F(x)−cB(x) =
+∑
+e∈E
+[
+−xe lnxe +c(1−x e) ln(1−x e)
+]
+.
+For eachc∈{3,4}and everyx∈P(G),
+Jc(x)≤H(x)≤F(x) +B(x).(59)
+Forn= 0, all displayed quantities are zero.
+Proof. The empty graph gives the stated trivial case. Assumen≥ 2. For the upper bound, regard
+a matching law with meanx as a law on{0, 1}E, giving zero probability to nonmatching vectors.
+Compare it with independent Bernoulli coordinates of respective meansxe. This product law is
+positive wherever the matching law is positive: a coordinate with mean zero or one is necessarily
+fixed at that value under both laws. Equation (13) now gives the upper bound.
+For the lower bound, fix eitherc = 3or c = 4. Lemma 3.1 and continuity ofJc imply that
+H−J c attains its minimum on the compact setP. At an integral mean the only possible law is the
+point mass at that matching vector, soH=Jc = 0. It suffices to rule out a fractional minimizer.
+Suppose, then, thatx is such a minimizer. Take its positive maximizing lawp and a parameter
+θfrom Lemma 3.2. For anyv∈R E andt∈R, define
+pa(t) = exp((θ+tv)·a)∑
+b∈Ax exp((θ+tv)·b) , x(t) =
+∑
+a∈Ax
+pa(t)a.
+The same lemma shows thatx(t)stays in the relative interior ofFx and
+H(x(t)) = Φ(t)−(θ+tv)·x(t),Φ(t) = ln
+∑
+a∈Ax
+exp((θ+tv)·a).(60)
+Thus we may differentiate along these curves without assuming differentiability ofHacross faces.
+Let
+C=
+∑
+a∈Ax
+pa(a−x)(a−x) T
+be the covariance matrix att = 0. Differentiating the finite sums givesp′
+a(0) =pav· (a−x ), hence
+x′(0) =Cv. For anyw∈R E,
+wTCw=
+∑
+a∈Ax
+pa
+(
+w·(a−x)
+)2.
+Allp a are positive, andspan{a−x:a∈A x}=T(x). SinceCis symmetric, it follows that
+kerC=T(x) ⊥,imC=T(x),rankC=d(x).(61)
+At a fractional mean, some coordinate has varianceCee = xe(1−x e) > 0, so d(x)≥ 1. Also
+x′′(0)∈T(x), because the whole curve lies inaffF x =x+T(x).
+On the fractional coordinates, write
+ge =−lnx e−cln(1−x e)−(c+ 1), D ee =− 1
+xe
++ c
+1−x e
+;
+35
+
+=== PDF PAGE 36 ===
+let D be diagonal, and setge = Dee = 0on the other coordinates. These entries represent the
+derivatives ofJc restricted to the face. Indeed, a coordinate withxe∈{ 0, 1} has that value on every
+face atom, so its contribution toJc(x(t))is constantly zero. A fractional coordinate takes both bit
+values among the face atoms; positivity ofp(t)keeps0 <x e(t)< 1for every finitet. Consequently
+the usual chain rule on fractional coordinates gives all derivatives ofJc(x(t)).
+FromΦ′(t) =v·x(t)and Equation (60), we obtain
+d
+dtH(x(t)) =−(θ+tv)·x ′(t).
+Both signs oftare permitted. The minimum property att= 0therefore gives
+(θ+g)·Cv= 0for everyv∈R E.
+By Equation(61), θ +g is orthogonal toT (x), and in particular(θ +g)·x′′(0) = 0. The second
+derivative at the minimum is accordingly
+0≤ d2
+dt2
+(
+H(x(t))−J c(x(t))
+)
+⏐⏐⏐⏐⏐
+t=0
+=−v TCv−(θ+g)·x ′′(0)−(Cv) TD(Cv)
+=−v TCv−(Cv) TD(Cv).
+(62)
+Let u1,...,u d be orthonormal eigenvectors for the positive eigenvaluesλ1,...,λ d of C, where
+d = d(x). Substituting v = ui in Equation (62) and dividing byλi > 0gives λiuT
+i (−D)ui≥ 1.
+Summing and usingC= ∑d
+i=1λiuiuT
+i , we find
+d(x)≤
+d∑
+i=1
+λiuT
+i (−D)ui = tr(C(−D)).(63)
+Only the spectral decomposition ofC is used here; no inverse ofC, or simultaneous diagonalization
+ofCandD, is needed.
+Each matching coordinate is Boolean, soCee =xe(1−xe). Writingsf for the number of vertices
+incident withEf(x), Corollary A.3 gives
+tr(C(−D)) =
+∑
+e∈Ef (x)
+xe(1−x e)
+( 1
+xe
+− c
+1−x e
+)
+=|E f(x)|−(c+ 1)
+∑
+e∈Ef (x)
+xe =|E f(x)|− c+ 1
+2 sf.
+(64)
+Forc= 4, the weaker consequenced(x)≥|E f(x)|−2s f of the residual dimension bound suffices:
+tr(C(−D)) =|E f(x)|− 5
+2sf <|E f(x)|−2s f≤d(x),
+because a fractional point hassf > 0. Forc = 3, the trace is|Ef(x)|− 2sf, so we use the exact
+residual cases. Ifsf≥4, then
+d(x)≥|E f(x)|−2(s f−2) =|E f(x)|−2s f + 4>tr(C(−D)).
+Ifs f = 2, then
+d(x)≥|E f(x)|−1>|E f(x)|−4 = tr(C(−D)).
+These exhaust the positive even values ofsf. For either coefficient, the result contradicts Equa-
+tion (63). Thus no fractional minimizer exists; the minimum is attained at an integral mean and
+equals zero. This proves the lower bound for each coefficient by its own covariance contradiction.
+36
+
+=== PDF PAGE 37 ===
+A.5 Two other entropy comparisons
+The covariance comparisons just proved give separable counting estimates and a short scalar proof
+of the nonlinear bound. We give those deductions here before the distinct normalized-covariance
+proof in Appendix B. As in Section 4,N(G)denotes the number of labelled perfect matchings, and
+B(x)≤mby Equation (21).
+Corollary A.5(Separable and nonlinear consequences).For every x∈P (G)with |V (G)| =n =
+2m>0,
+F(x)−4B(x)≤F(x)−3B(x)≤H(x)≤F(x) +B(x),(65)
+F(x)−H(x)≤min{F(x),3m}≤8m
+(
+1−e −F(x)/m)
+.(66)
+Furthermore,
+lnN(G)≤max
+x∈P(G)
+[F(x) +B(x)]≤lnN(G) + 2n≤lnN(G) + 5
+2n.(67)
+Proof. Theorem A.4 provesF− 3B≤H≤F +B by the contraction and covariance route; its
+coefficient-four proof givesF− 4B≤H as well. SinceB≥ 0, the first two terms are ordered as
+displayed. Nonnegativity of entropy andB≤m giveF−H≤min{F, 3m}. Putt =F (x)/m≥ 0
+andf(t) = 8(1−e −t). On[0,ln 2], one hasf(0) = 0andf ′(t) = 8e−t≥4≥1, hencef(t)≥t. For
+t≥ln 2, one hasf(t)≥ 4≥ 3. Thus min{t, 3}≤f (t), proving the nonlinear inequality including
+t= 0. This deduction is independent of the normalized inverse-covariance proof of Theorem B.1.
+For the optimized bound,H≤lnN and( F +B)− (F− 3B) = 4B≤ 4m = 2n give the upper
+error2 n. UsingF− 4B instead gives the separate original comparison(F +B)− (F− 4B) = 5B≤
+5m = 5n/2. The uniform matching law supplies the lower bound exactly as in Corollary 4.2. The
+sharper error3m−2in that corollary improves both comparisons on the same domain.
+A.6 Structural estimates from the other entropy bounds
+Fork≥1, putb 1 = 1andb k =k(1−1/k) 3(k−1) fork≥2.
+Corollary A.6(Coefficient-three and nonlinear counts).A loopless labelled multigraphG on2m> 0
+vertices containingk≥1pairwise edge-disjoint perfect matchings satisfies
+N(G)≥b m
+k ≥(e−3k)m,(68)
+N(G)≥
+[
+kexp{−8(1−1/k)}
+]m≥(e−8k)m.(69)
+The same two conclusions hold whenGisk-regular and every odd cut has at leastkedges.
+Proof. For the selected matching mixture in Theorem 4.3,F (x) =mlnk andx vanishes outside their
+labelled union. Fork≥ 2, F (x)− 3B(x) =mlnk + 3m(k− 1) ln(1− 1/k). UsingH(x)≤lnN (G)
+and the coefficient-three inequality in Corollary A.5, then exponentiating, gives the first bound.
+The inequality(k− 1) ln(1− 1/k)≥− 1from the proof of Theorem 4.3 gives its coarse form. At
+k= 1the selected matching givesN(G)≥1 =b m
+1 .
+At this same mean, the nonlinear inequality giveslnN (G)≥mlnk− 8m(1− 1/k), including
+k = 1. Exponentiating and using1− 1/k≤ 1proves the second line. For a regular graph satisfying
+the odd-cut hypothesis, Corollary 4.4 proves that the uniform vector is feasible; the same evaluations
+then prove both statements without requiring a partition of the edges into perfect matchings. Its
+cut-parity argument also proves the(k−1)-edge-connected even-order case.
+37
+
+=== PDF PAGE 38 ===
+Fork≥ 2, the finite-order bound of Theorem 4.3 implies the coefficient-three bound directly,
+since0 < 1− 1/k <1and2( m− 1)(k− 1)≤ 3m(k− 1). The coefficient-three logarithmic loss is at
+most3, while8(1 − 1/k)≥ 4for k≥ 2, so it also dominates the second displayed base. We have
+nevertheless derived that base from the nonlinear inequality to retain the distinct implication. At
+k= 1, the refined boundsbm
+1 and[kexp{−8(1−1/k)}] m both equal one.
+Corollary A.7(An exact partition of the ambient edges).If the entire edge set of a loopless labelled
+graph on2m>0vertices is partitioned byk≥1perfect matchings, then
+N(G)≥
+[
+kexp{−8(1−1/k)}
+]m≥(e−8k)m.
+When k = 1the count is exactly one. Ifk = 0and the order is positive, the graph is edgeless and its
+count is zero; only the coarse bound is then asserted. On the empty vertex set there is one empty
+matching.
+Proof. The partition provides the hypothesis of Corollary A.6; its uniform law has marginal1/k on
+every ambient edge. Thus the nonlinear proof just given applies verbatim. Fork = 1the entire
+graph is a single perfect matching. Fork = 0it has no edges. The empty case follows directly from
+the definition of a matching and does not use expressions containing1/m.
+The exact-partition hypothesis in the last corollary is stronger than containing a selected union.
+In particular, a graph containing one perfect matching may have more than one, whereas the exact
+one-matching union has count one.
+B A normalized-covariance proof of the nonlinear entropy bound
+We give a direct proof of the entropy-dependent estimate using the supported-face codimension
+bound from Proposition A.2. The normalization below makes the marginal-entropy Hessian equal
+to minus the identity, while the covariance trace has an exact combinatorial value. These two
+identities lead to a contradiction at any positive maximum of the proposed entropy defect. The
+scalar deduction in Corollary A.5 is a separate proof of the same bound.
+Throughout this appendix,G = (V,E )is a finite loopless multigraph on2m> 0vertices with at
+least one perfect matching. Parallel edges have distinct labels. WriteM for its perfect matchings,
+a(M) =1 M, andP =P (G) = conv{a(M) : M∈M} . Recall that, with natural logarithms and
+0 ln 0 = 0,
+F(y) =−
+∑
+e∈E
+ye lnye, H(y) = max
+pa probability law onM∑
+MpMa(M)=y
+(
+−
+∑
+M∈M
+pM lnpM
+)
+.
+To distinguish entropy of a law from its maximum at a prescribed mean, write Ent(p) =
+−∑
+MpM lnpM.
+Theorem B.1(Nonlinear entropy bound).For everyy∈P(G),
+F(y)−H(y)≤8m
+(
+1−e −F(y)/m)
+.(70)
+The attainment and continuity ofH on the whole polytope follow from Lemma 3.1. In particular,
+a continuous defect has a maximum even when that maximum lies on a proper face. The proof
+below combines the codimension bound with that lemma, the face description, and the exponential
+law of Lemma 3.2. These inputs are independent of Theorem 1.1.
+38
+
+=== PDF PAGE 39 ===
+B.1 The face at a hypothetical positive maximum
+Proof of Theorem B.1.Define
+f(t) = 8(1−e −t),Ψ(y) =F(y)−H(y)−mf
+(
+F(y)/m
+)
+.
+Suppose thatΨis positive somewhere. By Lemma 3.1, it has a positive maximum at somex∈P .
+LetF x be the minimal face containingx, and put
+A={e∈E:x e>0}, s=|A|, d= dimF x, t=F(x)/m.
+Here s counts supportededges. Each matching has exactlym edges, so∑
+exe =m and0 ≤x e≤ 1.
+Concavity of−ulnugives
+0≤t≤ln(s/m).
+On[0,ln 8], we havef(0) = 0and f′(t)≥ 1, sof(t)≥t . SinceH(x)≥ 0, positivity ofΨ(x)therefore
+forcest>ln 8, and hences>8m. The supported-face estimate of Proposition A.2 now yields
+d≥s−4m> s
+2 >0.(71)
+Thus all integral and low-entropy cases have already been excluded before any covariance inverse is
+introduced.
+Let
+Mx ={M∈M:a(M)∈F x}.
+Every law whose mean is inFx is supported onMx. Indeed, each inequality active on this
+face has nonnegative slack at every matching vector. Expected slack zero forces every atom of
+positive probability to satisfy its equality. This applies to both zero coordinates and tight odd cuts.
+ConsequentlyF x = conv{a(M) :M∈M x}.
+Discard the coordinates outsideAand set
+D= diag(x e :e∈A),T=D −1/2T(x) = span
+(
+D−1/2(Fx−x)
+)
+⊆R A.(72)
+All diagonal entries ofDare positive. By Lemma 2.3,xis relatively interior toFx. Therefore
+z=D −1/2(y−x), y=x+D 1/2z
+identifies a relative neighborhood ofx in the face with a neighborhood of zero in thed-dimensional
+Euclidean spaceT. Define
+bM =D−1/2(a(M)−x), M∈M x.
+Their convex hull contains a neighborhood of zero inT . All gradients, Hessians, operator inverses,
+and operator traces in the remainder of the proof are taken onT . Coordinates withxe = 1have
+not been discarded: their centered entries and all tangent directions are zero, so they cause no
+singularity on this space.
+39
+
+=== PDF PAGE 40 ===
+B.2 A finite exponential family on the normalized tangent space
+We now express the face law of Lemma 3.2 in the normalized coordinates. Letp be the positive
+maximizing law atx, and write its parameter asθ∈R A, restricting to supported coordinates. Since
+a(M) =x+D 1/2bM,
+θ·a(M) =θ·x+ (D 1/2θ)·b M.
+EverybM lies inT . Thus only the orthogonal projectionλ = projT (D1/2θ)affects the normalized
+law. Define
+Φ(η) = ln
+∑
+M∈Mx
+eη·bM (η∈T).
+The law and its normalized mean then satisfy
+pM = exp
+(
+λ·b M−Φ(λ)
+)
+,∇Φ(λ) = 0.(73)
+The last equality is the zero mean ofbM under p. The parameter is finite because the original law
+is taken on its minimal face.
+For anyη∈T, put
+pη,M =e η·bM−Φ(η), z(η) =
+∑
+M
+pη,MbM, y(η) =x+D 1/2z(η).
+This law has exponential parameterD−1/2η in the original coordinates, since the centering term is
+constant across atoms. Lemma 3.2 therefore shows that it maximizes entropy at its own meany(η)
+and remains on the same minimal face. Differentiating the finite sum definingΦyields
+z(η) =∇Φ(η),
+H(y(η)) = Φ(η)−η·z(η),
+C(η) :=∇ 2Φ(η) = Covpη(bM).
+(74)
+EachC(η)is positive definite onT . Indeed, zero variance in a directionu∈T would makeu·b M
+constant on all face atoms becausepη is positive. The affine span of thebM isT , so this forces
+u= 0. WriteC=C(λ).
+B.3 The second variation and its trace
+We have a positive definite covariance on a space of dimensiond>s/ 2. We now compare its inverse
+with the marginal-entropy Hessian. This comparison uses the smooth exponential parameter; it
+does not require differentiability ofHacross faces.
+Set
+ˆF(z) =F(x+D 1/2z), L(z) = ˆF(z)−mf
+(ˆF(z)/m
+)
+.
+These functions are smooth near zero onT . In the retained coordinates, the Hessian ofF at x is
+−D−1. The change of coordinates in Equation (72) therefore gives
+∇2ˆF(0) =−I T.(75)
+By Equation (74), the smooth function
+J(η) =L(z(η))−Φ(η) +η·z(η) = Ψ(y(η))
+40
+
+=== PDF PAGE 41 ===
+has a local maximum atλ. Its gradient is
+∇J(η) =C(η)
+(
+∇L(z(η)) +η
+)
+.
+Since C is invertible andz(λ) = 0, stationarity implies∇L(0) +λ = 0. Differentiating once more at
+λ, the derivative ofC(η)is multiplied by this zero vector. Thus the second-derivative test gives
+∇2J(λ) =C∇ 2L(0)C+C⪯0.
+Congruence byC−1, as an operator onT, yields
+∇2L(0) +C−1⪯0.(76)
+Under p =pλ, the normalized vectorbM has mean zero. For each edgee, its indicator in the
+random matching has variancexe(1−x e), so
+trT C=E p∥bM∥2
+2 =
+∑
+e∈A
+xe(1−x e)
+xe
+=s−m.(77)
+The trace onT equals the ambient trace because all the vectorsbM lie inT . For u > 0, the
+inequalityu−1≥ 2−u follows from(u− 1)2/u≥ 0. Applying it to thed positive eigenvalues ofC
+gives
+trT (−IT +C−1)≥d−tr T C
+=d−s+m≥−3m. (78)
+The last inequality is again the supported-face codimension bound.
+It remains to include the nonlinear correction. Writingg=∇ˆF(0), the full chain rule is
+∇2
+[
+mf
+(ˆF(z)/m
+)]⏐⏐⏐
+z=0
+=−f′(t)IT + f′′(t)
+m ggT.(79)
+In particular, the rank-one term has tracef′′(t)∥g∥2
+2/m≤ 0. Since t≤ln (s/m), we also have
+f′(t) = 8e−t≥8m/s. Combining Equations (71), (78), and (79), we obtain
+trT
+(
+∇2L(0) +C−1)
+≥−3m+f ′(t)d
+≥−3m+ 8md
+s >m>0.
+(80)
+This contradicts the negative semidefiniteness in Equation(76). HenceΨ( y)≤ 0throughout P,
+proving Theorem B.1.
+The theorem assumesm> 0because its formula divides bym. On the empty vertex set, the
+unique empty matching hasF =H = 0; its entropy statement is handled separately without that
+quotient. If a nonempty graph has no perfect matching, there are no means inP (G)to which the
+theorem applies.
+41
+
+=== PDF PAGE 42 ===
+C A convention allowing singleton loops
+Suppose a loop is allowed to cover its single incident vertex. Letℓi be the number of distinguished
+loop choices at vertexi, and retain the multiplicitiesk{i,j} for pairs of distinct vertices. All these
+integers are given in binary. A matching under this convention covers every vertex exactly once by
+either a chosen loop or an ordinary pair. WriteNj for the number of such matchings using exactly
+jloops, andN loop =∑n
+j=0Nj.
+Proposition C.1.There is one deterministic algorithm which, given a graph onn vertices with
+nonnegative binary integer pair and singleton-loop multiplicities, returns a nonnegative rational
+numberA loop such that
+Nloop
+218n ≤A loop≤N loop.
+It returns zero exactly whenNloop = 0. Its running time and output length are polynomial in the
+input bit length, including when the input givesn in binary and lists only the positive pair and loop
+records.
+Proof. First count the distinct vertices occurring in a positive ordinary pair or having a positive
+loop count. If any of then vertices is missing, it cannot be covered, so return zero. This test uses
+only the listed records, without enumerating the vertex set. Otherwise, if there arer positive pair
+records ands positive loop records, thenn≤ 2r +s. Thus the constructions indexed by vertices
+below have size polynomial in the input length, even for a compact binary vertex count.
+For eachj∈{ 0,...,n} , construct an ordinary loopless graphGj by adjoiningj labeled new
+vertices. Keep all original edges between distinct vertices. There are no edges among the new
+vertices, and the pair joining original vertexi to any new vertex has multiplicityℓi. Label these
+parallel edges by the corresponding original loop choices.
+Every perfect matching ofGj pairs the new vertices toj distinct original vertices. Replace those
+pairs by their labeled loop choices and retain the other edges; this gives a matching counted byNj.
+Conversely, each matching counted byNj has exactlyj!lifts, one for each bijection from the new
+vertices to itsj loop-covered vertices. Edge labels preserve the loop choices independently of this
+bijection. Thus, includingj= 0,
+N(Gj) =j!N j.(81)
+Run the ordinary algorithm on eachGj, obtaining a nonnegative integerAj, and return
+Aloop =
+n∑
+j=0
+Aj
+j! .(82)
+Parity is tested on each transformed ordern +j, as part of that ordinary algorithm. There is no
+initial rejection for oddn: a single vertex with a loop is already a positive-count example. The
+parity ofn +j equals that of the numbern−j of original vertices that remain to be paired by
+ordinary edges.
+By Theorem 1.2 and Equation (81),
+Nj
+512n+j≤ Aj
+j! ≤N j.
+Since n +j≤ 2n, summing these inequalities proves the claimed factor5122n = 218n. All terms are
+nonnegative, andAj = 0exactly whenN j = 0, so zero recognition is also exact.
+The construction retains compressed multiplicity records:Gj has at mostr +js positive pair
+records. No parallel-edge list is expanded. Each transformed graph has at most2n vertices and
+42
+
+=== PDF PAGE 43 ===
+uses only multiplicities already present in the input. Ifbmax is the largest binary exponent of any
+positive pair or loop multiplicity, takingbmax = 0when all multiplicities are zero, Proposition 10.1
+bounds each call and givesO(n2 +nbmax + 1)bits for Aj. There are onlyn + 1calls. The rational
+sum can be represented exactly with the common denominatorn!:
+Aloop =
+n∑
+j=0
+Aj
+n!
+j!
+n! .(83)
+The denominator hasO(nlog 2(n+1)+1)bits, and the numerator hasO(n2+nbmax+nlog 2(n+1)+1)
+bits. Factorials, exact integer divisions, products, and the sum therefore take polynomial bit time.
+The casen = 0uses the single term j = 0, with0! = 1and A0 = 1, so the empty matching is
+counted exactly.
+References
+[1] Ahmad Abdi, Gérard Cornuéjols, Daniel Dadush, and Mahsa Dalirrooyfard. Lower bounds for
+cube-ideal set-systems.Proceedings of the London Mathematical Society, 133(2):e70199, 2026.
+doi: 10.1112/plms.70199. URL https://londmathsoc.onlinelibrary.wiley.com/doi/10.1
+112/plms.70199.
+[2] Nima Anari, Shayan Oveis Gharan, and Cynthia Vinzant. Log-concave polynomials, entropy,
+and a deterministic approximation algorithm for counting bases of matroids. In2018 IEEE
+59th Annual Symposium on Foundations of Computer Science (FOCS), pages 35–46. IEEE,
+2018. doi: 10.1109/FOCS.2018.00013. URL https://ieee-focs.org/FOCS-2018-Papers/pd
+fs/59f035.pdf.
+[3] Alexander Barvinok. Polynomial time algorithms to approximate permanents and mixed
+discriminants within a simply exponential factor.Random Structures & Algorithms, 14(1):
+29–61, 1999. doi: 10.1002/(SICI)1098-2418(1999010)14:1<29::AID-RSA2>3.0.CO;2-X. URL
+https://sites.lsa.umich.edu/barvinok/wp-content/uploads/sites/1434/2025/05/pe
+rmanent.pdf. Section locator refers to the author preprint.
+[4] Alexander Barvinok. Approximating permanents and hafnians.Discrete Analysis, 2017(2):
+1–34, 2017. doi: 10.19086/da.1244. URLhttps://discreteanalysisjournal.com/article/
+1244-approximating-permanents-and-hafnians. Theorem locator refers to the final arXiv
+version 1601.07518v5, 13 January 2017.
+[5] Fan R. K. Chung, Ronald L. Graham, Peter Frankl, and James B. Shearer. Some intersection
+theorems for ordered sets and graphs.Journal of Combinatorial Theory, Series A, 43(1):23–37,
+1986. doi: 10.1016/0097-3165(86)90019-1. URLhttps://www.renyi.hu/~pfrankl/j32.pdf.
+[6] Marek Cygan, Marcin Pilipczuk, and Riste Škrekovski. A bound on the number of perfect
+matchings in Klee-graphs.Discrete Mathematics & Theoretical Computer Science, 15(1):37–52,
+January 2013. ISSN 1365-8050. doi: 10.46298/dmtcs.633. URLhttps://dmtcs.episciences.
+org/633.
+[7] Dingding Dong and Vishesh Jain. A deterministic(1 +ε)n approximation for the permanent of
+a nonnegative matrix, 2026. URLhttps://arxiv.org/abs/2609.11049v1. Version 1.
+43
+
+=== PDF PAGE 44 ===
+[8] Farzam Ebrahimnejad, Ansh Nagda, and Shayan Oveis Gharan. Counting and sampling perfect
+matchings in regular expanding non-bipartite graphs. In13th Innovations in Theoretical
+Computer Science Conference, volume 215 ofLeibniz International Proceedings in Informatics,
+pages 61:1–61:12, 2022. doi: 10.4230/LIPIcs.ITCS.2022.61. URLhttps://arxiv.org/abs/21
+03.08683v1. Conjecture locator refers to arXiv:2103.08683v1, 15 March 2021.
+[9] Jack Edmonds. Maximum matching and a polyhedron with 0,1-vertices.Journal of Research of
+the National Bureau of Standards, Section B, 69B(1–2):125–130, 1965. doi: 10.6028/jres.069B.
+013. URLhttps://nvlpubs.nist.gov/nistpubs/jres/69B/jresv69Bn1-2p125_A1b.pdf.
+[10] Jack Edmonds, William R. Pulleyblank, and László Lovász. Brick decompositions and the
+matching rank of graphs.Combinatorica, 2(3):247–274, 1982. doi: 10.1007/BF02579233. URL
+https://doi.org/10.1007/BF02579233.
+[11] Louis Esperet, František Kardoš, Andrew D. King, Daniel Kráľ, and Serguei Norine. Exponen-
+tially many perfect matchings in cubic graphs.Advances in Mathematics, 227(4):1646–1664,
+2011. doi: 10.1016/j.aim.2011.03.015. URLhttps://arxiv.org/abs/1012.2878v2. Numbered
+statements refer to arXiv:1012.2878v2, 5 September 2011, whose exposition differs from the
+journal version.
+[12] L. R. Ford, Jr. and D. R. Fulkerson. A simple algorithm for finding maximal network flows
+and an application to the Hitchcock problem.Canadian Journal of Mathematics, 9:210–218,
+1957. doi: 10.4153/CJM-1957-024-0. URLhttps://doi.org/10.4153/CJM-1957-024-0.
+[13] Leonid Gurvits. Unleashing the power of Schrijver’s permanental inequality with the help of
+the Bethe approximation. ECCC Report TR11-169, Electronic Colloquium on Computational
+Complexity, 2011. URL https://eccc.weizmann.ac.il/report/2011/169/ . Expanded
+version: arXiv:1106.2844v11 (20 June 2012).
+[14] Edwin T. Jaynes. Information theory and statistical mechanics.Physical Review, 106(4):620–630,
+1957. doi: 10.1103/PhysRev.106.620. URLhttps://doi.org/10.1103/PhysRev.106.620.
+[15] Mark Jerrum, Alistair Sinclair, and Eric Vigoda. A polynomial-time approximation algorithm
+for the permanent of a matrix with nonnegative entries.Journal of the ACM, 51(4):671–697,
+2004. doi: 10.1145/1008731.1008738. URLhttps://doi.org/10.1145/1008731.1008738.
+[16] Sergei Kudria, Jason Luo, and Mahbod Majid. Subexponential approximation of the permanent
+in deterministic polynomial time, 2026. URLhttps://arxiv.org/abs/2609.10516v1. Version
+1.
+[17] Nathan Linial, Alex Samorodnitsky, and Avi Wigderson. A deterministic strongly polynomial
+algorithm for matrix scaling and approximate permanents.Combinatorica, 20(4):545–568, 2000.
+doi: 10.1007/s004930070007. URL https://www.math.ias.edu/~avi/PUBLICATIONS/MYPAPE
+RS/LSW98/lsw00.pdf. Theorem locator refers to the author version.
+[18] Denis Naddef. Rank of maximum matchings in a graph.Mathematical Programming, 22:52–70,
+1982. doi: 10.1007/BF01581025. URLhttps://doi.org/10.1007/BF01581025.
+[19] OpenAI. A Fully Polynomial Randomized Approximation Scheme for Perfect Matchings
+in General Graphs. OpenAI Math Release preprint OAI:A-Fully-Polynomial-Randomized-
+Approximation-Scheme-for-Perfect-Matchings-in-General-Graphs-September-23-2026, 2026.
+44
+
+=== PDF PAGE 45 ===
+[20] Manfred W. Padberg and M. R. Rao. Odd minimum cut-sets andb-matchings.Mathematics
+of Operations Research, 7(1):67–80, 1982. doi: 10.1287/moor.7.1.67. URLhttps://pubsonli
+ne.informs.org/doi/10.1287/moor.7.1.67.
+[21] B. T. Polyak. A general method for solving extremal problems.Doklady Akademii Nauk SSSR,
+174(1):33–36, 1967. URL https://www.mathnet.ru/eng/dan33049 . In Russian; method
+citation refers to Equation (1).
+[22] Alexander Schrijver. Counting 1-factors in regular bipartite graphs.Journal of Combinatorial
+Theory, Series B, 72(1):122–135, January 1998. doi: 10.1006/jctb.1997.1798. URL https:
+//doi.org/10.1006/jctb.1997.1798.
+[23] Mohit Singh and Nisheeth K. Vishnoi. Entropy, optimization and counting. InProceedings of
+the Forty-Sixth Annual ACM Symposium on Theory of Computing, pages 50–59. ACM, 2014.
+doi: 10.1145/2591796.2591803. URL https://arxiv.org/abs/1304.8108v1 . Full version
+arXiv:1304.8108v1, 2013.
+[24] Ola Svensson and Jakub Tarnawski. The matching problem in general graphs is in Quasi-NC.
+In2017 IEEE 58th Annual Symposium on Foundations of Computer Science (FOCS), pages
+696–707. IEEE, 2017. doi: 10.1109/FOCS.2017.70. URLhttps://doi.org/10.1109/FOCS.2
+017.70. Full version: arXiv:1704.01929v2, 4 September 2017.
+[25] Leslie G. Valiant. The complexity of computing the permanent.Theoretical Computer Science,
+8(2):189–201, 1979. doi: 10.1016/0304-3975(79)90044-6. URL https://www.cs.bu.edu/facu
+lty/gacs/courses/cs535/papers/Valiant_permanent.pdf.
+[26] Martin J. Wainwright and Michael I. Jordan. Graphical models, exponential families, and
+variational inference.Foundations and Trends in Machine Learning, 1(1–2):1–305, 2008. doi:
+10.1561/2200000001. URLhttps://doi.org/10.1561/2200000001.
+[27] Zihong Yi. Diffuse Gaussian truncation for deterministic approximate counting, 2026. URL
+https://arxiv.org/abs/2609.04079v1. Version 1.
+45

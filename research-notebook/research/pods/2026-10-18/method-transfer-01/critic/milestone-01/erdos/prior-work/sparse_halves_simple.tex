@@ -1,0 +1,844 @@
+\documentclass[11pt,reqno]{amsart}
+
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage[margin=1.15in]{geometry}
+\usepackage[colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue]{hyperref}
+
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+
+\newcommand{\opt}{\beta}
+\newcommand{\Nb}{N}
+\newcommand{\optf}{\beta^{*}}
+\newcommand{\dens}{\rho}
+
+\begin{document}
+
+\title[Sparse halves in triangle-free graphs]
+{Sparse halves in triangle-free graphs: a bound of $131/5000$}
+
+\author{Amir Sarid}
+% amsart prints \date at the foot of the first page.  Show it under the author
+% instead.  \dedicatory is the one title-block hook between author and abstract.
+\dedicatory{\normalfont August 4, 2026}
+\date{}
+
+\begin{abstract}
+Erd\H{o}s conjectured that every triangle-free graph on $n$ vertices contains
+$\lfloor n/2\rfloor$ vertices spanning at most $n^{2}/50$ edges, and offered a
+prize for a proof.  The best bound previously known is $\tfrac{27}{1024}n^{2}$, proved
+by Razborov using the flag-algebra method.  We prove that every triangle-free
+graph on $n$ vertices contains $\lfloor n/2\rfloor$ vertices spanning at most
+\[
+ \frac{131}{5000}n^{2}=0.0262\,n^{2}
+\]
+edges.  The argument uses the max-cut theorem of Balogh, Clemen and
+Lidick\'y, an exact rational flag-algebra bound on the four-cycle density, and
+a perturbation supported on the neighbourhood of a single vertex.
+
+The proof has been formalized in Lean, with the max-cut theorem taken as a
+hypothesis in the form its authors state it, Theorem~2(a) of \cite{bcl}.
+Everything else is proved inside the formal development.  OpenAI's
+GPT-5.6~Sol and Anthropic's Claude Fable~5 assisted in the research,
+writing and formalization of this work.
+\end{abstract}
+
+\maketitle
+
+\section{Introduction}
+
+For a graph $G$ on $n\ge1$ vertices let
+\[
+ \opt(G)=\frac1{n^2}\min\bigl\{e(S):S\subseteq V(G),\
+ |S|=\lfloor n/2\rfloor\bigr\},
+\]
+where $e(S)$ is the number of edges spanned by $S$.  The normalization by
+$n^{2}$ is the one used in the literature.  Erd\H{o}s \cite{erdos75} asked whether every triangle-free graph satisfies
+$\opt(G)\le1/50$.  He returned to the question repeatedly, offering a prize of
+\$250 for it in \cite{erdos97}, and Keevash and Sudakov describe it as one of
+his favourite conjectures \cite{keevash-sudakov}.  See also
+\cite{erdosproblems}.  Balanced blow-ups of $C_{5}$ attain $\opt=1/50$ whenever the blow-up factor is
+even, and balanced blow-ups of the Petersen graph attain it for every factor,
+so $1/50$ is the smallest constant for which such a bound can hold.  These are
+the only extremal examples known \cite{razborov-halves}.
+
+For a general triangle-free graph, the bound $\opt(G)\le1/16$ is immediate
+from a random half.  Erd\H{o}s, Faudree, Rousseau and Schelp \cite{efrs}
+proved $\opt(G)\le1/30$, and Krivelevich \cite{krivelevich} improved this to
+$\opt(G)\le1/36$.  The conjecture itself is known in several ranges of the
+edge density $\dens=\dens(G)=2e(G)/n^{2}$.  It is immediate from a random half
+when $\dens\le4/25$.  Keevash and Sudakov \cite{keevash-sudakov} proved it for
+$\dens\le1/6$ and for $\dens\ge2/5$, showing moreover that in the latter range
+the balanced blow-up of $C_{5}$ is the only extremal example.  For regular
+graphs the case $\dens\ge2/5$ was already known
+\cite[Theorem~3]{krivelevich}.  Norin and Yepremyan
+\cite{norin-yepremyan} relaxed $\dens\ge2/5$ to
+$\dens\ge\tfrac25-\varepsilon_{0}$ for an absolute $\varepsilon_{0}>0$, and
+proved the conjecture for graphs of normalized minimum degree at least
+$5/14$.  The best
+general bound previously known is due to Razborov \cite{razborov-halves}, who
+proved
+\[
+ \opt(G)\le\frac{27}{1024}
+\]
+by the flag-algebra method \cite{razborov-flag}, and also settled the
+conjecture for graphs of girth at least five, for graphs of independence
+number at least $2n/5$, and for strongly regular graphs.
+
+A companion question of Erd\H{o}s asks how many edges must be deleted from a
+triangle-free graph to make it bipartite.  It was studied by Erd\H{o}s,
+Faudree, Pach and Spencer \cite{efps} and by Erd\H{o}s, Gy\H{o}ri and
+Simonovits \cite{egs}, and most recently by Balogh, Clemen and Lidick\'y
+\cite{bcl}, whose theorem is the one result the present proof quotes.
+There, one asks for a bipartition whose two sides span few edges, whereas here
+a single set, of size exactly $\lfloor n/2\rfloor$, has to be sparse.
+
+Our result is the following:
+
+\begin{theorem}\label{thm:main}
+Every finite triangle-free graph $G$ on $n\ge1$ vertices satisfies
+\[
+ \opt(G)\le\frac{131}{5000}=0.0262.
+\]
+\end{theorem}
+
+We treat separately the graphs with $\dens\ge7/22$ and those with
+$\dens<7/22$.
+
+For $\dens\ge7/22$ a double counting argument over the edges suffices.  If
+$\{u,v\}$ is an edge of a triangle-free graph, then $\Nb(u)$ and $\Nb(v)$ are
+disjoint independent sets, so each of them is the sparse part of a candidate of
+the required total size, and the cost of the better of the two candidates is
+governed by the number of edges between $\Nb(u)$ and $\Nb(v)$.  Averaging over
+all edges of $G$ turns that quantity into the number of homomorphisms of the
+four-cycle into $G$, which we bound from below by an exact rational
+flag-algebra certificate.  This construction goes back to Krivelevich
+\cite{krivelevich}, and the averaged form we use is due to Razborov
+\cite{razborov-halves}.
+
+For $\dens<7/22$ we use the max-cut theorem of Balogh, Clemen and Lidick\'y
+\cite{bcl}, which supplies a bipartition of $V(G)$ with at most $2n^{2}/47$
+edges inside its two sides.  Two candidates are built from such a bipartition,
+and each is improved by a perturbation supported on the neighbourhood of a
+single vertex.  A harmonic-mean averaging argument produces
+a vertex at which that improvement is cubic in the edge density of the larger
+side.  What is left is to maximize an explicit function of two parameters.  Its
+maximum occurs when the larger side of the bipartition is $417/241$ times the
+smaller, and the value there is below $131/5000$.
+
+Section~\ref{sec:background} fixes notation, relates $\opt$ to a fractional
+relaxation, and records the blow-up invariance that removes the largeness
+hypothesis from the max-cut theorem.  Section~\ref{sec:high} treats
+$\dens\ge7/22$ and Section~\ref{sec:low} treats $\dens<7/22$.
+Theorem~\ref{thm:main} is proved at the end of Section~\ref{sec:low}, and
+Section~\ref{sec:verification} describes the verification.
+
+The constant $131/5000$ is close to, but not exactly, the best this argument
+gives.  The bound of Section~\ref{sec:high} decreases as the split density
+grows while that of Section~\ref{sec:low} increases, so the two are in balance
+at one value of $\dens$.  Numerically that value is near $0.3184$, where both
+are about $0.026176$.  We split at the nearby short rational $\dens=7/22$ and
+state a short decimal, which together cost about $2\cdot10^{-5}$.
+
+\section{Fractional halves and graphons}\label{sec:background}
+
+Define
+\begin{equation}\label{eq:b-def}
+ \optf(G)=\frac1{n^2}\min\left\{
+ \sum_{\{x,y\}\in E(G)}f_xf_y:
+ f:V(G)\to[0,1],\ \sum_x f_x=\frac n2
+ \right\}.
+\end{equation}
+
+A function $f:V(G)\to[0,1]$ with $\sum_xf_x=n/2$ is a \emph{fractional half},
+and $n^{-2}\sum_{\{x,y\}\in E(G)}f_xf_y$ is its \emph{cost}, so $\optf(G)$ is the
+least cost of a fractional half.
+
+\begin{lemma}\label{lem:rounding}
+$\opt(G)\le\optf(G)$ for every graph $G$.
+\end{lemma}
+
+\begin{proof}
+Choose a minimizer of \eqref{eq:b-def} with as few nonintegral coordinates as
+possible.  If $f_x,f_y\notin\{0,1\}$, replace $(f_x,f_y)$ by
+$(f_x+t,f_y-t)$.  On the feasible interval for $t$, the objective is affine
+when $\{x,y\}\notin E(G)$ and is a concave quadratic when $\{x,y\}\in E(G)$.  One
+endpoint is therefore no worse, contradicting the choice of $f$.  Thus at
+most one coordinate is nonintegral.  For even $n$ there is none.  For odd
+$n$ the remaining coordinate is $1/2$, and deleting its vertex gives
+$\lfloor n/2\rfloor$ vertices without adding an edge.
+\end{proof}
+
+For a graph $H$ write
+\[
+ t(H,G)=\frac{\hom(H,G)}{n^{|V(H)|}}
+\]
+for the homomorphism density of $H$ in $G$.  Here $\hom(H,G)$ is the number of
+maps $V(H)\to V(G)$ carrying every edge to an edge, not necessarily injective.
+Thus $\dens=t(K_2,G)$ is the edge density of $G$.
+For disjoint $A,B\subseteq V(G)$ we write $e(A,B)$ for the number of edges with
+one end in $A$ and the other in $B$, and $\Delta(G)$ for the maximum degree of
+$G$.  For a bipartition $V(G)=X\sqcup Y$, its internal-edge count is
+$e(X)+e(Y)$, and $D_2(G)$ denotes the minimum of this quantity.
+
+The max-cut theorem quoted in Section~\ref{sec:low} is proved only for
+sufficiently large $n$.  Every normalized quantity used in this paper is
+invariant under balanced blow-ups, and it is the last identity of the next
+lemma that removes the restriction.
+Write $G(k)$ for the balanced blow-up of
+$G$ in which every vertex is replaced by $k$ pairwise nonadjacent twins.
+
+\begin{lemma}\label{lem:blowup}
+For every graph $G$ on $n$ vertices and every $k\ge1$,
+\[
+ \optf(G(k))=\optf(G),\qquad
+ \frac{2e(G(k))}{(nk)^{2}}=\frac{2e(G)}{n^{2}},\qquad
+ \frac{\hom(C_4,G(k))}{(nk)^{4}}
+ =\frac{\hom(C_4,G)}{n^{4}},
+\]
+and
+\[
+ \frac{D_2(G(k))}{(nk)^{2}}=\frac{D_2(G)}{n^{2}}.
+\]
+\end{lemma}
+
+\begin{proof}
+Twin classes are independent, so an edge of $G(k)$ joins two classes that are
+adjacent in $G$.  Given $f:V(G(k))\to[0,1]$, let $x_i$ be the mean of $f$ on
+class $i$.  Then
+$\sum_{\{u,v\}\in E(G(k))}f_uf_v=k^{2}\sum_{\{i,j\}\in E(G)}x_ix_j$, while the mass
+constraint $\sum_uf_u=nk/2$ reads $\sum_ix_i=n/2$.  Dividing by $(nk)^{2}$
+identifies the two minimization problems, so $\optf(G(k))=\optf(G)$.  The edge and
+homomorphism counts satisfy $e(G(k))=k^{2}e(G)$ and
+$\hom(C_4,G(k))=k^{4}\hom(C_4,G)$, since a
+homomorphism of the blow-up is a homomorphism of $G$ together with a choice of
+twin at each of the four positions.
+
+For the last identity, a bipartition of $G(k)$ puts a fraction $x_i\in[0,1]$
+of class $i$ on the first side, and its internal-edge count is
+\[
+ k^{2}\sum_{\{i,j\}\in E(G)}\bigl(x_ix_j+(1-x_i)(1-x_j)\bigr),
+\]
+again because the classes are independent.  This function is affine in each
+$x_i$ separately, hence attains its minimum over $[0,1]^{n}$ at a point of
+$\{0,1\}^{n}$, that is, at a bipartition of $G$.  Therefore
+$D_2(G(k))\ge k^{2}D_2(G)$.  Conversely every bipartition of $G$ lifts to one
+of $G(k)$ with exactly $k^{2}$ times the internal-edge count, so
+$D_2(G(k))=k^{2}D_2(G)$.
+\end{proof}
+
+\section{The high-density range}\label{sec:high}
+
+\begin{proposition}\label{prop:c4}
+Let
+\[
+ \gamma=\frac3{64}+\frac1{50\,000\,000\,000}.
+\]
+Every triangle-free graph satisfies
+\begin{equation}\label{eq:c4}
+ t(C_4,G)\ge\dens^{3}-\gamma\dens.
+\end{equation}
+\end{proposition}
+
+The slack $\varepsilon=1/(5\cdot10^{10})$ in $\gamma$ is an artefact of the
+method rather than of the statement: \eqref{eq:c4} is very likely true with
+$\gamma=3/64$, but that inequality is tight at the Clebsch graph, so every
+square occurring in a certificate for it would have to vanish there as well,
+and no such certificate was found.
+The verifier reports that the exact slack its own square coefficients require
+is $1.9911\cdot10^{-11}<\varepsilon$, and nothing in this paper needs the
+sharp constant.
+
+The value $3/64$ is, on the other hand, optimal.  Indeed, the Clebsch graph has
+$\dens=\tfrac5{16}$ and $t(C_4,G)=\tfrac{1040}{65536}=\tfrac{65}{4096}$, while
+$\dens^{3}-\tfrac3{64}\dens=\tfrac{125}{4096}-\tfrac{60}{4096}
+=\tfrac{65}{4096}$ at $\dens=\tfrac5{16}$, so \eqref{eq:c4} with
+$\gamma=\tfrac3{64}$ holds there with equality and fails for every smaller
+$\gamma$.
+
+\begin{proof}
+The proof is a flag-algebra certificate: a finite identity exhibiting the
+difference between the two sides of \eqref{eq:c4} as a nonnegative rational
+combination of averaged squares, so that checking finitely many rational
+inequalities establishes \eqref{eq:c4} for every triangle-free graph at once.
+
+It is enough to prove the graphon statement, because a graph and its step
+graphon have the same homomorphism densities: for the step graphon $W$ of $G$,
+$t(K_2,W)=\dens$ and $t(C_4,W)=t(C_4,G)$.  At level six, the expression
+$t(C_4,W)-\dens^{3}+\gamma\dens$ has one rational coefficient for each of the
+$38$ triangle-free unlabelled graphs on six vertices.  The ancillary
+certificate file
+\[
+ \texttt{clebsch\_tangent\_certificate.json}
+\]
+gives $34$ positive rational multiples of averaged squares of flags.  The
+exact verifier
+\[
+ \texttt{verify\_clebsch\_tangent\_certificate.py}
+\]
+checks that the coefficient of every one of the $38$ hosts dominates the sum
+of the corresponding square coefficients.  It also checks the host list,
+flag dimensions, and positivity of every multiplier.  All sign decisions are
+made in rational arithmetic.  This proves \eqref{eq:c4} by the flag-algebra
+method \cite{razborov-flag}.
+\end{proof}
+
+\begin{lemma}\label{lem:anchor}
+If $G$ is triangle-free, $\dens>0$, and $\Delta(G)<n/2$, then
+\begin{equation}\label{eq:anchor}
+ \optf(G)\le\frac{\dens}8-\frac{t(C_4,G)}{4\dens}.
+\end{equation}
+\end{lemma}
+
+This is Proposition~1.1 of \cite{razborov-halves}, stated there for $\opt$
+rather than for the relaxation $\optf$, and with the four-cycle density
+normalized so that its value is $3\,t(C_4,G)$.  Razborov derives it from the
+argument of \cite{krivelevich}.  We give the proof because the fractional form
+is what the next section perturbs.
+
+\begin{proof}
+Fix an edge $\{u,v\}$ and put
+\[
+ A=\Nb(u),\qquad C=\Nb(v),\qquad
+ B=V(G)\setminus(A\cup C).
+\]
+Triangle-freeness makes $A$ and $C$ disjoint independent sets.  Write
+\[
+ \delta_u=\frac{|A|}{n},\qquad \delta_v=\frac{|C|}{n},\qquad
+ z=1-\delta_u-\delta_v,
+\]
+and
+\[
+ p=\frac{1/2-\delta_u}{z},\qquad
+ 1-p=\frac{1/2-\delta_v}{z}.
+\]
+The maximum-degree hypothesis gives $p\in[0,1]$.  The two functions
+$\mathbf 1_A+p\mathbf 1_B$ and
+$\mathbf 1_C+(1-p)\mathbf 1_B$ are feasible fractional halves.  If their
+costs are $Q_u,Q_v$, then direct expansion gives
+\begin{equation}\label{eq:edge-bound}
+ (1-p)Q_u+pQ_v
+ =p(1-p)\left(\frac{\dens}2-
+ \frac{e(\Nb(u),\Nb(v))}{n^2}\right)
+ \le\frac14\left(\frac{\dens}2-
+ \frac{e(\Nb(u),\Nb(v))}{n^2}\right).
+\end{equation}
+Thus $\optf(G)$ is at most the right-hand side of \eqref{eq:edge-bound} for
+every edge $\{u,v\}$.
+Moreover,
+\begin{equation}\label{eq:c4-count}
+ \sum_{\{u,v\}\in E(G)}e(\Nb(u),\Nb(v))
+ =\frac12\hom(C_4,G).
+\end{equation}
+Indeed, $\Nb(u)$ and $\Nb(v)$ are disjoint, so an edge counted by
+$e(\Nb(u),\Nb(v))$ has exactly one end in $\Nb(u)$ and exactly one in
+$\Nb(v)$.  Writing that end first,
+\[
+ e(\Nb(u),\Nb(v))=\#\{(x,y):x\in\Nb(u),\ y\in\Nb(v),\ \{x,y\}\in E(G)\}.
+\]
+Summing over the two orderings of each edge $\{u,v\}$ therefore gives
+\[
+ 2\sum_{\{u,v\}\in E(G)}e(\Nb(u),\Nb(v))
+ =\#\{(u,x,y,v):\{u,v\},\{u,x\},\{x,y\},\{y,v\}\in E(G)\},
+\]
+and the right side is exactly the number of homomorphisms $C_4\to G$, a
+homomorphism being a cyclically adjacent quadruple.
+
+The right-hand side of \eqref{eq:edge-bound} bounds $\optf(G)$ for each of the
+$e(G)$ edges, hence so does its average, and by \eqref{eq:c4-count} that
+average is
+\[
+ \frac1{e(G)}\sum_{\{u,v\}\in E(G)}\frac{e(\Nb(u),\Nb(v))}{n^{2}}
+ =\frac{\hom(C_4,G)}{2e(G)n^{2}}
+ =\frac{t(C_4,G)}{\dens},
+\]
+since $e(G)=\tfrac12\dens n^{2}$ and $\hom(C_4,G)=t(C_4,G)n^{4}$.  Therefore
+$\optf(G)\le\tfrac14\bigl(\tfrac\dens2-t(C_4,G)/\dens\bigr)$, which is
+\eqref{eq:anchor}.
+\end{proof}
+
+\begin{proposition}\label{prop:high}
+If $G$ is triangle-free and $\dens\ge7/22$, then $\optf(G)<131/5000$.
+\end{proposition}
+
+\begin{proof}
+If $\Delta(G)\ge n/2$, a neighbourhood of a maximum-degree vertex is an
+independent set of size at least $n/2$.  Assigning values in $[0,1]$ on that
+neighbourhood with total mass $n/2$, and zero elsewhere, gives a fractional
+half of cost zero.  Thus suppose $\Delta(G)<n/2$.  Lemma~\ref{lem:anchor} and
+Proposition~\ref{prop:c4} give
+\[
+ \optf(G)\le\frac{\dens}8-\frac{\dens^{2}}{4}+\frac\gamma4.
+\]
+This expression decreases for $\dens>1/4$.  Since $\gamma<293/6250$, at
+$\dens=7/22$ it is less than
+\[
+ \frac7{484}+\frac{293}{25000}
+ =\frac{79203}{3025000}<\frac{79255}{3025000}=\frac{131}{5000},
+\]
+where $\frac7{484}=\frac7{176}-\frac{49}{1936}$ is the value of
+$\frac\dens8-\frac{\dens^{2}}4$ at $\dens=\frac7{22}$.
+\end{proof}
+
+\section{The low-density range}\label{sec:low}
+
+\begin{theorem}[Balogh--Clemen--Lidick\'y \cite{bcl}]\label{thm:bcl-large}
+There is an $n_0$ such that every triangle-free graph $G$ on $n\ge n_0$
+vertices satisfies
+\[
+ D_2(G)\le\frac{n^{2}}{23.5}=\frac2{47}n^{2}.
+\]
+\end{theorem}
+
+This is Theorem~2(a) of \cite{bcl}, where it is stated with
+the constant $23.5$ and for $n$ large enough.  The largeness hypothesis is not
+a restriction here.
+
+\begin{corollary}\label{cor:bcl}
+Every triangle-free graph $G$ on $n\ge1$ vertices satisfies
+$D_2(G)\le\frac2{47}n^{2}$.
+\end{corollary}
+
+\begin{proof}
+The blow-up $G(k)$ is triangle-free and has $nk$ vertices, so
+Theorem~\ref{thm:bcl-large} applies to it once $k\ge n_0/n$.  By
+Lemma~\ref{lem:blowup}, $D_2(G)/n^{2}=D_2(G(k))/(nk)^{2}\le2/47$.
+\end{proof}
+
+\subsection{A perturbation inside one neighbourhood}
+A weighted graph is a finite graph $H$ with positive vertex weights
+$(w_x)$ summing to one.  By a \emph{profile} on $H$ we mean a function
+$\pi:V(H)\to[0,1]$.  Its weighted mean is $\sum_xw_x\pi_x$.  A constant profile
+is one that is constant on $V(H)$.  Put
+\[
+ \mu=\sum_{\{x,y\}\in E(H)}w_xw_y,\qquad
+ d_x=\sum_{y\in\Nb(x)}w_y,\qquad
+ e_x=\sum_{y\in\Nb(x)}w_yd_y,
+\]
+and
+\[
+ S_x=d_x(e_x-\mu d_x).
+\]
+We call $\mu$ the \emph{edge mass} of $H$.
+
+\begin{lemma}\label{lem:cubic}
+If $\mu>0$, some positive-degree vertex $x$ satisfies
+\begin{equation}\label{eq:cubic}
+ S_x\ge4\mu^3.
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+Put $p=2\mu$ and, for $d_x>0$, define
+\[
+ R_x=\frac{d_x}{p},\qquad
+ U_x=\frac1{d_x}\sum_{y\in\Nb(x)}w_yR_y.
+\]
+Then $\sum_xw_xR_x=1$, $e_x=p^2R_xU_x$, and hence
+\begin{equation}\label{eq:S-RU}
+ S_x=p^3R_x^2\left(U_x-\frac12\right).
+\end{equation}
+Suppose that \eqref{eq:cubic} fails strictly at every nonisolated vertex.
+Since $4\mu^3=p^3/2$, equation \eqref{eq:S-RU} gives
+\[
+ U_x<\frac{R_x^2+1}{2R_x^2}.
+\]
+The weighted harmonic--arithmetic mean inequality in $\Nb(x)$ therefore
+gives
+\begin{equation}\label{eq:harmonic}
+ \frac1{d_x}\sum_{y\in\Nb(x)}\frac{w_y}{R_y}
+ \ge\frac1{U_x}>
+ \frac{2R_x^2}{R_x^2+1}.
+\end{equation}
+No neighbour in this expression is isolated.
+
+Let $\sigma$ be the total weight of the nonisolated vertices.  Average
+\eqref{eq:harmonic} with weights $w_xR_x$, which sum to one.  The average of
+the left side is exactly
+\[
+ \frac1p\sum_{y:d_y>0}\frac{w_y}{R_y}
+ \sum_{x\in\Nb(y)}w_x
+ =\frac1p\sum_{y:d_y>0}\frac{w_yd_y}{R_y}=\sigma.
+\]
+For every $R\ge0$,
+\[
+ \frac{2R^3}{R^2+1}-(2R-1)
+ =\frac{(R-1)^2}{R^2+1}\ge0.
+\]
+Consequently the average of the right side of \eqref{eq:harmonic} is at
+least
+\[
+ \sum_{x:d_x>0}w_x(2R_x-1)=2-\sigma\ge\sigma,
+\]
+contradicting the strict inequality in \eqref{eq:harmonic}.
+\end{proof}
+
+For $\alpha\in[0,1]$ define
+\[
+ \hat\alpha=\min(\alpha,1-\alpha),\qquad
+ L(\alpha)=\min\{4\hat\alpha^{2},\hat\alpha(1-\hat\alpha)\}.
+\]
+
+\begin{lemma}\label{lem:onestep}
+Let $H$ be a weighted triangle-free graph of edge mass $\mu$, and let
+$\psi:V(H)\to\mathbb R$ be arbitrary.  For
+\[
+ \mathcal A(\pi)=\sum_{\{u,v\}\in E(H)}w_uw_v\pi_u\pi_v
+ +\sum_uw_u\psi_u\pi_u,
+\]
+the constant profile $\alpha$ can be replaced by a profile
+$\pi:V(H)\to[0,1]$ with the same weighted mean and
+\begin{equation}\label{eq:onestep}
+ \mathcal A(\pi)\le\mathcal A(\alpha)-4L(\alpha)\mu^3.
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+The assertion is immediate if $\mu=0$ or $\alpha\in\{0,1\}$.  Otherwise
+choose $x$ from Lemma~\ref{lem:cubic}, abbreviate
+$d=d_x$, $z=1-d$, and put
+\[
+ \varphi=\mathbf 1_{\Nb(x)}-d.
+\]
+This function has weighted mean zero.  Since $H$ is triangle-free,
+$\Nb(x)$ is independent, and expanding the quadratic form gives
+\begin{equation}\label{eq:quad}
+ -\sum_{\{u,v\}\in E(H)}w_uw_v\varphi_u\varphi_v
+ =d(e_x-\mu d)=S_x.
+\end{equation}
+The positive vertex weights and $d_x>0$ give $0<d,z<1$, so all radii below
+are well defined.
+
+The full feasible interval for $\alpha+t\varphi$ is
+$-t_-\le t\le t_+$, where
+\[
+ t_+=\min\left\{\frac{1-\alpha}{z},\frac\alpha d\right\},
+ \qquad
+ t_-=\min\left\{\frac\alpha z,\frac{1-\alpha}{d}\right\}.
+\]
+Give the two endpoints the barycentric weights
+\[
+ \lambda_+=\frac{t_-}{t_++t_-},\qquad
+ \lambda_-=\frac{t_+}{t_++t_-}.
+\]
+The linear terms in $t$ cancel, including the arbitrary $\psi$-term, while
+\eqref{eq:quad} gives
+\[
+ \lambda_+\mathcal A(\alpha+t_+\varphi)
+ +\lambda_-\mathcal A(\alpha-t_-\varphi)
+ =\mathcal A(\alpha)-t_+t_-S_x.
+\]
+At least one endpoint is no larger than this average.
+
+It remains to bound the product of the radii.  By symmetry assume
+$\alpha\le1/2$.  Directly from their definitions,
+\[
+ t_+t_-=\begin{cases}
+ \alpha(1-\alpha)/z^2,&d\le\alpha,\\[3pt]
+ \alpha^2/(dz),&\alpha\le d\le1-\alpha,\\[3pt]
+ \alpha(1-\alpha)/d^2,&d\ge1-\alpha.
+ \end{cases}
+\]
+The first and third quantities are at least $\alpha(1-\alpha)$, and the
+middle one is at least $4\alpha^2$.  Hence $t_+t_-\ge L(\alpha)$.
+Together with Lemma~\ref{lem:cubic}, this proves \eqref{eq:onestep}.
+\end{proof}
+
+\subsection{The cut construction}\label{ssec:low-cut}
+Assume from now on that
+\begin{equation}\label{eq:low-density}
+ \dens\le\dens_0:=\frac7{22}.
+\end{equation}
+By Corollary~\ref{cor:bcl}, choose a bipartition $V(G)=X\sqcup Y$ with
+\[
+ I:=\frac{e(X)+e(Y)}{n^2}\le I_0:=\frac2{47}.
+\]
+Interchanging the sides if necessary, write
+\[
+ \frac{|X|}{n}=\frac{1-s}{2},\qquad
+ \frac{|Y|}{n}=\frac{1+s}{2},\qquad 0\le s\le1,
+\]
+and put
+\[
+ a=\frac{s}{1+s}\in\left[0,\frac12\right],
+ \qquad c=1-a,\qquad
+ I_Y=\frac{e(Y)}{n^2},\qquad
+ \mu=4c^2I_Y.
+\]
+The graph $G[Y]$, with every vertex assigned weight $1/|Y|$, has edge mass
+$\mu$, because $|Y|/n=1/(2c)$.  Also
+\begin{equation}\label{eq:mu-cap}
+ 0\le\mu\le4I_0c^2.
+\end{equation}
+
+We define two fractional halves:
+\[
+ \mathbf 1_X+a\mathbf 1_Y,
+ \qquad c\mathbf 1_Y.
+\]
+Their respective costs are
+\begin{equation}\label{eq:baselines}
+ B_1=\frac{a\dens}{2}+cI-\frac{1+a}{4c}\mu,
+ \qquad B_2=\frac\mu4.
+\end{equation}
+Indeed, if $I_X=e(X)/n^2=I-I_Y$, then the first cost is
+$I_X+a(\tfrac{\dens}2-I)+a^2I_Y$, and the second is $c^2I_Y$.
+
+Apply Lemma~\ref{lem:onestep} inside $Y$.  Edges from $Y$ to the fixed
+profile on $X$ contribute only a linear functional, so the lemma applies to
+both baselines.  Their constant values on $Y$ are $a$ and $c$, and
+$L(a)=L(c)$.  Returning from the normalization of $G[Y]$ to that of $G$
+multiplies the saving by $(|Y|/n)^2=1/(4c^2)$.  Preservation of the weighted
+mean on $Y$ keeps the resulting ambient profile a fractional half.  We have
+proved
+\begin{equation}\label{eq:master}
+ \optf(G)\le\min(B_1,B_2)-\frac{L(a)\mu^3}{c^2}.
+\end{equation}
+
+Increasing $\dens$ and $I$ can only increase $B_1$.  Thus it remains to
+maximize the following elementary expression with $\dens=\dens_0$ and $I=I_0$:
+\begin{equation}\label{eq:F-two}
+ F(a,\mu)=
+ \min\left\{P(a)-\frac{1+a}{4c}\mu,\frac\mu4\right\}
+ -\frac{L(a)}{c^2}\mu^3,
+ \qquad
+ P(a)=\frac{a\dens_0}{2}+cI_0,
+\end{equation}
+on $0\le a\le1/2$ and the interval \eqref{eq:mu-cap}.
+
+\subsection{The one-variable calculation}
+\begin{lemma}\label{lem:calculus}
+On the domain just described,
+\[
+ F(a,\mu)<\frac{131}{5000}.
+\]
+\end{lemma}
+
+\begin{proof}
+This is a straightforward calculation: we maximize in $\mu$ for each fixed $a$,
+which leaves a one-variable envelope, and then locate the maximum of that
+envelope using coarse rational bounds on its derivative.
+
+For fixed $a$, the two quantities inside the minimum in \eqref{eq:F-two} are
+equal precisely when
+\[
+ \mu=\nu(a):=2cP(a),
+\]
+the first exceeding the second for $\mu>\nu(a)$ and the second exceeding the
+first for $\mu<\nu(a)$.  For $\mu\le\nu(a)$, where the minimum equals
+$\tfrac\mu4$, the derivative of \eqref{eq:F-two} with respect to $\mu$ is
+\[
+ \frac14-\frac{3L(a)\mu^2}{c^2}
+ \ge\frac14-12I_0^2
+ =\frac14-\frac{48}{2209}>0,
+\]
+where we used $L(a)\le1/4$ and \eqref{eq:mu-cap}.  For $\mu\ge\nu(a)$, where
+the minimum equals $P(a)-\tfrac{(1+a)\mu}{4c}$, that derivative is strictly
+negative.  Hence the maximizing value of $\mu$ is
+\[
+ \min\{\nu(a),4I_0c^2\}.
+\]
+The two entries agree exactly when
+\[
+ a=a_*:=\frac{I_0}{\dens_0/2+I_0}=\frac{88}{417}.
+\]
+
+Put $\delta=\tfrac{\dens_0}2-I_0=241/2068$.  Since
+\[
+ L(a)=\begin{cases}4a^2,&a\le1/5,\\a(1-a),&a\ge1/5,
+ \end{cases}
+\]
+maximizing first in $\mu$ gives the one-variable envelope
+\begin{equation}\label{eq:envelope}
+ \begin{cases}
+ \displaystyle \frac{cP}{2}-32a^2cP^3,
+   &0\le a\le\frac15,\\[5pt]
+ \displaystyle \frac{cP}{2}-8ac^2P^3,
+   &\frac15\le a\le a_*,\\[5pt]
+ \displaystyle I_0c^2-64I_0^3ac^5,
+   &a_*\le a\le\frac12.
+ \end{cases}
+\end{equation}
+
+We check its monotonicity with deliberately coarse rational bounds.  Put
+$h=cP/2$.  On $[0,a_*]$,
+\[
+ h'=\frac{\dens_0/2-2I_0-2\delta a}{2}
+ \ge h'(a_*)=\frac{455}{36696}>\frac1{100}.
+\]
+Also $P\le P(a_*)=28/417<7/100$ and $\delta<1/8$.
+
+On $0\le a\le1/5$, the derivative of the subtracted term in the first line
+of \eqref{eq:envelope} is
+\[
+ 32aP^2\bigl((2-3a)P+3ac\delta\bigr)
+ <32\cdot\frac15\left(\frac7{100}\right)^2
+ \left(2\cdot\frac7{100}+\frac3{40}\right)
+ <\frac7{1000}<\frac1{100}.
+\]
+Thus the first line is increasing.  On $1/5\le a\le a_*$ we have
+$a_*<17/80$ and $c\le4/5$.  The derivative of the subtracted term in the
+second line is
+\[
+ 8cP^2\bigl((1-3a)P+3ac\delta\bigr)
+ <8\cdot\frac45\left(\frac7{100}\right)^2
+ \left(\frac25\cdot\frac7{100}
+ +3\cdot\frac{17}{80}\cdot\frac45\cdot\frac18\right)
+ <\frac1{300}<\frac1{100}.
+\]
+The second line is increasing as well.
+
+For the third line of \eqref{eq:envelope}, differentiation gives
+\[
+ -2I_0c\left[1-32I_0^2c^3(6a-1)\right].
+\]
+The bracket is positive, since
+\[
+ 32I_0^2c^3(6a-1)\le64I_0^2=\frac{256}{2209}<1.
+\]
+Thus the third line is decreasing.  The global maximum is attained at
+$a_*=88/417$.
+
+At that point
+\[
+ c_*=\frac{329}{417},\qquad
+ \mu_*=4I_0c_*^2=\frac{18424}{173889},\qquad
+ \frac{a_*}{c_*}=\frac{88}{329}.
+\]
+The baseline term satisfies
+\[
+ I_0c_*^2=\frac{4606}{173889}<\frac{2649}{100000},
+\]
+and the saving satisfies
+\[
+ \frac{a_*}{c_*}\mu_*^3
+ >\frac4{15}\left(\frac{21}{200}\right)^3
+ >\frac{29}{100000}.
+\]
+The two lower bounds used here are
+\[
+ \frac{88}{329}>\frac4{15},\qquad
+ \frac{18424}{173889}>\frac{21}{200},
+\]
+and every comparison is a direct cross-multiplication.  Therefore
+\[
+ F(a_*,\mu_*)
+ <\frac{2649}{100000}-\frac{29}{100000}
+ =\frac{131}{5000},
+\]
+as required.
+\end{proof}
+
+\begin{proof}[Proof of Theorem~\ref{thm:main}]
+By Lemma~\ref{lem:rounding}, it is enough to bound $\optf(G)$.  If
+$\dens\ge7/22$,
+apply Proposition~\ref{prop:high}.  Otherwise the cut construction of
+Section~\ref{ssec:low-cut} and Lemma~\ref{lem:calculus} give
+$\optf(G)<131/5000$.
+\end{proof}
+
+\section{Verification}\label{sec:verification}
+
+The proof supplies one machine-certified component,
+Proposition~\ref{prop:c4}.  With Python and NetworkX installed, the ancillary
+files can be checked from scratch with
+\[
+ \texttt{python3 verify\_clebsch\_tangent\_certificate.py}.
+\]
+The verifier works in exact rational arithmetic, so no floating-point
+comparison enters any sign decision.  Apart from this certificate and the
+max-cut theorem quoted as Theorem~\ref{thm:bcl-large}, every step of the
+argument is carried out by hand in the text above.
+
+The argument has also been formalized in the Lean~4 proof assistant, on top of
+\texttt{mathlib}.  The ancillary directory \texttt{lean/} contains the
+development, and \texttt{./verify.sh} builds it and prints an audit of the
+axioms each conclusion depends on.
+
+One statement is not formalized: the max-cut bound of
+Theorem~\ref{thm:bcl-large} is taken as an explicit hypothesis of the
+formalized theorem, so it appears in
+its statement rather than being reproved.  Everything else is proved inside the
+development, including Proposition~\ref{prop:c4} together with the
+flag-algebra machinery it needs: the sampling semantics, the exhaustive check
+over the triangle-free six-vertex hosts, and the passage from the certificate
+to the graph-level inequality.
+
+There is no use of \texttt{sorry}, \texttt{native\_decide}, or any added
+axiom, and each conclusion depends on
+exactly the three axioms of Lean's standard library, namely \texttt{propext},
+\texttt{Classical.choice} and \texttt{Quot.sound}.
+
+\begin{thebibliography}{99}
+
+\bibitem{bcl}
+J.~Balogh, F.~C.~Clemen and B.~Lidick\'y,
+\emph{Max cuts in triangle-free graphs},
+in: Extended Abstracts EuroComb 2021, Trends in Mathematics, Springer, 2021,
+509--514; \texttt{arXiv:2103.14179v1}.
+
+\bibitem{erdosproblems}
+T.~F.~Bloom,
+\emph{Erd\H{o}s Problem \#128},
+\url{https://www.erdosproblems.com/128}, accessed 2026-08-03.
+
+\bibitem{erdos75}
+P.~Erd\H{o}s,
+\emph{Problems and results in graph theory and combinatorial analysis},
+in: Proc. Fifth British Combinatorial Conference (Univ. Aberdeen, 1975),
+Congr. Numer. 15 (1976), 169--192.
+
+\bibitem{erdos97}
+P.~Erd\H{o}s,
+\emph{Some old and new problems in various branches of combinatorics},
+Discrete Math. 165/166 (1997), 227--231; proceedings of the international
+symposium Graphs and Combinatorics (Marseille, 1995).
+
+\bibitem{efps}
+P.~Erd\H{o}s, R.~J.~Faudree, J.~Pach and J.~Spencer,
+\emph{How to make a graph bipartite},
+J. Combin. Theory Ser. B 45(1) (1988), 86--98.
+
+\bibitem{efrs}
+P.~Erd\H{o}s, R.~J.~Faudree, C.~C.~Rousseau and R.~H.~Schelp,
+\emph{A local density condition for triangles},
+Discrete Math. 127(1--3) (1994), 153--161.
+
+\bibitem{egs}
+P.~Erd\H{o}s, E.~Gy\H{o}ri and M.~Simonovits,
+\emph{How many edges should be deleted to make a triangle-free graph
+bipartite?},
+in: Sets, graphs and numbers (Budapest, 1991), Colloq. Math. Soc. J\'anos
+Bolyai 60, North-Holland, Amsterdam, 1992, 239--263.
+
+\bibitem{keevash-sudakov}
+P.~Keevash and B.~Sudakov,
+\emph{Sparse halves in triangle-free graphs},
+J. Combin. Theory Ser. B 96(4) (2006), 614--620.
+
+\bibitem{krivelevich}
+M.~Krivelevich,
+\emph{On the edge distribution in triangle-free graphs},
+J. Combin. Theory Ser. B 63(2) (1995), 245--260.
+
+\bibitem{norin-yepremyan}
+S.~Norin and L.~Yepremyan,
+\emph{Sparse halves in dense triangle-free graphs},
+J. Combin. Theory Ser. B 115 (2015), 1--25.
+
+\bibitem{razborov-flag}
+A.~A.~Razborov,
+\emph{Flag algebras},
+J. Symbolic Logic 72(4) (2007), 1239--1282.
+
+\bibitem{razborov-halves}
+A.~A.~Razborov,
+\emph{More about sparse halves in triangle-free graphs},
+Sb. Math. 213(1) (2022), 109--128.
+
+\end{thebibliography}
+
+\end{document}

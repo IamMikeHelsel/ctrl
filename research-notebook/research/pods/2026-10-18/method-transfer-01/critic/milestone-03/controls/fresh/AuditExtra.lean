@@ -1,0 +1,2 @@
+import EndpointTrap
+#print axioms CriticEndpointTrap.endpoint_is_small_but_earlier_peak_is_not

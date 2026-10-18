@@ -1,0 +1,103 @@
+{
+  "started_utc": "2026-10-18T16:54:04.411981+00:00",
+  "work": "controls-final-0_lm53ya",
+  "dependency_manifest": "unchanged-435-b6bhte68/verification.json",
+  "dependency_manifest_sha256": "e2343b8fd3fb1c3543eb2b4cfa8e17bf4ff347be9eaf9e468beaac685bf15996",
+  "lean_path": "/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/pods/2026-10-18/method-transfer-01/erdos/saving-replay-03/controls-final-0_lm53ya:/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/pods/2026-10-18/method-transfer-01/erdos/saving-replay-03/unchanged-435-b6bhte68:/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/lean-controls/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/lean-controls/.lake/packages/Qq/.lake/build/lib/lean:/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/lean-controls/.lake/packages/aesop/.lake/build/lib/lean:/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/lean-controls/.lake/packages/batteries/.lake/build/lib/lean:/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/lean-controls/.lake/packages/importGraph/.lake/build/lib/lean:/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/lean-controls/.lake/packages/mathlib/.lake/build/lib/lean:/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/lean-controls/.lake/packages/plausible/.lake/build/lib/lean:/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/lean-controls/.lake/packages/proofwidgets/.lake/build/lib/lean",
+  "runs": [
+    {
+      "label": "compile-controls",
+      "command": [
+        "/Users/mike/.elan/toolchains/leanprover--lean4---v4.35.0/bin/lean",
+        "-o",
+        "MeaningfulControls.olean",
+        "MeaningfulControls.lean"
+      ],
+      "exit": 0,
+      "seconds": 24.55407804105198,
+      "log": "compile-controls.log"
+    },
+    {
+      "label": "kernel-controls",
+      "command": [
+        "/Users/mike/.elan/toolchains/leanprover--lean4---v4.35.0/bin/leanchecker",
+        "MeaningfulControls",
+        "-v"
+      ],
+      "exit": 0,
+      "seconds": 27.558372458966915,
+      "log": "kernel-controls.log"
+    },
+    {
+      "label": "reject-NoTriangle",
+      "command": [
+        "/Users/mike/.elan/toolchains/leanprover--lean4---v4.35.0/bin/lean",
+        "NoTriangle.lean"
+      ],
+      "exit": 1,
+      "seconds": 6.152756666997448,
+      "log": "reject-NoTriangle.log"
+    },
+    {
+      "label": "reject-BadNormalization",
+      "command": [
+        "/Users/mike/.elan/toolchains/leanprover--lean4---v4.35.0/bin/lean",
+        "BadNormalization.lean"
+      ],
+      "exit": 1,
+      "seconds": 15.911238374945242,
+      "log": "reject-BadNormalization.log"
+    },
+    {
+      "label": "reject-NoActualSaving",
+      "command": [
+        "/Users/mike/.elan/toolchains/leanprover--lean4---v4.35.0/bin/lean",
+        "NoActualSaving.lean"
+      ],
+      "exit": 1,
+      "seconds": 7.543464874965139,
+      "log": "reject-NoActualSaving.log"
+    }
+  ],
+  "axioms": {
+    "SavingReplayControls.triangle_cost_lower": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "SavingReplayControls.triangle_refutes_unrestricted_saving": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "SavingReplayControls.two_unit_masses_not_normalized": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "SavingReplayControls.unchanged_profile_does_not_save": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  },
+  "negative_controls": [
+    {
+      "name": "NoTriangle",
+      "rejected": true,
+      "reason": "well-typed false arithmetic/normalization goal remains unsolved"
+    },
+    {
+      "name": "BadNormalization",
+      "rejected": true,
+      "reason": "well-typed false arithmetic/normalization goal remains unsolved"
+    },
+    {
+      "name": "NoActualSaving",
+      "rejected": true,
+      "reason": "well-typed false arithmetic/normalization goal remains unsolved"
+    }
+  ],
+  "passed": true,
+  "completed_utc": "2026-10-18T16:55:26.134352+00:00"
+}

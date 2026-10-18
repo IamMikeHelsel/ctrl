@@ -1,0 +1,70 @@
+{
+  "passed": true,
+  "main_result_sha256": "acf5703dd584e0d40eae91a0dc62053bbac454382e46ca47b444fc2f0b94422c",
+  "runner_sha256": "0d40ee876f0a0885a9be60223fed48e1500b84324ccfff5b3185fda71960d9ab",
+  "steps": [
+    {
+      "label": "build-endpoint-trap",
+      "command": [
+        "/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/.tools/elan/toolchains/leanprover--lean4---v4.35.0/bin/lean",
+        "--root=/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/pods/2026-10-18/method-transfer-01/critic/milestone-03/controls/fresh",
+        "-o",
+        "/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/pods/2026-10-18/method-transfer-01/critic/milestone-03/controls/fresh/EndpointTrap.olean",
+        "/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/pods/2026-10-18/method-transfer-01/critic/milestone-03/controls/fresh/EndpointTrap.lean"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "expected": "success",
+      "seconds": 4.8366,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "audit-endpoint-trap",
+      "command": [
+        "/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/.tools/elan/toolchains/leanprover--lean4---v4.35.0/bin/lean",
+        "/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/pods/2026-10-18/method-transfer-01/critic/milestone-03/controls/fresh/AuditExtra.lean"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "expected": "success",
+      "seconds": 6.2936,
+      "log_sha256": "5d32fd6b061e10f6ed30e7ac0e2c3feb97ab6309dba2b04cea084e04e7dd091e"
+    },
+    {
+      "label": "kernel-endpoint-trap",
+      "command": [
+        "/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/.tools/elan/toolchains/leanprover--lean4---v4.35.0/bin/leanchecker",
+        "EndpointTrap",
+        "-v"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "expected": "success",
+      "seconds": 13.681,
+      "log_sha256": "74b91647b5e236e55ac13d52ee62c40d87e154594e541d07f1e974c745ca0629"
+    },
+    {
+      "label": "reject-endpoint-only",
+      "command": [
+        "/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/.tools/elan/toolchains/leanprover--lean4---v4.35.0/bin/lean",
+        "/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/pods/2026-10-18/method-transfer-01/critic/milestone-03/controls/fresh/FalseEndpointOnly.lean"
+      ],
+      "exit_code": 1,
+      "passed": true,
+      "expected": "semantic rejection",
+      "seconds": 3.3075,
+      "log_sha256": "fd6dac77da5d28d737c3717e4c8cc6d4171c6c0f7dbeb3ae9f9682c6800fad07"
+    }
+  ],
+  "axioms": {
+    "CriticEndpointTrap.endpoint_is_small_but_earlier_peak_is_not": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ]
+  },
+  "sources": {
+    "EndpointTrap.lean": "76ba82185990a7e20c152f30849cf6b5d0ed16828d2e8e4b36e9b35c36578903",
+    "FalseEndpointOnly.lean": "c422f8c6377d33f6360d7f4de6f4e6843b3c56cc3c33f18be43215c7689b28b1"
+  }
+}

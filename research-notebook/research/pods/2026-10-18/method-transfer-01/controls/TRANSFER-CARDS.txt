@@ -1,0 +1,165 @@
+CONTROLS TRANSFER CARDS — PREFLIGHT
+18 October 2026. Proposed tests, not accepted new results.
+
+Rank 1 — retain the lag transient, then certify the peak
+
+Decision enabled: can the current parameterized recovery contract certify a
+0.15 m reference-position limit, without a response-rate ceiling? The simple
+bound fails that test. The older fixed-contract proof already passes it. A
+useful result must expose a reusable certificate and preserve this baseline.
+
+Source mechanism: Fantuzzi and Goluskin, Bounding extreme events in nonlinear
+dynamics using convex optimization (2020), section 2.1, equations (2.5)-(2.8).
+An auxiliary function dominates the observable and does not increase along
+trajectories. Its initial value bounds the peak. This is an older method, not
+a method discovered in the 2026 release. Occupation-measure duality supplies
+one interpretation; it is not required to prove a specific certificate.
+Theorem 2.1's sharpness conditions include regularity and compactness. We do
+not transfer those conditions or promise a convergent SOS search here.
+
+Translation: the observable is forward position. First use the already proved
+Recovery.recovered_upper_flow, with q<=-b and r>=k>0, to dominate the physical
+trajectory by the exact constant upper flow. Let U=v0+A*T, C=(A+b)/k and
+P=X+v0*T+A*T^2/2. Its recovered coordinates are
+  a_bar(s) = -b+(A+b)*exp(-k*s),
+  v_bar(s) = U-b*s+C*(1-exp(-k*s)),
+  x_bar(s) = P+(U+C)*s-b*s^2/2-(C/k)*(1-exp(-k*s)).
+Build a scalar peak certificate for this envelope. A certified zero bracket
+for v_bar plus interval inequalities for x_bar is the smallest useful test.
+Do not add an SDP merely to call the result convex optimization. The source
+changes the proof target from one simulated endpoint to a full-time peak.
+This is our reconstruction, not a reported discovery path in the corpus.
+
+Required assumptions: keep the entire frozen recovery contract. It derives
+the loss-phase acceleration bound from the physical ODE. The state is shared
+across recovery and continuous, including acceleration. Effective braking
+q<=-b persists through the certified horizon. Keep the continuous rate and
+supplied-trajectory premises. Do not impose r<=12, compact controls, a final
+acceleration bound, or a new invariant set. If an auxiliary inequality is
+checked on the original uncertain field, it must hold for every r>=k and
+q<=-b. The safer first test applies the existing comparison theorem first.
+
+Fair benchmark, in metres:
+  Contract X=.001,v0=.41,A=.1,T=.05,b=1.2,k=8:
+    current simple bound = .1605859375 (formal; fails .15);
+    old exponential certificate <=.15 (formal; old rate range [8,12]);
+    exact upper-flow peak about .140710782944 (numerical only).
+  Near rest X=0,v0=.01,A=T=0,b=1,k=8:
+    simple bound .0091125; numerical upper-flow peak .000350929154.
+  Already stationary v0=A=T=0: first zero is at 0. Do not give it a positive
+    stopping distance because a relaxed formula happens to be positive.
+
+Falsifier: a proof that requires a rate ceiling, assumes the claimed position
+limit, checks only a terminal position, or loses the phase boundary fails.
+Keep a lower-bound witness from the exact upper flow: any claimed bound below
+its peak must be rejected. Replacing the exponential transient with an
+instantaneous brake must also fail a nonzero-lag witness.
+
+45-60 minute test: copy only the necessary pinned dependencies. In 15 minutes
+derive rational brackets and explicit exponential inequalities. In 30 minutes
+prove a reusable scalar certificate wrapper and instantiate the old case.
+Target <=.142 m and a total first-zero deadline <=.529 s; minimum useful gate
+is <=.15 m under the current floor-only rate contract. Use the near-rest case
+as a second check only if the main gate passes. Finish with fresh build,
+axiom audit, separate kernel replay, and meaningful negative controls. If the
+certificate cannot pass .15 in the time box, record the exact obstruction.
+Do not replace the route with a large optimizer search.
+
+Expected scope: useful reduction of conservatism. No new control theory,
+contact model, permanent rest, lower-travel bound, or stop-to-hold composition.
+
+Rank 2 — active affine progress from a recent permanence proof
+
+Decision enabled: does the existing sampled hold guarantee entry into a
+smaller residual band, rather than only containment in its initial box?
+This is a downstream settling result. The proposed band is still too wide
+to claim precision standstill, and it does not establish detector liveness.
+
+Source: family 149, Uniform Permanence in Weakly Reversible Mass-Action
+Systems, 5 October 2026, section 3, Lemma "Trapping and finite entry"
+(lem:trapping). A finite affine minimum has a right derivative controlled
+by its active branches. Uniform positive drift outside a plateau gives
+finite entry; nonnegative drift gives invariance. We also inspected the
+generic Lean lemma monotoneOn_finset_inf'_of_active_right_deriv_nonneg in
+OAI/Analysis/MassAction/FiniteMinimum.lean at the pinned corpus revision.
+Its finite-branch proof is relevant at held-command dispatch times.
+
+The chemical theorem uses positive concentrations, weak reversibility,
+positive constant reaction rates, and stoichiometric classes. Our signed
+lag state has none of that structure. We transfer only the active-branch
+proof pattern and supply our own robust drift check. Generic polyhedral
+Lyapunov and comparison arguments are older standard methods. Reading this
+recent proof does not make our possible control corollary novel. The local
+family scope note concerns the September boundedness/persistence result;
+we do not claim that it formally verifies every October permanence claim.
+
+Translation: use the existing transformed coordinates z and weighted radius
+  rho=max(|z0|/1.02, |z1|/1.01, |z2|).
+The negative radius is a finite affine minimum. First invoke the old sampled
+cube theorem, then derive its residual W=.1090800376 on the whole horizon.
+This order avoids a circular assumption about containment or mismatch.
+For r in [8,12], exact rational face checks at rho*=.045 give normalized
+outward derivatives at most -3/1700, -9/5050 and -.0036899718. Every radial
+coefficient is negative. The candidate entry time is
+  (R-rho*)/(3/1700) = 7157/1200 = 5.9641666667 s,
+where R=.055525. After entry the candidate physical bounds are
+  |x-c|<=.0459 m, |v|<=.3654 m/s, |a|<=2.9088 m/s^2.
+Before entry retain the old |x-c|<=.055525 m bound. The screen is exact
+rational algebra, not a trajectory theorem or an independent verdict.
+
+Required assumptions: precisely the old fixed 1 ms sampled execution,
+initial cube, gains, clipping, sensor errors, target error, and rate range.
+Use its one continuous physical state and one-sided derivatives at dispatch.
+For a finite execution require enough horizon for entry. An all-time claim
+would still be conditional on a supplied all-time execution. No new
+existence, fresh-command, history-reset, or rate assumption is permitted.
+
+Falsifier already found: the equal-weight box cannot give this strict drift.
+At z=(rho,rho,rho), r=8,w=0 the vector field is (0,0,-4*rho). Two active
+faces have zero derivative. Invariance alone does not imply a uniform entry
+rate. Also reject any proof that assumes the smaller initial box or ignores
+dispatch times. That would remove the proposed benefit.
+
+45-60 minute test: adapt a finite-active-maximum comparison lemma under our
+existing toolchain; prove the robust weighted face inequalities; compose
+with the existing sampled invariant and prefix mismatch result. The gate is
+entry by 7157/1200 s and continued containment at every admitted real time,
+starting from the same old cube. Preserve the equal-weight failure, run
+fresh build/audit/kernel replay, and have the critic inspect the composition.
+If only another invariant box is proved, stop: that misses this card's gate.
+
+Rank 3 — reject direct offline balancing for causal retained history
+
+Source: family 097, The Euclidean Steinitz-Bergstrom theorem, September 2026;
+the pinned formal scope and SignedPrefixBound/OrderingPrefixBound statements.
+They choose signs or an ordering after the finite vector family is given.
+The scope note explicitly says that this does not supply an online algorithm.
+We inspected statement/scope, not the complete manuscript or implementation.
+
+Tempting translation: treat incoming reference changes as vectors and use a
+dimension-only bound on their accumulated motion. The quantifiers do not fit
+causal retained history. Future requests may depend on past accepted actions;
+past physical actions cannot be reordered or sign-flipped afterward.
+
+Exact falsifier: in R^2 let S be the current signed sum. Choose the next unit
+vector perpendicular to S (any unit vector if S=0). For either sign epsilon,
+  ||S+epsilon*v||^2=||S||^2+1.
+After N choices the norm is sqrt(N). Thus the offline conclusion cannot be
+promoted to an adversarial online dimension-only bound by the same statement.
+This does not contradict the source theorem.
+
+Fair benchmark: retain the existing causal acceptance/rejection contract,
+which preserves the old plan on stale or late messages but does not promise
+new-task liveness. An offline batch experiment with free signs/permutations
+would change that contract and is not a fair improvement.
+
+Test allocation: reject the direct transfer now. A 45-minute experiment is
+not warranted by this card. If root later permits explicit offline batch
+semantics, first compare the same finite requests with the existing native
+and smooth planners while preserving task order constraints. That is a new
+question, not a repair to the causal claim.
+
+Other triage: family 221's averaged hierarchy estimate is not a worst-case
+sensor or dispatch bound. The critic owns that source audit. Family 104's
+formal scope concerns long-run mean payoff and randomized guarantees; we
+did not read enough of its proof to propose a finite stopping transfer.

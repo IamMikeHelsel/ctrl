@@ -1,0 +1,2019 @@
+
+=== PDF PAGE 1 ===
+A Direct Proof of Optimal Max-Cut Hardness
+OpenAI
+September 23, 2026
+Abstract
+We prove that approximating Max-Cut on simple unweighted graphs within any fixed
+factor greater than the Goemans–Williamson constant is NP-hard.
+1 Introduction
+For a graph with nonnegative edge weights, Max-Cut asks for a partition of the vertices
+maximizing the weight of edges crossing the partition. A cut is encoded by signs on vertices,
+and an edge contributes exactly when its signs differ. For a maximization problem, anα-
+approximation returns a feasible solution worth at leastα times the optimum. Unless stated
+otherwise, the graph and its rational weights are given explicitly. We writeMaxCut(G)for the
+maximum crossing weight and, when the edge weights sum to one, also denote this value by
+Val(G). The decision problem of whether a weighted graph has a cut of at least a given weight
+appears among Karp’s original NP-complete problems [11]. Approximation asks how much of
+this optimum can still be guaranteed in polynomial time. Goemans and Williamson [9] gave
+a semidefinite programming algorithm with random-hyperplane rounding for Max-Cut, with
+expected approximation ratio approaching
+αGW = min
+−1≤ρ<1
+2 arccosρ
+π(1−ρ) = 0.878567....(1.1)
+The expression compares two contributions of an edge whose endpoint vectors have inner product
+ρ: its semidefinite objective value is(1−ρ )/2, whereas a random hyperplane separates the
+vectors with probabilityarccos(ρ)/π. The minimum ratio overρ is the uniform guarantee of
+this rounding rule. Determining whether this ratio is optimal under ordinary NP-hardness has
+been a central question in approximation algorithms. Håstad’s hardness theorem [10], combined
+with the gadgets of Trevisan, Sorkin, Sudan, and Williamson [19], rules out ratios greater than
+16/17. Khot, Kindler, Mossel, and O’Donnell [13] established optimality ofαGW assuming the
+Unique Games Conjecture [12]; the analytic input is the Majority Is Stablest theorem of Mossel,
+O’Donnell, and Oleszkiewicz [16].
+We resolve the unconditional optimality question for Max-Cut.
+Theorem 1.1.For every fixedα with αGW <α≤ 1, it is NP-hard to approximate Max-Cut
+within a factor ofα. This holds for simple unweighted graphs.
+The statement means that a polynomial-time algorithm which always returns a cut of weight
+at leastα times the maximum would implyP =NP. We prove the following more precise gap
+theorem. Write
+B(t) = 2
+π arcsint,0<t<1.(1.2)
+1
+
+=== PDF PAGE 2 ===
+Theorem 1.2.Fix a rationalt∈ (0, 1)and a constant0 <ε< (t−B (t))/4. For graphs equipped
+with a rational probability distribution on edges, it is NP-hard to distinguish
+YES:Val≥ 1 +t
+2 −ε,
+NO:Val≤ 1 +B(t)
+2 +ε,
+whereValis the maximum cut weight.
+Prior work and the direct route
+The reduction of proof verification to approximation gaps has its roots in Feige, Goldwasser,
+Lovász, Safra, and Szegedy [7] and in the PCP theorems of Arora–Safra and Arora, Lund,
+Motwani, Sudan, and Szegedy [2, 1]. Håstad’s Fourier analysis of proof-verification tests [10]
+made many of these gaps sharp. For Max-Cut, the Gaussian geometry of the semidefinite
+relaxation gives a particularly precise target. Feige and Schechtman [8] constructed integrality
+gaps approachingαGW for this relaxation; a limitation of that relaxation alone does not establish
+hardness for arbitrary algorithms. The Unique Games reduction of Khot, Kindler, Mossel, and
+O’Donnell [13] connected the same geometric threshold to computational hardness.
+The original analysis of Khot, Kindler, Mossel, and O’Donnell proposed Majority Is Stablest
+as the analytic statement needed to obtain this threshold. Mossel, O’Donnell, and Oleszkiewicz
+proved it through a comparison between low-influence Boolean functions and Gaussian func-
+tions [16], transferring Borell’s halfspace noise-stability bound [5] to the Boolean setting. Their
+theorem leaves the Unique Games Conjecture as the hypothesis in the classical hardness reduc-
+tion [16, Corollary 2.12]. We use Majority Is Stablest to identify an influential coordinate of our
+test, then prove the additional extraction needed to turn that coordinate into a source-game label.
+The algorithmic benchmark above is the ideal rounding ratio; finite-precision SDP optimization
+and random-hyperplane rounding give expected ratioαGW−η for any fixedη >0[ 9, Section 2].
+The comparison between semidefinite approximation and hardness extends beyond a single
+worst-case ratio. O’Donnell and Wu [17] determined the full Max-Cut approximation curve
+under the Unique Games Conjecture, relating the attainable cut value to the instance’s optimum.
+Raghavendra [18] established a general correspondence between semidefinite relaxations and
+Unique-Games-based hardness for finite constraint satisfaction problems. Our theorem concerns
+the unconditional worst-case ratio for Max-Cut; the proof below establishes the specific family
+of completeness and soundness gaps in Theorem 1.2.
+In a projection game, each vertex of a bipartite graph receives a label from a specified
+alphabet, and the edge weights form a probability distribution. An edge accepts when its
+prescribed map sends the left label to the right label. Its value is the maximum accepted edge
+weight. A two-to-one constraint has exactly two preimages for every right label. Completeness
+and soundness are, respectively, the promised lower bound on the YES-case value and upper
+bound on the NO-case value.
+Our starting point is the published 2-to-1 game construction with imperfect completeness [6].
+The Grassmann-graph approach was introduced by Khot, Minzer, and Safra [15]. Its soundness
+was completed through the connection between expansion and agreement established by Barak,
+Kothari, and Steurer [3] and the expansion theorem of Khot, Minzer, and Safra [14]. We need a
+precise affine form of the construction: its projections are surjective affine maps between binary
+spaces of dimensions differing by one, and its alphabet can be fixed for a desired soundness before
+2
+
+=== PDF PAGE 3 ===
+the completeness error is made arbitrarily small. Theorem 2.2 states this input. Appendix A
+derives it from the published construction, specifying both the valid-subspace conditioning
+and the auxiliary candidate lists used in the soundness proof. Together with Majority Is
+Stablest, that construction supplies the external foundation of the argument. The Unique Games
+Conjecture enters only as historical context. The tree Fourier analysis, hashing bound, and
+hidden-coordinate decoding are proved here.
+The proof and its main ingredients
+As in long-code reductions [4, 10], a labela is represented by the dictatorw↦→w(a), wherew
+ranges over Boolean words indexed by labels. The graph has one such word domain for each
+tuple of left vertices of the source game. Thus an arbitrary cut specifies a Boolean function
+on each domain. To sample an edge, the test chooses two left tuples through a common right
+tuple, generates two words on the right label space, and pulls them back through the sampled
+affine projections. It negates the second word. When the sampled constraints are satisfied,
+dictator labels give a cut probability of one half of one plus the correlation between the two
+words evaluated at a common label.
+The word generator is a finite rooted tree. Every internal node hass pairs of children and a
+random table fromFs
+2 to{−1, 1}; the leaves carry affine forms on the label space. At a labela,
+these forms give leaf signs, and the tables recursively combine the child signs into the root sign
+W (a). The gate rule is chosen so that each monomial of its Walsh expansion keeps one child
+from every pair. A second exploration keeps both children of one randomly selected pair at each
+reached node. At any fixed depth, the two explorations have exactly one node in common. The
+test couples the tables reached by this second exploration at a random depth, using entrywise
+correlationt, and leaves all other tables unchanged. Every monomial therefore acquires precisely
+one factor oft. A small independent resampling of the affine rows gives the smoothing needed
+for soundness and only a small completeness loss.
+For an arbitrary cut, we first average its odd part over the source-game edges. The resulting
+function is balanced in the selected table entries, and a cut above the desired NO threshold
+makes its expected noise stability exceedB(t). Majority Is Stablest then detects an influential
+entry. That entry is indexed by a gate input, not by a source-game label. The remaining task is
+to connect its influence to labels that the two endpoints of a source edge can choose consistently.
+Three steps address this task.
+1. Local simplification of Fourier support.The gate symmetries force the two child indices in
+each pair to have the same sum. After row smoothing, averaging the depth of the selected
+tables makes it inexpensive to retain indices which put this sum in one child of each pair
+and zero in the other. This simplification is imposed only at the influential gate. It is the
+structure that lets affine shifts act as translations of that gate’s table.
+2. A vector-valued affine hashing lemma.For independent affine shifts, a diffuse distribution
+of Fourier mass cannot create a large entry influence on average. The bound is uniform
+in the dimension of the row space. Its proof uses two truncations and a fourth-moment
+identity; it may be useful whenever translated coefficient arrays must be decoded without
+an alphabet-size loss.
+3. Decoding with a hidden coordinate.The mass concentration is obtained after fixing many
+row coordinates. A left endpoint cannot usually construct the pullback of this context
+3
+
+=== PDF PAGE 4 ===
+without knowing its incident projection. We use a product of the game and plant zero
+linear coefficients in one uniformly chosen factor of the context and of the latent resampling
+rows. After that factor is forgotten, the planted law is close to the original law. At the
+planted factor, the context can be pulled back without knowing the projection. Only the
+2s free rows at the selected gate still have to be compared across it, at a cost of22s in
+Fourier mass.
+The resulting decoding loss is independent of the source alphabet. This is essential: the
+alphabet dimension depends on the soundness we request, so a dimension-dependent loss could
+make the soundness choice circular. We first fix that loss and the source soundness, then the
+alphabet and the number of product factors, and finally the source completeness error. The
+quantifier order in Theorem 2.2 permits exactly this sequence.
+Section 2 fixes the Fourier conventions. Sections 3 and 4 define the code and the Max-Cut
+test. Sections 5 to 7 prove the analytic ingredients. Sections 8 and 9 give the decoding and
+finish the proof. Appendix A derives the precise starting game from the published construction,
+and Appendix B gives a deterministic conversion to simple unweighted graphs.
+2 Preliminaries
+The proof uses two Fourier expansions. Characters of affine rows encode candidate labels,
+whereas characters of Boolean table entries detect the influences to which Majority Is Stablest
+applies. We introduce both conventions, then state the exact affine-game input.
+All vector spaces overF2 are finite dimensional. All expectations on a finite vector space or
+Boolean cube use the uniform probability measure, unless another distribution is specified. All
+Fourier coefficients use this probability normalization. AnL2 norm always integrates over the
+variables displayed in its subscript; variables declared fixed are not integrated.
+2.1 Affine rows and labels
+LetAbe a nonempty affine space overF 2, with a fixed affine coordinate system, and set
+H= Aff(A,F 2).
+This is a vector space, containing the constant form1. Forq∈H ∗ define χq(h) = (−1)q(h).
+Evaluation identifiesAwith
+{q∈H ∗ :q(1) = 1}.(2.1)
+Indeed, if h(a) = h0 +∑
+ihiai, a functional taking value one on1has the unique form
+q(h) =h0 +∑
+ihiai. We call precisely these functionalslabels; a general nonzero functional in
+H∗ need not be a label.
+Forf:H k→RandC= (q 1,...,q k)∈(H ∗)k, put
+ˆf(C) =E Rf(R)
+k∏
+i=1
+χqi(Ri),|C|= #{i:q i̸= 0}.
+Parseval gives∑
+C ˆf(C)2 = ERf(R)2. The same notation is used for functions with additional
+variables, which remain fixed during the indicated Fourier expansion.
+4
+
+=== PDF PAGE 5 ===
+For0 ≤r≤ 1, letTr be the row-noise operator: independently in each coordinate, retain the
+row with probabilityrand otherwise replace it by an independent uniform row. Then
+ˆTrf(C) =r |C|ˆf(C).(2.2)
+This operator preserves the range[−1, 1]. It is also convolution by an independent increment
+E∈H k, whose coordinates are zero with probabilityr and independent uniform rows with
+probability1−r. Convolution commutes with every fixed translation of the rows.
+2.2 Boolean Fourier analysis
+For a finite setΩandh:{−1,1} Ω→R, write
+h(x) =
+∑
+S⊆Ω
+ˆh(S)
+∏
+a∈S
+xa.
+Its influence and degree-Kinfluence ata∈Ωare
+Infa(h) =
+∑
+S∋a
+ˆh(S)2,Inf ≤K
+a (h) =
+∑
+S∋a
+|S|≤K
+ˆh(S)2.
+LetP≤K be the orthogonal projection onto Fourier degree at mostK. In particular,
+∑
+a∈Ω
+Infa(P≤Kh)≤K∥h∥ 2
+2.(2.3)
+Fort-correlated uniform bitsx,y, independently coupled in each coordinate,
+Stabt(h) =E[h(x)h(y)] =
+∑
+S⊆Ω
+t|S|ˆh(S)2.(2.4)
+Thus stability is nonnegative fort≥0. Ifh∈[−1,1], it is at most one.
+Lemma 2.1(Majority Is Stablest with a degree cutoff).Fix0<t< 1and ξ >0. There are an
+integerK≥ 1and τ >0, depending only ont,ξ, such that everyh :{−1, 1}Ω→ [−1, 1]with
+Eh= 0satisfies
+(
+Inf≤K
+a (h)<τfor alla∈Ω
+)
+=⇒Stab t(h)≤B(t) +ξ.
+Proof. The untruncated assertion follows from Majority Is Stablest [16, Theorem 4.4]. To match
+its[0 , 1]convention, put g = (h + 1)/2: then Eg = 1/2, each nonconstant Fourier coefficient is
+halved, andStabt(h) = 4 Stabt(g)−1. The Gaussian halfspace value forg is1/4+ arcsin(t)/(2π),
+which becomesB(t)in our normalization; see [16, Theorem 4.1 and Corollary 4.3] and [5]. Here
+is the degree-cutoff reduction to the untruncated assertion. For a cube-noise parameteru< 1,
+put hu = Tuh, using ordinary bit noise in this paragraph. Range and mean are preserved.
+Uniformly overhof norm at most one,
+0≤Stab t(h)−Stab t(hu)≤sup
+j≥0
+tj(1−u 2j)−→0 (u↑1).
+The convergence follows by first choosing a finite degree cutoff to bound the tailtj, and then
+taking u close to one on the remaining degrees. Chooseu so that this error is at mostξ/2. Let
+δ >0be the untruncated influence threshold for errorξ/2. ChooseK with u2(K+1)≤δ/ 2, and
+takeτ=δ/2. Then
+Infa(hu)≤Inf ≤K
+a (h) +u 2(K+1)∥h∥2
+2<δ.
+Apply the untruncated theorem tohu and add the stability error.
+5
+
+=== PDF PAGE 6 ===
+2.3 Affine projection games
+A weighted bipartite projection game consists of finite setsX,Y , a rational probability distribu-
+tion λ on a finite edge setE with endpoint maps toX and Y (parallel edges are allowed), finite
+alphabets, and a projectionπe for each edge. Its value is
+Val(G) = max
+ℓX,ℓY
+Pr
+e=(x,y)∼λ
+[πe(ℓX(x)) =ℓ Y (y)].
+In this paper the alphabets areFn+1
+2 and Fn
+2, and everyπe : Fn+1
+2 →F n
+2 is surjective affine.
+Theorem 2.2 supplies NP-hard gaps with this structure. We discard endpoints with zero marginal
+probability whenever conditional edge distributions are used.
+The starting theorem has the quantifier order
+∀b∈(0,1)∃n=n(b)≥1∀a∈(0,1−b).
+The precise promise is given below; its derivation from the published construction is in Section A.
+Proposition 2.2(Affine 2-to-1 Games Theorem).For every constant b∈ (0, 1)there is an
+integer n≥ 1such that, for every constant a∈ (0, 1−b ), the following promise problem is
+NP-hard. Its input is a weighted bipartite game with vertex setsX,Y , respective label sets
+Fn+1
+2 ,Fn
+2, and a surjective affine map
+πe :F n+1
+2 −→Fn
+2
+on each edgee= (x,y). An edge is satisfied whenπe(λX(x)) =λ Y (y). The promise cases are
+YES : Val(G)≥1−a,NO : Val(G)≤b.
+The integern depends onb alone. For fixeda,b, the reduction is deterministic and has polynomial
+running time and output size.
+A weighted graph is likewise specified by a rational distribution on unordered edges, allowing
+loops. A cut assigns signs to its vertices and satisfies an edge when its signs differ. Its value is
+its satisfaction probability. Loops have zero cut weight. The conversion in Theorem B.1 keeps a
+common scale even when loops are deleted.
+3 A tree code with complementary traversals
+We use the affine label spaceA and row spaceH = Aff(A,F 2)of Section 2. The code below
+turns affine rows and Boolean gate tables into a word indexed by labels. Its two complementary
+traversals control the correlation seen by a cut that evaluates the word at a single label.
+Definition 3.1(Tree code).Fix integerss≥2andm≥1, and put
+k= (2s) m, d=s m.
+LetT be the complete rooted2s-ary tree of depthm. The children of each internal nodev are
+indexed by(g,b )∈ [s]×{ 0, 1}. Its leaves are indexed by[k]. To each internal node assign a
+table Fv : Fs
+2→{− 1, 1}, and to each leaf assign a rowRi∈H . The wordW (R,F )∈{− 1, 1}A
+6
+
+=== PDF PAGE 7 ===
+is defined pointwise as follows. Ata∈A , leafi has sign(−1)Ri(a). An internal node with child
+signs(Z g,b)outputs 
+
+s∏
+g=1
+Zg,0
+
+Fv(z),(−1) zg =Z g,0Zg,1.(3.1)
+The root output isW(R,F)(a).
+We choose the tables to be noised by a second traversal of the tree. Arandom sliceis
+obtained by first choosingJ0 uniformly from{0,...,m− 1}. Starting at the root, at each reached
+node of depth less thanJ0 choose one of itss child pairs uniformly and independently, and
+continue through both children of that pair. The setD of reached nodes at depthJ0 is the slice.
+Conditionally onJ0 =j, the slice has2j nodes, and every fixed node of depthj belongs to it
+with probabilitys−j. We writeFout = (Fu)u/∈Dfor the tables outside the slice.
+The two traversals of the tree used below complement one another. The slice construction
+chooses one pair and keeps both children. The Walsh expansion of a gate keeps one child from
+every pair. Their intersection therefore follows a single path. Figure 1 shows the local rule;
+iterating it gives one common node at every slice depth.
+v
+(1,0) (1,1) (2,0) (2,1) (3,0) (3,1)
+one child per pair
+both in one pair
+Figure 1: Complementary choices at one gate, illustrated fors = 3. A monomial traversal (solid)
+selects one child from each pair; the slice exploration (dashed) selects both children of one pair.
+Exactly one child is shared, shown in purple. Only this local selection is depicted; the same rule
+is repeated above the chosen slice.
+Lemma 3.2(Complementary traversal and correlation).For every fixed collection of tables
+F, the root output as a multilinear polynomial in thekleaf signs has only degree-dmonomials.
+Each such monomial chooses one child from every pair at every node that it reaches. Every
+resulting traversal meets every possible sliceD at exactly one node. Consequently, negating all
+the tables on a slice negatesW.
+Let0 < t <1and0 < r <1. Draw F uniformly, and constructF′ by leaving the tables
+outsideD unchanged and coupling each pair of corresponding table entries onD as uniform signs
+of correlationt, independently across entries. Independently drawR∈H k uniformly, and form
+R1,R 2 by retaining each row ofR with probabilityr and otherwise replacing it by an independent
+uniform row, independently in the two copies. Then, for everya∈Aand every fixed slice,
+E
+[
+W(R 1,F)(a)W(R 2,F′)(a)|D
+]
+=tr 2d.(3.2)
+In particular, ifr= 1−µ/dwith0<µ<1/2, thenr 2d≥1−2µ.
+7
+
+=== PDF PAGE 8 ===
+Proof. For a fixed gate table, expand in its argumentz: Fv(z) = ∑
+I⊆[s] ˆFv(I)(−1)
+∑
+g∈Izg
+.
+Substituting into Equation (3.1), the term indexed byIis
+ˆFv(I)
+∏
+g/∈I
+Zg,0
+∏
+g∈I
+Zg,1.
+Iterating this expansion gives
+WF (x) =
+∑
+P∈P
+aP (F)
+∏
+i∈P
+xi,|P|=d,(3.3)
+where P is the family of leaf sets produced by choosing one child per pair at each reached internal
+node. The leaf set determines all these choices: a selected child has a nonempty intersection
+with that leaf set, whereas an unselected child has none. Thus different traversals give different
+monomials, andaP (F )is the product of one Walsh coefficient ofFv for each node reached by
+the traversal.
+At the root both a monomial traversal and the slice exploration are present. At any common
+node above the slice depth, exactly one child is selected by both explorations. Induction gives
+exactly one common node at the slice depth. Hence eachaP contains exactly one factor from a
+table onD. Negating every such table negates each coefficient in Equation(3.3) and therefore
+negates the word. Moreover, each Walsh coefficient of a slice table satisfies
+E[ˆF′
+v(I)|F v] =t ˆFv(I).
+Conditional independence between tables therefore givesE[aP (F′)|F,D] =ta P (F).
+For fixeda, the signsxb
+i = (−1)Rb
+i(a) are uniform, independent acrossi, and E[x1
+ix2
+i ] =r2.
+Thus the product expectation of two monomials in Equation(3.3) is zero unless their leaf
+sets agree, and isr2d when they agree. SinceWF is Boolean, Parseval gives∑
+PaP (F )2 = 1.
+Averaging first over rows and then overF′ proves Equation(3.2). The last claim is Bernoulli’s
+inequality:(1−µ/d) 2d≥1−2µ.
+The correlation identity describes a cut that evaluates the word at one label. To analyze
+arbitrary cuts, we also need functions that can depend on the entire word but do not see its
+generating rows or tables. We callfafunction of the codeif
+f(R,F) =ϕ(W(R,F))(3.4)
+for a fixed functionϕ on words. This class is closed under averaging over fixed choices ofϕ,
+including choices that first pull a word back through a fixed affine map. Forr∈ [0, 1], let
+Tr denote independent row resampling with retention probabilityr, and write ¯f =Trf. The
+operator preserves bounds on the range off. Ifϕ is odd, Lemma 3.2 shows that bothf and ¯f
+are odd under simultaneous negation of the slice tables. In particular, they have mean zero in
+those table entries when all rows and outside tables are fixed.
+At these fixed data, the remaining random input is the cube of|D|2s independent entries,
+indexed by( v,z )∈D×F s
+2. Fourier degree and influence on this cube refer to subsets of
+entries. This differs from the Walsh expansion of a fixed gate in itss-bit argumentz used in the
+correlation proof.
+8
+
+=== PDF PAGE 9 ===
+4 The Max-Cut reduction
+Fix a rationalt∈ (0, 1), tree parameterss,m, a rational0 <µ< 1/2, andr = 1−µ/d. The
+parameters will be chosen in Section 9. LetG be an affine game as in Theorem 2.2, with edge
+lawλ and alphabet dimensionsn + 1,n. Let T≥ 1be an integer. We use the product label
+spaces
+B= (F n+1
+2 )T,A= (F n
+2)T,
+and the row spaceH= Aff(A,F 2).
+4.1 Vertices and edge distribution
+For eachx∈X T, make one graph vertex(x,w )for every word w∈{− 1, 1}B. This is the
+standard long-code word domain [4, 10]; the tree construction specifies how the test samples its
+queries. Thus an arbitrary cut is exactly a family of functions
+σx :{−1,1} B−→{−1,1}.
+The functions receive only the resulting words; they do not receive the rows, gate tables, slice,
+or sampled game edges that produced them.
+The graph’s edge distribution is the following test.
+1. Draw y∈Y T from the product right-endpoint marginal ofλ. Independently draw two
+edge tuplese,e′ from the product conditional edge law giveny. Writex,x′ for their left
+endpoints andπe,πe′ :B→Afor their coordinatewise projections.
+2. Independently of all game data, draw a random sliceD. DrawF,F′ as in Theorem 3.2:
+corresponding entries are independentt-correlated uniform pairs onD, and identical
+uniform pairs offD.
+3. Draw a uniform common row arrayR∈H k. In each of two copies, independently retain
+each row with probabilityrand otherwise resample it uniformly, obtainingR1,R 2.
+4. Output the unordered edge whose endpoints are
+(
+x,W(R 1,F)◦π e
+)
+,
+(
+x′,−W(R 2,F′)◦π e′
+)
+.(4.1)
+All edge weights are the probabilities of these outcomes, aggregated over outcomes with the
+same unordered endpoints.
+Lemma 4.1(Completeness).IfVal(G)≥1−a, the graph has a cut of value at least
+(1−2Ta) 1 +tr 2d
+2 ≥ 1 +t
+2 −tµ−2Ta.(4.2)
+The first lower bound is useful when2Ta≤1, which is the regime used below.
+Proof. Choose game labelsℓX,ℓY satisfying an edge with probability at least1−a. Label each
+word vertex by evaluation at the tuple of left labels:
+σx(w) =w
+(
+ℓX(x1),...,ℓ X(xT )
+)
+.
+9
+
+=== PDF PAGE 10 ===
+Each coordinate of either sampled edge tuple has the original edge law. A union bound
+shows that all2 T sampled constraints are satisfied except with probability at most2 Ta.
+When all these constraints are satisfied, the two queried tuples project to the same label
+l = (ℓY (y1),...,ℓ Y (yT ))∈A . The cut signs then have product−W (R1,F )(l)W (R2,F′)(l). The
+word-generation data are independent of the game edges, so Theorem 3.2 gives conditional cut
+probability(1 + tr2d)/2. On the remaining event the cut probability is nonnegative. This proves
+the first bound when2Ta≤ 1; if2Ta > 1that bound is negative and is automatic. Finally,
+r2d≥1−2µ, and the loss due to the prefactor is at most2Ta, giving the second bound.
+4.2 A large cut produces excess stability
+An arbitrary cut need not change sign when its queried word is negated. We separate its two
+parities because the negative second query makes odd dependence increase the cut value and
+even dependence decrease it. For each cut table define its even and odd parts by
+σeven(w) = σ(w) +σ(−w)
+2 , σ o(w) = σ(w)−σ(−w)
+2 .
+For an edge tuple and a right-endpoint tuple, set
+Ge(R,F) =σ o
+x(e)(W(R,F)◦π e),(4.3)
+Gy(R,F) =E e|yGe(R,F), ¯Gy =T rGy.(4.4)
+WriteAy and ¯Ay =TrAy for the analogous averages usingσeven. These functions are bounded
+in absolute value by one. Moreover,
+Gy(R,F) =ϕ y(W(R,F)), ϕ y(w) =E e|yσo
+x(e)(w◦π e),
+whereϕy is odd and depends on no slice or row data. Thus¯Gy has mean zero in the slice entries
+for every fixedy,D,R,F out, by the observation following Theorem 3.2. The later extraction
+argument, Theorem 7.1, applies to precisely such bounded odd functions of the generated word.
+Lemma 4.2(Stability identity).For every cut of the constructed graph,
+cut(σ) = 1
+2 + 1
+2 EStabFD
+t ( ¯Gy)− 1
+2 EStabFD
+t ( ¯Ay),(4.5)
+where both expectations are overy,D,R,F out. In particular,
+cut(σ)≤ 1
+2 + 1
+2 EStabFD
+t ( ¯Gy).(4.6)
+Proof. Condition ony,D,R,F out. The sampled edge tuples and the two row resamplings are
+independent between copies. After averaging over them, the expected first sign as a function
+of FD is ¯Ay + ¯Gy. The minus sign in the second queried word makes the expected second sign
+¯Ay− ¯Gy at F′
+D. The two slice inputs are ordinaryt-correlated uniform cube inputs. The rows
+in these functions are the common latent arrayR; the two independent row resamplings have
+already been absorbed intoTr. Negating every slice entry leaves¯Ay unchanged and negates ¯Gy.
+Their Fourier supports therefore have opposite total parities, so the cross terms vanish. The
+expected sign product isStabt( ¯Ay)−Stabt( ¯Gy). An edge is cut with probability one half of one
+minus its sign product, giving (4.5). Nonnegativity of stability fort>0gives (4.6).
+10
+
+=== PDF PAGE 11 ===
+If a cut has value at least(1 +B(t))/2 +δ/2, then its odd average has expected slice stability
+at leastB(t) +δ. The next three sections show that this excess stability yields a label carrying
+substantial Fourier mass, with constants independent of the game dimension and the number of
+repetitions; the formal statement is Theorem 7.1. Section 8 then turns that mass into a labeling
+of a single copy of the original game.
+5 Fourier structure of the tree code
+The cut depends on the generated word, so every transformation that preserves that word also
+constrains the cut’s row Fourier coefficients. At each gate these constraints give a common
+Fourier index shared by all child pairs. Negating the gate table distinguishes whether this index
+is an evaluation label. We then show that, at a random slice, little smoothed Fourier mass is
+lost by keeping the entire common index in just one child of each pair. Finally we express these
+retained indices in row coordinates that remain free after the other rows are fixed. This is the
+local form used in Section 7. Throughout the section,f is a function of the code in the sense of
+(3.4).
+5.1 Row Fourier support
+For each nodev, define itsgenerator P (v), a set of leaves, recursively:P (v) ={v} at a leaf, and
+P (v) = P (v1,0)∪P (v1,1)at an internal node. Thus a generator always follows both children
+of the first pair; unlike the slice, it involves no random choices. Adding the sameh∈H to all
+rows inP (v)multiplies the subtree output ata by(−1)h(a). This follows by induction from
+Equation (3.1): multiplying both children of one pair by the same sign leaves all gate inputszg
+unchanged and multiplies the prefactor by that sign.
+For a row Fourier indexC= (qi)k
+i=1∈(H∗)k, put
+χC(R) =
+∏
+i
+χqi(Ri),|C|=|{i:q i̸= 0}|, q v =
+∑
+i∈P(v)
+qi.
+Writeqv,gb for the index of child(g,b )of v. Thus, by definition,qv = qv,10 +qv,11. At fixed
+tables, the row expansion and its smoothing are
+f(R,F) =
+∑
+C
+ˆfC(F)χC(R), ˆ¯fC(F) =r |C|ˆfC(F).(5.1)
+Lemma 5.1(Row symmetries).Let f be a function of the code. Every nonzero row Fourier
+coefficient offsatisfies, at each internal nodev,
+qv,g0 +qv,g1 =q v (g∈[s]).(5.2)
+For a table collectionF, let Fv,− negate Fv alone, and letFv,z replaceFv(u)by Fv(u +z),
+leaving all other tables unchanged. Then
+ˆfC(Fv,−) = (−1)qv(1)ˆfC(F),(5.3)
+ˆfC(Fv,z) = (−1)
+∑
+gzgqv,g1(1)ˆfC(F).(5.4)
+All these statements remain true after row smoothing. They are also preserved by row Fourier
+projections and by projection to any range of total Fourier degrees in the entries of a specified
+collection of whole gate tables.
+11
+
+=== PDF PAGE 12 ===
+Proof. For eachg, shifting the generators of both children in pairg byh has exactly the same
+effect on the subtree atv as shiftingP (v)by h. Consequently the two row translations have the
+same effect on the whole word. Taking row Fourier coefficients yields
+χqv,g0+qv,g1(h)ˆfC(F) =χ qv(h)ˆfC(F) (h∈H).
+Distinct characters are distinct functions, proving Equation (5.2).
+Negating Fv has the same effect on the word as adding1to all rows inP (v). This proves
+Equation (5.3). To translate the input ofFv byz, add1to the generator of its second child
+in each pair withzg = 1. This changes precisely those gate input bits and leaves its prefactor
+unchanged. Fourier transformation gives Equation (5.4).
+Row smoothing and row Fourier projections act diagonally onC, so preserve all three
+identities. On the cube of table-entry signs, a domain translation permutes coordinates, and
+negating a gate table multiplies each monomial by its parity sign. Both operations preserve
+total degree in any specified collection of whole gate tables and therefore commute with the
+stated degree projections.
+5.2 An unsplit projection on a random slice
+Equation (5.2) assigns one common sumqv to every child pair. Equation(5.3) then has a useful
+interpretation: coefficients odd under negatingFv haveqv(1) = 1, so their common index is a
+label by(2.1). The individual child indices, however, can still be arbitrary functionals whose
+sum isqv.
+We simplify this last freedom at one gate at a time. Keepingqv in one child of each pair
+leaves only the choice of that child, rather than two arbitrary functionals with prescribed sum.
+Call C unsplit atv if, for everyg, the ordered pair(qv,g0,qv,g1)is either( qv, 0)or(0 ,qv). LetSv
+be the orthogonal row Fourier projection onto such indices. Whenqv = 0, this requires every
+child index to be zero. The next bound averages the cost over the slice depth. It does not
+require an index to be unsplit at every gate of the tree.
+Lemma 5.2(Average cost of the unsplit projection).Letf be a function of the code with|f|≤ 1,
+let r = 1−µ/d with0 <µ< 1/2, and let ¯f =Trf. Choose the random slice independently off.
+Then
+EJ0,D
+∑
+v∈D
+∥(I−S v) ¯f∥ 2
+2,R,F≤ s
+2emµ.(5.5)
+The same bound holds after averaging over additional background data determiningf, provided
+the slice is chosen independently of those data.
+Proof. Fix an indexC satisfying Equation(5.2), and letNj be the number of nodes at depth
+j with nonzero indexqv. If qv̸= 0, each child pair contains at least one nonzero index. A
+failure of the unsplit condition at such a node supplies at least one additional nonzero child. If
+qv = 0, a failure supplies at least two nonzero children, whereas its minimum contribution is
+zero. Therefore the numberBj of failures at depthjsatisfies
+Bj≤N j+1−sNj.
+12
+
+=== PDF PAGE 13 ===
+Using the slice inclusion probability and telescoping gives
+EJ0,D
+∑
+v∈D
+1{Cis split atv} ≤ 1
+m
+m−1∑
+j=0
+Nj+1−sNj
+sj
+= s
+m
+(Nm
+sm −N 0
+)
+≤ s|C|
+md.
+HereN m =|C|. By Equation (5.1) and Parseval, the left side of Equation (5.5) is at most
+s
+m
+∑
+C
+(
+r2|C||C|
+d
+)
+EF|ˆfC(F)| 2.
+Forx≥ 0, xe−2µx≤ (2eµ)−1, and logr≤−µ/d . Hence every parenthesized factor is at most
+(2eµ)−1, while∑
+C EF|ˆfC(F )|2 =∥f∥ 2
+2≤ 1. This proves the bound. The proof is pointwise in
+the background data, so its average satisfies the same inequality.
+5.3 Free shifts and the remaining row coordinates
+The extraction argument must use the common index after fixing most of the rows. We therefore
+choose coordinates in which translating a child generator changes one free row and leaves all
+other coordinates fixed. The unsplit projection will then act separately at each fixed context,
+and its retained characters will have an explicit form.
+Fix a sliceD and a nodev∈D . The2 s sets P (vg,b)are nonempty and disjoint. Choose
+one representative leafig,b from each of them, using a rule depending only on the tree, and set
+Lg,b =Rig,b. For every other leafi in that generator, replaceRi by Ri +Lg,b. Keep all rows
+outside these generators as they are. Denote the resultingk− 2s remaining coordinates by
+Γ∈H k−2s.
+Lemma 5.3(Free-shift coordinates).The change of coordinates
+Hk−→H 2s×H k−2s, R↦−→((Lg,b),Γ)
+is a linear bijection. In particular, under uniform rows the free shifts are independent uniforms
+conditional onΓ. The Fourier index ofLg,b corresponding to a full row indexC is Qg,b =qv,gb.
+Consequently, at every fixedΓ, the operatorSv acts as the Fourier projection in the2s shifts
+onto precisely the unsplit shift indices. For a function of the code or its row smoothing, the shift
+coefficients vanish unless the sumsQg,0 +Qg,1 are the same for everyg. The table actions in
+Equations (5.3) and (5.4) hold for each shift coefficient at this fixed context, withqv =Q1,0 +Q1,1
+andq v,g1 =Q g,1.
+Proof. The inverse map sets the representative row equal toLg,b and recovers every other row in
+its generator by addingLg,b to its recorded difference. This proves bijectivity. In a row character,
+the coefficient ofLg,b is exactly∑
+i∈P(v g,b)qi =qv,gb. Thus the condition definingSv depends
+only on the shift indexQ, not on any Fourier index ofΓ. Grouping the full Fourier expansion
+byQ proves its asserted action on each fixed fiber. The same grouping proves the support and
+table-action identities: all full row coefficients with a givenQ satisfy the same identities and
+carry the same signs.
+13
+
+=== PDF PAGE 14 ===
+Thus, for a nonzero common indexq, the retained shift indices are specified by the subset
+I⊆[s]of pairs in whichqoccurs in the second child. Their characters are
+∏
+g/∈I
+χq(Lg0)
+∏
+g∈I
+χq(Lg1).
+If q = 0, there is only the all-zero unsplit index, with character1. NegatingFv multiplies the
+corresponding coefficient by(−1)q(1). On the part odd inFv, q is therefore a label and hence
+nonzero, so the description byq and I is unique. For such a label, translating the argument of
+Fv byz∈F s
+2 multiplies its coefficient by(−1)
+∑
+g∈Izg
+. Thus the same subsetI records both the
+row character and the table translation character. This is the local Fourier description used in
+Section 7, valid at each fixed context.
+6 A vector-valued hashing lemma
+The following lemma turns dispersion among characters into dispersion among table entries. Its
+constants are independent of the dimension of the character space and of the dimension of the
+vectors being hashed. In the application,q will index candidate labels andz will index entries of
+a gate table. The resulting hashed vector will collect the Fourier coefficients contributing to one
+entry’s influence, so its squared norm will be that influence. This is why we need a vector-valued
+statement rather than a scalar estimate.
+Lemma 6.1(Vector-valued hashing).Let H be a finite-dimensional vector space overF2, write
+χq(u) = (−1)q(u) for q∈H ∗ and u∈H , letV be a real Hilbert space, lets≥ 1be an integer,
+and let
+c(q,z)∈V, q∈H ∗, z∈F s
+2.
+Set
+wq =
+∑
+z∈Fs
+2
+∥c(q,z)∥ 2, M=
+∑
+q∈H∗
+wq.
+ChooseL,J 1,...,J s independently and uniformly inH, and define
+J(q) = (q(J1),...,q(J s)), U(z) =
+∑
+q∈H∗
+χq(L)c(q,z+J(q)).
+Then
+E
+∑
+z∈Fs
+2
+∥U(z)∥ 2 =M.(6.1)
+For everyζ >0, there areγ >0ands 0∈N, depending only onζ, such that for everys≥s 0,
+max
+q∈H∗
+wq≤γM=⇒Emax
+z∈Fs
+2
+∥U(z)∥ 2≤ζM.(6.2)
+Proof. All expectations overH and Fs
+2 below use uniform probability measure; the displayed
+sums definingwq andM are unnormalized. Conditional on theJg, orthogonality of the characters
+ofLgives
+EL∥U(z)∥ 2 =
+∑
+q
+∥c(q,z+J(q))∥ 2.
+14
+
+=== PDF PAGE 15 ===
+Summing overz proves (6.1). If M = 0, every vectorc(q,z )is zero and (6.2) is immediate.
+Henceforth assumeM >0.
+Set h = 2s and ρ = maxqwq/M. We will prove the quantitative bound below for every
+C,D> 0, and then choose its parameters. The main estimate bounds the maximum squared
+norm by the square root of the sum of fourth powers. After a Fourier change of variables,
+most terms in that fourth moment force the same characterq in all four factors; their total is
+controlled by the dispersion of the character masses. Two truncations will control the remaining
+terms and the cost of this change to the array:
+Emaxz ∥U(z)∥ 2≤2M
+
+
+√
+2ρ+ 2C2
+D2 + 3D4
+h +
+( 1√
+C
++ 1
+D
+)2
++ 1
+h
+
+.(6.3)
+Fourier representation.Forp∈F s
+2 andu∈H, define
+αq(p) =
+∑
+z∈Fs
+2
+(−1)p·zc(q,z), A p(u) =
+∑
+q∈H∗
+χq(u)αq(p), S p =L+
+s∑
+g=1
+pgJg.
+Fourier inversion inzgives
+U(z) =E p(−1)p·zAp(Sp).(6.4)
+Writingm p =E u∥Ap(u)∥2, Parseval’s identity in the two groups gives
+mp =
+∑
+q
+∥αq(p)∥2,E pmp =M,E p∥αq(p)∥2 =w q.(6.5)
+For distinct p,p′, the variables Sp,Sp′ are independent and uniform in H: the coefficient
+vectors(1,p ), (1,p′)are linearly independent over F2. Similarly, any three distinctp1,p 2,p 3 give
+three independent uniform variablesSp1,Sp2,Sp3. Indeed, any nonempty subcollection of their
+coefficient vectors whose sum is zero must have even cardinality, and hence would consist of two
+equal vectors.
+Two truncations.We first discard indicesp with unusually large mean squared normmp, and
+then discard unusually large values ofAp(u)on the remaining indices. The first cutoff makes
+the change to each individual character coefficient uniformly small under the second cutoff. The
+second gives the pointwise bound needed when the fourth-moment indices coincide. We will
+control the discarded part using a first-moment bound and a variance bound from the pairwise
+independence of the samplesSp. Define
+A′
+p(u) =
+{
+Ap(u), m p≤CMand∥A p(u)∥≤D
+√
+M,
+0,otherwise,
+and put
+α′
+q(p) =E uχq(u)A′
+p(u), w ′
+q =E p∥α′
+q(p)∥2, U ′(z) =E p(−1)p·zA′
+p(Sp).
+Pointwise truncation does not increase the total squared norm, so Parseval gives∑
+qw′
+q≤M . If
+mp≤CM, then
+∥αq(p)−α ′
+q(p)∥≤E u∥Ap(u)∥1{∥Ap(u)∥>D
+√
+M}≤ mp
+D
+√
+M
+≤ C
+√
+M
+D .
+15
+
+=== PDF PAGE 16 ===
+Ifm p>CM, thenα ′
+q(p) = 0. Consequently,
+∑
+q
+w′
+q≤M, w ′
+q≤2w q + 2C2M
+D2 .(6.6)
+Let
+Xp =∥(A p−A′
+p)(Sp)∥, X=E pXp.
+Equation (6.4) and the triangle inequality implymaxz∥U(z)−U′(z)∥≤X . The contribution to
+EXfrom the indices withm p>CMis at most
+Ep1{mp>CM}
+√mp≤ Epmp√
+CM
+=
+√
+M/C.
+The contribution from the remaining indices is at mostEpmp/(D
+√
+M) =
+√
+M/D. Moreover,
+the Xp are pairwise independent, by the pairwise independence of theSp. Since Ap−A′
+p is
+eitherA p or zero at each point,
+Var(X) =h−2∑
+p
+Var(Xp)≤h −2∑
+p
+Eu∥Ap(u)−A ′
+p(u)∥2≤ M
+h .
+We have proved
+Emaxz ∥U(z)−U ′(z)∥2≤M
+[( 1√
+C
++ 1
+D
+)2
++ 1
+h
+]
+.(6.7)
+The fourth moment.For brevity write Bp =A′
+p(Sp). Expanding the fourth power of the
+norm and summing the characters inzgives the exact identity
+E
+∑
+z
+∥U′(z)∥4 =h−3 ∑
+p1,p2,p3
+E
+[
+⟨Bp1,Bp2⟩⟨Bp3,Bp1+p2+p3⟩
+]
+=E p1,p2,p3E
+[
+⟨Bp1,Bp2⟩⟨Bp3,Bp4⟩
+]
+, p 4 =p 1 +p 2 +p 3.(6.8)
+Here p1,p 2,p 3 are independent uniform indices in the second line. The factorh−3 in the first
+line comes from four factorsh−1 in Fourier inversion and the sum ofhcharacters overz.
+If any two ofp1,p 2,p 3,p 4 coincide, then some two ofp1,p 2,p 3 coincide. This event has
+probability at most3/h. Since∥Bp∥≤D
+√
+M, its contribution to(6.8) is at most3D4M 2/h in
+absolute value.
+Now fix four distinct indices withp4 = p1 +p2 +p3. The first threeSpi are independent
+uniform elements ofH, andSp4 =Sp1 +Sp2 +Sp3. Expanding the fourA′
+pi in characters and
+averaging over those three independent elements yields
+E
+[
+⟨Bp1,Bp2⟩⟨Bp3,Bp4⟩
+]
+=
+∑
+q
+⟨α′
+q(p1),α′
+q(p2)⟩⟨α′
+q(p3),α′
+q(p4)⟩.(6.9)
+In detail, characters indexed byq1,q 2,q 3,q 4 produce the factor
+3∏
+i=1
+χqi+q4(Spi),
+whose expectation is zero unlessq1 =q 2 =q 3 =q 4.
+16
+
+=== PDF PAGE 17 ===
+The right side of(6.9) need not be nonnegative. For an upper bound, replace each summand
+by∏4
+i=1∥α′
+q(pi)∥, which is nonnegative, and then drop the restriction that the four indices be
+distinct. For every fixedq, Cauchy–Schwarz gives
+Ep1,p2,p3
+4∏
+i=1
+∥α′
+q(pi)∥≤
+(
+E∥α′
+q(p1)∥2∥α′
+q(p2)∥2
+)1/2(
+E∥α′
+q(p3)∥2∥α′
+q(p4)∥2
+)1/2
+= (w′
+q)2.
+The last equality uses the unconditioned independent uniform law of each pair(p1,p 2)and( p3,p 4);
+it does not assert independence after conditioning on distinctness. Thus the nondegenerate
+fourth moment is bounded by∑
+q(w′
+q)2: dispersion among characters now controls concentration
+among table entries. Combining these estimates with (6.6) proves
+E
+∑
+z
+∥U′(z)∥4≤
+∑
+q
+(w′
+q)2 + 3D4M 2
+h
+≤M 2
+(
+2ρ+ 2C2
+D2 + 3D4
+h
+)
+.
+Therefore, using Cauchy–Schwarz once more,
+Emaxz ∥U′(z)∥2≤
+(
+E
+∑
+z
+∥U′(z)∥4
+)1/2
+≤M
+√
+2ρ+ 2C2
+D2 + 3D4
+h .(6.10)
+The inequality(a+b) 2≤2a 2 + 2b2, together with (6.7) and (6.10), proves (6.3).
+Finally, setε= min{ζ,1}and choose
+C= 64
+ε , D= 8C
+ε , γ= ε2
+128,2 s0≥max
+{
+192D4
+ε2 , 16
+ε
+}
+.
+Ifs≥s 0 andρ≤γ , the square-root term in(6.3) is at mostε/4. AlsoD≥
+√
+C, so the other two
+terms in its brackets are at mostε/16each. The resulting bound is3εM/4≤ζM , establishing
+(6.2) with constants depending only onζ.
+7 From excess stability to a label
+This section contains the analytic statement used in the reduction. Its constants do not depend
+on the dimension of the affine label space. The functions may depend on an additional random
+parameter ω, whose law is independent of all rows, gate tables, and the random slice. In the
+application,ωwill be a tuple of right endpoints of the game.
+Letϕ ω :{−1,1} A→[−1,1]be odd, meaningϕ ω(−w) =−ϕ ω(w), and set
+fω(R,F) =ϕ ω(W(R,F)), ¯fω =T rfω, r= 1−µ/d.
+The word, tree, and random sliceD are those of Section 3. WriteFout for the tables outsideD.
+Onceω,D,R,F out are fixed, ¯fω is a function of the independent slice-table bits.
+17
+
+=== PDF PAGE 18 ===
+For a nodev∈D , use the free shift coordinates(Lgb)g∈[s],b∈{0,1} and the remaining context
+Γ∈H k−2s from Theorem 5.3. A hat marked “shifts” expands only these2s free rows. For a
+labelq∈A(equivalently,q∈H ∗ withq(1) = 1), define
+mq(f; Γ,F out) =E FD
+∑
+Q∈(H∗)2s
+Qg0+Qg1=q(g∈[s])
+|ˆf shifts(Q)|2.(7.1)
+The dependence onv,D, andω is suppressed. The sets of indices in this definition are disjoint
+as q varies. For a fixedq, the mass includes every way to distribute that common sum between
+the two children of each pair. We seek such mass for the original smoothed function¯fω. The
+unsplit projection and a table-degree cutoff will serve only to find a label carrying this mass;
+neither projection is part of the conclusion. Keeping all the indices with a given common sum
+will let us compare masses under affine pullback in Section 8.
+In particular, if|f|≤1, then at every fixed context
+0≤
+∑
+q∈A
+mq(f; Γ,F out)≤1.(7.2)
+Proposition 7.1(Dimension-independent extraction).Fix t∈ (0, 1),0 <δ < 1−B (t), and
+0<µ< 1/2. There are tree parameterss≥ 2,m≥ 1and constants p∗,θ> 0, depending only on
+t,δ,µ, with the following property. For any affine label spaceAand any familyϕω as above, if
+Eω,D,R,Fout StabFD
+t ( ¯fω)≥B(t) +δ,(7.3)
+then
+Pr
+[
+max
+q∈A
+mq( ¯fω; Γ,Fout)≥θ
+]
+≥p∗.(7.4)
+Here we sampleω, the random sliceD, and a uniform nodev∈D ; conditional on these, we
+sampleF out andΓindependently and uniformly.
+Proof. Excess stability first produces an influential slice entry. We retain that influence after the
+unsplit projection, discard the part even in its gate table, and express the remaining influence
+as an affine hash of vectors indexed by labels. The hashing lemma then forces one label to carry
+substantial conditional mass.
+All constants chosen below are independent ofA and of the law ofω. The degree cutoff
+K and influence thresholdτ are chosen first. We leaves,m unspecified during the estimates:
+Step 4 will chooses to control the even and hashed contributions, and thenm to control the
+cost of the unsplit projection.
+Step 1: find an influential slice entry.Simultaneously negating the slice tables negates the
+word. Sinceϕω is odd and smoothing preserves this identity,¯fω has mean zero in the slice bits
+for every fixedω,D,R,F out. It also lies in[−1,1]. Apply Theorem 2.1 withξ=δ/2, obtaining
+K≥ 1and τ > 0. We may decreaseτ to ensureτ≤ 1. Since stability is at most one,(7.3)
+implies that, with probability at least
+η=δ/2,
+some entryz∈F s
+2 of somev∈D has Inf≤K
+v,z ( ¯fω)≥τ . Indeed, if the probability of this event is
+p, the expected stability is at mostB(t) +δ/2 +p.
+18
+
+=== PDF PAGE 19 ===
+LetS v be the orthogonal row projection onto indices unsplit atv. Put
+Hv =P FD
+≤KSv ¯fω.
+By Theorem 5.2, the required bound on the projection loss is
+E
+∑
+v∈D
+∥(1−S v) ¯fω∥2
+2,R,F≤ s
+2emµ≤ ητ
+8 .(7.5)
+For any fixeds, the last inequality can be ensured by increasingm. The same expectation is the
+expectation overω,D,R,F out of the sum of the corresponding conditional squared norms inFD.
+Markov’s inequality shows that this sum is at mostτ/4except on an event of probabilityη/2.
+On the intersection with the influential-entry event, the triangle inequality for the projection
+defining that influence gives
+√
+Infv,z(Hv)≥
+√
+Inf≤K
+v,z ( ¯fω)−∥(1−S v) ¯fω∥2,FD≥
+√τ
+2 .
+Consequently,
+E
+∑
+v∈D
+maxz Infv,z(Hv)≥ ητ
+8 =: Λ.(7.6)
+We will also use
+E
+∑
+v∈D
+∑
+z
+Infv,z(Hv)≤K.(7.7)
+To verify it, integrate over all rows. EachSv is an orthogonal projection in the rows and
+commutes with the slice-bit Fourier projections. It can therefore only decrease the integrated
+influence at its entries. After dropping eachSv separately, the left side is bounded by the total
+influence ofPFD
+≤K ¯fω, averaged over the remaining variables. Equation(2.3) and| ¯fω|≤ 1give
+(7.7). No pointwise boundedness ofHv is asserted or needed.
+Step 2: discard even dependence on a gate.Fixv∈D , and splitHv into its even and
+odd parts under negation ofFv alone. These parts have disjoint Fourier supports in the slice
+bits, also after retaining the monomials containing any specified entry. Thus
+Infv,z(Hv) = Infv,z(Heven
+v ) + Infv,z(Hodd
+v ).
+By the sign action in Theorem 5.1, the even part hasqv(1) = 0on row support. Since the
+index is unsplit, all its child indices are either0orqv, so they too take value zero on1. The
+domain-translation action in that lemma shows that the even part is invariant under translations
+of the domain ofFv, with the rows and outside tables fixed. These translations act transitively
+on its entries. All entry influences atvare therefore equal. By (7.7),
+E
+∑
+v∈D
+maxz Infv,z(Heven
+v )≤ K
+2s.(7.8)
+19
+
+=== PDF PAGE 20 ===
+Step 3: express odd influences as affine hashes.Fixω,D,v, Γ,F out. The remaining row
+coordinates Lgb are independent uniform elements ofH. On the odd part, the common pair
+sum q is a label, by(2.1), and hence is nonzero. An unsplit shift index with common sumq
+puts q in the second child on a subsetI⊆ [s]and in the first child elsewhere. Letaq,I(FD)be
+its coefficient inHodd
+v .
+Set
+LΣ =
+s∑
+g=1
+Lg0, J g =L g0 +Lg1,J(q) = (q(J 1),...,q(J s)).
+The s + 1forms LΣ,J 1,...,J s are independent and uniform: the displayed linear map fromH2s
+ontoHs+1 is surjective. The remainings− 1coordinates do not occur in the unsplit expansion.
+The character of the shift index(q,I)is
+χq(LΣ)(−1)
+∑
+g∈Iq(Jg).
+On the other hand, the domain-translation identity gives
+aq,I(Fv(·+z),F D\{v}) = (−1)
+∑
+g∈Izg
+aq,I(FD).
+WithΨ q =∑
+I⊆[s]aq,I we obtain
+Hodd
+v =
+∑
+q∈A
+χq(LΣ)Ψq
+(
+Fv(·+J(q)),F D\{v}
+)
+.(7.9)
+The functionsaq,I for distinctI are orthogonal in the uniform slice bits: a domain translation
+whose two characters differ preserves their inner product and changes its sign. Consequently,
+∥Ψq∥2
+2,FD =
+∑
+I
+∥aq,I∥2
+2,FD≤m q( ¯fω; Γ,Fout).(7.10)
+The inequality follows because the unsplit row projection is determined by the free shift index,
+and the degree and parity projections are orthogonal projections in the slice bits at each fixed
+context. EveryΨq has degree at mostK.
+Equation (7.9) has converted the free-shift characters into translations of a gate table. We
+next collect its Boolean Fourier coefficients into vectors whose squared norms are entry influences.
+These Fourier coefficients are indexed by sets of table entries; the earlier indexI⊆ [s]instead
+specified a character of the table’s domainFs
+2.
+Denote byˆΨq(B,D )the slice Fourier coefficient with entry setB⊆F s
+2 at gatev and entry
+set D on the other slice gates. Forz∈F s
+2 define a real vectorc(q,z ), with coordinates indexed
+by pairs(A,D)where0∈A⊆F s
+2, by
+c(q,z)A,D = ˆΨq(z+A,D).
+Using entry sets relative toz makes this vector space the same for everyz and every labelq.
+Set c(q,z ) = 0for functionals q which are not labels. For the influence atz, a slice Fourier
+set B containingz has the unique formB =z +A with0 ∈A . Translation byJ(q)sends its
+coefficient toˆΨq(z+A+J(q),D). Hence, exactly,
+Infv,z(Hodd
+v ) =
+
+∑
+q
+χq(LΣ)c(q,z+J(q))
+
+2
+.(7.11)
+20
+
+=== PDF PAGE 21 ===
+Writingw q =∑
+z∥c(q,z)∥ 2 andM v =∑
+qwq, we have
+wq =
+∑
+B,D
+|B||ˆΨq(B,D)| 2≤K∥Ψ q∥2
+2≤Km q( ¯fω; Γ,Fout).(7.12)
+The factor|B| counts the entries whose influences contain that Fourier monomial; it is at most
+the monomial’s total degree, which is at mostK. ThusMv≤K at every context. The total-mass
+identity in Theorem 6.1, together with (7.11), also gives
+E
+∑
+v∈D
+Mv =E
+∑
+v∈D
+∑
+z
+Infv,z(Hodd
+v )≤K.(7.13)
+For this identity the free coordinates are integrated separately for each node; their different
+coordinate systems do not affect the uniform row law.
+Step 4: force a heavy label.Choose ζ >0with ζK≤ Λ/4. Apply Theorem 6.1, obtaining
+γ >0and a lower bound ons. Chooses≥ 2large enough for that lemma and forK2−s≤ Λ/4.
+Then choosemas in (7.5). Finally put
+M0 = Λ
+4·2 m, θ= γM0
+K , p ∗ = Λ
+4K2m.(7.14)
+For each node, condition onω,D,v, Γ,F out and integrate the free shifts. Partition these
+contexts into three classes:
+(i)w q≤γM v for everyq;
+(ii) the first condition fails andMv <M 0;
+(iii)M v≥M 0 andw q >γM v for someq.
+On class (i), the hashing lemma bounds the expected maximum odd influence byζMv. Summing
+and using (7.13) costs at mostΛ/4. On class (ii), the maximum is bounded in expectation
+by the total influence, namelyMv < M0. Since|D|≤ 2m, these contexts cost at mostΛ/4.
+On class (iii), the same total-mass bound is at mostK per node. Equation (7.8) bounds all
+even contributions byΛ/4. Let Niii count the nodes whose induced contexts lie in class (iii).
+Comparing all four contributions with (7.6) gives
+Λ≤K2 −s +ζK+ 2 mM0 +KEN iii≤ 3Λ
+4 +KEN iii.
+Thus ENiii≥ Λ/(4K). At each such node (7.12) supplies a label withmq > γM0/K = θ.
+Choosing a uniform node from the slice loses at most a factor2m and gives(7.4). This proves
+the proposition.
+8 Decoding with a hidden coordinate
+We now convert the Fourier mass supplied by Proposition 7.1 into a labeling of the original
+affine game. The difficulty is that the mass is measured after fixing a row context. A labeler at
+an X-vertex does not know the projection on its incident edge, and therefore cannot usually
+lift that context to its own label space. We resolve this by repeating the game coordinates and
+planting one coordinate on which the context and the latent resampling rows have zero linear
+21
+
+=== PDF PAGE 22 ===
+coefficients. Hiding the planted coordinate makes the resulting distribution close to the original
+one. The comparison across the unknown projection then involves only the2s free shifts, so its
+loss is independent ofnandT.
+Throughout this section, the cut tables are fixed. We use the tree parameters and the row
+coordinates of the preceding sections. For each choice of a sliceD and a nodev∈D , fix the
+coordinate change
+R←→(L,Γ), L= (L gb)g∈[s],b∈{0,1}∈H 2s,Γ∈H k−2s,
+by choosing its representative leaves in a deterministic order. This change uses only additions of
+row coordinates and depends only on the tree andv. In particular, it commutes with pullback
+of affine forms. The massesmq always refer to these coordinates and to the uniform average
+over the slice tables in Equation (7.1).
+8.1 Removing the row smoothing
+LetRnew
+1 ,...,R new
+k be independent uniform elements ofH, and independently letB1,...,B k be
+Bernoulli variables withPr(Bi = 1) = 1−r. Set
+Ei =B iRnew
+i , E= (E 1,...,E k).
+For any fixed row arrayR, the arrayR +E has the distribution of the one-copy row resampling
+used by the test. Write(EL,E Γ)for the coordinates of E under the above linear change of
+variables.
+Lemma 8.1(Removing smoothing).For every fixedy ,D,v,Γ,F out, and labelq∈A,
+mq( ¯Gy; Γ,Fout)≤E E,e|ymq(Ge; Γ +EΓ,F out).(8.1)
+Here the noiseEis independent of the conditionally sampled edge tuplee.
+Proof. For the fixed context, regard a function of(L,FD)as an element of the real Hilbert space
+with the uniform probability measure. LetΠq be the orthogonal projection onto the shift Fourier
+indices Q satisfying Qg0 +Qg1 =q for everyg. Then the corresponding mass is the squared
+norm of this projection. The identity
+¯Gy(L,Γ,F) =E E,e|yGe(L+E L,Γ +E Γ,F)
+and convexity of the squared Hilbert-space norm give the desired inequality. Indeed, translation
+by EL commutes withΠ q and preserves its norm: on each shift Fourier coefficient it only
+multiplies by a sign.
+Choose once and for all an ordering of each label space, and define
+q∗ =q∗(y,D,v,Γ,F out)∈arg max
+q∈A
+mq( ¯Gy; Γ,Fout)(8.2)
+using that ordering to break ties. This definition uses the original conditional edge average and
+the original row-smoothing operator. It will remain unchanged when we modify the distribution
+of the row data below.
+Sampley, the slice, its uniform node, the context, and the outside tables as in Proposition 7.1,
+and then sampleRnew,B, ande |y . Combining that Proposition with Lemma 8.1 gives
+Emq∗(Ge; Γ +EΓ,F out)≥p ∗θ.(8.3)
+The mass in this expectation lies in[0,1], sinceGe is bounded in absolute value by one.
+22
+
+=== PDF PAGE 23 ===
+8.2 Planting a coordinate
+Write each affine row in coordinates onA = (Fn
+2)T. Apart from its single constant coefficient, it
+has one block ofn linear coefficients for each of theT slots. For a slota∈ [T ], letZa be the
+event that the slot-a blocks vanish in allk− 2s context rows and allk latent rowsRnew
+i . No
+condition is imposed on any constant coefficient. Under the original, unplanted law,
+p0 := Pr(Za) = 2−n(2k−2s).(8.4)
+Conditional on the depth, slice, and node, the eventsZa are independent: they concern disjoint
+blocks of independent uniform coefficients.
+Theplanted experimentchooses a uniform mark a∗∈ [T ]and sets these blocks to zero ata∗.
+All other row coefficients, the noise masks, the outside tables, and the game edges retain their
+original distributions. Equivalently, conditional ona∗ =a, this is the unplanted law conditioned
+onZ a.
+Lemma 8.2(Hiding the planted coordinate).LetUbe the unplanted law andPthe planted law
+after forgetting the mark. Both laws are taken on the full data
+(
+e,J 0,D,v,F out,Γ,R new,B
+)
+.
+Then
+TV(P,U)≤ 1
+2
+√
+1−p 0
+Tp 0
+≤ 1
+2√Tp 0
+.(8.5)
+Consequently, if
+T≥ 1
+p0(p∗θ)2,(8.6)
+then under the planted law,
+EPmq∗(Ge; Γ +EΓ,F out)≥ p∗θ
+2 .(8.7)
+Proof.LetZ= ∑T
+a=1 1Za. Averaging the conditional densities over the uniform mark gives
+dP
+dU = Z
+Tp 0
+.
+Conditional on the tree data,Z has the binomial distribution with parametersT,p 0; these
+parameters do not depend on the tree data. Thus Cauchy–Schwarz gives
+TV(P,U) = 1
+2 EU| Z
+Tp 0
+−1|≤ 1
+2
+√
+1−p 0
+Tp 0
+.
+The score in Equation(8.3) is a[0, 1]-valued function of the displayed data without the mark.
+In particular,q∗ is the fixed function defined in Equation(8.2); it does not use the mark, the
+sampled incident edges beyond theirY-endpoints, or the sampled noise. Its statistical dependence
+on zero slots causes no difficulty. Expectations of this score under the two laws differ by at most
+their total variation distance. Equations (8.3) and (8.6) therefore imply Equation (8.7).
+23
+
+=== PDF PAGE 24 ===
+8.3 Fourier mass under an affine restriction
+The next elementary observation accounts for the loss in decoding. Letρ : ˜A→A be a surjective
+affine map with two-element fibers, and write
+˜H= Aff( ˜A,F 2), ι=ρ ∗ :H ↪→˜H.
+Pullback is linear on the vector spaces of affine forms, even whenρ has a nonzero translation
+part. The image ofι has codimension one, andι(1) =1. Its dual restriction mapι∗ : ˜H∗→H∗
+has two-element fibers and, on evaluation functionals, agrees withρ.
+Lemma 8.3(Restriction of shift mass).Fix a context and the outside tables. Let˜f(˜L,FD)be a
+function on ˜H2s and the slice tables. Suppose its shift Fourier support has the common-pair-sum
+property
+˜Qg0 + ˜Qg1 = ˜Qh0 + ˜Qh1 for allg,h∈[s].
+Setf(L,F D) = ˜f(ιL,FD), whereιacts on each shift. For every labelq∈A,
+mq(f)≤2 2s ∑
+˜q∈˜A
+ρ(˜q)=q
+˜m˜q(˜f).(8.8)
+The masses on both sides use the common-pair-sum definition of Equation(7.1), with the
+respective affine row spaces.
+Proof.For every fixed choice of slice tables, Fourier inversion and character orthogonality give
+ˆf(Q) =
+∑
+˜Q
+ι∗˜Qgb=Qgb ∀g,b
+ˆ˜f(˜Q).
+The sum has22s indices. Hence its squared absolute value is at most22s times the sum of the
+squared absolute values of its terms. Now sum over allQ with pair sumsq. Every nonzero
+coefficient on the right has a common pair sum˜qwhose restriction isq. Moreover,
+˜q(1) = ˜q(ι(1)) =q(1) = 1,
+so ˜q is an evaluation functional, hence a label in˜A, andρ(˜q) =q. Each lifted index is counted
+only once. Averaging over the slice tables proves Equation (8.8).
+8.4 The endpoint labelers
+Equation (8.7) is an average over full edge tuples. To turn it into a labeling of the original game,
+we place the input edge at the planted coordinate and make all other edges public. The zero
+coefficients ensure that the needed context lift does not require the projection on the input edge.
+Proposition 8.4(Decoding).Suppose the extraction conclusion of Proposition 7.1 holds with
+constantsp∗,θ> 0. IfT satisfies Equation(8.6), then the original affine game has value at least
+Val(G)≥2 −2sp∗θ
+2 .(8.9)
+Proof. Weconstructrandomizedlabelersthatuseonlytheirownendpointandsharedrandomness.
+The entire game and the fixed cut tables are available as background data. No efficiency claim
+about the labelers is needed to lower-bound game value.
+24
+
+=== PDF PAGE 25 ===
+Shared data and theY-labeler.Given a random input edge e = (x,y )from the original
+edge law, choose a uniform public marka∗∈ [T ]. At every other slot, publicly sample an
+independent edge, including its endpoints and projection. Insert the input edge at the marked
+slot. Its projection is used only in the analysis; it is not revealed to either labeler. Conditional on
+any mark, the resulting full edge tuple has the product edge law; hence the tuple is independent
+of the mark. Each labeler knows its own endpoint tuple, and both know all edges outside the
+marked slot.
+Publicly sample the depth, slice, node, outside tables, context, latent rows, and masks
+according to the planted experiment above. The row sampling uses the fixed alphabet dimensions,
+the public tree coordinates, and the mark, and is independent of the input edge. Together with
+the edge tuple, these data have exactly the planted law used in Equation(8.7). TheY-labeler
+forms its endpoint tupley, computes the labelq∗ from Equation(8.2), and outputs its marked
+componentq∗
+a∗. All quantities used in that computation are available to this labeler: in particular
+the conditional average defining¯Gy can be computed from the game and cut as fixed background
+data. It does not use the actual marked edge or its projection.
+TheX-labeler.To define theX-labeler, replace the marked factor ofAby theX-alphabet:
+˜A=
+∏
+a̸=a∗
+Fn
+2 ×F n+1
+2 ,
+with factors in their original slot order. LetB= (Fn+1
+2 )T. The full projection factors as
+B κ−−→˜A
+ρ
+−−→A.
+Here κ is the public edge projection at every unmarked slot and the identity at the marked slot;
+ρ is the identity at every unmarked slot and the unknown mapπe at the marked slot. Thusκ is
+known to theX-labeler, whileρis used only in the analysis.
+The planted zeros imply that every row inΓandRnew has zero linear coefficient block in
+the marked slot. The same holds forE, EΓ, andΓ′ = Γ +EΓ, since the noise masks and context
+change only multiply by scalars and add rows. Consequently˜Γ′ =ρ∗Γ′ is known to theX-labeler:
+it is obtained by leaving every unmarked coefficient and constant coefficient unchanged and
+setting all marked coefficients to zero. This description does not requireπe, including its affine
+translation part.
+TheX-labeler forms the bounded raw function
+˜G(˜R,F) =σ o
+x
+(
+W˜A(˜R,F)◦κ
+)
+, ˜R∈ ˜Hk.
+Fix its context to˜Γ′ and its outside tables to the publicFout, leaving all2s shifts free in˜H. Let
+˜m˜qbe its masses. They are nonnegative and their sum over labels is at most one, by Parseval and
+|˜G|≤ 1. The labeler samples a label˜q with probability at least˜m˜qfor each label, assigning any
+leftover probability to a fixed label. It uses an additional independent public uniform random
+number to sample from this distribution and outputs the marked component of˜q. This sampling
+does not useq∗.
+Comparison on the sampled edge.We verify the restriction hypothesis needed to compare
+these probabilities with the score. For anyh∈ ˜H, shifting both child generators in one pair by
+25
+
+=== PDF PAGE 26 ===
+h multiplies the output of gatev by(−1)h(˜l) at every label˜l. Applying this shift in two distinct
+pairs leaves that output, and hence the whole word, unchanged. These operations only translate
+the free shifts and preserve the context. Character orthogonality therefore shows that every
+shift Fourier index of˜G has a common pair sum. This argument holds for each fixed choice of
+all gate tables.
+Word generation commutes with pullback of rows, pointwise in the label. Sinceπe =ρ◦κ ,
+restricting each free shift of˜G to ρ∗H yields exactlyGe with contextΓ′ and the same tables.
+The mapρhas two-element fibers, so Lemma 8.3 applies and gives
+∑
+ρ(˜q)=q∗
+˜m˜q≥2−2smq∗(Ge; Γ′,F out).
+Conditional on all the planted data, the left side lower-bounds the probability that the sampled
+full label projects toq∗. That event in particular implies satisfaction of the marked input edge.
+Averaging and using Equation (8.7) gives success probability at least2−2sp∗θ/2.
+Finally, fix all shared randomness, including the uniform number used to sample theX-label.
+The same fixed data define the two strategies at every endpoint, so they give a deterministic
+labeling of the original game. Their average value over the shared randomness has the lower
+bound just proved, so some fixed choice attains it. This proves Equation (8.9).
+The decoding loss depends ons,p∗,θ, and hence on the target cut gap, but not on the
+alphabet dimension or the repetition length. After choosing a game soundness smaller than the
+right side of Equation(8.9), one may therefore fix the alphabet dimension and then chooseT by
+Equation (8.6).
+9 Completing the hardness proof
+The parameter order is
+(t,ε,µ)−→(s,m,p ∗,θ)−→b−→n−→T−→a.
+The extraction constants fix the required game soundnessb before the alphabet dimensionn is
+known. Repetition is then chosen to hide the planted coordinate, and the game’s completeness
+errorais chosen last.
+Proof of Theorem 1.2.Fixt andε as in the theorem. Takeδ =ε. This satisfies0<δ < 1−B (t)
+because ε< (t−B (t))/4< (1−B (t))/4. Choose a rational0<µ< 1/2with tµ≤ε/ 4. Apply
+Theorem 7.1 witht,δ,µ, fixings,m,p ∗,θ, and hencek,d,r. Choose a rational
+0<b<2 −2sp∗θ
+2 .
+By Theorem 2.2, this fixes an alphabet dimensionn for which the game has arbitrarily small
+completeness error. Choose an integerTsatisfying
+T≥ 2n(2k−2s)
+(p∗θ)2 .
+Finally choose a positive rationala< 1−b small enough that2Ta≤ε/ 4, and start with the
+NP-hard game gapVal(G)≥1−aversusVal(G)≤b.
+26
+
+=== PDF PAGE 27 ===
+In the YES case, Theorem 4.1 gives cut value at least(1 +t)/2−ε/ 2, which is stronger than
+required. In the NO case, suppose a cut had value at least(1+B(t))/2+ε/2. By Theorem 4.2, its
+odd average has expected slice stability at leastB(t)+ε. Theorems 7.1 and 8.4 would then imply
+Val(G)≥ 2−2sp∗θ/2>b , a contradiction. Thus every cut has value less than(1 +B(t))/2 +ε/2.
+For completeness, the test is a deterministic polynomial-size graph construction. The vertex
+set has
+|X|T 2|B| =|X| T 22(n+1)T
+vertices. All factors except |X| are constants for fixedt,ε. There are polynomially many
+endpoint and edge tuples, and all word-generation sample spaces have constant size. Enumerate
+every test outcome and add its probability to the corresponding edge weight. The initial game
+weights,t, andr are rational, so these weights have polynomial bit complexity. Conditional edge
+probabilities also have polynomial bit complexity. All alphabets and words can be enumerated
+in constant time relative to the input size. The resulting graph is therefore computable in
+deterministic polynomial time. It has a rational edge distribution and satisfies the asserted,
+weakerε-loss bounds.
+Proof of Theorem 1.1.Substitutingρ=−tinto (1.1) gives
+αGW = min
+−1<t≤1
+1 +B(t)
+1 +t ,(9.1)
+where the same formula definesB(t) = 2 arcsin(t)/π for negativet. For−1<t≤ 0the ratio is
+at least one, whereas for0<t< 1it is less than one. Att = 1it equals one, and ast↓− 1it
+diverges. Thus its minimum occurs in(0,1).
+Fix αGW <α≤ 1. By continuity and the density of the rationals, choose a rationalt∈ (0, 1)
+such that
+α1 +t
+2 > 1 +B(t)
+2 .
+Choose positive rationalεandϵ ′ small enough thatε<(t−B(t))/4and
+α
+(1 +t
+2 −ε−ϵ ′
+)
+> 1 +B(t)
+2 +ε+ϵ ′.(9.2)
+Apply Theorem 1.2. Delete loops while retaining the original weight scale, so that the remaining
+weights sum to at most one. Apply Theorem B.1 with errorϵ′, producing a simple unweighted
+graph whose maximum cut, on the common scaleQ, differs from the original maximum cut
+weight by at mostϵ′. Anα-approximation algorithm on that graph returns, in the YES case, a
+cut of scaled value at least the left side of(9.2). In the NO case, no cut has scaled value greater
+than its right side. A fixed rational threshold strictly between them therefore distinguishes the
+NP-hard promise cases. This proves the theorem.
+A The affine game supplied by the 2-to-1 Games Theorem
+The Max-Cut reduction needs two features beyond the usual numerical 2-to-1 game gap: the
+projections must be affine overF2, and the alphabet must be fixed before the completeness
+error is chosen. We derive these features from the construction and soundness analysis in [6,
+Sections 4–5]. Its Grassmann agreement hypothesis is supplied by the expansion theorem of
+Khot, Minzer, and Safra [14] and the expansion-to-agreement implications of Barak, Kothari,
+27
+
+=== PDF PAGE 28 ===
+and Steurer [3, Theorems 9–11]; the introduction of the published version of [6] records this
+completion.
+We first describe the folded game and its affine projections. The source’s vertex definition
+excludes certain subspaces that its displayed sampler can produce. We specify the resulting
+conditioning, complete the tables used in its soundness proof, and give the invariant-list argument
+with the needed exceptional-subspace estimates. For the second player we use bounded lists
+on quotient spaces, keeping each restriction to the advice space separate. Completeness then
+follows by choosing the initial 3Lin error last.
+A.1 The folded game and its edge law
+Starting instance.Theorem 4.1 of [ 6], obtained from Håstad’s theorem [10], supplies an
+absolute constants∗< 1such that for every sufficiently smallε> 0it is NP-hard to distinguish
+regular binary 3Lin instances of value at least1−ε from those of value at mosts∗. Regularity
+includes bounded variable occurrence, three distinct variables per equation, and at most one
+variable shared by two distinct equations.
+For now letℓ≥ 2, k0≥ℓ , andβ∈ (0, 1)be fixed parameters, with β rational. The two
+alphabet dimensions will beℓ and ℓ− 1, so the dimension in Theorem 2.2 isn =ℓ− 1. The
+soundness argument below choosesℓ,k0,βusing onlyband the absolute constants ∗.
+Spaces, labels, and folding.LetZbe the variables of the 3Lin instance, letV 0 =FZ
+2 , and
+view each equationeas
+⟨xe,α⟩=b e, x e∈V 0, b e∈F 2,
+where xe has its three variable coordinates equal to one. AlegitimatetupleU consists ofk0
+disjoint equations with the additional separation condition imposed in [6, Section 4.2]: variables
+from different equations ofUdo not occur together in any input equation. Put
+VU =F var(U)
+2 , H U = span{xe :e∈U}.
+The vectorsxe, e∈U , are independent, sodimVU = 3k0, dimHU =k0, and there is a unique
+linear functionhU :H U→F 2 withh U(xe) =b e.
+Before folding, a left question is(U,L), where
+L≤V U,dimL=ℓ, L∩H U ={0}.
+For a variable subsetV⊆Z , writeVV = FV
+2 ≤V 0; the rule for samplingV is given below. A
+right question is(V,L′), withL′≤V V and dimL′ =ℓ− 1. On an incident pair,L′≤L . The
+respective answers are linear functions onL and L′, and the constraint is restriction. Choosing
+bases therefore identifies the unfolded alphabets withFℓ
+2 andF ℓ−1
+2 .
+The folding of [6, Section 4.2] puts(U,L)and(U 1,L 1)in the same class when
+L+H U +HU1 =L 1 +HU +HU1.
+Lemma 4.2 there proves that this is an equivalence relation and supplies, for every classC, a
+fixedℓ-dimensional spaceR C such that
+RC +HU =L+H U for every(U,L)∈C.(A.1)
+28
+
+=== PDF PAGE 29 ===
+Both sides have dimensionℓ +k0; consequentlyRC∩H U ={0} as well. A folded answer is
+a linear functionσ : RC→F 2. Its unfolding on(U,L )is the restriction to L of the unique
+extension
+˜σU(r+h) =σ(r) +h U(h), r∈R C, h∈H U.(A.2)
+For clarity, the affineness here is a property of the map betweenanswer spaces. Forz∈L ,
+write uniquelyz = AUz +BUz with AUz∈R C and BUz∈H U. The mapAU : L→R C is a
+linear isomorphism by (A.1). Thus unfolding is
+σ↦−→σ◦AU +hU◦BU,
+an affine bijection fromR∗
+C to L∗. Composing it with the surjective restrictionL∗→ (L′)∗ gives
+a surjective affine map with a one-dimensional kernel in its linear part. Every fiber has exactly
+two elements. This proves the required affine promise after bases are fixed. Claim 4.4 of [6]
+shows that the projections agree when several unfolded edges are aggregated into the same
+folded edge. Equivalently, these edges may be kept separately with their individual weights.
+Validity of the edge sampling.We specify the treatment of ill-formed samples omitted from
+the displayed sampler. Samplingk0 equations independently produces a nonlegitimate tuple
+with probabilityO(k2
+0/|Z|), by bounded occurrence. For fixedk0 this can be made arbitrarily
+small. If necessary, take sufficiently many disjoint copies of the input instance; this preserves its
+value and regularity.
+Given a legitimateU, independently for each equation, the right variable setV contains
+all three variables with probability1−β and otherwise one uniformly chosen variable. Iff0
+equations contribute all three, then
+dimVV =k 0 + 2f0,dim(V V∩HU) =f 0.
+For a uniformly chosen(ℓ−1)-spaceL ′≤V V, counting nonzero vectors gives
+Pr[L′∩HU̸={0}]≤ (2f0−1)(2ℓ−1−1)
+2k0+2f0−1 ≤2 ℓ−k0.
+If L′∩HU ={0}, a uniformly chosenℓ-space L≤V U containingL′ is obtained by choosing a
+nonzero vector ofVU/L′. It intersectsHU nontrivially precisely when this vector belongs to
+(HU +L′)/L′. Hence
+Pr[L∩H U̸={0}|L ′] = 2k0−1
+23k0−ℓ+1−1 ≤2 ℓ−2k0.
+We condition the sampling on legitimacy andL∩H U ={0}. The discarded probability is at
+most
+κ=O(k 2
+0/|Z|) + 2ℓ−k0 + 2ℓ−2k0.(A.3)
+The two geometric terms can be made arbitrarily small by increasingk0 afterℓ is fixed. We take
+their sum at most1/4and, by using disjoint copies of the input if needed, take the probability
+of nonlegitimacy at most1/4. Thus the probabilityqall of retaining a sample from the original
+independent-equation sampler is at least1/2. We distinguish this total retained probability from
+the normalization after legitimacy has already been imposed.
+29
+
+=== PDF PAGE 30 ===
+LetP be that sampler after conditioning on legitimateU, and putE ={L∩H U ={0}} and
+η = 2ℓ−k0 + 2ℓ−2k0. Our edge law isR =P (·|E ), so TV(P,R ) =P (Ec)≤η . On the source’s
+valid edge set define the subprobability weights
+w(e) =
+∑
+ω∈E
+ω↦→e
+P(ω), q edge =
+∑
+e
+w(e) =P(E)≥1−η.
+Thus R(e) = w(e)/qedge. For any folded labeling, its acceptance under R is its raw valid
+acceptance divided byqedge. The raw valid acceptance uses the lawP above, conditioned on
+legitimate U but not onE, with payoff zero on invalid outcomes. We next bound this quantity
+using completed tables in the published soundness analysis.
+A.2 Completed tables and the equations encoded by their lists
+The soundness proof uses tables on everyℓ-dimensional subspace, although a folded labeling
+specifies answers only at valid vertices. We first extend those answers, preserving the consistency
+between the tables onVU and VV. We then show that the linear functions decoded from these
+tables still satisfy the equations inU.
+Completing the tables.For a right variable setVoccurring with a legitimateU, define
+H(V) = span{x e :eis an input equation andvar(e)⊆V}.
+Every input equation supported invar(U)belongs to U: an equation using two tuple blocks
+violates legitimacy, and a distinct equation inside one block would share three variables with
+that block’s equation. Since the equations ofUhave disjoint supports, this proves
+HU∩VV =H(V).(A.4)
+In particular, forL⊆V V, validity of(U,L )is independent of the containing legitimate tupleU.
+Fix a folded labeling. LetFU[L]be its unfolded answer at each valid(U,L ), and the zero
+linear function wheneverL∩H U̸={0}. For eachV, defineFV [L]using any containingU when
+L∩H (V ) ={0}, and by zero otherwise. For validL, all vertices(U,L )with that same L lie in
+one folding class; their unfolded answers agree by [6, Claim 4.4]. Equation(A.4) gives the same
+independence for invalidL. Hence the completed tables satisfy
+FU[L] =F V [L] (L⊆V V,dimL=ℓ).(A.5)
+The auxiliary tableFV is on ℓ-spaces; it is distinct from the game’s right-answer table on
+(ℓ−1)-spaces.
+The completedFU has a second property. FixK⊇H U of dimensionℓ +k0. All validL with
+L +HU =K belong to one folding class. The common folded label and its(HU,hU)-extension
+give one linear functionfK : K→F 2 with fK|HU = hU and FU[L] = fK|L for every suchL.
+This condition imposes no restriction on invalid entries.
+Agreement and list parameters.The Grassmann agreement test for a tableF first chooses
+a uniform(ℓ− 1)-space, then two independent uniformℓ-spaces containing it, and accepts when
+their table entries agree on the common(ℓ− 1)-space. Write agreement(F )for its acceptance
+probability.
+30
+
+=== PDF PAGE 31 ===
+Fix a soundness parameterδ∈ (0, 1). The agreement lemma [6, Lemma 3.7] supplies
+constantsq,r,C and a positive functionα(ℓ)at agreement threshold δ2/8, as in the proof of its
+Lemma 5.3. Set the thresholds
+τr = min{C/2,1/2}, τ i = 10−9τ 12
+i+1 (0≤i<r).
+Thus0 < τi≤ 1/2, and the pairs supplied by the agreement lemma have agreement strictly
+above the relevant thresholds. We also fix the second list thresholds
+ζr =τ 0/2, ζ i = 10−9ζ12
+i+1 (0≤i<r).
+Both vectors are fixed before choosingℓ; the functionα(ℓ)is positive once ℓ is fixed. We choose
+ℓ large enough for that agreement lemma and for the ordinary list bound [6, Lemma 3.12] on
+(ℓ−q)-spaces with thresholds(ζ i). We also requireq≤ℓ−1and
+2q−ℓ≤τ 0/4.(A.6)
+The repetition parameter k0 is chosen subsequently, large enough that the cited ambient-
+dimension requirements hold for every dimension betweenk0 and3 k0 and for their quotients by
+aq-space.
+For a fixedq-spaceQ, a list records linear functions on spaces of codimension at mostr whose
+restrictions agree with the table on more than the designated fraction ofℓ-spaces containingQ.
+Only pairs with no occurring extension are kept. The next lemma shows that, for the completed
+tables above, these maximal pairs respect the original equations wheneverQ avoids their span.
+Lemma A.1(The invariant-list assertion on admissible advice spaces).LetX have dimension
+3k0, letH≤X have dimensionk0, and leth :H→F 2 be linear. Suppose a tableF assigns
+a linear function to everyℓ-space, and that for every(ℓ +k0)-spaceK⊇H there is a linear
+function fK : K→F 2 such thatfK|H = h and F [L] = fK|L whenever L +H = K. Fix a
+q-spaceQwithQ∩H={0}, and set
+ek0 = 2ℓ+r−2k0+1.
+Assumeq≤ℓ ,3 k0−r>ℓ , (A.6), andek0≤τ 0/4. ForQ⊆W⊆X of codimensioni≤r , say
+that(g,W)occurs ifg:W→F 2 is linear and
+Pr
+Q⊆L⊆W,dimL=ℓ
+[F[L] =g| L]>τ i.
+Call it maximal if it has no occurring extension to a strictly larger space. Every maximal
+occurring pair satisfiesH⊆Wandg| H =h.
+Proof. Put H′ = H∩W . In W/Q, the image( H′ +Q)/Q has dimension dimH′ because
+Q∩H={0}. Counting nonzero vectors in a uniform(ℓ−q)-space gives
+dW := Pr
+Q⊆L⊆W
+[L∩H̸={0}]
+≤ (2dimH′
+−1)(2ℓ−q−1)
+2dimW−q −1 ≤2 ℓ+dimH′−dimW+1 ≤e k0.
+The same bound holds withWreplaced by any containing space of codimension at mostr.
+31
+
+=== PDF PAGE 32 ===
+Partition the valid spacesL with Q⊆L⊆W by Y = L +H′. Within a fixed class, the
+table is the restriction of one linear function onY respecting h|H′; this follows by restricting
+fL+H. Ifg| H′̸=h| H′, the difference of these two functions is nonzero onH′. A complement to
+H′ in Y containingQ is a graph of a linear map on an(ℓ−q )-dimensional quotient. Each of its
+ℓ−q independent lift choices must satisfy one nontrivial linear equation for the two functions to
+agree. Thus agreement within this class is at most2q−ℓ (and is zero if the functions already
+disagree onQ). Total agreement is at most
+dW + (1−d W )2q−ℓ≤e k0 + 2q−ℓ≤τ 0/2<τ i,
+a contradiction. Henceg|H′ =h| H′.
+There is consequently a unique extension˜g to ˜W =W +H respecting h. Under either of
+the two uniform distributions on validℓ-spaces containingQ in W and in˜W, the image ofL in
+W/(W∩H)≃ ˜W/H
+is uniform among theℓ-spaces containing the image ofQ. Indeed, every such image has the
+same number of complements containingQ, namely2 (ℓ−q) dim(H∩W) in W and2 (ℓ−q) dimH in ˜W.
+Moreover, agreement depends only on this image:fL+H and˜g agree onH, so their difference
+vanishes on one complement precisely when it vanishes on every complement. The conditional
+agreement on valid spaces is therefore identical in the two ambient spaces. Since agreement in
+Wis at leastτ i, agreement in˜Wis at least
+(1−d ˜W )τi−dW
+1−d W
+≥(1−e k0)(τi−ek0)≥τ i−2ek0≥τ i/2.
+If H̸⊆W , the codimensionj of ˜W is strictly smaller thani, andτj≤τ i−1<τ i/2. This gives
+an occurring extension, contradicting maximality.
+Applying this lemma withX =VU, H =HU, andh =hU shows that every maximal pair
+decoded fromFU respects all equations inU, providedQ∩H U ={0}. We next estimate the
+probability of that condition under the distribution used by the source’s soundness proof.
+A.3 Soundness, completeness, and the parameter order
+The advice distribution.The outer game in [6, Section 5.2] first samples(U,V ), then takes
+Q uniformly from theq-spaces ofVV. It sends(U,Q )and( V,Q )to its two players and asks
+for assignments onvar(U)and V, respectively. It accepts when those assignments agree onV
+and the first satisfies every equation ofU. Iff0 equations contributed all three variables, then
+dimVV =k0 + 2f0 and dimH (V ) =f0. Consequently, under this actual distribution, uniformly
+inU,V,
+Pr[Q∩H U̸={0}|U,V]≤ (2f0−1)(2q−1)
+2k0+2f0−1 ≤2 q−k0.(A.7)
+We further increasek0 until
+ek0≤τ 0/4,2 q−k0≤δα(ℓ)/8.(A.8)
+32
+
+=== PDF PAGE 33 ===
+From game acceptance to nonempty lists.Suppose a folded labeling has raw valid
+acceptance greater thanδ under P, the sampler conditioned on legitimateU but not on validity
+of L. Testing the completedFU[L]against the original right answer on(V,L′)can only increase
+this acceptance: valid entries are unchanged, and invalid outcomes previously had payoff zero.
+We may therefore apply the agreement/list and covering arguments in [6, Lemma 5.3, Claim 5.6,
+and Equation (5.1)] to the completed tables. Before invoking invariance, these arguments use
+total linear tables, their agreement, and (A.5); all are now defined on every sampled subspace.
+For fixedU,Q, letLU,Q be the uniform law onℓ-spaces ofVU containingQ. LetL′
+U,Q first
+sample V conditional on the outer question(U,Q )and then a uniformℓ-space ofVV containing
+Q. These are the conditional laws in [6, Lemma 4.11]. Indeed, ifNq(d)denotes the number of
+q-spaces inFd
+2, then forQ⊆V V a uniformℓ-spaceL≤V V satisfies
+Pr[Q⊆L|V] = Nq(ℓ)
+Nq(dimVV ).
+Thus conditioning the source’s V,L sampler on Q⊆L weights each V proportionally to
+Pr[V|U]/N q(dimVV ), exactly as in the outer game.
+LetE 1 be the eventagreement(FU)>δ 2/8, letE 2 be
+TV(LU,Q,L′
+U,Q)≤2 ℓ+5√
+βk 1/4
+0 ,
+and letE3 be nonemptiness of theQ-list ofFU at thresholds(τi). Event E2 is precisely the
+smoothness condition in the source’s Equation (4.3). ForE3, Lemma 3.7 of the source supplies
+an occurring pair for anα(ℓ)fraction of uniform Q whenever E1 holds; any such pair has a
+maximal occurring extension. This uses only existence of the first list, not a bound on its
+size. The cited arguments give these events joint probability at leastδα(ℓ)/4. Intersecting
+with E4 ={Q∩H U ={0}} leaves probability at leastδα(ℓ)/8, by(A.7)–(A.8). The eventE4
+depends only onU,Q. Consequently it does not alter the subsequent conditional law ofV after
+U,Qhave been fixed.
+The second player’s quotient lists.For each question(V,Q )and each linear formγ :Q→
+F2, fix a linear extensionpγ :VV→F 2. Letν :VV→V V/Q be the quotient map. Define a total
+tableT γ on the(ℓ−q)-spaces ofV V/Qby
+Tγ[L/Q] =
+{
+FV [L]−p γ|L, F V [L]|Q =γ,
+0, F V [L]|Q̸=γ.
+Here Q⊆L⊆V V, dimL =ℓ, and the overline denotes the induced linear form onL/Q; it is
+defined in the first case because the difference vanishes onQ.
+For this total table, use the ordinary maximal list with thresholds(ζi): a pair(g,S )occurs
+if S≤V V/Q has codimensioni≤r and Tγ agrees withg on more than aζi fraction of the
+(ℓ−q )-spaces inS. By [6, Lemma 3.12], each such list has size at mostM0 =M0(ℓ−q,r,ζ r),
+independent ofk0. The second player chooses a uniformγ∈Q ∗, then a uniform pair(g,S )
+from this list. It liftsg to the linear formg◦ν +pγ on ν−1(S), extends it uniformly toVV, and
+outputs the corresponding assignment. If its chosen list is empty, it uses an arbitrary assignment.
+The entire procedure uses only(V,Q)and the fixed tables.
+The zero entries may create additional occurring extensions in an auxiliary table. This
+causes no difficulty: the proof below needs an extension of a specified linear form, rather than
+an identification of these auxiliary maximal pairs with the maximal pairs ofFV.
+33
+
+=== PDF PAGE 34 ===
+Success of the two strategies.The first player chooses a uniform maximal pair(f,W )from
+theτ-list ofFU and extendsf uniformly toVU, using an arbitrary assignment if its list is empty.
+This finite list need not have a size bound independent ofk0: the success estimate will hold for
+every one of its elements. The second player uses the quotient lists just constructed.
+Fix U,Q in E1∩E 2∩E 3∩E 4, and any first-player choice(f,W ), withi = codimVUW≤r .
+By Theorem A.1,HU⊆W and f|HU =hU. Every extension chosen by the first player therefore
+satisfies all equations ofU. This is the only use of the invariant-list assertion in the source’s
+decoding argument.
+The covering step of [6, Lemmas 4.11 and 5.5 and the proof of Lemma 5.3], using(A.5),
+gives probability at least0.3τi≥0.3τ 0 overVthat
+codimVV (W∩V V ) =i,Pr
+Q⊆L⊆W∩V V
+[FV [L] =f| L]>τ i/2.
+Here L has dimensionℓ. Set S0 =W∩V V and γ =f|Q. Every equalityFV [L] = f|L in this
+display is retained inTγ. Sinceζ i≤τ 0/2≤τ i/2, the quotient pair
+(
+f|S0−pγ|S0, S0/Q
+)
+occurs forTγ and hence has a maximal occurring extension in that auxiliary table. Lifting any
+such extension by the samepγ gives a function agreeing withf on all ofS0. This conclusion
+concerns function extension and is unaffected by the extra agreements that zero completion may
+introduce.
+The second player selects this tag and one such maximal extension with probability at
+least1 /M, whereM := 2qM0 is independent ofk0. Its eventual answer then agrees withf
+on W∩V V. The first player’s uniform extension agrees with this answer on all ofVV with
+probability2−i≥ 2−r: the quotient VV/(W∩V V )has dimension i. Thus, conditionally on
+E1∩E 2∩E 3∩E 4, the strategy wins with probability at least
+c∗ := 2−r 0.3τ0
+M >0.
+The overall success probability is at leastδα(ℓ)c∗/8, a positive constant independent ofk0. The
+upper bound in [6, Lemma 5.4] tends to zero asβk0→∞ . Choosingk0 sufficiently large gives
+the same contradiction as in the source and proves that raw valid acceptance is at mostδ.
+Fixing soundness before completeness.For the game in Theorem 2.2, takeδ =b/4and
+retain the valid raw weights. Their total massqedge is at least1/2by the preceding rejection
+estimates. Normalization therefore gives
+Val≤δ/q edge≤b/2<b.
+Every restriction above concerns onlyb and parameters fixed from it. After choosingℓ, take
+k0 =j4 and β =j−3 with j sufficiently large. Thenβk0→∞ , β√k0→ 0, and√βk 1/4
+0 → 0.
+These limits satisfy the outer-game soundness and covering requirements, including2ℓβ≤ 1/8,
+as well as all the displayed margins. In particular, the alphabet dimensionn =ℓ− 1has been
+fixed using onlyb.
+34
+
+=== PDF PAGE 35 ===
+Completeness with the alphabet fixed.Let α :Z →F2 satisfy all but anε fraction
+of the input equations, and also writeα : V0→F 2 for its linear extension. Give the folded
+left questionC the answerα|RC and give(V,L′)the answer α|L′. Whenever every equation of
+sampled U is satisfied,hU =α|HU, so(A.2) is exactlyα|RC+HU. The edge is therefore satisfied.
+This argument concerns the sampled edge; it does not require every member of its folding class
+to involve satisfied equations.
+Before either conditioning step, a union bound gives probability at mostk0ε of sampling an
+unsatisfied equation. Since the total retained probabilityqall is at least1/2, the conditioned
+game’s value is at least1−k 0ε/qall≥ 1− 2k0ε. Afterℓ,k 0 have been fixed for soundness, choose
+ε≤a/(2k 0)in the initial 3Lin gap. This gives the asserted completeness without alteringn.
+Effectivity and size.All spaces in an individual question have bounded dimension. There
+are polynomially manyk0-tuples of input equations, and each tuple has only constantly many
+subspaces, bases, and local sampling outcomes. The folding equivalence relation is explicitly
+testable by linear algebra. To findRC effectively, start from any(U,L )∈C and enumerate
+the ℓ-spaces insideL +HU, whose dimension is the fixed constantℓ +k0; test each candidate
+against (A.1) for every class member. Lemma 4.2 guarantees a successful candidate. Gaussian
+elimination then computes bases and the affine edge maps. The finite sampling distributions,
+their conditioning, and the aggregation of parallel edges have rational weights of polynomial
+bit length. These observations give the deterministic polynomial reduction claimed in the
+proposition. This completes the proof of Theorem 2.2.
+B Conversion to simple unweighted graphs
+We include an explicit deterministic conversion so that rational edge weights and loops introduce
+no additional complexity assumption. The comparison uses the original, unnormalized weight
+scale. We replace each vertex by a cluster and approximate each weighted edge by a bipartite
+graph whose edge count on every rectangle approximates the weighted-density prediction with a
+uniform absolute error. An arbitrary cut may split each cluster. Its cluster proportions then
+describe a random cut of the original graph, so the rectangle estimates control all cuts of the
+enlarged graph, not just cuts constant on clusters.
+Lemma B.1.Let G be a graph onN vertices with nonnegative rational weightswuv on unordered
+distinct vertex pairs, and∑
+u<vwuv≤ 1. For every fixedϵ′> 0, one can construct in deterministic
+polynomial time a simple unweighted graphG′ and an integer scaleQsuch that
+⏐⏐⏐⏐
+MaxCut(G′)
+Q −MaxCut(G)
+⏐⏐⏐⏐≤ϵ′.
+The same conclusion holds when the input graph has loops, after deleting them without renor-
+malizing its other weights.
+Proof. Choose a primep>max{ 2, 2N 2/ϵ′}. A prime of polynomial size can be found determin-
+istically by testing successive integers, using Bertrand’s postulate to bound the search. Replace
+every vertex by a cluster indexed byF6
+p. For eachu<v let Iuv⊆F p be any fixed set of⌊pwuv⌋
+residues, for example the first such residues in the usual ordering. Joinx in clusteru to y in
+clustervexactly when
+x·y∈I uv.
+35
+
+=== PDF PAGE 36 ===
+There are no edges within clusters. This defines a simple graph onNp 6 vertices, constructible
+by enumerating all possible pairs. TakeQ=p12.
+We first estimate its edge count on arbitrary rectangles between two clusters. Fix a residue
+setIand subsetsS,T⊆F 6
+p. Writingψ(a) = exp(2πia/p), Fourier inversion gives
+1I(a) =
+∑
+h∈Fp
+βhψ(ha), β h = 1
+p
+∑
+a∈I
+ψ(−ha),|β h|≤1.
+Forh̸= 0, the matrixM h(x,y) =ψ(hx·y)satisfies
+MhM∗
+h =p 6I,
+by character orthogonality, so its operator norm isp3. Consequently,
+⏐⏐⏐⏐#{(x,y)∈S×T:x·y∈I}− |I|
+p|S||T|
+⏐⏐⏐⏐≤
+∑
+h̸=0
+|βh|p3
+√
+|S||T|
+≤p 10.
+ForI=I uv, division byp12 and
+⏐⏐|I|/p−w uv
+⏐⏐≤1/pshow that
+⏐⏐⏐⏐
+euv(S,T)
+p12 −wuv
+|S|
+p6
+|T|
+p6
+⏐⏐⏐⏐≤ 1
+p + 1
+p2.(B.1)
+Now fix an arbitrary cut ofG′, and letau∈ [0, 1]be the fraction of clusteru on its positive
+side. Its crossing edges between clustersu,v form two rectangles. Equation(B.1) therefore
+compares their scaled count with
+wuv
+(
+au(1−a v) + (1−a u)av
+)
+to error at most2/p + 2/p2. Summing over the at most N(N− 1)/2pairs costs at most
+N(N− 1)(1/p + 1/p2). The displayed weighted expression, summed over pairs, is the expected
+cut weight obtained by independently assigning vertexu a positive sign with probabilityau. It
+is at mostMaxCut(G). This proves the desired upper bound for every cut ofG′.
+Conversely, give all vertices in each cluster the sign of a maximum cut ofG. The same
+rectangle bound compares its scaled weight withMaxCut(G)to at most the same error, giving
+the reverse inequality. Our choice ofp ensures N(N− 1)(1/p + 1/p2)< ϵ′, which proves the
+assertion. Loops contribute zero to every cut and can be deleted at the outset.
+References
+[1] Sanjeev Arora, Carsten Lund, Rajeev Motwani, Madhu Sudan, and Mario Szegedy. Proof
+verification and the hardness of approximation problems.Journal of the ACM, 45(3):501–555,
+1998. Preliminary version in FOCS 1992.
+[2] Sanjeev Arora and Shmuel Safra. Probabilistic checking of proofs: A new characterization
+of NP.Journal of the ACM, 45(1):70–122, 1998. Preliminary version in FOCS 1992.
+[3] Boaz Barak, Pravesh K. Kothari, and David Steurer. Small-set expansion in shortcode
+graph and the 2-to-2 Conjecture. In Avrim Blum, editor,10th Innovations in Theoretical
+Computer Science Conference (ITCS 2019), volume 124 ofLeibniz International Proceedings
+in Informatics, pages 9:1–9:12. Schloss Dagstuhl–Leibniz-Zentrum für Informatik, 2019.
+36
+
+=== PDF PAGE 37 ===
+[4] MihirBellare, OdedGoldreich, andMadhuSudan. Freebits, PCPs, andnonapproximability—
+towards tight results.SIAM Journal on Computing, 27(3):804–915, 1998.
+[5] Christer Borell. Geometric bounds on the Ornstein–Uhlenbeck velocity process.Zeitschrift
+für Wahrscheinlichkeitstheorie und Verwandte Gebiete, 70(1):1–13, 1985.
+[6] Irit Dinur, Subhash Khot, Guy Kindler, Dor Minzer, and Muli Safra. Towards a proof of
+the 2-to-1 games conjecture?Theory of Computing, 21(11):1–50, 2025. Preliminary version
+in STOC 2018.
+[7] Uriel Feige, Shafi Goldwasser, László Lovász, Shmuel Safra, and Mario Szegedy. Interactive
+proofs and the hardness of approximating cliques.Journal of the ACM, 43(2):268–292,
+1996.
+[8] Uriel Feige and Gideon Schechtman. On the optimality of the random hyperplane rounding
+technique for MAX CUT.Random Structures & Algorithms, 20(3):403–440, 2002.
+[9] Michel X. Goemans and David P. Williamson. Improved approximation algorithms for
+maximum cut and satisfiability problems using semidefinite programming.Journal of the
+ACM, 42(6):1115–1145, 1995.
+[10] Johan Håstad. Some optimal inapproximability results.Journal of the ACM, 48(4):798–859,
+2001.
+[11] Richard M. Karp. Reducibility among combinatorial problems. In Raymond E. Miller and
+James W. Thatcher, editors,Complexity of Computer Computations, pages 85–103. Plenum
+Press, New York, 1972.
+[12] Subhash Khot. On the power of unique 2-prover 1-round games. InProceedings of the
+Thirty-Fourth Annual ACM Symposium on Theory of Computing, pages 767–775. ACM,
+2002.
+[13] Subhash Khot, Guy Kindler, Elchanan Mossel, and Ryan O’Donnell. Optimal inapprox-
+imability results for MAX-CUT and other 2-variable CSPs?SIAM Journal on Computing,
+37(1):319–357, 2007.
+[14] Subhash Khot, Dor Minzer, and Muli Safra. Pseudorandom sets in Grassmann graph have
+near-perfect expansion.Annals of Mathematics, 198(1):1–92, 2023.
+[15] Subhash Khot, Dor Minzer, and Muli Safra. On independent sets, 2-to-2 games and
+Grassmann graphs.Theory of Computing, 21(10):1–55, 2025. Preliminary version in STOC
+2017.
+[16] Elchanan Mossel, Ryan O’Donnell, and Krzysztof Oleszkiewicz. Noise stability of functions
+with low influences: Invariance and optimality.Annals of Mathematics, 171(1):295–341,
+2010.
+[17] Ryan O’Donnell and Yi Wu. An optimal SDP algorithm for Max-Cut, and equally optimal
+long code tests. InProceedings of the Fortieth Annual ACM Symposium on Theory of
+Computing, pages 335–344. ACM, 2008.
+37
+
+=== PDF PAGE 38 ===
+[18] Prasad Raghavendra. Optimal algorithms and inapproximability results for every CSP?
+InProceedings of the Fortieth Annual ACM Symposium on Theory of Computing, pages
+245–254. ACM, 2008.
+[19] Luca Trevisan, Gregory B. Sorkin, Madhu Sudan, and David P. Williamson. Gadgets,
+approximation, and linear programming.SIAM Journal on Computing, 29(6):2074–2097,
+2000.
+38
