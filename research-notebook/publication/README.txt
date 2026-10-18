@@ -1,3 +1,13 @@
+INTERNAL SCOPE REVIEW — 18 October 2026
+
+Start with ../research/controls-scope-review-20261018/ASSESSMENT.txt.
+Fourteen internal comments separate proof correctness from novelty and useful
+engineering decisions. Recommended direction: one complete digital braking-to-
+holding operation under changing response, followed by a matched comparison.
+An exact-arithmetic age-budget screen has a nonempty 1 ms candidate; it is not
+a sampled safety proof. The old papers and frozen team packet remain unchanged.
+This is root self-review, not new independent or human peer review.
+
 TEAM REVIEW PACKET — 18 October 2026
 
 Start with controls-team-review-20261018/output/pdf/controls-review-brief.pdf.

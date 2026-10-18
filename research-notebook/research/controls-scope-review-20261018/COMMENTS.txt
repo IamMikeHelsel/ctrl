@@ -1,0 +1,113 @@
+INTERNAL COMMENTS FOR THE NEXT CONTROLS PAPER REVISION
+18 October 2026. All comments by the root assistant. No new independent reviewer.
+Paths are relative to the workspace root. Lines refer to hash-bound inputs.
+Priority: BLOCKER = research/release decision; MAJOR = revise or supply evidence.
+These are not claims that the existing Lean theorems are false.
+
+C01 — BLOCKER — State the engineering decision before the proof technique.
+Anchor: publication/robust-manuscript/main.tex:18,21-28.
+The abstract lists proof components but does not show a decision made possible
+by the result. Define a user, a motion task, and the quantity they choose:
+clearance, starting speed, information age, or actuator authority. A declared
+academic benchmark is honest; it is not evidence of engineering demand.
+Close with: a fixed task contract and a comparative result that matters to it.
+
+C02 — BLOCKER — The current novelty sentence is too weak to carry a controls paper.
+Anchor: robust-manuscript/main.tex:24,236-241 (same publication directory).
+Lyapunov reasoning, saturation sectors, Bernstein certificates, backup sets and
+intersample safety have prior art. Formal control envelopes and Lean control
+foundations also exist. Identify the exact composition/interface delta and
+evaluate it. Do not claim firstness from an incomplete library search.
+Close with: an overlap table at statement/API level, plus a demonstrated benefit.
+
+C03 — MAJOR — "Uncertain lag" must not suggest changing response during a run.
+Anchor: publication/robust-manuscript/main.tex:32,57,241.
+One unknown fixed r is materially different from r(t). Warm/cold repeated units
+could motivate a fixed range, but warm-up during motion requires a different
+model. Keep this distinction in the abstract and examples. No measured range
+has been supplied for either interpretation.
+
+C04 — BLOCKER — A certified region is not yet a useful operating region.
+Anchor: publication/robust-manuscript/main.tex:41-69,239-241.
+The full-state ellipsoid is justified mathematically. Its location, shape and
+units are not tied to an engineering requirement. Show admitted/rejected states
+in position, velocity and acceleration. State how those quantities are sensed.
+A larger certificate alone does not demonstrate a larger true safe region.
+
+C05 — MAJOR — Keep the direct-controller evidence visible.
+Anchor: research/adjacent-controls/direct-comparison/README.txt;
+        research/adjacent-controls/recovery-proof/README.txt.
+Direct control succeeds in the recorded matched numerical tests. The rational
+full-box prototype also passes. The scale-2 comparison is a difference between
+sufficient enclosures; it does not show direct control is unsafe. Do not use
+the recovery theorem to imply that a brake-first policy is needed.
+
+C06 — MAJOR — Update stale proof-status text at the next manuscript revision.
+Anchor: publication/recovery-manuscript/main.tex:249-258,265,278.
+Those paragraphs describe an endpoint-only pilot without a robust tail. Later
+BetweenSample, PilotPath and PilotContinuation results close those interfaces
+for ONE cell. Current reference: research/adjacent-controls/interval-checker/
+README.txt and composition-and-novelty-review.txt. The full 1,024-cell covering
+and family comparison remain unchecked in Lean. Preserve the older draft as
+history; do not treat its open-work list as the current state of every proof.
+
+C07 — BLOCKER — Do not merge theorem scopes in prose.
+Anchor: publication/controls-team-review-20261018/NOVELTY-EVAL.txt;
+        research/overnight/2026-10-18/controls/builder-05/CLAIMS.txt.
+The sampled saturated fixed-rate theorem is not generalized by the continuous
+changing-rate tracker. The latter has different gains, rate range and command
+assumptions. A unified digital theorem needs an explicit common execution model.
+
+C08 — BLOCKER — Detection and eventual handoff are missing from the stop story.
+Anchor: research/adjacent-controls/variable-response/EventStop.lean;
+        variable-response/sampled-handoff/Handoff.lean:14-17 and README.txt
+        (both under research/adjacent-controls).
+The stop event uses true velocity. The capture theorem starts from an admitted
+reading. Neither proves that noisy samples eventually produce an admitted
+reading while all intervening motion remains safe. Failure to switch can cause
+rearward motion under continued braking. State and prove the detector's progress
+condition; never assume the successful sample as the whole-operation conclusion.
+
+C09 — MAJOR — Bounded position is not a precise stop.
+Anchor: variable-response/sampled-handoff/README.txt and hold-scope.txt.
+The illustrative hold interval is [0.0326,0.14365] m, centred at 0.088125 m
+after a 0.14 m reading. It permits a substantial retreat. The exported cube
+bounds allow speed 0.4442 m/s and acceleration 3.5536 m/s^2; these are coarse
+bounds, not predicted motion. Do not describe this as precision standstill.
+Choose terminal speed/acceleration requirements before advertising a stop.
+
+C10 — BLOCKER — Continuous holding needs a digital implementation bridge.
+Anchor: variable-response/sampled-handoff/RobustHold.lean:200-242;
+        same folder/README.txt, "Holding model".
+The proof uses actual continuous state. Measurement error, age, held commands
+and drive error must share one explicit mismatch budget. The new age calculation
+is only a screen. Its cube and mismatch premises require a noncircular invariant
+argument. Switching and sample boundaries also need the right trajectory class.
+
+C11 — MAJOR — "Reusable" currently means a candidate interface.
+Anchor: publication/robust-manuscript/main.tex:234,239.
+Generic Bernstein, convexity and perturbation lemmas can be reused. There is no
+independent consumer on a different plant. Show exactly which proofs are reused
+and which model identities remain manual. Do not equate type-level generality
+or scaled copies with demonstrated reduction in verification effort.
+
+C12 — MAJOR — Retain the trust boundary and make it testable.
+Anchor: publication/robust-manuscript/main.tex:214-218.
+The metadata is not a verified semantics parser. Real arithmetic is not a
+finite-word controller. Model-mutation rejection is useful, but does not show
+that the mutations represent frequent field failures. An implementation claim
+needs checked timestamps, state ordering, units, command placement and rounding.
+
+C13 — BLOCKER — Separate our grades.
+Anchor: publication/controls-team-review-20261018/READ-ME.txt;
+        research/adjacent-controls/direct-comparison/README.txt (B-minus).
+Acceptance by a proof critic is evidence for the bounded proof. It is not a
+publication grade. Replace any single global score with correctness, novelty,
+comparative value and implementation evidence gates. Human review remains open.
+
+C14 — SCOPE — A one-axis problem can be meaningful.
+Anchor: proposed next paper, not an existing theorem.
+Dimension alone is not the defect. A small plant can expose a useful sharp
+trade, verify an important implementation gap, or enable reuse. Adding a Franka
+model without a coupled proof would increase the claim gap. Broaden the supported
+operation and evaluate it before broadening the robot.

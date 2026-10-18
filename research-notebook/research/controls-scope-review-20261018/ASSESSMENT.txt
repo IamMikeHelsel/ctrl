@@ -1,0 +1,100 @@
+INTERNAL ASSESSMENT: DOES THE CONTROLS PAPER EARN A LARGER SCOPE?
+18 October 2026. Root assistant self-review, not independent peer review.
+
+Decision
+Expand the engineering question, but do not expand the paper by collecting more
+small theorems. Keep the original fixed-lag paper as a verified case study. The
+preferred research direction is one complete digital braking-to-holding operation
+under changing actuator response. First test whether that operation has a useful
+timing and sensing budget. Publication novelty is still unestablished.
+
+Mike's concern is supported. We have stronger evidence for correctness than for
+usefulness. The old paper does not yet show a new control method, a useful design
+decision for a measured axis, less verification work, or an advantage over another
+complete verification pipeline. That does not make its checked mathematics wrong.
+
+What survives this review
+The fixed-lag result connects a real-valued sampled execution, clipping, held
+errors and exact certificates to safety between every sample. It includes
+existence and uniqueness. The recovery result adds a full-state handoff from a
+box outside the invariant ellipsoid. Those are substantive verification tasks.
+Their primary evidence remains frozen; this review adds no Lean theorem.
+
+The variable-response work already proves a delayed first velocity zero and
+one-sided travel bound. A separate result admits a noisy reading, a command
+delay, and continuous-feedback holding without a state reset. The later motion
+work derives terminal speed and acceleration bands after a reference stops.
+These are different contracts. They are not one sampled stop-and-hold theorem.
+
+What we should correct about our own process
+1. We let the next provable lemma set the research agenda. The missing test was:
+   which engineering decision changes when this proof is available?
+2. Proof reviewers checked statements, assumptions and evidence well. Passing
+   those checks did not answer whether the result was new or worth using.
+3. We spent effort on papers and animations before fixing the comparative claim.
+   Those tools explain results; they do not supply their research value.
+4. We accumulated model variants. Fixed lag, varying lag, held feedback and
+   continuous feedback now support different conclusions. Combining summaries
+   would conceal real interface work.
+5. Some reports lag the proofs. The recovery manuscript still describes an
+   endpoint-only direct pilot. The later pilot includes between-sample safety
+   and a robust tail, but only for one parameter cell. Neither description
+   supplies a full matched comparison. Use the evidence map in COMMENTS.txt.
+
+Separate decision gates
+Formal correctness: strong recorded evidence within the declared contracts.
+This pass inspected statements and records; it did not rerun the Lean stack.
+New control theory: not established; the methods have close published precedents.
+Lean contribution: plausible verification composition; independent reuse untested.
+Engineering usefulness: untested against a calibrated task or a useful design trade.
+Team review: ready, with these objections attached.
+Submission as a new controls solution: hold pending a value test and overlap audit.
+
+Recommended question
+Given remaining clearance, noisy position/velocity/acceleration, bounded sample
+age, and changing actuator response, when can a digital controller brake, switch
+to holding, and remain within the travel limits without resetting the state?
+
+The useful output is a decision: admit the maneuver, demand a smaller sample
+age or speed, or decline the guarantee. The first research result can be a tight
+description of this trade, even if no new controller is invented. Bounds on
+residual speed and acceleration must be explicit whenever we say "stopped."
+
+There is a concrete next test
+The existing 5.5525 cm hold cube permits 0.11105 m/s^2 total target mismatch.
+Its example sensor bounds alone cost 0.093 m/s^2 under the hold gains. A new
+exact-arithmetic screening calculation leaves a total information-age ceiling
+of about 1.394 ms if physical target error also uses 0.01 m/s^2. A 1 ms age
+fits that sufficient calculation; 5 ms does not. This is not a sampled safety
+proof or a necessary timing limit. See AGE-BUDGET.txt for the assumptions.
+
+This is useful direction-setting evidence: digital execution is a real missing
+obligation, and there is a nonempty candidate budget. It is not evidence that
+our method is novel, that 5 ms is unsafe, or that hardware can meet these bounds.
+The existing one-time 5 ms capture delay is a separate, still-valid contract.
+
+Scope choices
+A. More ellipsoids and parameter cells: do not make this the main expansion.
+   They complete comparisons, but do not establish value by themselves.
+B. Digital changing-response braking and holding: preferred application route.
+   It addresses Mike's original question and exposes a practical timing trade.
+C. Reusable Lean verification library: viable alternative if a different plant
+   uses the unchanged generic interface and the saved work is demonstrated.
+   Physical rescaling of the same plant is not enough evidence of reuse.
+D. Full Franka, contact, grip loss, PL d/e, or human motor control: separate work.
+   Adding these to this paper now would introduce unsupported claims and models.
+
+What would change the decision
+Complete one operation on one common model. Compare it with a credible robust
+sampled-data or backup-control baseline under the same limits. Show a useful
+admitted region, a less conservative budget, less verification effort, or a
+clear checked interface that another user can apply. Record negative results.
+Correctness plus a different proof assistant is not sufficient by itself.
+
+If the digital bridge only supports unusable sensing/timing, or the comparison
+offers no benefit and independent reuse fails, keep the result as a documented
+library example or tutorial. Do not broaden the claims to rescue the paper.
+
+The next bounded work and stop rules are in NEXT-GATE.txt. The internal comments
+are in COMMENTS.txt. SOURCES.txt records the primary-source overlap checks.
+No existing paper, theorem, frozen review, or overnight state was changed.
