@@ -31,6 +31,7 @@ from tools.verify_885_genus2_quotients import (  # noqa: E402
     compute_frobenius_data_mod_p,
     compute_igusa_clebsch_from_projective_roots,
     count_projective_points_fp_and_fp2,
+    evaluate_cassels_flynn_and_mumford_divisors,
     is_good_prime_for_offsets,
     squarefree_part,
     verify_birational_weierstrass_model_for_c6,
@@ -129,3 +130,20 @@ def test_squarefree_part_helper() -> None:
     assert squarefree_part(72) == 2
     assert squarefree_part(-45) == -5
     assert squarefree_part(0) == 0
+
+
+def test_cassels_flynn_2descent_and_mumford_divisors_all_classes() -> None:
+    """Verify that all 4 known columns map to the kernel of the Cassels-Flynn (x - T) map
+    and form valid degree-1 and degree-2 Mumford divisors across all 7 genus-2 quotients.
+    """
+    for cname, info in GRID_CLASSES.items():
+        cf = evaluate_cassels_flynn_and_mumford_divisors(info["U"], info["V"])
+        assert cf["all_quadric_lifts_in_cassels_flynn_kernel"] is True, f"Failed for {cname}"
+        assert len(cf["quintic_mumford_and_2descent"]) == 6
+        for q_cf in cf["quintic_mumford_and_2descent"]:
+            assert q_cf["deg1_divisors_count"] == 4
+            assert q_cf["deg2_divisors_count"] == 6
+            assert q_cf["all_deg1_in_cassels_flynn_kernel"] is True
+            assert q_cf["all_deg2_in_cassels_flynn_kernel"] is True
+            assert q_cf["all_mumford_divisibility_verified"] is True
+        assert cf["sextic_cassels_flynn_squarefree_tuples"] == [[1, 1, 1, 1, 1, 1]] * 4

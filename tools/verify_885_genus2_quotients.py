@@ -423,6 +423,119 @@ def verify_birational_weierstrass_model_for_c6(U: list[int], V: list[int]) -> di
     }
 
 
+def evaluate_cassels_flynn_and_mumford_divisors(U: list[int], V: list[int]) -> dict[str, Any]:
+    """Evaluate the Cassels-Flynn (x - T) 2-descent homomorphism and Mumford divisor representations
+    for the 4 known columns V = (v_0, v_1, v_2, v_3) across all 7 genus-2 quotients.
+
+    For a genus-2 curve C_5^(r): W_r^2 = f_r(X) = prod_{m != r} (X + u_m), a semi-reduced
+    effective divisor D of degree d <= 2 is represented in Mumford coordinates as a pair of
+    polynomials (a(X), b(X)) over Q such that:
+      1. a(X) is monic of degree d <= 2,
+      2. deg(b) < deg(a),
+      3. a(X) divides f_r(X) - b(X)^2 in Q[X].
+    The Cassels-Flynn (x - T) homomorphism maps [D - d * infinity] in J(C_5^(r))(Q) to the
+    5-tuple of squarefree classes:
+      mu_r(D) = ( squarefree((-1)^d * a(-u_m)) )_{m != r} in (Q^* / (Q^*)^2)^5.
+    For any point P_j = (v_j, W_r(v_j)) lifted from the 6-quadric system Z_{j,m}^2 = v_j + u_m:
+      - The degree-1 Mumford divisor D_j = (X - v_j, W_r(v_j)) has (-1)^1 * a(-u_m) = v_j + u_m = Z_{j,m}^2,
+        so mu_r(D_j) = (1, 1, 1, 1, 1) (trivial in every component!).
+      - For every pair of distinct columns (j1, j2), the degree-2 Mumford divisor
+          a_{j1, j2}(X) = (X - v_{j1})(X - v_{j2}),
+          b_{j1, j2}(X) = ((W_r(v_{j1}) - W_r(v_{j2})) / (v_{j1} - v_{j2})) * (X - v_{j2}) + W_r(v_{j2})
+        satisfies a_{j1, j2}(X) | (f_r(X) - b_{j1, j2}(X)^2) and has
+          a_{j1, j2}(-u_m) = (v_{j1} + u_m)(v_{j2} + u_m) = (Z_{j1, m} * Z_{j2, m})^2,
+        so mu_r(D_{j1, j2}) = (1, 1, 1, 1, 1) in (Q^* / (Q^*)^2)^5!
+    """
+    assert len(U) == 6 and len(V) == 4
+
+    # Verify all 6 components v_j + u_m are positive integer squares
+    z_table: list[list[int]] = []
+    for v in V:
+        row_z = []
+        for u in U:
+            s = math.isqrt(v + u)
+            assert s * s == v + u and s > 0
+            row_z.append(s)
+        z_table.append(row_z)
+
+    quintic_descent_results = []
+    for r in range(6):
+        included_indices = [m for m in range(6) if m != r]
+        included_u = [U[m] for m in included_indices]
+
+        # 1. Degree-1 Mumford divisors D_j = [P_j - inf] for j = 0..3
+        deg1_divisors = []
+        for j, v in enumerate(V):
+            w_r = 1
+            for m in included_indices:
+                w_r *= z_table[j][m]
+            cf_tuple = [squarefree_part(v + u) for u in included_u]
+            assert cf_tuple == [1, 1, 1, 1, 1], f"Non-trivial (x-T) image: {cf_tuple}"
+            deg1_divisors.append({
+                "column_index": j,
+                "a_poly": [Fraction(-v), Fraction(1)],  # X - v_j
+                "b_poly": [Fraction(w_r)],
+                "cassels_flynn_squarefree_tuple": cf_tuple,
+                "in_cassels_flynn_kernel": True,
+            })
+
+        # 2. Degree-2 Mumford divisors D_{j1, j2} = [P_{j1} + P_{j2} - 2*inf] for 0 <= j1 < j2 < 4
+        deg2_divisors = []
+        for j1, j2 in itertools.combinations(range(4), 2):
+            v1, v2 = Fraction(V[j1]), Fraction(V[j2])
+            w1 = Fraction(deg1_divisors[j1]["b_poly"][0])
+            w2 = Fraction(deg1_divisors[j2]["b_poly"][0])
+
+            # Linear interpolant b(X) = b1 * X + b0 passing through (v1, w1) and (v2, w2)
+            b1 = (w1 - w2) / (v1 - v2)
+            b0 = w2 - b1 * v2
+            assert b1 * v1 + b0 == w1 and b1 * v2 + b0 == w2
+
+            # Verify Mumford divisibility: f_r(v1) - b(v1)^2 == 0 and f_r(v2) - b(v2)^2 == 0
+            f_v1 = Fraction(1)
+            f_v2 = Fraction(1)
+            for u in included_u:
+                f_v1 *= v1 + u
+                f_v2 *= v2 + u
+            assert f_v1 - (b1 * v1 + b0) ** 2 == 0
+            assert f_v2 - (b1 * v2 + b0) ** 2 == 0
+
+            # Evaluate Cassels-Flynn (x - T) map: a(-u_m) = (-u_m - v1)(-u_m - v2) = (v1 + u_m)(v2 + u_m)
+            cf_pair_tuple = [
+                squarefree_part((V[j1] + u) * (V[j2] + u)) for u in included_u
+            ]
+            assert cf_pair_tuple == [1, 1, 1, 1, 1]
+            deg2_divisors.append({
+                "pair": [j1, j2],
+                "a_coeffs": [str(v1 * v2), str(-(v1 + v2)), "1"],
+                "b_coeffs": [str(b0), str(b1)],
+                "mumford_divisibility_verified": True,
+                "cassels_flynn_squarefree_tuple": cf_pair_tuple,
+                "in_cassels_flynn_kernel": True,
+            })
+
+        quintic_descent_results.append({
+            "label": f"C_5^({r + 1})",
+            "deg1_divisors_count": len(deg1_divisors),
+            "deg2_divisors_count": len(deg2_divisors),
+            "all_deg1_in_cassels_flynn_kernel": True,
+            "all_deg2_in_cassels_flynn_kernel": True,
+            "all_mumford_divisibility_verified": True,
+        })
+
+    # Also verify 6-component (x - T) triviality on the sextic C_6
+    sextic_cf_tuples = [
+        [squarefree_part(v + u) for u in U] for v in V
+    ]
+    assert all(t == [1, 1, 1, 1, 1, 1] for t in sextic_cf_tuples)
+
+    return {
+        "all_quadric_lifts_in_cassels_flynn_kernel": True,
+        "quintic_mumford_and_2descent": quintic_descent_results,
+        "sextic_cassels_flynn_squarefree_tuples": sextic_cf_tuples,
+    }
+
+
 def analyze_all_seven_genus2_quotients(class_name: str = "class1_formB") -> dict[str, Any]:
     """Perform complete arithmetic and Frobenius analysis of all 7 genus-2 quotients (6 quintics + 1 sextic)."""
     info = GRID_CLASSES[class_name]
@@ -584,6 +697,7 @@ def analyze_all_seven_genus2_quotients(class_name: str = "class1_formB") -> dict
     all_hasse_weil = all(
         f["hasse_weil_valid"] for q in quotients_report for f in q["frobenius_good_primes"]
     )
+    cassels_flynn_mumford = evaluate_cassels_flynn_and_mumford_divisors(U, V)
 
     return {
         "class_name": class_name,
@@ -595,6 +709,7 @@ def analyze_all_seven_genus2_quotients(class_name: str = "class1_formB") -> dict
         "all_hasse_weil_bounds_verified": all_hasse_weil,
         "all_7_jacobians_simple_over_Q": all_7_simple_over_q,
         "all_7_jacobians_absolutely_simple_over_Qbar": all_7_abs_simple,
+        "cassels_flynn_2descent_and_mumford": cassels_flynn_mumford,
         "quotients": quotients_report,
     }
 

@@ -23,10 +23,12 @@ if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
 from tools.certify_mf13_multiterm import (  # noqa: E402
+    NON_COMMON_T_GRID_PARAMS,
     anticomm_part,
     block_pair_6,
     build_multiterm_involution_ensemble,
     canonical_four_term_decomposition,
+    certify_non_common_t_grid,
     comm_part,
     diag_blocks_6,
     find_symmetric_intertwiner,
@@ -39,6 +41,7 @@ from tools.certify_mf13_multiterm import (  # noqa: E402
     off_diag_blocks_6,
     run_multiterm_benchmark_suite,
     sym_part_ak,
+    verify_eight_involution_dominance_and_intertwiner,
     verify_multiterm_involution_hierarchy,
 )
 from tools.certify_mf13_pair import (
@@ -260,6 +263,32 @@ def test_multiterm_hierarchy_and_non_common_t_certification() -> None:
     assert cert_large.excludes_s_below_one is True
 
 
+def test_eight_involution_dominance_and_symmetric_intertwiner_grid_10() -> None:
+    """Verify the 8-involution dominance corollary and 10-pair non-Common-T grid certification."""
+    assert len(NON_COMMON_T_GRID_PARAMS) == 10
+    grid_results = certify_non_common_t_grid()
+    assert len(grid_results) == 10
+
+    for entry in grid_results:
+        assert entry["has_common_t"] is False
+        assert Fraction(entry["min_pivot"]) > Fraction(0)
+        assert Fraction(entry["certified_s_sq_bound"]) > Fraction(1)
+        assert entry["excludes_s_below_one"] is True
+        dom = entry["dominance_and_intertwiner"]
+        assert dom["excess_identity_exact"] is True
+        assert dom["implication_valid"] is True
+        assert dom["intertwiner_found"] is True
+        assert dom["intertwiner_duality_exact"] is True
+
+    # Also verify on Calibration Pair where dominance condition 4||H||^2 + 4||H_iso||^2 >= ||Y_off||^2 holds
+    K_cal, Y_cal, A_cal, _ = make_calibration_pair()
+    dom_cal = verify_eight_involution_dominance_and_intertwiner(K_cal, Y_cal, A_cal)
+    assert dom_cal["excess_identity_exact"] is True
+    assert dom_cal["condition_holds"] is True
+    assert dom_cal["max_8_dominates"] is True
+    assert dom_cal["implication_valid"] is True
+
+
 def test_run_multiterm_benchmark_suite() -> None:
     """Verify the full benchmark suite executes cleanly and all certificates pass."""
     results = run_multiterm_benchmark_suite()
@@ -267,3 +296,6 @@ def test_run_multiterm_benchmark_suite() -> None:
     assert results["m05_t_third"]["multiterm_gram_cert"]["excludes_s_below_one"] is True
     assert results["generic_non_common_t"]["has_common_t"] is False
     assert results["generic_non_common_t"]["multiterm_gram_cert"]["excludes_s_below_one"] is True
+    assert len(results["non_common_t_grid_10"]) == 10
+    assert all(r["excludes_s_below_one"] for r in results["non_common_t_grid_10"])
+

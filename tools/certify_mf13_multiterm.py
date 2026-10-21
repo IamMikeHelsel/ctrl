@@ -540,6 +540,140 @@ def make_generic_non_common_t_pair(
     return K, Y
 
 
+def verify_eight_involution_dominance_and_intertwiner(
+    K: RationalMatrix,
+    Y: RationalMatrix,
+    A: RationalMatrix | None = None,
+) -> dict[str, Any]:
+    """Verify the Lean 4 8-involution dominance corollary and symmetric intertwiner pairing over Q.
+
+    Checks:
+    1. sum_{m=1}^8 (||L_A(K T^{(m)})||_F^2 - ||Y||_F^2) == 16 ||H||_F^2 + 16 ||H_iso||_F^2 - 4 ||Y_off||_F^2
+    2. Condition 4 ||H||_F^2 + 4 ||H_iso||_F^2 >= ||Y_off||_F^2 implies max_m ||L_A(K T^{(m)})||_F^2 >= ||Y||_F^2
+    3. Symmetric intertwiner S (S^T = S, S^2 = I_6, S K = Y S) satisfies:
+       U_S := -Y S Y is symmetric, U_S S == -Y K, and <-Y S Y, L_A(S)>_F == <Y, L_A(K)>_F == ||Y||_F^2.
+    """
+    if A is None:
+        analysis = analyze_byers_nash_pair(K, Y)
+        A = RationalMatrix([[Fraction(x) for x in row] for row in analysis.A0])
+
+    H = sym_part_ak(A, K)
+    H_iso = isotropic_block_trace_6(H)
+    Y_eval = lyapunov_eval(A, K)
+    Y_off = off_diag_blocks_6(Y_eval)
+
+    klein8 = make_eight_involution_family()
+    gains_8 = [frobenius_norm_sq(lyapunov_eval(A, K @ T)) for T in klein8]
+    norm_Y_sq = frobenius_norm_sq(Y_eval)
+    norm_H_sq = frobenius_norm_sq(H)
+    norm_H_iso_sq = frobenius_norm_sq(H_iso)
+    norm_Y_off_sq = frobenius_norm_sq(Y_off)
+
+    lhs_excess = sum(g - norm_Y_sq for g in gains_8)
+    rhs_excess = (
+        Fraction(16) * norm_H_sq
+        + Fraction(16) * norm_H_iso_sq
+        - Fraction(4) * norm_Y_off_sq
+    )
+    excess_identity_exact = lhs_excess == rhs_excess
+    dominance_margin = (
+        Fraction(4) * norm_H_sq + Fraction(4) * norm_H_iso_sq - norm_Y_off_sq
+    )
+    condition_holds = dominance_margin >= Fraction(0)
+    max_8_dominates = max(gains_8) >= norm_Y_sq
+    implication_valid = (not condition_holds) or max_8_dominates
+
+    S_inter = find_symmetric_intertwiner(K, Y)
+    intertwiner_exact = False
+    if S_inter is not None:
+        I6 = RationalMatrix.identity(6)
+        U_S = (Y @ S_inter @ Y) * Fraction(-1)
+        LAS = lyapunov_eval(A, S_inter)
+        intertwiner_exact = (
+            (S_inter - S_inter.transpose()).max_abs_entry() == Fraction(0)
+            and ((S_inter @ S_inter) - I6).max_abs_entry() == Fraction(0)
+            and ((S_inter @ K) - (Y @ S_inter)).max_abs_entry() == Fraction(0)
+            and (U_S - U_S.transpose()).max_abs_entry() == Fraction(0)
+            and ((U_S @ S_inter) + (Y @ K)).max_abs_entry() == Fraction(0)
+            and frobenius_inner(U_S, LAS) == frobenius_inner(Y, Y_eval)
+        )
+
+    return {
+        "excess_identity_exact": excess_identity_exact,
+        "dominance_margin": str(dominance_margin),
+        "condition_holds": condition_holds,
+        "max_8_dominates": max_8_dominates,
+        "implication_valid": implication_valid,
+        "intertwiner_found": S_inter is not None,
+        "intertwiner_duality_exact": intertwiner_exact,
+    }
+
+
+NON_COMMON_T_GRID_PARAMS: list[tuple[str, str]] = [
+    ("1/2", "1/10"),
+    ("1/2", "1/8"),
+    ("1/2", "1/6"),
+    ("1/2", "1/5"),
+    ("1/3", "1/10"),
+    ("1/3", "1/8"),
+    ("1/3", "1/6"),
+    ("1/3", "1/5"),
+    ("2/5", "1/10"),
+    ("2/5", "1/8"),
+]
+
+
+def certify_non_common_t_grid(
+    grid_params: list[tuple[str, str]] | None = None,
+) -> list[dict[str, Any]]:
+    """Certify a 10-pair grid of strictly non-Common-T 3-frequency compatible pairs over Q.
+
+    Uses the 8-involution (F, G)-Klein family combined with the algebraically solved
+    symmetric intertwiner S in S_6 (S K = Y S, S^2 = I_6) and U_S = -Y S Y.
+    """
+    if grid_params is None:
+        grid_params = NON_COMMON_T_GRID_PARAMS
+
+    klein8 = make_eight_involution_family()
+    I6 = RationalMatrix.identity(6)
+    records: list[dict[str, Any]] = []
+
+    for t1, t2 in grid_params:
+        K, Y = make_generic_non_common_t_pair(t1, t2)
+        common_t = find_common_t_involution(K, Y)
+        S_inter = find_symmetric_intertwiner(K, Y)
+        if S_inter is None:
+            raise ValueError(f"No symmetric intertwiner found for ({t1}, {t2})")
+
+        tests: list[tuple[RationalMatrix, Fraction]] = [
+            (I6, Fraction(1)),
+            (S_inter, Fraction(1)),
+        ]
+        for T in klein8:
+            tests.append((K @ T, Fraction(1, 256)))
+
+        cert = certify_gram_tester_pair(
+            K,
+            Y,
+            tests=tests,
+            name=f"Non-Common-T Grid Pair (t1={t1}, t2={t2})",
+        )
+        A_min = RationalMatrix([[Fraction(x) for x in row] for row in cert.minimizer_A])
+        dom_info = verify_eight_involution_dominance_and_intertwiner(K, Y, A_min)
+
+        records.append({
+            "t1": t1,
+            "t2": t2,
+            "has_common_t": common_t is not None,
+            "min_pivot": cert.min_pivot,
+            "certified_s_sq_bound": cert.certified_s_sq_bound,
+            "excludes_s_below_one": cert.excludes_s_below_one,
+            "dominance_and_intertwiner": dom_info,
+        })
+
+    return records
+
+
 def run_multiterm_benchmark_suite() -> dict[str, Any]:
     """Run the complete exact rational multi-term involution verification and certification suite."""
     results: dict[str, Any] = {}
@@ -615,7 +749,13 @@ def run_multiterm_benchmark_suite() -> dict[str, Any]:
         "phi_nullity": analysis_gen.phi_nullity,
         "hierarchy": hier_gen.to_dict(),
         "multiterm_gram_cert": cert_gen_multi.to_dict(),
+        "dominance_and_intertwiner": verify_eight_involution_dominance_and_intertwiner(
+            K_gen, Y_gen, A0_gen
+        ),
     }
+
+    # 5. 10-Pair Grid of Strictly Non-Common-T Pairs (8-Involution + Symmetric Intertwiner)
+    results["non_common_t_grid_10"] = certify_non_common_t_grid()
 
     return results
 

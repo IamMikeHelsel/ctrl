@@ -1,6 +1,7 @@
 -- Exploratory lemmas: these are not human-approved physical-plant challenges.
 import Research.ByersNashDuality
 import Research.ByersNashMultiTerm
+import Research.ByersNashHaarIntertwiner
 import Research.CentroidalDecelerationLimit
 import Research.ControlCertificates
 import Research.CoveringCapacity
@@ -12,6 +13,7 @@ import Research.CoveringSeventeen
 import Research.CoveringAssembly
 import Research.CoveringFamily
 import Research.Erdos885QuotientGenus
+import Research.Erdos885JacobianSimplicity
 import Research.HomographyDecomposition
 import Research.LorentzConeCBF
 import Research.RobotEnergySmoothness
