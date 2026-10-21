@@ -3,6 +3,8 @@ import ControlsLean.Vision.Homography
 import ControlsLean.Vision.HomographyUniqueness
 import ControlsLean.Vision.EightPoint
 import ControlsLean.Vision.Triangulation
+import ControlsLean.Robotics.SO3Rodrigues
+import ControlsLean.Robotics.SE3Kinematics
 import ControlsLean.Controls.Hurwitz2
 import ControlsLean.Controls.Jury2
 import ControlsLean.Controls.Reachability
@@ -16,10 +18,18 @@ import ControlsLean.Controls.PolePlacement
 import ControlsLean.Controls.PolePlacementGeneral
 import ControlsLean.Controls.Observer
 import ControlsLean.Controls.MPCFeasibility
+import ControlsLean.Controls.LQR
+import ControlsLean.Controls.DAREExistence
+import ControlsLean.Controls.SchurLyapunov
+import ControlsLean.Controls.DAREUniqueness
+import ControlsLean.Controls.LQROptimality
+import ControlsLean.Controls.BarrierPassivity
 import ControlsLean.Estimation.ScalarKalman
 import ControlsLean.Estimation.InformationFilter
 import ControlsLean.Estimation.RiccatiConvergence
 import ControlsLean.Estimation.AlphaBeta
 import ControlsLean.Estimation.KalmanOptimality
+import ControlsLean.Estimation.SteadyStateKalman
+import ControlsLean.Controls.LQG
 import ControlsLean.Tactics.ControlTactics
 import ControlsLean.Bounty.ErdosBounties

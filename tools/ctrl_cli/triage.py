@@ -1,6 +1,7 @@
 """
-Triage module for rapid bounty screening.
-Cross-references candidate problems against TheJustinSunPrize/awards PRs and plby/lean-proofs.
+Triage module for rapid bounty and formal-conjecture screening.
+Cross-references candidate problems against TheJustinSunPrize/awards PRs,
+plby/lean-proofs, and DeepMind's FormalConjectures repository across all 17 categories.
 """
 
 import sys
@@ -10,13 +11,83 @@ import re
 from pathlib import Path
 
 
+DECL_PATTERN = re.compile(
+    r"@\[([^\]]*category\s+([^\],\n]+)[^\]]*)\]\s*(?:@\[[^\]]*\]\s*)*(?:theorem|lemma)\s+([^\s({:]+)((?:(?!:=|\n@\[).)*?):=\s*(?:by\s+)?sorry\b",
+    re.DOTALL,
+)
+
+
+def _find_formal_conjectures_root(repo_root: Path) -> Path:
+    candidates = [
+        Path.home() / "Dev" / "formal-conjectures" / "FormalConjectures",
+        repo_root.parent / "formal-conjectures" / "FormalConjectures",
+        Path.home()
+        / "Dev"
+        / "ctrl-erdos-lab"
+        / ".lake"
+        / "packages"
+        / "formal_conjectures"
+        / "FormalConjectures",
+    ]
+    for p in candidates:
+        if p.exists():
+            return p
+    return candidates[0]
+
+
+def _scan_formal_conjectures(fc_root: Path, include_erdos: bool, include_non_erdos: bool, category_filter=None):
+    items = []
+    if not fc_root.exists():
+        return items
+    for cat_dir in sorted(fc_root.iterdir()):
+        if not cat_dir.is_dir() or cat_dir.name == "Util":
+            continue
+        is_erdos = cat_dir.name == "ErdosProblems"
+        if is_erdos and not include_erdos:
+            continue
+        if not is_erdos and not include_non_erdos:
+            continue
+        if category_filter and cat_dir.name.lower() != category_filter.lower():
+            continue
+
+        for f in sorted(cat_dir.rglob("*.lean")):
+            txt = f.read_text(errors="ignore")
+            has_formal_proof = "formal_proof" in txt
+            erdos_num = int(f.stem) if (is_erdos and f.stem.isdigit()) else None
+            for m in DECL_PATTERN.finditer(txt):
+                cat_raw = m.group(2).strip()
+                thm_name = m.group(3).strip()
+                sig = " ".join(m.group(4).strip().split())
+                if len(sig) > 95:
+                    sig = sig[:92] + "..."
+                is_open = "open" in cat_raw.lower()
+                status = "open" if is_open else "solved"
+                item_id = (
+                    f"ERDOS-{erdos_num:04d}:{thm_name}"
+                    if erdos_num is not None
+                    else f"FC-{cat_dir.name}/{f.stem}:{thm_name}"
+                )
+                items.append(
+                    {
+                        "id": item_id,
+                        "title": f"[{cat_raw}] {thm_name} {sig}".strip(),
+                        "status": status,
+                        "category": cat_dir.name,
+                        "category_tag": cat_raw,
+                        "erdos_id": erdos_num,
+                        "has_lean_proof": has_formal_proof,
+                        "file": str(f.relative_to(fc_root.parent)),
+                    }
+                )
+    return items
+
+
 def run_bounty_filter(args, repo_root, data_dir):
     awards_path = data_dir / "awards_prs.json"
     plby_path = data_dir / "plby_erdos.json"
     map_path = data_dir / "jsp_erdos_map.json"
     jsp_path = data_dir / "jsp.json"
 
-    # Fallback to ctrl-claude if local data missing
     if not awards_path.exists():
         data_dir = repo_root.parent / "ctrl-claude" / "data" / "snapshots"
         awards_path = data_dir / "awards_prs.json"
@@ -33,6 +104,10 @@ def run_bounty_filter(args, repo_root, data_dir):
 
     plby_erdos = set(plby_doc.get("solved_erdos", []))
     jsp_to_erdos = {k: set(v) for k, v in map_doc.get("mappings", {}).items()}
+    erdos_to_jsp = {}
+    for jid, eids in jsp_to_erdos.items():
+        for eid in eids:
+            erdos_to_jsp.setdefault(eid, set()).add(jid)
 
     # Index awards PRs
     prs = awards_doc.get("prs", [])
@@ -60,6 +135,10 @@ def run_bounty_filter(args, repo_root, data_dir):
                 pr_data[jid]["merged"].append(num)
             else:
                 pr_data[jid]["closed"].append(num)
+
+    source = getattr(args, "source", "jsp")
+    category_filter = getattr(args, "category", None)
+    limit = getattr(args, "limit", 0) or 0
 
     # Determine input candidates
     candidates = []
@@ -89,7 +168,18 @@ def run_bounty_filter(args, repo_root, data_dir):
         for fid in set(found):
             candidates.append({"id": fid})
     else:
-        candidates = [{"id": k, **v} for k, v in jsp_catalog.items()]
+        if source in ("jsp", "all") and not category_filter:
+            candidates.extend([{"id": k, **v} for k, v in jsp_catalog.items()])
+        if source in ("erdos", "fc", "all"):
+            fc_root = _find_formal_conjectures_root(repo_root)
+            candidates.extend(
+                _scan_formal_conjectures(
+                    fc_root,
+                    include_erdos=(source in ("erdos", "all")),
+                    include_non_erdos=(source in ("fc", "all")),
+                    category_filter=category_filter,
+                )
+            )
 
     survivors = []
     rejected = []
@@ -103,11 +193,13 @@ def run_bounty_filter(args, repo_root, data_dir):
                 item.get("has_lean_proof", False)
                 or str(item.get("lean", "")).lower() == "yes"
             )
+            explicit_erdos_id = item.get("erdos_id")
         elif isinstance(item, str):
             jid = item
             title = ""
             cat_status = ""
             has_lean_proof = False
+            explicit_erdos_id = None
         else:
             continue
 
@@ -132,58 +224,71 @@ def run_bounty_filter(args, repo_root, data_dir):
         # Check rejection criteria
         reasons = []
 
-        # 1. Awards PRs
-        pinfo = pr_data.get(jid)
-        if pinfo:
-            if pinfo["open"]:
-                reasons.append(
-                    f"{len(pinfo['open'])} open awards PR(s) ({', '.join(f'#{n}' for n in pinfo['open'][:3])})"
-                )
-            if pinfo["merged"]:
-                reasons.append(f"{len(pinfo['merged'])} merged awards PR(s)")
-            if (
-                args.strict
-                and pinfo["closed"]
-                and not (pinfo["open"] or pinfo["merged"])
-            ):
-                reasons.append(
-                    f"{len(pinfo['closed'])} closed awards PR(s) (strict zero-competition)"
-                )
+        # 1. Awards PRs (direct JSP or mapped from Erdős ID)
+        related_jids = {jid} if jid.startswith("JSP-") else set()
+        if explicit_erdos_id is not None:
+            related_jids |= erdos_to_jsp.get(explicit_erdos_id, set())
+
+        for rjid in sorted(related_jids):
+            pinfo = pr_data.get(rjid)
+            if pinfo:
+                if pinfo["open"]:
+                    reasons.append(
+                        f"{len(pinfo['open'])} open awards PR(s) on {rjid} ({', '.join(f'#{n}' for n in pinfo['open'][:3])})"
+                    )
+                if pinfo["merged"]:
+                    reasons.append(f"{len(pinfo['merged'])} merged awards PR(s) on {rjid}")
+                if (
+                    args.strict
+                    and pinfo["closed"]
+                    and not (pinfo["open"] or pinfo["merged"])
+                ):
+                    reasons.append(
+                        f"{len(pinfo['closed'])} closed awards PR(s) on {rjid} (strict zero-competition)"
+                    )
 
         # 2. plby/lean-proofs
-        erdos_ids = jsp_to_erdos.get(jid, set())
+        erdos_ids = set(jsp_to_erdos.get(jid, set()))
+        if explicit_erdos_id is not None:
+            erdos_ids.add(explicit_erdos_id)
         erdos_in_plby = erdos_ids.intersection(plby_erdos)
         if erdos_in_plby:
             reasons.append(
                 f"in plby/lean-proofs (Erdős {', '.join(str(e) for e in sorted(erdos_in_plby))})"
             )
-        elif pinfo and pinfo.get("plby"):
-            reasons.append("has plby claim in awards PRs")
+        else:
+            for rjid in sorted(related_jids):
+                pinfo = pr_data.get(rjid)
+                if pinfo and pinfo.get("plby"):
+                    reasons.append(f"has plby claim in awards PRs ({rjid})")
 
         # 3. Catalog says Lean proof exists
         if has_lean_proof:
-            reasons.append("JSP catalog marked 'Lean proof: Yes'")
+            reasons.append("Catalog/file marked as already having formal proof")
 
         if reasons:
             rejected.append((jid, title, "; ".join(reasons)))
         else:
             survivors.append((jid, title, cat_status))
 
+    shown_survivors = survivors[:limit] if limit > 0 else survivors
+
     # Output formatting
     if args.ids_only:
-        for jid, _, _ in survivors:
+        for jid, _, _ in shown_survivors:
             print(jid)
         return
 
     if args.json:
         out = [
             {"id": jid, "title": title, "status": status}
-            for jid, title, status in survivors
+            for jid, title, status in shown_survivors
         ]
         print(json.dumps(out, indent=2))
         return
 
-    print("\n\033[1m\033[36m=== Bounty Fast-Filter Results ===\033[0m")
+    print("\n\033[1m\033[36m=== Bounty & FormalConjectures Fast-Filter Results ===\033[0m")
+    print(f"Source catalog:       \033[1m{source}\033[0m" + (f" (category={category_filter})" if category_filter else ""))
     print(f"Scanned candidates:   \033[1m{len(candidates)}\033[0m")
     print(f"Rejected (contested): \033[31m{len(rejected)}\033[0m")
     print(f"Surviving shortlist:  \033[32m\033[1m{len(survivors)}\033[0m\n")
@@ -195,10 +300,12 @@ def run_bounty_filter(args, repo_root, data_dir):
         if len(rejected) > 10:
             print(f"  ... and {len(rejected) - 10} more.\n")
 
-    if survivors:
+    if shown_survivors:
         print("\033[1m\033[32mSurviving Uncontested Problems:\033[0m")
-        for jid, title, status in survivors:
+        for jid, title, status in shown_survivors:
             print(f"  \033[32m✔\033[0m \033[1m{jid}\033[0m [{status}]: {title}")
+        if limit > 0 and len(survivors) > limit:
+            print(f"  ... showing {limit} of {len(survivors)} surviving problems.")
     else:
         print(
             "\033[33mNo candidate survived filters. All candidates are contested, solved, or have active PRs.\033[0m"

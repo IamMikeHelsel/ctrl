@@ -356,17 +356,35 @@ def main():
 
     # Command: triage
     p_triage = subparsers.add_parser(
-        "triage", help="Ultra-fast bounty screening (JSP, Erdős, Conjectures)"
+        "triage", help="Ultra-fast bounty screening (JSP, Erdős, FormalConjectures)"
     )
     p_triage.add_argument(
         "candidates", nargs="*", help="Candidates (IDs, file paths, or stdin)"
+    )
+    p_triage.add_argument(
+        "--source",
+        choices=["jsp", "erdos", "fc", "all"],
+        default="jsp",
+        help="Catalog source: jsp (Justin Sun Prize), erdos (FormalConjectures/ErdosProblems), fc (16 non-Erdős FormalConjectures categories), or all",
+    )
+    p_triage.add_argument(
+        "-c",
+        "--category",
+        help="Optional FormalConjectures category filter (e.g. GreensOpenProblems, Wikipedia, Arxiv, OpenQuantumProblems)",
     )
     p_triage.add_argument(
         "-s",
         "--status",
         choices=["solved", "open", "all"],
         default="solved",
-        help="Filter status",
+        help="Filter status (solved = research solved / textbook / high_school / undergraduate / graduate)",
+    )
+    p_triage.add_argument(
+        "-n",
+        "--limit",
+        type=int,
+        default=0,
+        help="Maximum number of surviving candidates to display (0 = unlimited)",
     )
     p_triage.add_argument(
         "-v", "--verbose", action="store_true", help="Show rejection reasons"
