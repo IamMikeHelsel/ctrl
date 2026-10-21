@@ -2,3 +2,5 @@
 import ErdosLab.Erdos834
 import ErdosLab.Erdos261
 import ErdosLab.Erdos931
+import ErdosLab.Erdos291
+import ErdosLab.Erdos382
