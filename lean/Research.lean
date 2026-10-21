@@ -1,0 +1,22 @@
+-- Exploratory lemmas: these are not human-approved physical-plant challenges.
+import Research.ByersNashDuality
+import Research.ByersNashMultiTerm
+import Research.CentroidalDecelerationLimit
+import Research.ControlCertificates
+import Research.CoveringCapacity
+import Research.CoveringCRT
+import Research.CoveringMass
+import Research.CoveringTail
+import Research.CoveringEleven
+import Research.CoveringSeventeen
+import Research.CoveringAssembly
+import Research.CoveringFamily
+import Research.Erdos885QuotientGenus
+import Research.HomographyDecomposition
+import Research.LorentzConeCBF
+import Research.RobotEnergySmoothness
+import Research.SkewNormalForm
+import Research.SkewRankFourNormalForm
+import Research.TimingContracts
+import Research.VisualServoingInvariant
+import Research.WorldFrameTransport
