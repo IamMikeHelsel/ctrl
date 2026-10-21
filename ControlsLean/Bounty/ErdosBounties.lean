@@ -431,4 +431,204 @@ theorem erdos_834_parts_ii :
       · exact liH_not_colorable_two⟩,
     liH_edge_critical, liH_vertex_critical, liH_degree⟩
 
+/-! ## 6. Erdős Problem #291 (Part ii): Harmonic Numerator Divisibility $\gcd(a_n, L_n) > 1$ -/
+
+/-- $L_n = \operatorname{lcm}_{1 \le k \le n} k$. -/
+def erdos291L (n : ℕ) : ℕ :=
+  (Finset.Icc 1 n).lcm (fun x => x)
+
+/-- $a_n = \sum_{1 \le k \le n} L_n / k$, so $\sum_{k=1}^n 1/k = a_n / L_n$. -/
+def erdos291A (n : ℕ) : ℕ :=
+  ∑ k ∈ Finset.Icc 1 n, erdos291L n / k
+
+/-- For $n = 2 \cdot 3^m$ and any $k \in [1, n] \setminus \{3^m, 2 \cdot 3^m\}$, $3^m$ does not
+divide $k$. -/
+theorem erdos_291_not_dvd_of_ne (m k : ℕ) (hk1 : 1 ≤ k) (hkn : k ≤ 2 * 3 ^ m)
+    (hk_ne1 : k ≠ 3 ^ m) (hk_ne2 : k ≠ 2 * 3 ^ m) : ¬ (3 ^ m ∣ k) := by
+  rintro ⟨c, rfl⟩
+  have h3m_pos : 0 < 3 ^ m := Nat.pow_pos (by decide)
+  have hc_pos : 1 ≤ c := by
+    by_contra h
+    have hc0 : c = 0 := by omega
+    subst hc0
+    omega
+  have hc_le : c ≤ 2 := by
+    by_contra h
+    have hc3 : 3 ≤ c := by omega
+    have : 3 * 3 ^ m ≤ 3 ^ m * c := by
+      rw [Nat.mul_comm (3 ^ m) c]
+      exact Nat.mul_le_mul_right (3 ^ m) hc3
+    omega
+  interval_cases c
+  · exact hk_ne1 (Nat.mul_one (3 ^ m))
+  · exact hk_ne2 (Nat.mul_comm (3 ^ m) 2)
+
+/-- For $n = 2 \cdot 3^m$ ($m \ge 1$) and any $k \in [1, n] \setminus \{3^m, 2 \cdot 3^m\}$,
+$3 \mid (L_n / k)$. -/
+theorem erdos_291_three_dvd_term (m k : ℕ) (hk1 : 1 ≤ k) (hkn : k ≤ 2 * 3 ^ m)
+    (hk_ne1 : k ≠ 3 ^ m) (hk_ne2 : k ≠ 2 * 3 ^ m) :
+    3 ∣ erdos291L (2 * 3 ^ m) / k := by
+  set n := 2 * 3 ^ m
+  have hk_mem : k ∈ Finset.Icc 1 n := Finset.mem_Icc.mpr ⟨hk1, hkn⟩
+  have hk_dvd : k ∣ erdos291L n := Finset.dvd_lcm hk_mem
+  have hn_mem : n ∈ Finset.Icc 1 n := by
+    rw [Finset.mem_Icc]
+    have : 0 < 3 ^ m := Nat.pow_pos (by decide)
+    omega
+  have hn_dvd : n ∣ erdos291L n := Finset.dvd_lcm hn_mem
+  have h3m_dvd_L : 3 ^ m ∣ erdos291L n := dvd_trans ⟨2, by ring⟩ hn_dvd
+  by_contra h3_not_dvd
+  have hcop3 : Nat.Coprime 3 (erdos291L n / k) :=
+    (Nat.Prime.coprime_iff_not_dvd (by decide)).mpr h3_not_dvd
+  have hcop3m : Nat.Coprime (3 ^ m) (erdos291L n / k) := hcop3.pow_left m
+  have h3m_dvd_prod : 3 ^ m ∣ (erdos291L n / k) * k := by
+    rw [Nat.div_mul_cancel hk_dvd]
+    exact h3m_dvd_L
+  have h3m_dvd_k : 3 ^ m ∣ k := hcop3m.dvd_of_dvd_mul_left h3m_dvd_prod
+  exact erdos_291_not_dvd_of_ne m k hk1 hkn hk_ne1 hk_ne2 h3m_dvd_k
+
+/-- For every $m \ge 1$ and $n = 2 \cdot 3^m$, $3 \mid \gcd(a_n, L_n)$. -/
+theorem erdos_291_three_dvd_gcd_two_mul_three_pow (m : ℕ) (hm : 1 ≤ m) :
+    3 ∣ Nat.gcd (erdos291A (2 * 3 ^ m)) (erdos291L (2 * 3 ^ m)) := by
+  set n := 2 * 3 ^ m
+  have h3m_pos : 0 < 3 ^ m := Nat.pow_pos (by decide)
+  have h3_dvd_3m : 3 ∣ 3 ^ m := dvd_pow_self 3 (by omega)
+  have hn_mem : n ∈ Finset.Icc 1 n := Finset.mem_Icc.mpr ⟨by omega, le_rfl⟩
+  have hn_dvd_L : n ∣ erdos291L n := Finset.dvd_lcm hn_mem
+  have h3_dvd_L : 3 ∣ erdos291L n :=
+    dvd_trans h3_dvd_3m (dvd_trans ⟨2, by ring⟩ hn_dvd_L)
+  refine Nat.dvd_gcd ?_ h3_dvd_L
+  -- Split the sum over Icc 1 n by erasing 2 * 3^m and 3^m
+  have h3m_mem : 3 ^ m ∈ (Finset.Icc 1 n).erase n := by
+    rw [Finset.mem_erase, Finset.mem_Icc]
+    refine ⟨?_, by omega, by omega⟩
+    dsimp [n]
+    omega
+  unfold erdos291A
+  rw [← Finset.add_sum_erase _ _ hn_mem, ← Finset.add_sum_erase _ _ h3m_mem, ← add_assoc]
+  refine dvd_add ?_ ?_
+  · obtain ⟨q, hq⟩ := hn_dvd_L
+    have hq1 : erdos291L n / n = q := by
+      rw [hq, Nat.mul_div_right q (by omega)]
+    have hq2 : erdos291L n / 3 ^ m = 2 * q := by
+      have hrew : erdos291L n = 3 ^ m * (2 * q) := by
+        calc erdos291L n = (2 * 3 ^ m) * q := hq
+          _ = 3 ^ m * (2 * q) := by ring
+      rw [hrew, Nat.mul_div_right (2 * q) h3m_pos]
+    rw [hq1, hq2]
+    exact ⟨q, by ring⟩
+  · refine Finset.dvd_sum fun k hk => ?_
+    rw [Finset.mem_erase, Finset.mem_erase, Finset.mem_Icc] at hk
+    rcases hk with ⟨hk_ne1, hk_ne2, hk1, hkn⟩
+    exact erdos_291_three_dvd_term m k hk1 hkn hk_ne1 hk_ne2
+
+/-- **Erdős #291 (Part ii)** (`erdos_291.parts.ii` in DeepMind's *Formal Conjectures*):
+Infinitely many positive integers $n$ satisfy $\gcd(a_n, L_n) > 1$. -/
+theorem erdos_291_parts_ii :
+    { n : ℕ | Nat.gcd (erdos291A n) (erdos291L n) > 1 }.Infinite := by
+  let f : ℕ → ℕ := fun k => 2 * 3 ^ (k + 1)
+  have hf_mono : StrictMono f := by
+    refine strictMono_nat_of_lt_succ fun k => ?_
+    dsimp [f]
+    exact Nat.mul_lt_mul_of_pos_left
+      (Nat.pow_lt_pow_right (by decide) (Nat.lt_succ_self (k + 1))) (by decide)
+  refine Set.infinite_of_injective_forall_mem hf_mono.injective fun k => ?_
+  dsimp [f]
+  have h3_dvd := erdos_291_three_dvd_gcd_two_mul_three_pow (k + 1) (by omega)
+  have hL_pos : 0 < erdos291L (2 * 3 ^ (k + 1)) := by
+    have h_ne : erdos291L (2 * 3 ^ (k + 1)) ≠ 0 := by
+      unfold erdos291L
+      rw [Finset.lcm_ne_zero_iff]
+      intro x hx
+      rw [Finset.mem_Icc] at hx
+      omega
+    omega
+  have hgcd_pos : 0 < Nat.gcd (erdos291A (2 * 3 ^ (k + 1))) (erdos291L (2 * 3 ^ (k + 1))) :=
+    Nat.gcd_pos_of_pos_right _ hL_pos
+  have h3_le : 3 ≤ Nat.gcd (erdos291A (2 * 3 ^ (k + 1))) (erdos291L (2 * 3 ^ (k + 1))) :=
+    Nat.le_of_dvd hgcd_pos h3_dvd
+  omega
+
+/-! ## 7. Erdős Problem #382: Repeated Largest Prime Factor in Consecutive Products -/
+
+/-- **Erdős #382 (`lt_two_mul_of_largestPrimeRepeated`)**:
+If $1 \le u \le v$, $2 \le v$, and a prime $p$ is the largest prime factor of
+$P = \prod_{m \in [u, v]} m$ (so every prime $q \mid P$ satisfies $q \le p$) and $p^2 \mid P$,
+then $v < 2 u$. -/
+theorem erdos_382_lt_two_mul_of_largestPrimeRepeated {u v p : ℕ}
+    (hu : 1 ≤ u) (_huv : u ≤ v) (hv : 2 ≤ v)
+    (hp_prime : p.Prime)
+    (hp_max : ∀ q : ℕ, q.Prime → q ∣ (∏ m ∈ Finset.Icc u v, m) → q ≤ p)
+    (hp_sq : p ^ 2 ∣ ∏ m ∈ Finset.Icc u v, m) :
+    v < 2 * u := by
+  by_contra h_not_lt
+  have h_ge : 2 * u ≤ v := by omega
+  -- By Bertrand's postulate applied to v / 2 ≥ 1, there is a prime q with v / 2 < q ≤ v.
+  obtain ⟨q, hq_prime, hq_gt, hq_le_two⟩ :=
+    Nat.exists_prime_lt_and_le_two_mul (v / 2) (by omega)
+  have hq_le_v : q ≤ v := le_trans hq_le_two (Nat.mul_div_le v 2)
+  have hq_ge_u : u ≤ q := by omega
+  have hq_mem : q ∈ Finset.Icc u v := Finset.mem_Icc.mpr ⟨hq_ge_u, hq_le_v⟩
+  have hq_dvd_prod : q ∣ ∏ m ∈ Finset.Icc u v, m := Finset.dvd_prod_of_mem _ hq_mem
+  have hqp : q ≤ p := hp_max q hq_prime hq_dvd_prod
+  have hv_lt_2p : v < 2 * p := by omega
+  have hp_dvd_prod : p ∣ ∏ m ∈ Finset.Icc u v, m :=
+    dvd_trans ⟨p, by ring⟩ hp_sq
+  rw [Prime.dvd_finsetProd_iff hp_prime.prime] at hp_dvd_prod
+  obtain ⟨m₀, hm₀_mem, hpm₀⟩ := hp_dvd_prod
+  have hm₀_eq_p : m₀ = p := by
+    rcases hpm₀ with ⟨c, rfl⟩
+    rw [Finset.mem_Icc] at hm₀_mem
+    have hc_pos : 1 ≤ c := by
+      by_contra hc0
+      have : c = 0 := by omega
+      subst this
+      omega
+    have hc_le_1 : c ≤ 1 := by
+      by_contra hc2
+      have : 2 * p ≤ p * c := by
+        rw [Nat.mul_comm p c]
+        exact Nat.mul_le_mul_right p (by omega)
+      omega
+    have hc1 : c = 1 := by omega
+    rw [hc1, Nat.mul_one]
+  rw [hm₀_eq_p] at hm₀_mem
+  -- Split the product at p ∈ Icc u v
+  rw [← Finset.mul_prod_erase _ _ hm₀_mem, sq,
+      mul_dvd_mul_iff_left (Nat.Prime.ne_zero hp_prime),
+      Prime.dvd_finsetProd_iff hp_prime.prime] at hp_sq
+  obtain ⟨m₁, hm₁_mem, hpm₁⟩ := hp_sq
+  rw [Finset.mem_erase, Finset.mem_Icc] at hm₁_mem
+  rcases hm₁_mem with ⟨hm₁_ne_p, hm₁_ge_u, hm₁_le_v⟩
+  rcases hpm₁ with ⟨c, rfl⟩
+  have hc_pos : 1 ≤ c := by
+    by_contra hc0
+    have : c = 0 := by omega
+    subst this
+    omega
+  have hc_ge_2 : 2 ≤ c := by
+    by_contra hc1
+    have : c = 1 := by omega
+    subst this
+    exact hm₁_ne_p (Nat.mul_one p)
+  have : 2 * p ≤ p * c := by
+    rw [Nat.mul_comm p c]
+    exact Nat.mul_le_mul_right p hc_ge_2
+  omega
+
+/-! ## 8. Erdős Problem #667: Monotonicity of Locally Dense Clique Numbers -/
+
+/-- Monotonicity of `Nat.findGreatest` with respect to predicate implication: if
+`P m → Q m` for all $m \le n$, then `Nat.findGreatest P n ≤ Nat.findGreatest Q n`. -/
+theorem findGreatest_mono_pred {P Q : ℕ → Prop} [DecidablePred P] [DecidablePred Q]
+    (n : ℕ) (hPQ : ∀ m ≤ n, P m → Q m) :
+    Nat.findGreatest P n ≤ Nat.findGreatest Q n := by
+  by_cases hP : P (Nat.findGreatest P n)
+  · have hle : Nat.findGreatest P n ≤ n := Nat.findGreatest_le n
+    exact Nat.le_findGreatest hle (hPQ _ hle hP)
+  · have h0 : Nat.findGreatest P n = 0 := by
+      by_contra hne
+      exact hP (Nat.findGreatest_of_ne_zero rfl hne)
+    omega
+
 end ControlsLean.Bounty

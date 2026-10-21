@@ -190,3 +190,154 @@ import ControlsLean
 #print axioms ControlsLean.Bounty.erdos_143_floor_injOn
 #print axioms ControlsLean.Bounty.erdos_143_ncard_le_floor
 #print axioms ControlsLean.Bounty.erdos_834_parts_ii
+#print axioms ControlsLean.Bounty.erdos_291_three_dvd_gcd_two_mul_three_pow
+#print axioms ControlsLean.Bounty.erdos_291_parts_ii
+#print axioms ControlsLean.Bounty.erdos_382_lt_two_mul_of_largestPrimeRepeated
+#print axioms ControlsLean.Bounty.findGreatest_mono_pred
+
+-- Addition 13: Robotics (3D Rotation Lie Algebra so(3) & Rodrigues' Rotation Formula)
+#print axioms ControlsLean.Robotics.skew_mulVec_self
+#print axioms ControlsLean.Robotics.skew_sq
+#print axioms ControlsLean.Robotics.skew_cube
+#print axioms ControlsLean.Robotics.trace_skew
+#print axioms ControlsLean.Robotics.trace_skew_sq
+#print axioms ControlsLean.Robotics.skew_lie_bracket
+#print axioms ControlsLean.Robotics.rodrigues_transpose
+#print axioms ControlsLean.Robotics.rodrigues_mulVec_self
+#print axioms ControlsLean.Robotics.rodrigues_mul_rodrigues
+#print axioms ControlsLean.Robotics.rodrigues_transpose_mul_self
+#print axioms ControlsLean.Robotics.rodrigues_mul_transpose_self
+#print axioms ControlsLean.Robotics.trace_rodrigues
+
+-- Addition 14: Robotics (SE(3) Spatial Adjoint & Euler–Lagrange Manipulator Passivity)
+#print axioms ControlsLean.Robotics.adjoint6_one
+#print axioms ControlsLean.Robotics.adjoint6_mul
+#print axioms ControlsLean.Robotics.adjoint6_inv_mul
+#print axioms ControlsLean.Robotics.det_adjoint6
+#print axioms ControlsLean.Robotics.wrench_twist_power_invariance
+#print axioms ControlsLean.Robotics.manipulator_passivity_power
+#print axioms ControlsLean.Robotics.manipulator_pd_gravity_lyapunov
+
+-- Addition 15: Controls (Discrete-Time LQR, Bellman Completion of Squares & DARE Stability)
+#print axioms ControlsLean.Controls.lqrHessian_transpose
+#print axioms ControlsLean.Controls.lqr_joseph_completion_of_squares
+#print axioms ControlsLean.Controls.lqr_bellman_completion_of_squares
+#print axioms ControlsLean.Controls.lqr_bellman_min_le
+#print axioms ControlsLean.Controls.dare_lyapunov_dissipation
+#print axioms ControlsLean.Controls.dare_closedLoop_tendsto_zero
+
+-- Addition 16: Controls (Discrete-Time Control Barrier Functions & Willems Passivity)
+#print axioms ControlsLean.Controls.dtcbf_step_lower_bound
+#print axioms ControlsLean.Controls.dtcbf_iterate_lower_bound
+#print axioms ControlsLean.Controls.dtcbf_forward_invariant
+#print axioms ControlsLean.Controls.dtcbf_strict_forward_invariant
+#print axioms ControlsLean.Controls.dissipative_telescoping_bound
+#print axioms ControlsLean.Controls.passive_extracted_energy_bound
+#print axioms ControlsLean.Controls.passive_feedback_power_balance
+#print axioms ControlsLean.Controls.passive_feedback_dissipation
+
+-- Addition 17: Controls (DARE Existence via Riccati Value Iteration)
+#print axioms ControlsLean.Controls.riccatiMap_le_joseph
+#print axioms ControlsLean.Controls.riccatiMap_mono
+#print axioms ControlsLean.Controls.riccatiIter_le_of_certificate
+#print axioms ControlsLean.Controls.riccatiMap_continuousAt
+#print axioms ControlsLean.Controls.dare_exists_of_certificate
+#print axioms ControlsLean.Controls.riccatiMap_standard_form
+#print axioms ControlsLean.Controls.dare_standard_form
+#print axioms ControlsLean.Controls.dare_stabilizing_of_certificate
+#print axioms ControlsLean.Controls.certificate_of_converse_lyapunov
+#print axioms ControlsLean.Controls.lqr_stabilizing_of_stabilizable
+
+-- Addition 18: Controls (Converse Lyapunov from Schur Stability & LQR from Stabilizability)
+#print axioms ControlsLean.Controls.exists_pow_contraction
+#print axioms ControlsLean.Controls.summable_quad_pow_mulVec
+#print axioms ControlsLean.Controls.lyapunovSum_tendsto_of_schur
+#print axioms ControlsLean.Controls.lyapunov_tail_tendsto_zero_of_schur
+#print axioms ControlsLean.Controls.converse_lyapunov_of_schur
+#print axioms ControlsLean.Controls.lqr_exists_of_stabilizable
+
+-- Addition 19: Controls (DARE Uniqueness: stabilizing solution is maximal & unique)
+#print axioms ControlsLean.Controls.eq_zero_of_quad_eq_zero
+#print axioms ControlsLean.Controls.LoewnerLE.antisymm
+#print axioms ControlsLean.Controls.dare_sub_le_closedLoop
+#print axioms ControlsLean.Controls.dare_le_of_stabilizing
+#print axioms ControlsLean.Controls.dare_unique_of_stabilizing
+#print axioms ControlsLean.Controls.dare_stabilizing_of_posDef
+#print axioms ControlsLean.Controls.dare_unique_of_posDef
+#print axioms ControlsLean.Controls.lqr_existsUnique_of_stabilizable
+
+-- Addition 20: Estimation (Steady-State Kalman Filter by Duality)
+#print axioms ControlsLean.Estimation.kalmanMap_standard_form
+#print axioms ControlsLean.Estimation.kalmanGain_eq
+#print axioms ControlsLean.Estimation.lqrClosedLoop_dual
+#print axioms ControlsLean.Estimation.schur_transpose
+#print axioms ControlsLean.Estimation.kalman_steady_state
+#print axioms ControlsLean.Estimation.kalman_observer_error_tendsto_zero
+
+-- Addition 21: Controls (LQR Optimality: DARE solution is the minimal infinite-horizon cost)
+#print axioms ControlsLean.Controls.lqrCost_succ
+#print axioms ControlsLean.Controls.riccatiIter_le_lqrCost
+#print axioms ControlsLean.Controls.lqrTraj_feedback
+#print axioms ControlsLean.Controls.lqrCost_feedback_eq
+#print axioms ControlsLean.Controls.lqr_infinite_horizon_optimal
+
+-- Addition 22: Controls (LQG separation-principle stability, converging-input converging-state)
+#print axioms ControlsLean.Controls.norm_mulVec_le_colSum
+#print axioms ControlsLean.Controls.tendsto_zero_of_block_contraction
+#print axioms ControlsLean.Controls.forced_block_expansion
+#print axioms ControlsLean.Controls.tendsto_zero_of_schur_forced
+#print axioms ControlsLean.Controls.lqgTraj_error_step
+#print axioms ControlsLean.Controls.lqgTraj_state_step
+#print axioms ControlsLean.Controls.lqg_stable_of_stable_gains
+#print axioms ControlsLean.Controls.lqg_closed_loop_stable
+
+-- Addition 23: Controls (DARE Detectability, Return-Difference & Quadratic Gain-Margin Robustness)
+#print axioms ControlsLean.Controls.isDetectable_iff_isStabilizable_dual
+#print axioms ControlsLean.Controls.dare_dissipation_factored
+#print axioms ControlsLean.Controls.dare_zero_dissipation_escape
+#print axioms ControlsLean.Controls.dare_schur_of_detectable
+#print axioms ControlsLean.Controls.dare_unique_of_detectable
+#print axioms ControlsLean.Controls.lqr_existsUnique_of_stabilizable_detectable
+#print axioms ControlsLean.Controls.lqr_infinite_horizon_optimal_of_detectable
+#print axioms ControlsLean.Controls.kalman_steady_state_of_stabilizable_detectable
+#print axioms ControlsLean.Controls.dare_bellman_return_difference
+#print axioms ControlsLean.Controls.dare_optimal_dominates_perturbed_bellman
+#print axioms ControlsLean.Controls.dare_perturbed_dissipation_ge_of_margin
+
+-- Addition 24: Estimation (Continuous-Time CARE, HJB Trajectory Calculus & Kalman–Bucy Filter)
+#print axioms ControlsLean.Estimation.care_completion_of_squares
+#print axioms ControlsLean.Estimation.care_closedLoop_lyapunov_of_careResidual
+#print axioms ControlsLean.Estimation.care_lie_derivative_neg
+#print axioms ControlsLean.Estimation.care_hjb_nonneg_of_solution
+#print axioms ControlsLean.Estimation.hasDerivAt_care_hjb
+#print axioms ControlsLean.Estimation.kalmanBucyCovDeriv_completion_of_squares
+#print axioms ControlsLean.Estimation.kalmanBucy_loewner_optimal
+#print axioms ControlsLean.Estimation.kalmanBucy_trace_optimal
+#print axioms ControlsLean.Estimation.kalmanBucy_steadyState_negDef
+#print axioms ControlsLean.Estimation.hasVecDerivAt_kalmanBucy_error
+
+-- Addition 25: Controls (Discrete-Time Input-to-State Stability & Schur Quadratic Perturbation Bounds)
+#print axioms ControlsLean.Controls.iss_lyapunov_convolution_bound
+#print axioms ControlsLean.Controls.iss_lyapunov_step_bound
+#print axioms ControlsLean.Controls.iss_invariant_sublevel
+#print axioms ControlsLean.Controls.iss_ultimate_bound
+#print axioms ControlsLean.Controls.iss_tendsto_zero_of_disturbance_tendsto_zero
+#print axioms ControlsLean.Controls.quad_add_peter_paul_identity
+#print axioms ControlsLean.Controls.quad_add_le_peter_paul
+#print axioms ControlsLean.Controls.quad_iss_of_stein_explicit
+#print axioms ControlsLean.Controls.schur_quadratic_iss
+#print axioms ControlsLean.Controls.schur_quadratic_iss_trajectory_bound
+
+-- Addition 26: Bounty (New Erdős Solutions, Extremal Certificates & Structural Insights)
+#print axioms ControlsLean.Bounty.erdos_370_dyadic_bounds
+#print axioms ControlsLean.Bounty.erdos_370
+#print axioms ControlsLean.Bounty.erdos_645_bounded_47
+#print axioms ControlsLean.Bounty.erdos_645
+#print axioms ControlsLean.Bounty.erdos_493
+#print axioms ControlsLean.Bounty.erdos_493_strictMono_k_two
+#print axioms ControlsLean.Bounty.erdos_493_two_factors_ge_three_iff
+#print axioms ControlsLean.Bounty.erdos_275_dyadic_covers_Icc
+#print axioms ControlsLean.Bounty.erdos_275_dyadic_misses_mul
+#print axioms ControlsLean.Bounty.erdos_275_extremal_sharpness
+#print axioms ControlsLean.Bounty.erdos_873_lcm_ge_add
+#print axioms ControlsLean.Bounty.erdos_1125_kemperman_monotone_chain
