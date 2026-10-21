@@ -1,0 +1,46 @@
+AGE-DEPENDENT CERTIFICATE CONDITIONS
+These are sufficient conditions for this proof method, not a necessary
+condition for physical safety. AgeBudget proves the exact split and formula;
+the fixed T1 values and all inflated radii are checked in Lean.
+
+Let a>=d>=0 be age and startup-duration caps. Let R be the intermediate
+cube radius, K in [R,1/16], N=.103, P=8, and target B=.045.
+  W0=N+a*(384K+.618)
+  S=96K+6W0
+  W1=N+8d+S*(a-d)=c+bK
+  c=N+8d+.618*(a-d)*(1+6a)
+  b=(a-d)*(96+2304a).
+The split requires 0<=S<=8. Since S increases with K, its upper check is
+at K=1/16. Pending overlap is ell=min(t,D)-min(s,D), not an independently
+allocated interval of length d. The replacement by d uses S<=8.
+
+The unweighted first-contact proof needs W1<=2K for all K in [R,1/16].
+When c>=0 and b<2, this is equivalent within this affine estimate to
+R>=c/(2-b). The initial measured weighted box must lie inside R, and
+24K+.093<=2 must hold for unclipping. Neither condition is omitted.
+
+After that cube is derived, use
+  Wfinal=N+8d+108R*(a-d).
+For nonnegative rounded W>=Wfinal, the normalized worst weighted faces at
+K=B give the entry constraints
+  gamma <= .04B/1.02,
+  gamma <= .04B/1.01,
+  gamma <= 1.9B-.75W.
+The all-K face proof is in AgeBudget.weighted_face. These equations do not
+assert that every abstract face residual is produced by an actual sensor
+history. A positive gamma is a progress bound; gamma=0 only gives enclosure.
+
+At a=.0015,d=.0005 and W=.1132, the exact support-radius interval from these
+two scalar budget checks is
+  53811781/950272000 <= R <= 31/540,
+before intersecting startup and clipping conditions. R=.0567 lies inside.
+The lower endpoint is about .0566278 and the upper about .0574074.
+The old .055525 radius lies outside this chosen proof envelope. The new
+R is a simple rational interior choice, not a physically optimal radius.
+
+The weights, policy K(m), center c(m) and startup D bound are unchanged.
+Thus a larger support cube need not increase the final forward tube: that
+tube follows from the smaller policy-weighted barrier after history closure.
+No center retuning, wider sensor guard, command increase or plant-rate change
+is used to obtain the 1.5 ms certificate. screen-results.json retains old
+and new support checks at several ages, including failures.

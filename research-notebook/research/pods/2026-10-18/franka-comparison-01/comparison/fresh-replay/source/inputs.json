@@ -1,0 +1,30 @@
+{
+  "contract": "B1 fixed-rate sampled-data adaptation, frozen before comparison runs",
+  "rate_per_second": 8,
+  "sample_period_seconds": 0.001,
+  "dispatch_delay_seconds": 0.0005,
+  "horizon_seconds": 4,
+  "requested_position_m": 0.14,
+  "position_limits_m": [-0.05, 0.15],
+  "command_limits_m_per_s2": [-2, 2],
+  "pending_command_m_per_s2": -1.21,
+  "sensor_error_bounds": [0.001, 0.01, 0.05],
+  "target_error_bound": 0.01,
+  "reference_interval_m": [-0.03, 0.135],
+  "prediction_steps": 2000,
+  "terminal_block_steps": 2000,
+  "terminal_radius": 0.014,
+  "speed_certificate_bound": 0.5,
+  "position_grid_divisions": 4,
+  "position_tightening_m": 0.000126,
+  "numerical_inequality_reserve": 1e-10,
+  "initial_cases": [
+    {"id": "nominal", "measurement": [0.14, -0.01, -1.17], "initial_sensor_error": [0, 0, 0]},
+    {"id": "forward_guard", "measurement": [0.143, 0.01122, -0.2], "initial_sensor_error": [-0.001, 0.01, 0.05]},
+    {"id": "hard_brake", "measurement": [0.14, -0.01122, -1.27], "initial_sensor_error": [0.001, -0.01, -0.05]}
+  ],
+  "patterns": ["zero", "positive_drive", "negative_drive", "alternating"],
+  "pattern_notes": "Initial measurement is fixed separately. For k>=1 positive_drive uses negative full sensor error and +.01 physical target error; negative_drive uses positive full sensor error and -.01 target error. Alternating reverses every 25 samples, including both physical half intervals. Zero uses no later error. Errors have the same exogenous index in both arms; measurements differ because physical states differ.",
+  "excluded": ["time-varying r(t)", "unknown rate", "unknown or varying dispatch delay", "sensor dropout", "sensor-to-controller latency", "packet reordering", "Franka dynamics", "measured hardware latency"],
+  "scope": "No finite grid, floating matrix test or numerical trajectory is an all-time robust proof. Existing C5 theorem has <=1 ms total age; this experiment has <=1.5 ms and is an explicit numerical extension."
+}

@@ -1,0 +1,94 @@
+C5 EXACT SUPPLIED-EXECUTION CONTRACT
+
+Main theorem: LeanControls.ClearanceEntry.sampled_clearance.
+Entry theorem: LeanControls.ClearanceEntry.sampled_variable_entry.
+All real arithmetic in the policy is exact. The reference is selected ONCE
+from the actual first reading m=q.measurement 0 and then retained.
+
+Changed admission guard
+  m_x<=143/1000 m; |m_v|<=561/50000 m/s;
+  -127/100<=m_a<=-1/5 m/s^2.
+No lower position limit is imposed for this forward-only ceiling. This is a
+new, explicit guard, not an improved conclusion for every old C3 reading.
+
+Policy
+  a=(m_x, m_x+m_v/4, m_x+m_v/2+m_a/16)
+  E=(101533,368033,1042283)/100000000
+  w=(51/50,101/100,1), target=9/200
+  K=max(target, max over all ordered i,j of
+      (a_i-a_j+E_i+E_j)/(w_i+w_j))
+  c=max over i of (a_i+E_i-w_i*K).
+ClearancePolicy.feasible proves |a_i-c|+E_i<=w_i*K for each coordinate.
+It does not assume interval feasibility. Formal optimality for physical
+trajectories or correlated sensor errors is not claimed.
+
+Unchanged physical and clock conditions
+  0<=D<=H and D<=1/2000 seconds.
+  ClearanceAdmission.Execution H D m f r d stamp read.
+  ClearanceAdmission.IsSchedule H D q stamp read; q.measurement 0=m.
+One continuous physical state f=(x,v,a) obeys x'=v, v'=a,
+a'=r*(u+d-a), with the specified one-sided derivatives. Response rate is
+in [8,12]/s. Effective target error |d|<=.01 is added after clipping.
+Pending command u=-1.21 is active before D and on the left at D. The right
+channel at D switches to clip(-8*(read_x-c)-6*read_v-read_a/2), clipped to
+[-2,2]. Samples retain causal nonnegative timestamps, total age<=.001 and
+sensor errors (.001,.01,.05). First sample is zero; first dispatch is D.
+Dispatches are strictly increasing and locally finite, with held-cell
+semantics. All assumptions persist through H. The physical state, original
+stamp and first reading are not reset at dispatch.
+
+Derived proof order
+1. The actual first sample and guard yield the true initial sensor box.
+2. The pending ODE yields |a|<=1.32, |v|<=.03066 and |jerk|<=30.48 on [0,D].
+   Integration yields measurement envelopes
+     e=(.00101533,.01066,.06524), then the transformed-coordinate errors E.
+3. Policy feasibility gives the startup WEIGHTED box. The guard yields
+   K<=2407079/50250000 and w_i*K<R=.055525, so the startup old cube follows.
+4. The full old R cube is proved with the actual pending/digital history.
+   Its two-pass age estimate yields digital mismatch W=.111. The proof uses
+   the R cube, not an invalid 2K budget at the policy radius: .111>2*.045.
+5. The accepted C4 all-K weighted faces apply. A moving-face argument uses
+   the derived startup weighted box to exclude contact at or before D.
+   Only strictly after D is the incoming command rewritten as digital.
+   The plateau kink uses its incoming derivative. All boundaries are covered.
+No initial endpoint cube, invariant, residual bound or reference feasibility
+is supplied as a new main premise.
+
+Whole-horizon conclusions
+Let z=(x-c,x-c+v/4,x-c+v/2+a/16) and
+rho=max(|z0|/1.02,|z1|/1.01,|z2|).
+  Both readings at D equal the original m and retain timestamp zero.
+  |zi(t)|<=R for all i and all t in [0,H].
+  |zi(t)|<=w_i*K for all i and all t in [0,H].
+  x(t)<=3/20-1277551/20100000000<.15 m for all t in [0,H].
+  rho(z(t))<=max(.045,K-(3/1700)*(t-D)) for every t in [D,H].
+The exact guard-wide ceiling is 3013722449/20100000000 m. The margin below
+.15 m is 1277551/20100000000 m, about 63.56 micrometres. It is not an extra
+allowance for errors outside the model.
+
+Variable entry
+Define duration=(K-.045)/(3/1700)>=0. If H>=D+duration, then every real time
+from D+duration through H has rho<=.045 and
+  |x-c|<=.0459 m, |v|<=.3654 m/s, |a|<=2.9088 m/s^2.
+The algebraic guard-wide duration bound is 2479093/1507500 seconds, about
+1.644506136. The nominal K is already .045; its duration is zero. This does
+not establish an outside-to-inside motion for the nominal witness.
+
+Nominal and fair baseline
+At m=(.14,-.01,-1.17), the new policy gives K=.045, c=.09573033,
+upper tube .14163033 and first digital command .29084264.
+With the SAME E and weights, the OLD C3 center .1009375 requires
+K=.04948533 and upper tube .1514125366. Both are exact Lean statements.
+This is the fair variable-radius comparison. A failed upper tube does not
+prove that the corresponding actual trajectory violates .15 m.
+
+Witness and limits
+ClearanceAdmission.Witness.positive_delay_witness has D=.0005, H=.001,
+r=8, d=0, the nominal guard reading and its original zero stamp. Its pending
+and digital exponential phases join at one full physical state. Acceleration
+changes during startup. The digital command is the new .29084264. No
+continuation after H is constructed. C4's ma=0 witness fails this new guard.
+No general existence, detector liveness, C1 floor-only-rate composition,
+precision rest, lower-travel protection, robot/contact model, implementation
+validation or novelty is proved. H is finite and supplied; whole-horizon
+means every t in [0,H], not existence of an infinite execution.

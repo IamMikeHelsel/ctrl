@@ -1,0 +1,1288 @@
+
+PAGE 1
+MITSUBISHI ELECTRIC RESEARCH LABORATORIES
+http://www.merl.com
+Reference Governor for Network Control Systems Subject to
+Variable Time-delay
+Di Cairano, S.; Kalabi´ c, U.; Kolmanovsky, I.V.
+TR2015-154 December 01, 2015
+Abstract
+The handling of constraints in systems subject to variable time-delay is a challenging problem.
+It is particularly relevant to Network Control Systems (NCSs) in which a control system is
+remotely located with respect to the plant to be controlled. In this paper, we develop reference
+governors for controlling constrained systems subject to variable delays with a particular
+focus on the application to NCSs. In the proposed approach, which neither exploits nor
+depends on any explicit synchronization between the plant and the governor, the closed-loop
+dynamics are modeled by a sampled data system, for which input delays result in additive
+disturbances with magnitude proportional to the input rate of change. We ﬁrst develop a
+network reference governor (netRG) that guarantees constraint enforcement and ﬁnite-time
+convergence for variable time-delay shorter than the sampling period. Then, we extend the
+network reference governor to the case of output feedback. Finally, we consider the case of
+long and potentially unbounded delay. The netRGs is evaluated in a case study of orientation
+control of a spacecraft with a ﬂexible appendage.
+Automatica (Journal of IF AC)
+This work may not be copied or reproduced in whole or in part for any commercial purpose. Permission to copy in
+whole or in part without payment of fee is granted for nonproﬁt educational and research purposes provided that all
+such whole or partial copies include the following: a notice that such copying is by permission of Mitsubishi Electric
+Research Laboratories, Inc.; an acknowledgment of the authors and individual contributions to the work; and all
+applicable portions of the copyright notice. Copying, reproduction, or republishing for any other purpose shall require
+a license with payment of fee to Mitsubishi Electric Research Laboratories, Inc. All rights reserved.
+Copyright c⃝ Mitsubishi Electric Research Laboratories, Inc., 2015
+201 Broadway, Cambridge, Massachusetts 02139
+
+PAGE 2
+
+
+PAGE 3
+Reference Governor for Network Control Systems
+subject to Variable Time-delay
+StefanoDiCairano a,Uro ˇsV.Kalabi´cb,IlyaV.Kolmanovsky b
+aMitsubishi Electric Research Laboratories, Cambridge, MA
+bDept. of Aerospace Engineering, Univ. Michigan, Ann Arbor, MI
+Abstract
+The handling of constraints in systems subject to variable time-delay is a challenging problem. It is particularly relevant to
+Network Control Systems (NCSs) in which a control system is remotely located with respect to the plant to be controlled. In
+this paper, we develop reference governors for controlling constrained systems subject to variable delays with a particular focus
+on the application to NCSs. In the proposed approach, which neither exploits nor depends on any explicit synchronization
+between the plant and the governor, the closed-loop dynamics are modeled by a sampled data system, for which input delays
+result in additive disturbances with magnitude proportional to the input rate of change. We ﬁrst develop a network reference
+governor (netRG) that guarantees constraint enforcement and ﬁnite-time convergence for variable time-delay shorter than the
+sampling period. Then, we extend the network reference governor to the case of output feedback. Finally, we consider the case
+of long and potentially unbounded delay. The netRGs is evaluated in a case study of orientation control of a spacecraft with
+a ﬂexible appendage.
+Key words: Network Control Systems, Constrained Control, Reference Governors, Time-delay, Remote Control
+1 Introduction
+In applications as diverse as automotive, aerospace,
+and factory automation, it is appealing to consider the
+network implementation of control systems in which
+computing nodes, sensors and actuators, exchange data
+through a communication network [3–8]. Some of the
+advantages of theseNetwork Control Systems (NCSs)
+are higher computational capabilities, reduced cost, in-
+creased ﬂexibility and simpliﬁed maintenance [6,9–11].
+On the other hand, the network medium introduces ef-
+fects that may cause closed-loop performance degrada-
+tion [10,12,13]. Such eﬀects, that include data losses,
+variable delays and data corruption, are not commonly
+dealt with by classical control methods. As a conse-
+quence, special design techniques have been developed
+in the past ﬁfteen years for NCS. In particular, the sta-
+bility and performance properties of NCSs aﬀected by
+⋆ This paper was not presented at any IFAC meeting. Pre-
+liminary results have been reported in [1,2].
+Corresponding author S. Di Cairano.
+Email addresses: dicairano@ieee.org (Stefano Di
+Cairano), kalabic@umich.edu (Uroˇs V. Kalabi´c),
+ilya@umich.edu (Ilya V. Kolmanovsky).
+datalosses,quantizationandtime delayhavebeen stud-
+ied extensively, see, e.g., [14–20], and references therein.
+Also, control methods for dealing with communication
+networkconstraints,suchasbandwidthandaccess,have
+been developed, see, e.g., [21–23].
+Another important objective in high performance con-
+trol systems is the enforcement of constraints on input
+andoutputplantvariables.InNCS,thenetworkcommu-
+nication introduces a delay that varies and is not known
+in advance, as it depends, for instance, on the network
+protocol executions, on the amount of network users,
+and on environmental conditions. For instance, in [24] a
+controlmethodforcompensa tingthe transmissiondelay
+was developed, based on generalized predictive control.
+In this paper we consider control architectures for con-
+strained control that ensure constraint satisfaction de-
+spite the presence of variable time delays. Speciﬁcally,
+weconsideracontrolarchitecturewhereareferencegov-
+ernor is remotely located with respect to a plant aug-
+mented by a nominal unconstrained controller. A ref-
+erence governor [25] is a nonlinear state-feedback con-
+troller for a constrained plant in closed-loop with a con-
+trollerthat ignores systemconstraints. The governorre-
+ceives a desired reference for the closed-loop plant, usu-
+ally from an operator or a supervisory algorithm, and
+Preprint submitted to Automatica 22 August 2015
+
+PAGE 4
+sends to the closed loop plant the closest virtual refer-
+ence that satisﬁes the constraints. Ideally, the virtual
+referencewill convergetothe desiredreferenceif the lat-
+ter satisﬁes the constraints in steady state.
+The NCS governor architecture, hereafter referred to as
+network reference governor(netRG), is suitable when
+the virtual reference cannot be computed at the plant
+site,e.g.,duetotheimpossibilityorhighcostsofplacing
+at the plant site a computationalunit capableof solving
+anoptimizationproblem.Somemotivatingexamplesfor
+the netRG are in chemical or process control [6], when
+the plant operates in an extreme environment. Another
+class of applications is in autonomous spacecraft or re-
+motelypilotedUAVsandrobots,see,e.g.,[5,7,26],where
+onboard computing hardware capabilities are limited,
+but there is a communication link with a base station
+that can host more capable computing hardware. Other
+applicationsincludeautomotivevehicles[27],wherenet-
+worksconnectmicrocontrollersandactuatorswithvary-
+ing levels of local computing capabilities.
+NCS architectures based on reference governors have
+been previously proposed for enforcing constraints in
+presenceofdelaysanddatalosses.Intheearlypaper[28],
+a prediction scheme with additional logic was used to
+account for a delay bounded over a given horizon, and
+a recovery algorithm was developed for cases when the
+delay was longer than expected. In [29], this approach
+was extended by algorithms based on data redundancy
+thatallowformultipleinterconnectedsystemstobecon-
+trolledthroughthenetworkwithincreasedrobustnessto
+delays and data losses. In both approaches, the delay is
+assumedtobeamultipleofthesamplingperiod,asisthe
+case in synchronous architectures, where the plant and
+controller are synchronized by a common clock. Thus, a
+purely discrete-time model of the plant is exploited for
+predictive constraint enforcement.
+In this paper we consider netRG strategies for systems
+aﬀected by a variable time delay that may take continu-
+ous values in a (possibly unbounded) interval. This kind
+of delay occurs in NCS with asynchronous communica-
+tion protocols, such as the CAN protocol used in au-
+tomotive. We focus on the case where the delay aﬀects
+the command sent from the netRG to the plant, and we
+derive a sampled-data system model, where the eﬀect
+of the delay is modeled as an additive disturbance with
+magnitudeproportionaltotherateofchangeofthecom-
+mand. By using robust constraints, we ﬁrst provide a
+netRG that guarantees constraint enforcement for a de-
+lay that is alwayssmaller than the sampling period, and
+we show that the ﬁnite-time convergence properties of
+the standardgovernor[30,31]arepreserved.The netRG
+is then extended to the case of imperfect state informa-
+tion, where an observeris used for state estimation, and
+a bound on the estimation error is used to robustly en-
+force constraints. Finally, we present a netRG that can
+deal with a longer and possibly unbounded delay, where
+a simple acceptance/rejection logic is implemented at
+the plant.
+The netRG modulates the speed ofconvergencetowards
+thedesiredreferencesothattheuncertaindelaydoesnot
+causeconstraintviolations.Thus, it diﬀers from [28,29],
+and instead exploits an idea similar to [32], while the
+typeandsourcesofuncertaintyandmethodsforaddress-
+ing it are signiﬁcantly diﬀerent. Some of the advantages
+of the proposed netRG are that it does not require syn-
+chronization between the plant and the governor, that
+it has computational burden similar to standard gover-
+nors,thatit allowsforoutputfeedback,andthat itisro-
+busttointersamplingactuation,whichmayoccurdueto
+network and computational jitter. While mainly driven
+by applications in NCSs, the netRG concepts are appli-
+cable to many systems subject to time-varying delays,
+such as those in automotive and aerospace applications.
+The paper is structured as follows. In Section 2 we in-
+troduce the NCS model, the reference governor strat-
+egy and the model of the network-induced time delay.
+In Section 3 we formulate the netRG for the case where
+the time-varying network delay is “short”, which here
+means, shorter than the sampling period. In Section 4
+we consider the case of output feedback, where an esti-
+mator is used to reconstruct the state. Finally, in Sec-
+tion 5 the control strategy is extended to handle “long”
+delays, that is, longer than the sampling period. The
+netRG is applied under diﬀerent conditions to the case
+study of attitude control of aspacecraft with a ﬂexible
+appendageinSection6.The conclusionsaresummarized
+in Section 7.
+Notation. We denote the real, nonnegative real, positive
+real, and integer, nonnegative integer, positive integers
+by R, R
+0+, R+,a n dZ, Z0+, Z+, respectively. Further-
+more, Z[a,b] ≜ {z ∈Z : a ≤z ≤b}, and a similar nota-
+tion is also used withR. Given a continuous signala(t)
+sampledwith sampling periodTs,w ed e n ot eb ya(k)t h e
+value at thekth sampling instant, that isa(k)= a(tk),
+where tk = kTs.W h e r ea is a vector,∥a∥p indicates the
+p-normofthe vector,while when Ais a matrix,∥A∥p in-
+dicates the induced matrixp-norm. Whena is a vector,
+[a]i is theith component of the vector. We denote the
+interiorof the setX by int(X), its convex hull by co(X),
+and the Minkowski sum of setsX and Y by X⊕Y .T h e
+∞-norm ball of radiusρin Rn is denoted byB(ρ), and
+the vertices ofB(1), i.e.,X = {x ∈Rn : ∥x∥∞ ≤1},a r e
+denoted by{ηi}nη
+i=1,w h e r enη=2 n. P[ξ], whereξis a
+generic event, indicates the probability ofξ.
+2 NCS Model and Problem Deﬁnition
+In this section we introduce the NCS and the impact of
+the network-induced delay on the closed-loop system.
+2
+
+PAGE 5
+Plant (x)
++ LogicNetworkReference
+Governor y,y z
+Measurement channel (ym)
+Command channel (v)
+Fig. 1. Schematics of a NCS based on reference governor.
+2.1 Network control system model
+We consider the NCS shown in Figure 1, where a
+reference governor is connected to a plant, possibly
+augmented by a local stabilizing controller, through a
+communication network. The reference governor sends
+commands to the plant, through the command (for-
+ward) channel and receives measurements from the
+plant through the measurement (feedback) channel.
+The command and measurement channels are logical
+channels, that may share the same physical network in-
+frastructure. The signals sent through the network are
+sampled, hence the transmitter also operates as a sam-
+pler, and the receiveroperates also as a zero order hold.
+The communication network causes a time-varying de-
+laybetween the sentand receivedsignals.We assume no
+time-stamping nor sequential indexing of the data pack-
+ets that results in more involved communication pro-
+tocols. Consider a sequence{a
+k}k, k ∈Z0+,w h e r eak
+is sent at timetk ∈R0+ and received at timetk + δk,
+δk ∈R0+. The receiver output is the signal
+a(t)= ak(t),k (t) = arg max
+k∈Z0+:
+tk+δk≤t
+tk +δk. (1)
+In (1) the receiver output at timet is the last received
+signal, which may not be the latest sent packet. In the
+simpler casewhereδ
+k ∈R[0,tk+1−tk), the receiveroutput
+signal a for t ∈R[tk,tk+1), k ∈Z+,i s
+a(t)=
+{
+ak−1 if t ∈R[tk,tk+δk),
+ak if t ∈R[tk+δk,tk+1).
+(2)
+In this paper, we ﬁrst develop control strategies for the
+case where the delay is modelled by (2), then we extend
+our approach to the more general case (1). Also, we fo-
+cus on the case where the delay induced by the network
+aﬀects only the command channel.
+The plant to be controlled is the continuous-time linear
+time-invariant dynamical system,
+˙x(t)= A
+cx(t)+ Bcr(t), (3a)
+y(t)= Ccx(t), (3b)
+wherex ∈Rn isthestatevector, y ∈Rp istheconstraint
+output vector, andr ∈Rm is the input vector, which,
+in this context, is the reference selected to achieve the
+desiredequilibrium. In this paper,y is used to formulate
+the constraints speciﬁed as
+y ∈C⊂ Rp, (4)
+where C is a given compact polyhedron, and 0∈int(C).
+Remark 1 Model (3) represents a plant possibly in
+c l o s e d - l o o pw i t hac o - l o c a t e dc o n t r o l l e r .I nN C S s ,t h e
+co-located controller may be a computationally simple
+controller (e.g., a PID) aimed at asymptotically stabi-
+lizing the physical plant and achieving a unitary steady
+state gain. If the co-located controller is discrete-time, it
+is assumed that its sampling period is such that(3) is a
+valid approximation of the closed-loop behavior from the
+reference governor perspective.
+In this paper we develop netRGs that enforce (4) point-
+wise in time. In the design, we exploit a sampled data
+model of (3) with periodTs ∈R+ being the update pe-
+riod of the netRG,
+x(k +1)= Ax(k)+ Bv(k), (5a)
+y(k)= Cx(k), (5b)
+where A = eAcTs, B =
+∫Ts
+0 eAc(Ts−τ)Bcdτ, C = Cc,a n d
+thereference rin(3)issubstituted byavirtualreference
+v ∈Rm generated by the netRG so that the pointwise
+in time constraints,
+y(k) ∈C, ∀k ∈Z+, (6)
+are enforced andv is “as close as possible” tor.
+Assumption 2 Systems (3) and (5) are asymptotically
+stable,i.e., Ac isHurwitz,and AisSchur.Thepair (A,C)
+is observable.
+Finally, the measurement vectorym ∈Rpm, which is fed
+back from the plant is,
+ym(k)= Cmx(k). (7)
+Assumption 3 Cm in (7) is such thatrank(Cm)= n,
+i.e., givenym(k), x(k) is uniquely determined.
+By Assumption 3, the full statex(k) is known. We dis-
+cuss the case when Assumption 3 does not hold later, in
+Section 4.
+3
+
+PAGE 6
+2.2 Reference governor
+Next, we recall basic concepts and results of the conven-
+tional reference governor, whenδk =0f o ra l lk ∈Z0+.
+Deﬁnition 4 Given x(k +1)= f(x(k)), x ∈Rn, X⊆
+Rn is positive invariant (PI) if for allx ∈X, f(x) ∈X.
+Deﬁnition 5 ( [33]) The maximum output admissible
+setO∞ ⊂Rn+m for (5),(6)for constantreferencev(k+
+1) =v(k) is the PI set,
+O∞ ≜ {(x,v) ∈Rn+m : x(k)= x,v(h)= v, (8)
+∀h ∈Z[k,∞) =⇒ y(h) ∈C, ∀h ∈Z[k,∞)}.
+Deﬁnition 6 Denote the steady state of the con-
+stant command v ∈ Rm by xe(v) ∈ Rn.T h es e t
+Γ⊆{v ∈Rm : Cxe(v) ∈int(C)} is a compact polyhedral
+set of strictly steady state admissible references, i.e.,
+(xe(v),v) ∈int(O∞) for allv ∈Γ.
+Lemma 7 ( [30, 33]) Let Assumption 2 hold. O∞ is
+convex, compact, and it has an arbitrarily close PI inner
+approximation ˜O∞ ⊆O∞ described by a ﬁnite number
+of linear inequalities, i.e., there exists a ﬁniteq ∈Z+,
+Hx ∈Rq×n, Hv ∈Rq×p, K ∈Rq such that,
+˜O∞ = {(x,v): Hxx+Hvv ≤K}. (9)
+In what follows, we disregard the arbitrarily small diﬀer-
+ence between˜O∞ and O∞, which aﬀect only the compu-
+tations, and with a little abuse we consider˜O∞ = O∞.
+The reference governor[25,30,33] is a control lawv =
+g(x,r)w h e r e ,
+g(x,r)=a r gm i n
+v∈Γ
+∥r−v∥2
+2 (10a)
+s.t. (Ax+Bv,v ) ∈O∞, (10b)
+so that the virtual reference (or command)v is the pro-
+jection ofr onto the section ofO∞ at the next state.
+Theorem 8 ( [30]) Consider (5)withv(k)= g(x(k),r(k))
+deﬁned by(10),a n dl e tr(k)= r for allk ∈Z0+.T h e n :
+(i) the setXfeas = {x ∈Rn : ∃v,(Ax+Bv,v ) ∈O∞} is
+PI for (5), (10); (ii) if at some¯h ∈Z0+, x(¯h) ∈Xfeas,
+y(k) ∈C for allk ∈Z[¯h,∞); (iii) if r ∈Γ,t h e r ee x i s t sa
+ﬁnite¯k ∈Z+ such thatv(¯k)= r.
+Remark 9 The pointwise-in timeconstraintscan been-
+forced on a shorter sampling period thanTs by extending
+yin (5)toincludeintersamplinginstants.Enforcingcon-
+straintswithperiod Ts/nc,nc ∈Z+,r e sul tsi ny ∈Rp·nc.
+2.3 Control-oriented model of plant subject to delay
+LetthenetworkinFigure1induceadelay δk inthecom-
+mand (forward) channel, while the measurement (feed-
+back) channel has no delay.
+Lemma 10 Let δk ∈ R[0,¯δ] for all k ∈ Z0+, ¯δ<T s.
+Then,
+x(k +1)= Ax(k)+ Bv(k)+ W(δk)Δv(k), (11)
+whereΔv(k)= v(k)−v(k −1),a n d ,
+W(δ)= A−1
+c (eAc(Ts−δ) −eAcTs)Bc. (12)
+Proof 1 Consider v(tk) applied attk + δk,w h e r eδk ∈
+R[0,¯δ]. Based on(2) with a(t)= v(t) and (3),
+x(tk+1)= eAcTsx(tk)+
+∫ δk
+0
+eAc(Ts−τ)Bcv(tk−1)dτ
++
+∫ Ts
+δk
+eAc(Ts−τ)Bcv(tk)dτ. (13)
+By the deﬁnition ofA, B, x(tk+1)= Ax(tk)+ Bv(tk)+∫δk
+0 eAc(Ts−τ)Bcv(tk−1) −
+∫δk
+0 eAc(Ts−τ)Bcv(tk)dτ,a n d
+we obtain(11) with W(δ)= −
+∫δ
+0 eAc(Ts−τ)Bcdτ.T h u s ,
+(12) follows by integration, since Ac is Hurwitz, and
+hence invertible.
+By (11), a delay in the command channel modiﬁes the
+plant dynamics. Figure 2 showsthe responseof a second
+order system controlled by a reference governorthat en-
+forcesconstraintsbutdoesnotaccountforthedelay.The
+command is subject to a random delayδ
+k ∈[0, 0.99Ts],
+and we setv(t)= v(t−1) if no feasible solution to (10)
+exists at timet. Figure 2 shows that the constraints are
+violated because of the time delay.
+0 1 2 3 4 5 6 7 8 9 10
+−1.2
+−1
+−0.8
+−0.6
+−0.4
+−0.2
+0
+0.2
+0.4
+0.6
+0.8
+1
+1.2
+r,x 1
+t
+Fig. 2. Constraint violations on a system controlled by a
+reference governor due to variable delay. Position (solid),
+position reference (dash-dot), and constraints (dash).
+Equation (13) is similar to that in [18], although there
+the authors continue towards computing a diﬀerence in-
+clusion, while here we obtain an equation for character-
+izing the disturbance.
+4
+
+PAGE 7
+For the relatively benign case whenδk is known attk ∈
+R0+, for everyk ∈Z0+, the reference governor can be
+modiﬁed to account for it.
+Theorem 11 Consider (5a) where for allk ∈Z+ the
+command signalv(k) is subject to delay(2) with the cur-
+rent value of the delayδk <T s known for allk ∈Z0+.
+Consider the reference governor law,
+v(k)= gδ(x(k),r(k),v(k −1),δk), (14)
+wheregδ: Rn × Rm × Rm × R0+ → Rm is deﬁned by,
+gδ(x,r,v −,δ)=
+argmin
+v∈Γ
+∥r−v∥2
+2 (15a)
+s.t. (Ax+Bv +W(δ)Δv,v) ∈O∞ (15b)
+for Δv = v −v−,a n dW(δ) as in Lemma 10.
+If at some¯h ∈Z0+,(x(¯h),v(¯h−1)) ∈O∞, then for(11)
+in closed loop with(14), y(k) ∈C for allt ∈Z[k,∞).
+Proof 2 If (x(¯h),v(¯h−1)) ∈O∞, and since by(11) the
+delay does not have an eﬀect whenΔv(k)=0 , v(¯h)=
+v(¯h −1) is feasible for (15).S i n c eδ¯h is known, v(¯h)
+generated from(14) is such that(x(¯h+1),v(¯h)) ∈O∞.
+Since O∞ is PI, the reasoning can be repeated for all
+k ∈ Z[¯h,∞).T h u s ,(x(k),v(k −1)) ∈O∞, and hence
+y(k) ∈C, for allk ∈Z[¯h,∞).
+By Deﬁnition 5, the delay does not aﬀectO∞, but only
+the computation ofv in (15).
+An immediate extension of Theorem 11 is for when the
+delay takesone of a ﬁnite number ofknownpossible val-
+ues, but it is otherwise unknown. In this case (15b) can
+be replicated for each possible delay value. Computa-
+tionally, this approach becomes unwieldy if the number
+of possible delay values is large.
+To account for the case where{δk}∞
+k=0 is unknown and
+can take arbitrary values, as in asynchronousNCSs, the
+reference governor must be further modiﬁed.
+3 Network Reference Governor for Short Delay
+Next, we consider a network delay δk that is vari-
+able and unknown. Since Theorem 11 does not apply,
+(14), (15) must be modiﬁed to deal with the uncertainty
+in the delay. First, we considerδk <T s for allk ∈Z0+,
+i.e., the delay is shorter than the netRG update period,
+and (2) can be used. For this case, we introduce the
+following assumption.
+Assumption 12 There exists¯δ∈R[0,Ts) such thatδk ∈
+R[0,¯δ] for allk ∈Z0+.
+Under Assumption 12 phenomena such as command
+overtaking, i.e., a later command being received earlier
+than a previously sent command, do not occur. How-
+ever, since the netRG commands a reference,Ts may
+be long with respect to the system time constant, and
+hence even under Assumption 12 the delay can cause
+signiﬁcant constraint violations, if ignored.
+Remark 13 The case when the delay has a constant
+component,i.e., δk ∈R[δc,δc+¯δ], canbedealt with byinte-
+gratingthesystemforward foratime δc,andbyconsider-
+ing a variable delayδk ∈R[0,¯δ] acting from the predicted
+state, see, e.g., [2].
+From (11) we formulate the system model subject to
+unknown command delay as,
+x(k +1)= Ax(k)+ Bv(k)+ d(k), (16a)
+d(k) ∈D(Δv(k)), (16b)
+D(Δv)= {d ∈Rn : d = W(δ)Δv, δ∈R[0,¯δ]}. (16c)
+When δk is unknown,d(k) in (16) acts as a disturbance
+bounded in the setD(Δv(k)). Hence, we modify (10) to
+ensure constraintenforcement for any admissible delay,
+gd(x,r,v −)=m i n
+v∈Γ
+∥r−v∥2
+2 (17a)
+s.t. (Ax+Bv +d,v) ∈O∞, (17b)
+∀d ∈D(Δv), (17c)
+where Δv = v −v−. The control law (17) ensures that
+for any admissible delay the state will stay in the max-
+imum output admissible set, but it is not computation-
+ally tractable due to (17c). The netRG is based on a
+computationally eﬃcient approximation of (17).
+Lemma 14 Under Assumption 12, consider (11) and
+the O
+∞ set for(5),a n dl e t ,
+¯W =m a x
+δ∈R[0,¯δ]
+∥W(δ)∥∞. (18)
+Let the netRG lawgw : Rn × Rm × Rm be,
+gw(x,r,v −) = (19a)
+argmin
+v∈Γ
+∥r−v∥2
+2 (19b)
+s.t. (Ax+Bv + ¯Wηi∥Δv∥∞,v) ∈O∞,
+∀i ∈Z[1,nη]. (19c)
+Given x(k), r(k), v(k −1),w i t h(x(k),v(k −1)) ∈O∞,
+v(k)= gw(x(k),r(k),v(k −1)) is such that for anyδk ∈
+R[0,¯δ], (x(k +1),v(k)) ∈O∞.
+Proof 3 (17b), (17c) can be reformulated as,
+(Ax+Bv ⊕D(Δv),v) ⊆O∞. (20)
+5
+
+PAGE 8
+Since by the norm properties¯W∥Δv∥∞ ≥∥W(δ)Δv∥∞
+for allδ∈R[0,¯δ], it follows thatD(Δv) ⊆ ˜D(Δv) where,
+˜D(Δv) ≜{d ∈Rn : ∥d∥∞ ≤ ¯W∥Δv∥∞}. (21)
+According to(21), ˜D(Δv) is a (convex) polytope. By the
+deﬁnition of∞-norm, ˜D(Δv)=c o ({ηi ¯W∥Δv∥∞}n
+i=1)
+and by convexity ofO∞ and ˜D(Δv),
+(Ax+Bv +ηi ¯W∥Δv∥,v) ∈O∞, ∀i ∈Z[1,nη]
+=⇒ (Ax+Bv +d,v) ∈O∞, ∀d ∈˜D(Δv). (22)
+Since D(Δv) ⊂ ˜D(Δv), (17b), (17c) are enforced and
+(Ax + Bv + d,v) ∈O∞ for all δ∈ R[0,¯δ].F i n a l l y ,a
+feasible referencev exists sincev = v(k−1) is such that
+D(Δv)= {0} and (Ax(k)+ Bv,v ) ∈O∞.
+The netRG (19) enforces the constraints for the set of
+possible next states, obtained as a nominal evolution
+for δ= 0, plus a delay-induced uncertainty set. Also,
+when replacingD(Δv)b y ˜D(Δv) in (17c), the recursive
+feasibility ofv = v− in (19) is maintained since˜D(0) =
+D(0).
+Remark 15 While making the optimization problem
+computationally feasible, (19c) introduces some con-
+servativeness due to the approximation of D(Δv).
+Tighter approximations can be found, for instance
+based on general polytopes [18]. For instance, for all
+i ∈ Z[1,m],l e thi ∈ Z+ and ω(j)
+i , j ∈ Z[1,hi] be such
+that [W(δ)]i ⊆co({ω(j)
+i }hi
+j=1), for allδ∈R[0,¯δ]. Deﬁne
+˜Di([Δv]i)=c o ({ω(j)
+i [Δv]i}hi
+j=1)=c o ({ω(j)
+i }hi
+j=1)[Δv]i,
+then D(Δv) ⊆ ⨁m
+i=1 ˜Di([Δv]i).T h u s ,(17b), (17c) are
+guaranteedbyenforcing (Ax+Bv+∑m
+i=1 ω(ji)
+i [Δv]i,v) ∈
+O∞ for allji ∈Z[1,hi], i ∈Z[1,m]. 2
+The netRG (19)canbe evaluatedby solvinga quadratic
+program. Under Assumption 2, O∞ is deﬁned by the
+polytope (9), and substituting (9) into (19) and intro-
+ducing the auxiliary variableξ∈R
+0+,
+(gw(x,r,v −),ξ) = (23a)
+arg min
+v∈Γ,ξ
+∥r−v∥2
+2 (23b)
+s.t.H x(Ax+Bv +ηi ¯Wξ)+ Hvv ≤K, (23c)
+ξ≥[v −v−]j, (23d)
+ξ≥−[v −v−]j, (23e)
+i ∈Z[1,nη],j ∈Z[1,m],
+where at optimumξ=Δv, and (23c) enforces (x(k +
+1),v(k)) ∈O∞ for the vertices of˜D(Δv), thus enforcing
+(17b) for alld ∈˜D(Δv) ⊃D(Δv).
+The following theorem summarizes the properties of the
+network reference governor (19).
+Theorem 16 Consider (5) under Assumption 2, and
+let the commandv(k) be subject to random delay satis-
+fying Assumption 12. If at some¯h ∈Z0+, (x(¯h),v(¯h −
+1)) ∈O∞, then for the closed loop of(5) with v(k)=
+gw(x(k),r(k),v(k −1)), it follows thaty(k) ∈C for all
+k ∈Z[¯h,∞).I fr(k)= r for all k ∈Z[¯h,∞), r ∈Γ,t h e n
+there exists a ﬁnite¯k ∈Z0+ such thatv(¯k)= r. 2
+Proof 4 If (x(¯h),v(¯h −1)) ∈O∞, v(¯h)= v(¯h −1) is
+feasible for(23), by Lemma 14.
+Dueto (19b)andsincefor each k ∈Z[¯h,∞),v(k)= v(k−
+1) is feasible, it follows thatJ∗(k) ≤∥r −v(k −1)∥2
+2 =
+J∗(k−1),wher eJ∗(k)denotestheoptimal costat step k.
+Thus, the optimal cost is nonincreasing, and there exists
+J∗≥0, such thatJ∗= limk→∞ ∥r −v(k)∥2
+2. Note that
+v(k) is the projection ofr on the set deﬁned by(19c).
+Using the properties of the norm projection on a closed
+convex set,∥v(k)−v(k−1)∥2
+2 ≤∥r−v(k−1)∥2
+2 −∥r−
+v(k)∥2
+2,a n dt h u slimk→∞ ∥v(k)−v(k −1)∥2 =0 .
+Let x(k +1 )= Ax(k)+ Bv(k)+ ¯WΔv(k) and xe(k)=
+xe(v(k)) = Axe(k)+ Bv(k),t h e nx(k +1 )−xe(k)=
+A(x(k)−xe(k))+ ¯W(v(k)−v(k−1)).S i n c eA is Schur
+and limk→∞ ∥v(k) −v(k −1)∥ =0 , it follows that
+limk→∞ ∥x(k)−xe(k)∥ =0 .
+To complete the proof we note that there existsσ> 0
+such that for allv ∈Γ, (xe(v) ⊕B(σ),v) ∈int(O∞).
+Thus,(x(k),v) ∈O∞ andx(k) → xe(k)ask →∞ imply
+that (x(k),v) ∈int(O∞) for all k suﬃciently large. By
+the invariance ofO∞, it follows that(Ax(k)+ Bv,v ) ∈
+int(O∞) and there exists ρ> 0 such that (Ax(k)+
+Bv,v )⊕B(ρ) ∈int(O∞), for allk suﬃciently large.
+Consider vfs(k)= v(k)+ r−v(k)
+∥r−v(k)∥2
+γ. Clearly, for allk
+suﬃciently large,vfs(k) is feasible for(23) for someγ>
+ϵv > 0,w h e r eϵv is ﬁnite, yet possibly small. Also, if
+∥r −v(k)∥≤ ϵv, v(k +1 )= r is feasible. Thus, fork
+suﬃciently large∥r−vfs(k)∥≤ max{∥r−v(k)∥−ϵv,0}.
+Hence, fork suﬃciently large,0 ≤∥r −v(k +1 )∥2 ≤
+∥r −vfs(k)∥2 ≤ max{∥r −v(k)∥− ϵv,0}.T h u s ,t h e r e
+exists a ﬁnite¯k ∈Z0+ such that∥r−v(¯k−1)∥≤ ϵv,a n d
+hence,v(¯k)= r.
+4 Network Reference Governor with Output
+F eedback
+Inthissection,werelaxAssumption3intothefollowing.
+Assumption 17 Cm in (7) is such thatrank(Cm) <n ,
+and the pair(Cm,A) is observable.
+6
+
+PAGE 9
+Under Assumption 17, only output feedback is avail-
+able, so the state needs to be estimated, and the estima-
+tion error has to be accounted for in enforcing the con-
+straints. For enforcing constraints through output feed-
+backinsystemssubjecttogeneraladditivedisturbances,
+set-membershipobservershavebeenproposedin[34,35].
+Sinceby(11)theuncertaintyisproportionaltothecom-
+mand variation, here we use a standard observer and
+compute a bound on the estimation error based on the
+sequence of past commands. Consider the observer,
+ˆx(k+1)= Aˆx(k)+ Bv(k)+ L(y
+m(k)−Cmˆx(k)), (24)
+where ˆx(k) ∈ Rn is the state vector estimate, andL
+is the observer gain. LetAL = A −LCm and ε(k)=
+x(k)−ˆx(k)bethe observererror.UnderAssumption12,
+the observer error dynamics are governed by,
+ε(k +1)= ALε(k)+ W(δ)Δv(k), (25)
+where Δv appears in the estimation error dynamics be-
+cause the delay introduces uncertainty on when the in-
+put is applied. In order to account for the estimation
+error in (6) we enforce a constraint onε(k).
+Assumption 18 There exists a compact setE⊂ Rn,
+with 0 ∈int(E) satisfying,
+CE⊂C , (26a)
+ALE⊂ int(E). (26b)
+By (26), ifε(k) ∈E,t h e ny(k) ∈C at least for ˆx(k)=0 .
+Also,E is PI for (25) if Δv = 0. In fact, due to (26b) and
+compactness ofE,t h e r ee x i s t sλ∈R[0,1) such that
+ALE⊆ λE, (27)
+i.e., E is λ-contractive for (25) when Δv =0 .
+Lemma 19 Let c− ∈R[0,1), ε∈c−E, (ˆx,v−) ∈(1 −
+c−)O∞.L e tc ∈R[0,1), v ∈Rm be such that
+D(Δv) ⊆(c−λc−)E, (28a)
+(Aˆx+Bv +d,v) ∈(1−c)O∞, ∀d ∈D(Δv). (28b)
+If ε(k)= ε, ˆx(k)=ˆx, v(k −1) = v−,a n df o ra l lh ∈
+Z[k+1,∞), v(h)= v,t h e ny(h) ∈C, for allh ∈Z[k,∞).
+Proof 5 LetO∞ be the maximum output admissible set
+for (5), (6). Then [33,36],(1 −c)O∞ is the maximum
+output admissible set for(5) subject toy(k) ∈(1−c)C.
+If E satisﬁes(26b), cE also satisﬁes(26b).
+If ˆx(k) ∈(1−c)O∞ and ε(k) ∈cE for somec ∈R[0,1),
+then Cˆx(k) ∈(1 −c)C and Cε(k) ∈cCE⊆ cC.T h u s ,
+y(k)= C(ˆx(k)+ ε(k)) ∈(1−c)C⊕ cC = C.
+Since ε(k) ∈c−E,b y (25), (28a), ε(k +1 )∈c−ALE⊕
+D(Δv(k)) ⊆ λc−E⊕ (c −λc−)E = cE. Since for all
+h ∈Z[k,∞), v(h)= v,t h e nε(h +1 )∈cALE⊆ λcE⊆
+cE, for allh ∈Z[k,∞). Thus, since for allh ∈Z[k,∞),
+(ˆx(h),v) ∈(1−c)O∞, we havey(h)= C(ˆx(h)+ ε(h)) ∈
+(1−c)C⊕ cCE⊆ (1−c)C⊕ cC = C for allh ∈Z[k,∞).
+The output feedback netRG law is then deﬁned by
+(gε(x,v−,c−),˜c) = (29a)
+arg min
+v∈Γ,˜c∈R[0,1)
+∥r−v∥2 (29b)
+s.t. (Ax+Bv +d,v) ∈(1−˜c)O∞
+∀d ∈D(Δv) (29c)
+D(Δv) ⊆(˜c−λc−)E, (29d)
+gc
+ε(v,v−,c−)=a r g m i n
+c∈R[0,1)
+∥c∥2 (30a)
+s.t. D(Δv) ⊆(c−λc−)E. (30b)
+Theorem 20 Consider (5)under Assumption 2, let the
+commandv(k) be subject to random delay satisfying As-
+sumption 12, and letE satisfy Assumption 18. If at some
+¯h ∈Z0+, ε(¯h) ∈E and (x(¯h),v(¯h −1)) ∈O∞, then for
+the closed loop of(5) and c(k)= gc
+ε(v(k),v(k−1),c(k−
+1))withv(k)= gε(x(k),v(k−1),c(k−1)), it follows that
+y(k) ∈Cforall k ∈Z[¯h,∞).If r(k)= rforall k ∈Z[¯h,∞),
+r ∈Γ, there exists a ﬁnite¯k ∈Z0+ such thatv(¯k)= r.2
+Proof 6 First, v(¯h)= v(¯h −1), c(¯h +1 ) = λc(¯h)
+is a feasible solution of (29), (30),s i n c eO∞ is
+PI, D(0) = {0}, and by Lemma 19. The reasoning
+can be repeated for any k ∈ Z[¯h,∞).T h u s ,b yu s i n g
+the same procedure as in the proof of Theorem 16,
+J∗(k)= ∥r −v(k)∥2
+2 ≤ J∗(k −1),a n dt h e r ee x i s t s
+J∗ ≥ 0, J∗ = limk→∞ ∥r −v(k)∥2
+2. This implies that
+limk→∞ ∥v(k)−v(k−1)∥ =0 ,limk→∞ ∥x(k)−xe(k)∥ =
+0.F u r t h e r m o r e ,i flimk→∞ ∥v(k) −v(k −1)∥ =0 ,
+limk→∞ ∥ε(k)∥ =0 ,a n db y(30), limk→∞ c(k)=0 .
+The rest of the proof can be completed as the proof of
+Theorem16, bydeﬁningEk = c(k)E andnoticingthatfor
+any Ek compact andσ> 0,b y (27) there exists a ﬁnite
+h ∈Z+, such thatEk+h ∈B(σ).
+5 Network Reference Governor for Long Delay
+Next we develop the netRG for when Assumption 12
+does not hold, so that the delay model (1) is considered.
+When the network delay becomes large or possibly un-
+bounded, command overtaking is possible. Thus, for a
+command to be robust it needs to guarantee constraint
+7
+
+PAGE 10
+satisfaction for every possible sequence of past com-
+mands,whichmayleadto conservativenessorhighcom-
+putational complexity [29]. In this paper, we avoid ex-
+cessive conservativeness and complexity by two key el-
+ements: (i) the netRG generates a robust command as-
+suming that the delay is within a certain interval; (ii)
+the receiver veriﬁes the validity of such an assumption
+on the received command, and discards the invalid com-
+mands. Referring to the architecture in Figure 1, such a
+veriﬁcation logic is implemented at the plant.
+We selectα∈R
+(0,1) and deﬁne
+¯δ= αTs. (31)
+Assumption 21 Let δk ∈R0+, k ∈Z0+, δk are i.i.d.1
+withprobabilitydensityfunction, φ(δ): R0+ → R0+ such
+that
+∫αTs
+0 φ(δ)dδ= q,f o rq ∈R(0,1).
+Lemma 22 UnderAssumption21foranyﬁnite ℓ ∈Z+,
+limk→∞ P[∃h ∈Z[0,k] : δh+i ≤αTs, ∀i ∈Z[0,ℓ−1]]=1 .
+Proof 7 Consider an arbitrary choice forℓ ∈Z+.T h e
+probability of observingℓ consecutive delays of duration
+less thanαTs from the sequence{δk}k, can be modeled
+as a Markov chain with states{sj}ℓ
+j=1. Each state repre-
+sents how many delays shorter thanαTs occurred since
+the last delay longer thanαTs. The transition probabil-
+ities are P[sj|sj−1]= q, j ∈Z[1,ℓ], P[s0|sj−1]=1 −q,
+j ∈Z[1,ℓ].F i n a l l y ,P[sℓ|sℓ]=1 and P[sj|sℓ]=0 , for all
+j ̸= ℓ. Such Markov chain is absorbing [37], with absorb-
+ing statesℓ, which is reachable from everysj, j ∈Z[1,ℓ].
+Thus, for any ﬁniteℓ ∈Z+, limk→∞ P[s(k)= sℓ]=1 .
+Thus,byLemma22forany α∈R[0,1) aﬁnitesequenceof
+arbitrary length of delays shorter thanαTs will eventu-
+ally occur with probability 1. The properties of absorb-
+ing Markov chains [37] ensure that the average number
+of steps to observe such a sequence, i.e.,E[k ∈Z
+(ℓ,∞) :
+δk−ℓ > ¯δ, δk−i ≤ ¯δ, i ∈ Z[0,ℓ−1]], and the related
+variance are ﬁnite, and can be computed for any ﬁnite
+ℓ ∈Z+.
+The control and actuation strategy for the netRG that
+handles longer-than-sampling delays is reported in Al-
+gorithm1.Atany k ∈Z0+,theplantsendstothenetRG
+the statex(tk) and the command being appliedv−(tk).
+For the current referencer(k), the netRG uses (19) to
+compute v(k), where ¯W is obtained from (18) using¯δ
+in(31).Then, v(k)and rv(k) = r(k)aresenttotheplant.
+Since, v(k) guarantees constraint satisfaction only if
+δk ≤αTs, it needs to be veriﬁed at the plant to ensure
+1 Noni.i.d. delays canbe handledsimilarly, when a property
+as the one in Lemma 22 can be established.
+that no constraint violation actually occurs. Such veriﬁ-
+cation is based onO∞, which is stored at the plant, to-
+gether with the actuated command at the current time
+t, v(t)= vact, and a buﬀervbfr with all the commands
+that have been applied during [tk,t), t ≤tk+1.
+Foracommand v receivedattime t ∈R[tk,tk+1) together
+withthecorrespondingreference rv,theveriﬁcationlogic
+computes
+ Δv =m a xi ∥v−[vbfr]i∥∞,w h e r e[vbfr]i is the
+ith command currently storedin the buﬀer. The com-
+mand v is actuated if and only if,
+∥rv −v∥2
+2 < ∥rv −vact∥2
+2, (32a)
+((Ax(k)+ Bv)⊕DTs(
+Δv),v) ⊆O∞, (32b)
+where DTs(
+Δv)= {d ∈ Rn : ∃δ∈ R[0,Ts],d =
+W(δ)
+Δv}. While (32a) enforces the reduction of the
+reference tracking error, (32b) enforces that constraints
+will not be violated. Indeed, the proposed approach
+requires (32) to be evaluated at the plant. However,
+(32) only evaluates the inequalities for a given com-
+mand, while (23) has to select a command that satisﬁes
+the inequalities and minimizes the cost function. Hence,
+the computations performed at the plant are still signif-
+icantly less than those in the remote controller.
+Algorithm 1 netRG for long delays
+1: Initialization: Select: Ts, α. Compute: ¯δ, ¯W.
+2: function NetRG
+3: loop
+4: ReceiveFrom Operator: r = r(k)
+5: ReceiveFrom Plant: x = x(tk), v− = v(t−
+k )
+6: Compute: (19)
+7: SendTo Plant: v = gw(x,r,v −), rv = r
+8: end loop
+9: end function
+10: function Verification Logic
+11: loop
+12: while t ∈R[tk,tk+1) do
+13: ReceiveFrom NetRG: v, rv
+14: Compute:
+ Δv
+15: if (∥rv −v∥2
+2 < ∥rv −vact∥2
+2),
+16: ((Ax+Bv)⊕DTs(
+Δv),v) ⊆O∞ then
+17: Apply: vact = v
+18: Append: v to vbfr
+19: end if
+20: end while
+21: Store: x = x(tk+1), vbfr = v(t−
+k+1)= vact
+22: SendTo NetRG: x, v− = vact
+23: end loop
+24: end function
+Remark 23 The referencerv is sent together with the
+command v so that the commands that do not improve
+tracking, for instance because of packet overtaking, are
+discarded. This cannot correct for the case where the re-
+ceived command is coupled with an older reference, i.e.,
+8
+
+PAGE 11
+rv haschangedinthemeantime.Inthiscaseitisstillpos-
+sible to see a tracking performance degradation,because
+the command may move towards an older value of the
+reference. However, constraint satisfaction is still guar-
+anteed, and assuming that the references are piecewise-
+constantwithlong periods, which is common in reference
+governor applications, the performance will self-correct
+rapidly since all newly generated commands will be re-
+ceived together with the newer value ofr
+v.
+Theorem 24 Consider (5)under Assumption 2, let the
+command be subject to a random delay satisfying As-
+sumption 21. If at some¯t ∈R[t¯h−1,t¯h), v(¯t) is applied to
+the plant such that(x(t¯h),v(¯t)) ∈O∞, then the closed
+system obtained by(3) controlled by Algorithm 1 is such
+that y(k) ∈C for all k ∈Z[¯t/Ts,∞).I fr(k)= r for all
+k ∈Z[¯h,∞), r ∈Γ, limk→∞ P[∥v(k)−r∥2
+2 =0 ]=1 .
+Proof 8 If (x(t¯h),v(¯t)) ∈O∞, y(˜k) ∈C for ˜k ∈Z0+,
+˜k =m i nk≥¯t/Ts k.F u r t h e r m o r ed u et o(19),i fv(t)= v(¯t)
+for allt ≥¯t, y(k) ∈C for allk ∈Z[˜k+1,∞).A n yf u t u r e
+command that is actuated satisﬁes(32), and it has the
+same property. Hence,y(k) ∈C , for any k such that
+kTs > ¯t.
+By Theorem 16, if δk ∈ R[0,¯δ], for all k ∈ Z0+,
+for any (x0,v−
+0 ) ∈O ∞, r ∈ Γthere exists a ﬁnite
+¯k(x0,v−
+0 ,r) ∈ Z+ such that v(¯k(x0,v−
+0 ,r0)) = r.U n -
+der Assumption 2,O∞ is bounded. Hence, there exists
+¯¯k =1+m a xr∈Γ,(x,v)∈O∞
+¯k(x,v,r) such that ifδk ∈R[0,¯δ]
+for all k ∈R[0,¯¯k], v(¯¯k)= r for all (x(0),v−(0)) ∈O∞,
+v−(0),r ∈ Γ. Hence, given k0 ∈ Z+, such that for
+x(k0) there exists v,f o rw h i c h(x(k0),v) ∈O∞,a n d
+{δk0+i}h
+i=0, h ≥¯¯k +1 , such thatδk0+i ≤¯δ, i ∈Z[0,h],
+then v(k0 +h)= r.D u et o(32),i fv(k0 +¯¯k)= r, for all
+k ≥k0 +¯¯k, v(k)= v(k0 +¯¯k). Furthermore, due to(11),
+if Δv(k)=0 , x(k +1) is independent ofδk, and hence,
+δk0+i,i ≥¯¯k, does not aﬀect the dynamics.
+Due to Lemma 22 for anyh ∈Z[0,∞), limk→∞ P[∃k0 ∈
+Z[0,k] : δk0+i ≤ αTs, ∀i ∈ Z[0,¯h]]=1 .T h u s ,
+limk→∞ P[∥v(k)−r∥2
+2 =0 ]=1 .
+The properties of absorbing Markov chains [37] also
+guarantee that the average number of steps¯k such that
+v(¯k)= r is ﬁnite, and so is the variance.
+6 Application to Orientation Control of a
+Spacecraft with a Flexible Appendage
+Often,spacecraftareequippedwith anappendagemade
+of lightweight materials, such as a solar panel, a robotic
+arm, an instrument, an antenna, or a telescope. When
+the spacecraft is re-oriented, the appendage may bend
+x1
+x2
+u
+κ
+J
+m
+l
+Fig. 3. Model of the spacecraft with ﬂexible appendage.
+and oscillate, which can degrade sensitive equipment on
+the appendage or even cause structural damage if not
+properlycontrolled.Wecons ideranagilespacecraftwith
+a ﬂexible appendage that has to be re-oriented with a
+rotational maneuver about a speciﬁed axis.
+As shown in Figure 3, the spacecraft with ﬂexible ap-
+pendage can be modeled as two bodies, the spacecraft
+bus and the appendage, connected by a ﬂexible shaft.
+When the shaft bends, the appendage is subject to an
+elasticforce,modeledasifobtainedbyaspringactingon
+the displacement from the straight shaft position. The
+dynamics are described by,
+(J +ml
+2)¨x1 +ml¨x2 =u, (33a)
+m¨x2 +κx2 +ml¨x1 =0, (33b)
+wherex1[rad]denotesthe orientationangleofthespace-
+craft bus,x2[m] denotes the linear deﬂection of the ﬂex-
+ible appendage at its tip, and the model parameters are
+m =1 k g ,J = 50kgm
+2, κ=0 .1[N/m], l = 40[m]. In
+order to avoid structural damage, the deﬂection of the
+ﬂexible appendage must satisfy,
+−0.2 ≤x2 ≤0.2, (34)
+and the control torque is limited by,
+−0.8 ≤u ≤0.8. (35)
+For a commandv, the plant co-located controller pro-
+duces the torqueu[Nm] given by the unconstrained lin-
+ear quadratic regulator,
+u = −FLQx+GLQv, (36)
+designed to have unitary steady state gain fromv to
+x1. Figure 4 shows that for a desired spacecraft angle
+r, without a governor, i.e.,v = r, the constraints are
+signiﬁcantly violated.
+9
+
+PAGE 12
+0 50 100 150 200-1
+-0.5
+0
+0.5
+1
+1.5
+2
+x2[m]
+t[s]
+0 50 100 150 200-4
+-3
+-2
+-1
+0
+1
+t[s]
+u[Nm]
+Fig. 4. Change in orientation without reference governor.
+Top: appendage deﬂection, x2. Bottom: torque, u.C o n -
+straints: red dash lines.
+Consideringthe caseswhen the re-orientationmaneuver
+is executed by remotely controlling the spacecraft, we
+designanetRGthatreceives randgenerates vfor(36)to
+enforce constraints(34), (35). We obtaina discrete-time
+model (5a) of (33) in closed loop with (36) forTs =1 s .
+The constrained outputs (5b) and the constraints (6)
+are obtained from (33), (34), and (35) for a sampling
+period of T
+c = Ts/4=0 .25s. Constraints upsampling
+helps limiting intersampling violations, see Remark 9.
+Although the constraints are enforced every 0.25s, the
+update period of the reference governor is still 1.0s.
+We ﬁrst consider the case where the delay in the com-
+mand channel is shorter than the sampling period, i.e.,
+δ(t) ∈[0,0.995]s for allt ≥0, and it is random, i.i.d,
+and uniformly distributed. The netRG is designed as
+described in Section 3. The results are shown in Fig-
+ures 5–7. Figure 5 shows that unlike the conventional
+reference governor, whose variables are denoted by the
+superscript (rg), the netRG enforces the constraints de-
+spitethetime-varyingdelay.Theorientationchangema-
+neuver of the netRG is only slightly slowed down with
+respecttotheconventionalreferencegovernor,foravoid-
+ing constraint violations due to the delay.
+0 50 100 150 200-1.2
+-1
+-0.8
+-0.6
+-0.4
+-0.2
+0
+t[s]
+r,v,v (rg)[rad]
+Fig. 5. Change in orientation with short communication de-
+lay. Reference,r (dot), and virtual reference,v,f o rc o n v e n -
+tional reference governor (dash) and netRG (solid).
+0 50 100 150 200-1.4
+-1.2
+-1
+-0.8
+-0.6
+-0.4
+-0.2
+0
+t[s]
+x1,x(rg)
+1 ,r[rad]
+0 50 100 150 200-0.3
+-0.2
+-0.1
+0
+0.1
+0.2
+0.3
+0.4x2,x(rg)
+2 [m]
+t[s]
+Fig. 6. Change in orientation with conventional reference
+governor (dash) and netRG (solid) with of short communi-
+cation delay. Top: spacecraft bus orientation,x
+1, reference,r
+(dash dot). Bottom: appendage deﬂection,x2.C o n s t r a i n t s :
+red dash lines.
+0 50 100 150 200
+-0.5
+0
+0.5
+t[s]
+u,u(rg)[Nm]
+Fig. 7. Change in orientation with conventional reference
+governor (dash) and netRG (solid) with of short communi-
+cation delay. Torque,u. Constraints: red dash lines.
+Next, we consider the case where full state information
+is not available and an observer is used with the netRG,
+as described in Section 4. The only available measure-
+ment is the bus orientation,x
+1, and the observer gainL
+is chosen so thatE in Assumption 18 isλ-contractive,
+with λ=0 .51 in (27). At the initial time, the system is
+at rest, the actual estimation error isε(0) = 0, and the
+estimatorparameter cisinitializedby c(0) = 0.1,sothat
+ε(0) ∈c(0)E. The simulation results are shown in Fig-
+ures 8, 9. Constraints are enforced although the action
+ofthe referencegovernorismo reconservativetoprevent
+constraint violations due to the estimation error.
+Last, we demonstrate the case where the delay is longer
+thanthesamplingperiod,andspeciﬁcally δ(t) ∈[0,10]s,
+for allt ∈R0+. The netRG is implemented as described
+in Section 5, withα=0 .995, and full state measure-
+mentisassumed.TheresultsareshowninFigures10-11,
+where the constraints are enforced despite a delay up to
+10 times the update period of the netRG. The system
+response is slower and more conservative than the short
+delaycase,duetotheeﬀectsofthelongerdelay,however
+10
+
+PAGE 13
+0 50 100 150 200 250-1.2
+-1
+-0.8
+-0.6
+-0.4
+-0.2
+0
+0.2
+t[s]
+x1,v,r [rad]
+0 50 100 150 200 2500
+0.2
+0.4
+0.6
+0.8c
+t[s]
+Fig. 8. Change in orientation with output feedback netRG
+with short communication delay. Top: Reference,r (dot),
+virtual reference, v (dash), and bus orientation,x1 (solid).
+Bottom: estimation error bounding parameter,c.
+0 50 100 150 200 250
+-0.2
+-0.1
+0
+0.1
+0.2x2[m]
+t[s]
+0 50 100 150 200 250
+-0.5
+0
+0.5
+t[s]
+u[Nm]
+Fig. 9. Change in orientation with output feedback netRG
+with short communication delay. Top: appendage deﬂection
+x
+2. Bottom: torque inputu. Constraints: red dash lines.
+the commandv still converges tor in ﬁnite time.
+7 Conclusions and F uture Research
+We developed a reference governor for systems subject
+to variable time-delay, such as in network control sys-
+tems with asynchronous communication. By modeling
+the delayeﬀect as an additive disturbance with size pro-
+portionaltotheinputrateofchange,wehaveintroduced
+anetworkreferencegovernorthatrobustlyenforcescon-
+straintsandforwhichﬁnite-time convergenceis guaran-
+0 50 100 150 200 250-1.2
+-1
+-0.8
+-0.6
+-0.4
+-0.2
+0
+t[s]
+x1,v,r [rad]
+Fig. 10. Change in orientation withnetRGwithlong commu-
+nication delay.Reference,r (dot), virtualreference,v (dash),
+and bus orientation,x1 (solid).
+0 50 100 150 200 250
+-0.2
+-0.1
+0
+0.1
+0.2x2[m]
+t[s]
+0 50 100 150 200 250
+-0.5
+0
+0.5
+t[s]
+u[rad]
+Fig. 11. Change in orientation with netRG with long com-
+munication delay. Top: appendage deﬂection,x2. Bottom:
+torque, u. Constraints shown by red dash lines.
+teed whenthe delayis shorterthan the samplingperiod.
+We extended the method to the cases of output feed-
+back and arbitrarily long, and possibly unbounded, de-
+lay. The netRG has been demonstrated on a case study
+of a remotely controlled re-orientation of a spacecraft
+withaﬂexibleappendagefordiﬀerenttypesofdelaysin-
+duced by the communication network. Future research
+will focus on including delay in the measurement chan-
+nel following the ideas in [1, III.A], which exploit some
+degree of equivalence between delays in the command
+and measurement channels.
+References
+[ 1 ] S .D iC a i r a n oa n dI .K o l m a n o v s k y ,“ R a t el i m i t e dr e f e r e n c e
+governor for networked controlled systems,” in Proc.
+American Contr. Conf.,Baltimore,MD,2010, pp.3704–3709.
+[2] S. Di Cairano and I. V. Kolmanovsky, “Further developments
+and applications of network reference governor for
+constrained systems,” in Proc. American Contr. Conf. ,
+Montreal, Canda, 2012, pp. 3907–3912.
+[3] P. Arcara and C. Melchiorri, “Control schemes for
+teleoperation with time delay: A comparative study,”
+Robotics and Autonomous Systems, vol. 38, no. 1, pp. 49–64,
+2002.
+11
+
+PAGE 14
+[4] A. Okamura, “Methods for haptic feedback in teleoperated
+robot-assisted surgery,”Industrial Robot, vol. 31, no. 6, pp.
+499–508, 2004.
+[5] T. Fong and C. Thorpe, “Vehicle teleoperation interfaces,”
+Autonomous robots, vol. 11, no. 1, pp. 9–18, 2001.
+[6] T. Samad, P. McLaughlin, and J. Lu, “System architecture
+for process automation: Review and trends,” Journal of
+Process Control, vol. 17, pp. 191–201, 2007.
+[ 7 ]S .D iC a i r a n o ,H .P a r k ,a n dI .K o l m a n o v s k y ,“ M o d e l
+predictive control approach for guidance of spacecraft
+rendezvous and proximity maneuvering,” International
+Journal of Robust and Nonlinear Control , vol. 22, no. 12, pp.
+1398–1427, 2012.
+[ 8 ] C .F .C a r u n t u ,M .L a z a r ,R .H .G i e l e n ,P .v a nd e nB o s c h ,
+and S. Di Cairano, “Lyapunov based predictive control of
+vehicle drivetrains over can,”Control Engineering Practice,
+vol. 21, no. 12, pp. 1884–1898, 2013.
+[9] W. Zhang, M. S. Branicky, and S. M. Phillips, “Stability
+of networked control systems,” IEEE Control Systems
+Magazine, vol. 21, no. 1, pp. 84–99, 2001.
+[10] P. Antsaklis and J. Baillieul, “Special issue on networked
+control systems,”IEEE Trans. Aut. Control , vol. 49, no. 9,
+pp. 1421–1423, Sep. 2004.
+[11] K.-E.˚Arz´en, A. Bicchi, G. Dini, S. Hailes, K. H. Johansson,
+J. Lygeros, and A. Tzes, “A component-based approach to
+the design of networked control systems,”European Journal
+of Control, 2007.
+[12] J. Hespanha, P. Naghshtabrizi, and Y. Xu, “A survey of
+recent results in networked control systems,”Proc. of IEEE
+Special Issue on Technology of Networked Control Systems,
+vol. 95, no. 1, pp. 138–162, Jan. 2007.
+[13] A. Bemporad, S. Di Cairano, E. Henriksson, and
+K. Johansson, “Hybrid model predictive control based on
+wireless sensor feedback: an experimental study,” Int. J.
+Robust Nonlinear Control, vol. 20, no. 2, 2010, special issue
+“Industrial applications of wireless control”.
+[14] D. Nesic and A. R. Teel, “Input-output stability properties
+of networked control systems,” Automatic Control, IEEE
+Transactions on, vol. 49, no. 10, pp. 1650–1667, 2004.
+[15] D. Liberzon and D. Nesic, “ Input-to-state stabilization
+of linear systems with quantized state measurements,”
+Automatic Control, IEEE Transactions on , vol. 52, no. 5,
+pp. 767–781, 2007.
+[16] N. van de Wouw, P. Naghshtabrizi, M. Cloosterman, and
+J. P. Hespanha, “Tracking control for sampled-data systems
+with uncertain time-varying sampling intervals and delays,”
+International Journal of Robust and Nonlinear Control ,
+vol. 20, no. 4, pp. 387–411, 2010.
+[17] M. B. Cloosterman, L. Hetel, N. Van De Wouw, W. Heemels,
+J. Daafouz, and H. Nijmeijer, “Controller synthesis for
+networked control systems,”Automatica, vol. 46, no. 10, pp.
+1584–1594, 2010.
+[18] R. H. Gielen, S. Olaru, M. Lazar, W. Heemels, N. van de
+Wouw, and S.-I. Niculescu, “On polytopic inclusions as a
+modeling framework for systems with time-varying delays,”
+Automatica, vol. 46, no. 3, pp. 615–619, 2010.
+[19] D. E. Quevedo and D. Nesic, “Input-to-state stability
+of packetized predictive control over unreliable networks
+aﬀected by packet-dropouts,” Automatic Control, IEEE
+Transactions on, vol. 56, no. 2, pp. 370–375, 2011.
+[20] N. Elia and J. N. Eisenbeis, “Limitations of linear control
+over packet drop networks,” Automatic Control, IEEE
+Transactions on, vol. 56, no. 4, pp. 826–841, 2011.
+[21] S. Tatikonda and S. Mitter, “Control under communication
+constraints,”IEEE Trans. Aut. Control , vol. 49, no. 7, pp.
+1056–1068, 2004.
+[22] W. P. M. H. Heemels, A. R. Teel, N. van de Wouw, and
+D. Nesic, “Networked control systems with communication
+constraints: Tradeoﬀs between transmission intervals, delays
+and performance,”Automatic Control, IEEE Transactions
+on, vol. 55, no. 8, pp. 1781–1796, 2010.
+[23] L. Zhang, H. Gao, and O. Kaynak, “Network-induced
+constraints in networked control systemsa survey,” IEEE
+Trans. Ind. Informatics, vol. 9, no. 1, pp. 403–416, 2013.
+[24] P. L. Tang and C. W. de Silva, “Compensation for
+transmission delays in an ethernet-based control network
+using variable-horizon predictive control,” IEEE Trans.
+Contr. Systems Technology, vol. 14, no. 4, pp. 707–718, 2006.
+[25] I. Kolmanovsky, E. Garone, and S. Di Cairano, “Reference
+and command governors: A tutorial on their theory and
+automotive applications,” inProc. American Contr. Conf. ,
+2014, pp. 226–241.
+[26] M. Pachter and R. Miller, “Manual ﬂight control with
+saturating actuators,” IEEE Control Systems Magazine ,
+vol. 18, no. 1, pp. 10–20, 1998.
+[27] J. Cook, J. Grizzle, and J. Sun, “Automotive control
+systems,”Control System Applications, p. 87, 1999.
+[28] A. Bemporad, “Predictive control of teleoperated constrained
+systems with unbounded communication delays,” in Proc.
+37th IEEE Conf. on Decision and Control , Tampa, FL, 1998,
+pp. 2133–2138.
+[29] A. Casavola, M. Papini, and G. Franze, “Supervision
+of networked dynamical systems under coordination
+constraints,”IEEE Trans. Aut. Control , vol. 51, no. 3, pp.
+421–437, March 2006.
+[30] E. Gilbert and I. Kolmanovsky, “Nonlinear tracking control
+in the presence of state and control constraints: a generalized
+reference governor,”Automatica, vol. 38, no. 12, pp. 2063–
+2073, 2002.
+[31] A. Bemporad, A. Casavola, and E. Mosca, “Nonlinear
+control of constrained linear systems via predictive reference
+management,”IEEE Trans. Aut. Control, vol. 42, no. 3, pp.
+340–349, Mar 1997.
+[32] E. Garone, F. Tedesco, and A. Casavola, “Sensorless
+supervision of linear dynamical systems: The feed-forward
+command governor approach,”Automatica, vol. 47, no. 7,
+pp. 1294–1303, 2011.
+[33] E.Gilbert and K.Tan, “Linear systems with state and control
+constraints: the theory and applications of maximal output
+admissible sets,”IEEE Trans. Aut. Control , vol. 36, no. 9,
+pp. 1008–1020, 1991.
+[34] A. Bemporad and A. Garulli, “Output-feedback predictive
+control of constrained linear systems via set-membership
+state estimation,”Int. J. Control, vol. 73, no. 8, pp. 655–665,
+2000.
+[35] D. Angeli, A. Casavola, and E. Mosca, “On feasible
+set-membership state estimators in constrained command
+governor control,”Automatica, vol. 37, no. 1, pp. 151–156,
+2001.
+[36] I. Kolmanovsky and E. Gilbert, “Theory and computation of
+disturbance invariant sets for discrete-time linear systems,”
+Mathematical Problems in Engineering , vol. 4, no. 4, pp.
+317–363, 1998.
+[37] C. M. Grinstead and J. L. Snell,Introduction to probability.
+Providence, RI: American Mathematical Soc., 1998.
+12

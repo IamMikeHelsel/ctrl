@@ -1,0 +1,1488 @@
+
+PAGE 1
+VeriPhy: Verified Controller Executables from Verified
+Cyber-Physical System Models
+Rose Bohrer
+Carnegie Mellon University
+USA
+Yong Kiam Tan
+Carnegie Mellon University
+USA
+Stefan Mitsch
+Carnegie Mellon University
+USA
+Magnus O. Myreen
+Chalmers University of Technology
+Sweden
+André Platzer
+Carnegie Mellon University
+USA
+Abstract
+We present VeriPhy, a verified pipeline which automatically
+transforms verified high-level models of safety-critical cyber-
+physical systems (CPSs) in differential dynamic logic (dL) to
+verified controller executables. VeriPhy proves thatall safety
+results are preserved end-to-end as it bridges abstraction
+gaps, including: i) the gap between mathematical reals in
+physical models and machine arithmetic in the implemen-
+tation, ii) the gap between real physics and its differential-
+equation models, and iii) the gap between nondeterministic
+controller models and machine code. VeriPhy reduces CPS
+safety to the faithfulness of the physical environment, which
+is checked at runtime by synthesized, verified monitors. We
+use three provers in this effort: KeYmaera X, HOL4, and Is-
+abelle/HOL. To minimize the trusted base, we cross-verify
+KeYmaera X in Isabelle/HOL. We evaluate the resulting con-
+troller and monitors on commodity robotics hardware.
+CCS Concepts • Computer systems organization 
+Embedded and cyber-physical systems ; •Software and
+its engineering  Formal software verification;
+Keywords cyber-physical systems, hybrid systems, formal
+verification, verified compilation, verified executables
+ACM Reference Format:
+Rose Bohrer, Yong Kiam Tan, Stefan Mitsch, Magnus O. Myreen,
+and André Platzer. 2018. VeriPhy: Verified Controller Executables
+from Verified Cyber-Physical System Models. InProceedings of 39th
+ACM SIGPLAN Conference on Programming Language Design and
+Implementation (PLDI’18). ACM, New York, NY, USA, 14 pages.
+https://doi.org/10.1145/3192366.3192406
+Permission to make digital or hard copies of all or part of this work for
+personal or classroom use is granted without fee provided that copies
+are not made or distributed for profit or commercial advantage and that
+copies bear this notice and the full citation on the first page. Copyrights
+for components of this work owned by others than the author(s) must
+be honored. Abstracting with credit is permitted. To copy otherwise, or
+republish, to post on servers or to redistribute to lists, requires prior specific
+permission and/or a fee. Request permissions from permissions@acm.org.
+PLDI’18, June 18–22, 2018, Philadelphia, PA, USA
+© 2018 Copyright held by the owner/author(s). Publication rights licensed
+to the Association for Computing Machinery.
+ACM ISBN 978-1-4503-5698-5/18/06. . . $15.00
+https://doi.org/10.1145/3192366.3192406
+1 Introduction
+Safety-critical cyber-physical systems (CPSs) such as self-
+driving cars, trains, aircraft, and ground robots are increas-
+ingly autonomous. Hence, providing strong safety guaran-
+tees for their implementation is key.
+Safety assurance for CPSs poses a unique challenge: Con-
+trol software for CPSs is constrained by its physical environ-
+ment (or plant). CPS safety emerges as a joint property of the
+system itself, its operating environment, and assumptions we
+make about the environment. For example, a ground robot
+avoiding collisions requires not only correct control, but that
+other agents behave reasonably and that the robot’s brakes
+are operational. Assumptions about the environment are just
+as safety-critical as the control logic.
+Differential dynamic logic (dL) enables verifying high-level
+CPS models featuring real arithmetic, nondeterminism, and
+differential equations. Real arithmetic is crucial for physical
+models, and abstracts away low-level details of controller
+implementation, simplifying mathematical reasoning. Non-
+determinism both abstracts away irrelevant details of control
+algorithms and accounts for environmental uncertainty. Dif-
+ferential equations are crucial to describing physics, e.g.,
+continuous motion. To achieve safety guarantees at the exe-
+cutable level, we must not only achieve safety at the source
+level, but preserve safety as we soundly implement the ab-
+stractions of a) real controller arithmetic b) nondeterministic
+control and c) environment assumptions.
+We introduce VeriPhy, an automated pipeline for gener-
+ation of verified CPS controller executables from verified
+models, which, as shown in Fig. 1:
+• Begins with a dL model verified safe in KeYmaera X
+[15] and an untrusted controller implementation.
+• Extends the ModelPlex [32] feature of KeYmaera X to
+generate a verified sandbox controller to provably de-
+tect model violations in the environment and untrusted
+controller, engaging a verified fallback controller.
+• Generates CakeML [25, 45] source which implements
+real arithmetic soundly with machine-word intervals
+and is verified against a model of the environment.
+• Generates verified executables with the CakeML com-
+piler. Safety (in compliant environments) is preserved.
+
+PAGE 2
+PLDI’18, June 18–22, 2018, Philadelphia, PA, USA R. Bohrer, Y. K. Tan, S. Mitsch, M. O. Myreen, and A. Platzer
+CPS Model ( dL)
+𝜙 → [ 𝛼 ∗]𝜓
+System safe
+Sandbox (dL)
+𝜙 → [ sandbox]𝜓
+Sandbox safe Intervals sound
+Checker sound
+Compilation
+sound
+Sandbox
+(ARM/x64 exec.)
+Step 1
+Prove model safety
+Step 2
+Synthesize safe sandbox
+Step 3
+Compile
+Soundness proof
+(Section 4)Safety proof
+(Section 2)
+Safety proof
+(Section 3)
+Soundness proof
+(Section 5)
+KeYmaera X Isabelle/HOL HOL4+CakeML
+Figure 1. High assurance artifacts and steps in the VeriPhy verification pipeline
+To resolve the high-level abstractions of the source model
+in low-level machine code, VeriPhy exploits multiple theo-
+rem provers: KeYmaera X is used to verify hybrid systems
+models of CPS while HOL4 provides executable-level guar-
+antees via CakeML. The foundations of KeYmaera X and
+higher-order logic differ greatly; we bridge them to improve
+trust. In Step 3, the semantic gap from dL’s real arithmetic
+to machine-word interval arithmetic must also be bridged.
+Supporting Pipeline Stages. A foundational bridge requires
+formalizing both hybrid systems and machine-word arith-
+metic. However, KeYmaera X knows only hybrid systems
+and HOL4 lacks a hybrid systems formalization. We build the
+bridge in Isabelle/HOL because it has a dL formalization [2],
+can express word arithmetic, and has a similar logical foun-
+dation to HOL4:
+• We first extend KeYmaera X with a proof term exporter.
+• We verify a dL proof term checker in Isabelle/HOL.
+• We rewrite the proof checker definitions in HOL4 for
+verified CakeML extraction [35] and, after adding a
+trusted parser, compilation to a verified executable.
+We prove that the checker only accepts proofs of true dL
+formulas and that interval arithmetic semantics are sound
+with respect to standard dL semantics, thus bridging dL with
+higher-order logic and interval arithmetic. We exploit each
+prover for its strengths: KeYmaera X for its hybrid systems
+automation, HOL4 for its verified CakeML compiler, and
+Isabelle/HOL for its dL formalization and word libraries.
+Trusted Computing Base. The cost of using multiple provers
+is increased trusted computing base. We summarize the
+trusted base and why each component is either simple or
+can be addressed in future work. We assume:
+• The cores of HOL4 and Isabelle/HOL (≈12K lines, well-
+tested) are sound. Translations of definitions from
+Isabelle/HOL to HOL4 must be accurate. Some are
+nontrivial, e.g. we simulate Isabelle/HOL’s typeclasses
+manually in HOL4. Trust in Isabelle/HOL is partial,
+e.g., a system safety proof is valid unless both the KeY-
+maera X and Isabelle/HOL cores fail at once.
+• The hand-written proof term parser is correct. The
+parser is simple and the checker prints the proof con-
+clusion, which can be inspected as a cross-check.
+• Arithmetic solving is sound. Proof-producing solvers
+[42] fit our proof term framework, but were not used
+because making them scalable is an open problem.
+• Untrusted controllers obey memory isolation with re-
+spect to the sandbox controller. Verified isolation is an
+established but active area of study [34].
+The above list shows the components that must be trusted.
+In return we gain the first automatic pipeline from verified
+CPS models to verified controller executables.
+2 Hybrid Programs
+The mathematical essence of a CPS is a hybrid system [20]
+combining discrete and continuous dynamics for control and
+physics. We review the hybrid program (HP) language for
+hybrid systems and differential dynamic logic (dL) [37, 38, 40]
+for verifying HPs. Table 1 gives their syntax and meaning.
+Table 1. Hybrid Programs (HPs)
+Statement Meaning
+𝛼; 𝛽 Sequentially composes 𝛽 after 𝛼
+𝛼 ∪ 𝛽 Executes either 𝛼 or 𝛽, nondeterministically
+𝛼 ∗ Repeats 𝛼 zero or more times
+𝑥 := 𝜃 Assigns value of term 𝜃 to 𝑥
+𝑥 := ∗ Assigns an arbitrary real value to 𝑥
+𝑥 ′ = 𝜃 & 𝑄 Continuous evolution1
+?𝑄 Aborts run if formula 𝑄 is not true
+Atomic hybrid programs (HPs) comprise deterministic
+(𝑥 := 𝜃) and nondeterministic (𝑥 := ∗) assignments, tests (?𝑄),
+1A continuous evolution along the differential equation system 𝑥 ′ = 𝜃 for
+an arbitrary real duration within the region described by formula 𝑄.
+
+PAGE 3
+Verified Controller Executables from Verified CPS Models PLDI’18, June 18–22, 2018, Philadelphia, PA, USA
+and differential equations constrained to evolution domains
+(𝑥 ′ = 𝜃 & 𝑄). Here, 𝜃 is a real arithmetic term, possibly men-
+tioning 𝑥, and 𝑄 a first-order real arithmetic formula. The
+program connectives provide sequencing (𝛼; 𝛽), nondeter-
+ministic choice (𝛼 ∪ 𝛽), and nondeterministic repetition (𝛼 ∗).
+Familiar program constructs like if-then-else are derived:
+if(𝑄) 𝛼 else 𝛽
+def
+≡ ?𝑄; 𝛼 ∪ ?¬ 𝑄; 𝛽 (1)
+The formulas of dL are generated by the following gram-
+mar (∼ is a comparison operator, <, ≤, =, ≠, ≥, >, and 𝜃1, 𝜃2
+are arithmetic expressions in +, −, ·over the reals):
+𝜙 ::= ¬ 𝜙 | 𝜙 ∧ 𝜓 | 𝜙 ∨ 𝜓 | 𝜙 → 𝜓
+| 𝜃1 ∼ 𝜃2 | ∀𝑥 𝜙 | ∃𝑥 𝜙 | [ 𝛼]𝜙 | ⟨ 𝛼⟩𝜙
+The standard logical connectives are as in classical first-
+order logic (see semantics below). Modal formulas [𝛼]𝜙 and
+⟨𝛼⟩𝜙 hold if all or some runs of the (possibly) nondeterminis-
+tic hybrid program 𝛼 end in states satisfying 𝜙, respectively.
+We will often use partial correctness assertions 𝜙 → [ 𝛼]𝜓
+stating that when precondition 𝜙 holds initially, all states
+reached by running 𝛼 satisfy the postcondition 𝜓.
+Formal Semantics. The semantics of dL [37, 38, 40] is a
+Kripke semantics in which the states of the Kripke model
+are the states of the hybrid system. Let R denote the set of
+real numbers and V denote the set of variables. A state is a
+map 𝜔 : V → R assigning a real value𝜔 (𝑥) to each variable
+𝑥 ∈ V . The set of all states is denoted by S. We write𝜔 |= 𝜙
+if formula 𝜙 is true atstate 𝜔 (Def. 2). The real value of term𝜃
+at state 𝜔 is denoted 𝜔 [[𝜃 ]].
+The semantics of HP𝛼 is expressed as a transition relation
+between states (Def. 1). A differential equation 𝑥 ′ = 𝜃 & 𝑄
+can transition between any pair of states connected by a
+continuous flow 𝜑 that respects the differential equations
+and evolution domain. We write 𝜑 |= 𝑥 ′ = 𝜃 & 𝑄 to mean
+that 𝜑 is a flow of the differential equation 𝑥 ′ = 𝜃 contained
+within the region 𝑄, see [37, 38, 40] for full details.
+Definition 1 (Transition semantics of hybrid programs) .
+The transition relation [[𝛼]] specifies which states 𝜈 are
+reachable from a state 𝜔 by operations of 𝛼. It is defined
+as follows:
+1. (𝜔, 𝜈) ∈ [[ 𝑥 := 𝜃 ]] iff 𝜈 (𝑥) = 𝜔 [[𝜃 ]], and for all other-
+variables 𝑧 ≠ 𝑥, 𝜈 (𝑧) = 𝜔 (𝑧)
+2. (𝜔, 𝜈) ∈ [[ 𝑥 := ∗]] iff𝜈 (𝑧) = 𝜔 (𝑧) for all variables𝑧 ≠ 𝑥
+3. (𝜔, 𝜈) ∈ [[ ?𝑄]] iff 𝜔 = 𝜈 and 𝜔 |= 𝑄
+4. (𝜔, 𝜈) ∈ [[ 𝑥 ′ = 𝜃 & 𝑄]] iff exists solution 𝜑:[0, 𝑟] → S
+for 𝑟 ≥ 0 with 𝜑 (0) = 𝜔, 𝜑 (𝑟 ) = 𝜈, and 𝜑 |= 𝑥 ′ = 𝜃 & 𝑄
+5. [[𝛼 ∪ 𝛽]] = [[𝛼]] ∪ [[ 𝛽]]
+6. [[𝛼; 𝛽]] = {(𝜔, 𝜈) : (𝜔, 𝜇) ∈ [[ 𝛼]], (𝜇, 𝜈) ∈ [[ 𝛽]], exists 𝜇}
+7. [[𝛼 ∗]] = [[𝛼]]∗, the transitive, reflexive closure of[[𝛼]]
+Definition 2 (Interpretation of dL formulas). Truth of dL
+formula 𝜙 in state 𝜔, written 𝜔 |= 𝜙, is defined as follows:
+1. 𝜔 |= 𝜃1 ∼ 𝜃2 iff 𝜔 [[𝜃1]] ∼ 𝜔 [[𝜃2]] for ∼ ∈ { =, ≤, <, ≥
+, >}
+2. 𝜔 |= 𝜙 ∧ 𝜓 iff 𝜔 |= 𝜙 and 𝜔 |= 𝜓, so on for ¬ , ∨, →, ↔
+3. 𝜔 |= ∀𝑥 𝜙 iff 𝜈 |= 𝜙 for all states 𝜈 that agree with 𝜔
+except for the value (in R) of 𝑥
+4. 𝜔 |= ∃𝑥 𝜙 iff 𝜈 |= 𝜙 for some state 𝜈 that agrees with 𝜔
+except for the value (in R) of 𝑥
+5. 𝜔 |= [𝛼]𝜙 iff 𝜈 |= 𝜙 for all 𝜈 with (𝜔, 𝜈) ∈ [[ 𝛼]]
+6. 𝜔 |= ⟨𝛼⟩𝜙 iff 𝜈 |= 𝜙 for some 𝜈 with (𝜔, 𝜈) ∈ [[ 𝛼]]
+We denote validity as ⊨ 𝜙, i.e., 𝜔 |= 𝜙 for all states 𝜔.
+Running Example. We introduce an abstract dL model of a
+ground robot in a corridor, which we reduce throughout the
+paper to a verified implementation running on commodity
+robot hardware. The robot must avoid hitting walls and
+other obstacles but can drive freely otherwise. We model the
+robot with instantaneous control over its velocity 𝑣. This
+abstraction is faithful as shown in Section 6 because our robot
+drives slowly relative to its braking power. The controller
+is time-triggered, i.e., the system delay between controller
+runs is bounded by some 𝜀.
+Formula (2) expresses safety of the model in a dL formula
+𝜙 → [( ctrl; plant)∗]𝜓. It says all states satisfying assump-
+tions 𝜙 lead to safe states (𝜓) no matter how long the system
+loop (ctrl; plant)∗ repeats. The program ctrl is a discrete
+time-triggered controller, while the program plant describes
+physical environment assumptions as a differential equation.
+o
+𝜙
+z                       }|                       {
+𝑑 ≥ 0 ∧ 𝑉 ≥ 0 ∧ 𝜀 ≥ 0 → [( ctrl; plant)∗]
+𝜓
+z}|{
+𝑑 ≥ 0 (2)
+ctrl ≡ ( drive ∪ stop); 𝑡 := 0 (3)
+drive ≡ ?𝑑 ≥ 𝜀𝑉 ; 𝑣 := ∗; ?0 ≤ 𝑣 ≤ 𝑉 (4)
+stop ≡ 𝑣 := 0 (5)
+plant ≡ {𝑑 ′ = −𝑣, 𝑡 ′ = 1 &𝑡 ≤ 𝜀} (6)
+Initially, the robot is driving at a safe distance 𝑑 ≥ 0 from
+the obstacles. We also know the system delay𝜀 ≥ 0 and max-
+imum driving speed 𝑉 ≥ 0. Our safety condition 𝑑 ≥ 0 says
+the robot does not drive through the obstacles. Its controller
+(3) can either drive or stop (drive ∪ stop), followed by setting
+a timer 𝑡 := 0 which, by (6), wakes the robot controller again
+after at most time 𝜀. When the test in (4) passes, it is safe to
+keep driving for 𝜀 time, and the robot can choose any veloc-
+ity 𝑣 := ∗ up to at most the maximum velocity (?0 ≤ 𝑣 ≤ 𝑉 ).
+In each case, the controller is allowed to stop the robot (5)
+by setting velocity 𝑣 to 0. Finally, the plant (6) changes the
+distance according to the chosen velocity 𝑣 via the differen-
+tial equation 𝑑 ′ = −𝑣. Time advances at the rate 𝑡 ′ = 1, for
+any duration 𝑡 ≤ 𝜀. The program ctrl; plant can then repeat
+and the controller can make its next decision. The validity
+proof of formula (2) is elaborated next.
+
+PAGE 4
+PLDI’18, June 18–22, 2018, Philadelphia, PA, USA R. Bohrer, Y. K. Tan, S. Mitsch, M. O. Myreen, and A. Platzer
+Proving Safety. The VeriPhy pipeline starts with a safety
+proof in dL of the partial correctness assertion
+𝜙 → [( ctrl; plant)∗]𝜓 (7)
+in the hybrid systems theorem prover KeYmaera X [15].
+The proof of formula (7) is input as a proof script fordL in
+the Bellerophon language [14]. Bellerophon scripts combine
+high-level automated search procedures from the standard
+library with manual uses of dL axioms [37, 38, 40]. Typi-
+cal scripts focus on key system insights, such as invariants
+for loops and differential equations, and manually assist-
+ing automation with challenging sub-problems, like proving
+statements about real arithmetic. For models like those in
+this paper, proving is typically automatic once invariants
+are provided. Interactive proofs from the web-based UI can
+also be exported to Bellerophon [31], then passed to VeriPhy.
+Step 1 of VeriPhy checks the Bellerophon script to establish
+that the source model has been verified:
+Definition 3 (Verified input). The HP 𝛼 ≡ ( ctrl; plant)∗
+for time-triggered ctrl is verified (with 𝜑) if a dL formula
+𝜙 → [ 𝛼]𝜓 has been proven valid via a loop invariant 𝜑, i.e.,
+𝜙 → 𝜑, 𝜑 → 𝜓 and 𝜑 → [ 𝛼]𝜑 have been proven valid.
+3 ModelPlex Sandbox Synthesis
+To enable abstraction in controller models, dL provides fea-
+tures which make it ill-suited for direct execution, such as
+nondeterminism. Nondeterministic controller models are a
+natural fit, however, forsandboxing the results of an external
+unverified controller by monitoring it for compliance with
+the dL model and executing a safedeterministic fallback upon
+compliance violation. Step 2 synthesizes from the system
+safety proof and loop invariant𝜑 such asandbox controller en-
+forcing runtime safety by sandboxing untrusted controllers.
+Correct-by-construction monitors detect controller bugs and
+environment model violations [32, Thms. 1+2], invoking ver-
+ified fallback control or signaling an error, respectively.
+The shape of the synthesized sandbox controller is shown
+in Fig. 2. For clarity, we denote by®𝑥 the vector of all variables
+in the current program state before executingctrl; plant, and
+denote by ®𝑥 + the tentative next state. In all, the sandbox
+controller performs the following tasks: It i) nondetermin-
+istically assigns ( ®𝑥 := ∗) arbitrary values to configuration
+parameters and initial system state from external sensors in
+(8), checking that they satisfy the precondition 𝜙; ii) checks
+that the untrusted controller decision ®𝑥 + (9) satisfies the
+monitor formula ctrlMon( ®𝑥, ®𝑥 +) in (10); iii) otherwise allows
+only a safe fallback action (11); iv) actuates the decision ®𝑥 +
+by assigning it to state ®𝑥 (12); v) models sensing with nonde-
+terministic assignments ®𝑥 + := ∗ and monitors whether the
+sensor values comply with the environment model in (14)
+before storing them for the next iteration with ®𝑥 := ®𝑥 + (15).
+Lines (10)–(11) correspond to a nondeterministic if-then-
+else (1) where the else branch in (11) is always allowed. This
+sandbox ≡
+®𝑥 := ∗; ? 𝜙; read initial state (8)
+(
+®𝑥 + := extCtrl( ®𝑥); run external control (9)
+ ?ctrlMon( ®𝑥, ®𝑥 +) check if safe action (10)
+∪ ®𝑥 + := fallback( ®𝑥); or fallback control (11)
+®𝑥 := ®𝑥 +; actuate action (12)
+®𝑥 + := ∗; sense next state (13)
+?plantMon( ®𝑥, ®𝑥 +); check safe env. (14)
+®𝑥 := ®𝑥 + store sensors (15)
+)∗ repeat (16)
+Figure 2. Sandbox controller overview
+flexibility becomes important in Section 4 when machine
+arithmetic introduces uncertainty in the test of (10).
+We first discuss the key ingredients of sandboxing: the con-
+trol monitor ctrlMon (10) for detecting errors in untrusted
+controllers and the plant monitor plantMon (14) for detect-
+ing unexpected environment behavior. We then discuss their
+incorporation into the verified sandbox controller (Fig. 2)
+with safe fallback control (11).
+3.1 Controller Monitor Formula
+We use nondeterminism in dL controller models to abstract
+away control algorithm details that are not safety-relevant
+(e.g., optimizations to save power or ensure smooth travel).
+Any such details are supplied by the untrusted controller,
+which can be implemented freely, even in languages that
+were not designed for verification. The untrusted controller
+is only known to be safe, however, if it behaves consis-
+tently with the verified controller model. ModelPlex [ 32]
+synthesizes a real arithmetic formula ctrlMon( ®𝑥, ®𝑥 +) over
+the model’s state variables to check control decisions for
+compliance with the model. The condition ctrlMon( ®𝑥, ®𝑥 +) is
+efficiently checked at runtime for concrete values ®𝑥 of a start
+state (e.g., distance sensed before the controller runs) and ®𝑥 +
+of an end state (e.g., new speed, chosen by the controller).
+We give a brief overview of monitor synthesis here, and
+refer the reader to the literature [32] for full details on how
+monitor formulas can be automatically synthesized from an
+input model and verified. ModelPlex composes the safety
+theorem 𝜙 → [( ctrl; plant)∗]𝜓 with offline transformation
+proofs [32, Lem 4–8], reducing system safety to online mon-
+itor compliance. ModelPlex monitors the precondition 𝜙
+when the system starts in state 𝜔0 (check 𝜔0 |= 𝜙 in equa-
+tion (8) of the sandbox) and the controller monitor condition
+ctrlMon( ®𝑥, ®𝑥 +) at every observed transition (𝜔, 𝜈) (check
+
+PAGE 5
+Verified Controller Executables from Verified CPS Models PLDI’18, June 18–22, 2018, Philadelphia, PA, USA
+ctrlMon( ®𝑥, ®𝑥 +) in equation (10)). As a result, we get online
+safety 𝜈 |= 𝜑 up through the current state 𝜈 by [32, Thm 2].
+Definition 4 (Compliance). We say transition (𝜔, 𝜈) com-
+plies with ctrlMon( ®𝑥, ®𝑥 +) , written (𝜔, 𝜈) |= ctrlMon( ®𝑥, ®𝑥 +),
+iff ctrlMon( ®𝑥, ®𝑥 +) holds using the values of state 𝜔 for plain
+variables 𝑥 and the values of 𝜈 for variables 𝑥 + in ®𝑥 +.
+The equations in Fig. 3 illustrate the offline transformation
+proof for synthesizing controller monitor conditionsctrlMon
+to check controller implementation correctness. The proof
+starts at the semantic statement (𝜔, 𝜈) ∈ [[( ctrl; plant)∗]]
+and obtains an arithmetic monitor condition ctrlMon( ®𝑥, ®𝑥 +).
+Condition ctrlMon( ®𝑥, ®𝑥 +) also checks that the plant evolu-
+tion domain constraint 𝑄 holds so that the controller does
+not itself cause a plant violation upon actuating the output
+®𝑥 +.
+(𝜔, 𝜈) ∈ [[( ctrl; plant)∗]] Semantical condition
+⇕ by [32, Lem 4]
+(𝜔, 𝜈) |= ⟨(ctrl; plant)∗⟩( ®𝑥 = ®𝑥 +) Logical criterion
+⇑ by [32, Lem 5]
+(𝜔, 𝜈) |= ⟨ctrl; plant⟩( ®𝑥 = ®𝑥 +) thus 𝜈 |= 𝜓
+⇑ by [32, Lem 6]
+(𝜔, 𝜈) |= ⟨ctrl⟩( ®𝑥 = ®𝑥 + ∧ 𝑄)
+⇑ by ModelPlex-generated dL proof, Lemma 1
+(𝜔, 𝜈) |= ctrlMon( ®𝑥, ®𝑥 +) by online monitoring
+Figure 3. ModelPlex controller monitor synthesis [32]
+Monitor Correctness Proof. ModelPlex’s synthesized con-
+troller monitor conditions are correct by construction [32]
+from the process in Fig. 3, which guarantees Lemma 1. The
+controller monitor synthesis process of Fig. 3 starts by ob-
+taining logical criterion ⟨(ctrl; plant)∗⟩( ®𝑥 = ®𝑥 +) from the
+proved property 𝜙 → [( ctrl; plant)∗]𝜓. We denote by®𝑥 = ®𝑥 +
+component-wise equality between vectors ®𝑥 and ®𝑥 +.
+Lemma 1 (Controller monitor correctness). The controller
+monitor ctrlMon( ®𝑥, ®𝑥 +) relating control input ®𝑥 to control out-
+put ®𝑥 + guarantees that control output ®𝑥 + is permitted by the
+verified control model ctrl on input ®𝑥 and respects the plant
+evolution domain constraint 𝑄, i.e.:
+⊨ ctrlMon( ®𝑥, ®𝑥 +) → ⟨ ctrl⟩( ®𝑥 = ®𝑥 + ∧ 𝑄)
+Lemma 1 is a crucial lemma in the sandbox safety proof.
+Example. In our running example, the monitor checks the
+bound variables 𝑑, 𝑣, 𝑡:
+⟨ctrl⟩( ®𝑥 = ®𝑥 + ∧ 𝑄) ≡
+D
+(?𝑑 ≥ 𝜀𝑉 ; 𝑣 := ∗; ?0 ≤𝑣 ≤𝑉 ∪ 𝑣 := 0);
+𝑡 := 0
+E
+(𝑑 +=𝑑 ∧ 𝑣 +=𝑣 ∧ 𝑡 +=𝑡 ∧ 𝑡 ≤ 𝜀)
+The offline monitor transformation proofs are implemented
+as automation in KeYmaera X, outside the trusted core. On
+the above formula, this monitor formula is output:
+ctrlMon ≡ 𝑑 ≥ 𝜀𝑉 ∧ 0 ≤ 𝑣 + ≤ 𝑉 ∨ 𝑣 + = 0
+∧ 0 ≤ 𝜀 ∧ 𝑉 ≥ 0 ∧ 𝑡 + = 0 ∧ 𝑑 + = 𝑑
+The monitor checks both possible paths through the con-
+troller: the first disjunct captures the test conditions for driv-
+ing with a new velocity 𝑣 + (nondeterministic assignment
+𝑣 := ∗ followed by test ?0 ≤ 𝑣 ≤ 𝑉 ), whereas the second
+disjunct captures the emergency stop ( 𝑣 := 0), so 𝑣 + = 0.
+The conditions further state that the constants are chosen
+according to the model assumptions (0 ≤ 𝜀 ∧ 𝑉 ≥ 0), that
+both paths reset their clocks 𝑡 + = 0 to correctly measure
+the duration until the next controller run, and that neither
+controller path alters the distance measurement, so 𝑑 + = 𝑑.
+3.2 Plant Monitor Formula
+ModelPlex also synthesizes a formulaplantMon( ®𝑥, ®𝑥 +) which
+holds only if the values ®𝑥 and ®𝑥 + sensed in successive states
+comply with theplant model. For example, theplant monitor
+for our ground robot tests that sensed motion is consistent
+with the maximum speed 𝑉 .
+Exact compliance is typically too restrictive: A differential
+equation specifies a single exact trajectory for each point,
+from which realistic sensors will deviate slightly. However,
+safety proofs need not employ the exact trajectory, but rather
+often employ invariant arguments which specify a broader
+safety region. In our example, safety eschews the exact trajec-
+tory 𝑑 + = 𝑑−𝑣𝑡 + in favor of the looser invariant𝑑 + ≥ 𝑣 (𝜀−𝑡 +).
+It suffices for safety to construct plantMon from the plant
+model’s evolution domain 𝑄 (e.g., 𝑡 ≤ 𝜀) and the ODE in-
+variants in the safety proof of Step 1 (e.g., 𝑑 ≥ 𝑣 (𝜀 − 𝑡)). In
+the sandbox controller Fig. 2, the condition plantMon( ®𝑥, ®𝑥 +)
+checks that the observed evolution from the sensed values
+®𝑥 of the previous iteration to the new values ®𝑥 + is within
+this relaxed safety region. If aplant monitor fails, a violation
+raises an alarm, upon which best-effort fallback control is
+typically done. Unlike in the ctrl monitor case, however, fall-
+back controller safety cannot be guaranteed when all of the
+physical assumptions are violated.
+Lemma 2 (Plant monitor correctness). Let (ctrl; plant)∗ be
+verified with 𝜑, and let ctrlMon( ®𝑥, ®𝑥 +) be a correct controller
+monitor according to Lemma 1. Then, loop invariant 𝜑 is pre-
+served when the plant monitor plantMon( ®𝑥, ®𝑥 +) is satisfied.
+⊨ ctrlMon( ®𝑥, ®𝑥 +) → [ ?plantMon( ®𝑥, ®𝑥 +)]𝜑
+
+PAGE 6
+PLDI’18, June 18–22, 2018, Philadelphia, PA, USA R. Bohrer, Y. K. Tan, S. Mitsch, M. O. Myreen, and A. Platzer
+3.3 Fallback Control
+Unsafe control choices are detected by the controller monitor
+and replaced with provably safe fallback control choices.Any
+controller that satisfies the controller monitor can be used
+for safe fallback according to Lemma 3. Concretely, we take
+the verified fallback from the controller ctrl, e.g., 𝑣 := 0; 𝑡 := 0
+for our ground robot.
+Lemma 3 (Fallback correctness). Let program (ctrl; plant)∗
+be verified with 𝜑 and let ctrlMon( ®𝑥, ®𝑥 +) be a controller mon-
+itor per Lemma 1. A fallback controller is correct if all runs
+starting in states satisfying the loop invariant 𝜑 comply with
+the controller monitor ctrlMon( ®𝑥, ®𝑥 +):
+⊨ 𝜑 → [ ®𝑥 + := fallback( ®𝑥)]ctrlMon( ®𝑥, ®𝑥 +)
+3.4 Provably Safe Sandboxing
+Theorem 4 says safety results transfer: from the theorem
+𝜙 → [( ctrl; plant)∗]𝜓 for program (ctrl; plant)∗, we obtain
+safety of the synthesized sandbox.
+Theorem 4 (Sandbox safety). Let program (ctrl; plant)∗ be
+verified. Assume a correct controller monitor, correct plant
+monitor, and correct fallback. Then all runs of the sandbox
+program (from Fig. 2) starting in 𝜙 (from Def. 3) are safe (𝜓 ):
+⊨ 𝜙 → [ sandbox]𝜓
+Proof. By dL proof from Lemma 1, Lemma 2, and Lemma 3.
+□
+Running Example. The provable dL formula in Fig. 4 il-
+lustrates the controller and plant monitor conditions of our
+running example embedded into their sandbox.
+see (2): 𝑑 ≥ 0 ∧ 𝑉 ≥ 0 ∧ 𝜀 ≥ 0
+𝜙 →
+
+𝑉 := ∗; 𝜀 := ∗; 𝑑 := ∗; 𝑡 := ∗; // ®𝑥 := ∗
+?𝑑 ≥ 0 ∧ 𝑉 ≥ 0 ∧ 𝜀 ≥ 0; // ?𝜙
+ 𝑡 + := ∗; 𝑣 + := ∗; 𝑑 + := 𝑑; // ®𝑥 + := extCtrl
+( ?ctrlMon(𝑑, 𝑡, 𝑣, 𝑑+, 𝑡+, 𝑣+)
+∪ 𝑡 + := 0; 𝑣 + := 0 ); // ®𝑥 + := fallback
+𝑡 := 𝑡 +; 𝑣 := 𝑣 +; // ®𝑥 := ®𝑥 +
+𝑑 + := ∗; 𝑡 + := ∗; // ®𝑥 + := ∗
+?0≤𝑡 +≤𝜀 ∧ 𝑑 +≥𝑣 (𝜀 − 𝑡 +); // ?plantMon( ®𝑥, ®𝑥 +)
+𝑑 := 𝑑 +; 𝑡 := 𝑡 + // ®𝑥 := ®𝑥 +
+ ∗
+𝜓
+see (2) : 𝑑 ≥ 0
+Figure 4. Sandbox of a velocity-controlled ground robot
+Truth of the monitor formula implies runtime safety of
+the CPS, but the monitor formulas and sandboxes are hard
+to execute until we concretely implement the arithmetic and
+nondeterministic approximations contained therein.
+4 Interval Word Arithmetic Translation
+Having shown safety of a sandbox controller in dL, we turn
+our attention toward correct compilation, the first step of
+which is to formally justify implementing real numbers with
+interval arithmetic over machine words. We formalize both
+real arithmetic and interval arithmetic semantics for dL (in
+the style of Section 2) and show a soundness theorem: any
+formula which holds in the interval semantics holds in the
+real-number semantics. This is a theorem about the seman-
+tics of dL, making it outside KeYmaera X’s purview. We now
+transition to Isabelle/HOL to reason about dL semantically.
+For a provably sound transition, we develop a bridge from
+dL proofs in KeYmaera X to semantic truth in Isabelle/HOL,
+removing KeYmaera X from the trusted base in the pro-
+cess, then verify interval arithmetic soundness within Is-
+abelle/HOL. The bridge builds on an existing formalization
+of semantics, proof calculus, and soundness of dL [2].
+4.1 Proof Export and Import
+While using multiple provers in VeriPhy simplifies reason-
+ing across domains (from hybrid systems to machine code),
+it places additional correctness demands: i) shared defini-
+tions must have the same semantics in all provers and ii) all
+provers must be sound. We address both problems simulta-
+neously by cross-verifying KeYmaera X into Isabelle/HOL.
+We implemented proof-term export for KeYmaera X and a
+verified proof-term checker in Isabelle/HOL.
+The proof checker uses a deep embedding of dL [40] in
+Isabelle/HOL. We extend a previous [2] soundness proof for
+the core dL calculus theory [40] with more mature formal-
+izations of features needed for practical proofs, such as non-
+deterministic assignments, systems of differential equations,
+variable renaming, and sequent calculus. These extensions
+are tied together by a proof-checking function formalized
+in Isabelle/HOL which takes a KeYmaera X proof term and
+returns the theorem proved by it, if any:
+pteval : pt → rule option
+The result is a KeYmaera X proof state, i.e. an arbitrary de-
+rived rule. Proven dL formulas are rules with no premisses.
+Theorem 5 (Proof-checker soundness). If all real arithmetic
+subgoals are valid and the proof checker accepts the proof term,
+the output derived rule is sound, i.e.:
+arith_valid pt ∧ pteval pt = Some rule → sound(rule)
+This assumes all arithmetic goals in the proof are true.
+They are decidable, but expensive to check in practice. Veri-
+fied real arithmetic proving is an active research area in its
+own right [19, 33, 42], which we leave as future work.
+
+PAGE 7
+Verified Controller Executables from Verified CPS Models PLDI’18, June 18–22, 2018, Philadelphia, PA, USA
+KeYmaera X is actively developed, so our goal is not to
+support all proofs. Our checker supports all sandbox safety
+proofs in this paper, on the scale of ≈200, 000 proof steps.
+Tests with shorter proofs indicate these would take days
+to check in Isabelle/HOL. We generate an executable checker
+instead, currently hand-translated to HOL4 for extraction
+because its verified CakeML extractor [35] is mature, while
+Isabelle/HOL’s [21] cannot yet target machine code. Com-
+bined with a trusted parser, it rechecks KeYmaera X proofs
+quickly (e.g., 6.5s for our example). In all, our extensions
+to the dL soundness proof are ≈7, 000 lines of Isabelle/HOL
+proof based on 15,000 for the initial proof.
+4.2 Interval Arithmetic Translation
+We have soundly transitioned from proofs of system safety
+in KeYmaera X to the truth of system safety according to
+the semantics of dL in Isabelle/HOL. The standard semantics
+of dL feature arithmetic on real numbers, which are crucial
+for physics but ill-suited to efficient execution. Next, we
+soundly approximate the real semantics with a computable
+32-bit integer interval arithmetic semantics, enabling effi-
+cient sandbox execution. Here, we present our translation
+to interval arithmetic and prove it sound in Isabelle/HOL.
+The major design choice here is arithmetic representation.
+We wish to keep compilation simple, support a wide variety
+of hardware, and keep the arithmetic soundness proof sim-
+ple. We chose fixed-precision integer (interval) arithmetic
+because it is widely used in embedded software for its pre-
+dictability and is universally supported by hardware and
+compilers. In Section 6, we show that limited precision was
+not an issue on our hardware platform, because physics lim-
+its the range and precision of sensor values.
+Semantics. The transition to interval arithmetic does not
+require transforming the program source; we merely assign
+a new semantics to the existing constructs of dL. Represen-
+tative cases of the term, formula, and program semantics
+are in Fig. 5. We write𝜔𝐼 , 𝜈𝐼 for interval states assigning to
+each variable 𝑥 an interval [𝑙, 𝑢] of 32-bit machine words for
+lower and upper bounds on the (real number) value of 𝑥, re-
+spectively. Machine words are interpreted as signed integers
+in standard two’s-complement format, excepting sentinel
+values for negative (∞−
+𝑤) and positive (∞+
+𝑤) infinity.
+We write 𝜔𝐼 [(𝜃 )] : [R, R] for the value of term 𝜃 in the
+interval state 𝜔𝐼 , which is a closed interval in the extended
+reals. Likewise, we write (𝜔𝐼 , 𝜈𝐼 ) ∈ [( 𝛼)] when interval state
+𝜔𝐼 can reach 𝜈𝐼 upon running HP 𝛼. Because interval arith-
+metic is conservative, the resulting formula semantics is
+three-valued: we write 𝜔𝐼 [(𝜙)] = ⊤ when 𝜙 is definitely
+true in interval state 𝜔𝐼 , ⊥ when it is definitely false, or 𝑈
+when it is unknown. Arithmetic operations augmented with
+overflow checks are written with a subscript𝑤 and trunc(𝑤 )
+returns positive or negative infinity when 𝑤 is out of range.
+trunc(𝑤 ) = max(∞−
+𝑤, min(∞+
+𝑤, 𝑤))
+𝑤 1 ˆ+𝑤𝑤 2 = if max(𝑤 1, 𝑤2) ∈ {∞ +
+𝑤, ∞−
+𝑤 } then max(𝑤 1, 𝑤2)
+else trunc(𝑤 1 + 𝑤 2)
+𝑤 1 ˇ+𝑤𝑤 2 = if min(𝑤 1, 𝑤2) ∈ {∞ +
+𝑤, ∞−
+𝑤 } then min(𝑤 1, 𝑤2)
+else trunc(𝑤 1 + 𝑤 2)
+𝜔𝐼 [(𝜃1 + 𝜃2)] = [𝑙1 ˇ+𝑤𝑙2, 𝑢1 ˆ+𝑤𝑢2] where 𝜔𝐼 [(𝜃𝑖 )] = [𝑙𝑖, 𝑢𝑖 ]
+𝜔𝐼 [(𝜃1<𝜃2)] =
+ 
+
+⊤ if 𝜔𝐼 [(𝜃𝑖 )] = (𝑙𝑖, 𝑢𝑖 ) and 𝑢1 < 𝑙2
+⊥ if 𝜔𝐼 [(𝜃𝑖 )] = (𝑙𝑖, 𝑢𝑖 ) and 𝑙1 ≥ 𝑢2
+𝑈 otherwise
+(𝜔𝐼 , 𝜈𝐼 ) ∈ [( 𝑥 := 𝜃 )] iff 𝜈𝐼 = 𝜔𝐼 except 𝜈𝐼 (𝑥) = 𝜔𝐼 [(𝜃 )]
+(𝜔𝐼 , 𝜈𝐼 ) ∈ [( ?𝑄)] iff 𝜔𝐼 = 𝜈𝐼 and 𝜔𝐼 [(𝑄)] = ⊤
+(𝜔𝐼 , 𝜈𝐼 ) ∈ [( 𝛼 ∪ 𝛽)] iff (𝜔𝐼 , 𝜈𝐼 ) ∈ [( 𝛼)] or (𝜔𝐼 , 𝜈𝐼 ) ∈ [( 𝛽)]
+(𝜔𝐼 , 𝜈𝐼 ) ∈ [( 𝛼; 𝛽)] iff (𝜔𝐼 , 𝜇𝐼 ) ∈ [( 𝛼)] and (𝜇𝐼 , 𝜈𝐼 ) ∈ [( 𝛽)]
+∧ ⊤ U ⊥
+⊤ ⊤ U ⊥
+U U U ⊥
+⊥ ⊥ ⊥ ⊥
+∨ ⊤ U ⊥
+⊤ ⊤ ⊤ ⊤
+U ⊤ U U
+⊥ ⊤ U ⊥
+Figure 5. Interval arithmetic for executable dL, 3-valued
+truth tables (true ⊤, false ⊥, unknown U)
+We implement bounds checking by sign-extending to 64-
+bit words, where our operations on 32-bit values are guaran-
+teed not to overflow, and then checking the result. This is
+done, e.g., in ˆ+𝑤 and ˇ+𝑤, (casts between 32- and 64-bit words
+are omitted for brevity). Rounding modes differ in handling
+of infinite inputs, e.g., ∞−
+𝑤 + ∞+
+𝑤 is indeterminate, bounded
+below only by ∞−
+𝑤, and bounded above only by ∞+
+𝑤.
+In three-valued semantics, inequalities <𝑤, ≤𝑤 have the
+truth value 𝑈 (unknown) when the intervals for both sides
+of an inequality overlap. For example, 𝑥 <𝑤 𝑥 ˇ+𝑤 𝑦 could be
+either true or false in the state 𝜈𝐼 = {𝑥 ↦→ [ 1, 2], 𝑦 ↦→ [ 0, 1]},
+so conservatively is 𝑈 . In contrast, 𝑥 ≤𝑤 𝑥 ˇ+𝑤 𝑦 is ⊤.
+Relating Real and Interval Semantics. We now formalize
+our notion of correctness: the interval semantics is sound
+with respect to real-number semantics if all word intervals
+contain their corresponding real numbers. Formally, we de-
+fine a notation 𝜈 ∈ [(𝜈𝐼 )] saying the values of all variables in
+interval state 𝜈𝐼 contain their correspondents in real-number
+state 𝜈. We define the notation 𝑟 ∈ [(𝑤 𝑙, 𝑤𝑢)] likewise when
+the real number 𝑟 is in the interval [𝑤 𝑙, 𝑤𝑢]:
+𝑟 ∈ [(𝑤 𝑙, 𝑤𝑢)] iff 𝑤 𝑙
+wr
+≤ 𝑟 and 𝑤𝑢
+wr
+≥ 𝑟
+𝜔 ∈ [( 𝜔𝐼 )] iff ∀ ∀𝑥 ∈ V 𝜔 (𝑥) ∈ [( 𝜔𝐼 (𝑥))]
+To simplify the proof structure, the definition is decom-
+posed into one-sided safe bounds 𝑤
+wr
+≤ 𝑟 and 𝑤
+wr
+≥ 𝑟 saying
+
+PAGE 8
+PLDI’18, June 18–22, 2018, Philadelphia, PA, USA R. Bohrer, Y. K. Tan, S. Mitsch, M. O. Myreen, and A. Platzer
+word 𝑤 is a lower or upper bound for real 𝑟, respectively:
+𝑤
+wr
+≤ 𝑟 iff 𝑤
+wr
+= 𝑟 ′ for some 𝑟 ′ ≤ 𝑟
+𝑤
+wr
+≥ 𝑟 iff 𝑤
+wr
+= 𝑟 ′ for some 𝑟 ′ ≥ 𝑟
+The inexact bounds are defined with exact bounds 𝑤
+wr
+= 𝑟
+saying word 𝑤 exactly represents real 𝑟. Here, w2r is the
+standard injection of two’s-complement words into reals:
+∞+
+𝑤
+wr
+= 𝑟 iff 𝑟 ≥ w2r(∞+
+𝑤)
+∞−
+𝑤
+wr
+= 𝑟 iff 𝑟 ≤ w2r(∞−
+𝑤)
+𝑤
+wr
+= w2r(𝑤 ) otherwise
+Soundness. We use the above definitions to state and prove
+soundness theorems that conservatively relate the interval
+semantics to the real semantics.
+Theorem 6 (Soundness for terms) . Interval valuations of
+terms contain their real valuations. That is, if 𝜔 [[𝜃 ]] = 𝑟 and
+𝜔 ∈ [( 𝜔𝐼 )] then 𝑟 ∈ 𝜔𝐼 [(𝜃 )].
+Proof. By induction on 𝜃. We examine the representative
+case 𝜃 = 𝜃1 + 𝜃2. The case reduces to qualitative correct-
+ness of rounding modes: upward-rounding operations pre-
+serve upper bounds and downward-rounding operations
+preserve lower bounds. We prove these properties ourselves
+as they are not provided by existing Isabelle/HOL arithmetic
+libraries [46]. For example, we prove: If 𝑤 1
+wr
+≥ 𝑟1 and 𝑤 2
+wr
+≥ 𝑟2
+then 𝑤 1 ˆ+𝑤𝑤 2
+wr
+≥ 𝑟1 + 𝑟2. The proof is by cases, following the
+structure of the definition of 𝑤 1 ˆ+𝑤𝑤 2. When bound checks
+detect overflow, they soundly return infinities. When𝑤 1 and
+𝑤 2 are both finite and bounds checks pass, it suffices to show
+that the casts are sound, which they are. □
+Theorem 7 (Soundness for formulas). If the interval seman-
+tics of a formula is true or false, the real semantics agree.
+• If 𝜔𝐼 [(𝜙)] = ⊤ and 𝜔 ∈ [( 𝜔𝐼 )] then 𝜔 |= 𝜙.
+• If 𝜔𝐼 [(𝜙)] = ⊥ and 𝜔 ∈ [( 𝜔𝐼 )] then 𝜔 ̸|= 𝜙.
+• If 𝜔𝐼 [(𝜙)] = 𝑈 we make no claim.
+Proof. By induction on fact 𝜔𝐼 ∈ [( 𝜙)], appealing to The-
+orem 6. We show the representative case 𝜙 ≡ ( 𝜃1 < 𝜃2).
+Comparisons 𝜃1 < 𝜃2 bridge terms to formulas. For sound-
+ness, we conservatively compare the upper bound of 𝜃1 with
+the lower bound of 𝜃2, and comparison of overlapping inter-
+vals returns undefined (U). Stated formally: If 𝑤 1
+wr
+≥ 𝑟1 and
+𝑤 2
+wr
+≤ 𝑟2 and 𝑤 1 <𝑤 𝑤 2 then 𝑟1 < 𝑟2. The proof is direct, by
+the definitions of
+wr
+≤,
+wr
+≥,
+wr
+=, and <𝑤. □
+Theorem 8 (Soundness for programs). If (𝜔𝐼 , 𝜈𝐼 ) ∈ [( 𝛼)] and
+𝜔 ∈ [( 𝜔𝐼 )], then there exists 𝜈 ∈ [(𝜈𝐼 )] where (𝜔, 𝜈) ∈ [[ 𝛼]].
+Proof. By induction on programs 𝛼, using Theorem 7. □
+Together, these show that all program behaviors accepted
+by the sandbox program in interval semantics correspond to
+behavior in the real semantics, which is safe by Theorem 4:
+Corollary 9 (Sandbox soundness). If (ctrl; plant)∗is verified
+and sensing is sound (𝜔 ∈ [( 𝜔𝐼 )]) and the sandbox implementa-
+tion transitions (𝜔𝐼 [(𝜙)] = ⊤ and (𝜔𝐼 , 𝜈𝐼 ) ∈ [( 𝛼)]), then there
+is a real state 𝜈 underlying the final interval state ( 𝜈 ∈ [(𝜈𝐼 )])
+which is safe, i.e., 𝜈 |= 𝜓 .
+Proof. By sensing soundness and Theorem 7,𝜔 |= 𝜓. By The-
+orem 4, since (ctrl; plant)∗is verified then 𝜙 → [ sandbox]𝜓
+is valid. By Theorem 8, (𝜔, 𝜈) ∈ [[ 𝛼]] for some 𝜈 ∈ [(𝜈𝐼 )]. By
+the above implication, 𝜈 |= 𝜓. □
+Now the sandbox is executable at a high level and still
+safe. Next, we will soundly implement the executable interval
+semantics at the machine level.
+5 Sandbox Implementation in CakeML
+By Corollary 9, we may now understand the sandbox HP
+from Fig. 2 using the interval semantics. This allows us to im-
+plement the monitoring checks (10) and (14) using machine
+arithmetic. However, the sandbox still contains high-level
+abstract constructs. Nondeterministic assignments are used
+to represent sensing in (8) and (13) and external control in (9).
+Sound implementation of external control (9) and actuation
+(12) are still expressed abstractly. Nondeterminism must be
+resolved also in choosing between external (10) and fallback
+(11) control, and in choosing the sandbox loop duration.
+In this section, we explain how the sandbox is imple-
+mented as a CakeML program (Section 5.1). We resolve the
+aforementioned sources of nondeterminism, external con-
+troller calls, and actuators all with CakeML’s support for
+foreign function interfaces (FFIs). The resulting program is
+then compiled down to machine code (ARMv6, x64, etc.)
+using the verified CakeML compiler [45].
+By employing the verified CakeML compiler, we know that
+the compiled machine code soundly implements CakeML
+source programs. It remains to show (Section 5.3) that our
+CakeML program soundly implements the sandbox. This
+verification step is made easier because CakeML is itself a
+high-level programming language with an accompanying
+suite of verification tools [ 16, 35]. The CakeML program,
+however, senses and actuates in the real world, so its sound-
+ness relies on assumptions about the correctness of sensor
+and actuator FFIs (Section 5.2).
+5.1 CakeML Sandbox
+We first explain how we implement nondeterminism and
+external interaction. The following pseudocode snippet il-
+lustrates the sandbox loop implementation. Corresponding
+
+PAGE 9
+Verified Controller Executables from Verified CPS Models PLDI’18, June 18–22, 2018, Philadelphia, PA, USA
+lines from Fig. 2 are indicated on the right.
+fun cmlSandboxBody state =
+if not (stop ()) then
+state.ctrl+:= extCtrl state; (9)
+state.ctrl := if intervalSem ctrlMon state = ⊤
+then state.ctrl+ (10)
+else fallback state; (11)
+actuate state.ctrl; (12)
+state.sensors+:= sense (); (13)
+if intervalSem plantMon state = ⊤ then (14)
+Runtime.fullGC ();
+state.sensors := state.sensors +; (15)
+cmlSandboxBody state (16)
+else violation "Plant Violation"
+The tail-recursive function cmlSandboxBody keeps track of
+a CakeML representation of the current state ( state). We
+use record-update notation for state, closely following the
+assignments in Fig. 2. Loop termination is decided by the
+stop FFI wrapper. The stop wrapper itself makes an FFI call
+to external code (ffiStop) which decides whether to stop
+the loop, e.g., upon user request or battery depletion.
+Nondeterministic assignments for external control and
+actuation are implemented with the extCtrl and sense FFI
+wrappers which control and sense via external drivers. From
+the current state variable vector ®𝑥, we single out the sensor
+variables (state.sensors), actuated variables (state.ctrl),
+and constants (state.consts); ®𝑥 + is treated likewise.
+The actuate FFI wrapper executes the control decision
+state.ctrl, taken from extCtrl when the controller mon-
+itor ctrlMon is satisfied or the fallback otherwise.
+The above nondeterminism came from the environment
+and was thus resolved externally with FFIs. The nondeter-
+ministic choice between (10) and (11), in contrast, simply
+provides us freedom in controller implementation. We ex-
+ploit this freedom when the ternary truth-value of ctrlMon
+in the interval semantics ( intervalSem) is unknown (U):
+we are free to use the fallback (11) even when ctrlMon is
+not definitely false ( ⊥), so we conservatively use it in the
+unknown (U) case as well.
+If the plant monitor fails, however, sandboxing cannot
+guarantee safety. Here, cmlSandboxBody exits the control
+loop by calling the violation function with an error mes-
+sage. The function returns control to user code, which may
+initiate (unverified) best-effort recovery measures in the case
+of plant violations. For time-triggered controllers, the plant
+monitor only holds when the system delay is within our
+specified limit 𝜀. We minimize the risk of a delay violation by
+garbage-collecting (Runtime.fullGC) after each cycle, mak-
+ing runtimes predictable. The cost is negligible in practice
+because each control cycle does minimal heap allocation.
+Table 2. External functions and their intended meaning
+External func. Intended Meaning
+ffiConst Get the values of system constants
+ffiSense Get the current sensor readings
+ffiExtCtrl Get the next (untrusted) control decision
+ffiActuate Actuate a control decision
+ffiStop Check whether to run more control cycles
+ffiViolation Exit control loop due to a fatal violation
+The sandbox entry point cmlSandbox, elided here, simply
+invokes cmlSandboxBody on the initial state after checking
+initial conditions 𝜙. We have thus reduced implementation
+of the sandbox to implementation of the FFIs.
+5.2 CakeML FFIs
+We now specify and implement the FFIs. FFIs bridge CakeML
+to the external world: physical sensing/actuation and un-
+trusted control. Thus, the crucial specification step is to
+model external behavior in HOL4: We write 𝑒𝑠 :ext for an
+external state, a record capturing all external state and ef-
+fects, current and future. The external state is taken as the
+ground truth of the world, which all (e.g. sensing/actuation)
+FFIs must read or change. This makes the notion of sens-
+ing/actuation correctness precise. The 6 FFIs assumed by
+VeriPhy are summarized in Table 2, along with their infor-
+mal meanings. Of these, we take ffiSense and ffiStop as
+our examples.
+FFI Model. Each FFI specification consults the external state
+to determine the ground truth of the current state and effect
+of external code. They each return a result r and a new
+external state 𝑒𝑠 when invoked safely (i.e. SOME(r,𝑒𝑠 ’)) or
+NONE if calling conventions were violated. For example, the
+ffiSense calling convention expects one word per sensor
+in the array 𝑏𝑦𝑡𝑒𝑠, then we specify that the values sensed by
+ffiSense match the ground truth 𝑒𝑠. sensor_vals:
+ffiSense 𝑏𝑦𝑡𝑒𝑠 (𝑒𝑠 :ext) =
+if LEN 𝑏𝑦𝑡𝑒𝑠 = NSENSORS*WORD ∧
+LEN 𝑒𝑠 .sensor_vals = LEN bytes
+then SOME (word_to_bytes 𝑒𝑠 .sensor_vals,𝑒𝑠 )
+else NONE
+Unlike ffiSense, which must always return the current
+sensor values,ffiStop has complete freedom to decide when
+the loop should stop. This external nondeterminism is re-
+solved by querying an oracle (𝑒𝑠 .stop_oracle):
+ffiStop 𝑏𝑦𝑡𝑒𝑠 (𝑒𝑠 :ext) =
+if LEN 𝑏𝑦𝑡𝑒𝑠 = 1
+then SOME (query 𝑒𝑠 .stop_oracle,𝑒𝑠 )
+else NONE
+When queried, the oracle returns a bit, with1 indicating that
+the sandbox loop should stop.
+
+PAGE 10
+PLDI’18, June 18–22, 2018, Philadelphia, PA, USA R. Bohrer, Y. K. Tan, S. Mitsch, M. O. Myreen, and A. Platzer
+Neither ffiSense nor ffiStop modifies the state of the
+external world, so the external state𝑒𝑠 is unchanged. The ex-
+ternal state is modified, e.g., whenffiActuate sends control
+values to actuators.
+The full specification is ≈150 lines of HOL4, and formally
+captures the assumed behavior of each FFI from Table 2.
+FFI Stub Implementation. The end-user must provide ex-
+ternal FFI implementations. Here, we implement ffiSense
+by filling a VeriPhy-generated C stub with calls to application-
+specific drivers. Per the specification, ffiSense populates
+sensor_vals with the actual sensor values:
+void ffiSense(int32_t *sensor_vals, long nSensors) {
+sensor_vals[0] = distanceDriver(); // return d
+sensor_vals[1] = currentTime(); // return t
+}
+CakeML FFI Wrapper. The CakeML sandbox program ac-
+cesses the FFIs through CakeML wrapper functions. For ex-
+ample, the sense function wraps the ffiSense FFI:
+fun sense () =
+let val sensorArr = Word8Array.array (NSENSORS*WORD) 0
+val () = #(ffiSense) sensorArr
+in arr_to_list sensorArr end
+The function first allocates a byte array sensorArr with
+one word per sensor value. It then invokes ffiSense using
+CakeML’s FFI call syntax #(ffiSense). Once sensorArr
+is populated with real sensor values, sense returns them
+reformatted as a list.
+The remaining FFIs are modeled and implemented sim-
+ilarly to the representative examples shown above, with
+ffiCtrl and ffiActuate also having their own oracles to
+model external control and actuation, respectively.
+5.3 Verifying the CakeML Sandbox
+Next, we verify the CakeML programcmlSandbox, assuming
+that the FFIs behave according to our FFI model. The main
+verification work is carried out with CakeML’s Characteris-
+tic Formulae (CF) framework [16], which allows reasoning
+about the FFIs with separation logic-style assertions. As with
+interval arithmetic soundness, our results are generic across
+all sandbox instances.
+We write [{𝜔 } ]for a CakeML state containing an external
+state 𝑒𝑠 :ext and a runtime store. We write [{𝜔 } ], [{𝜈} ] ∈
+[{cmlSandbox} ]to mean that executing the CakeML sand-
+box (cmlSandbox) from the initial CakeML state [{𝜔 } ]ter-
+minates with the CakeML state [{𝜈} ], see [ 16] for formal
+details. The states implicitly agree with cmlSandbox as to
+which variables are sensors/actuators, etc. For any CakeML
+state [{𝜔 } ], the corresponding interval state [(𝜔)] represents
+each value [{𝜔 } ] (𝑥) = 𝑤 exactly by a point-interval [𝑤, 𝑤 ],
+which implies that sensing is exact. Sensor uncertainty could
+in principle be encoded with non-point intervals.
+Theorem 10 (CakeML sandbox correctness). For any ini-
+tial CakeML state [{𝜔 } ], assuming that its stop oracle even-
+tually stops the loop (by returning the bit 1 when queried),
+then we have a CakeML state [{𝜈} ]such that [{𝜔 } ], [{𝜈} ] ∈
+[{cmlSandbox} ]. In addition,
+1. If [{𝜔 } ]violates initial condition 𝜙, then cmlSandbox
+leaves the initial CakeML state unchanged: [{𝜔 } ] =
+[{𝜈} ].
+2. Otherwise, either the stop oracle of [{𝜈} ]stopped the
+loop when queried and ( [(𝜔)], [(𝜈)]) ∈ [( sandbox)], or
+3. There exists [{𝜇} ]where ( [(𝜔)], [(𝜇)]) ∈ [( sandbox)]
+and [{𝜈} ]was obtained by actuating (12) in [{𝜇} ]where
+(after sensing) intervalSem raises a plantMon (14) vi-
+olation.
+We assume that the stop oracle eventually stops the loop
+because real systems do not run forever. Under this assump-
+tion, soundness is verified simply by induction on execution
+traces. The violation in Case 3 of Theorem 10 is raised con-
+servatively when plantMon has an unknown truth value (U),
+analogously to the control monitorctrlMon. The violation is
+guaranteed to be raised when plantMon first fails, ensuring
+early detection of any model deviations.
+Using CakeML’s compiler correctness theorem [45], we
+extend Theorem 10 to the compiled, machine code imple-
+mentation of cmlSandbox. We write CML(cmlSandbox) for
+the result of running the CakeML compiler on cmlSandbox,
+{|CML(cmlSandbox)|} for its (machine code) semantics, and
+accordingly {|𝜔 |} for a machine-level program state.
+Theorem 11 (Sandbox machine code correctness). Under the
+standard CakeML compiler correctness assumptions [ 45], let
+{|𝜔 |} be an initial machine state whose stop oracle eventually
+stops the loop. Then we have a machine state {|𝜈|} such that{|𝜔 |}, {|𝜈|} ∈ {| CML(cmlSandbox)|}, and {|𝜔 |}, {|𝜈|} satisfy
+one of the three cases listed in the conclusion of Theorem 10.
+The machine code may also exit with an out-of-memory error
+if the CakeML runtime exhausts its heap or stack.
+As a corollary, we have the following end-to-end chain of
+correctness guarantees for VeriPhy:
+Corollary 12 (End-to-end implementation guarantees). Un-
+der the assumptions of Theorem 11, assume further that Case
+2 of the theorem occurs and the CakeML runtime does not run
+out of memory. Let (ctrl; plant)∗be verified, external interac-
+tion be sound, then there is a real state 𝜈 underlying state {|𝜈|}
+which is safe, i.e., 𝜈 |= 𝜓 .
+Proof. By composing Corollary 9 with Case 2 of Theorem 11.
+Here soundness of external interactions consists of sensing
+soundness per Corollary 9 and correctness of FFI with re-
+spect to the external state model and the CakeML compiler
+correctness assumptions [45]. □
+
+PAGE 11
+Verified Controller Executables from Verified CPS Models PLDI’18, June 18–22, 2018, Philadelphia, PA, USA
+6 Experimental Evaluation
+The pipeline has successfully synthesized sandboxes for our
+velocity-controlled robot example, a train safety controller
+[41], and acceleration-controlled motion [ 43]. Our proofs
+guarantee soundness, so sandbox controllers execute only
+provably safe control choices. We experimentally evaluate
+operational suitability of the velocity-controlled robot, show-
+ing that sandboxing does not make the controller overly
+conservative. We see that the controllers and machine arith-
+metic are fast and precise enough in practice and that moni-
+tors alert the user if modeling simplifications affect safety,
+but do not raise excessive false alarms. Since monitors de-
+tect model violations, the absence of excessive alarms also
+helps validate the input model. We run our robot example
+on commodity robot hardware with several controllers. This
+common platform minimizes hardware cost while our mul-
+tiple controls allow testing the approach’s generality. We
+augment the experiments with simulations showing how the
+sandbox responds to non-compliant environments.
+Hardware Platform and Calibration. We use a GoPiGo3
+Raspberry Pi-based robot. It is equipped with two separately
+controlled motors and a laser distance sensor with 25◦ field-
+of-view and typical indoor measurement range on white
+background of 200 cm with ≈94% obstacle detection rate. De-
+pending on operating temperature and voltage, the distance
+measurements are off by at most ±3 cm. The motors take
+speed commands in the range −25 cm
+s to 25 cm
+s , controlled
+internally with a proportional-integral-derivative (PID) con-
+troller. It has a stopping margin of about 2.5 cm from engag-
+ing “brakes” by setting𝑣 = 0 until full stop from maximum
+speed. The sensed distance incorporates this margin, closely
+mimicking instantaneous stopping per our model.
+Drivers. GoPiGo3 provides C drivers for the motors, but
+only Python drivers for the distance sensor. Between sensing,
+control, and actuation, the control cycle time is 180–220ms. It
+is dominated by distance sensor interaction through Python.
+Experiment Setup. The robot is initially stationary, 75 cm
+from an obstacle, then drives straight toward the obstacle
+with user-defined constant speeds10, 15, 20, 25 cm
+s (maximum
+speed of the robot). Since the robot measures time in ms, we
+measure speed in mm
+s and distance in 𝜇m. Thus the greatest
+distance in the system, 75 cm, can be represented in 20 bits,
+well within our 32-bit limit. We performed the experiment
+with both stationary and moving obstacles. The robot stops
+close to a stationary obstacle, with ≈3 cm safety margin to
+account for sensor and actuator uncertainty. If the obstacle
+moves away, the robot follows, stopping close to the obsta-
+cle’s final position. If the obstacle moves closer, the robot
+stops before reaching the obstacle.
+We tested two implementations of the untrusted external
+controller. Controller A follows a user-defined speed when
+safe and otherwise stops. This is safe and thus does not
+C†
+C†
+PE
+C†
+C!
+CE
+C†
+CE
+PE
+CE
+CE CE0 2 4 6 8
+20
+40
+60
+time[s]
+distance[cm]
+Controller A (correct)
+Controller B (faulty)
+Malicious obstacle
+Small disturbance
+Large disturbance
+Figure 6. Controller sandbox, simulated plant. Solid lines:
+sandbox controller safe; fallback engaged if control violation
+occurs. Dashed lines: plant violation, environment caused
+collision. C†,CE,PE,C!indicate speed spike, control/plant
+violations, and restoration of normal control, respectively.
+violate the monitor. Controller B first sets a user-defined
+speed then spikes to maximum speed near the obstacle. This
+is unsafe and violates the monitor, invoking fallback control.
+Our experiments on both the real robot and a simulatedplant
+record distance, speed, and monitor violations vs. time.
+Experiment Results. Fig. 6 plots distance over time in sim-
+ulation for maximum speed 𝑉 = 25 cm
+s , system delay 𝜀 =
+220 ms, initial distance 75 cm, with varying sensor distur-
+bance and both passive and malicious obstacles. Fig. 7 plots
+results on the real robot. Both figures show that monitors
+correctly detect plant violations. Fallback is then engaged as
+a safety best-effort, which ensured safety in simulation.
+The robot engaged fallback at ≈4.6 cm from the obstacle,
+stopping at ≈2.6 cm (due to the safety margin). Under small
+disturbances, the plant monitor holds and safety is assured.
+Malicious obstacles or dangerously high disturbances are
+detected as plant violations, triggering fallback. We simu-
+lated controller faults at 𝑑 ≈ 50 cm by issuing 𝑣 = 𝑉 = 25 cm
+s
+continually. The fallback engages right before the faulty con-
+troller would become unsafe (𝑑 < 𝜀𝑉 ).
+7 Related Work
+CPS Verification. Differential dynamic logic [37, 38], as im-
+plemented in KeYmaera X [15], has been successfully applied
+in a number of case studies [39]. Soundness of its core calcu-
+lus [40] has been cross-verified in Isabelle/HOL and Coq [2],
+which this work extended to a verified proof-term checker
+in Isabelle/HOL.
+General-purpose logics have also been used for CPS proofs.
+ROSCoq [1] and VeriDrone [ 27] allow CPS specification,
+implementation, verification, and code generation in Coq.
+
+PAGE 12
+PLDI’18, June 18–22, 2018, Philadelphia, PA, USA R. Bohrer, Y. K. Tan, S. Mitsch, M. O. Myreen, and A. Platzer
+C†
+CE
+Ob+
+Ob-
+Ob0
+Ob+
+2 4 6 8
+20
+40
+60
+time[s]
+distance[cm] Controller A (correct)
+Controller B (faulty)
+Approaching obstacle
+Robot follows obstacle
+Figure 7. Controller sandbox, real robot: correct controller
+approaching a stationary obstacle, faulty controller ap-
+proaching a stationary obstacle, obstacle approaches robot,
+and robot follows a moving obstacle.Ob+, Ob0, Ob- indicate
+proceeding, stopped, and receding obstacles, respectively.
+However, they do not synthesize and automatically verify
+monitors nor is their machine code verified.
+We provide greater automation: the user need only verify
+the source model and can exploit KeYmaera X automation.
+On the other hand, Coq provides ROSCoq and VeriDrone
+with greater freedom in models and verified controllers,
+which VeriPhy has only in the untrusted controller.
+Hybrid model checking [ 8, 10, 13] typically has a large
+trusted base and sacrifices expressiveness to increase automa-
+tion, being restricted, e.g., to linear differential equations,
+bounded-time safety, or bounded state-space verification.
+Toolchains. High-Assurance SPIRAL [12] translates Model-
+Plex monitors to x64 machine code. Its verification is not
+end-to-end: because it only treats hybrid systems syntacti-
+cally, it cannot verify across semantic gaps, e.g., in interval
+arithmetic and compilation. Its optimizer employs features
+such as SIMD instructions that would make verified com-
+pilation especially challenging. Ivory [ 11] and Tower [36]
+are used to ensure high-assurance embedded software is
+memory safe, but do not verify the functional correctness of
+cyber nor physical behavior.
+Verified Compilation. We use the CakeML [ 45] verified
+ML compiler and its associated verification tools [ 16, 35].
+CakeML is higher-level than other languages such as Clight
+with verified compilers such as floating-point CompCert [4].
+This makes the verification of sandbox implementation in
+CakeML against hybrid systems semantics painless. We chose
+this over, e.g., translation validation with unverified compil-
+ers [44] since translation validation can be brittle.
+Lustre [17] is a CPS-centric language with a verified com-
+piler, Vélus [7]. Writing and compiling a Lustre controller
+provides no end-to-end guarantees because physical model-
+ing and verification are left unanswered. It could be used as
+a code generation target, but this would be a detour because
+the Lustre language differs greatly from hybrid programs.
+Machine Arithmetic Verification. Machine arithmetic cor-
+rectness is a major VeriPhy component. We verify arithmetic
+soundness foundationally. This is an active research area
+with libraries available in HOL Light [18], Coq [3, 5, 9, 30],
+Isabelle/HOL [46], etc. Of these, only PFF in Coq [ 9] pro-
+vides the qualitative rounding correctness results we need,
+so we prove them in Isabelle/HOL using the seL4 [24] ma-
+chine word library. We chose Isabelle/HOL and HOL4 over
+Coq because their combination of cutting-edge analysis li-
+braries [23], mature formalization of dL [2], proof-producing
+code extraction [ 35], and classical foundations positions
+them well for our end-to-end pipeline. Static analysis of
+arithmetic for hybrid systems has been studied [ 6, 26, 28],
+but without foundational safety proofs for general dynamics.
+8 Conclusions and Future Work
+VeriPhy is the first automatic, verified pipeline from verified
+CPS models to verified controller executables. High-level dL
+proofs provide safe interaction between code and physics,
+which we have transported to the implementation level.
+We summarize the chain of proofs in Fig. 8: A verifieddL
+model is transformed to a verified sandbox featuring a syn-
+thesized monitor. The sandbox is then soundly reinterpreted
+over interval arithmetic and compiled by CakeML to, e.g.,
+ARM or x64. So long as the executable does not report a
+model violation, the system remains in a safe state.
+𝜈 |= 𝜓
+⇑ by Section 3: Theorem 4
+(𝜔, 𝜈) ∈ [[ sandbox]]
+dL (KeYmaera X)
+Real arithmetic,
+nondeterministic
+⇑ by Section 4: Theorem 8
+𝜔𝐼 , 𝜈𝐼
+ ∈ [( sandbox)]
+dL (Isabelle/HOL)
+Interval word arithmetic,
+nondeterministic
+⇑ by Section 5: Theorem 10
+[{𝜔 } ], [{𝜈} ] ∈ [{cmlSandbox} ]
+CakeML (HOL4)
+Interval word arithmetic,
+deterministic
+⇑ by CakeML compiler [45]
+{|𝜔 |}, {|𝜈|} ∈ {|CML(cmlSandbox)|}
+ARM/x64
+Interval word arithmetic,
+machine-executable
+Figure 8. End-to-end proof chain for end-to-end result
+To cross the wide gap between hybrid systems and exe-
+cutable code, VeriPhy employs multiple tools, gaining conve-
+nience at the cost of an enlarged trusted base. The VeriPhy
+approach incorporates measures to ensure that the connec-
+tions between tools are sound, which we wish to strengthen
+
+PAGE 13
+Verified Controller Executables from Verified CPS Models PLDI’18, June 18–22, 2018, Philadelphia, PA, USA
+in future work to further mitigate trusted base size. The cross-
+verification of KeYmaera X into Isabelle/HOL can be made
+more trustworthy by incorporating proof-producing arith-
+metic solvers [19, 29, 33, 42]. The link between Isabelle/HOL
+and HOL4 could be made more trustworthy by automatically
+converting specifications with OpenTheory [22]. The treat-
+ment of memory-management, while already trustworthy,
+could be made even more suitable for real-time systems by
+generating allocation-free code in the backend. With these
+additions, we can maintain convenient end-to-end guaran-
+tees from high-level models with even higher reliability.
+Acknowledgments. This material is based upon work sup-
+ported by the National Science Foundation under NSF CA-
+REER Award CNS-1054246, by the AFOSR under grant num-
+ber FA9550-16-1-0288, and by DARPA under agreement num-
+ber FA8750-12-2-0291. The first and second authors were also
+supported by the Department of Defense through the Na-
+tional Defense Science & Engineering Graduate Fellowship
+Program, and by A*STAR, Singapore, respectively.
+References
+[1] Abhishek Anand and Ross A. Knepper. 2015. ROSCoq: Robots powered
+by constructive reals. In ITP (LNCS), Christian Urban and Xingyuan
+Zhang (Eds.), Vol. 9236. Springer, 34–50. https://doi.org/10.1007/
+978-3-319-22102-1_3
+[2] Rose Bohrer, Vincent Rahli, Ivana Vukotic, Marcus Völp, and André
+Platzer. 2017. Formally verified differential dynamic logic. In Certified
+Programs and Proofs - 6th ACM SIGPLAN Conference, CPP 2017, Paris,
+France, January 16-17, 2017 , Yves Bertot and Viktor Vafeiadis (Eds.).
+ACM, 208–221. https://doi.org/10.1145/3018610.3018616
+[3] Sylvie Boldo, Jean-Christophe Filliâtre, and Guillaume Melquiond.
+2009. Combining Coq and Gappa for certifying floating-point pro-
+grams. In MKM, Held as Part of CICM (LNCS) , Jacques Carette, Lucas
+Dixon, Claudio Sacerdoti Coen, and Stephen M. Watt (Eds.), Vol. 5625.
+Springer, 59–74. https://doi.org/10.1007/978-3-642-02614-0_10
+[4] Sylvie Boldo, Jacques-Henri Jourdan, Xavier Leroy, and Guillaume
+Melquiond. 2013. A formally-verified C compiler supporting floating-
+point arithmetic. In ARITH, Alberto Nannarelli, Peter-Michael Seidel,
+and Ping Tak Peter Tang (Eds.). IEEE Computer Society, 107–115.
+https://doi.org/10.1109/ARITH.2013.30
+[5] Sylvie Boldo and Guillaume Melquiond. 2011. Flocq: A unified library
+for proving floating-point algorithms in Coq. In ARITH, Elisardo An-
+telo, David Hough, and Paolo Ienne (Eds.). IEEE Computer Society,
+243–252. https://doi.org/10.1109/ARITH.2011.40
+[6] Olivier Bouissou, Eric Goubault, Sylvie Putot, Karim Tekkal, and
+Franck Védrine. 2009. HybridFluctuat: A static analyzer of numerical
+programs within a continuous environment (LNCS), Ahmed Boua-
+jjani and Oded Maler (Eds.), Vol. 5643. Springer, 620–626. https:
+//doi.org/10.1007/978-3-642-02658-4_46
+[7] Timothy Bourke, Lélio Brun, Pierre-Évariste Dagand, Xavier Leroy,
+Marc Pouzet, and Lionel Rieg. 2017. A formally verified compiler
+for Lustre. In PLDI, Albert Cohen and Martin T. Vechev (Eds.). ACM,
+586–601. https://doi.org/10.1145/3062341.3062358
+[8] Xin Chen, Erika Ábrahám, and Sriram Sankaranarayanan. 2013. Flow*:
+An analyzer for non-linear hybrid systems. In CA V (LNCS), Natasha
+Sharygina and Helmut Veith (Eds.), Vol. 8044. Springer, 258–263.https:
+//doi.org/10.1007/978-3-642-39799-8_18
+[9] Marc Daumas, Laurence Rideau, and Laurent Théry. 2001. A generic
+library for floating-point numbers and its application to exact comput-
+ing. In TPHOLs (LNCS), Richard J. Boulton and Paul B. Jackson (Eds.),
+Vol. 2152. Springer, 169–184. https://doi.org/10.1007/3-540-44755-5_13
+[10] Parasara Sridhar Duggirala, Sayan Mitra, Mahesh Viswanathan, and
+Matthew Potok. 2015. C2E2: A verification tool for stateflow models.
+In TACAS (LNCS), Christel Baier and Cesare Tinelli (Eds.), Vol. 9035.
+Springer, 68–82. https://doi.org/10.1007/978-3-662-46681-0_5
+[11] Trevor Elliott, Lee Pike, Simon Winwood, Patrick C. Hickey, James
+Bielman, Jamey Sharp, Eric L. Seidel, and John Launchbury. 2015. Guilt
+free ivory. InHaskell. 189–200. https://doi.org/10.1145/2804302.2804318
+[12] Franz Franchetti, Tze Meng Low, Stefan Mitsch, Juan Paolo Mendoza,
+Liangyan Gui, Amarin Phaosawasdi, David Padua, Soummya Kar, José
+M. F. Moura, Mike Franusich, Jeremy Johnson, André Platzer, and
+Manuela Veloso. 2017. High-assurance SPIRAL: End-to-end guarantees
+for robot and car control. IEEE Control Systems 37, 2 (2017), 82–103.
+https://doi.org/10.1109/MCS.2016.2643244
+[13] Goran Frehse, Colas Le Guernic, Alexandre Donzé, Scott Cotton, Ra-
+jarshi Ray, Olivier Lebeltel, Rodolfo Ripado, Antoine Girard, Thao
+Dang, and Oded Maler. 2011. SpaceEx: Scalable verification of hybrid
+systems. In CA V (LNCS), Ganesh Gopalakrishnan and Shaz Qadeer
+(Eds.), Vol. 6806. 379–395. https://doi.org/10.1007/978-3-642-22110-1_
+30
+[14] Nathan Fulton, Stefan Mitsch, Rose Bohrer, and André Platzer. 2017.
+Bellerophon: Tactical theorem proving for hybrid systems. In ITP
+(LNCS), Mauricio Ayala-Rincón and César A. Muñoz (Eds.), Vol. 10499.
+Springer, 207–224. https://doi.org/10.1007/978-3-319-66107-0_14
+[15] Nathan Fulton, Stefan Mitsch, Jan-David Quesel, Marcus Völp, and
+André Platzer. 2015. KeYmaera X: An axiomatic tactical theorem
+prover for hybrid systems. In CADE (LNCS) , Amy Felty and Aart
+Middeldorp (Eds.), Vol. 9195. Springer, 527–538. https://doi.org/10.
+1007/978-3-319-21401-6_36
+[16] Armaël Guéneau, Magnus O. Myreen, Ramana Kumar, and Michael
+Norrish. 2017. Verified characteristic formulae for CakeML. In ESOP
+(LNCS), Hongseok Yang (Ed.), Vol. 10201. Springer, 584–610. https:
+//doi.org/10.1007/978-3-662-54434-1_22
+[17] Nicolas Halbwachs, Fabienne Lagnier, and Christophe Ratel. 1992.
+Programming and verifying real-time systems by means of the syn-
+chronous data-flow language LUSTRE. IEEE Trans. Software Eng. 18, 9
+(1992), 785–793. https://doi.org/10.1109/32.159839
+[18] John Harrison. 2006. Floating-point verification using theorem prov-
+ing. In Formal Methods for Hardware Verification, SFM (LNCS) , Marco
+Bernardo and Alessandro Cimatti (Eds.), Vol. 3965. Springer, 211–242.
+https://doi.org/10.1007/11757283_8
+[19] John Harrison. 2007. Verifying nonlinear real formulas via
+sums of squares. In TPHOLs (LNCS) , Klaus Schneider and Jens
+Brandt (Eds.), Vol. 4732. Springer, 102–118. https://doi.org/10.1007/
+978-3-540-74591-4_9
+[20] Thomas A. Henzinger. 1996. The theory of hybrid automata. In LICS.
+IEEE Computer Society, 278–292. https://doi.org/10.1109/LICS.1996.
+561342
+[21] Lars Hupel and Tobias Nipkow. 2018. A Verified Compiler from Is-
+abelle/HOL to CakeML. In ESOP (LNCS), Amal Ahmed (Ed.). Springer.
+[22] Joe Hurd. 2011. The OpenTheory standard theory library. In NFM
+(LNCS), Mihaela Gheorghiu Bobaru, Klaus Havelund, Gerard J. Holz-
+mann, and Rajeev Joshi (Eds.), Vol. 6617. Springer, 177–191. https:
+//doi.org/10.1007/978-3-642-20398-5_14
+[23] Fabian Immler and Christoph Traut. 2016. The flow of ODEs. In ITP
+(LNCS), Jasmin Christian Blanchette and Stephan Merz (Eds.), Vol. 9807.
+Springer, 184–199. https://doi.org/10.1007/978-3-319-43144-4_12
+[24] Gerwin Klein, June Andronick, Kevin Elphinstone, Gernot Heiser,
+David Cock, Philip Derrin, Dhammika Elkaduwe, Kai Engelhardt, Rafal
+Kolanski, Michael Norrish, Thomas Sewell, Harvey Tuch, and Simon
+Winwood. 2010. seL4: Formal verification of an operating-system
+
+PAGE 14
+PLDI’18, June 18–22, 2018, Philadelphia, PA, USA R. Bohrer, Y. K. Tan, S. Mitsch, M. O. Myreen, and A. Platzer
+kernel. Commun. ACM 53, 6 (2010), 107–115. https://doi.org/10.1145/
+1743546.1743574
+[25] Ramana Kumar, Magnus O. Myreen, Michael Norrish, and Scott Owens.
+2014. CakeML: A verified implementation of ML. In POPL, Suresh
+Jagannathan and Peter Sewell (Eds.). ACM, 179–192. https://doi.org/
+10.1145/2535838.2535841
+[26] Rupak Majumdar, Indranil Saha, and Majid Zamani. 2012. Synthesis of
+minimal-error control software. In EMSOFT, Ahmed Jerraya, Luca P.
+Carloni, Florence Maraninchi, and John Regehr (Eds.). ACM, 123–132.
+https://doi.org/10.1145/2380356.2380380
+[27] Gregory Malecha, Daniel Ricketts, Mario M. Alvarez, and Sorin Lerner.
+2016. Towards foundational verification of cyber-physical systems. In
+SOSCYPS@CPSWeek. IEEE Computer Society, 1–5. https://doi.org/10.
+1109/SOSCYPS.2016.7580000
+[28] Adolfo Anta Martinez, Rupak Majumdar, Indranil Saha, and Paulo
+Tabuada. 2010. Automatic verification of control system implementa-
+tions. In EMSOFT, Luca P. Carloni and Stavros Tripakis (Eds.). ACM,
+9–18. https://doi.org/10.1145/1879021.1879024
+[29] Sean McLaughlin and John Harrison. 2005. A proof-producing decision
+procedure for real arithmetic. In CADE (LNCS), Robert Nieuwenhuis
+(Ed.), Vol. 3632. Springer, 295–314.https://doi.org/10.1007/11532231_22
+[30] Guillaume Melquiond. 2012. Floating-point arithmetic in the Coq
+system. Inf. Comput. 216 (2012), 14–23. https://doi.org/10.1016/j.ic.
+2011.09.005
+[31] Stefan Mitsch and André Platzer. 2016. The KeYmaera X proof IDE:
+Concepts on usability in hybrid systems theorem proving. In3rd Work-
+shop on Formal Integrated Development Environment (EPTCS) , Cather-
+ine Dubois, Dominique Mery, and Paolo Masci (Eds.), Vol. 240. Open
+Publishing Association, 67–81. https://doi.org/10.4204/EPTCS.240.5
+[32] Stefan Mitsch and André Platzer. 2016. ModelPlex: Verified runtime val-
+idation of verified cyber-physical system models. Form. Methods Syst.
+Des. 49, 1 (2016), 33–74. https://doi.org/10.1007/s10703-016-0241-z
+Special issue of selected papers from RV’14.
+[33] David Monniaux and Pierre Corbineau. 2011. On the generation of
+Positivstellensatz witnesses in degenerate cases. In ITP (LNCS), Marko
+C. J. D. van Eekelen, Herman Geuvers, Julien Schmaltz, and Freek
+Wiedijk (Eds.), Vol. 6898. Springer, 249–264. https://doi.org/10.1007/
+978-3-642-22863-6_19
+[34] Greg Morrisett, Gang Tan, Joseph Tassarotti, Jean-Baptiste Tristan,
+and Edward Gan. 2012. RockSalt: better, faster, stronger SFI for the
+x86. In PLDI, Jan Vitek, Haibo Lin, and Frank Tip (Eds.). ACM, 395–404.
+https://doi.org/10.1145/2254064.2254111
+[35] Magnus O. Myreen and Scott Owens. 2012. Proof-producing syn-
+thesis of ML from higher-order logic. In ICFP, Peter Thiemann and
+Robby Bruce Findler (Eds.). ACM, 115–126. https://doi.org/10.1145/
+2364527.2364545
+[36] Lee Pike, Patrick C. Hickey, James Bielman, Trevor Elliott, Thomas
+DuBuisson, and John Launchbury. 2014. Programming languages for
+high-assurance autonomous vehicles: Extended abstract. In PLPV. 1–2.
+https://doi.org/10.1145/2541568.2541570
+[37] André Platzer. 2008. Differential dynamic logic for hybrid sys-
+tems. J. Autom. Reas. 41, 2 (2008), 143–189. https://doi.org/10.1007/
+s10817-008-9103-8
+[38] André Platzer. 2012. Logics of dynamical systems. In LICS. IEEE Com-
+puter Society, 13–24. https://doi.org/10.1109/LICS.2012.13
+[39] André Platzer. 2016. Logic & proofs for cyber-physical systems. In
+IJCAR (LNCS) , Nicola Olivetti and Ashish Tiwari (Eds.), Vol. 9706.
+Springer, 15–21. https://doi.org/10.1007/978-3-319-40229-1_3
+[40] André Platzer. 2017. A complete uniform substitution calculus for
+differential dynamic logic. J. Autom. Reas. 59, 2 (2017), 219–265. https:
+//doi.org/10.1007/s10817-016-9385-1
+[41] André Platzer and Jan-David Quesel. 2009. European Train Control
+System: A case study in formal verification. In ICFEM (LNCS), Karin
+Breitman and Ana Cavalcanti (Eds.), Vol. 5885. Springer, 246–265.
+https://doi.org/10.1007/978-3-642-10373-5_13
+[42] André Platzer, Jan-David Quesel, and Philipp Rümmer. 2009. Real
+world verification. In CADE (LNCS), Renate A. Schmidt (Ed.), Vol. 5663.
+Springer, 485–501. https://doi.org/10.1007/978-3-642-02959-2_35
+[43] Jan-David Quesel, Stefan Mitsch, Sarah Loos, Nikos Aréchiga, and
+André Platzer. 2016. How to model and prove hybrid systems with
+KeYmaera: A tutorial on safety. STTT 18, 1 (2016), 67–91. https:
+//doi.org/10.1007/s10009-015-0367-0
+[44] Thomas Arthur Leck Sewell, Magnus O. Myreen, and Gerwin Klein.
+2013. Translation validation for a verified OS kernel. In PLDI, Hans-
+Juergen Boehm and Cormac Flanagan (Eds.). ACM, 471–482. https:
+//doi.org/10.1145/2462156.2462183
+[45] Yong Kiam Tan, Magnus O. Myreen, Ramana Kumar, Anthony C. J. Fox,
+Scott Owens, and Michael Norrish. 2016. A new verified compiler back-
+end for CakeML. In ICFP, Jacques Garrigue, Gabriele Keller, and Eijiro
+Sumii (Eds.). ACM, 60–73. https://doi.org/10.1145/2951913.2951924
+[46] Lei Yu. 2013. A formal model of IEEE floating point arithmetic.
+Archive of Formal Proofs (2013). https://www.isa-afp.org/entries/IEEE_
+Floating_Point.shtml

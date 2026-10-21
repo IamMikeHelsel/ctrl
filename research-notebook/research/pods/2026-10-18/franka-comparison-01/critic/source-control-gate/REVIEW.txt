@@ -1,0 +1,34 @@
+ACTUATOR-ERROR SOURCE CONTROL — HYPOTHESIS CHECK
+18 October 2026. Bounded independent check; not a paper refutation.
+
+The proposed linear test identifies a false set-theoretic step. Shrinking U
+alone ensures the perturbed input stays in U. It does not ensure that an affine
+barrier inequality satisfied by the desired input also holds for the perturbed
+input. The copied author PDF prints that implication in the Proposition 2 proof
+on page 5. This observation does not yet satisfy all premises of that proposition.
+
+There is a missing premise in the proposed h(x)=x example. Equation (3) defines
+the CBF condition for every x in R^n. Proposition 2 explicitly requires that
+condition. For xdot=u, U=[-1,1], a=1, h=x, the supremum is 1+x. At x=-2 it is
+-1, so h=x is not a global CBF under that definition. The example therefore
+cannot yet be reported as a complete counterexample to Proposition 2.
+
+The first-step calculation itself is correct at the implementation level.
+With xhat=x0=.00001, epsilon_x=.000001, T=.001, phi=-.001001 and desired
+u=.000991, the displayed nominal inequality is equality and desired u belongs
+to [-.9,.9]. Actual u=-.099009 stays inside U and has error -.1, but the state
+crosses zero before .001 s. This rejects a tempting actuator-error implementation
+and the displayed proof implication. It does not remove the missing global-CBF
+premise. A full-sequence test also needs admissibility and nonemptiness at every
+step, not only the first step.
+
+One candidate repair for root to examine is h(x)=1-exp(-x), with the same
+integrator and U. Its derivative is positive and h'(x)*1+h(x)=1 everywhere,
+so the global CBF premise is satisfied. It has the same safe set x>=0.
+Its Taylor bound and desired input must be recomputed. The linear phi cannot
+be reused. I did not construct or accept that repaired source counterexample.
+
+Read scope: copied author text pages 1-2, 4-5; (3), Assumptions 1 and 2,
+definition of the robust admissible set, Proposition 2 and its proof. Root owns
+version comparison and PDF-render verification. No public error claim or
+contact is authorized. This audit does not alter T1 or the RG comparison.

@@ -1,0 +1,52 @@
+/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/pods/2026-10-18/franka-comparison-01/timing/build/TimingAdmission.lean:51:0: warning: automatically included section variable(s) unused in theorem `LeanControls.TimingAdmission.initial_bounds`:
+  ex
+  hD
+  hDH
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit ex hD hDH in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/pods/2026-10-18/franka-comparison-01/timing/build/TimingAdmission.lean:217:8: warning: `if_pos` has been deprecated: Use `ite_eq_left` instead
+
+Hint: Replace the deprecated name:
+  i̵f̵_̵p̵o̵s̵i̲t̲e̲_̲e̲q̲_̲l̲e̲f̲t̲
+/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/pods/2026-10-18/franka-comparison-01/timing/build/TimingAdmission.lean:556:24: warning: `if_pos` has been deprecated: Use `ite_eq_left` instead
+
+Hint: Replace the deprecated name:
+  i̵f̵_̵p̵o̵s̵i̲t̲e̲_̲e̲q̲_̲l̲e̲f̲t̲
+/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/pods/2026-10-18/franka-comparison-01/timing/build/TimingAdmission.lean:560:24: warning: `if_neg` has been deprecated: Use `ite_eq_right` instead
+
+Hint: Replace the deprecated name:
+  i̵f̵_̵n̵e̵g̵i̲t̲e̲_̲e̲q̲_̲r̲i̲g̲h̲t̲
+/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/pods/2026-10-18/franka-comparison-01/timing/build/TimingAdmission.lean:563:6: error: linarith failed to find a contradiction
+case neg
+m : State
+H D : ℝ
+hD : 0 ≤ D
+hDH : D ≤ H
+hlim : D ≤ startupLimit
+f : ℝ → State
+r d stamp : Bool → ℝ → ℝ
+read : Bool → ℝ → State
+q : Schedule
+ex : Execution H D m f r d stamp read
+hs : IsSchedule H D q stamp read
+hm : q.measurement 0 = m
+hg : Guard m
+hH : 0 ≤ H
+hi : Admitted m f
+hz : ∀ t ∈ Icc 0 H, ∀ (i : Fin 3), |coordinates (center m) (f t) i| ≤ radius
+t : ℝ
+ht : t ∈ Icc 0 H
+hp :
+  |f t 0 - center m| ≤ radius ∧ |f t 1| ≤ 8 * radius ∧ |f t 2| ≤ 64 * radius ∧ |command (center m) (f t)| ≤ 24 * radius
+htube : -radius ≤ f t 0 - center m ∧ f t 0 - center m ≤ radius
+b : Bool
+hc : clip (command (center m) (read b t)) = command (center m) (read b t)
+hd : |d b t| ≤ 1 / 100
+hb : ¬if b = true then t < D else t ≤ D
+hh : |command (center m) (read b t) + d b t| ≤ |command (center m) (read b t)| + |d b t|
+hr : |command (center m) (read b t)| ≤ 7269 / 5000
+a✝ : 3589 / 2500 < |command (center m) (read b t) + d b t|
+⊢ False
+failed

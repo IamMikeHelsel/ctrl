@@ -1,0 +1,151 @@
+INDEPENDENT PREFLIGHT — FRANKA TIMING AND BASELINE CONTRACT
+18 October 2026. This packet is an arithmetic and statement gate. It does not
+accept the current timing-builder source or a whole 1 kHz hybrid execution.
+
+Verdict
+Proceed with the narrow supplied-execution timing repair and a matched baseline
+experiment. Do not claim a Franka controller, robust baseline advantage, precision
+holding, or publication readiness. The exact arithmetic supports a repair, but
+the new execution proof and its copied-source replay remain required.
+
+Timing findings
+A fresh 1 ms stream with fixed 0.5 ms arrival delay has maximum age 1.5 ms.
+At an incoming dispatch, the left command uses the old reading with age exactly
+1.5 ms. The right command uses the next reading with age 0.5 ms. A dispatch does
+not renew a reading timestamp. T and D must be separate parameters: the old
+constructive clock tied both to 0.5 ms.
+
+For K in [R,1/16], the proposed first refinement is
+ W0 = .103 + .0015(384K+.618),
+ S = 96K+6W0 = 99.456K+.623562,
+ W1 = .103 + 8(.0005) + S(.001) = .107623562+.099456K.
+At old R=.055525, W1=.1131458564 exceeds 2R=.11105. This rejects the old
+certificate, not physical safety. At R=.0567, W1=.1132627172 < .1134.
+The margin is .0001372828. S<=6.839562<8 on the full inflated K range.
+The chosen R is a simple sufficient repair, not an optimized plant limit.
+result.json records the exact threshold for this particular affine budget.
+
+The split-age argument needs actual pending overlap ell, actual age h, and
+0<=S<=8, ell<=h<=a, ell<=d<=a. Its decisive identity is
+ [8d+S(a-d)] - [8ell+S(h-ell)] = S(a-h)+(8-S)(d-ell).
+Without S<=8 the replacement of actual overlap by its upper bound can fail.
+The exact control S=9, ell=0, h=.0015, d=.0005 gives .0135 > .013.
+At the pending/digital join, continuity of k(f) can join the two estimates;
+the proof must use the correct one-sided derivative. No classical derivative
+at every command dispatch may be assumed.
+
+After a noncircular outer-cube proof, the digital slope is at most 108R=6.1236.
+The split residual is .1131236, rounded upward to .1132. Clipping remains
+inactive on the relevant prefix: 24K+.093<=1.593<2. The initial pending command
+and startup bounds must remain explicit. Before the first dispatch, exclude
+contact with startup bounds before rewriting the left ODE as digital feedback.
+Do not assume the final cube or residual in that prefix proof.
+
+The weighted box needs a new contraction rate. At K=.045, r=12 and
+z=(-1.02K,1.01K,K), its third face is -1.9K+.75W. W=.1132 gives -.0006;
+the old rate 3/1700 is false at this allowed residual face. W=.115 gives an
+outward .00075. These are residual-enclosure face controls, not realized
+sampled trajectories. The other two normalized inward rates exceed .0006.
+With rate .0006, the policy's worst entry-duration certificate grows from
+1.644506136 s to 4.836782753 s after the digital start. This does not change
+the late physical bands into precision rest.
+
+The original policy still has a weighted initial box strictly inside the new
+outer cube. Its algebraic forward ceiling is .149936440248756 m, only
+.000063559751244 m below .15 m. This ceiling transfers only after the new
+weighted all-time execution proof. The larger outer cube alone cannot imply
+it. Commands, sensor bounds, reference selection, startup and moving faces all
+need to be checked when the new source freezes.
+
+Two integration gaps remain beyond this gate. First, the old finite state
+recursion and hybrid proof use a different sample clock. Second, the loose
+latest-zero bound .529 plus a 1 ms first-post-zero sampling bound and 0.5 ms
+arrival can reach .5305, beyond the old .530 braking horizon. This is a gap in
+those bounds, not proof that an admissible trajectory reaches the worst time.
+A holding-age theorem cannot silently repair either gap.
+
+Baseline findings
+The primary network RG paper is TR2015-154. I read its model, Assumptions 2/3,
+Lemma 10, (15), (19), Theorem 16, Remark 9 and output-feedback assumptions.
+It uses an asymptotically stable LTI reference-to-output loop. Its delayed
+signal is the reference, and the full-state result has exact current state.
+Our delayed held acceleration from noisy state is a different topology.
+A fixed r=8 adaptation is a fair restricted comparison if both arms use it
+and the difference from the paper is stated.
+
+The augmented map must retain the pending command and compose the D and T-D
+flows. Verify sampled closed-loop stability; continuous gain stability is not
+sufficient. Clipping must either enter the model or be proved inactive.
+Both arms must receive the same noisy measurement, known command memory,
+requested reference, uncertainty set and state set. Record internal reference
+retreat separately from tracking the requested target.
+
+The paper's recursive-feasibility argument uses D(Delta v)=0 at fixed reference.
+Our independent sensor/target errors persist at fixed reference. A robust
+invariant tail is required. A finite prediction alone is not that tail.
+Keeping an earlier accepted constant-reference certificate after a fresh
+measurement-box rejection can be sound; do not claim that every reset-box
+optimization must remain feasible. Check all four augmented terminal states.
+
+Two constant scalar disturbance values per sample represent arbitrary bounded
+time-varying target error only if a sound vector integral enclosure is proved.
+Otherwise restrict both arms to a declared piecewise-constant disturbance
+subclass. State components have different convolution kernels. A single scalar
+average generally cannot represent all three integrals.
+
+The paper's displayed Theorem 16 gives constraints at sample indices. Remark 9
+adds finite intersampling instants. Neither alone establishes every real-time
+travel bound. An all-time comparison needs an analytic between-sample bound or
+validated enclosure. Binary64 certificate margins are numerical evidence until
+the arithmetic is bounded. Nonempty admissible cases and deliberate exclusions
+are required to avoid an empty-set performance claim.
+
+Measurement and practical limits
+The copied official RobotState 0.15.0 documentation calls ddq_d desired joint
+acceleration. It is not an actual acceleration measurement with our .05 m/s^2
+error bound. The copied latest API exposes link accelerometers, which still
+need a frame, gravity, kinematic, timestamp and error mapping to this scalar.
+The scalar acceleration-target lag is also not established by a Franka command
+API name. The robot/software/mode and physical bounds have not been validated.
+
+I independently replayed and checked root's exact sensor conversion control:
+with independent velocity errors +/- .01 m/s, a 1 ms first difference has
+attainable 20 m/s^2 noise, 400 times the assumed acceleration allowance. Constant
+true velocity suffices. This concerns the stated error box, not measured robot
+noise. A jerk-bound endpoint bias JT/2 is additional to that noise bound.
+
+I also checked root's equilibrium control. The fixed holding law permits
+x-c=-ex-.75ev-ea/16+d/8=.012875 m with negative sensor extrema and d=.01.
+The raw command is -.01 and its sum with d is zero, so clipping is inactive
+and the physical state is stationary for every positive response rate. The
+acceleration reading -.05 fails the admission guard. Thus this is a law-level
+precision obstruction, not a guard-reachable execution or a lower bound for
+all controllers. A smaller enclosure alone cannot remove it from the law's
+full uncertainty class.
+
+Publication gate
+Repair, then reassess. Sampled-data safety with state uncertainty, known delay,
+and ZOH already appears in Singletary/Chen/Ames 2020. I inspected its opening
+model, sampled invariant-set definition, Proposition 1 and discussion of
+nonsmooth update points; I did not re-prove or deeply review the whole paper.
+The network RG source also supplies an established constraint-governor method.
+The basic combination is not evidence of novelty. A useful next result would
+combine an explicit implementation contract, independently checked robust
+certificates, and a fair demonstrated advantage or a clear measured tradeoff.
+Current evidence does not yet establish that contribution. This is not a claim
+that no publishable contribution exists.
+
+Evidence and replay
+check.py independently uses Fraction arithmetic, checks both root diagnostic
+scripts against their recorded results, and verifies all copied input hashes.
+Run: python3 critic/preflight/check.py from the pod, or use its absolute path.
+result.json and replay.log are the recorded outputs. INPUTS.json binds 22 source
+copies. No current timing-builder proof was copied before its freeze. This
+packet does not accept B1; root owns its actual result review.
+
+Primary source URLs
+https://www.merl.com/publications/docs/TR2015-154.pdf
+https://arxiv.org/abs/2005.06418
+https://frankarobotics.github.io/libfranka/0.15.0/structfranka_1_1RobotState.html
+https://frankarobotics.github.io/libfranka/latest/structfranka_1_1RobotState.html
+https://frankarobotics.github.io/libfranka/latest/classfranka_1_1Robot.html

@@ -1,0 +1,807 @@
+PAGE 1
+Control Barrier Function Meets Interval Analysis: Safety-Critical
+Control with Measurement and Actuation Uncertainties
+Yuhao Zhang, Sequoyah Walters, Xiangru Xu
+Abstract— This paper presents a framework for designing
+provably safe feedback controllers for sampled-data control
+afﬁne systems with measurement and actuation uncertainties.
+Based on the interval Taylor model of nonlinear functions,
+a sampled-data control barrier function (CBF) condition is
+proposed which ensures the forward invariance of a safe set
+for sampled-data systems. Reachable set overapproximation
+and Lasserre’s hierarchy of polynomial optimization are used
+for ﬁnding a margin term in the sampled-data CBF condition.
+Sufﬁcient conditions for a safe controller in the presence of
+measurement and actuation uncertainties are proposed. The
+effectiveness of the proposed method is illustrated by a numer-
+ical example and an experimental example that implements the
+proposed controller on the Crazyﬂie quadcopter in real-time.
+I. I NTRODUCTION
+Designing feedback controllers that enforce safety speci-
+ﬁcations is a recurring challenge in many real systems such
+as automotive and robotic systems. Safety conditions are
+normally speciﬁed in terms of forward invariance of a set,
+which can be established through the barrier function (or
+barrier certiﬁcate) without ﬁnding trajectories of a system
+[1]–[3]. For control systems, controlled invariant sets are
+used to encode the correct behavior of the closed-loop
+systems and characterize a set of feedback control laws that
+will achieve it [4], [5]. Inspired by automotive safety-control
+problems, [6]–[8] proposed reciprocal and zeroing control
+barrier functions (CBFs) which extend previous barrier con-
+ditions to only requiring a single sub-level set be controlled
+invariant. Families of control policies that guarantee safety
+can be obtained by solving a convex quadratic program (QP).
+This CBF-QP framework has been used in applications such
+as automotive safety systems, bipedal robots, quadcopters,
+robotic manipulators, and multi-agent systems [9]–[13].
+CBFs proposed in [6]–[8] provide forward invariance
+guarantees for the safety set in the continuous-time sense,
+but require the control law being updated continuously.
+This requirement is difﬁcult to realize in practice because
+most controllers are digitally implemented in a sampled-data
+fashion and the time to solve the convex QP is not negligible
+in safety-critical applications. Therefore, new conditions are
+needed to ensure the forward invariance for sampled-data
+systems with piecewise-constant controllers (also called zero-
+order-hold controllers). CBFs for sampled-data systems have
+been investigated in [12], [14]–[18]. These existing works
+are either designed only for a speciﬁc type of systems or
+based on non-convex optimization which is not suitable for
+Y . Zhang, S. Walters and X. Xu are with the Department of Mechanical
+Engineering, University of Wisconsin-Madison, Madison, WI, USA. Email:
+{yuhao.zhang2,snwalters2,xiangru.xu}@wisc.edu.
+real-time control implementations. On the other hand, almost
+all the existing results using CBFs rely on accurate state and
+actuation information, which is difﬁcult to obtain in practice.
+In [19], a measurement-robust CBF was proposed for the
+safety of learned perception modules; in [20], an unscented
+Kalman ﬁlter is integrated with CBF-QP to attenuate the
+effects of state disturbances and measurement noises. In spite
+of these interesting results, a systematic approach to handle
+measurement and actuation uncertainties for the CBF-based
+safe controller is still lacking, especially one that is suitable
+for real-time applications.
+This paper presents a safety control design framework
+for sampled-data systems in the presence of measurement
+and actuation uncertainties, by leveraging tools from interval
+analysis and CBFs. The contributions are at least threefold:
+(i) Based on the interval Taylor model of nonlinear functions,
+a sampled-data control barrier function (SDCBF) condition
+is proposed to guarantee the forward invariance of a safe
+set for sampled-data systems. (ii) Sufﬁcient conditions for
+CBF-based sampled-data safe controller in the presence of
+inaccurate state measurement and actuation are proposed.
+(iii) Efﬁcient algorithms are proposed to compute the new
+SDCBF conditions utilizing interval arithmetic and poly-
+nomial optimization techniques, and implemented on the
+Crazyﬂie quadcopter hardware.
+II. P RELIMINARIES AND PROBLEM STATEMENT
+A. Control Barrier Functions
+Consider a control afﬁne system
+˙x =F (x,u ) :=f(x) +g(x)u, (1)
+where x ∈ Rn, u ∈ U ⊂ Rm, and f : Rn → Rn
+and g : Rn → Rn×m are locally Lipschitz continuous.
+Given a control signal u(t), the solution of (1) at time t
+with initial condition x0 ∈ Rn at time t0 is denoted by
+x(t;t0,x 0) or simplyx(t) whent0,x 0 are clear from context.
+For simplicity, assume that the solution of (1) exists for all
+t≥t0. A set S is called (forward) controlled invariant with
+respect to system (1) if for every x0 ∈ S, there exists a
+control signal u(t) such that x(t;t0,x 0)∈S for all t≥t0.
+The setS is called safe if it is controlled invariant.
+The (forward) reachable set of system (1) from an initial
+set X0 ⊂ Rn at time t > t0 is deﬁned as R(t,X0) ≜
+{x(t;t0,x 0)| x0∈X 0,u ∈ U}. The (forward) reachable
+tube of system (1) from an initial set X0 over a time interval
+[t1,t 2] wheret2 >t 1≥t0 isR([t1,t 2],X0) ≜{x(t;t0,x 0)|
+x0∈X 0,t∈ [t1,t 2],u∈U}.
+PAGE 2
+Consider a safe set C⊂ Rn deﬁned by
+C ={x∈ Rn :h(x)≥ 0} (2)
+whereh : Rn→ R is a sufﬁciently smooth function. Zeroing
+CBFs with relative degree 1 were ﬁrst proposed in [7], and
+generalized to CBFs with a higher relative degree in [21],
+[22]. In this paper, we develop our results for CBFs with a
+general relative degree. Given a Cr(r≥ 1) function h(x)
+with a relative degree r, it is called a zeroing CBF if there
+exists a column vector a∈ Rr such that∀x∈ Rn,
+sup
+u∈U
+[Lr
+fh(x) +LgLr−1
+f h(x)u + a⊤η(x)]≥ 0 (3)
+where η(x) = [ Lr−1
+f h,Lr−2
+f h,...,h ]⊤ ∈ Rr, and a =
+[a1,...,a r]⊤∈ Rr is chosen such that the roots of pr
+0(λ) =
+λr + a1λr−1 + ... + ar−1λ + ar are all negative reals
+−λ1,...,−λr < 0 [21], [22]. The set of control inputs that
+satisfy (3) for any given x∈ Rn is deﬁned as Kzcbf(x) =
+{u∈U|Lr
+fh(x) +LgLr−1
+f h(x)u + a⊤η(x)≥ 0}.
+Deﬁne functionssk(x(t)) fork = 0, 1,...,r−1 as follows:
+s0(x(t)) =h(x(t)), sk(x(t)) = ( d
+dt +λk)sk−1. (4)
+It was shown in [22] that ifsk(x(0))≥ 0 fork = 0, 1,...,r−
+1, then any locally Lipschitz controller u(x)∈{ u∈ U |
+LgLr−1
+f h(x)u +Lr
+fh(x) + a⊤η(x)≥ 0} will guarantee the
+forward invariance of C. For any given x, the safe control
+law is obtained by solving the following convex CBF-QP:
+u∗(x) = argmin
+u∈U
+∥u−unom∥2 (CBF-QP)
+s.t.L r
+fh(x) +LgLr−1
+f h(x)u + a⊤η(x)≥ 0
+whereunom is a nominal controller that is potentially unsafe.
+B. Interval Arithmetic
+A real interval [a] = [a, ¯a] is a subset of R. The set of all
+real intervals of R is denoted as IR. The set of n-dimensional
+real interval vectors is denoted by IRn. Real arithmetic
+operations on R can be extended to IR as follows: for ◦∈
+{+,−,∗,÷}, [a]◦[b] ={infx∈[a],y∈[b]x◦y, supx∈[a],y∈[b]x◦
+y}. Classical operations for interval vectors are direct exten-
+sions of the same operations for real vectors [23], [24].
+C. Problem Statement
+The safety guarantee provided by the control input u∗(x)
+from (CBF-QP) is predicated on the following implicit
+“assumptions”: (i) the time to solve the QP is negligible
+so that the CBF-QP controller is updated continuously;
+(ii) the accurate state information is known; (iii) the exact
+control input generated by (CBF-QP) is implemented by
+the actuator. However, these “assumptions” can hardly be
+satisﬁed in reality: modern systems are predominantly based
+on digital electronics, which means that the input can only
+be updated at discrete time instances; the state information
+is usually obtained from sensors and contaminated with
+unknown noise; the desired control command is not perfectly
+achievable by real-life actuators.
+For a sampled-data system, the sampling instants are
+described by a sequence of strictly increasing positive real
+numbers{tk}, k ∈ Z≥0, where t0 = 0 , tk+1−tk > 0,
+limk→∞tk =∞. Deﬁne the sampling interval between tk
+and tk+1 as ∆k =tk+1−tk. At each sampling instance tk,
+the state and input of the system are denoted as xk =x(tk)
+and uk = u(tk), respectively. The control input u(t) is
+assumed to be a piecewise constant signal, i.e.,
+u(t) =uk,∀t∈ [tk,tk+1). (5)
+At each sampling time tk, the control input uk is chosen
+from the set Kzcbf(xk), i.e.,
+Lr
+fh(xk) +LgLr−1
+f h(xk)uk + a⊤η(xk)≥ 0. (6)
+The CBF condition in (6) may not be satisﬁed during inter-
+sampling times [tk,tk+1), and therefore, it may not hold
+in the continuous-time sense, which means that the forward
+invariance of the safe set C may not be guaranteed.
+Consider system (1) and a safe setC shown in (2). Suppose
+that the state measurement and actuation are perfect. The ﬁrst
+problem that will be studied in this paper is stated as follows.
+Problem 1: Design a sampled-data CBF-QP controller
+shown in (5) that renders the set C forward invariant.
+The second problem considers system (1) with inaccurate
+state estimation and imperfect actuation. We assume that we
+only have access to an estimate ˆxk of the true system state
+xk with bounded estimation error. Similarly, we assume the
+real input produced by the imperfect actuator differs from
+the desired input within a bounded range.
+Problem 2: With inaccurate state estimation and imper-
+fect actuation, design a sampled-data CBF-QP controller
+shown in (5) that renders the set C forward invariant.
+III. S AMPLED -DATA CBF C ONDITION BASED ON
+INTERVAL ANALYSIS
+A. Interval Taylor Model of Nonlinear Functions
+Solving Problem 1 involves the computation of the range
+of functions using interval arithmetic. The simplest method
+is to directly apply interval arithmetic to each term of the
+function [23], [24]; though fast, this method often results in
+rather conservative bounds. Instead, the interval Taylor model
+will be utilized in this paper to obtain tighter bounds of the
+range of functions.
+Deﬁnition 1: [Def. 1 in [25]] Let f : S ⊂ Rn → R
+be a function that is (n + 1) times continuously partially
+differentiable on an open set containing the domain S. Let
+x0 be a point in S andPn then-th order Taylor polynomial
+of f around x0. Let I be an interval such that f(x) ∈
+Pn (x−x0) +I, ∀x∈ S. Then the pair (Pn,I ) is called
+an n-th order Interval Taylor model of f around x0 on S.
+In general, the reminder interval I will be smaller with a
+larger value of n.
+B. Sampled-data CBF
+The main idea of solving Problem 1 is to design a margin
+term φ(xk, ∆k) that accounts for the difference between
+the continuously updated controller and the sampled-data
+controller, and add it to the CBF condition (6) such that
+PAGE 3
+the piecewise-constant controller as shown in (5) can guar-
+antee controlled invariance of set C in continuous time (i.e.
+h(x(t))≥ 0 for all t≥ 0 wheneverh(x(0))≥ 0).
+Recall that xk = x(tk). Given a CBF h with relative
+degree r (r≥ 1), we call the following inequality
+Lr
+fh(xk) +LgLr−1
+f h(xk)uk + a⊤η(xk) +φ(xk, ∆k)≥ 0
+the sampled-data CBF (SDCBF) condition at sampling in-
+stance tk. Deﬁne the set
+Ks
+zcbf(xk, ∆k) ={u∈U|Lr
+fh(xk) +LgLr−1
+f h(xk)u
++a⊤η(xk) +φ(xk, ∆k)≥ 0}
+as the sampled-data admissible input set for the sampled state
+xk and the sampling interval ∆k. Deﬁne a function
+∆ξ(x,u,x k) =ξ(x,u )−ξ(xk,u )
+where ξ(·,u ) ≜ Lr
+fh(·) + LgLr−1
+f h(·)u + a⊤η(·). Deﬁne
+z = (x⊤,u⊤)⊤. For any given sampling interval ∆k > 0,
+deﬁne the setZk as the Cartesian product of the reachable
+tubeR([tk,tk + ∆k],xk) and the admissible set of the input
+U, i.e., Zk ≜R([tk,tk + ∆k],xk)×U. Then we have the
+following result that solves Problem 1.
+Proposition 1: Consider control system (1) and a set C⊂
+Rn deﬁned by (2) for a Cr function h : Rn→ R that has a
+relative degreer. Suppose that z∗
+k = (x∗
+k
+⊤,u∗
+k
+⊤)⊤ is a given
+state-input pair in the set Zk, i.e, z∗
+k∈Z k, and (Pn
+k,Ik) is
+the n-th Taylor model of ∆ξ(x,u,x k) around z∗
+k, i.e.,
+∆ξ(x,u,x k)∈Pn
+k (z−z∗
+k) +Ik,∀z∈Z k. (7)
+Suppose that φ(xk, ∆k) is chosen to be
+φ(xk, ∆k) =Ik +φ∗
+k (8)
+where Ik is the lower bound of Ik, φ∗
+k = minz∈ZkPn
+k (z−
+z∗
+k), and the resulting set Ks
+zcbf(xk, ∆k) is non-empty. If
+sk(x(0))≥ 0 for k = 0, 1,...,r − 1, where sk are given in
+(4), then any input u(t) = uk,t ∈ [tk,tk + ∆k) such that
+uk∈Ks
+zcbf(xk, ∆k) will render h(x(t))≥ 0 for all t≥ 0.
+Proof: By the deﬁnition ofφ(xk, ∆k) and the inclusion
+relation (7), ∆ξ(x,u,x k)≥φ(xk, ∆k) holds for anyz∈Z k.
+For any t∈ [tk,tk + ∆k), since ∆ξ(x,uk,xk) =ξ(x,uk)−
+ξ(xk,uk), it follows that Lr
+fh(x) + LgLr−1
+f h(x)uk +
+a⊤η(x) = Lr
+fh(xk) + LgLr−1
+f h(xk)uk + a⊤η(xk) +
+∆ξ(x,uk,xk)≥Lr
+fh(xk) +LgLr−1
+f h(xk)uk + a⊤η(xk) +
+φ(xk, ∆k)≥ 0, where the last inequality is from the deﬁni-
+tion of Ks
+zcbf(xk, ∆k) and the fact that uk∈Ks
+zcbf(xk, ∆k).
+Thus, by induction, Lr
+fh(x) +LgLr−1
+f h(x)u + a⊤η(x)≥ 0
+holds for any t ≥ 0, which implies that h is a CBF for
+C. Since u(t) is piecewise constant and therefore locally
+Lipschitz, the conclusion follows by the results of [22].
+Note that z∗
+k can be any element in the set Zk. In this
+paper, we will choose z∗
+k = (x∗
+k
+⊤,u∗
+k
+⊤)⊤ = (xk⊤,uc⊤)⊤
+where uc is the center of the input admissible set U.
+The sampled-data safe controller is obtained by solving
+the following (SDCBF-QP) only at discrete sampling times:
+u∗(xk) = argmin
+u∈U
+∥u−unom∥2 (SDCBF-QP)
+s.t.L r
+fh(xk)+LgLr−1
+f h(xk)u+a⊤η(xk)+φ(xk, ∆k)≥0
+where k∈ Z≥0, and unom is any given nominal controller.
+Next, we show how to compute the term φ(xk, ∆k) in the
+SDCBF condition efﬁciently. For nonlinear systems the exact
+reachable tube R([tk,tk + ∆k],xk) is generally very chal-
+lenging to compute, so we will use an over-approximation
+of R([tk,tk + ∆k],xk), denoted as ˆR([tk,tk + ∆k],xk),
+to compute the Taylor model (7) and the minimization (8).
+Using the over-approximated reachable tube will result in a
+smallerφ(xk, ∆k) which will render the admissible input set
+Ks
+zcbf(xk, ∆k) smaller; however, as long asKs
+zcbf(xk, ∆k) is
+non-empty for everyk, any inputu(t) =uk,t∈ [tk,tk+∆k)
+such thatuk∈Ks
+zcbf(xk, ∆k) will still guarantee the forward
+invariance of the set C.
+The computation of φ(xk, ∆k) in Proposition 1 involves
+two tasks: 1) ﬁnd ˆR([tk,tk + ∆k],xk) and 2) compute
+minz∈ZkPn
+k (z−z∗
+k). In the following, we will discuss how
+these two tasks can be accomplished efﬁciently.
+1) Find ˆR([tk,tk +∆k],xk). To ﬁnd ˆR([tk,tk +∆k],xk),
+we will utilize the method in [26], which is based on the
+linearization of a nonlinear system with interval remainder.
+Consider a control system given in (1) and recall that z =
+(x⊤,u⊤)⊤. Given a state-input pair z∗
+k = (x∗
+k
+⊤,u∗
+k
+⊤)⊤ =
+(xk⊤,uc⊤)⊤, the inﬁnite Taylor series of the i-th state xi
+can be overapproximated by its ﬁrst order Taylor polynomial
+and its Lagrange remainder as follows:
+˙xi∈Fi (x∗
+k,u∗
+k) + ∂Fi(z)
+∂z
+⏐⏐⏐⏐
+z=z∗
+k
+(z−z∗
+k) +Li([0, 1])
+where Li([0, 1]) = { 1
+2 (z−z∗
+k)⊤ ∂2Fi(z)
+∂z 2 |z=ζ (z−z∗
+k) |
+ζ = z∗
+k +θ(z−z∗
+k),θ ∈ [0, 1]}∈ IR and z is restricted
+to a convex set. Therefore, system (1) can be written into
+the following differential inclusion form:
+˙x∈F (z∗
+k) + ∂F (z)
+∂z
+⏐⏐⏐⏐
+z=z∗
+k
+(z−z∗
+k) +L([0, 1])
+=A(x−x∗
+k)+B(u−u∗
+k)+F (x∗
+k,u∗
+k)+L([0, 1]) (9)
+where A =
+(
+∂f (x)
+∂x + ∂g(x)
+∂x u
+)⏐⏐⏐
+x=x∗
+k,u=u∗
+k
+∈ Rn×n, B =
+g(x∗
+k)∈ Rn×m, L([0, 1]) = [L1([0, 1]),...,L n([0, 1])]⊤∈
+IRn. The over-approximated reachable tube ˆR([tk,tk +
+∆k],xk) can be obtained by ˆR([tk,tk + ∆k],xk) =
+Rlin(xk) ⊕ Rerr(xk), where Rlin(xk) is the over-
+approximated reachable tube of the linearized system shown
+in (9) with L = 0 , Rerr(xk) is the over-approximated
+reachable tube of the linearized system resulting from the
+remainder term L, and⊕ denotes the Minkowski sum. As in
+[26], we choose zonotopes or intervals as the representation
+of reachable tubes for computational efﬁciency. We utilize
+the same algorithms presented in [26] to compute Rlin(xk)
+and Rerr(xk) for state xk at each sampling time tk.
+2) Compute minz∈ZkPn
+k (z−z∗
+k). By the construction of
+ˆR([tk,tk + ∆k],xk) above, the set Zk is represented as a
+zonotope or intervals, which can be readily expressed as
+a polytope, a more general set representation than zono-
+tope/interval. Speciﬁcally, there exists a matrix Hk and a
+column vector 1 whose elements are all 1 with appropriate
+dimensions such that Zk = {(x,u ) | Hk
+(x
+u
+)
+≤ 1}.
+PAGE 4
+Since Pn
+k (z−z∗
+k) is a polynomial with variables x and u,
+the optimization problem minz∈ZkPn
+k (z−z∗
+k) becomes a
+polynomial optimization problem:
+(POP) φ∗
+k = min
+x,u
+Pn
+k
+((x
+u
+)
+−
+(x∗
+k
+u∗
+k
+))
+s.t. H k
+(x
+u
+)
+≤ 1
+A polynomial optimization problem is generally non-convex
+and known to be NP-hard. It can be solved using non-
+convex global solvers, such as BMIBNB in Y ALMIP or
+using relaxation methods either based on linear programming
+or semideﬁnite programming. In this paper we choose to
+solve (POP) by using Lasserre’s linear matrix inequality
+(LMI) relaxations to obtain a lower bound for φ∗
+k, the global
+minimum of (POP) [27]. The relaxed LMIs in Lasserre’s
+hierarchy are convex and can be solved using the interior-
+point algorithm in polynomial time, and the solutions of the
+LMIs provide a monotonically nondecreasing sequence of
+lower bounds for φ∗
+k. Although the global optimal solution
+of (POP) can be obtained by increasing the relaxation order,
+the computational burden increases signiﬁcantly with larger
+relaxation order. On the other hand, if φ(xk, ∆k) is chosen
+to be φ(xk, ∆k) = Ik +φk where φk is any lower bound
+of φ∗
+k, then from the proof of Proposition 1 we know uk∈
+Ks
+zcbf(xk, ∆k) will still render the set C forward invariant.
+Corollary 1: Suppose that z∗
+k ∈Z k, (Pn
+k,Ik) is the n-
+th Taylor model of ∆ξ(x,u,x k) around z∗
+k, φ(xk, ∆k) is
+chosen to be φ(xk, ∆k) = Ik +φk where Ik is the lower
+bound of Ik, φk is the optimal value of any Lasserre’s
+LMI for (POP), and Ks
+zcbf(xk, ∆k)̸=∅ for every k. Then
+any input u(t) = uk,t ∈ [tk,tk + ∆k) such that uk ∈
+Ks
+zcbf(xk, ∆k) will render the set C forward invariant.
+We use SparsePOP to exploit the sparse structure of
+polynomials when applying Lasserre’s hierarchy of LMI
+relaxations to (POP) [28], and use Mosek to solve the relaxed
+semideﬁnite programmings. The computational efﬁciency of
+ﬁnding ˆR([tk,tk+∆k],xk) and computing minz∈ZkPn
+k (z−
+z∗
+k) will be demonstrated in simulations and experiments in
+Section V.
+Remark 1: In [18], three types of modiﬁed CBF condi-
+tions for sampled-data systems were proposed. The com-
+putation of the CBF conditions there involves non-convex
+optimization problems that can be solved by nonlinear
+programming solvers such as FMINCON. However, these
+solvers are sensitive to the initial conditions, have no guar-
+antee on termination time in general and can only ﬁnd local
+optimum values, which make them unsuitable for safety-
+critical applications. In addition, imperfect state estimation
+and actuation were not considered in [18]. In [17], a robust
+backup controller-based CBF controller under state uncer-
+tainty is proposed requiring the sampled-data system to
+be incremental stable. Besides, the CBF condition in [17]
+involves the nonlinear robust optimization problems which
+might not be tractable for complex nonlinear dynamics.
+Compared with existing results, the proposed framework
+is applicable to any nonlinear control afﬁne dynamics. In
+particular, computing φ(xk, ∆k) is based on convex pro-
+grams and has several advantages: (i) the related LMIs are
+convex programs that can be solved efﬁciently with real-
+time computation guarantees; (ii) by choosing the order of
+the Taylor polynomial and the relaxation order of Lasserre’s
+LMI for (POP), we can make a trade-off between the
+computation’s efﬁency and optimality; (iii) any lower bound
+of φ(xk, ∆k) can be used to guarantee the safe set forward
+invariant as stated in Corollary 1.
+IV. S AFETY UNDER MEASUREMENT & ACTUATION
+UNCERTAINTIES
+In practice, the exact state information of a control system
+is unknown. For sampled-data systems, an estimate of the
+system state is available at sampling instances, which can
+be obtained from an observer such as Luenberger or interval
+observer, or from a Kalman ﬁlter. The following assumption
+provides a measure of the estimation accuracy.
+Assumption 1: At any time instance tk,k∈ Z≥0, the true
+state xk and the estimated state ˆxk satisfy xk ∈ {ˆxk}⊕
+Bϵx(0), where Bϵx(0) is the 2-norm ball at the origin with
+a radius of ϵx > 0, i.e., Bϵx(0) ={x∈ Rn|∥ x∥2≤ϵx}.
+Assumption 1 means that the measurement uncertainty is
+bounded by some given parameter ϵx, so we have that xk∈
+Bϵx(ˆxk) ≜{x∈ Rn |∥ x− ˆxk∥2 ≤ ϵx}. Since we only
+have the estimated state of the system, we will guarantee
+the forward invariance of the set C utilizing the enlarged
+reachable tubeR([tk,tk +∆k],Bϵx(ˆxk)) ={x(t,x 0)|x0∈
+Bϵx(ˆxk)),t ∈ [tk,tk + ∆k],u ∈ U} and the corresponding
+set ˆZk deﬁned as ˆZk ≜R([tk,tk + ∆k],Bϵx(ˆxk)))×U.
+Besides the state estimation uncertainty, the real system
+might also have an imperfect actuator causing a deviation
+between the desired input and the real input. To account for
+the uncertain actuation, we need to bound this deviation and
+thus guarantee the system safety for the worst-case scenario.
+Assumption 2: At any time instance tk,k ∈ Z≥0, the
+desired input ud
+k and the real input ur
+k implemented by the
+system satisfy ur
+k∈{ud
+k}⊕ Bϵu(0), where Bϵu(0) ={u∈
+Rm|∥ u∥2≤ϵu}.
+Suppose that ˆz∗
+k = (ˆx⊤
+k,uc⊤)⊤ ∈ ˆZk where uc is the
+center of the set U. ( ˆPn
+k, ˆIk) is the n-th Taylor model of
+∆ξ(x,u, ˆxk) around ˆz∗
+k. Let φ(ˆxk, ∆k) = ˆIk + ˆφ∗
+k where ˆIk
+is the lower bound of ˆIk, ˆφ∗
+k = minz∈ ˆZk
+ˆPn
+k (z− ˆz∗
+k). Then,
+we deﬁne the new admissible input set as
+ˆKs
+zcbf(ˆxk, ∆k) ={u∈U⊖Bϵu(0)| Lr
+fh(ˆxk)
++LgLr−1
+f h(ˆxk)u + a⊤η(ˆxk) +φ(ˆxk, ∆k)≥ 0},
+where⊖ is the Pontryagin difference.
+The following result provides a solution to Problem 2.
+Proposition 2: Consider control system (1) and a set
+C ⊂ Rn deﬁned by (2) for a Cr function h that is a
+CBF with a relative degree r such that (3) holds. Suppose
+ˆKs
+zcbf(ˆxk, ∆k) is non-empty. If minx∈Bϵx (ˆx0)sk(x)≥ 0 for
+k = 0, 1,...,r − 1, where sk are given in (4), then any input
+u(t) = ud
+k,t∈ [tk,tk + ∆k) such that ud
+k∈ ˆKs
+zcbf(ˆxk, ∆k)
+will render h(x(t))≥ 0 for all t≥ 0.
+PAGE 5
+Proof: Since the desired input ud
+k ∈ ˆKs
+zcbf(ˆxk, ∆k),
+according to Assumption 2, the real input ur
+k ∈
+ˆKs
+zcbf(ˆxk, ∆k)⊕Bϵu(0) which implies that ur
+k ∈ U and
+Lr
+fh(ˆxk) + LgLr−1
+f h(ˆxk)ur
+k + a⊤η(ˆxk) + φ(ˆxk, ∆k) ≥
+0. Using the deﬁnition of φ(ˆxk, ∆k), one can get that
+LgLr−1
+f h(x)u + Lr
+fh(x) + a⊤η(x) ≥ 0 for all t ≥ 0.
+Following the same proof as in Proposition 1, it is easy to
+show the forward invariance of the set C.
+The sampled-data safe controller with inaccurate state
+estimation and imperfect actuation is obtained by solving
+the following robust sampled-data CBF-QP (RSDCBF-QP)
+only at discrete sampling times:
+ud(ˆxk) = argmin
+u∈U⊖Bϵu (0)
+∥u−unom∥2 (RSDCBF-QP)
+s.t.L r
+fh(ˆxk)+LgLr−1
+f h(ˆxk)u+a⊤η(ˆxk)+φ(ˆxk, ∆k)≥0
+where k∈ Z≥0, and unom is any given nominal controller.
+V. S IMULATION & E XPERIMENT
+In this section, we demonstrate the effectiveness of the
+proposed method using two examples. For simplicity, we
+will refer to the sampled-data controller with the naive
+CBF constraint shown in (6) as “CBF controller” and the
+safe sampled-data controller by solving (RSDCBF-QP) as
+“RSDCBF controller”.
+Example 1: Consider the following dynamics [29]: ˙x1 =
+−0.6x1−x2, ˙x2 =x3
+1+x2u. Consider the safe setC ={x∈
+R2 : h(x)≥ 0} where h(x) =−x2
+2−x1 + 1, which has a
+relative degree 1. Assume the input is constrained in the set
+U ={u|− 1≤u≤ 1}, the periodic sampling time is 0.02
+seconds and a = 3. The uncertainty bounds on the estimation
+error and the actuation error are both 0.1, i.e., ϵx = ϵu =
+0.1. We choose the nominal controller to be a stabilizing
+controller based on control Lyapunov functions without
+considering the safety constraint. The closed-loop system
+is simulated for 10 seconds starting from the initial state
+x0 = [−2, 1]⊤. The average computation time (including the
+computation of φ(xk, ∆k) and solving (RSDCBF-QP)) at
+Fig. 1: Simulation result for Example 1. System trajectories
+with three controllers are shown: (i) nominal controller
+(green), which is obtained from control Lyapunov function
+conditions; (ii) CBF controller (purple), which is a sampled-
+data controller with the naive CBF constraint shown in (6);
+(iii) RSDCBF controller (blue), which is obtained by solving
+(RSDCBF-QP). The boundary of safe set C is shown in red.
+t = t0,t 1,... is around 0.018 secs using MATLAB R2020b
+in a computer with 3.7 GHz CPU and 32 GB memory. Fig.
+1 shows system trajectories with the RSDCBF controller and
+the CBF controller. It can be observed that in the presence
+of state measurement and actuation uncertainties, the CBF
+controller can not keep the system safe, while the RSDCBF
+controller always respects safety.
+Example 2: This example presents the experimental re-
+sults that implements the RSDCBF controller on a Crazyﬂie
+Nano Quadcopter. We consider the following linearized 6-
+dimension quadcopter model:
+˙x =
+[
+03×3 I3×3
+03×3 03×3
+]
+x +
+[
+03×3
+I3×3
+]
+u. (10)
+where x = [x y z ˙x ˙y ˙z]T is the state and u =
+[¨x ¨y ¨z]⊤ is the virtual input. The model shown in (10)
+is usually referred to as the double-integrator quadcopter
+model and is widely used in quadcopter simulations [30].
+Deﬁne the safe set C = {x ∈ R6 : h(x) ≥ 0} with
+h(x) = [h1(x), h2(x), h3(x), h4(x), h5(x), h6(x)]⊤ =
+[0.5−x, x + 0.5, 0.5−y, y + 0.5, 0.6−z, z]⊤. The
+SDCBF condition for i = 1,..., 6 is given by L2
+fhi(x) +
+LgLfhi(x)u + a⊤ηi(x) +φi(x, ∆t)≥ 0, where ηi(x) =
+[Lfhi(x),hi(x)]⊤ and a = [6, 8]⊤. We use a LQR controller
+as the nominal controller to track a given reference trajectory.
+We choose ϵx = 0.02 and ϵu = 0.01.
+The quadcopter ﬂies for about 20 seconds to follow the
+reference trajectory starting from the origin. We implement
+both CBF and RSDCBF controllers in the quadcopter exper-
+iments, with the periodic sampling time as 0.02 seconds. Fig.
+2 illustrates the reference trajectory and the quadcopter tra-
+jectories with two types of CBF-based controllers. Although
+most of the trajectory using the CBF controller is inside the
+constraining box (the safe set C), h(x)≥ 0 is violated at
+some extreme points in Fig. 3. In contrast, the trajectory
+using the RSDCBF controller remains in the constraining box
+for all time. The experimental results show that the RSDCBF
+controller can guarantee safety under measurement and ac-
+tuation uncertainties, which is necessary for the quadcopter
+and other safety-critical robotic applications. The average
+computation time is 0.005 seconds at each sampling time.
+Fig. 2: Experimental results for Example 2. Trajectories
+of Crazyﬂie with the CBF controller (pink), the RSDCBF
+controller (blue), and the reference trajectory are shown.
+PAGE 6
+Fig. 3: Evolution of CBF h(x) in Example 2. The RSDCBF-
+QP controller respects all safety constraints while the CBF
+controller induces safety violations.
+VI. C ONCLUSION
+In this paper, we proposed a framework that can guarantee
+the safe control of sampled-data systems with measurement
+and actuation uncertainties. Comparing with the traditional
+CBF condition, the proposed SDCBF condition includes an
+additional term φ(xk, ∆k) which can be efﬁciently solved
+by computing the lower bound of a Taylor polynomial
+using reachable tube approximation and polynomial opti-
+mization techniques. We proved that the SDCBF-QP con-
+troller can guarantee the safety constraint in continuous time
+for sampled-data systems with perfect information and the
+RSDCBF-QP controller can ensure safety with inaccurate
+state estimation and imperfect actuation. The performance
+of the proposed method was demonstrated via simulations
+and hardware experiments on the quadcopter. Future work
+includes approximating the model uncertainties using online
+measurements and applying the proposed framework to more
+realistic robotic applications such as navigating or object
+tracking in unknown environment.
+REFERENCES
+[1] F. Blanchini and S. Miani, Set-theoretic methods in control (2nd
+edition). Springer, 2015.
+[2] J.-P. Aubin, Viability theory . Springer Science & Business Media,
+2009.
+[3] S. Prajna and A. Jadbabaie, “Safety veriﬁcation of hybrid systems us-
+ing barrier certiﬁcates,” in Hybrid Systems: Computation and Control ,
+2004, pp. 477–492.
+[4] J. Wolff and M. Buss, “Invariance control design for constrained
+nonlinear systems,” in Proceedings of the 16th IF AC World Congress ,
+vol. 38, 2005, pp. 37–42.
+[5] M. Kimmel and S. Hirche, “Invariance control for safe human–robot
+interaction in dynamic environments,” IEEE Transactions on Robotics,
+vol. 33, no. 6, pp. 1327–1342, 2017.
+[6] A. Ames, J. Grizzle, and P. Tabuada, “Control barrier function based
+quadratic programs with application to adaptive cruise control,” in
+IEEE Conference on Decision and Control , 2014, pp. 6271–6278.
+[7] X. Xu, P. Tabuada, A. Ames, and J. Grizzle, “Robustness of control
+barrier functions for safety critical control,” in IF AC Conference on
+Analysis and Design of Hybrid Systems , vol. 48, no. 27, 2015, pp.
+54–61.
+[8] A. Ames, X. Xu, J. Grizzle, and P. Tabuada, “Control barrier function
+based quadratic programs for safety critical systems,” IEEE Transac-
+tions on Automatic Control , vol. 62, no. 8, pp. 3861–3876, 2017.
+[9] X. Xu, J. W. Grizzle, P. Tabuada, and A. D. Ames, “Correctness
+guarantees for the composition of lane keeping and adaptive cruise
+control,” IEEE Transactions on Automation Science and Engineering ,
+vol. 15, no. 3, pp. 1216–1229, 2017.
+[10] S. Hsu, X. Xu, and A. Ames, “Control barrier functions based
+quadratic programs with application to bipedal robotic walking,” in
+American Control Conference , 2015, pp. 4542–4548.
+[11] L. Wang, E. A. Theodorou, and M. Egerstedt, “Safe learning of
+quadrotor dynamics using barrier certiﬁcates,” in IEEE International
+Conference on Robotics and Automation. IEEE, 2018, pp. 2460–2465.
+[12] W. S. Cortez, D. Oetomo, C. Manzie, and P. Choong, “Control barrier
+functions for mechanical systems: Theory and application to robotic
+grasping,” IEEE Transactions on Control Systems Technology , pp.
+530–545, 2021.
+[13] D. Pickem, P. Glotfelter, L. Wang, M. Mote, A. Ames, E. Feron, and
+M. Egerstedt, “The robotarium: A remotely accessible swarm robotics
+research testbed,” in IEEE International Conference on Robotics and
+Automation. IEEE, 2017, pp. 1699–1706.
+[14] A. Ghaffari, I. Abel, D. Ricketts, S. Lerner, and M. Krsti ´c, “Safety
+veriﬁcation using barrier certiﬁcates with application to double inte-
+grator with input saturation and zero-order hold,” in American Control
+Conference. IEEE, 2018, pp. 4664–4669.
+[15] G. Yang, C. Belta, and R. Tron, “Self-triggered control for safety
+critical systems using control barrier functions,” in American Control
+Conference. IEEE, 2019, pp. 4454–4459.
+[16] T. Gurriet, P. Nilsson, A. Singletary, and A. D. Ames, “Realizable set
+invariance conditions for cyber-physical systems,” inAmerican Control
+Conference. IEEE, 2019, pp. 3642–3649.
+[17] A. Singletary, Y . Chen, and A. D. Ames, “Control barrier functions
+for sampled-data systems with input delays,” in 59th IEEE Conference
+on Decision and Control (CDC) . IEEE, 2020, pp. 804–809.
+[18] J. Breeden, K. Garg, and D. Panagou, “Control barrier functions in
+sampled-data systems,” IEEE Control Systems Letters , pp. 367–372,
+2021.
+[19] S. Dean, A. J. Taylor, R. K. Cosner, B. Recht, and A. D. Ames,
+“Guaranteeing safety of learned perception modules via measurement-
+robust control barrier functions,” arXiv:2010.16001, 2020.
+[20] R. Takano and M. Yamakita, “Robust constrained stabilization control
+using control lyapunov and control barrier function in the presence
+of measurement noises,” in Conference on Control Technology and
+Applications (CCTA). IEEE, 2018, pp. 300–305.
+[21] X. Xu, “Constrained control of input–output linearizable systems using
+control sharing barrier functions,” Automatica, vol. 87, pp. 195–201,
+2018.
+[22] Q. Nguyen and K. Sreenath, “Exponential control barrier functions
+for enforcing high relative-degree safety-critical constraints,” in 2016
+American Control Conference (ACC) . IEEE, 2016, pp. 322–328.
+[23] L. Jaulin, M. Kieffer, O. Didrit, and E. Walter, Applied interval
+analysis. Springer, 2006.
+[24] R. E. Moore, R. B. Kearfott, and M. J. Cloud, Introduction to interval
+analysis. SIAM, 2009.
+[25] K. Makino and M. Berz, “Taylor models and other validated func-
+tional inclusion methods,” International Journal of Pure and Applied
+Mathematics, vol. 6, pp. 239–316, 2003.
+[26] M. Althoff, O. Stursberg, and M. Buss, “Reachability analysis of
+nonlinear systems with uncertain parameters using conservative lin-
+earization,” in 47th IEEE Conference on Decision and Control . IEEE,
+2008, pp. 4042–4048.
+[27] J. B. Lasserre, Moments, positive polynomials and their applications .
+World Scientiﬁc, 2009, vol. 1.
+[28] H. Waki, S. Kim, M. Kojima, M. Muramatsu, and H. Sugimoto,
+“Algorithm 883: Sparsepop—a sparse semideﬁnite programming re-
+laxation of polynomial optimization problems,” ACM Transactions on
+Mathematical Software (TOMS) , vol. 35, no. 2, pp. 1–13, 2008.
+[29] M. Jankovic, “Robust control barrier functions for constrained sta-
+bilization of nonlinear systems,” Automatica, vol. 96, pp. 359–367,
+2018.
+[30] M. Greeff and A. P. Schoellig, “Flatness-based model predictive
+control for quadrotor trajectory tracking,” in IEEE/RSJ International
+Conference on Intelligent Robots and Systems , 2018, pp. 6740–6745.

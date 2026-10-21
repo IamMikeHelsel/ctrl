@@ -1,0 +1,55 @@
+FRANKA TIMING AND MATCHED CONTROLLER COMPARISON
+18 October 2026. New round authorized directly by Mike after the old round closed.
+
+Question
+Can the accepted recovery-to-holding proof tolerate a 1 kHz measurement stream,
+and does it offer a useful, defensible contribution against existing methods?
+Keep feasibility, formal correctness, measured performance and novelty separate.
+
+First gates
+T1: Derive exact age-dependent feasibility inequalities using the unchanged
+plant, sensors, command limits and forward travel objective. Test T=1 ms and
+illustrative fixed D=0.5 ms, hence maximum sample age T+D=1.5 ms. D is an
+assumption, not a documented physical latency. Identify every changed constant.
+If feasible, make the minimal checked Lean age theorem and clock statement.
+If infeasible, give the first exact failing inequality and smallest justified
+repair. Do not start by copying the whole hybrid proof with new constants.
+
+B1: Build one executable, fair comparison contract in the common model class
+of our method and a published reference governor. Derive the published method
+from its equations, cite its precise scope, and report any implementation
+deviation. Same plant, initial states, information, command bounds, sample age,
+travel limits and requested target. Include nonempty cases and deliberate
+exclusions. Numerical trajectories do not certify all-time robust constraints.
+Report target progress, retreat, transient travel, command effort and constraint
+checks; do not improve tracking by quietly changing the requested target.
+
+Review and ownership
+digital_hold_grader_01 owns timing/. First frozen gate within 45-60 minutes.
+digital_hold_builder_01 owns comparison/. First frozen gate within 45-60 minutes.
+digital_hold_critic_01 owns critic/. Challenge both contracts early; independently
+review the actual frozen timing source and replay. Root independently reviews
+the comparison, owns sources/, integration, state and Git. No self-acceptance.
+Use existing three workers. Do not spawn duplicates. Stop a route with no useful
+test and record its obstruction. A first gate can be a decisive failure.
+
+Preservation and limits
+Old rounds and their automations remain complete and paused. All old frozen
+sources, evidence and toolchains are read-only. New work belongs here. No robot
+exists; scalar timing is not a Franka dynamics or hardware theorem. Do not
+relabel interpolated old readings as fresh. Do not equate host turnaround with
+physical sensor-to-actuator latency. Record failures and negative controls.
+
+Resources
+At 21:53 UTC the shared weekly meter reads 18% used; credits 66235.333017,
+reserve floor 33117.6665085. Inspect usage at gates. Existing local tools and
+runners only. No model download, paid API setup, billing change, purchase,
+external contact, paper submission, public release or merge. No new scheduled
+automation is required for this active work. Root syncs, checks, commits and
+pushes useful coherent results to the existing private draft branch.
+
+Deliverables
+Exact timing result, executable matched baseline with reproducible outputs,
+independent criticism, a source-based contribution table and a concise REVIEW-ME
+with a go/repair/stop decision for publication. Further work needs a concrete
+next falsifier; theorem counts are not the objective.

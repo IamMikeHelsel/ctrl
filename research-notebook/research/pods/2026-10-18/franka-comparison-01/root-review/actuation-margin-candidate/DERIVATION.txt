@@ -1,0 +1,62 @@
+ACTUATION MARGIN: VERSION-PINNED CANDIDATE COUNTEREXAMPLE
+18 October 2026. Awaiting independent review. No external claim or contact.
+
+Source scope
+Zhang, Walters and Xu, Control Barrier Function Meets Interval Analysis.
+The downloaded arXiv v1 has the uncertain-input condition in equation (19)
+and Proposition 3. The author's ACC2022 copy puts the corresponding condition
+and Proposition 2 on PDF pages 4-5. Rendered author page 4 was inspected: the
+input range is eroded by the actuator-error ball, while the barrier inequality
+uses the selected nominal input. This note concerns those displayed conditions.
+It does not audit the authors' software, experiments or every later revision.
+Sources and hashes are in ../../sources/source-manifest.json (relative to round).
+
+Independent scalar construction
+Let x' = u_real, safe set x >= 0, h(x)=x, and U=[-1,1]. Use the relative-degree
+one barrier expression xi(x,u)=u+x (coefficient 1, Hurwitz polynomial s+1).
+On D=(-1/2,infinity), this h satisfies the underlying CBF existence condition.
+All trajectories below stay inside D. The vector fields are globally Lipschitz.
+
+Choose
+  T=1/1000, e_x=1/1000000, e_u=1/10, x_0=1/100000.
+Measurements are exact: xhat_k=x_k, which satisfies the positive error bound.
+For any measured xhat, the reachable tube with inputs in U and initial error
+at most e_x is [xhat-e_x-T,xhat+e_x+T]. This interval is exact for the integrator.
+Delta xi = xi(x,u)-xi(xhat,u) = x-xhat, so the first Taylor polynomial is exact,
+its remainder is zero, and its minimum is phi=-(e_x+T).
+
+At each sample choose u_des,k=e_x+T-x_k. The displayed barrier condition is
+  u_des,k + xhat_k + phi = 0.
+Use the allowed constant actuator error -e_u throughout each held interval.
+Then u_real,k=u_des,k-e_u. Define b=e_x+T-e_u=-98999/1000000.
+The exact trajectory at samples obeys
+  x_(k+1)=(1-T)*x_k+T*b,
+  x_k=b+(x_0-b)*(1-T)^k.
+For every natural k, b <= x_k <= x_0, hence
+  991/1000000 <= u_des,k <= 1/10.
+The chosen nominal input is always in U eroded by [-e_u,e_u]=[-.9,.9].
+Actual input is in U. The admissible nominal input set is nonempty at all k.
+The initial uncertainty interval is safe: x_0-e_x=9/1000000 > 0.
+
+Nevertheless, on the FIRST interval the actual derivative is -99009/1000000.
+At t=T/2=1/2000,
+  x(t)=-79009/2000000000 < 0.
+The first sample is x_1=-89009/1000000000 < 0. The path is continuous,
+piecewise affine, and satisfies the scalar ODE with piecewise-constant input.
+The all-k expression above avoids an unstated later-feasibility escape.
+
+What fails and the standard local repair
+An eroded actuator range ensures admissible physical commands; it does not
+alone preserve a nominal barrier half-space under actuator error. For this
+integrator, enforce u_des+xhat+phi >= e_u. For a general affine barrier term
+ell(xhat)u with Euclidean input-error radius e_u, subtract the support bound
+e_u*||ell(xhat)|| in the robust inequality (with the other state/reachability
+conditions still required). This is a standard robust-optimization step,
+not a claim that we invented robust CBFs.
+
+The numerical code checks exact rational arithmetic and the invariant interval
+for the sample recurrence. It is not a Lean proof of the whole source paper.
+The publication version and known corrections still need a full provenance
+check before any public claim. The result, if independently accepted, supplies
+a concrete negative control for a baseline implementation and motivates
+checking interface assumptions; it does not establish our controller's novelty.

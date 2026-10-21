@@ -1,0 +1,25 @@
+PRECISION LIMIT OF THE PRESENT FIXED-REFERENCE HOLDING LAW
+18 October 2026. Written algebra and exact rational witness; not a Lean theorem.
+
+At a stationary unclipped equilibrium, the present feedback law gives
+  x - c = -e_x - (3/4)e_v - (1/16)e_a + d/8.
+With the declared independent sensor and target-error bounds, the right side
+can be 0.012875 m. holding_bias_witness.py constructs such an equilibrium:
+actual velocity and acceleration are zero, the command is -0.01 m/s², and
+the target error +0.01 m/s² cancels it for every positive response rate.
+Clipping is inactive. The arbitrary sample age has no effect on constant data.
+
+This is a limitation of the current law and uncertainty description. It is
+not a universal lower bound for all controllers or observers. It is not a
+claim that this equilibrium is reachable from the recovery admission guard:
+the example's acceleration reading does not satisfy that guard. It does show
+why a tight stationary band around the chosen fixed reference does not follow
+from the holding law and sensor bounds alone. Reducing the 45.9 mm proof band
+to a small assembly tolerance needs more than a sharper enclosure: investigate
+measurement assumptions, disturbance estimation, feedback design or adaptation.
+
+Both sides of the comparison must retain the same requested target and error
+bounds. A reference governor may change its auxiliary reference to recover the
+requested target. That capability must be reported separately from the common
+inner feedback law. Neither nominal trajectories nor this equilibrium witness
+are a complete robust performance comparison.

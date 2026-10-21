@@ -1,0 +1,958 @@
+
+PAGE 1
+arXiv:2005.06418v1  [eess.SY]  13 May 2020
+Control Barrier Functions for Sampled-Data Systems with
+Input Delays
+Andrew Singletary, Y uxiao Chen, and Aaron D. Ames
+Abstract—This paper considers the general problem of tran-
+sitioning theoretically safe controllers to hardware. Con cretely,
+we explore the application of control barrier functions (CB Fs)
+to sampled-data systems: systems that evolve continuously but
+whose control actions are computed in discrete time-steps.
+While this model formulation is less commonly used than its
+continuous counterpart, it more accurately models the real ity of
+most control systems in practice, making the safety guarant ees
+more impactful. In this context, we prove robust set invaria nce
+with respect to zero-order hold controllers as well as state
+uncertainty, without the need to explicitly compute any con trol
+invariant sets. It is then shown that this formulation can be
+exploited to address input delays in this system, with the re sult
+being CBF constraints that are afﬁne in the input. The result s
+are demonstrated in a high-ﬁdelity simulation of an unstabl e
+Segway robotic system in real-time.
+I. INTRODUCTION
+Control theory in practice is almost always implemented
+in the form of a digital controller on a physical system
+that evolves continuously. However, these systems are rare ly
+treated as such due to the difﬁculties that arise in the
+formulation of controllers that act optimally for these typ es of
+systems. Generally, the system is controlled rapidly enoug h
+that the time discretization can be ignored, and the entire
+system can be treated as continuous, allowing for a much
+larger class of control techniques. This is especially true
+for robotic systems, where continuous controllers are ofte n
+implemented at loop rates faster that 1 kHz.
+In the context of safety-critical control, however, it is
+important to model the system as accurately as possible,
+in order to extend the guarantees from theory to practice.
+Moreover, optimization-based controllers tend to be less
+robust than simple control laws such as PID, therefore
+call for a more accurate model. As an example, control
+barrier functions have emerged as a popular technique for
+guaranteeing safety of continuous-time [1], [2], discrete -time
+[3], [4], and even sampled-data systems [5]. This technique
+relies on the knowledge of a control invariant subset of the
+state-space, and can be formulated as a quadratic program
+wherein the CBF yields a constraint, afﬁne in the input, that
+ensures the system stays in that set for all time. However, th e
+computation of such sets is notoriously difﬁcult for nonlin ear
+systems [6], [7].
+The method proposed in [8] removes the need for a control
+invariant set, and instead relies on knowledge of a backup
+Andrew Singletary, Y uxiao Chen, and Aaron D. Ames are with De -
+partment of Mechanical Engineering, California Institute of Technology,
+Pasadena CA 91125, U.S.A. Email addresses: {asinglet,chenyx,
+ames}@caltech.edu
+controller that takes the system to a small safe region of
+the state space. This method of implicitly deﬁning a control
+barrier function has been successfully implemented in a
+variety of complex applications [9]–[11], but it suffers fr om
+a lack of robustness.
+Another reality of control theory in practice is the presenc e
+of input delay. Input delay for myopic, optimization-based
+controllers (such as Control Lyapunov Functions [12] and
+control barrier functions), is often handled by making the
+problem formulation robust to any value of the input delay
+in some bounded set. However, this treatment degrades per-
+formance due to conservatism and complicates the (already
+difﬁcult) computation of the Lyapunov or barrier functions .
+In practice, the input delay for a system is relatively easy t o
+identify, so it would be beneﬁcial to formulate the problem
+with the knowledge of the input delay of the system. While
+many solutions to handling speciﬁc time delays have been
+proposed, in general they either require either linear syst ems
+[13], [14], are applicable only to autonomous systems [15],
+require difﬁcult construction [16], or rely on frequency-
+domain analysis that is not applicable to these optimizatio n-
+based controllers [17].
+The contributions of this paper are:
+• We propose a formulation of the implicitly deﬁned
+control barrier function that is applicable to sampled-
+data systems, while retaining scalability.
+• We use the concept of incremental stability [18] to prove
+robustness of the proposed backup controller-based CBF
+controller under state uncertainty.
+• We are able to guarantee safety under a known input
+delay with much less conservatism under the proposed
+framework.
+For the remainder of the paper, Section II details the
+conditions required for the control barrier function to pro vide
+safety guarantees for the sampled-data system that arises
+from a zero-order hold controller. The resulting constrain t
+must be evaluated over a set of states, thus Section III pro-
+vides a means for tractably evaluating this constraint. Sec tion
+IV provides a method for handling known input delays, while
+maintaining the safety guarantee in the form of an afﬁne
+constraint. The proposed method is then applied in Section
+V to a high-ﬁdelity Segway simulation, which demonstrates
+the result. Finally, Section VI provides a summary of the
+work and details future research directions.
+
+PAGE 2
+II. S AMPLED -DATA CONSIDERATIONS FOR CBF S
+A. Background on Control Barrier Functions
+In this paper, we consider an afﬁne dynamical system
+described by the following ordinary differential equation :
+˙x = f (x) +g(x)u, x∈X⊆ Rn, u∈U⊆ Rm. (1)
+Here, f : Rn→ Rn and g : Rn→ Rn× m are locally Lipschitz
+functions.U is the set of admissible inputs, assumed to be
+a strict subset of Rm. For a given dynamic system, given a
+feedback policy u :X→U , φ u
+t (x0) be the state evolution of
+this closed loop system with initial condition x0 at time t,
+i.e., the ﬂow map. With a slight abuse of terminology, we let
+φ u(·)
+t denote the state ﬂow under a ﬁxed input signal u(·), as
+opposed to a ﬁxed feedback policy.
+Suppose that the system is required to stay within the set
+described by the function S ={x∈ Rn| h(x)≥ 0} for all
+time. To guarantee this constraint is satisﬁed for all time,
+one way is to ﬁnd a control invariant set SI⊆S .
+Deﬁnition 1. A setSI is a control invariant set if there exists
+a control policy that keeps any trajectory starting within SI
+insideSI for all time.
+If a control invariant subset described as the superlevel-s et
+(see [1]) of a function hI(x) is known, the CBF condition can
+be enforced to keep the state within SI:
+dhI
+dx
+⏐
+⏐
+⏐
+⏐
+x
+( f (x) +g(x)u) +
+α(hI(x))≥ 0, (2)
+as an afﬁne constraint on the input u. Here, α(·) is an
+extended class-K function.
+Lemma 1. If the input satisﬁes the CBF condition (2) for
+all time, the system will stay in the set h I(x) for all time.
+Speciﬁcally, let u (x) be a controller that satisﬁes (2) and is
+applied to (1) to yield a closed-loop dynamical system: ˙x =
+f (x) +g(x)u(x) =: fcl(x) (assumed to be forward complete).
+Then if x 0∈S I, φ u
+t (x0)∈S I for all t ≥ 0.
+See [1] for proof.
+As mentioned in the introduction, the computation of
+control invariant sets is very difﬁcult in general. Instead , [8]
+proposes utilizing a ﬁxed backup controller uB(x) to enlarge a
+much smaller control invariant set SB ={x∈ Rn|hB(x)≥ 0}
+(which is much easier to compute) to the set of all states
+that can be safely brought to SB with the backup controller
+uB :X→U . This leads to a control invariant set deﬁned
+implicitly using the system ﬂow
+φ uB
+t (x0) under uB as
+SI =
+{
+x∈ Rn|
+(
+∀τ∈ [0, T ], h
+(
+φ uB
+τ
+)
+≥ 0
+)
+and
+(
+hB (φ uB
+T )≥ 0
+) } (3)
+The CBF condition (2) then is evaluated at a point x0 as
+dh
+dx
+⏐
+⏐
+⏐
+⏐
+φ uBτ
+∂ φuB
+t
+∂ x
+⏐
+⏐
+⏐
+⏐
+x0
+( f (x0) +g(x0)u) +
+α(h(φ uB
+τ (x0)))≥ 0
+dhB
+dx
+⏐
+⏐
+⏐
+⏐
+φ uB
+T
+∂ φuB
+T
+∂ x
+⏐
+⏐
+⏐
+⏐
+x0
+( f (x0) +g(x0)u) +
+α(hB(φ uB
+T (x0)))≥ 0
+(4)
+Any input that satisﬁes (4) for all time τ∈ [0, T ] will keep
+the system in the set SI. If this constraint is satisﬁed for all
+time, the state is kept in the set SI indeﬁnitely. See [8, p. 6].
+B. CBFs Along a Zero-Order Hold Backup Controller
+While condition (4) can be used to guarantee safety
+for continuous-time systems, it relies on the input being
+computed and applied continuously. In the presence of a
+zero-order hold controller, the description of the invaria nt set
+need to be modiﬁed. The zero-order hold backup controller,
+denoted as
+uB(x(·),t), simply takes on the value of uB(x)
+every ∆t seconds, and holds that value until its next update:
+uB(x(·),t) = uB(x(⌊t/∆t⌋∆t)), (5)
+where⌊·⌋is the largest integer not greater than the argument.
+Remark 1. The ﬂow of the system under the zero-order
+backup controller φ uB
+t is well-deﬁned, as unique solutions
+to sampled-data systems exist so long as the underlying
+controller is piecewise continuous (c.f. [19, p. 16])
+The updated control invariant set under the zero-order hold
+backup controller can be written as
+SI =
+{
+x∈ Rn|
+(
+∀τ∈ [0, T ], h
+(
+φ uB
+τ
+)
+≥ 0
+)
+and
+(
+hB
+(
+φ uB
+T
+)
+≥ 0
+) } (6)
+This is a control invariant set for the system under a zero-
+order controller with the same sampling time ∆t as
+uB. The
+proof follows from [8, Theorem 1].
+Remark 2. While the ﬂow of the system under the zero-order
+hold backup controller is Lipschitz [20], it is nonsmooth.
+Because of this, the barrier function itself is nonsmooth, a nd
+thus ˙h cannot be expressed at ﬁnitely many points, which
+correspond to when the controller is updated. Despite this,
+a nonsmooth barrier function is valid if ˙h≥−
+α(h) almost
+everywhere. For proof, see [21, Lemma 2.2].
+To enforce the CBF condition, ˙h needs to be computed,
+which requires ∂ φuBt
+∂ x to be evaluated. This expression is
+continuous over each controller sampling time, and can be
+computed using ﬁnite-differences [22]. To do this, simply
+integrate forward n + 1 initial conditions under
+uB to evaluate
+∂ φuB
+(i+1)∆t (x)
+∂ φuB
+i∆t (x) at each time-step. Then, use the chain rule to get
+∂ φuB
+i∆t (x)
+∂ x =
+i− 1
+∏
+n=0
+∂ φuB
+(n+1)∆t (x)
+∂ φuB
+n∆t (x) (7)
+
+PAGE 3
+C. Enforcing the Barrier Condition with Zero-order Hold
+The last caveat to consider in the implementation of the
+CBF condition is the fact that the condition must be met over
+the entire time horizon of the zero-order hold controller. N ote
+that this consideration must be taken regardless of the meth od
+used for expressing the robust control barrier function, an d
+was a subject of prior research of the authors [5].
+Consider verifying the barrier function over the horizon
+of a single time-step of the zero-order hold controller with
+sample time ∆t ,
+h(
+φ uB
+τ (x0))≥ 0 ∀ τ∈ [0, ∆t ]. (8)
+The robust satisfaction of the above condition can be
+veriﬁed by checking the stronger condition shown in [5],
+h(R(x0, ∆t ))≥ 0, (9)
+whereR(x0, ∆t ) is the set of states reachable from x0 in time
+∆t with any input u∈U .
+Remark 3. This condition adds conservatism to the barrier
+formulation. While checking only the points φ u
+τ (x0) ∀τ∈
+[0, ∆t ] would result in a more performant condition, this
+would make the constraint no longer afﬁne, due to its
+dependence on the decision variable u.
+Let
+uB(·) be the input signal w.r.t. the nominal state ﬂow,
+the robust CBF condition deﬁned from the set SI,
+dh
+dx
+⏐
+⏐
+⏐
+⏐
+φ uB(·)
+τ (x0)
+∂ φuB(·)
+τ (x0)
+∂ x ( f (x0) +g(x0)u) +α(h(φ uB(·)
+τ (x0)))≥ 0
+dhB
+dx
+⏐
+⏐
+⏐
+⏐
+φ uB(·)
+T (x0)
+∂ φuB(·)
+T (x0)
+∂ x ( f (x0) +g(x0)u) +α(hB(φ uB(·)
+T (x0)))≥ 0
+(10)
+where x0 =R(x0, ∆t ), and the ﬁrst inequality must hold for
+all τ∈ [0, T ].
+Proposition 1. Let (ui)∞
+i=0 be a sequence of inputs that
+satisﬁes (10) at the beginning of each time-step and is applied
+with zero-order hold to the system (1). If x 0∈
+SI, then
+φ u
+t (x0)∈SI for all t ≥ 0.
+Proof. Consider any time interval of a single time-step T =
+[t0,t0 + ∆t], and assume xt0∈SI.
+Denote Φ :={⋃
+t∈ T φ ui
+t (xt0)}. Since xt0 = xt0 +R(xt0 , ∆t )
+covers all states reachable from time t0, Φ⊂ φ ui
+t (xt0), There-
+fore, if ui satisﬁes (10) for xt0, then the CBF condition holds
+for Φ as well. Thus, by the invariance of SI and Lemma 1,
+φ ui
+t (xt0 )∈SI for all t∈T .
+Since this condition is met over the entire sequence of
+time-steps, φ u
+t (x0)∈SI for all t≥ 0.
+Remark 4. It is possible that, for some x0∈S I, that x0∈S I
+but x0 /∈S I. In this case, the system is inside of its control
+invariant set, but the CBF condition (10) cannot be satisﬁed .
+This is due to conservatism mentioned in Remark 3. However,
+when this occurs, the backup control action can be taken.
+Thus, the system will stay safe for all time. Furthermore,
+this occurs on a very small set at the boundary of SI, which
+the strengthening term
+α(·) makes difﬁcult to reach.
+Note that the condition is evaluated here over a set, rather
+than a single point. The evaluation of φ uB(·)
+τ (x0) poses the
+most difﬁculty, as it involves robustly integrating over a
+set. This makes techniques like interval arithmetic [23], [ 24]
+difﬁcult to implement, due to numerical issues.
+III. S TATE UNCERTAINTY
+In this section, the concept of incremental stability will b e
+used to show that for any
+τ∈ [0, T ], a ﬁxed control signal
+u(·) and an uncertainty set ∆∆∆x, φ u(·)
+τ (x0 + ∆∆∆x)⊆ φ u(·)
+τ (x0)+ ∆∆∆x.
+Thus, the CBF condition (10) can be evaluated over the entire
+set as an afﬁne condition without requiring robust integrat ion
+over sets.
+A. Incremental stability with Lyapunov functions
+To show that safety can be guaranteed for a small neigh-
+borhood of initial conditions, we adopt the concept of incre -
+mental stability (c.f. [18]).
+Deﬁnition 2. Given the dynamic system in (1), the system
+is incrementally stable inside a set X ⊆ Rn if ∀T≥ 0,
+∀ x1, x2∈X and u(·) : [0, T ]→ Rm such that
+φ u(·)
+t (x1)
+and φ u(·)
+t (x2) stay inside X , the evolution of the state
+satisﬁes
+
+
+
+φ u(·)
+t (x1)− φ u(·)
+t (x2)
+
+
+≤
+β (∥x1− x2∥ ,t), where β :
+R× [0, T ]→ R is nonincreasing in t and∀ t∈ [0, T ], β (·,t)
+is a class-K function.
+Proposition 2. Suppose there exists a Lyapunov function
+V :X→ R that satisﬁes c 1||x||≤ V (x)≤ c2||x||for some
+c2≥ c1 > 0. F or two initial conditions x 1, x2∈X and an
+input signal u (·) such that φ u(·)(x1), φ u(·)(x2), and φ u(·)(x1)−
+φ u(·)(x2)∈X , let V (t) = V (φ u(·)
+t (x1)− φ u(·)
+t (x2)). If ˙V≤ 0,
+then the system is locally incrementally stable in X .
+Proof. The proof follows from the fact that V (·) and||·||are
+equivalent norms.
+In the context of control barrier functions with a backup
+strategy, if the system is incrementally stable, then given
+a nominal initial condition x0 and an uncertainty set char-
+acterized as a level-set of the Lyapunov function, ∀x∈
+{x|V (x− x0)≤
+ε}, for any input signal u(·), φ u(·)
+t (x)∈
+{x|V (x− φ u(·)
+t (x0))≤ ε}. We shall show in Section III-C how
+this result can simplify the robust CBF condition in (10),
+which requires that the CBF condition hold for a small set
+R(x0, ∆t ) around the nominal initial condition.
+B. Gaining incremental stability via pre-feedback
+The Segway model that considered in Section V is not
+incrementally stable, but pre-feedback can be used to make
+it so. Since the error dynamics are being considered, the non -
+linear dynamics are linearized to simplify the analysis. Gi ven
+a set X⊆ Rn of states, multiple linear dynamics models
+˙x = Aix + Biu, i = 1, ...,N can be obtained by considering the
+extreme points of X . Given a quadratic Lyapunov function
+V = x⊺Px where P is symmetric and positive deﬁnite, and an
+input set hyperbox deﬁned asU ={− umax≤ u≤ umax}⊆ Rm,
+we develop the following Linear Matrix Inequality (LMI) to
+
+PAGE 4
+search for a pre-feedback gain that guarantees incremental
+stability for the system:
+min
+K∈ Rn× m
+||ΛP− 1
+2 K⊺||∞
+s.t.∀i = 1, ...,N, P(Ai + BiK) + (Ai + BiK)⊺P≤ 0,
+(11)
+where Λ = diag( 1
+umax
+1
+, ... , 1
+umax
+m
+).
+The cost function is chosen due to the fact that
+{max
+x
+|Kix| s.t. x⊺Px≤ 1} =
+√KiP− 1K⊺
+i , (12)
+which means that the pre-feedback is available within the
+level set{x|x⊺Px≤ min
+i=1,...,N
+umax
+i
+√
+KiP− 1K⊺
+i
+}. Therefore, minimizing
+the cost function in (11) is maximizing the size of the level-
+set of the Lyapunov function in which the pre-feedback is
+available.
+Proposition 3. Given a dynamic system as described in (1)
+withU ={− umax≤ u≤ umax}, a setX⊆ Rn, and a Lyapunov
+function V (x) = x⊺Px, P ≥ 0, assume that ∀ x1, x2∈X ,
+∀ u∈U , f (x1)+ g(x1)u− f (x2)− g(x2)u∈ Conv(Ai)(x1− x2).
+Then, with a K solved with (12), the system with pre-
+feedback ˙x = f (x) + g(x)(u + Kx) is incrementally stable
+withinX∩{ x|x⊺Px≤ min
+i=1,...,N
+umax
+i
+√
+KiP− 1K⊺
+i
+}.
+Proof. Since the A and B matrix enters linearly into the
+Lyapunov condition in (11), by the assumption that f (x1) +
+g(x1)u− f (x2)− g(x2)u∈ Conv(Ai)(x1− x2), convexity shows
+that ˙V (x1− x2)≤ 0, which shows incremental stability.
+C. Generalizing State Uncertainty
+The CBF condition shown in Equation (10) is shown for
+a speciﬁc uncertainty set x0 = R(x0, ∆t ) that arises from
+the sampled-data nature of the system. For an incrementally
+stable dynamic system, the CBF condition is rewritten as
+dh
+dx
+⏐
+⏐
+⏐
+⏐
+φ uB(·)
+τ (x0)
+⏐
+⏐
+⏐
+x0
+∂ φuB(·)
+τ
+∂ x
+⏐
+⏐
+⏐
+⏐
+⏐
+x0
+( f (x0) +g(x0)u) +
+α(h( φ uB(·)
+τ (x)
+⏐
+⏐
+⏐
+x0
+))
+dhB
+dx
+⏐
+⏐
+⏐
+⏐
+φ uB(·)
+T (x0)
+⏐
+⏐
+⏐x0
+∂ φuB(·)
+τ
+∂ x
+⏐
+⏐
+⏐
+⏐
+⏐
+x0
+( f (x0) +g(x0)u) +
+α(hB( φ uB(·)
+T (x)
+⏐
+⏐
+⏐
+x0
+))
+(13)
+The new set in which the constraint is being evaluated is
+x0 :=R(x0, ∆t ) +∆∆∆x, where ∆∆∆x⊂ Rn is the state uncertainty
+set such that the estimated value of the state ˜ x∈ x+ ∆∆∆x, with x
+being the true state. The other major difference from Equati on
+(10) is that the ﬂow over the backup trajectory is now being
+computed for the nominal value of x0, and it is simply being
+evaluated over the set
+φ u
+t (x0) +∆∆∆x. This greatly simpliﬁes the
+computation, and makes the constraint tractable in real-ti me.
+Theorem 1. Let u(·) be a input signal with zero-order hold
+that satisﬁes (13). If the system is incrementally stable in SI,
+then φ u(·)
+t (x0)∈SI for all t ≥ 0.
+Proof. From incremental stability, we have ∀ x1, x2∈SI, and
+for β : R× [0, T ]→ R nonincreasing in t, and ∀ t1,t2∈ R+
+with t2 > t1,
+
+
+
+φ u(·)
+t (x1)− φ u(·)
+t (x2)
+
+
+≤
+β (∥x1− x2∥ ,t)
+⇓ 
+
+
+φ u(·)
+t2 (x1)− φ u(·)
+t2 (x2)
+
+
+≤
+
+
+
+φ u(·)
+t1 (x1)− φ u(·)
+t1 (x2)
+
+
+ (14)
+Therefore,
+
+
+
+φ u(·)
+0 (x1)− φ u(·)
+0 (x2)
+
+
+ =∥x1− x2∥
+⇓
+φ uB(·)
+t (x0)⊂ φ uB(·)
+t (x0)
+⏐
+⏐
+⏐
+x0
+(15)
+Fix any x0, ¯u, t. For brevity, let Φ1 :=
+φ uB(·)
+t (x0) and Φ2 :=
+φ uB(·)
+t (x0)
+⏐
+⏐
+⏐
+x0
+, and let ˙ x:=
+∂ φuB(·)
+t
+∂ x
+⏐
+⏐
+⏐
+⏐
+x0
+( f (x0) +g(x0)u).
+Φ1⊂ Φ2 ⇒ dh
+dx
+⏐
+⏐
+⏐
+⏐
+Φ1
+⊂ dh
+dx
+⏐
+⏐
+⏐
+⏐
+Φ2
+⇒ dh
+dx
+⏐
+⏐
+⏐
+⏐
+Φ1
+˙ x⊂ dh
+dx
+⏐
+⏐
+⏐
+⏐
+Φ2
+˙ x.
+Following the same logic, we have
+Φ1⊂ Φ2 ⇒
+α(h(Φ1))⊂ α(h(Φ2))
+Thus,
+dh
+dx
+⏐
+⏐
+⏐
+⏐
+Φ1
+˙ x+
+α(h(Φ1))⊂ dh
+dx
+⏐
+⏐
+⏐
+⏐
+Φ2
+˙ x+
+α(h(Φ2)).
+Therefore, any x0, ¯u(·) that meets condition (13) will also
+meet condition (10), and by Proposition 1, φ u(·)
+t (x0)∈SI for
+all t≥ 0
+IV. I NPUT DELAY
+In the previous sections, it is shown that safety can be
+guaranteed for sampled-data systems with an afﬁne constrai nt
+using control barrier functions. This section will extend t he
+safety guarantees to systems with known time-delay, withou t
+simply making the barrier robust to a set of possible input
+delays, which would degrade system performance. Note that
+the analysis in this section can be done for any robust contro l
+invariant set, not limited to the version discussed in previ ous
+sections.
+A. Preliminaries
+Assumption 1. Suppose that the system has a time delay
+equal to some integer n multiple of the controller period ∆t .
+Therefore, the system evolves with dynamics
+˙x = f (x) +g(x) ¯u(x,t− n∆t) (16)
+for zero-order hold controller ¯ u.
+This is a reasonable assumption, especially for the time
+delay caused by the numerical computation of the digital
+controller. Moreover, rounding of the time-delay can alway s
+be made robust with an addition to the state uncertainty.
+Since it is not possible to provide any input to the system
+before time t = n∆t, one more assumption is required.
+
+PAGE 5
+Assumption 2. From any initial set of states x0 = x0 + ∆∆∆x⊂
+SI , we require
+φ 0
+n∆t (x0)⊂SI. (17)
+Here, the 0 in φ 0
+n∆t denotes the fact that a control input of
+zero is applied to the system during this time.
+In practice, this is not a restrictive assumption since the
+initial condition can be set well within the safe set. Moreov er,
+if this is not met, there is no hope to keep the system safe
+whatsoever.
+In order to obtain the state at which the control input will
+be applied, the most recent n∆t inputs must be stored in a
+vector ¯uH. Since no input can be applied during time t∈
+[0, n∆t], the input vector is initialized to all zeros. With this,
+the state at which the ith computed control action will be
+applied can be expressed as
+x(i+n)∆t =
+φ ¯uH
+n∆t (xi∆t ) (18)
+The input history vector ¯ uH is executed under zero-order
+hold, just as the inputs are applied to the system. Starting
+with the initial state, the algorithm for handling input del ay
+is now described.
+B. Algorithm Overview
+At initial time-step t0, the control action to be implemented
+at time t = n∆t is computed. To keep the system safe, the
+barrier conditions must be evaluated at state xn∆t , which is
+computed using Equation (18). Note that the constraint itse lf
+does not need to be altered, and is still afﬁne. The only extra
+step is the integration from x0 to xn∆t .
+The input chosen by the quadratic program at time t0 is
+then placed at the head of the ¯ uH buffer, after each previous
+value is shifted backwards. Thus, the oldest value in the inp ut
+buffer is lost, as it has already taken effect on the system.
+The computation for all future time-steps is outlined in
+Algorithm 1.
+Algorithm 1: CBF with Input Delay of n∆t
+double uH [n] ={0};
+i← 0;
+while true do
+x(i+n)∆t = φ ¯uH
+n∆t (xi∆t );
+Compute safe action with udes, x(i+n)∆t using (13);
+update uH;
+i = i + 1;
+end
+While this algorithm may seem trivial, it is only made
+possible by treating the system as a sampled-data system.
+The continuous case of this algorithm would be much more
+complex, as there is no ﬁnite time-history of inputs to
+integrate over. Safety under this algorithm is summarized
+with the following theorem.
+Theorem 2. Given a control invariant set
+SI, if inputs are
+chosen with Algorithm 1, and the system model is accurate,
+then the system (16) remains safe, i.e. φ u
+t (x0)∈SI for all
+t≥ 0.
+Proof. Assume by contradiction that for some time t = m∆t ,
+xm∆t /∈SI. Let this be the ﬁrst time in which x /∈SI, thus
+xk∆t∈SI∀k < m.
+Because system integration is accurate,
+xm∆t = φ um
+H
+n∆t (x(m− n)∆t )
+um
+H = [um− 2n+1, ...,um− n]
+x(m− 1)∆t =
+φ
+um− 1
+H
+n∆t (x(m− n− 1)∆t ) um− 1
+H = [um− 2n, ...,um− n− 1]
+Since x(m− 1)∆t∈SI, the control inputs chosen up until time
+tm− n− 1 keep the system in SI. Therefore, the control action
+um− n must cause the system to exit SI. The CBF condition at
+t = (m− n− 1)∆t is based on φ um− 1
+H
+n∆t (x(m− n− 1)∆t ), the estimated
+x(m− 1)∆t , but since the model is assumed to be correct, it is
+equal to the actual state. However, if um− n was computed
+via CBF condition, then φ um
+H
+n∆t (x(m− n)∆t )∈
+SI by Theorem 1.
+This implies that xm∆t̸= φ um
+H
+n∆t (x(m− n)∆t ), which contradicts the
+assumption that the model is accurate.The set SI described in Section II is an example of one
+such control invariant set robust to zero-order hold, but th is
+theorem holds for any other such set.
+It is important to recognize the fact that, under this
+algorithm, one is effectively performing open-loop contro l
+over the time-horizon of the input delay. However, due to
+the state uncertainty result from Section III, it is possibl e to
+guarantee safety for a range of possible initial conditions that
+the system is expected to lay within at the time of the control
+input being enacted. Thus, we have the following extension:
+Corollary 1. Given an invariant set
+SI, robust to state
+uncertainty ∆∆∆x, if inputs are chosen with Algorithm 1, and
+φ ¯uH
+n∆t (x0)∈ xn∆t +∆∆∆x for any x 0∈SI (i.e. the system integration
+is accurate up to the set uncertainty set ∆∆∆x), then the system
+(16) remains safe, i.e. x (t)∈SI for all t ≥ 0.
+Proof. The proof follows directly from the Theorem 1, and
+simply utilizes the guarantees over state uncertainty from
+Section III, or from [5] for more general control barrier
+functions.
+V. S IMULATION OF RESULTS ON SEGWAY ROBOT
+The simulation is done in a ROS-based simulation environ-
+ment. The full, nonlinear dynamics are integrated under zer o-
+order hold at a variable sampling time ∆t . The true state of the
+system is not known to the controller, only the state estimat e
+from an extended Kalman ﬁlter. This state observer receives
+noisy sensor data based on the true state of the system. A
+pre-feedback gain was computed following Section III-B.
+The Segway has 4 states x = [ p, ˙p,
+θ , ˙θ ]⊺. The safe set is
+described byS ={x|1− 4p2≥ 0}, which enforces the robot
+position p to stay within a 0.5 m range from the origin.
+The robust barrier condition (13) is evaluated over sets usi ng
+the interval arithmetic library libaffa [25]. The constrai nt is
+imposed at the 10 closest points to the boundary of the safe
+set along the backup trajectory.
+
+PAGE 6
+Fig. 1. Results from simulations with three different contr oller frequencies, and one with input delay.
+Fig. 2. Segway in simulation.
+The sequence of axes show the
+system along the backup trajec-
+tory.
+Figure 1 shows the result of
+three simulations with the nom-
+inal CBF conditions (4), and
+the robust condition (13). The
+robust condition is set to handle
+a state uncertainty set based on
+the uncertainty caused by the
+zero-order hold and the Kalman
+ﬁlter. At 40 Hz, the Segway is
+able to stay within the set with
+the nominal controller, but it is
+unable to maintain invariance at
+20 Hz, or in the presence of an
+input delay of 30 ms. The ro-
+bust barrier is able to maintain
+safety for not just the nominal
+trajectory, but over the entire
+robustness margin.
+VI. C ONCLUSION
+In this paper, the authors ﬁrst introduced a robust variatio n
+of the backup-controller-based control barrier function t hat
+guarantees safety in the presence of a zero-order controlle r,
+as well as state uncertainty. The barrier can be used without
+computing any robust control invariant sets, and can be
+evaluated in real-time as an afﬁne constraint. An extension
+of control barrier functions for systems with known input
+delay was then introduced, made possible only by treating th e
+system as sampled-data as opposed to continuous. Finally, t he
+theory was validated in a real-time high-ﬁdelity simulatio n
+environment of a Segway robot. For future work, the authors
+would like to explore solving this problem using discrete-
+time control barrier functions in a nonlinear program.
+REFERENCES
+[1] A. D. Ames, X. Xu, J. W. Grizzle, and P . Tabuada, “Control b arrier
+function based quadratic programs for safety critical syst ems,” IEEE
+Transactions on Automatic Control , vol. 62, no. 8, pp. 3861–3876,
+2017.
+[2] L. Wang, A. D. Ames, and M. Egerstedt, “Safety barrier cer tiﬁcates
+for collisions-free multirobot systems,” IEEE Transactions on Robotics,
+vol. 33, no. 3, pp. 661–674, 2017.
+[3] A. Agrawal and K. Sreenath, “Discrete control barrier fu nctions for
+safety-critical control of discrete systems with applicat ion to bipedal
+robot navigation.”
+[4] M. Ahmadi, A. Singletary, J. W. Burdick, and A. D. Ames, “S afe policy
+synthesis in multi-agent pomdps via discrete-time barrier functions,”
+arXiv preprint arXiv:1903.07823 , 2019.
+[5] T. Gurriet, P . Nilsson, A. Singletary, and A. D. Ames, “Re alizable set
+invariance conditions for cyber-physical systems,” in 2019 American
+Control Conference (ACC) . IEEE, 2019, pp. 3642–3649.
+[6] M. Fiacchini, T. Alamo, and E. F. Camacho, “On the computa tion of
+convex robust control invariant sets for nonlinear systems ,” Automatica,
+vol. 46, no. 8, pp. 1334–1338, 2010.
+[7] I. Mitchell, “A summary of recent progress on efﬁcient pa rametric
+approximations of viability and discriminating kernels.” in SNR@ CA V,
+2015, pp. 23–31.
+[8] T. Gurriet, M. Mote, A. D. Ames, and E. Feron, “An online ap proach
+to active set invariance,” in 2018 IEEE Conference on Decision and
+Control (CDC). IEEE, 2018, pp. 3592–3599.
+[9] A. Singletary, P . Nilsson, T. Gurriet, and A. D. Ames, “On line active
+safety for robotic manipulators,” in 2019 International Conference on
+Intelligent Robots and Systems (IROS) . IEEE, 2019, p. Final V ersion
+Submitted.
+[10] A. Singletary, T. Gurriet, P . Nilsson, and A. Ames, “Saf ety-critical
+rapid aerial exploration of unknown environments,” IEEE International
+Conference on Robotics and Automation (ICRA) , 2020.
+[11] A. J. Taylor, A. Singletary, Y . Y ue, and A. D. Ames, “A con trol barrier
+perspective on episodic learning via projection-to-state safety,” arXiv
+preprint arXiv:2003.08028, 2020.
+[12] P . Ogren, M. Egerstedt, and X. Hu, “A control lyapunov fu nction
+approach to multi-agent coordination,” in Proceedings of the 40th IEEE
+Conference on Decision and Control (Cat. No. 01CH37228) , vol. 2.
+IEEE, 2001, pp. 1150–1155.
+[13] M. Jankovic, “Control barrier functions for constrain ed control of
+linear systems with input delay,” in 2018 Annual American Control
+Conference (ACC). IEEE, 2018, pp. 3316–3321.
+[14] E. Fridman, “A reﬁned input delay approach to sampled-d ata control,”
+Automatica, vol. 46, no. 2, pp. 421–427, 2010.
+[15] G. Orosz and A. D. Ames, “Safety functionals for time del ay systems,”
+in 2019 American Control Conference (ACC) . IEEE, 2019, pp. 4374–
+4379.
+[16] M. Jankovic, “Control lyapunov-razumikhin functions and robust sta-
+bilization of time delay systems,” IEEE Transactions on Automatic
+Control, vol. 46, no. 7, pp. 1048–1060, 2001.
+[17] Q.-C. Zhong, Robust control of time-delay systems . Springer Science
+& Business Media, 2006.
+[18] D. Angeli, “A lyapunov approach to incremental stabili ty properties,”
+IEEE Transactions on Automatic Control , vol. 47, no. 3, pp. 410–421,
+2002.
+[19] G. Lars and P . J¨ urgen, “Nonlinear model predictive con trol theory and
+algorithms,” 2011.
+[20] M. Abbaszadeh, “Is lipschitz continuity preserved und er sampled-data
+discretization?” arXiv preprint arXiv:1612.08469 , 2016.
+[21] P . Glotfelter, J. Cort´ es, and M. Egerstedt, “Nonsmooth barrier functions
+with applications to multi-robot systems,” IEEE control systems letters,
+vol. 1, no. 2, pp. 310–315, 2017.
+[22] R. J. LeV eque, “Finite difference methods for differen tial equations,”
+Draft version for use in AMath , vol. 585, no. 6, p. 112, 1998.
+[23] L. Jaulin, M. Kieffer, O. Didrit, and E. Walter, “Interv al analysis,” in
+Applied interval analysis . Springer, 2001, pp. 11–43.
+[24] T. Gurriet, A. Singletary, J. Reher, L. Ciarletta, E. Fe ron, and A. Ames,
+“Towards a framework for realizable safety critical contro l through
+active set invariance,” in 2018 ACM/IEEE 9th International Conference
+on Cyber-Physical Systems (ICCPS) . IEEE, 2018, pp. 98–106.
+[25] O. Gay, D. Coeurjolly, and N. Hurst, “Libaffa-c++ afﬁne arithmetic
+library for gnu/linux,” 2006.

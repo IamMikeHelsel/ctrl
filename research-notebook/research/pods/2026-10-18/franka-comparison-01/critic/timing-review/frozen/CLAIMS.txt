@@ -1,0 +1,104 @@
+T1 — EXACT 1 kHz HOLDING CERTIFICATE, WITH ASSUMED 0.5 ms DELAY
+Builder evidence. Independent acceptance is separate.
+
+Formal endpoint
+LeanControls.TimingEntry.one_khz_clearance proves, for every supplied
+TimingAdmission.Execution on [0,H] with the concrete TimingClock schedule,
+  x(t) <= 3013722449/20100000000 < .15 m, for every real t in [0,H].
+It is a conditional physical-trajectory theorem, not only a scalar budget.
+TimingClock has sample n at n/1000 s and dispatch n at .0005+n/1000 s.
+It proves causal timestamps, strict dispatch order, local finiteness, both
+held-cell sides, and age <= .0015 s. At the second dispatch, the incoming
+stamp is zero and its age is exactly .0015; the outgoing stamp is .001 and
+its age is .0005. TimingEntry.periodic_schedule links those exact clocks to
+the actual schedule interface. The old sample is never renewed at dispatch.
+
+What is still supplied
+One continuous physical state f=(x,v,a), its response rate, target error and
+readings must satisfy Execution. No finite 1 kHz state constructor or new
+nonempty motion witness is supplied here. No real hardware schedule is
+observed. In particular, .5 ms is an illustrative delay assumption, not a
+measured or documented Franka sensor-to-actuator latency. The mathematical
+periodic clock exists; plant-trajectory existence at that clock is separate.
+
+Unchanged plant, guard and reference policy
+x'=v, v'=a, a'=r*(u+delta-a), r in [8,12]/s; |delta|<=.01 after clipping.
+The pending command is -1.21, active before D and on the left at D. The
+right side at D uses clip(-8*(read_x-c)-6*read_v-read_a/2), with clip range
+[-2,2]. Right and left derivatives use the same continuous physical state.
+Sensor errors remain (.001,.01,.05), evaluated at the actual stored stamp.
+The actual initial reading m has mx<=.143, |mv|<=.01122,
+ma in [-1.27,-.2]. Its physical sensor box is derived at timestamp zero.
+The C5 one-time interval center c, policy radius K(m), weights (1.02,1.01,1),
+plateau .045, pending limit D<=.0005, and all startup error bounds stay exact.
+K(m)<=2407079/50250000. No smaller initial box, invariant or residual is added
+as a premise. This is the same retained target, not a changed reference.
+
+New age calculation
+Let a be the maximum total sample age and d the startup-duration cap.
+For a strict first-contact prefix in a cube of radius K, define
+  W0(a,K)=.103+a*(384*K+.618),
+  S(a,K)=96*K+6*W0(a,K),
+  W1(a,d,K)=.103+8*d+S(a,K)*(a-d).
+The .103 includes the unchanged .093 feedback sensor cost and .01 target
+error. AgeBudget.phase_variation uses the exact pending overlap
+ell=min(t,D)-min(s,D), with 0<=ell<=min(D,t-s). It proves variation <=
+8*ell+S*((t-s)-ell), allowing derivative jumps. AgeBudget.split_age requires
+0<=S<=8, D<=d and t-s<=a; only then may it replace the overlap by its cap.
+At D the post-D segment uses the right derivative. The pending segment
+excludes D. Every original stamp remains unchanged.
+
+Exact feasibility and obstruction
+At a=.0015, d=.0005,
+  S=99.456*K+.623562,
+  W1=.107623562+.099456*K.
+At the old support cube R=.055525, W1=.1131458564>2R=.11105.
+That failed certificate does not prove a physical unsafe trajectory.
+The naive unsplit slope-8 budget W=.115 also makes the abstract third
+weighted face outward by .00075 at K=.045. This is an aggregate-face
+falsifier, not a realized sampled history.
+
+Justified repair
+Only the proof's intermediate unweighted support cube changes to R=.0567.
+For every inflated K in [R,1/16], 0<=S<=6.839562<8, W1<=2K, and the
+unclipped reading command bound 24K+.093<=1.593<2 holds. At R,
+W1=.1132627172<.1134=2R. Startup's unchanged weighted box is strictly inside
+this enlarged cube. TimingAdmission.delayed_invariant then closes that
+cube from the actual history, before a global mismatch bound is derived.
+
+After cube closure, the digital slope is at most 108R. The split bound gives
+Wfinal=.103+8*.0005+108R*.001=.1131236<=.1132. Use rounded W=.1132.
+The same weighted boxes retain all-K inward drift gamma=.0006; the third
+face attains -gamma exactly at K=.045, r=12. The former gamma=3/1700 fails
+at that abstract face. TimingEntry derives W; it does not assume it.
+
+Whole-horizon result and entry
+TimingEntry.sampled_clearance proves the support cube, original first stamp,
+the unchanged weighted policy box and the unchanged forward ceiling at every
+real time, including D, later dispatches, the envelope kink and final H.
+For t>=D,
+  rho(z(t)) <= max(.045, K(m)-.0006*(t-D)),
+where z=(x-c,x-c+v/4,x-c+v/2+a/16) and
+rho=max(|z0|/1.02,|z1|/1.01,|z2|).
+Entry is conditional on H reaching D+(K(m)-.045)/.0006. The guard-wide
+maximum duration is 145829/30150 s, about 4.836783 s; the old duration was
+about 1.644506 s. The plateau bounds remain |x-c|<=.0459 m,
+|v|<=.3654 m/s, |a|<=2.9088 m/s^2. These do not mean precision rest.
+
+Changed auxiliary bounds, not changed plant limits
+The support cube gives |v|<=.4536 and |a|<=3.6288, versus .4442 and 3.5536.
+Its unclipped reading command bound is 1.4538 and its effective physical
+target bound is 1.4638, versus 1.4256 and 1.4356. The actual clipping limit
+remains 2. The stronger policy-weighted conclusion remains unchanged.
+The forward ceiling remains .14993644024875621 m. Its .15 m margin is only
+about .06356 mm inside the model; it is not an unmodeled hardware allowance.
+
+Open integration and scope
+Old C7/C8 bind period and delay to h=.0005. Their state recurrence is not
+changed or reused as a 1 kHz construction. Old C6 detector reachability also
+uses a .5 ms grid. A first sample up to 1 ms after tau=.529, plus .5 ms delay,
+can arrive at .5305, outside the old .530 braking horizon. That integration
+needs its own repaired contract and construction. Do not silently extend the
+braking input or interpolate an old reading as fresh. No recovery-to-hold
+1 kHz theorem, infinite execution, maintained rest, lower-travel guarantee,
+Franka dynamics/contact/hardware validation, or novelty claim follows.

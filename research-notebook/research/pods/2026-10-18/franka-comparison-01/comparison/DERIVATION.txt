@@ -1,0 +1,209 @@
+B1 — DELAYED SAMPLED-DATA GOVERNOR ADAPTATION
+18 October 2026. Builder derivation, pending independent review.
+
+1. What is implemented
+
+This is a bounded, explicitly disclosed adaptation of the reference-governor
+architecture in Di Cairano, Kalabic and Kolmanovsky (2015), not a reproduction
+of their continuous closed-loop plant or their spacecraft experiment.
+
+Primary source: https://www.merl.com/publications/docs/TR2015-154.pdf
+DOI: 10.1016/j.automatica.2015.09.006. Pinned PDF in inputs/.
+Read equations (3), (5), (9)-(19), (23)-(30), Assumptions 2, 3, 12, 17, 18,
+Lemma 10, Lemma 14, and the relevant proofs. Sections 2-4, printed pp.3-7
+(PDF pp.5-9). Their (15) selects the closest requested reference subject to
+next-state admissibility under a known delay. Equation (19) handles unknown
+short delay by robust vertices. The unchanged-reference fallback removes
+their delay-increment uncertainty. Their early model has exact state data;
+Section 4 supplies an observer-error treatment. Remark 9 adds finite checks
+between sampling times. It does not alone establish every-real-time safety.
+
+Own adaptation: a known fixed command delay enters a sampled feedback loop,
+with persistent measurement and target errors. We derive its exact augmented
+map. A persistent-error block-invariant tail replaces an unjustified reuse
+of the paper's no-change argument. Our estimator is a fresh measurement box,
+not their observer. We use a finite prediction with a conservative terminal
+subset and retain the last accepted constant-reference plan when a new box
+is infeasible. We do not claim their recursive QP feasibility or convergence
+theorem. This is existing reference-governor reasoning, not a novelty claim.
+
+2. Common experiment contract
+
+Use SI units and one physical state p=(x,v,a):
+  x'=v; v'=a; a'=r(u+d-a), with known constant r=8 /s.
+  |u|<=2 m/s^2. Clipping is BEFORE d. |d|<=.01 m/s^2.
+  T=.001 s. Sample k at kT; compute from that sample; dispatch at kT+D,
+  D=.0005 s. The old command remains active until dispatch.
+  Pending u_-1=-1.21. The controller knows this value exactly.
+  m_k=p(kT)+e_k; |e_k|<=(.001,.01,.05) in corresponding SI units.
+  u_k=clip(8*c_k-[8,6,.5]m_k,[-2,2]).
+
+For THIS experiment d is an unknown independent CONSTANT on each of the two
+subintervals [kT,kT+D) and [kT+D,(k+1)T). Values can differ between halves.
+This is an explicit common subclass of the older arbitrary-bounded-d model.
+It is not valid to replace an arbitrary time-varying d by one scalar average
+in each half; controls.py contains a counter-control for that reduction.
+
+The controller receives the sample immediately; only its computed command
+has the known D delay. No sensor-channel delay, dropout, packet overtaking,
+variable response rate or unknown delay is included. At actuation, the held
+sample age ranges from D to T+D=1.5 ms, with the old sample used on the left
+of dispatch. Neither arm gets the true state. Both get the same exogenous
+sensor-error and disturbance sequences, indexed by the same physical time.
+Their measured values differ after their physical trajectories separate.
+
+Both arms use the same requested position .14 m, travel limits [-.05,.15] m,
+initial states, commands and clocks. The lower travel limit is an explicit
+experimental restriction; the old C5 theorem only addressed forward travel.
+The RG uses an auxiliary sample-speed certificate |v|<=.5 m/s. This is an
+internal conservative check, not privileged plant information.
+
+The C5 arm selects its center once from its actual first measurement, using
+the exact policy in the copied ClearancePolicy.lean, and retains that center.
+The requested target remains .14 m when computing all tracking errors. Its
+center is not redefined as the requested target. Its old proof has total
+age<=1 ms. The numerical extension here has age<=1.5 ms, so that old theorem
+is not a justification for these runs. A separate T1 theorem, if accepted,
+must be identified separately; it is not silently imported here.
+
+3. Exact two-subinterval map
+
+Let P(t)=exp(A_o*t), b(t)=integral_0^t exp(A_o*s) B_o ds, where
+  A_o=[[0,1,0],[0,0,1],[0,0,-8]], B_o=[0,0,8]^T.
+Let R=T-D, J=P(R)b(D), K=[8,6,1/2], E=[1,0,0,0]^T.
+For unclipped feedback and eta=-K*e, augmented state X=[p,u_old] satisfies
+  X_next=F*X+B*c+G*[eta,d_before,d_after],
+  F=[[P(T)-b(R)K, J],[-K,0]], B=[8*b(R);8],
+  G=[[b(R),J,b(R)],[1,0,0]].
+Here |eta|<=.093, independently of |d_before|,|d_after|<=.01. The three-input
+box is an outer bound on all allowed sensor errors. This transformation does
+not remove the old-command memory. F*E+B=E, so equilibrium is X=E*c.
+
+At the current decision the computed u is known from m, so it must not be
+assigned a second sensor-error input. With epsilon=p-m, the FIRST step is
+  X_1=F*[m,u_old]+B*c+H*epsilon+G0*[d_before,d_after],
+  H=[P(T);0], G0=[[J,b(R)],[0,0]].
+This is not F*[epsilon,0]. The first command depends on m, not hidden p.
+controls.py compares both maps against separate analytic two-phase flows.
+
+For a proposed constant c, at later sample h>=1 the nominal state is
+  X_h=F^h*[m,u_old]+(E-F^h*E)*c.
+For any row C, its uncertainty support is
+  |C F^(h-1) H|*sensor_bounds
+  + .01*sum |C F^(h-1) G0|
+  + sum_(i=0)^(h-2) |C F^i G|*[.093,.01,.01].
+Absolute values are componentwise; empty sums are zero. This formula retains
+the first measurement uncertainty, both first physical disturbances and all
+fresh errors at later samples.
+
+Within a later cell, for 0<=tau<=D, use old=b(tau), new=0. For D<tau<=T,
+use old=P(tau-D)b(D), new=b(tau-D). Physical state is
+  p(tau)=[P(tau)-new*K,old]X_h+8*new*c+new*eta_h
+         +old*d_before+new*d_after.
+Before D the last term's new coefficient is zero. The same independent
+constant disturbance in a half is correlated with its endpoint, but separate
+support maxima remain sound upper bounds. In the current cell, epsilon
+propagates by P(tau), and eta_h is absent because u(m) is already known.
+
+4. Exact persistent-error terminal construction
+
+Define z=S*(X-E*c), where
+  z0=x-c; z1=x-c+v/4; z2=x-c+v/2+a/16;
+  z3=(u_old+8*(x-c)+6*v+a/2)/24.
+The fourth coordinate is essential. All numerical scalings use SI values.
+Let A=S F S^-1, W={S G nu: |nu|<=(.093,.01,.01)} and B0=[-.014,.014]^4.
+Set m=2000. For 0<=j<=m define the exact reachable polytope
+  R_j=A^j B0 + sum_(i=0)^(j-1) A^i W.
+Its coordinate support is
+  b_j=|A^j|*[.014,.014,.014,.014]
+      +sum_(i=0)^(j-1) |A^i S G|*[.093,.01,.01].
+The integer-interval checker proves b_m<.014 componentwise for the exact
+matrix, and bounds all b_j for 0<=j<m. Thus R_m is contained in B0.
+The convex hull Omega=conv(union_(j=0)^(m-1) R_j) is robust positively
+invariant: A*Omega+W is contained in conv(union R_(j+1)), which is contained
+in Omega because R_m is contained in R_0. This is a finite polytope; we do
+not claim it is the maximal admissible set. Repeated blocks also directly
+show the all-future constant-reference property starting from B0.
+
+terminal_interval.py uses integer outward intervals with quantum 10^-24.
+It encloses exp(-.004) and exp(-.008) by the alternating Taylor terms 12 and
+13, then encloses every matrix product and support sum with floor/ceiling
+integer division. No floating exp or matrix product enters this check.
+terminal-exact.json records exact rational endpoints and all eight tests.
+The proof of the enclosure rules is written here, not formalized in Lean.
+Independent review of the script and argument remains necessary.
+
+Approximate values, for orientation only:
+  b_m <= (.012892,.012879,.012875,.003912).
+  max_j b_j <= (.014001,.014002,.014057,.014001).
+The exact JSON bounds are authoritative. The block infinity norm is <1,
+which also proves the exact sampled F is Schur after similarity transform.
+This is stronger evidence than only checking eigenvalues of a binary64 F.
+
+For c in Gamma=[-.03,.135], Omega obeys the travel and command requirements.
+At sample times |v|<=4*(b0+b1), |a|<=16*(b0+2*b1+b2), and the next raw
+command has magnitude <=8*(b0+b1+b2)+.093. The checker establishes these
+are respectively below .5, 2.01 and 2. Thus clipping is inactive in the tail.
+It also establishes c+/-b0 with the interpolation margin inside travel limits.
+
+5. Finite prediction, intersample travel and fallback
+
+The online program requires N=2000 steps of constant-reference prediction,
+using the support formula above. It checks position at tau=0,T/4,T/2,3T/4,
+sample speed |v|<=.5, and every raw new command in [-2,2]. Each position bound
+is tightened by .000126 m. At N it requires the whole uncertain z_N in B0.
+All constraints are affine inequalities in the ONE reference c. Their
+intersection with Gamma is an interval. Select the projection of the SAME
+requested .14 onto that interval; this solves the scalar squared-distance
+objective. If the interval is empty after an earlier acceptance, keep the
+last accepted constant reference. If the first interval is empty, fail the
+case; do not invent a safe initial reference.
+
+The command constraints make clipping inactive for every trajectory in an
+exactly checked plan. Given |a(0)|<=2.01 and |u+d|<=2.01, the scalar lag ODE
+keeps |a|<=2.01. Sample-speed bounds then give |v(t)|<=.50201 over each cell.
+The maximum gap between position checks is T/4; the possible travel in one
+gap is at most .50201/4000=.0001255025<.000126 m. This covers the real-time
+intervals, including the last partial cell, not only the checked instants.
+The invariant tail supplies the remaining samples and their intervening
+intervals. This written argument is separate from numerical peak finding.
+
+If every finite inequality is checked soundly, each accepted constant plan
+is safe for all future allowed disturbances. Retaining that plan is safe even
+if a freshly reset measurement box fails a later query. A new accepted plan
+contains the actual state by the sensor bounds and known u_old. Induction on
+accepted plans gives the same safety statement. We do NOT assert that the
+fresh-box optimization itself is recursively feasible at every sample.
+
+Critical implementation boundary: compare.py constructs and evaluates the
+finite prediction in numpy/scipy binary64, with a 1e-10 inequality reserve.
+That reserve has NOT been proved to enclose all construction/evaluation error.
+Only the terminal block is independently enclosed with integer arithmetic.
+Therefore this packet does NOT prove robust all-time safety of the executable
+controller, despite supplying a complete mathematical terminal construction.
+A validated finite-prediction evaluator is the exact remaining numerical
+trust obligation. No Lean theorem for this adaptation is claimed.
+
+6. Simulation and meaningful limits
+
+The simulator uses the closed-form constant-input physical solution on each
+half interval. Position extrema are sought at endpoints and every v=0 root.
+Since a(t) has at most one zero in a constant-input segment, splitting there
+brackets all velocity roots. scipy brentq locates these roots numerically.
+This is more informative than a 1 kHz peak sample, but is still binary64
+numerical evidence. It is not a worst-case proof over the uncertainty class.
+
+The 12 case definitions were fixed before the first sanity run. No case was
+added after a result. All scores are retained. In ALL 12 cases the RG chooses
+c=.135 throughout. Its dynamic inequalities are evaluated but not binding;
+Gamma's upper endpoint binds. These results do not measure the advantage of
+online state adaptation. A separate OUTSIDE-C5-GUARD semantic witness
+m=(.13,.08,-.2) makes c<=about .12807855 necessary for this certificate and
+rejects the generic .135 clamp. That diagnostic is not a scored comparison.
+
+The fixed-rate and subinterval-constant-d restrictions are intentional. A
+varying-rate flow and a within-half d sign switch both give counter-controls
+against pretending the exact augmented map covers a larger class. The
+standstill target is also limited: constant eta+d=.103 allows equilibrium
+position offset .103/8=.012875 m from c. Neither this controller nor C5 proves
+precision standstill under those unchanged worst-case biases.

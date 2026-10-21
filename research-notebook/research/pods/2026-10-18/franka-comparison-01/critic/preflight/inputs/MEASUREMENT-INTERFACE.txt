@@ -1,0 +1,52 @@
+FRANKA MEASUREMENT AND COMMAND INTERFACE — OPEN GATES
+18 October 2026. Source audit, not a hardware test.
+
+The timing change alone cannot make this a Franka theorem.
+The scalar proof needs measured position, velocity and actual acceleration,
+with errors at most 1 mm, 10 mm/s and 0.05 m/s². Those are our declared
+assumptions. They are not Franka accuracy specifications.
+
+The official 0.15.0 RobotState API labels q and dq as measured joint position
+and velocity. It labels ddq_d as DESIRED joint acceleration. Substituting ddq_d
+for actual acceleration would introduce an unproved tracking-error premise.
+The current latest API also exposes link-mounted accelerometer arrays. These
+are not directly the scalar end-effector-axis acceleration used by our proof.
+Their frame, gravity, rigid-body kinematics, noise and timing must be mapped.
+The installed robot and libfranka version have not been selected or inspected.
+
+A naive derivative does not supply the required error bound.
+If two scalar velocity readings each have independent bounded error e_v,
+their first-difference noise can be as large as 2*e_v/T. At e_v=0.01 m/s
+and T=0.001 s, this is 20 m/s²: 400 times our 0.05 m/s² allowance.
+Opposite-sign errors attain this value even when true velocity is constant.
+This is a counterexample to that measurement conversion, not to the controller
+and not a claim about measured Franka noise. Temporal correlation or an observer
+can improve the result only with additional justified assumptions.
+
+With acceleration jerk bounded by J, the backward first difference estimates
+the average acceleration over the interval. Its endpoint bias is at most J*T/2,
+in addition to the measurement-noise term. If either term is omitted, the
+derived acceleration box is not justified. No observer was validated here.
+
+Commands also need a defined mapping.
+FCI exposes joint torque, joint position/velocity and Cartesian pose/velocity
+interfaces. The scalar input in this proof is an acceleration target for an
+uncertain first-order actuator. None of those API names alone establishes that
+plant model. The command filter and optional rate limiter can alter the signal;
+the actual mode, settings and full actuator path must enter identification.
+No configuration change or instruction to disable a safety feature is made.
+
+Next falsifiable interface test
+Pin the intended robot/software/mode. Record timestamped raw measurements,
+commands before and after signal processing, and an independent acceleration
+reference on a limited, approved experiment. Fit and then test the lag and
+error intervals on held-out conditions, including payload and speed changes.
+Without hardware, a simulation can test the adapter code but cannot validate
+the physical intervals. A derived observer proof is a separate possible route.
+
+Primary sources, retrieved into sources/ with hashes:
+https://frankarobotics.github.io/docs/overview.html
+https://frankarobotics.github.io/docs/troubleshooting.html
+https://frankarobotics.github.io/libfranka/0.15.0/structfranka_1_1RobotState.html
+https://frankarobotics.github.io/libfranka/latest/structfranka_1_1RobotState.html
+https://frankarobotics.github.io/libfranka/latest/classfranka_1_1Robot.html
