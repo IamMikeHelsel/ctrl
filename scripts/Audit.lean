@@ -12,3 +12,6 @@ import ControlsLean
 #print axioms ControlsLean.Estimation.postVar_eq_opt_iff
 #print axioms ControlsLean.Estimation.inv_postVarOpt
 #print axioms ControlsLean.Estimation.riccati_fixed_unique
+#print axioms ControlsLean.Estimation.abs_riccati_iterate_sub_le
+#print axioms ControlsLean.Estimation.tendsto_riccati_iterate
+#print axioms ControlsLean.Estimation.tendsto_gain_riccati_iterate
