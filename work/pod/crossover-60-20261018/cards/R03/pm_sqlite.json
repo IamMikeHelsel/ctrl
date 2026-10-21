@@ -1,0 +1,36 @@
+{
+  "sqlite_version": "3.53.1",
+  "concurrent_two_writer_rounds": 32,
+  "each_round": [
+    "published",
+    "stale"
+  ],
+  "full_snapshot_mutations_rejected": [
+    "history",
+    "offset",
+    "width",
+    "frame",
+    "calibration",
+    "clock_domain",
+    "clock_epoch",
+    "owner_epoch",
+    "task"
+  ],
+  "fault_rollback_preserves_both": true,
+  "fresh_late_clock_rejected": true,
+  "stale_callback_counterexample": {
+    "cached_upper": "1/2",
+    "true_publication_time": "7/10",
+    "earliest_execution": "3/5",
+    "published": true,
+    "physical_ordering": false
+  },
+  "external_ack_loss_trace": [
+    "database commit",
+    "external effect",
+    "acknowledgement lost",
+    "replay outbox",
+    "external effect again"
+  ],
+  "scope": "Real local SQLite transactions test atomic snapshot+append+outbox state publication. Synthetic certificate fixture and model clock; no verified source certificate checker, bounded OS/fsync tail, physical event-time mapping, actual dispatch exactly-once, hard real-time or robot validation. Epochs trusted distinct/unbounded in model; no reset/wrap guarantee."
+}

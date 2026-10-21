@@ -1,0 +1,294 @@
+{
+  "cases": [
+    {
+      "case": "positive",
+      "request": {
+        "initial": [
+          "0",
+          "0",
+          "0",
+          "0"
+        ],
+        "terminal_derivatives": [
+          "0",
+          "0",
+          "0"
+        ],
+        "latency_policy": "hold_rest",
+        "latency": "1/200",
+        "deadline": "21/200",
+        "distance": "1/24000",
+        "velocity_limit": "1",
+        "acceleration_limit": "3",
+        "jerk_limit": "10",
+        "snap_limit": "400"
+      },
+      "result": {
+        "decision": "ADMIT_REFERENCE",
+        "bounds": {
+          "velocity": "7/7680",
+          "acceleration": "7/64",
+          "jerk": "35/16",
+          "snap": "350"
+        },
+        "duration": "1/10",
+        "distance": "1/24000",
+        "shape": "35s4-84s5+70s6-20s7",
+        "scope": "Prospective reference only; polynomial derivative/corridor bridge separatelyproved, no plant guarantee"
+      }
+    },
+    {
+      "case": "impossiblejoint",
+      "request": {
+        "initial": [
+          "0",
+          "0",
+          "0",
+          "0"
+        ],
+        "terminal_derivatives": [
+          "0",
+          "0",
+          "0"
+        ],
+        "latency_policy": "hold_rest",
+        "latency": "1/200",
+        "deadline": "21/200",
+        "distance": "1/1000",
+        "velocity_limit": "1",
+        "acceleration_limit": "3",
+        "jerk_limit": "10",
+        "snap_limit": "400"
+      },
+      "result": {
+        "decision": "REJECT",
+        "reason": "necessaryrestmomentdualgate"
+      }
+    },
+    {
+      "case": "unsupportednonrest",
+      "request": {
+        "initial": [
+          "0",
+          "0",
+          "1",
+          "10"
+        ],
+        "terminal_derivatives": [
+          "0",
+          "0",
+          "0"
+        ],
+        "latency_policy": "hold_rest",
+        "latency": "1/200",
+        "deadline": "21/200",
+        "distance": "1/24000",
+        "velocity_limit": "1",
+        "acceleration_limit": "3",
+        "jerk_limit": "10",
+        "snap_limit": "400"
+      },
+      "result": {
+        "decision": "UNKNOWN",
+        "reason": "nonreststate unsupported"
+      }
+    },
+    {
+      "case": "wronghold",
+      "request": {
+        "initial": [
+          "0",
+          "0",
+          "0",
+          "0"
+        ],
+        "terminal_derivatives": [
+          "0",
+          "0",
+          "0"
+        ],
+        "latency_policy": "continue_old",
+        "latency": "1/200",
+        "deadline": "21/200",
+        "distance": "1/24000",
+        "velocity_limit": "1",
+        "acceleration_limit": "3",
+        "jerk_limit": "10",
+        "snap_limit": "400"
+      },
+      "result": {
+        "decision": "UNKNOWN",
+        "reason": "latencymodel unsupported"
+      }
+    },
+    {
+      "case": "lessslack",
+      "request": {
+        "initial": [
+          "0",
+          "0",
+          "0",
+          "0"
+        ],
+        "terminal_derivatives": [
+          "0",
+          "0",
+          "0"
+        ],
+        "latency_policy": "hold_rest",
+        "latency": "1/200",
+        "deadline": "1/20",
+        "distance": "1/24000",
+        "velocity_limit": "1",
+        "acceleration_limit": "3",
+        "jerk_limit": "10",
+        "snap_limit": "400"
+      },
+      "result": {
+        "decision": "REJECT",
+        "reason": "necessaryrestmomentdualgate"
+      }
+    },
+    {
+      "case": "septicgap",
+      "request": {
+        "initial": [
+          "0",
+          "0",
+          "0",
+          "0"
+        ],
+        "terminal_derivatives": [
+          "0",
+          "0",
+          "0"
+        ],
+        "latency_policy": "hold_rest",
+        "latency": "1/200",
+        "deadline": "21/200",
+        "distance": "1/20000",
+        "velocity_limit": "1",
+        "acceleration_limit": "3",
+        "jerk_limit": "10",
+        "snap_limit": "400"
+      },
+      "result": {
+        "decision": "UNKNOWN",
+        "reason": "septiccertificateinsufficient"
+      }
+    },
+    {
+      "case": "wrongunits",
+      "request": {
+        "initial": [
+          "0",
+          "0",
+          "0",
+          "0"
+        ],
+        "terminal_derivatives": [
+          "0",
+          "0",
+          "0"
+        ],
+        "latency_policy": "hold_rest",
+        "latency": "1/200",
+        "deadline": "21/200",
+        "distance": "1",
+        "velocity_limit": "1",
+        "acceleration_limit": "3",
+        "jerk_limit": "10",
+        "snap_limit": "400"
+      },
+      "result": {
+        "decision": "REJECT",
+        "reason": "necessaryrestmomentdualgate"
+      }
+    },
+    {
+      "case": "nonzeroendjerk",
+      "request": {
+        "initial": [
+          "0",
+          "0",
+          "0",
+          "0"
+        ],
+        "terminal_derivatives": [
+          "0",
+          "0",
+          "1"
+        ],
+        "latency_policy": "hold_rest",
+        "latency": "1/200",
+        "deadline": "21/200",
+        "distance": "1/24000",
+        "velocity_limit": "1",
+        "acceleration_limit": "3",
+        "jerk_limit": "10",
+        "snap_limit": "400"
+      },
+      "result": {
+        "decision": "UNKNOWN",
+        "reason": "nonreststate unsupported"
+      }
+    },
+    {
+      "case": "reverse_request",
+      "request": {
+        "initial": [
+          "0",
+          "0",
+          "0",
+          "0"
+        ],
+        "terminal_derivatives": [
+          "0",
+          "0",
+          "0"
+        ],
+        "latency_policy": "hold_rest",
+        "latency": "1/200",
+        "deadline": "21/200",
+        "distance": "-1/24000",
+        "velocity_limit": "1",
+        "acceleration_limit": "3",
+        "jerk_limit": "10",
+        "snap_limit": "400"
+      },
+      "result": {
+        "decision": "UNKNOWN",
+        "reason": "outsidepositiveforwardhorizoncontract"
+      }
+    },
+    {
+      "case": "zero_horizon_hold",
+      "request": {
+        "initial": [
+          "0",
+          "0",
+          "0",
+          "0"
+        ],
+        "terminal_derivatives": [
+          "0",
+          "0",
+          "0"
+        ],
+        "latency_policy": "hold_rest",
+        "latency": "1/200",
+        "deadline": "1/200",
+        "distance": "0",
+        "velocity_limit": "1",
+        "acceleration_limit": "3",
+        "jerk_limit": "10",
+        "snap_limit": "400"
+      },
+      "result": {
+        "decision": "UNKNOWN",
+        "reason": "outsidepositiveforwardhorizoncontract"
+      }
+    }
+  ],
+  "scope": "Exact arithmetic prototype; complete polynomial all-time certificate and kinematic binding are needed. UNKNOWN is notinfeasible."
+}

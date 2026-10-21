@@ -1,0 +1,125 @@
+{
+  "scope": "Proposed next30-minute block; cases are specifications, not claimed executions. Pair every rejection with unmutated passing fixture. Runtime needs trusted schedule, source receipts and physical actuator model.",
+  "mutations": [
+    {
+      "id": 1,
+      "mutation": "missing_due",
+      "construction": "Remove packetk while retaining trusted acquisition interval.",
+      "required_outcome": "Do not releasek or claim First/physical handoff; surface missing-input state."
+    },
+    {
+      "id": 2,
+      "mutation": "missing_prior",
+      "construction": "Deliver qualifyingk but remove earlierj<k from validated ledger.",
+      "required_outcome": "Reject first-index certificate even ifk is fresh."
+    },
+    {
+      "id": 3,
+      "mutation": "conflicting_duplicate",
+      "construction": "Deliver two different payloads with same session/sequence/sample identity.",
+      "required_outcome": "Reject conflict; never overwrite the preserved reading."
+    },
+    {
+      "id": 4,
+      "mutation": "duplicate_commit",
+      "construction": "Replay identical due receipt after an earlier successful release.",
+      "required_outcome": "No second command transition or repeated handoff."
+    },
+    {
+      "id": 5,
+      "mutation": "wrong_session",
+      "construction": "Reuse a valid sequence and payload from a previous acquisition session.",
+      "required_outcome": "Reject against current trusted session and schedule."
+    },
+    {
+      "id": 6,
+      "mutation": "index_stamp_mismatch",
+      "construction": "Change sequencek to k+1 while keeping original timestamp.",
+      "required_outcome": "Reject rather than deriving a new timestamp from the claimed sequence."
+    },
+    {
+      "id": 7,
+      "mutation": "timestamp_refresh",
+      "construction": "Replace original sensor stamp by receive or dispatch time.",
+      "required_outcome": "Reject; age is measured from original sampling."
+    },
+    {
+      "id": 8,
+      "mutation": "pre_sample_arrival",
+      "construction": "Supply actual arrival before the declared physical sample.",
+      "required_outcome": "Reject negative latency under original contract."
+    },
+    {
+      "id": 9,
+      "mutation": "late_arrival",
+      "construction": "Delay due packet just beyond s_k+h.",
+      "required_outcome": "Reject original-clock refinement; late arrival cannot retroactively satisfy deadline."
+    },
+    {
+      "id": 10,
+      "mutation": "clock_skew",
+      "construction": "Offset sensor clock by+.2ms so true1.1ms age appears.9ms.",
+      "required_outcome": "Require verified clock relation; fail original age assertion."
+    },
+    {
+      "id": 11,
+      "mutation": "timer_before_due_receive",
+      "construction": "Run timer callback before ingestion of packet arriving exactly at deadline.",
+      "required_outcome": "No missing-success or premature commit; due-receipt barrier required."
+    },
+    {
+      "id": 12,
+      "mutation": "future_tied_coalescing",
+      "construction": "Ingest k+1 first at same instant ask then replace duek with latestpayload.",
+      "required_outcome": "Retain duek separately; futurek+1 must wait its own release."
+    },
+    {
+      "id": 13,
+      "mutation": "forged_payload",
+      "construction": "Substitute(0,0,-1) for source packet632 while preserving its index.",
+      "required_outcome": "Reject source/receipt binding even though numerical Guard passes."
+    },
+    {
+      "id": 14,
+      "mutation": "forged_guard_bit",
+      "construction": "Keep valid payload but flip externally supplied qualification Boolean.",
+      "required_outcome": "Recompute or verify Guard from that same immutable payload."
+    },
+    {
+      "id": 15,
+      "mutation": "prefix_certificate_gap",
+      "construction": "Claim complete prefix using highestsequence orcount while omitting one index and duplicating another.",
+      "required_outcome": "Reject exact-coverage mismatch; no cardinality-only acceptance."
+    },
+    {
+      "id": 16,
+      "mutation": "positive_processing_time",
+      "construction": "Admit network arrival exactlys_k+h then add1microsecond validation/computation.",
+      "required_outcome": "Cannot claim original release clock; require reserved internal processing slack."
+    },
+    {
+      "id": 17,
+      "mutation": "actuation_delay",
+      "construction": "Release software command atdeadline but apply physical command1microsecond later.",
+      "required_outcome": "Cannot inherit source pending interval/ODE join without explicit actuator timing proof."
+    },
+    {
+      "id": 18,
+      "mutation": "missed_deadline_queue",
+      "construction": "Stall event loop foroneh while three legally timed packets become pending.",
+      "required_outcome": "Queue<=2 theorem must not be invoked without serviced-deadline invariant."
+    },
+    {
+      "id": 19,
+      "mutation": "counterfactual_future_reading",
+      "construction": "After handoff replace generated newReadings with old continued-braking readings.",
+      "required_outcome": "Reject state/sensor binding even when timestamps/indices are correct."
+    },
+    {
+      "id": 20,
+      "mutation": "future_lookahead",
+      "construction": "Give two infinite stream completions with identical finite prefix but different future guards/delays.",
+      "required_outcome": "Emitted prefix commands/decisions must agree; implementation may not globally sort or inspect future stream."
+    }
+  ]
+}

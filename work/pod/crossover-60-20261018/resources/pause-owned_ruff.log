@@ -1,0 +1,400 @@
+I001 [*] Import block is un-sorted or un-formatted
+  --> work/pod/crossover-60-20261018/cards/R03/critic_commit_tail.py:3:1
+   |
+ 1 |   """Fresh-clock SQLite tail overrun under a controlled reader; no WCET claim."""
+ 2 |
+ 3 | / from pathlib import Path
+ 4 | | from threading import Event, Thread
+ 5 | | import json
+ 6 | | import sqlite3
+ 7 | | import tempfile
+ 8 | | import time
+   | |___________^
+ 9 |
+10 |   P = Path(__file__).resolve().parent
+   |
+help: Organize imports
+  |
+2 |
+  - from pathlib import Path
+  - from threading import Event, Thread
+3 | import json
+4 | import sqlite3
+5 | import tempfile
+6 | import time
+7 + from pathlib import Path
+8 + from threading import Event, Thread
+9 |
+  |
+
+I001 [*] Import block is un-sorted or un-formatted
+  --> work/pod/crossover-60-20261018/cards/R03/critic_interleavings.py:3:1
+   |
+ 1 |   """Exact diagnostic runtime interleavings; not a refinement proof of an executor."""
+ 2 |
+ 3 | / from dataclasses import dataclass, replace
+ 4 | | from fractions import Fraction as F
+ 5 | | from itertools import permutations
+ 6 | | import json
+ 7 | | from math import comb
+ 8 | | from pathlib import Path
+   | |________________________^
+ 9 |
+10 |   P = Path(__file__).resolve().parent
+   |
+help: Organize imports
+  |
+2 |
+3 + import json
+4 | from dataclasses import dataclass, replace
+5 | from fractions import Fraction as F
+6 | from itertools import permutations
+  - import json
+7 | from math import comb
+  |
+
+I001 [*] Import block is un-sorted or un-formatted
+  --> work/pod/crossover-60-20261018/cards/R03/critic_receipt.py:3:1
+   |
+ 1 |   """Independent caller probes for the exact payload receipt boundary."""
+ 2 |
+ 3 | / import json
+ 4 | | from dataclasses import replace
+ 5 | | from fractions import Fraction as F
+ 6 | | from pathlib import Path
+ 7 | | import runpy
+ 8 | | import sys
+   | |__________^
+ 9 |
+10 |   P = Path(__file__).resolve().parent
+   |
+help: Organize imports
+  |
+3 | import json
+4 + import runpy
+5 + import sys
+6 | from dataclasses import replace
+7 | from fractions import Fraction as F
+8 | from pathlib import Path
+  - import runpy
+  - import sys
+9 |
+  |
+
+F401 [*] `copy` imported but unused
+ --> work/pod/crossover-60-20261018/cards/R03/critic_sqlite_snapshot.py:2:8
+  |
+1 | """State-publication primitive only: local transactions, no robot/certificate executor."""
+2 | import copy
+  |        ^^^^
+3 | import json
+4 | import sqlite3
+  |
+help: Remove unused import: `copy`
+  |
+1 | """State-publication primitive only: local transactions, no robot/certificate executor."""
+  - import copy
+2 | import json
+  |
+
+E701 Multiple statements on one line (colon)
+  --> work/pod/crossover-60-20261018/cards/R03/critic_sqlite_snapshot.py:28:27
+   |
+27 | def publish(path,expected,event_id,read_clock,*,fault=False,barrier=None):
+28 |     if barrier is not None:barrier.wait()
+   |                           ^
+29 |     c=sqlite3.connect(path,timeout=10,isolation_level=None)
+30 |     try:
+   |
+
+E702 Multiple statements on one line (semicolon)
+  --> work/pod/crossover-60-20261018/cards/R03/critic_sqlite_snapshot.py:34:34
+   |
+32 |         current=c.execute('SELECT body FROM live WHERE id=1').fetchone()[0]
+33 |         if current!=expected:
+34 |             c.execute('ROLLBACK');return 'stale'
+   |                                  ^
+35 |         # This callback supplies an interval for a model clock AFTER lock acquisition.
+36 |         # The publication-tail bound is a stated premise, not established by SQLite.
+   |
+
+E702 Multiple statements on one line (semicolon)
+  --> work/pod/crossover-60-20261018/cards/R03/critic_sqlite_snapshot.py:38:34
+   |
+36 |         # The publication-tail bound is a stated premise, not established by SQLite.
+37 |         now_upper=read_clock()
+38 |         publication_tail=F(1,100);dispatch_max=F(1,50);execution_lower=F(3,5)
+   |                                  ^
+39 |         if now_upper+publication_tail+dispatch_max>execution_lower:
+40 |             c.execute('ROLLBACK');return 'expired'
+   |
+
+E702 Multiple statements on one line (semicolon)
+  --> work/pod/crossover-60-20261018/cards/R03/critic_sqlite_snapshot.py:38:55
+   |
+36 |         # The publication-tail bound is a stated premise, not established by SQLite.
+37 |         now_upper=read_clock()
+38 |         publication_tail=F(1,100);dispatch_max=F(1,50);execution_lower=F(3,5)
+   |                                                       ^
+39 |         if now_upper+publication_tail+dispatch_max>execution_lower:
+40 |             c.execute('ROLLBACK');return 'expired'
+   |
+
+E702 Multiple statements on one line (semicolon)
+  --> work/pod/crossover-60-20261018/cards/R03/critic_sqlite_snapshot.py:40:34
+   |
+38 |         publication_tail=F(1,100);dispatch_max=F(1,50);execution_lower=F(3,5)
+39 |         if now_upper+publication_tail+dispatch_max>execution_lower:
+40 |             c.execute('ROLLBACK');return 'expired'
+   |                                  ^
+41 |         next_state=json.loads(current)
+42 |         next_state['events'].append(['31/50','-1/50'])
+   |
+
+E701 Multiple statements on one line (colon)
+  --> work/pod/crossover-60-20261018/cards/R03/critic_sqlite_snapshot.py:45:17
+   |
+43 |         next_state['version']+=1
+44 |         c.execute('UPDATE live SET body=? WHERE id=1',(encode(next_state),))
+45 |         if fault:raise RuntimeError('injected before outbox insert')
+   |                 ^
+46 |         c.execute('INSERT INTO outbox VALUES (?,?)',(event_id,encode({'execution':'31/50','delta':'-1/50','expected':expected})))
+47 |         c.execute('COMMIT');return 'published'
+   |
+
+E702 Multiple statements on one line (semicolon)
+  --> work/pod/crossover-60-20261018/cards/R03/critic_sqlite_snapshot.py:47:28
+   |
+45 |         if fault:raise RuntimeError('injected before outbox insert')
+46 |         c.execute('INSERT INTO outbox VALUES (?,?)',(event_id,encode({'execution':'31/50','delta':'-1/50','expected':expected})))
+47 |         c.execute('COMMIT');return 'published'
+   |                            ^
+48 |     except BaseException:
+49 |         if c.in_transaction:c.execute('ROLLBACK')
+   |
+
+E701 Multiple statements on one line (colon)
+  --> work/pod/crossover-60-20261018/cards/R03/critic_sqlite_snapshot.py:49:28
+   |
+47 |         c.execute('COMMIT');return 'published'
+48 |     except BaseException:
+49 |         if c.in_transaction:c.execute('ROLLBACK')
+   |                            ^
+50 |         raise
+51 |     finally:c.close()
+   |
+
+E701 Multiple statements on one line (colon)
+  --> work/pod/crossover-60-20261018/cards/R03/critic_sqlite_snapshot.py:51:12
+   |
+49 |         if c.in_transaction:c.execute('ROLLBACK')
+50 |         raise
+51 |     finally:c.close()
+   |            ^
+52 |
+53 | def mutate(path,field,value):
+   |
+
+E702 Multiple statements on one line (semicolon)
+  --> work/pod/crossover-60-20261018/cards/R03/critic_sqlite_snapshot.py:55:71
+   |
+53 | def mutate(path,field,value):
+54 |     with sqlite3.connect(path) as c:
+55 |         x=json.loads(c.execute('SELECT body FROM live').fetchone()[0]);x[field]=value
+   |                                                                       ^
+56 |         c.execute('UPDATE live SET body=?',(encode(x),))
+   |
+
+E702 Multiple statements on one line (semicolon)
+  --> work/pod/crossover-60-20261018/cards/R03/critic_sqlite_snapshot.py:62:32
+   |
+60 |     root=Path(td)
+61 |     for k in range(32):
+62 |         path=root/f'race{k}.db';setup(path);barrier=Barrier(2)
+   |                                ^
+63 |         with ThreadPoolExecutor(max_workers=2) as pool:
+64 |             fs=[pool.submit(publish,path,encode(BASE),f'event{i}',lambda:F(1,2),barrier=barrier) for i in range(2)]
+   |
+
+E702 Multiple statements on one line (semicolon)
+  --> work/pod/crossover-60-20261018/cards/R03/critic_sqlite_snapshot.py:62:44
+   |
+60 |     root=Path(td)
+61 |     for k in range(32):
+62 |         path=root/f'race{k}.db';setup(path);barrier=Barrier(2)
+   |                                            ^
+63 |         with ThreadPoolExecutor(max_workers=2) as pool:
+64 |             fs=[pool.submit(publish,path,encode(BASE),f'event{i}',lambda:F(1,2),barrier=barrier) for i in range(2)]
+   |
+
+E702 Multiple statements on one line (semicolon)
+  --> work/pod/crossover-60-20261018/cards/R03/critic_sqlite_snapshot.py:67:31
+   |
+65 |             rs=sorted(f.result() for f in fs)
+66 |         assert rs==['published','stale']
+67 |         body,count=state(path);x=json.loads(body)
+   |                               ^
+68 |         assert x['version']==1 and len(x['events'])==2 and count==1
+69 |         assert publish(path,encode(BASE),'retry',lambda:F(1,2))=='stale'
+   |
+
+E702 Multiple statements on one line (semicolon)
+  --> work/pod/crossover-60-20261018/cards/R03/critic_sqlite_snapshot.py:79:31
+   |
+77 |     }
+78 |     for name,(field,value) in mutation_cases.items():
+79 |         path=root/f'{name}.db';setup(path);mutate(path,field,value);old=state(path)
+   |                               ^
+80 |         assert publish(path,encode(BASE),name,lambda:F(1,2))=='stale' and state(path)==old
+81 |     path=root/'rollback.db';setup(path);old=state(path)
+   |
+
+E702 Multiple statements on one line (semicolon)
+  --> work/pod/crossover-60-20261018/cards/R03/critic_sqlite_snapshot.py:79:43
+   |
+77 |     }
+78 |     for name,(field,value) in mutation_cases.items():
+79 |         path=root/f'{name}.db';setup(path);mutate(path,field,value);old=state(path)
+   |                                           ^
+80 |         assert publish(path,encode(BASE),name,lambda:F(1,2))=='stale' and state(path)==old
+81 |     path=root/'rollback.db';setup(path);old=state(path)
+   |
+
+E702 Multiple statements on one line (semicolon)
+  --> work/pod/crossover-60-20261018/cards/R03/critic_sqlite_snapshot.py:79:68
+   |
+77 |     }
+78 |     for name,(field,value) in mutation_cases.items():
+79 |         path=root/f'{name}.db';setup(path);mutate(path,field,value);old=state(path)
+   |                                                                    ^
+80 |         assert publish(path,encode(BASE),name,lambda:F(1,2))=='stale' and state(path)==old
+81 |     path=root/'rollback.db';setup(path);old=state(path)
+   |
+
+E702 Multiple statements on one line (semicolon)
+  --> work/pod/crossover-60-20261018/cards/R03/critic_sqlite_snapshot.py:81:28
+   |
+79 |         path=root/f'{name}.db';setup(path);mutate(path,field,value);old=state(path)
+80 |         assert publish(path,encode(BASE),name,lambda:F(1,2))=='stale' and state(path)==old
+81 |     path=root/'rollback.db';setup(path);old=state(path)
+   |                            ^
+82 |     try:publish(path,encode(BASE),'fault',lambda:F(1,2),fault=True)
+83 |     except RuntimeError:pass
+   |
+
+E702 Multiple statements on one line (semicolon)
+  --> work/pod/crossover-60-20261018/cards/R03/critic_sqlite_snapshot.py:81:40
+   |
+79 |         path=root/f'{name}.db';setup(path);mutate(path,field,value);old=state(path)
+80 |         assert publish(path,encode(BASE),name,lambda:F(1,2))=='stale' and state(path)==old
+81 |     path=root/'rollback.db';setup(path);old=state(path)
+   |                                        ^
+82 |     try:publish(path,encode(BASE),'fault',lambda:F(1,2),fault=True)
+83 |     except RuntimeError:pass
+   |
+
+E701 Multiple statements on one line (colon)
+  --> work/pod/crossover-60-20261018/cards/R03/critic_sqlite_snapshot.py:82:8
+   |
+80 |         assert publish(path,encode(BASE),name,lambda:F(1,2))=='stale' and state(path)==old
+81 |     path=root/'rollback.db';setup(path);old=state(path)
+82 |     try:publish(path,encode(BASE),'fault',lambda:F(1,2),fault=True)
+   |        ^
+83 |     except RuntimeError:pass
+84 |     else:raise AssertionError('fault not exercised')
+   |
+
+E701 Multiple statements on one line (colon)
+  --> work/pod/crossover-60-20261018/cards/R03/critic_sqlite_snapshot.py:83:24
+   |
+81 |     path=root/'rollback.db';setup(path);old=state(path)
+82 |     try:publish(path,encode(BASE),'fault',lambda:F(1,2),fault=True)
+83 |     except RuntimeError:pass
+   |                        ^
+84 |     else:raise AssertionError('fault not exercised')
+85 |     assert state(path)==old
+   |
+
+E701 Multiple statements on one line (colon)
+  --> work/pod/crossover-60-20261018/cards/R03/critic_sqlite_snapshot.py:84:9
+   |
+82 |     try:publish(path,encode(BASE),'fault',lambda:F(1,2),fault=True)
+83 |     except RuntimeError:pass
+84 |     else:raise AssertionError('fault not exercised')
+   |         ^
+85 |     assert state(path)==old
+86 |     path=root/'late.db';setup(path);old=state(path)
+   |
+
+E702 Multiple statements on one line (semicolon)
+  --> work/pod/crossover-60-20261018/cards/R03/critic_sqlite_snapshot.py:86:24
+   |
+84 |     else:raise AssertionError('fault not exercised')
+85 |     assert state(path)==old
+86 |     path=root/'late.db';setup(path);old=state(path)
+   |                        ^
+87 |     assert publish(path,encode(BASE),'late',lambda:F(7,10))=='expired' and state(path)==old
+88 |     # Deliberate wrong callback returns old interval: database atomicity does not repair it.
+   |
+
+E702 Multiple statements on one line (semicolon)
+  --> work/pod/crossover-60-20261018/cards/R03/critic_sqlite_snapshot.py:86:36
+   |
+84 |     else:raise AssertionError('fault not exercised')
+85 |     assert state(path)==old
+86 |     path=root/'late.db';setup(path);old=state(path)
+   |                                    ^
+87 |     assert publish(path,encode(BASE),'late',lambda:F(7,10))=='expired' and state(path)==old
+88 |     # Deliberate wrong callback returns old interval: database atomicity does not repair it.
+   |
+
+I001 [*] Import block is un-sorted or un-formatted
+ --> work/pod/crossover-60-20261018/cards/R03/critic_timing_motion.py:3:1
+  |
+1 |   """Independent exact retained-FIR extrema under relative versus common time error."""
+2 |
+3 | / from fractions import Fraction as F
+4 | | from math import comb, factorial
+5 | | import json
+6 | | from pathlib import Path
+  | |________________________^
+7 |
+8 |   P = Path(__file__).resolve().parent
+  |
+help: Organize imports
+  |
+2 |
+3 + import json
+4 | from fractions import Fraction as F
+5 | from math import comb, factorial
+  - import json
+6 | from pathlib import Path
+  |
+
+I001 [*] Import block is un-sorted or un-formatted
+ --> work/pod/crossover-60-20261018/cards/R03/critic_transaction.py:3:1
+  |
+1 |   """Independent bounded transition audit and certificate-payload negative."""
+2 |
+3 | / import json
+4 | | from dataclasses import replace
+5 | | from fractions import Fraction as F
+6 | | from pathlib import Path
+7 | | import runpy
+  | |____________^
+8 |
+9 |   P = Path(__file__).resolve().parent
+  |
+help: Organize imports
+  |
+3 | import json
+4 + import runpy
+5 | from dataclasses import replace
+6 | from fractions import Fraction as F
+7 | from pathlib import Path
+  - import runpy
+8 |
+  |
+
+Found 29 errors.
+[*] 6 fixable with `--fix`.

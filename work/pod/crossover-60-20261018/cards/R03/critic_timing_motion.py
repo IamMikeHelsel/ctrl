@@ -1,0 +1,82 @@
+"""Independent exact retained-FIR extrema under relative versus common time error."""
+
+from fractions import Fraction as F
+from math import comb, factorial
+import json
+from pathlib import Path
+
+P = Path(__file__).resolve().parent
+h = F(1, 5)
+base = [(F(7, 25), F(1, 50)), (F(17, 25), F(-1, 50))]
+
+
+def value(events, t, order):
+    degree = 4 - order
+    return sum(
+        delta
+        * sum(F((-1) ** k * comb(4, k)) * max(t - tau - k * h, F(0)) ** degree for k in range(5))
+        for tau, delta in events
+    ) / (factorial(degree) * h**4)
+
+
+def extrema(events):
+    knots = sorted({tau + k * h for tau, _ in events for k in range(5)})
+    candidates = knots[:]
+    for left, right in zip(knots, knots[1:], strict=False):
+        jl, jr = value(events, left, 3), value(events, right, 3)
+        if jr != jl:
+            root = left - jl * (right - left) / (jr - jl)
+            if left < root < right:
+                candidates.append(root)
+    peak = max((abs(value(events, t, 2)), t) for t in candidates)
+    return {
+        "peak_acceleration": peak[0],
+        "time": peak[1],
+        "peak_jerk": max(abs(value(events, t, 3)) for t in knots),
+    }
+
+
+nominal = extrema(base)
+relative = [base[0], (base[1][0] - F(1, 1000), base[1][1])]
+advanced = extrema(relative)
+common = extrema([(tau - F(1, 1000), d) for tau, d in base])
+assert nominal["peak_acceleration"] == F(1, 2)
+assert advanced["peak_acceleration"] == F(160797, 320000) > F(1, 2)
+assert common["peak_acceleration"] == nominal["peak_acceleration"]
+assert advanced["peak_jerk"] < F(15, 2)
+# Discriminator is retained-history phase relationship, not an absolute clock translation.
+phase_time = F(13, 25)
+clock_events = [(F(11, 50), F(1, 50)), (F(31, 50), F(-1, 50))]
+source_velocity = value(clock_events, phase_time, 1)
+assert source_velocity == F(23, 480)
+left_velocity = F(3, 2) * source_velocity
+right_velocity = F(1, 2) * source_velocity
+assert right_velocity - left_velocity == F(-23, 480)
+affine_receipt = json.loads((P / "pm_affine_clock.json").read_text())
+rate = F(affine_receipt["clock_rate"])
+phase = F(affine_receipt["phase"])
+nominal_a = value(clock_events, phase, 2)
+assert nominal_a == F(-1, 2)
+scaled_a = nominal_a * rate**2
+assert scaled_a == F(affine_receipt["physical_reference_acceleration"])
+assert abs(scaled_a) > F(1, 2)
+assert (rate - 1) * F(affine_receipt["horizon"]) == F(17, 100000)
+out = {
+    "source_connection": "R10 buffered source-shaped events, independently reconstructed four-box formula",
+    "h": str(h),
+    "events": [[str(a), str(b)] for a, b in base],
+    "nominal": nominal,
+    "affine_clock_audit": {"scaled_acceleration": str(scaled_a), "bias_bound": str(F(17, 100000))},
+    "clock_kink": {
+        "clock_phase": str(phase_time),
+        "source_velocity": str(source_velocity),
+        "left_velocity": str(left_velocity),
+        "right_velocity": str(right_velocity),
+        "jump": str(right_velocity - left_velocity),
+    },
+    "second_event_advanced_1ms": advanced,
+    "all_events_advanced_1ms": common,
+    "scope": "Exact scalar reference extrema; not physical plant tracking. Candidate-specific nominal certificate cannot automatically transfer to independent clock/dispatch retiming.",
+}
+(P / "critic_timing_motion.json").write_text(json.dumps(out, default=str, indent=2) + "\n")
+print(json.dumps(out, default=str))

@@ -1,0 +1,52 @@
+C6 — FINITE READING THAT MEETS THE CLEARANCE POLICY GUARD
+18 October 2026. Frozen builder packet for independent review; not self-accepted.
+
+Result
+Under the explicit stronger continued-braking contract, the finite .5 ms
+sample grid contains a reading that meets the accepted C5 guard for every
+allowed sensor error. A first qualifying index exists no later than 1058.
+Common latency D<=.5 ms keeps its arrival inside the .530 s braking horizon.
+The physical state, sensor errors and original timestamps are retained.
+
+Useful change
+C5 previously assumed a qualifying first reading. C6 proves that a finite
+list contains one for this stronger physical family. It also exposes a
+prefix-only .142 m position bound, which does not borrow braking after a
+future switch or assume a future first zero. These are ingredients for a
+later switch proof. They do not supply that switch proof.
+
+Exact main facts
+The ODE gives a>=-1.22 and v>=.39-1.22t. Thus the first zero tau satisfies
+39/122<=tau<=.529. For t>=.1, the same ODE comparison gives a<=-19/70.
+Within 1 ms after tau, v is in [-.00122,0] and x<=.142. The sensor box then
+gives mx<=.143, |mv|<=.01122 and ma in [-1.27,-31/140], inside C5's guard.
+N=ceil(2000*tau) is an admitted finite index, with tau<=N/2000<=tau+.0005.
+
+The common-latency schedule has strict dispatch order and age<=1 ms on
+whole held cells, including incoming endpoints. Earlier queued stamps
+remain negative when every physical time is translated by the same origin.
+
+Fair scope
+The added lower acceleration/target bounds, positive initial speed,
+recovered rate ceiling and .530 s horizon are explicit. C1 alone does not
+imply this result. The nominal changing-target witness proves this stronger
+family is nonempty; it continues braking after the hypothetical switch.
+The actual switched path, prefix agreement, pending input agreement, later
+hold execution, and detector/actuator liveness remain open.
+
+True failures are kept separate from failed proof mutations. Exact examples
+show C1 can have an out-of-guard early zero; bounded sample gaps can be Zeno;
+a 1 ms period plus .5 ms delay is too old; variable delays can tie dispatches.
+The initial-zero/positive-acceleration example is a loss-prefix example only.
+
+Evidence
+DetectorBridge.lean: ODE comparisons, first zero and prefix-only position.
+DetectorSampling.lean: universal sensor guard, finite first index and clocks.
+DetectorWitness.lean: changing-target execution/readings and physical failures.
+CLAIMS.txt gives the exact contract, theorem map and open boundaries.
+verification.json and VERIFICATION-SUMMARY.txt record final replay results.
+INPUTS.json, SOURCE-DERIVATION.json and PREFLIGHT-SOURCES.json bind provenance.
+All development failures remain under attempts/. No earlier packet is edited.
+
+No general existence, full hybrid, physical grip, precision-rest, hardware,
+or novelty claim. Independent review must determine acceptance.

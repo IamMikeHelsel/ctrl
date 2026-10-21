@@ -1,0 +1,197 @@
+unformatted: File would be reformatted
+  --> work/pod/crossover-60-20261018/cards/M09/inventor_transport.py:21:13
+   |
+20 | def mul(a, b):
+   -     return [[sum(x * y for x, y in zip(row, col, strict=True)) for col in zip(*b, strict=True)] for row in a]
+21 +     return [
+22 +         [sum(x * y for x, y in zip(row, col, strict=True)) for col in zip(*b, strict=True)]
+23 +         for row in a
+24 +     ]
+25 |
+   |
+
+unformatted: File would be reformatted
+  --> work/pod/crossover-60-20261018/cards/M09/pm_pairs.py:2:1
+   |
+1  | """Exact diagnostic coordinate transport; no source bundle claim."""
+2  +
+3  | import json
+--------------------------------------------------------------------------------
+32 | rows = []
+   - for z in map(F, [0, '1/4', '-1/4', '1/3', '1/2', 2, -2]):
+   -     a, b = (1 + z*z)/(1-z*z), 2*z/(1-z*z)
+   -     s = [[a,b],[-b,a]]
+   -     t = 2*a*b
+   -     h = [[F(1),t],[t,F(-1)]]
+   -     assert mm(mm(tr(s),K),s) == h
+   -     rows.append((t,h,s))
+33 + for z in map(F, [0, "1/4", "-1/4", "1/3", "1/2", 2, -2]):
+34 +     a, b = (1 + z * z) / (1 - z * z), 2 * z / (1 - z * z)
+35 +     s = [[a, b], [-b, a]]
+36 +     t = 2 * a * b
+37 +     h = [[F(1), t], [t, F(-1)]]
+38 +     assert mm(mm(tr(s), K), s) == h
+39 +     rows.append((t, h, s))
+40 | checked = 0
+41 | false_fixed_k = 0
+   - for t,h,s in rows:
+   -     for u,g,r in rows:
+   -         c = mm(inv(s),r)
+42 + for t, h, s in rows:
+43 +     for u, g, r in rows:
+44 +         c = mm(inv(s), r)
+45 |         ci = inv(c)
+   -         k2 = mm(mm(tr(c),K),c)
+   -         h2 = mm(mm(tr(c),h),c)
+   -         w2 = mm(mm(ci,W),c)
+46 +         k2 = mm(mm(tr(c), K), c)
+47 +         h2 = mm(mm(tr(c), h), c)
+48 +         w2 = mm(mm(ci, W), c)
+49 |         assert h2 == g
+   -         signed = trace(mm(W,sub(mm(inv(K),h),I)))
+   -         transported = trace(mm(w2,sub(mm(inv(k2),h2),I)))
+   -         assert signed == transported == -2*t
+50 +         signed = trace(mm(W, sub(mm(inv(K), h), I)))
+51 +         transported = trace(mm(w2, sub(mm(inv(k2), h2), I)))
+52 +         assert signed == transported == -2 * t
+53 |         # Replacing the transported independent K by its old components changes the tuple.
+54 |         false_fixed_k += int(k2 != K)
+55 |         checked += 1
+   - result = {'pairs': checked, 'non_K_unitary_coordinate_maps': false_fixed_k,
+   -           'all_congruences_and_decorated_trace_preserved': True,
+   -           'parameters': [str(t) for t,_,_ in rows],
+   -           'scope': 'Exact2D diagnostic; not physical modulus or128D source implementation.'}
+   - Path(__file__).with_suffix('.json').write_text(json.dumps(result,indent=2)+'\n')
+56 + result = {
+57 +     "pairs": checked,
+58 +     "non_K_unitary_coordinate_maps": false_fixed_k,
+59 +     "all_congruences_and_decorated_trace_preserved": True,
+60 +     "parameters": [str(t) for t, _, _ in rows],
+61 +     "scope": "Exact2D diagnostic; not physical modulus or128D source implementation.",
+62 + }
+63 + Path(__file__).with_suffix(".json").write_text(json.dumps(result, indent=2) + "\n")
+64 | print(json.dumps(result))
+   |
+
+unformatted: File would be reformatted
+  --> work/pod/crossover-60-20261018/cards/R02/pm_native_branch.py:2:1
+   |
+1  | """Pinned native branch semantics replay, using saved profiles and binary64 add/subtract."""
+2  +
+3  | import gzip
+--------------------------------------------------------------------------------
+8  |
+   - S=Path('/Users/mike/Dev/ctrl-research-notebook/research-notebook/research/pods/2026-10-17/robot-motion/native-execution-06/builder')
+   - exports=json.loads((S/'ruckig-primary-exports.json').read_text())
+   - schedules=json.loads((S/'reference-schedules.json').read_text())['schedules']
+   - rows=[];count=0
+9  + S = Path(
+10 +     "/Users/mike/Dev/ctrl-research-notebook/research-notebook/research/pods/2026-10-17/robot-motion/native-execution-06/builder"
+11 + )
+12 + exports = json.loads((S / "ruckig-primary-exports.json").read_text())
+13 + schedules = json.loads((S / "reference-schedules.json").read_text())["schedules"]
+14 + rows = []
+15 + count = 0
+16 | for name, plans in exports.items():
+   -     native=json.loads(gzip.decompress((S/'native-checks'/f'{name}-output.json.gz').read_bytes()))
+   -     commits=[p['native_commit_float'] for p in plans]
+   -     schedule=next(s for s in schedules if s['case']+'__'+s['method']==name)
+   -     cuts=[F(p['start_exact']) for p in schedule['pieces']]
+   -     for sample in native['queries']:
+   -         t=sample['time']; idx=bisect_right(commits,t)-1; phase='initial'; jj=0.; local=None
+   -         if idx>=0:
+   -             p=plans[idx]['plan'];local=t-commits[idx]
+   -             main=[x for x in p['phases'] if x['kind']=='main']
+   -             if local>=p['duration']:
+   -                 phase='tail_duration'
+   -             elif p['brake_duration']>0 and local<p['brake_duration']:
+   -                 brake={x['index']:x for x in p['phases'] if x['kind']=='brake' and 'index' in x}
+   -                 bi=0 if local<brake[0]['duration'] else 1
+   -                 jj=brake[bi]['jerk'];phase=f'brake_{bi}'
+17 +     native = json.loads(
+18 +         gzip.decompress((S / "native-checks" / f"{name}-output.json.gz").read_bytes())
+19 +     )
+20 +     commits = [p["native_commit_float"] for p in plans]
+21 +     schedule = next(s for s in schedules if s["case"] + "__" + s["method"] == name)
+22 +     cuts = [F(p["start_exact"]) for p in schedule["pieces"]]
+23 +     for sample in native["queries"]:
+24 +         t = sample["time"]
+25 +         idx = bisect_right(commits, t) - 1
+26 +         phase = "initial"
+27 +         jj = 0.0
+28 +         local = None
+29 +         if idx >= 0:
+30 +             p = plans[idx]["plan"]
+31 +             local = t - commits[idx]
+32 +             main = [x for x in p["phases"] if x["kind"] == "main"]
+33 +             if local >= p["duration"]:
+34 +                 phase = "tail_duration"
+35 +             elif p["brake_duration"] > 0 and local < p["brake_duration"]:
+36 +                 brake = {
+37 +                     x["index"]: x for x in p["phases"] if x["kind"] == "brake" and "index" in x
+38 +                 }
+39 +                 bi = 0 if local < brake[0]["duration"] else 1
+40 +                 jj = brake[bi]["jerk"]
+41 +                 phase = f"brake_{bi}"
+42 |             else:
+   -                 afterbrake=local-p['brake_duration'] if p['brake_duration']>0 else local
+   -                 if afterbrake>=main[-1]['native_t_sum']:
+   -                     phase='tail_main'
+43 +                 afterbrake = local - p["brake_duration"] if p["brake_duration"] > 0 else local
+44 +                 if afterbrake >= main[-1]["native_t_sum"]:
+45 +                     phase = "tail_main"
+46 |                 else:
+   -                     pi=bisect_right([x['native_t_sum'] for x in main],afterbrake)
+   -                     jj=main[pi]['jerk'];phase=f'main_{pi}'
+   -         assert jj==sample['jerk'],(name,t,phase,jj,sample['jerk'])
+   -         count+=1
+   -         physical=schedule['pieces'][bisect_right(cuts,F(t))-1]
+   -         if physical['jerk']!=jj:
+   -             exactlocal=F(t)-F(commits[idx])
+   -             rows.append({'identity':name,'query_exact':str(F(t)),'native_selected':phase,
+   -                          'physical_selected':physical['origin'],'native_j':str(F(jj)),
+   -                          'physical_j':str(F(physical['jerk'])),'local_subtraction_error':str(F(local)-exactlocal),
+   -                          'physical_phase_end_minus_query':str(F(physical['end_exact'])-F(t)),
+   -                          'local_binary':str(F(local))})
+   - assert count==84316 and len(rows)==6
+   - Path(__file__).with_suffix('.json').write_text(json.dumps({'queries':count,'native_jerk_matches':count,
+   -  'different_physical_branch':rows,'scope':'Read-only pinned comparison-branch replay in Python binary64, not C++ rebuild/full arithmetic proof. Saved profile authority and platform float semantics explicit.'},indent=2)+'\n')
+   - print(json.dumps(rows,indent=2))
+47 +                     pi = bisect_right([x["native_t_sum"] for x in main], afterbrake)
+48 +                     jj = main[pi]["jerk"]
+49 +                     phase = f"main_{pi}"
+50 +         assert jj == sample["jerk"], (name, t, phase, jj, sample["jerk"])
+51 +         count += 1
+52 +         physical = schedule["pieces"][bisect_right(cuts, F(t)) - 1]
+53 +         if physical["jerk"] != jj:
+54 +             exactlocal = F(t) - F(commits[idx])
+55 +             rows.append(
+56 +                 {
+57 +                     "identity": name,
+58 +                     "query_exact": str(F(t)),
+59 +                     "native_selected": phase,
+60 +                     "physical_selected": physical["origin"],
+61 +                     "native_j": str(F(jj)),
+62 +                     "physical_j": str(F(physical["jerk"])),
+63 +                     "local_subtraction_error": str(F(local) - exactlocal),
+64 +                     "physical_phase_end_minus_query": str(F(physical["end_exact"]) - F(t)),
+65 +                     "local_binary": str(F(local)),
+66 +                 }
+67 +             )
+68 + assert count == 84316 and len(rows) == 6
+69 + Path(__file__).with_suffix(".json").write_text(
+70 +     json.dumps(
+71 +         {
+72 +             "queries": count,
+73 +             "native_jerk_matches": count,
+74 +             "different_physical_branch": rows,
+75 +             "scope": "Read-only pinned comparison-branch replay in Python binary64, not C++ rebuild/full arithmetic proof. Saved profile authority and platform float semantics explicit.",
+76 +         },
+77 +         indent=2,
+78 +     )
+79 +     + "\n"
+80 + )
+81 + print(json.dumps(rows, indent=2))
+   |
+
+3 files would be reformatted, 24 files already formatted

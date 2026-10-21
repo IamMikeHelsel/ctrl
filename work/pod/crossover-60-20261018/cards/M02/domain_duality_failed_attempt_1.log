@@ -1,0 +1,27 @@
+../work/pod/crossover-60-20261018/cards/M02/domain_duality.lean:27:31: error: Tactic `rewrite` failed: Did not find an occurrence of the pattern
+  (∑ i ∈ ?s, ?f i) * ?a
+in the target expression
+  c * ∑ x ∈ U, w x = ∑ x ∈ U, w x * c
+
+α : Type u_1
+β : Type u_2
+inst✝¹ : DecidableEq α
+inst✝ : DecidableEq β
+U : Finset α
+I : Finset β
+S : β → Finset α
+lam : β → ℝ
+w : α → ℝ
+cap : β → ℝ
+c : ℝ
+hlam : ∀ i ∈ I, 0 ≤ lam i
+hw : ∀ x ∈ U, 0 ≤ w x
+hcover : ∀ x ∈ U, c ≤ ∑ i ∈ I, if x ∈ S i then lam i else 0
+hcap : ∀ i ∈ I, ∑ x ∈ U with x ∈ S i, w x ≤ cap i
+he : (∑ x ∈ U, w x * ∑ i ∈ I, if x ∈ S i then lam i else 0) = ∑ i ∈ I, lam i * ∑ x ∈ U with x ∈ S i, w x
+⊢ c * ∑ x ∈ U, w x = ∑ x ∈ U, w x * c
+'M02WeightedDuality.fractional_cover_obstructs_weighted_bound' depends on axioms: [propext,
+ sorryAx,
+ Classical.choice,
+ Quot.sound]
+'M02WeightedDuality.no_strict_weighted_exclusion' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]

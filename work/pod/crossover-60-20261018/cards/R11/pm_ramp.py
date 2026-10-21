@@ -1,0 +1,130 @@
+"""Exact Lyapunov certificate for continuous-rate interpolation of delayed visual commands."""
+
+import json
+from fractions import Fraction as F
+from pathlib import Path
+
+HERE = Path(__file__).resolve().parent
+A = [[F(1), -F(1, 10), -F(1, 10)], [F(1), F(0), F(0)], [F(0), F(1), F(0)]]
+
+
+def dot(a, b):
+    return sum((x * y for x, y in zip(a, b, strict=True)), F(0))
+
+
+def transpose(a):
+    return list(map(list, zip(*a, strict=True)))
+
+
+def mul(a, b):
+    return [[dot(row, col) for col in transpose(b)] for row in a]
+
+
+def vec(a, x):
+    return [dot(row, x) for row in a]
+
+
+def det(a):
+    return (
+        a[0][0] * (a[1][1] * a[2][2] - a[1][2] * a[2][1])
+        - a[0][1] * (a[1][0] * a[2][2] - a[1][2] * a[2][0])
+        + a[0][2] * (a[1][0] * a[2][1] - a[1][1] * a[2][0])
+    )
+
+
+def solve(matrix, rhs):
+    m = [row[:] + [value] for row, value in zip(matrix, rhs, strict=True)]
+    n = len(m)
+    for k in range(n):
+        pivot = next(i for i in range(k, n) if m[i][k])
+        m[k], m[pivot] = m[pivot], m[k]
+        a = m[k][k]
+        m[k] = [v / a for v in m[k]]
+        for i in range(n):
+            if i != k:
+                a = m[i][k]
+                m[i] = [v - a * w for v, w in zip(m[i], m[k], strict=True)]
+    return [row[-1] for row in m]
+
+
+# P-A^T P A=I, 9unknowns solved exactly; no solver verdict is trusted.
+coeff = []
+rhs = []
+for i in range(3):
+    for j in range(3):
+        coeff.append(
+            [F(int((k, l) == (i, j))) - A[k][i] * A[l][j] for k in range(3) for l in range(3)]
+        )
+        rhs.append(F(int(i == j)))
+p = solve(coeff, rhs)
+P = [p[i * 3 : (i + 1) * 3] for i in range(3)]
+assert P == transpose(P)
+AtPA = mul(transpose(A), mul(P, A))
+assert [[P[i][j] - AtPA[i][j] for j in range(3)] for i in range(3)] == [
+    [F(int(i == j)) for j in range(3)] for i in range(3)
+]
+
+
+# Sylvester exact positive-definite test for P-I and uppercapI-P.
+def positive(a):
+    return a[0][0] > 0 and a[0][0] * a[1][1] - a[0][1] ** 2 > 0 and det(a) > 0
+
+
+lower = [[P[i][j] - F(int(i == j)) for j in range(3)] for i in range(3)]
+assert positive(P)
+# Conservative convenient rational spectral bounds; verify independently by minors.
+lo = F(1, 2)
+hi = F(20)
+assert positive([[P[i][j] - lo * int(i == j) for j in range(3)] for i in range(3)])
+assert positive([[hi * int(i == j) - P[i][j] for j in range(3)] for i in range(3)])
+
+eps = F(1, 10000)
+X = [eps] * 3
+E0 = dot(X, vec(P, X))
+state_bound = F(1, 1000)
+assert E0 <= lo * state_bound**2
+# Thus allstates staywithin .001, so |v|<=.01, |vdot|<=1.
+H = F(1, 50)
+gain = F(10)
+vmax = gain * state_bound
+amax = 2 * gain * state_bound / H
+assert vmax == F(1, 100) and amax == 1
+rows = []
+for n in range(100):
+    E = dot(X, vec(P, X))
+    Y = vec(A, X)
+    En = dot(Y, vec(P, Y))
+    assert E - En == dot(X, X)
+    assert En <= F(19, 20) * E  # verified spectral upper20 yields contraction19/20
+    v_old = -gain * X[2]
+    v_new = -gain * X[1]
+    assert abs(v_old) <= vmax and abs(v_new) <= vmax
+    assert abs((v_new - v_old) / H) <= amax
+    # Integrate affine velocity exactly over one visual period.
+    assert X[0] + H * (v_old + v_new) / 2 == Y[0]
+    rows.append(
+        {
+            "n": n,
+            "position": str(X[0]),
+            "v_old": str(v_old),
+            "v_new": str(v_new),
+            "accel": str((v_new - v_old) / H),
+            "energy": str(E),
+        }
+    )
+    X = Y
+out = {
+    "A": [[str(v) for v in row] for row in A],
+    "P": [[str(v) for v in row] for row in P],
+    "P_determinant": str(det(P)),
+    "spectral_bounds": [str(lo), str(hi)],
+    "initial_state": [str(eps)] * 3,
+    "initial_energy": str(E0),
+    "state_bound": str(state_bound),
+    "world_reference_speed_bound": str(vmax),
+    "world_reference_acceleration_bound": str(amax),
+    "trace": rows,
+    "scope": "Exact discrete nominal controller plus handquadratic/spectral argument. rcontinuous andvcontinuous linear ramps admit Lipschitzv withboundedaccel. No jerkbound; inner residual/measurementerror perturbs recurrence and is not yet closed.",
+}
+(HERE / "pm_ramp.json").write_text(json.dumps(out, indent=2) + "\n")
+print(json.dumps({k: v for k, v in out.items() if k != "trace"}))

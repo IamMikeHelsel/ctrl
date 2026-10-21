@@ -1,0 +1,37 @@
+{
+  "status": "pass",
+  "phase_cycling": {
+    "schedule": [
+      1,
+      -1,
+      -1,
+      1
+    ],
+    "affine_drift_result": "1/2",
+    "worst_deterministic_error": "1/40",
+    "quadratic_drift_bias": "1/10",
+    "unbounded_drift_false_wheel": "1",
+    "finite_window_width": "1/2",
+    "finite_window_spacing": "32",
+    "nuisance_second_derivative_bound": "1/1000",
+    "finite_window_false_estimate": "253/250",
+    "actual_wheel": "1/2",
+    "drift_aware_error_bound": "537/1000"
+  },
+  "oscillator": {
+    "model": "x''+2a*x'+a\u00b2*x=f, constant a in[1,2], |f|<=4",
+    "initial": "|x0|<=1, |v0+a*x0|<=1; retained, not reset",
+    "invariant": "|x|<=4/a\u00b2, |v+a*x|<=4/a",
+    "support_unknown": "Only constant critically damped family; not arbitrary damping/stiffness",
+    "after_actual_force_removal": "|x(Toff+s)|<=4(1+s)exp(-s)",
+    "s6_rational_upper": "196/2587",
+    "e6_lower": "2587/7"
+  },
+  "negative_controls": [
+    "Undamped resonant source violates displacement before a long window ends",
+    "Zero terminal displacement does not imply zero velocity or safe ringdown",
+    "Frequency authority Delta<=.1 requires T>60 for one-turn null",
+    "Phase-pattern nuisance drift can imitate wheel forcing"
+  ],
+  "boundary": "Exact rational checks plus explicit ODE comparison and trigonometric derivations; no kernel proof, measured plant, actuator model, or hardware validation."
+}

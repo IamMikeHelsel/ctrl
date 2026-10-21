@@ -1,0 +1,8 @@
+# Primary-source scope check
+
+Consulted19October2026. No novelty or exhaustive literature-review claim.
+
+- Yang and Carlone, *One Ring to Rule Them All* (NeurIPS2020), https://proceedings.neurips.cc/paper/2020/file/da6ea77475918a3d83c7e49223d453cc-Paper.pdf. Its certificate establishes optimization objective optimality/suboptimality for robust geometric estimation. This does not itself identify an actual-state deterministic error bound; that implication needs the observation model and identifiability assumptions. The present campaign does not claim to invent certifiable geometric estimation.
+- Bertsekas and Rhodes, *Recursive State Estimation for a Set-Membership Description of Uncertainty* (1971), author-hosted https://web.mit.edu/dimitrib/www/RecursiveStateEstimation.pdf. Defines state sets compatible with observations and bounded disturbances; distinguishes joint energy constraints from individual instantaneous bounds. The latter need not yield an ellipsoid. This established distinction motivates keeping deterministic support separately from information-matrix algebra.
+- Fawzi, Tabuada and Diggavi, *Secure estimation and control for cyber-physical systems under adversarial attacks*, https://arxiv.org/abs/1205.5073. Establishes a pre-existing secure-estimation setting and resilience questions. Here the small static observation support test is an explicit local analogue, not a new general secure-estimation result.
+- SPARK author research page https://web.mit.edu/sparklab/research/adapt/ describes outlier-rejection hardness and per-instance approximation bounds. We do not assume exhaustive branch enumeration scales to realistic camera datasets.

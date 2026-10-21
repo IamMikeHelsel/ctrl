@@ -35,14 +35,19 @@ for every edge e and vertex v, δ(H) ≥ 7, H 3-uniform on 9 vertices.
   source result was found.
 
 ## Blueprint (lemma DAG)
-All nodes are *search* (explicit witness), checked by kernel `decide +kernel`.
+Finite witnesses are checked by kernel `decide +kernel`; structural implications use ordinary
+Lean proofs. Updated by OpenAI Codex on 2026-10-18; see disclosure.md.
 - `liH` : Li's 22 edges, relabelled 1..9 ↦ 0..8. Re-verified independently in Python before use.
 - `liH_uniform` (decide) ; `liH_degree` (decide; degrees are 10,7,7,7,7,7,7,7,7)
 - `liH_colorable_three` : witness colouring `![0,0,1,0,0,1,2,1,1]` (decide)
 - `liH_not_colorable_zero` (`Fin 0` is empty), `liH_not_colorable_one` (an edge is monochromatic)
-- `liH_not_colorable_two` : `Fin.forall_fin_succ_pi` unrolls the 2^9 colourings, then decide
+- `liH_not_colorable_two` : complement-normalize vertex 0, then three binary branch nodes and
+  four contradiction leaves, each obtained by propagating not-all-equal edge constraints
 - `liH_edge_critical` : table `edgeWit : Fin 22 → Fin 9 → Fin 2`; decide `∀ e ∈ H, ∃ i, proper`
-- `liH_vertex_critical` : table `vertWit : Fin 9 → Fin 9 → Fin 2`; decide
+- `liH_vertex_critical` : generic edge-criticality + positive-degree implication; no vertex table
 - `solution` : assemble with n = 9.
 
-Status: proof complete (90 lines). `lean/scripts/check.sh 834` is green. Waiting for statement approval.
+Status: structural proof complete. `ctrl check --all` passes build, token, axiom, and binding checks;
+the existing pending statement approval still produces `NOT_APPROVED` (exit 3).
+The challenge and explicit Li hypergraph are unchanged. Exact search evidence is in
+`certs/crossover.json`; replay with `uv run python -m experiments.crossover`.

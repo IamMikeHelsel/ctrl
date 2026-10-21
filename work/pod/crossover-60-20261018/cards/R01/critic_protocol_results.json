@@ -1,0 +1,27 @@
+{
+  "model": "Synthetic single-receiver atomic version check; no scheduler, network or plant proof",
+  "accepted_revision": {
+    "session": "run-A",
+    "epoch": 1,
+    "goal_mm": 1,
+    "deadline_tick": 10,
+    "expected_previous_epoch": 0
+  },
+  "failure_cases": [
+    "old session with larger epoch",
+    "stale concurrent predecessor",
+    "same epoch with different payload",
+    "undelivered cancellation before queued execution",
+    "logical cancellation after physical motion",
+    "unknown clock offset makes deadline check false",
+    "receipt acknowledgement with no actuator delivery",
+    "safe rejection incorrectly counted as task success"
+  ],
+  "unverified_assumptions": [
+    "trusted authorized task source and truthful task metadata",
+    "persistent session/epoch allocation and atomic commit",
+    "task-specific allowed transition set and physical feasibility",
+    "bounded delivery, queueing, clock mapping and execution latency",
+    "cancellation effect specification; cancellation cannot retroactively undo motion"
+  ]
+}

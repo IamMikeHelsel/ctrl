@@ -1,0 +1,311 @@
+unformatted: File would be reformatted
+   --> .agents/teamwork/challenger_m2_2/handoff.md:82:19
+   |
+81 |      cross = edge_x * to_pt_y - edge_y * to_pt_x
+   -      if cross < 0: return False, ...
+82 +      if cross < 0:
+83 +          return False, ...
+84 |      ```
+--------------------------------------------------------------------------------
+93 |      ```python
+   -      if a_b > mu_f * g_f: return False, ...
+94 +      if a_b > mu_f * g_f:
+95 +          return False, ...
+96 |      return True, ...
+   |
+
+unformatted: File would be reformatted
+   --> tests/test_885_geometry.py:209:16
+    |
+208 |         obs = res["obstruction_summary"]
+    -         assert obs["classification"] == "Bounded search negative (q <= 10^6) + Faltings finiteness (non-effective)"
+209 +         assert (
+210 +             obs["classification"]
+211 +             == "Bounded search negative (q <= 10^6) + Faltings finiteness (non-effective)"
+212 +         )
+213 |         assert obs["faltings_finite"] is True
+    |
+
+unformatted: File would be reformatted
+  --> tests/test_covering_273.py:64:24
+   |
+63 |     """Adversarial mutation 2: Artificial inflation of tree node capacity bound."""
+   -     with pytest.raises(ValueError, match="capacity bias must be zero|density gap.*below certified minimum margin"):
+64 +     with pytest.raises(
+65 +         ValueError, match="capacity bias must be zero|density gap.*below certified minimum margin"
+66 +     ):
+67 |         CHECKER_11["check"](capacity_bias=1000)
+--------------------------------------------------------------------------------
+78 |     """Adversarial mutation 4: Mutate branch residue offset away from canonical stabilizer orbits."""
+   -     with pytest.raises(ValueError, match="branch offset must be zero|branch residue.*outside canonical orbit range"):
+79 +     with pytest.raises(
+80 +         ValueError, match="branch offset must be zero|branch residue.*outside canonical orbit range"
+81 +     ):
+82 |         CHECKER_11["check"](branch_offset=1)
+   |
+
+unformatted: File would be reformatted
+   --> tests/test_crossover_push.py:62:1
+    |
+61  |
+62  +
+63  | # ==============================================================================
+--------------------------------------------------------------------------------
+205 |         # Check analytical formula identity
+    -         expected_depth = (
+    -             math.exp(-lam * t) * depth_0 + (1.0 - math.exp(-lam * t)) * depth_star
+    -         )
+206 +         expected_depth = math.exp(-lam * t) * depth_0 + (1.0 - math.exp(-lam * t)) * depth_star
+207 |         assert math.isclose(depth_t, expected_depth, rel_tol=1e-12)
+    |
+
+unformatted: File would be reformatted
+   --> tests/test_lorentz_adversarial.py:30:26
+    |
+29  |
+    - @pytest.mark.parametrize("mu", [
+    -     Fraction(1, 10**18),
+    -     Fraction(1, 10**6),
+    -     Fraction(1, 100),
+    -     Fraction(1, 2),
+    -     Fraction(1),
+    -     Fraction(100),
+    -     Fraction(10**6),
+    -     Fraction(10**18),
+    -     Fraction(0),
+    - ])
+30  + @pytest.mark.parametrize(
+31  +     "mu",
+32  +     [
+33  +         Fraction(1, 10**18),
+34  +         Fraction(1, 10**6),
+35  +         Fraction(1, 100),
+36  +         Fraction(1, 2),
+37  +         Fraction(1),
+38  +         Fraction(100),
+39  +         Fraction(10**6),
+40  +         Fraction(10**18),
+41  +         Fraction(0),
+42  +     ],
+43  + )
+44  | def test_convexity_under_extreme_aspect_ratios(mu):
+--------------------------------------------------------------------------------
+111 |
+    - @pytest.mark.parametrize("b, a_nom, a_pi", [
+    -     (Fraction(0), Fraction(0), Fraction(10)),
+    -     (Fraction(10), Fraction(0), Fraction(10)),
+    -     (Fraction(5), Fraction(0), Fraction(10)),
+    -     (Fraction(2), Fraction(5), Fraction(10)),   # nominal safe
+    -     (-Fraction(2), -Fraction(8), -Fraction(1)), # negative regime
+    -     (Fraction(1, 10**6), Fraction(0), Fraction(1)),
+    -     (Fraction(10**6 - 1), Fraction(0), Fraction(10**6)),
+    - ])
+112 + @pytest.mark.parametrize(
+113 +     "b, a_nom, a_pi",
+114 +     [
+115 +         (Fraction(0), Fraction(0), Fraction(10)),
+116 +         (Fraction(10), Fraction(0), Fraction(10)),
+117 +         (Fraction(5), Fraction(0), Fraction(10)),
+118 +         (Fraction(2), Fraction(5), Fraction(10)),  # nominal safe
+119 +         (-Fraction(2), -Fraction(8), -Fraction(1)),  # negative regime
+120 +         (Fraction(1, 10**6), Fraction(0), Fraction(1)),
+121 +         (Fraction(10**6 - 1), Fraction(0), Fraction(10**6)),
+122 +     ],
+123 + )
+124 | def test_lambda_star_bounded_in_unit_interval(b, a_nom, a_pi):
+    |
+
+unformatted: File would be reformatted
+   --> tests/test_lorentz_cbf.py:34:1
+    |
+33  |
+    - @pytest.mark.parametrize("x1, y1, x2, y2", [
+    -     (1, 2, 3, 4),
+    -     (0, 0, 5, 7),
+    -     (-3, 4, 12, -5),
+    -     (Fraction(1, 3), Fraction(2, 5), Fraction(7, 11), Fraction(4, 9)),
+    -     (-Fraction(8, 7), Fraction(15, 7), Fraction(20, 3), -Fraction(5, 2)),
+    - ])
+34  +
+35  + @pytest.mark.parametrize(
+36  +     "x1, y1, x2, y2",
+37  +     [
+38  +         (1, 2, 3, 4),
+39  +         (0, 0, 5, 7),
+40  +         (-3, 4, 12, -5),
+41  +         (Fraction(1, 3), Fraction(2, 5), Fraction(7, 11), Fraction(4, 9)),
+42  +         (-Fraction(8, 7), Fraction(15, 7), Fraction(20, 3), -Fraction(5, 2)),
+43  +     ],
+44  + )
+45  | def test_lagrange_identity_2d_across_scalars(x1, y1, x2, y2):
+--------------------------------------------------------------------------------
+60  |
+    - @pytest.mark.parametrize("lam", [
+    -     Fraction(0),
+    -     Fraction(1, 10),
+    -     Fraction(1, 4),
+    -     Fraction(1, 2),
+    -     Fraction(3, 4),
+    -     Fraction(9, 10),
+    -     Fraction(1),
+    - ])
+61  + @pytest.mark.parametrize(
+62  +     "lam",
+63  +     [
+64  +         Fraction(0),
+65  +         Fraction(1, 10),
+66  +         Fraction(1, 4),
+67  +         Fraction(1, 2),
+68  +         Fraction(3, 4),
+69  +         Fraction(9, 10),
+70  +         Fraction(1),
+71  +     ],
+72  + )
+73  | def test_conic_margin_decomposition(lam):
+--------------------------------------------------------------------------------
+85  |     a_cbf = Vec3Q.from_values(2, -1, 0)
+    -     u_nom = Vec3Q.from_values(0, 2, 5)   # a_nom = -2
+    -     pi_b = Vec3Q.from_values(3, 0, 8)    # a_pi = 6
+    -     b = Fraction(2)                       # a_nom < b <= a_pi
+86  +     u_nom = Vec3Q.from_values(0, 2, 5)  # a_nom = -2
+87  +     pi_b = Vec3Q.from_values(3, 0, 8)  # a_pi = 6
+88  +     b = Fraction(2)  # a_nom < b <= a_pi
+89  |     assert verify_exact_barrier_equality_on_intervention(a_cbf, b, u_nom, pi_b)
+--------------------------------------------------------------------------------
+100 |     a_cbf = Vec3Q.from_values(1, 0, 0)
+    -     u_nom = Vec3Q.from_values(3, 0, 6)   # a_nom = 3
+    -     pi_b = Vec3Q.from_values(5, 0, 10)   # a_pi = 5
+    -     b = Fraction(2)                      # b <= a_nom
+101 +     u_nom = Vec3Q.from_values(3, 0, 6)  # a_nom = 3
+102 +     pi_b = Vec3Q.from_values(5, 0, 10)  # a_pi = 5
+103 +     b = Fraction(2)  # b <= a_nom
+104 |     lam = compute_lambda_star(b, a_cbf.dot(u_nom), a_cbf.dot(pi_b))
+--------------------------------------------------------------------------------
+114 |
+    - @pytest.mark.parametrize("b, a_nom, a_pi, expected_lam", [
+    -     (Fraction(1), Fraction(0), Fraction(2), Fraction(1, 2)),
+    -     (Fraction(0), Fraction(0), Fraction(5), Fraction(0)),
+    -     (Fraction(5), Fraction(0), Fraction(5), Fraction(1)),
+    -     (-Fraction(2), -Fraction(4), Fraction(4), Fraction(2, 8)),
+    -     (Fraction(3), Fraction(4), Fraction(8), Fraction(0)),  # Safe nominal
+    - ])
+115 +
+116 + @pytest.mark.parametrize(
+117 +     "b, a_nom, a_pi, expected_lam",
+118 +     [
+119 +         (Fraction(1), Fraction(0), Fraction(2), Fraction(1, 2)),
+120 +         (Fraction(0), Fraction(0), Fraction(5), Fraction(0)),
+121 +         (Fraction(5), Fraction(0), Fraction(5), Fraction(1)),
+122 +         (-Fraction(2), -Fraction(4), Fraction(4), Fraction(2, 8)),
+123 +         (Fraction(3), Fraction(4), Fraction(8), Fraction(0)),  # Safe nominal
+124 +     ],
+125 + )
+126 | def test_lambda_star_values(b, a_nom, a_pi, expected_lam):
+--------------------------------------------------------------------------------
+159 |
+160 +
+161 | def test_lorentz_cone_membership():
+--------------------------------------------------------------------------------
+193 |
+194 +
+195 | def test_backup_cbf_value():
+--------------------------------------------------------------------------------
+216 |     Lf_h, a_cbf = cbf_lie_derivatives(v, n_hat, a_brake)
+    -     assert Lf_h == - Fraction(4)
+217 +     assert Lf_h == -Fraction(4)
+218 |     assert a_cbf == Vec3Q.from_values(-1, -2, -Fraction(1, 2))
+--------------------------------------------------------------------------------
+237 |
+238 +
+239 | def test_interval_arithmetic_basic_operations():
+--------------------------------------------------------------------------------
+289 |
+290 +
+291 | def test_friction_limit_falsification():
+292 |     """check_friction_limit accurately checks ||a_brake|| <= mu * g."""
+293 |     g = Fraction(981, 100)  # 9.81
+    -     mu = Fraction(6, 10)    # 0.6 -> mu * g = 5.886
+294 +     mu = Fraction(6, 10)  # 0.6 -> mu * g = 5.886
+295 |
+    |
+
+unformatted: File would be reformatted
+   --> tests/test_sdp_rational_cert.py:60:24
+    |
+59  |     # From ints, floats, Fractions, strings
+    -     A = RationalMatrix([
+    -         [1, 2.5, Fraction(3, 4)],
+    -         ["5/2", 0, -1],
+    -     ])
+60  +     A = RationalMatrix(
+61  +         [
+62  +             [1, 2.5, Fraction(3, 4)],
+63  +             ["5/2", 0, -1],
+64  +         ]
+65  +     )
+66  |     assert A.shape == (2, 3)
+--------------------------------------------------------------------------------
+142 |     # A = [[4, 2, -1], [2, 5, 2], [-1, 2, 6]]
+    -     A = RationalMatrix([
+    -         [4, 2, -1],
+    -         [2, 5, 2],
+    -         [-1, 2, 6],
+    -     ])
+143 +     A = RationalMatrix(
+144 +         [
+145 +             [4, 2, -1],
+146 +             [2, 5, 2],
+147 +             [-1, 2, 6],
+148 +         ]
+149 +     )
+150 |     L, D = rational_ldl(A)
+--------------------------------------------------------------------------------
+179 |     # K3 Laplacian is positive semidefinite with one 0 eigenvalue
+    -     L_K3 = RationalMatrix([
+    -         [2, -1, -1],
+    -         [-1, 2, -1],
+    -         [-1, -1, 2],
+    -     ])
+180 +     L_K3 = RationalMatrix(
+181 +         [
+182 +             [2, -1, -1],
+183 +             [-1, 2, -1],
+184 +             [-1, -1, 2],
+185 +         ]
+186 +     )
+187 |     with pytest.raises(ValueError, match="not strictly positive definite"):
+--------------------------------------------------------------------------------
+247 | def test_project_to_rational_certificate_preserves_psd():
+    -     C = RationalMatrix([
+    -         [Fraction(-2, 4), Fraction(1, 4), Fraction(1, 4)],
+    -         [Fraction(1, 4), Fraction(-2, 4), Fraction(1, 4)],
+    -         [Fraction(1, 4), Fraction(1, 4), Fraction(-2, 4)],
+    -     ])
+248 +     C = RationalMatrix(
+249 +         [
+250 +             [Fraction(-2, 4), Fraction(1, 4), Fraction(1, 4)],
+251 +             [Fraction(1, 4), Fraction(-2, 4), Fraction(1, 4)],
+252 +             [Fraction(1, 4), Fraction(1, 4), Fraction(-2, 4)],
+253 +         ]
+254 +     )
+255 |     # Numerical boundary dual vector
+    |
+
+unformatted: File would be reformatted
+   --> tests/test_skew_normal_form.py:77:55
+    |
+76  |         assert mat_frobenius_sq(S) == mat_frobenius_sq(K)
+    -         assert mat_frobenius_sq(K) == 2 * (Fraction(a)**2 + Fraction(b)**2)
+77  +         assert mat_frobenius_sq(K) == 2 * (Fraction(a) ** 2 + Fraction(b) ** 2)
+78  |
+--------------------------------------------------------------------------------
+124 |     # Gain difference formula: 4*a^2*(A_01^2 + A_10^2) + 4*b^2*(A_23^2 + A_32^2)
+    -     expected_gain = (
+    -         4 * (a ** 2) * (A[0][1] ** 2 + A[1][0] ** 2) +
+    -         4 * (b ** 2) * (A[2][3] ** 2 + A[3][2] ** 2)
+125 +     expected_gain = 4 * (a**2) * (A[0][1] ** 2 + A[1][0] ** 2) + 4 * (b**2) * (
+126 +         A[2][3] ** 2 + A[3][2] ** 2
+127 |     )
+    |
+
+8 files would be reformatted, 155 files already formatted

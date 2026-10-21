@@ -1,0 +1,104 @@
+"""Finite executable de-jitter consumer; exact times and semantic rejection controls."""
+
+import json
+from fractions import Fraction as F
+from itertools import product
+from pathlib import Path
+
+HERE = Path(__file__).resolve().parent
+H = F(1, 2000)
+
+
+def consume(indices, arrivals, release_lag=H, ingest_before_release=True):
+    inbox, released, maximum_buffer = {}, [], 0
+    deadlines = {i * H + release_lag: i for i in indices}
+    events = sorted(set(arrivals) | set(deadlines))
+    for now in events:
+        incoming = [i for i, t in zip(indices, arrivals, strict=True) if t == now]
+
+        def ingest(incoming=incoming, now=now):
+            nonlocal maximum_buffer
+            for i in reversed(incoming):  # Newest callback first deliberately.
+                if i in inbox or i in released:
+                    raise ValueError("duplicate packet identity")
+                if now > i * H + release_lag:
+                    raise ValueError("late packet")
+                inbox[i] = (i, i * H)  # Immutable identity and original stamp.
+            maximum_buffer = max(maximum_buffer, len(inbox))
+
+        def release(now=now):
+            if now in deadlines:
+                i = deadlines[now]
+                if i not in inbox:
+                    raise ValueError("missing packet at release watermark")
+                identity, stamp = inbox.pop(i)
+                if identity != i or stamp != i * H:
+                    raise ValueError("packet binding mismatch")
+                released.append(i)
+
+        if ingest_before_release:
+            ingest()
+            release()
+        else:
+            release()
+            ingest()
+    return released, maximum_buffer
+
+
+def main():
+    indices = list(range(630, 635))
+    passed = 0
+    largest_buffer = 0
+    for delays in product((F(0), H / 2, H), repeat=len(indices)):
+        arrivals = [i * H + d for i, d in zip(indices, delays, strict=True)]
+        released, size = consume(indices, arrivals)
+        assert released == indices
+        assert size <= 2
+        largest_buffer = max(largest_buffer, size)
+        passed += 1
+    rejected = []
+    mutations = [
+        ("release before boundary arrival ingestion", [632], [633 * H], H, False),
+        ("arrival exceeds declared latency bound", [632], [633 * H + H / 10], H, True),
+    ]
+    for name, ids, arrivals, lag, boundary_order in mutations:
+        try:
+            consume(ids, arrivals, lag, boundary_order)
+        except ValueError as exc:
+            rejected.append({"mutation": name, "reason": str(exc)})
+        else:
+            raise AssertionError(f"Mutation accepted: {name}")
+    broad_arrivals = [634 * H, 633 * H]
+    broad, _ = consume([632, 633], broad_arrivals, 2 * H)
+    assert broad == [632, 633]
+    result = {
+        "scope": "Executable finite consumer model; packet identities/stamps only, not full hybrid-plant construction.",
+        "exact_delay_patterns": passed,
+        "callback_order": "newest first within tied arrival groups",
+        "release_order_always_preserved": True,
+        "max_buffered_packets": largest_buffer,
+        "effective_sample_to_release_age": str(H),
+        "incoming_end_of_hold_age": str(2 * H),
+        "rejected_controls": rejected,
+        "larger_latency_boundary": {
+            "scope": "Separate2h latency extension; source C8 contract not preserved.",
+            "raw_arrivals_reordered": True,
+            "release_order": broad,
+            "sample_to_release_age": str(2 * H),
+            "incoming_end_of_hold_age": str(3 * H),
+            "violates_original_total_age": 3 * H > F(1, 1000),
+            "violates_original_startup_delay": 2 * H > H,
+        },
+        "assumptions": [
+            "Every expected packet arrives with unchanged payload and original sample identity by its stamp+h.",
+            "All arrivals available at a deadline are ingested before release at that same real time.",
+            "Timestamp clocks are the original shared clock; no additional actuation delay is hidden.",
+            "The pending physical command is retained until the release; future packets are queued separately.",
+        ],
+    }
+    (HERE / "inventor_release.json").write_text(json.dumps(result, indent=2) + "\n")
+    print(json.dumps(result, indent=2))
+
+
+if __name__ == "__main__":
+    main()

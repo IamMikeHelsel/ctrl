@@ -1,0 +1,64 @@
+C8 BUILDER REPORT — CONSTRUCTED FINITE HANDOFF
+18 October 2026. Builder verification complete; frozen for independent review.
+
+Result
+The proof constructs one finite recovery/detector/
+pending/hold path for every supplied C6 braking input and bounded future
+cell choices. The first qualifying index is derived, not assumed. The
+constructed state agrees with the original braking state through command
+arrival, then uses the accepted C7 recurrence. Actual generated readings
+and the C5 schedule share the original half-millisecond clock.
+
+The result gives the unchanged C5 forward ceiling on every real time in the
+full finite horizon. It removes the need to assume a future hybrid execution
+for this admitted class. The initial C6 braking input still has to be supplied.
+This is a finite construction and interface result, not general plant
+existence, precision rest, new control theory, or hardware acceptance.
+
+Key obligations closed in source
+- The guard and sensor box place sigma strictly after .05, with the whole
+  pending interval ending before .530. Both recovered coefficient functions
+  use sigma+s-.05. Pending rate/error/ODE and sensor bounds are derived.
+- Full state equality holds through sigma+.0005, not just at sigma. All
+  coordinates are continuous. The old .05 join keeps its phase-open ODE
+  contract; only the later digital joins get the new one-sided statements.
+- Finite pasting uses only finite continuity of the constructed C7 path.
+  No global continuity, endpoint invariant, residual or future Execution
+  premise is added.
+- First-index prefix stability and common-latency arrival order are proved.
+  Old readings are retained only through k. Future readings come from the
+  new state and chosen errors. schedule_reading_link includes j=0, and
+  actual_readings proves their sensor boxes against the same physical F.
+- Safety before the decision uses a comparison restricted to the actual
+  braking prefix. It uses no future zero or post-switch braking segment.
+
+Combined witness
+The actual input is x=.001+.39t-.6t^2, v=.39-1.2t, a=-1.2, with exact old
+readings. Its target is constant across the old recovery boundary; this is
+an admitted example, not a loss/restoration event. The first qualifying
+index is 632, sampled at .316 s and acted on
+at .3165 s. Arrival speed is exactly .0102 m/s>0; acceleration remains -1.2.
+Thus command arrival is before rest. The command changes from -1.21 to
+.22264264. The next three digital cells use rates 8,12,8, a nonzero middle
+physical target error, and nonzero future sensor errors. This same physical
+path satisfies the full assembly through .318 s. The next generated
+acceleration reading differs from the old reading by exactly .025.
+These are formal source facts, not numerical simulation evidence.
+
+Verification
+All 58 fresh copied-source builds, 58 separate kernels, and 10 semantic rejection
+controls passed. Four are source mutations; six are mathematical false assertions.
+The 314 audited theorem closures use only propext,
+Classical.choice and Quot.sound. All 127 recorded steps passed. Previous
+frozen files and toolchain pins are unchanged. Seven development failures
+are preserved. See verification.json and VERIFICATION-SUMMARY.txt.
+This is builder evidence; independent acceptance remains pending.
+
+Scope and useful limit
+The input contract is stronger than C1: it includes lower initial bounds,
+continuous phase rates, recovered rate [8,12] and two-sided effective-target
+bounds. See CLAIMS.txt. This does not prove that every physical plant supplies
+that input or that every abstract hybrid controller follows this path. It
+constructs one causal finite path in the scalar lag model. It gives no lower
+travel limit, infinite execution, maintained rest, contact physics or robot
+acceptance. Root owns the independent verdict and repository checkpoint.

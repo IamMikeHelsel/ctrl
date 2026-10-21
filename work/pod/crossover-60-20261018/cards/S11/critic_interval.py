@@ -1,0 +1,97 @@
+"""Independent physical held-flow interval replay; no producer imports/matrix."""
+
+import json
+from fractions import Fraction as F
+from pathlib import Path
+
+from critic_exact import exp_negative
+
+Q = 10**80
+
+
+def point(v):
+    v = F(v) * Q
+    return v.numerator // v.denominator, -((-v.numerator) // v.denominator)
+
+
+def plus(*boxes):
+    return sum(a for a, b in boxes), sum(b for a, b in boxes)
+
+
+def neg(b):
+    return -b[1], -b[0]
+
+
+def mul(a, b):
+    vals = [x * y for x in a for y in b]
+    return min(vals) // Q, -((-max(vals)) // Q)
+
+
+def scale(b, k):
+    return mul(b, point(k))
+
+
+def brake(t):
+    return tuple(
+        point(x)
+        for x in (F(1, 1000) + F(39, 100) * t - F(3, 5) * t * t, F(39, 100) - F(6, 5) * t, F(-6, 5))
+    )
+
+
+def main():
+    h = F(1, 2000)
+    r = F(8)
+    c = F(2525673, 10**8)
+    lo, hi = exp_negative(r * h)
+    E = point(lo)[0], point(hi)[1]
+    one_minus_E = plus(point(1), neg(E))
+    I = scale(one_minus_E, 1 / r)
+    II = scale(plus(point(h), neg(I)), 1 / r)
+    # Independent physical-coordinate formulas use a,b separately and preserve old sample.
+    previous = brake(F(79, 250))
+    state = brake(F(633, 2000))
+    maxcmd = 0
+    for n in range(21000):
+        u = plus(
+            scale(plus(previous[0], point(-c)), -8),
+            scale(previous[1], -6),
+            scale(previous[2], F(-1, 2)),
+        )
+        assert -2 * Q < u[0] <= u[1] < 2 * Q
+        maxcmd = max(maxcmd, abs(u[0]), abs(u[1]))
+        b = plus(u, point(F(1 if (n // 2000) % 2 == 0 else -1, 100)))
+        x, v, a = state
+        nxt = (
+            plus(x, scale(v, h), mul(a, II), mul(b, plus(point(h * h / 2), neg(II)))),
+            plus(v, mul(a, I), mul(b, plus(point(h), neg(I)))),
+            plus(mul(a, E), mul(b, one_minus_E)),
+        )
+        previous, state = state, nxt
+    assert state[1][0] > Q // 1000
+    p = Path(__file__).resolve().parent
+    root = json.loads((p / "pm_interval_hold.json").read_text())
+    own_v = tuple(F(x, Q) for x in state[1])
+    root_v = tuple(map(F, root["velocity"]))
+    assert max(own_v[0], root_v[0]) <= min(own_v[1], root_v[1])
+    result = {
+        "elapsed_after_arrival": "21/2",
+        "absolute_time": "21633/2000",
+        "sigma": "79/250",
+        "arrival": "633/2000",
+        "h": str(h),
+        "rate": str(r),
+        "steps": 21000,
+        "center": str(c),
+        "physical_state_intervals": [[str(F(x, Q)) for x in b] for b in state],
+        "velocity_float": float(own_v[0]),
+        "maximum_command_bound": str(F(maxcmd, Q)),
+        "root_witness_intervals_overlap": True,
+        "exp_bound_method": "Invert positive exponential Taylor partial sum with geometric upper tail, independent of root alternating series.",
+        "scope": "Exact Python outward arithmetic and hand-bound held-flow/source recurrence; no full Lean execution theorem or periodic-limit claim.",
+    }
+    (p / "critic_interval.json").write_text(json.dumps(result, indent=2) + "\n")
+    print(float(own_v[0]), float(own_v[1]), "width", float(own_v[1] - own_v[0]))
+
+
+if __name__ == "__main__":
+    main()

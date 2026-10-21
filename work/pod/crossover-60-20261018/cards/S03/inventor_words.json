@@ -1,0 +1,83 @@
+{
+  "formats": [
+    {
+      "fraction_bits": 14,
+      "scale": 16384,
+      "x_count_bound": 2606,
+      "v_count_bound": 5801,
+      "dot_count_bound": 22615,
+      "int16_inputs_fit": true,
+      "int16_dot_bound_fits": true,
+      "output_limit_count": 16384,
+      "weighted_quantization_error": "5/32768",
+      "remaining_controller_error_budget": "399/4096000"
+    },
+    {
+      "fraction_bits": 16,
+      "scale": 65536,
+      "x_count_bound": 10421,
+      "v_count_bound": 23201,
+      "dot_count_bound": 90445,
+      "int16_inputs_fit": true,
+      "int16_dot_bound_fits": false,
+      "output_limit_count": 65536,
+      "weighted_quantization_error": "5/131072",
+      "remaining_controller_error_budget": "3471/16384000"
+    }
+  ],
+  "interior_cell_negative": {
+    "X": -3277,
+    "V": 22872,
+    "four_corner_energies": [
+      "426892861/4294967296",
+      "213466025/2147483648",
+      "213452917/2147483648",
+      "426945025/4294967296"
+    ],
+    "correct_count": -62062,
+    "wrapped_count": 3474,
+    "error": 1
+  },
+  "rounding": "nearest, ties to even, exact rational executable model",
+  "invariant_boundary": {
+    "x": "-1/20",
+    "v": "7/20",
+    "energy": "1/10"
+  },
+  "Q16_negative": {
+    "X": -3277,
+    "V": 22938,
+    "three_V": 68814,
+    "wrap16_three_V": 3278,
+    "correct_output_count": -62260,
+    "wrong_output_count": 3276,
+    "wrong_output": "819/16384",
+    "error_vs_correct": 1,
+    "semantics": "Explicit modulo16 simulation; not a claim about C signed overflow, integer promotion, or actual deployed code."
+  },
+  "clamp_order_negative": {
+    "source_clamp_after_dot": "-19/20",
+    "termwise_clamp_then_sum": "-9/10",
+    "error": "1/20"
+  },
+  "zero_sum_error_diagnostic": [
+    {
+      "command_error": "1/4000",
+      "delivered_u": "1/4000",
+      "x": "1/32000",
+      "v": "1/8000"
+    },
+    {
+      "command_error": "-1/4000",
+      "delivered_u": "-11/16000",
+      "x": "1/128000",
+      "v": "-7/32000"
+    }
+  ],
+  "limits": [
+    "Q14/Q16 are declared alternative formats, not exact implementations of decimal delta1/10000.",
+    "Input quantizer error is assumed bounded or checked against a cell; no ADC/firmware correspondence is proved.",
+    "Q16 needs int32 accumulator and output; bounded int16 input codes alone are insufficient.",
+    "Error-shaping diagnostic uses allowed held command errors, not a claimed output of nearest quantization."
+  ]
+}

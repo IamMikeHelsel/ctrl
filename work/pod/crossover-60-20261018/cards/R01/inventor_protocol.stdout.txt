@@ -1,0 +1,108 @@
+{
+  "model_scope": "Reference primitive and semantic reducer only; no integration or new plant run.",
+  "duplicate_displacement_failure": {
+    "events": [
+      [
+        "11/50",
+        "1"
+      ],
+      [
+        "23/100",
+        "1"
+      ]
+    ],
+    "reference_at_deadline_mm": "2",
+    "summed_jerk_bound_m_per_s3": "1/2",
+    "piecewise_linear_jerk_knots": [
+      [
+        "11/50",
+        "0"
+      ],
+      [
+        "23/100",
+        "1/160"
+      ],
+      [
+        "21/50",
+        "39/160"
+      ],
+      [
+        "43/100",
+        "37/160"
+      ],
+      [
+        "31/50",
+        "-77/160"
+      ],
+      [
+        "63/100",
+        "-77/160"
+      ],
+      [
+        "41/50",
+        "37/160"
+      ],
+      [
+        "83/100",
+        "39/160"
+      ],
+      [
+        "51/50",
+        "1/160"
+      ],
+      [
+        "103/100",
+        "0"
+      ]
+    ],
+    "exact_peak_reference_jerk_m_per_s3": "77/160",
+    "unchanged_guard_limit_m_per_s3": "15/2",
+    "minimum_goal_error_if_original_tracking_tube_holds_mm": "4/5",
+    "meaning": "Dynamically admissible reference generation can still implement the wrong task after duplicate execution. Exact reference jerk verified at every knot; no existing guard implementation or plant run is claimed."
+  },
+  "idempotent_epoch_reducer": {
+    "epoch": 7,
+    "goal": "1",
+    "seen": {
+      "7": [
+        "1",
+        "3/2",
+        "11/50"
+      ]
+    },
+    "events": [
+      [
+        "11/50",
+        "1"
+      ]
+    ],
+    "log": [
+      "ADMITTED",
+      "ADVISORY_ONLY",
+      "DUPLICATE_ACK",
+      "CONFLICT_REJECT",
+      "STALE_REJECT",
+      "FAILED_REQUEST_PENDING_OLD_TAIL"
+    ]
+  },
+  "late_execution_copy": {
+    "fixed_goal_mm": 20,
+    "deadline": "3/2",
+    "nominal_execution": "11/50",
+    "actual_execution": "13/10",
+    "reference_predictions_at_1_02s": [
+      "20",
+      "0"
+    ],
+    "actual_reference_at_deadline_mm": "5/6",
+    "minimum_goal_error_under_tracking_tube_mm": "569/30",
+    "meaning": "An intent-copy predictor using issue/nominal time instead of actual admitted execution predicts movement that has not occurred. This scenario violates the source delay bound; it is not a counterexample to its theorem."
+  },
+  "robust_reference_exactness": "For every e in[-R,R],|q+e-g|<=R implies q=g: e=R gives q<=g and e=-R gives q>=g. Conversely q=g suffices. This is necessary relative to the interval abstraction, not proof that the physical plant reaches both extrema.",
+  "limits": [
+    "Correct authoritative labels remain external assumptions.",
+    "Generation/session handling, restart persistence, cryptographic authentication and clocks are not implemented.",
+    "New requests during a pending tail are explicitly failed, not claimed complete.",
+    "An actual executed-command ledger estimates state but cannot reveal unissued or mislabeled intent."
+  ]
+}

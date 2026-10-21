@@ -1,0 +1,9 @@
+# C02 sources and novelty boundary
+
+AI-written, checked 2026-10-19. The original README hash matches the frozen roster; actual comparison.py, review_numeric.py and Lean statements were inspected by the roles. No original file was changed. The source objective is peak position error over the four jerk segments plus a four-second hold; comparisons use paired rate/disturbance inputs and zero initial error.
+
+[Hindi and Boyd, Robust Solutions to l1, l2, and l-infinity Uncertain Linear Approximation Problems Using Convex Optimization](https://stanford.edu/~boyd/papers/RobApprox.html), ACC 1998, explicitly studies minimax/stochastic formulations for uncertain linear approximation under these norms. The author-hosted summary supports treating robust linear approximation as established background. It does not establish the dynamic uncertainty oracle or validate our benchmark. No novelty claim for convex tuning or scenario exchange is made.
+
+[Boyd and Vandenberghe, Convex Optimization](https://web.stanford.edu/~boyd/cvxbook/) is the author-hosted textbook source. Its standard pointwise-supremum convexity principle explains why fixed uncertainty sets preserve convexity here. A direct PDF fetch timed out; the author page and indexed textbook excerpt were available. The present kernel lemmas independently verify only the explicit conditional algebra recorded in their statements.
+
+The pointwise Hamiltonian corner calculation in pm_corner.lean is elementary interval algebra. We have not proved Pontryagin assumptions, trajectory existence, a complete switching schedule, or a global optimal-control result. It suggests a future falsification oracle only. A maximizing waveform may change with the coefficient without breaking robust convexity when it is selected from one fixed admissible waveform set. Saturation or coefficient-dependent admissible sets require a new argument.

@@ -1,0 +1,11 @@
+import ControlsLean.Estimation.InformationFilter
+#print axioms ControlsLean.Estimation.IsInverse.symm
+#print axioms ControlsLean.Estimation.woodbury_right_inv
+#print axioms ControlsLean.Estimation.woodbury_left_inv
+#print axioms ControlsLean.Estimation.woodbury_isInverse
+#print axioms ControlsLean.Estimation.kalman_information_right_inv
+#print axioms ControlsLean.Estimation.kalman_information_left_inv
+#print axioms ControlsLean.Estimation.kalman_information_equivalence
+#print axioms ControlsLean.Estimation.kalman_postVar_information_equiv
+#print axioms ControlsLean.Estimation.kalman_scalar_cov_eq
+#print axioms ControlsLean.Estimation.kalman_scalar_information_equiv

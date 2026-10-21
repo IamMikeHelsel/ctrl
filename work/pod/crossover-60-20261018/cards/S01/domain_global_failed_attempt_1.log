@@ -1,0 +1,72 @@
+/Users/mike/Dev/ctrl/work/pod/crossover-60-20261018/cards/S01/domain_global.lean:34:8: error: Tactic `rewrite` failed: Did not find an occurrence of the pattern
+  readings m ε (globalState m g R δ ε) true t
+in the target expression
+  HasDerivWithinAt (fun s => globalState m g R δ ε s i)
+    (rhs (field rp R true t)
+      (ClearanceAdmission.actualCommand h (ClearanceAdmission.center m) (readings m ε (globalState m g R δ ε)) true t)
+      (field dp δ true t) (globalState m g R δ ε t) i)
+    (Ici t) t
+
+case hR
+m : State
+g : ℝ → State
+rp dp : Bool → ℝ → ℝ
+R δ : ℕ → ℝ
+ε : ℕ → State
+pre : ClearanceAdmission.Execution h h m g rp dp (fun x x_1 => 0) fun x x_1 => m
+hr : ∀ (n : ℕ), 1 ≤ n → 8 ≤ R n ∧ R n ≤ 12
+hd : ∀ (n : ℕ), 1 ≤ n → |δ n| ≤ 1 / 100
+he : ∀ (n : ℕ), |ε n 0| ≤ 1 / 1000 ∧ |ε n 1| ≤ 1 / 100 ∧ |ε n 2| ≤ 1 / 20
+H : ℝ
+hH : 0 ≤ H
+n : ℕ := coveringStage (H + 1)
+hlarge : H < grid (n + 1)
+finite :
+  ClearanceAdmission.Execution (grid (n + 1)) h m (state m g R δ ε n) (field rp R) (field dp δ) stamp
+    (readings m ε (state m g R δ ε n))
+t : ℝ
+ht : t ∈ Ico 0 H
+i : Fin 3
+htlarge : t < grid (n + 1)
+⊢ HasDerivWithinAt (fun s => globalState m g R δ ε s i)
+    (rhs (field rp R true t)
+      (ClearanceAdmission.actualCommand h (ClearanceAdmission.center m) (readings m ε (globalState m g R δ ε)) true t)
+      (field dp δ true t) (globalState m g R δ ε t) i)
+    (Ici t) t
+/Users/mike/Dev/ctrl/work/pod/crossover-60-20261018/cards/S01/domain_global.lean:42:8: error: Tactic `rewrite` failed: Did not find an occurrence of the pattern
+  readings m ε (globalState m g R δ ε) false t
+in the target expression
+  HasDerivWithinAt (fun s => globalState m g R δ ε s i)
+    (rhs (field rp R false t)
+      (ClearanceAdmission.actualCommand h (ClearanceAdmission.center m) (readings m ε (globalState m g R δ ε)) false t)
+      (field dp δ false t) (globalState m g R δ ε t) i)
+    (Iic t) t
+
+case hL
+m : State
+g : ℝ → State
+rp dp : Bool → ℝ → ℝ
+R δ : ℕ → ℝ
+ε : ℕ → State
+pre : ClearanceAdmission.Execution h h m g rp dp (fun x x_1 => 0) fun x x_1 => m
+hr : ∀ (n : ℕ), 1 ≤ n → 8 ≤ R n ∧ R n ≤ 12
+hd : ∀ (n : ℕ), 1 ≤ n → |δ n| ≤ 1 / 100
+he : ∀ (n : ℕ), |ε n 0| ≤ 1 / 1000 ∧ |ε n 1| ≤ 1 / 100 ∧ |ε n 2| ≤ 1 / 20
+H : ℝ
+hH : 0 ≤ H
+n : ℕ := coveringStage (H + 1)
+hlarge : H < grid (n + 1)
+finite :
+  ClearanceAdmission.Execution (grid (n + 1)) h m (state m g R δ ε n) (field rp R) (field dp δ) stamp
+    (readings m ε (state m g R δ ε n))
+t : ℝ
+ht : t ∈ Ioc 0 H
+i : Fin 3
+htlarge : t < grid (n + 1)
+⊢ HasDerivWithinAt (fun s => globalState m g R δ ε s i)
+    (rhs (field rp R false t)
+      (ClearanceAdmission.actualCommand h (ClearanceAdmission.center m) (readings m ε (globalState m g R δ ε)) false t)
+      (field dp δ false t) (globalState m g R δ ε t) i)
+    (Iic t) t
+'S01SourceBridge.global_execution' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'S01SourceBridge.global_schedule' depends on axioms: [propext, Classical.choice, Quot.sound]

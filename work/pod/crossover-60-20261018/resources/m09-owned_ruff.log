@@ -1,0 +1,124 @@
+B905 `zip()` without an explicit `strict=` parameter
+  --> work/pod/crossover-60-20261018/cards/M09/pm_pairs.py:12:30
+   |
+11 | def tr(a):
+12 |     return [list(x) for x in zip(*a)]
+   |                              ^^^^^^^
+help: Add explicit value for parameter `strict=`
+   |
+11 | def tr(a):
+   -     return [list(x) for x in zip(*a)]
+12 +     return [list(x) for x in zip(*a, strict=False)]
+13 |
+   |
+note: This is an unsafe fix and may change runtime behavior
+
+B007 Loop control variable `u` not used within loop body
+  --> work/pod/crossover-60-20261018/cards/M09/pm_pairs.py:42:9
+   |
+40 | false_fixed_k = 0
+41 | for t,h,s in rows:
+42 |     for u,g,r in rows:
+   |         ^
+43 |         c = mm(inv(s),r)
+44 |         ci = inv(c)
+   |
+help: Rename unused `u` to `_u`
+   |
+41 | for t,h,s in rows:
+   -     for u,g,r in rows:
+42 +     for _u,g,r in rows:
+43 |         c = mm(inv(s),r)
+   |
+note: This is an unsafe fix and may change runtime behavior
+
+E702 Multiple statements on one line (semicolon)
+  --> work/pod/crossover-60-20261018/cards/R02/pm_native_branch.py:11:8
+   |
+ 9 | exports=json.loads((S/'ruckig-primary-exports.json').read_text())
+10 | schedules=json.loads((S/'reference-schedules.json').read_text())['schedules']
+11 | rows=[];count=0
+   |        ^
+12 | for name, plans in exports.items():
+13 |     native=json.loads(gzip.decompress((S/'native-checks'/f'{name}-output.json.gz').read_bytes()))
+   |
+
+E702 Multiple statements on one line (semicolon)
+  --> work/pod/crossover-60-20261018/cards/R02/pm_native_branch.py:18:25
+   |
+16 |     cuts=[F(p['start_exact']) for p in schedule['pieces']]
+17 |     for sample in native['queries']:
+18 |         t=sample['time']; idx=bisect_right(commits,t)-1; phase='initial'; jj=0.; local=None
+   |                         ^
+19 |         if idx>=0:
+20 |             p=plans[idx]['plan'];local=t-commits[idx]
+   |
+
+E702 Multiple statements on one line (semicolon)
+  --> work/pod/crossover-60-20261018/cards/R02/pm_native_branch.py:18:56
+   |
+16 |     cuts=[F(p['start_exact']) for p in schedule['pieces']]
+17 |     for sample in native['queries']:
+18 |         t=sample['time']; idx=bisect_right(commits,t)-1; phase='initial'; jj=0.; local=None
+   |                                                        ^
+19 |         if idx>=0:
+20 |             p=plans[idx]['plan'];local=t-commits[idx]
+   |
+
+E702 Multiple statements on one line (semicolon)
+  --> work/pod/crossover-60-20261018/cards/R02/pm_native_branch.py:18:73
+   |
+16 |     cuts=[F(p['start_exact']) for p in schedule['pieces']]
+17 |     for sample in native['queries']:
+18 |         t=sample['time']; idx=bisect_right(commits,t)-1; phase='initial'; jj=0.; local=None
+   |                                                                         ^
+19 |         if idx>=0:
+20 |             p=plans[idx]['plan'];local=t-commits[idx]
+   |
+
+E702 Multiple statements on one line (semicolon)
+  --> work/pod/crossover-60-20261018/cards/R02/pm_native_branch.py:18:80
+   |
+16 |     cuts=[F(p['start_exact']) for p in schedule['pieces']]
+17 |     for sample in native['queries']:
+18 |         t=sample['time']; idx=bisect_right(commits,t)-1; phase='initial'; jj=0.; local=None
+   |                                                                                ^
+19 |         if idx>=0:
+20 |             p=plans[idx]['plan'];local=t-commits[idx]
+   |
+
+E702 Multiple statements on one line (semicolon)
+  --> work/pod/crossover-60-20261018/cards/R02/pm_native_branch.py:20:33
+   |
+18 |         t=sample['time']; idx=bisect_right(commits,t)-1; phase='initial'; jj=0.; local=None
+19 |         if idx>=0:
+20 |             p=plans[idx]['plan'];local=t-commits[idx]
+   |                                 ^
+21 |             main=[x for x in p['phases'] if x['kind']=='main']
+22 |             if local>=p['duration']:
+   |
+
+E702 Multiple statements on one line (semicolon)
+  --> work/pod/crossover-60-20261018/cards/R02/pm_native_branch.py:27:37
+   |
+25 |                 brake={x['index']:x for x in p['phases'] if x['kind']=='brake' and 'index' in x}
+26 |                 bi=0 if local<brake[0]['duration'] else 1
+27 |                 jj=brake[bi]['jerk'];phase=f'brake_{bi}'
+   |                                     ^
+28 |             else:
+29 |                 afterbrake=local-p['brake_duration'] if p['brake_duration']>0 else local
+   |
+
+E702 Multiple statements on one line (semicolon)
+  --> work/pod/crossover-60-20261018/cards/R02/pm_native_branch.py:34:40
+   |
+32 |                 else:
+33 |                     pi=bisect_right([x['native_t_sum'] for x in main],afterbrake)
+34 |                     jj=main[pi]['jerk'];phase=f'main_{pi}'
+   |                                        ^
+35 |         assert jj==sample['jerk'],(name,t,phase,jj,sample['jerk'])
+36 |         count+=1
+   |
+
+Found 10 errors.
+2 unsafe fixes available with `--fix --unsafe-fixes`.

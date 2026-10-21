@@ -1,0 +1,26 @@
+{
+  "ruff": {
+    "exit_code": 1,
+    "tail": "F401 [*] `math` imported but unused\n --> tests/test_skew_normal_form.py:7:8\n  |\n5 | \"\"\"\n6 |\n7 | import math\n  |        ^^^^\n8 | from fractions import Fraction\n  |\nhelp: Remove unused import: `math`\n  |\n6 |\n  - import math\n7 | from fractions import Fraction\n  |\n\nFound 1 error.\n[*] 1 fixable with `--fix`.\n"
+  },
+  "format": {
+    "exit_code": 1,
+    "tail": "----------------------------------\n142 |     # A = [[4, 2, -1], [2, 5, 2], [-1, 2, 6]]\n    -     A = RationalMatrix([\n    -         [4, 2, -1],\n    -         [2, 5, 2],\n    -         [-1, 2, 6],\n    -     ])\n143 +     A = RationalMatrix(\n144 +         [\n145 +             [4, 2, -1],\n146 +             [2, 5, 2],\n147 +             [-1, 2, 6],\n148 +         ]\n149 +     )\n150 |     L, D = rational_ldl(A)\n--------------------------------------------------------------------------------\n179 |     # K3 Laplacian is positive semidefinite with one 0 eigenvalue\n    -     L_K3 = RationalMatrix([\n    -         [2, -1, -1],\n    -         [-1, 2, -1],\n    -         [-1, -1, 2],\n    -     ])\n180 +     L_K3 = RationalMatrix(\n181 +         [\n182 +             [2, -1, -1],\n183 +             [-1, 2, -1],\n184 +             [-1, -1, 2],\n185 +         ]\n186 +     )\n187 |     with pytest.raises(ValueError, match=\"not strictly positive definite\"):\n--------------------------------------------------------------------------------\n247 | def test_project_to_rational_certificate_preserves_psd():\n    -     C = RationalMatrix([\n    -         [Fraction(-2, 4), Fraction(1, 4), Fraction(1, 4)],\n    -         [Fraction(1, 4), Fraction(-2, 4), Fraction(1, 4)],\n    -         [Fraction(1, 4), Fraction(1, 4), Fraction(-2, 4)],\n    -     ])\n248 +     C = RationalMatrix(\n249 +         [\n250 +             [Fraction(-2, 4), Fraction(1, 4), Fraction(1, 4)],\n251 +             [Fraction(1, 4), Fraction(-2, 4), Fraction(1, 4)],\n252 +             [Fraction(1, 4), Fraction(1, 4), Fraction(-2, 4)],\n253 +         ]\n254 +     )\n255 |     # Numerical boundary dual vector\n    |\n\nunformatted: File would be reformatted\n   --> tests/test_skew_normal_form.py:77:55\n    |\n76  |         assert mat_frobenius_sq(S) == mat_frobenius_sq(K)\n    -         assert mat_frobenius_sq(K) == 2 * (Fraction(a)**2 + Fraction(b)**2)\n77  +         assert mat_frobenius_sq(K) == 2 * (Fraction(a) ** 2 + Fraction(b) ** 2)\n78  |\n--------------------------------------------------------------------------------\n124 |     # Gain difference formula: 4*a^2*(A_01^2 + A_10^2) + 4*b^2*(A_23^2 + A_32^2)\n    -     expected_gain = (\n    -         4 * (a ** 2) * (A[0][1] ** 2 + A[1][0] ** 2) +\n    -         4 * (b ** 2) * (A[2][3] ** 2 + A[3][2] ** 2)\n125 +     expected_gain = 4 * (a**2) * (A[0][1] ** 2 + A[1][0] ** 2) + 4 * (b**2) * (\n126 +         A[2][3] ** 2 + A[3][2] ** 2\n127 |     )\n    |\n\n8 files would be reformatted, 145 files already formatted\n"
+  },
+  "pytest": {
+    "exit_code": 0,
+    "tail": "........................................................................ [ 36%]\n........................................................................ [ 72%]\n........................................................                 [100%]\n200 passed, 1 deselected in 9.00s\n"
+  },
+  "ctrl-check": {
+    "exit_code": 3,
+    "tail": "\u00b7 checking 834: lean/scripts/check.sh\n#     build   tokens   axioms   binding   hash   result      \n\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n834   \u25cf       \u25cf        \u25cf        \u25cf         \u2715      NOT_APPROVED\n  ! 273: no lean/ErdosLab/Erdos273.lean, skipped\n\u2715 834: the challenge statement is not approved\n  why  a human must review lean/Challenge/Erdos834.lean first\n  fix  ctrl approve 834 --by <name>\n  code NOT_APPROVED \u00b7 exit 3\n\nnext\n  \u2192 ctrl approve 834 --by <name>\n"
+  },
+  "campaign-ruff": {
+    "exit_code": 0,
+    "tail": "All checks passed!\n"
+  },
+  "campaign-format": {
+    "exit_code": 0,
+    "tail": "256 files already formatted\n"
+  }
+}

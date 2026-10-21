@@ -1,0 +1,105 @@
+{
+  "scope": "After breadth pass, declared implementation/error-budget interface",
+  "cases": [
+    {
+      "id": 1,
+      "name": "positive_decimal",
+      "test": "Declared int16 codes, int64 four-corner guard, exact complete dot then clamp."
+    },
+    {
+      "id": 2,
+      "name": "positive_q14",
+      "test": "Q14 declared scaling with half-cell ADC and proved intermediates."
+    },
+    {
+      "id": 3,
+      "name": "positive_q16_wide",
+      "test": "Q16 int32 output and accumulator; no accidental int16 narrowing."
+    },
+    {
+      "id": 4,
+      "name": "center_only",
+      "test": "Reject center-only certificate for(-500,3500)."
+    },
+    {
+      "id": 5,
+      "name": "energy_int32",
+      "test": "Reject modulo32 quadratic guard false admission."
+    },
+    {
+      "id": 6,
+      "name": "cast_after_product",
+      "test": "Reject promotion only after potentially overflowing multiplication."
+    },
+    {
+      "id": 7,
+      "name": "product_wrap",
+      "test": "Reject Q16 modulo16 intermediate product."
+    },
+    {
+      "id": 8,
+      "name": "termwise_clip",
+      "test": "Reject clip each term before sum."
+    },
+    {
+      "id": 9,
+      "name": "truncation",
+      "test": "Account full-cell truncation rather than nearest half-cell."
+    },
+    {
+      "id": 10,
+      "name": "nearest_ties",
+      "test": "Accept alternate tie rule only through error contract, not equality claim."
+    },
+    {
+      "id": 11,
+      "name": "stale_adc",
+      "test": "Bind timestamp/current true state and consume age budget."
+    },
+    {
+      "id": 12,
+      "name": "cell_boundary",
+      "test": "Initial safe boundary can fail the closed-cell guard; after compliant synchronous updates, check the proved stronger whole-cell margin. Do not transfer that margin to stale initialization."
+    },
+    {
+      "id": 13,
+      "name": "rejected_fallback",
+      "test": "Zero output after rejection has explicit unsafe boundary example."
+    },
+    {
+      "id": 14,
+      "name": "raw_on_reject",
+      "test": "Do not actuate diagnostic raw output when admission flagfalse."
+    },
+    {
+      "id": 15,
+      "name": "malformed_input",
+      "test": "Require bounded parsing before casts and multiplication."
+    },
+    {
+      "id": 16,
+      "name": "wrong_scale",
+      "test": "Reject decimal/binary scale substitution or integer division before conversion; Q16 strict-interior zero-decoding fixture violates endpoint energy."
+    },
+    {
+      "id": 17,
+      "name": "dac_error",
+      "test": "Include postclamp delivered-output error."
+    },
+    {
+      "id": 18,
+      "name": "hold_duration",
+      "test": "Keep h in[.05,.5]; do not infer universal step sizes."
+    },
+    {
+      "id": 19,
+      "name": "disturbance_semantics",
+      "test": "Held acceleration disturbance after delivered command; time-varying extension separate."
+    },
+    {
+      "id": 20,
+      "name": "trajectory_refinement",
+      "test": "Bind repeated executable command/state recurrence; finite tests and endpoint theorem do not establish continuous/hardware safety."
+    }
+  ]
+}

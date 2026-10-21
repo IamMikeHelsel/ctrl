@@ -1,0 +1,134 @@
+{
+  "status": "Proposed next thirty-minute block; this file does not claim all twenty tests executed.",
+  "positive_contract": "Four original exact labelled pairs, proper rigid transforms with unit scale, at most one original outlier, and a reliable additional observation with Euclidean error at most one. The 57-point pool is virtual until an acquisition-feasibility mask is supplied.",
+  "positive_controls": [
+    "Recover all four original proper three-support hypotheses.",
+    "Recover the single off-axis five-pair four-support fit.",
+    "Check all six prediction distances and select (-1,-1,-1) with minimum squared separation eight when feasible.",
+    "Return both optimal six-pair registrations rather than identifying truth from their equal costs."
+  ],
+  "mutations": [
+    {
+      "id": 1,
+      "name": "candidate_coverage",
+      "mutation": "Drop one of the four exact feasible poses before scoring.",
+      "required_outcome": "Reject the incomplete cover, even if the remaining pairwise gaps improve."
+    },
+    {
+      "id": 2,
+      "name": "pair_coverage",
+      "mutation": "Omit the closest of the six prediction pairs.",
+      "required_outcome": "Reject the score certificate unless every unordered pair is checked."
+    },
+    {
+      "id": 3,
+      "name": "model_binding",
+      "mutation": "Replace fixed labelled correspondences with unknown matching on the regular tetrahedron.",
+      "required_outcome": "Return twelve proper full-support poses rather than the fixed-label singleton."
+    },
+    {
+      "id": 4,
+      "name": "orientation",
+      "mutation": "Admit the determinant-minus-one reflection in the five-pair fixture.",
+      "required_outcome": "Reject under SO(3); explicitly retain the extra fit under O(3)."
+    },
+    {
+      "id": 5,
+      "name": "scale_binding",
+      "mutation": "Submit 2I as a rotation, or silently introduce an unknown positive scale.",
+      "required_outcome": "Reject the nonorthogonal rotation; require a separate similarity model and full scale-domain certificate."
+    },
+    {
+      "id": 6,
+      "name": "fault_budget",
+      "mutation": "Add the fifth point but increase the allowed faults from one to two.",
+      "required_outcome": "Retain the old three-support explanations; do not reuse the one-fault uniqueness claim."
+    },
+    {
+      "id": 7,
+      "name": "acquisition_mask",
+      "mutation": "Mark the unique best virtual point (-1,-1,-1) physically unavailable.",
+      "required_outcome": "Choose a maximizer among feasible queries only, or abstain if none is informative."
+    },
+    {
+      "id": 8,
+      "name": "empty_feasible_query_set",
+      "mutation": "Remove every feasible acquisition.",
+      "required_outcome": "Return no admissible query rather than inventing a feasible action."
+    },
+    {
+      "id": 9,
+      "name": "noise_boundary",
+      "mutation": "Use radius sqrt(2) at the best query and the midpoint of a closest prediction pair.",
+      "required_outcome": "Retain both hypotheses because the two closed noise balls touch."
+    },
+    {
+      "id": 10,
+      "name": "noise_inflation",
+      "mutation": "Increase the new measurement radius beyond the declared value one.",
+      "required_outcome": "Recompute separation; reject any old noise certificate whose margin is insufficient."
+    },
+    {
+      "id": 11,
+      "name": "noisy_prior_cover",
+      "mutation": "Perturb the original four exact observations and reuse exact triple enumeration.",
+      "required_outcome": "Reject completeness: continuous feasible pose sets need certified enclosures."
+    },
+    {
+      "id": 12,
+      "name": "query_target_binding",
+      "mutation": "Replace the added target (0,0,2) by (10,0,2) in the seven-pair TLS fixture.",
+      "required_outcome": "Invalidate the old identity certificate: identity costs four and the translated fit costs three."
+    },
+    {
+      "id": 13,
+      "name": "threshold_binding",
+      "mutation": "Change the six-pair TLS threshold from one to 15/2.",
+      "required_outcome": "Reject lower bound three: the midpoint translation has cost 8/3."
+    },
+    {
+      "id": 14,
+      "name": "units",
+      "mutation": "Rescale coordinates without scaling the noise bound.",
+      "required_outcome": "Reject the original model certificate or recompute it under the changed units."
+    },
+    {
+      "id": 15,
+      "name": "duplicate_provenance",
+      "mutation": "Reuse one acquisition ID as a supposedly new correspondence.",
+      "required_outcome": "Do not count it as independent new support or a new fault-budget witness."
+    },
+    {
+      "id": 16,
+      "name": "collinear_overlap",
+      "mutation": "Use three collinear points as the supposedly identifying shared support.",
+      "required_outcome": "Retain the rotation family about that line."
+    },
+    {
+      "id": 17,
+      "name": "uninformative_query",
+      "mutation": "Add the on-axis point (2,0,0) to the exact four-pair fixture.",
+      "required_outcome": "Retain two proper four-support fits."
+    },
+    {
+      "id": 18,
+      "name": "near_collinear_noise",
+      "mutation": "Use sources 0,e1,(2,.01,0), targets 0,e1,(2,0,0), and radius .01.",
+      "required_outcome": "Retain identity and the half-turn about the x axis; exact noncollinearity is insufficient."
+    },
+    {
+      "id": 19,
+      "name": "clique_chirality",
+      "mutation": "Supply the complete pair-distance graph of a reflected tetrahedron.",
+      "required_outcome": "Reject the inference that a clique certifies an exact proper rigid fit."
+    },
+    {
+      "id": 20,
+      "name": "tie_aware_output",
+      "mutation": "Provide the two globally optimal six-pair registrations with identical objective value.",
+      "required_outcome": "Return an ambiguity set or abstention; optimality alone must not select a true-world pose."
+    }
+  ],
+  "duration_seconds": 1800,
+  "start_gate": "Afterall60initial600secondreviews"
+}

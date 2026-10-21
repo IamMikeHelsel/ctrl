@@ -1,0 +1,77 @@
+CAN THE EXISTING HOLD CERTIFICATE SUPPORT DIGITAL FEEDBACK?
+18 October 2026. New exact-arithmetic screen. Not a Lean or trajectory proof.
+
+Purpose
+Test a cheap candidate bridge before starting more formalization. Use the
+existing changing-response hold law and its illustrative sensor bounds. Do not
+retune gains or expand the accepted cube after seeing the result.
+
+Inherited continuous model, SI units
+  x'=v, v'=a, a'=r(t)(k+w-a),   8<=r<=12 per second
+  k=-8(x-c)-6v-a/2
+  z1=x-c, z2=x-c+v/4, z3=x-c+v/2+a/16
+  |zi|<=R,  R=2221/40000 m=0.055525 m
+The existing hold theorem admits total target mismatch |w|<=W=2R=0.11105 m/s^2.
+The gains in these expressions carry SI units; these are not dimensionless laws.
+
+Candidate digital implementation
+At time t the command uses a noisy reading at time s<=t. Its total information
+age is t-s, including sensing, computation, transport and holding time. The
+measurement errors are bounded by ex=.001 m, ev=.01 m/s, ea=.05 m/s^2.
+The implemented command is k(measured state at s), held until the next update.
+Add a separate physical target error d. For a fixed reference c, the mismatch
+relative to continuous feedback is
+  w_total(t)=k(measured state at s)-k(actual state at t)+d(t).
+
+Exact calculation
+Measurement error costs M=8ex+6ev+ea/2=0.093 m/s^2.
+Using v=4(z2-z1), a=16(z1-2z2+z3), differentiate the actual k:
+  k'=(4r-64)z1+(160-12r)z2+(12r-96)z3-r*w_total/2.
+Conditional on the cube and |w_total|<=2R, its maximum absolute value is
+104R=5.7746 m/s^3. The expression is affine in each variable separately;
+the absolute value is bounded by its maximum over the 32 endpoint vertices.
+age_budget.py checks all vertices with Fraction arithmetic and checks the
+identity independently through the original physical-coordinate derivatives.
+
+For piecewise differentiable trajectories with the required continuity and
+finite switching on each bounded interval, integrating this conditional slope
+gives the candidate sufficient budget
+  M + (104R)*total_information_age + max|d| <= 2R.
+
+Results (bounds in m/s^2; ages in milliseconds)
+ physical error     age       proposed total bound       existing budget
+      0              1             0.0987746                0.11105
+      0              5             0.121873                 0.11105
+      0.01           1             0.1087746                0.11105
+      0.01           2             0.1145492                0.11105
+      0.01           5             0.131873                 0.11105
+Algebraic age ceilings: 3.1257576 ms with zero physical error, and 1.3940359 ms
+with 0.01 m/s^2 physical error. Use strict slack in any first-exit proof; these
+ceiling values are not already certified operating limits.
+
+What passed
+Exact expression and endpoint arithmetic. A 1 ms candidate has nonzero budget
+slack even with the separate physical error. The measured command magnitude is
+bounded by 24R+M=1.4256 m/s^2 if its actual sampled state is in the cube. With
+0.01 physical error this is below the illustrative authority of 2 m/s^2.
+Whether saturation is inactive throughout the full operation still needs proof.
+
+What has NOT passed
+The bound assumes both the cube and the total mismatch condition. It does not
+prove their preservation under the digital controller. Prove a bootstrap/first-
+exit or one-step implication without assuming the conclusion. Specify initial
+command/history, a fresh first reading, finite sampling, switch regularity and
+existence. The old theorem requires classical derivatives; sampled commands
+need a suitable piecewise execution contract before it can be reused.
+
+No full braking prefix, eventual accepted detector sample, or initial capture
+bridge was checked here. The previous one-time capture delay <=5 ms is not a
+bound on every later sample age. Its theorem is not contradicted by this screen.
+
+A failed budget only rejects this sufficient proof route at that age. A sharper
+analysis, another tube, or another gain set might work. No unsafe trajectory was
+found or claimed. Sensor errors and rates remain illustrative, not measured.
+
+Reproduce
+  python3 research/controls-scope-review-20261018/age_budget.py
+The script writes age-budget-results.json in this new review folder only.

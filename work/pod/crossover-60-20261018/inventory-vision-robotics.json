@@ -1,0 +1,541 @@
+[
+  {
+    "id": "V01",
+    "domain": "machine_vision",
+    "title": "Faithful projective plane transfer",
+    "question": "Under explicit nonzero-ray, depth and invertibility conditions, which projective incidences and plane-induced image constraints survive a camera-frame change?",
+    "source_paths": [
+      "/Users/mike/Dev/ctrl-research-notebook/ControlsLean/Vision/Homography.lean",
+      "/Users/mike/Dev/ctrl-research-notebook/docs/proposals/01_planar_homography.md"
+    ],
+    "prior_work": "Source has algebraic incidence, determinant and plane-motion lemmas; inspected theorem statements, not rebuilt in inventory.",
+    "obstacle": "Vector identities do not alone establish a projective quotient camera pipeline or physical calibration; proposal overstates failure of epipolar geometry on planes.",
+    "reading_depth": "investigated",
+    "crossover_seed": "Use simulation relations from control to state the camera-model bridge.",
+    "cheap_test": "Construct rational plane points and invertible H; check incidence and depth scaling, then test singular H and zero rays.",
+    "wildcard": false,
+    "score_parts": {
+      "impact": 3,
+      "transfer": 4,
+      "testability": 4,
+      "readiness": 4,
+      "unexplored": 2
+    }
+  },
+  {
+    "id": "V02",
+    "domain": "machine_vision",
+    "title": "Homography pose ambiguity and cheirality",
+    "question": "Given a calibrated plane-induced homography, which rigid pose and plane candidates satisfy reconstruction and positive-depth constraints, including degeneracies?",
+    "source_paths": [
+      "/Users/mike/Dev/ctrl/.agents/teamwork/explorer_survey_vision_1/handoff.md",
+      "/Users/mike/Dev/ctrl-research-notebook/ControlsLean/Vision/Homography.lean"
+    ],
+    "prior_work": "Survey proposes analytical decomposition; existing Lean file only proves forward identities.",
+    "obstacle": "Survey fixed eight-to-two multiplicity and novelty claims are not established; pure rotation, scale conventions and visible points can change ambiguity.",
+    "reading_depth": "surveyed",
+    "crossover_seed": "Treat branches as finite certificates like SAT witnesses instead of assuming a solution count.",
+    "cheap_test": "For identity, pure translation and generic rotation homographies, test candidate reconstruction and signed depths; report sets rather than fixed count.",
+    "wildcard": false,
+    "score_parts": {
+      "impact": 4,
+      "transfer": 4,
+      "testability": 3,
+      "readiness": 3,
+      "unexplored": 3
+    }
+  },
+  {
+    "id": "V03",
+    "domain": "machine_vision",
+    "title": "Epipolar validity versus pose identifiability",
+    "question": "When do calibrated two-view correspondences determine a rigid pose, and how do planar scenes or zero baseline affect identifiability without invalidating the epipolar identity?",
+    "source_paths": [
+      "/Users/mike/Dev/ctrl-research-notebook/ControlsLean/Vision/Epipolar.lean",
+      "/Users/mike/Dev/ctrl-research-notebook/docs/proposals/01_planar_homography.md"
+    ],
+    "prior_work": "Lean source proves the epipolar equation from a depth-scaled relation even for arbitrary R; prose in proposal conflates validity with estimation ambiguity.",
+    "obstacle": "Need separate SO(3), nonzero translation, nonzero rays and observability conditions; algebraic satisfaction is not unique reconstruction.",
+    "reading_depth": "investigated",
+    "crossover_seed": "Borrow observability rank tests and unobservable modes from control.",
+    "cheap_test": "Build planar correspondences satisfying two distinct epipolar matrices, and a pure-rotation zero-E case; verify identity separately from rank.",
+    "wildcard": false,
+    "score_parts": {
+      "impact": 4,
+      "transfer": 4,
+      "testability": 4,
+      "readiness": 4,
+      "unexplored": 3
+    }
+  },
+  {
+    "id": "V04",
+    "domain": "machine_vision",
+    "title": "Certifiable robust Wahba rotation",
+    "question": "Can an outlier-corrupted rotation estimate carry a checkable lower-bound certificate matching its feasible objective under a stated noise/outlier model?",
+    "source_paths": [
+      "/Users/mike/Dev/ctrl/.agents/teamwork/explorer_survey_vision_1/handoff.md"
+    ],
+    "prior_work": "QUASAR and robust rotation certification are listed and summarized in a local survey; no local replication found.",
+    "obstacle": "Numerical PSD and claimed universal zero duality gap are insufficient; exactness depends on instance and assumptions.",
+    "reading_depth": "surveyed",
+    "crossover_seed": "Reuse exact rational energy certificates from finite mathematics.",
+    "cheap_test": "Construct a tiny rotation dataset with one controlled outlier and independently check primal residual and rational dual slack.",
+    "wildcard": false,
+    "score_parts": {
+      "impact": 4,
+      "transfer": 4,
+      "testability": 3,
+      "readiness": 2,
+      "unexplored": 3
+    }
+  },
+  {
+    "id": "V05",
+    "domain": "machine_vision",
+    "title": "Robust point-cloud registration",
+    "question": "Which translation/rotation/scale ambiguities and outlier patterns prevent a certifiable rigid point-cloud registration on small fixtures?",
+    "source_paths": [
+      "/Users/mike/Dev/ctrl/.agents/teamwork/explorer_survey_vision_1/handoff.md"
+    ],
+    "prior_work": "TEASER is explicitly catalogued as a registration method; full source and algorithm not audited here.",
+    "obstacle": "Must distinguish correspondences from correspondence search, bounded noise from adversarial data, and conditional certificate from guaranteed success.",
+    "reading_depth": "catalogued",
+    "crossover_seed": "Use fault-isolation consistency sets and graph rigidity to predict ambiguous inlier subsets.",
+    "cheap_test": "Create two congruent subcloud explanations and test whether a proposed certificate rejects ambiguity rather than selecting a convenient alignment.",
+    "wildcard": false,
+    "score_parts": {
+      "impact": 4,
+      "transfer": 4,
+      "testability": 4,
+      "readiness": 2,
+      "unexplored": 3
+    }
+  },
+  {
+    "id": "V06",
+    "domain": "machine_vision",
+    "title": "Pose-graph synchronization certificates",
+    "question": "Can a small inconsistent relative-pose graph be accompanied by an independently checked certificate of global optimum after gauge fixing?",
+    "source_paths": [
+      "/Users/mike/Dev/ctrl/.agents/teamwork/explorer_survey_vision_1/handoff.md"
+    ],
+    "prior_work": "SE-Sync appears as a surveyed certifiable synchronization reference; no local pose-graph implementation inspected.",
+    "obstacle": "Gauge freedom, disconnected graphs and relaxation tightness must be made explicit.",
+    "reading_depth": "catalogued",
+    "crossover_seed": "Cycle invariants from graph theory and passivity-style residual budgets.",
+    "cheap_test": "Use a three-node rotation cycle with one inconsistent edge and compare exact cycle residuals, feasible objective and a lower bound.",
+    "wildcard": true,
+    "score_parts": {
+      "impact": 4,
+      "transfer": 4,
+      "testability": 4,
+      "readiness": 2,
+      "unexplored": 3
+    }
+  },
+  {
+    "id": "V07",
+    "domain": "machine_vision",
+    "title": "Complete minimal absolute-pose candidates",
+    "question": "Can a P3P minimal solver produce all physically admissible camera poses for a three-point instance with a checkable real-root certificate?",
+    "source_paths": [
+      "/Users/mike/Dev/ctrl/.agents/teamwork/explorer_survey_vision_1/handoff.md"
+    ],
+    "prior_work": "Survey names P3P in its minimal-solver transfer discussion; no P3P implementation or polynomial derivation checked.",
+    "obstacle": "Numerical action-matrix eigenvalues are not automatically complete exact roots; singular and repeated-root cases need treatment.",
+    "reading_depth": "catalogued",
+    "crossover_seed": "Transfer algebraic root isolation and certificate checking from exact mathematics.",
+    "cheap_test": "Choose rational geometry, derive its range equations, isolate roots and reconstruct each pose; test collinear input rejection.",
+    "wildcard": false,
+    "score_parts": {
+      "impact": 3,
+      "transfer": 4,
+      "testability": 3,
+      "readiness": 2,
+      "unexplored": 3
+    }
+  },
+  {
+    "id": "V08",
+    "domain": "machine_vision",
+    "title": "Minimal relative pose and degeneracy",
+    "question": "Can a five-correspondence calibrated relative-pose solve distinguish isolated real solutions from degenerate solution families with a checkable certificate?",
+    "source_paths": [
+      "/Users/mike/Dev/ctrl/.agents/teamwork/explorer_survey_vision_1/handoff.md",
+      "/Users/mike/Dev/ctrl-research-notebook/ControlsLean/Vision/Epipolar.lean"
+    ],
+    "prior_work": "Five-point relative pose is named in the survey; epipolar forward identity exists locally.",
+    "obstacle": "Need actual elimination equations and saturation conditions; quotient-ring dimension and generic root count are not guarantees for every instance.",
+    "reading_depth": "catalogued",
+    "crossover_seed": "Use rank stratification and control observability analysis before algebraic solving.",
+    "cheap_test": "Compare a generic five-ray fixture with planar/pure-rotation fixtures; test rank and substitution residuals of all claimed candidates.",
+    "wildcard": false,
+    "score_parts": {
+      "impact": 4,
+      "transfer": 4,
+      "testability": 3,
+      "readiness": 2,
+      "unexplored": 3
+    }
+  },
+  {
+    "id": "V09",
+    "domain": "machine_vision",
+    "title": "Point-line multiview reconstruction",
+    "question": "For a selected small complete-visibility point-line configuration, can all consistent multiview reconstructions be enumerated and validated?",
+    "source_paths": [
+      "/Users/mike/Dev/ctrl/.agents/teamwork/explorer_survey_vision_1/handoff.md"
+    ],
+    "prior_work": "PLMP and homotopy continuation are named as source-map leads; no configuration-level review evidenced.",
+    "obstacle": "A named method is not a specified finite problem; choose one published configuration and verify path-completeness assumptions first.",
+    "reading_depth": "catalogued",
+    "crossover_seed": "Translate incidence into hypergraph constraints and exploit automorphism reduction.",
+    "cheap_test": "Select a triangle of point/line incidences in two or three views, count degrees of freedom, and exhibit a gauge or degeneracy witness before solver work.",
+    "wildcard": true,
+    "score_parts": {
+      "impact": 3,
+      "transfer": 4,
+      "testability": 3,
+      "readiness": 1,
+      "unexplored": 4
+    }
+  },
+  {
+    "id": "V10",
+    "domain": "machine_vision",
+    "title": "Global bounded-reprojection feasibility",
+    "question": "Under positive depth and fixed versus unknown rotations, which multiview maximum-reprojection-error subproblems admit convex feasibility certificates?",
+    "source_paths": [
+      "/Users/mike/Dev/ctrl/.agents/teamwork/explorer_survey_vision_1/handoff.md"
+    ],
+    "prior_work": "Hartley/Kahl L-infinity optimization and rotation branch-and-bound are surveyed.",
+    "obstacle": "Whole pose estimation is not made convex by naming an SOCP; rotation and denominator domains matter.",
+    "reading_depth": "surveyed",
+    "crossover_seed": "Use reachable-set branch-and-bound and interval certificates from safety verification.",
+    "cheap_test": "For two fixed cameras, test a triangulation error threshold using explicit cone inequalities; change rotation to show where fixed-camera convexity breaks.",
+    "wildcard": false,
+    "score_parts": {
+      "impact": 4,
+      "transfer": 4,
+      "testability": 4,
+      "readiness": 2,
+      "unexplored": 3
+    }
+  },
+  {
+    "id": "V11",
+    "domain": "machine_vision",
+    "title": "Outlier admission in information filtering",
+    "question": "Can a geometric outlier-rejection rule preserve a stated estimation-error bound when combined with an additive information update?",
+    "source_paths": [
+      "/Users/mike/Dev/ctrl/.agents/teamwork/explorer_survey_vision_1/handoff.md",
+      "/Users/mike/Dev/ctrl-research-notebook/ControlsLean/Estimation/InformationFilter.lean"
+    ],
+    "prior_work": "Survey proposes combining pose rejection and information updates; source file supplies algebraic inverse identities only.",
+    "obstacle": "Posterior covariance algebra does not bound actual error under biased or misclassified measurements; observation and noise assumptions are missing.",
+    "reading_depth": "surveyed",
+    "crossover_seed": "Use robust set-membership observers and safety-margin erosion.",
+    "cheap_test": "Scalar counterexample: very precise biased measurement decreases covariance while increasing actual error; then test bounded-error interval admission.",
+    "wildcard": false,
+    "score_parts": {
+      "impact": 4,
+      "transfer": 4,
+      "testability": 4,
+      "readiness": 3,
+      "unexplored": 3
+    }
+  },
+  {
+    "id": "V12",
+    "domain": "machine_vision",
+    "title": "Planar camera calibration identifiability",
+    "question": "Which planar checkerboard views provide enough independent constraints to recover camera intrinsics, and how can a calibration carry a rank/consistency check?",
+    "source_paths": [
+      "/Users/mike/Dev/ctrl-research-notebook/docs/proposals/01_planar_homography.md"
+    ],
+    "prior_work": "Zhang calibration is cited as an application of homographies, not implemented or audited.",
+    "obstacle": "Need calibration model, view diversity and noise assumptions; a homography proof does not prove intrinsic recovery.",
+    "reading_depth": "catalogued",
+    "crossover_seed": "Experiment-design Gramians and persistent excitation from control.",
+    "cheap_test": "Compare repeated fronto-parallel views to tilted synthetic views using the intrinsic-constraint matrix rank.",
+    "wildcard": false,
+    "score_parts": {
+      "impact": 4,
+      "transfer": 4,
+      "testability": 4,
+      "readiness": 2,
+      "unexplored": 3
+    }
+  },
+  {
+    "id": "R01",
+    "domain": "robotics",
+    "title": "Task intent versus measurement ambiguity",
+    "question": "What authoritative task information is necessary to distinguish a true small move from noisy observations of a hold without silently suppressing intended motion?",
+    "source_paths": [
+      "/Users/mike/Dev/ctrl-research-notebook/research-notebook/research/pods/2026-10-17/robot-motion/intent-contract-07/analyst/report.md",
+      "/Users/mike/Dev/ctrl-research-notebook/research-notebook/research/pods/2026-10-17/robot-motion/intent-contract-07/analyst/motor-control-addendum.md",
+      "/Users/mike/Dev/ctrl-research-notebook/research-notebook/research/pods/2026-10-17/robot-motion/task-contract-08/builder/report.txt"
+    ],
+    "prior_work": "Prior report gives identical-history impossibility examples and a later isolated authoritative-goal theorem under explicit premises.",
+    "obstacle": "Intent remains a trusted input; identical numeric histories cannot reveal incompatible hidden tasks.",
+    "reading_depth": "investigated",
+    "crossover_seed": "Information-theoretic indistinguishability and typed command protocols.",
+    "cheap_test": "Replay identical 1 mm packets under hold and move truths with disjoint 0.2 mm goal bands; demonstrate no packet-only universal success.",
+    "wildcard": true,
+    "score_parts": {
+      "impact": 4,
+      "transfer": 4,
+      "testability": 4,
+      "readiness": 4,
+      "unexplored": 3
+    }
+  },
+  {
+    "id": "R02",
+    "domain": "robotics",
+    "title": "Reference continuity across native replanning",
+    "question": "Can an execution adapter preserve the actual native trajectory jet across repeated replacements and retain all real jump contributions in its metrics?",
+    "source_paths": [
+      "/Users/mike/Dev/ctrl-research-notebook/research-notebook/research/pods/2026-10-17/robot-motion/native-execution-06/builder/report.txt",
+      "/Users/mike/Dev/ctrl-research-notebook/research-notebook/research/pods/2026-10-17/robot-motion/intent-contract-07/analyst/industrial-comparison-addendum.md"
+    ],
+    "prior_work": "Native execution repair retains C++ trajectory state and reports finite reconstruction tests; tiny joins and jerk-side differences remain explicit.",
+    "obstacle": "Finite sampled agreement is not continuous-runtime or firmware correctness; clock rounding and zero-duration metadata matter.",
+    "reading_depth": "investigated",
+    "crossover_seed": "Refinement relations from verified compilers applied to trajectory representations.",
+    "cheap_test": "Use one superseded short native phase and compare both sides of q/v/a at execution joins under exact binary-origin conversion.",
+    "wildcard": false,
+    "score_parts": {
+      "impact": 4,
+      "transfer": 4,
+      "testability": 4,
+      "readiness": 4,
+      "unexplored": 2
+    }
+  },
+  {
+    "id": "R03",
+    "domain": "robotics",
+    "title": "Atomic future commit under clock uncertainty",
+    "question": "Can a candidate future trajectory be committed only while its history, task, frame and timing snapshot remains valid under bounded clock error?",
+    "source_paths": [
+      "/Users/mike/Dev/ctrl-research-notebook/research-notebook/publication/robot-motion/stabilization-research-addendum-2026-10-18.md"
+    ],
+    "prior_work": "Addendum proposes versioned snapshot, future validation and atomic commit; current proof boundary assumes ideal common clock and atomic state.",
+    "obstacle": "Ordering bounds do not establish atomic state binding or physical progress; real executor absent.",
+    "reading_depth": "surveyed",
+    "crossover_seed": "Database serializability and optimistic concurrency control with interval time.",
+    "cheap_test": "Enumerate interleavings of proposal, goal revision and commit; reject stale version even when time inequality passes.",
+    "wildcard": false,
+    "score_parts": {
+      "impact": 4,
+      "transfer": 4,
+      "testability": 4,
+      "readiness": 3,
+      "unexplored": 3
+    }
+  },
+  {
+    "id": "R04",
+    "domain": "robotics",
+    "title": "Conditional scheduler progress",
+    "question": "Under what feasible-task margin, candidate coverage, computation bounds and request-rate assumptions must the executor eventually accept a request?",
+    "source_paths": [
+      "/Users/mike/Dev/ctrl-research-notebook/research-notebook/publication/robot-motion/stabilization-research-addendum-2026-10-18.md"
+    ],
+    "prior_work": "Addendum explicitly separates sound acceptance from progress and lists needed premises.",
+    "obstacle": "An always-reject checker is sound but useless; a finite candidate search is not completeness.",
+    "reading_depth": "surveyed",
+    "crossover_seed": "Fair scheduling and temporal-logic liveness certificates.",
+    "cheap_test": "Small discrete scheduler model with a feasible execution slot; compare bounded exhaustive slot coverage to starvation under repeated supersession.",
+    "wildcard": false,
+    "score_parts": {
+      "impact": 4,
+      "transfer": 4,
+      "testability": 4,
+      "readiness": 3,
+      "unexplored": 3
+    }
+  },
+  {
+    "id": "R05",
+    "domain": "robotics",
+    "title": "Bounded retained-history storage",
+    "question": "Can the retained-event execution contract obtain a finite memory and checking-time bound while preserving all active and future commitments?",
+    "source_paths": [
+      "/Users/mike/Dev/ctrl-research-notebook/research-notebook/publication/robot-motion/stabilization-research-addendum-2026-10-18.md",
+      "/Users/mike/Dev/ctrl-research-notebook/research-notebook/publication/robot-motion/execution-note/related-work-audit/comparison.md"
+    ],
+    "prior_work": "Prior audit states finite but unbounded histories and roughly quadratic checking work; addendum notes pruning completed events does not bound active queues.",
+    "obstacle": "Requires arrival-rate or admission assumptions; deleting future events changes the task.",
+    "reading_depth": "surveyed",
+    "crossover_seed": "Network calculus arrival curves and queueing admission applied to proof certificate size.",
+    "cheap_test": "Send arbitrarily dense accepted future events in one support window; derive counterexample to pruning-only bounded memory, then bound count under minimum spacing.",
+    "wildcard": false,
+    "score_parts": {
+      "impact": 4,
+      "transfer": 4,
+      "testability": 4,
+      "readiness": 3,
+      "unexplored": 3
+    }
+  },
+  {
+    "id": "R06",
+    "domain": "robotics",
+    "title": "World-frame derivative transport",
+    "question": "Can world-frame output constraints be preserved when body motion, frame/calibration updates and coupled robot kinematics transform an actuator reference?",
+    "source_paths": [
+      "/Users/mike/Dev/ctrl-research-notebook/research-notebook/publication/robot-motion/stabilization-research-addendum-2026-10-18.md"
+    ],
+    "prior_work": "Addendum identifies frame derivative, calibration, singularity and coupled dynamics obligations; no proved multi-axis extension.",
+    "obstacle": "Componentwise limits do not imply Cartesian bounds; rotating-frame terms and singularities can amplify error.",
+    "reading_depth": "surveyed",
+    "crossover_seed": "Differential geometry covariant derivatives and robust Jacobian bounds.",
+    "cheap_test": "Two-dimensional rotating base with constant body-frame vector: calculate nonzero world velocity/acceleration and expose an omitted transport term.",
+    "wildcard": false,
+    "score_parts": {
+      "impact": 4,
+      "transfer": 4,
+      "testability": 4,
+      "readiness": 3,
+      "unexplored": 3
+    }
+  },
+  {
+    "id": "R07",
+    "domain": "robotics",
+    "title": "Minimal intervention on redundant arms",
+    "question": "Can a robot avoid correcting task-irrelevant joint deviations while maintaining explicit task, obstacle and actuator constraints?",
+    "source_paths": [
+      "/Users/mike/Dev/ctrl-research-notebook/research-notebook/research/pods/2026-10-17/robot-motion/intent-contract-07/analyst/motor-control-addendum.md",
+      "/Users/mike/Dev/ctrl-research-notebook/research-notebook/research/pods/2026-10-17/robot-motion/intent-contract-07/analyst/report.md"
+    ],
+    "prior_work": "Motor-control reading motivates minimal intervention; source explicitly says scalar model has no redundancy and cannot establish this extension.",
+    "obstacle": "Null-space freedom can violate constraints and disappears near singularities; biological analogy is motivation only.",
+    "reading_depth": "surveyed",
+    "crossover_seed": "Quotient-space goals, control allocation and task-space invariants.",
+    "cheap_test": "Two-joint scalar task x=q1+q2: compare full joint correction with null-space motion while enforcing joint bounds; add a singular Jacobian case.",
+    "wildcard": true,
+    "score_parts": {
+      "impact": 4,
+      "transfer": 4,
+      "testability": 4,
+      "readiness": 3,
+      "unexplored": 4
+    }
+  },
+  {
+    "id": "R08",
+    "domain": "robotics",
+    "title": "Energy benefit versus smoothness proxies",
+    "question": "Does a smoother successful robot trajectory reduce a defined mechanical or electrical energy quantity once task, timing, payload and losses are matched?",
+    "source_paths": [
+      "/Users/mike/Dev/ctrl-research-notebook/research-notebook/research/pods/2026-10-17/robot-motion/intent-contract-07/analyst/industrial-comparison-addendum.md",
+      "/Users/mike/Dev/ctrl-research-notebook/research-notebook/research/pods/2026-10-17/robot-motion/moving-goal-08/builder/report.txt"
+    ],
+    "prior_work": "Prior addendum separates jerk integral, torque effort and joules; rest-to-rest frictionless net-work counterexample given.",
+    "obstacle": "No electrical/mechanical energy measurement exists in scalar acceleration-command model; prior methods start revisions at different distances.",
+    "reading_depth": "investigated",
+    "crossover_seed": "Thermodynamic accounting and Pareto comparison with constraints.",
+    "cheap_test": "Compare equal-duration rest-to-rest polynomials in an inertia-plus-viscous-loss model, reporting net work, positive work, loss and jerk separately.",
+    "wildcard": false,
+    "score_parts": {
+      "impact": 4,
+      "transfer": 4,
+      "testability": 4,
+      "readiness": 3,
+      "unexplored": 3
+    }
+  },
+  {
+    "id": "R09",
+    "domain": "robotics",
+    "title": "Fair native industrial motion comparison",
+    "question": "What common task and replacement semantics permit a fair comparison between an external execution contract and native buffered industrial interpolation?",
+    "source_paths": [
+      "/Users/mike/Dev/ctrl-research-notebook/research-notebook/research/pods/2026-10-17/robot-motion/intent-contract-07/analyst/industrial-comparison-addendum.md"
+    ],
+    "prior_work": "FANUC/Yaskawa documentation was read in bounded scope; no vendor hardware controller implemented or simulated.",
+    "obstacle": "Stop-between-point, buffered target and incremental interfaces have distinct semantics; proprietary derivative objectives unknown.",
+    "reading_depth": "surveyed",
+    "crossover_seed": "Experimental causal inference and interface trace equivalence.",
+    "cheap_test": "Specify paired abstract buffered versus stop-at-each-point traces; show cycle-time advantage disappears or changes when interpolation ownership is matched.",
+    "wildcard": false,
+    "score_parts": {
+      "impact": 4,
+      "transfer": 3,
+      "testability": 3,
+      "readiness": 2,
+      "unexplored": 2
+    }
+  },
+  {
+    "id": "R10",
+    "domain": "robotics",
+    "title": "Complete moving-goal admission contract",
+    "question": "Can retained-history motion admission enforce velocity, acceleration, jerk and task deadline simultaneously during reversal, while competing with native online planning?",
+    "source_paths": [
+      "/Users/mike/Dev/ctrl-research-notebook/research-notebook/research/pods/2026-10-17/robot-motion/moving-goal-08/builder/report.txt"
+    ],
+    "prior_work": "Prior independently replayed scalar batch reports native 18/24 valid tasks versus FIR 6/24; jerk guard admits an acceleration excess and rejection leaves old goal active.",
+    "obstacle": "Jerk-only correctness is insufficient; preserving old motion can cause large goal error. No universal planner replacement established.",
+    "reading_depth": "investigated",
+    "crossover_seed": "Multiobjective viability kernels and exact polynomial extrema rather than a single smoothness budget.",
+    "cheap_test": "Reproduce ordinary-return exact acceleration 21/32 against 1/2 limit and far-reversal rejection; add full V/A/J feasibility check without changing history.",
+    "wildcard": false,
+    "score_parts": {
+      "impact": 4,
+      "transfer": 4,
+      "testability": 4,
+      "readiness": 4,
+      "unexplored": 3
+    }
+  },
+  {
+    "id": "R11",
+    "domain": "robotics",
+    "title": "Moving-base gaze stabilization",
+    "question": "Can a small execution layer maintain a world-frame optical output while a supporting robot moves and a slower visual task changes?",
+    "source_paths": [
+      "/Users/mike/Dev/ctrl-research-notebook/research-notebook/publication/robot-motion/stabilization-research-addendum-2026-10-18.md"
+    ],
+    "prior_work": "Bird gaze and aerial optical-axis sources were read only at abstract/title level; addendum proposes separated stabilization/tracking loops and staged simulation.",
+    "obstacle": "Need multirate delay, authority, signal and domain models; IMAX mechanism unverified and no universal tremor cause follows.",
+    "reading_depth": "surveyed",
+    "crossover_seed": "Small-gain/passivity loop composition and vestibular feedforward as bounded engineering hypotheses.",
+    "cheap_test": "Scalar base angle plus fast actuator and delayed outer visual loop; isolate coordinated feedforward versus inconsistent frame/loop state.",
+    "wildcard": false,
+    "score_parts": {
+      "impact": 4,
+      "transfer": 4,
+      "testability": 4,
+      "readiness": 3,
+      "unexplored": 4
+    }
+  },
+  {
+    "id": "R12",
+    "domain": "robotics",
+    "title": "Franka model and total-torque transfer gap",
+    "question": "What explicit coupled tracking and total-actuation contract could justify transferring scalar checked references to the recorded FR3 simulation or a specified physical Franka arm?",
+    "source_paths": [
+      "/Users/mike/Dev/ctrl-research-notebook/research-notebook/research/pods/2026-10-17/robot-motion/franka-demo-08/README.txt"
+    ],
+    "prior_work": "Pinned seven-joint simulation found stock-actuator final failures and assisted final-window passes but 9.213 mm transient tracking error; assist lies outside force clamp.",
+    "obstacle": "Exact hardware variant unknown; ideal bias assistance is not firmware, total torque is unbounded by retained actuator clamp, and sampled convergence is not proof.",
+    "reading_depth": "investigated",
+    "crossover_seed": "Assume-guarantee refinement with total resource budgets and task-space tubes.",
+    "cheap_test": "From a recorded assisted state, sum position-actuator force and ideal bias force; test total bound and compare flange error against claimed scalar tube.",
+    "wildcard": false,
+    "score_parts": {
+      "impact": 4,
+      "transfer": 4,
+      "testability": 4,
+      "readiness": 4,
+      "unexplored": 3
+    }
+  }
+]

@@ -1,0 +1,53 @@
+import Mathlib.Tactic
+namespace S03Machine
+/-- Integer obligations only: no assertion about a C compiler's operational semantics. -/
+theorem raw_intermediates (X V : ℤ)
+    (hx : -32768 ≤ X ∧ X ≤ 32767) (hv : -32768 ≤ V ∧ V ≤ 32767) :
+    (-65534 ≤ -2*X ∧ -2*X ≤ 65536) ∧
+    (-98301 ≤ -3*V ∧ -3*V ≤ 98304) ∧
+    (-163835 ≤ -2*X-3*V ∧ -2*X-3*V ≤ 163840) := by omega
+
+theorem doubled_cell_coordinates (X s : ℤ)
+    (hx : -32768 ≤ X ∧ X ≤ 32767) (hs : s=-1 ∨ s=1) :
+    |2*X+s|≤65537 := by
+  apply abs_le.mpr
+  rcases hs with hs|hs <;> omega
+
+theorem quad_intermediates (x v : ℤ) (hx : |x|≤65537) (hv : |v|≤65537) :
+    |5*x|≤327685 ∧ |5*x*x|≤21475491845 ∧
+    |2*x|≤131074 ∧ |2*x*v|≤8590196738 ∧
+    |5*x*x+2*x*v|≤30065688583 ∧ |v*v|≤4295098369 ∧
+    |5*x*x+2*x*v+v*v|≤34360786952 := by
+  have xx : |x*x|≤4295098369 := by
+    rw [abs_mul]
+    nlinarith [mul_self_nonneg (|x|),abs_nonneg x]
+  have vv : |v*v|≤4295098369 := by
+    rw [abs_mul]
+    nlinarith [mul_self_nonneg (|v|),abs_nonneg v]
+  have xv : |x*v|≤4295098369 := by
+    rw [abs_mul]
+    have h := mul_le_mul hx hv (abs_nonneg v) (by norm_num : (0:ℤ)≤65537)
+    norm_num at h
+    exact h
+  have p : |5*x*x|≤21475491845 := by
+    calc
+      |5*x*x| = 5*|x*x| := by rw [mul_assoc,abs_mul]; norm_num
+      _ ≤ 21475491845 := by omega
+  have q : |2*x*v|≤8590196738 := by
+    calc
+      |2*x*v| = 2*|x*v| := by rw [mul_assoc,abs_mul]; norm_num
+      _ ≤ 8590196738 := by omega
+  have pq : |5*x*x+2*x*v|≤30065688583 := (abs_add_le _ _).trans (by omega)
+  refine ⟨?_,p,?_,q,pq,vv,?_⟩
+  · rw [abs_mul]; norm_num; omega
+  · rw [abs_mul]; norm_num; omega
+  · exact (abs_add_le _ _).trans (by omega)
+
+theorem within_machine_ranges :
+    (-2147483648:ℤ) < -163835 ∧ (163840:ℤ)<2147483647 ∧
+    (34360786952:ℤ)<9223372036854775807 := by norm_num
+end S03Machine
+#print axioms S03Machine.raw_intermediates
+#print axioms S03Machine.doubled_cell_coordinates
+#print axioms S03Machine.quad_intermediates
+#print axioms S03Machine.within_machine_ranges

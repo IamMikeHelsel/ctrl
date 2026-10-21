@@ -1,0 +1,29 @@
+# V12 program-manager notes
+
+AI-written four-role review; root PM, domain inventory_math, inventor inventory_vision_robotics, critic inventory_controls_safety. All inherited root model, exact runtime identifier unavailable. No new cloud-family or Spark inference. Prior source is a catalogue-level Zhang citation in docs/proposals/01_planar_homography.md; original sourcehash preserved. Its homography proof is not intrinsic recovery, and its overbroad planar-epipolar/novelty prose is not adopted.
+
+Frozen question: Which planar checkerboard views provide enough independent constraints to recover camera intrinsics, and how can a calibration carry a rank/consistency check?
+
+Primary Zhang report inspected: https://www.microsoft.com/en-us/research/wp-content/uploads/2016/02/tr98-71.pdf, section3.1 equations3–9, section4 degeneracy, section3.2 algebraic versus image residual, section3.3 distortion. Full five-intrinsic generic recovery needs at least three views. Two views need an added assumption such as zero skew. Same plane orientation including in-plane spin is redundant for intrinsic constraints. These are established results, not a novel calibration method. No full literature survey.
+
+Let H_i=[h1,h2,h3] map the fixed Euclidean board into pixels, and B=K^-T K^-1 up to scale. Each view supplies h1'Bh2=0 and h1'Bh1=h2'Bh2. Rank5 of the stacked six-column system gives one metric line, not yet a physical camera. Domain uses K=[[2,1/2,1],[0,3,-1],[0,0,1]], front/Rx/Ry rational rotations: ranks2/4/5, exact invertible row-operation certificates and a positive-definite metric. Two tilted views admit two distinct SPD metrics. Adding a false zero-skew prior returns another SPD, consistent, unique result. Priors must be explicit and justified.
+
+Three transfers:
+
+1. Persistent excitation/experiment design: seek new constraint directions, not more images. Exact row operators carry rank evidence. Counterexample: rank5 at arbitrarily small nonzero tilt has arbitrarily bad conditioning. For I,Rx,Ry, c²+s²=1 and s≠0 force the homogeneous metric to a scalar identity; the weak diagonal direction is only observed with s² sensitivity. Generic uniqueness algebra is kernel-checked separately from literal row assembly.
+2. Proof-carrying metric reconstruction: certify rank, metric signature, scale, fixed-board geometry, camera reconstruction and positive board depth separately. Critic/inventor's independently constructed rank5 kernel diag(1,1,-1) is consistent and projectively positive on the board but has no SPD sign. Another SPD fixture has depths of both signs; global sign cannot repair it. Radial distortion bends a line, invalidating an unmodeled homography assumption.
+3. Gauge-aware geometry and metrology: homography scaling changes raw Gram by λ^4 without changing pixels. Inventor's P=A'(AA')^-1 A is invariant under nonzero H scaling and invertible two-row generator changes, in a declared six-coordinate metric. Nine rescalings/three rowmixes tested. It is geometric coverage, not Fisher information; pixel/parameter coordinate changes and covariance must transform too. A wrong board aspect ratio can alias intrinsics in a single-view example; no generic tilted ambiguity claim follows.
+
+## Physical noisy-identifiability countermodel
+
+Root constructed two common pinhole calibrations, not merely two approximate algebraic metrics. Use rational rotations c(t)=(1-t²)/(1+t²),s(t)=2t/(1+t²), front/Rx/Ry, principal point(320,240). Camera1 focal1000, boarddepth5; Camera2 focal1000f, depth5f, with f=3(1-t²)/(1-9t²) and rotations parameter3t. All poses are proper and all tested board depths positive. At t=1/1000, f=2999997/999991>3; the two sets of27 projected grid points differ by at most3199996800000000/999209159997567191≈.003202529488pixels percoordinate. Shared midpoint observations fit both models within.001601264745pixels percoordinate. Both homography designs have exactrank5. Four rationaltilts were independently replayed, showing the quadratic trend; no statistical distribution is assumed.
+
+Five pm_calibration Lean declarations include generic exact metric uniqueness, rational angle relations/depths, all54 scalar pixel differences and midpoint budget. Failed first unique_metric compiler attempts are retained and rejected. This disproves a uniform noise-precision guarantee based on rank alone. It does not say a known bound of zero noise permits two calibrations.
+
+A whole-board strengthening factors second-view columns by a=c(3t)/c(t), with s(3t)/f=a*s(t). For |X|,|Y|≤1, denominator product≥4.99² and numerator magnitude≤.08 give difference≤.0033pixels percoordinate. Exact parameter checks and generic algebra/bounds are recorded in pm_continuous; the y-axis version swaps coordinates and the sign of the board coordinate. Keep the finite27-point theorem separate from this generic-bound composition and its camera-binding argument.
+
+## Positive quantitative route
+
+For the declared normalized fixture K=I, c=3/5,s=4/5, B11=1, five Zhang-row residuals bounded byε imply |B12|≤ε, |B22−1|≤ε, |B13|,|B23|≤2ε, |B33−1|≤41ε/8. Three pm_residual lemmas certify the inverse algebra, scalar bounds and margins. Gershgorin yields a hand SPD margin at least727/800 when ε≤.01. This is normalized algebraic-row error, not pixel error; a validated image-to-homography-to-row perturbation bridge remains open. The exact rank certificate is useful, but that bridge is the discriminating next task.
+
+GO95 (faithfulness4,reproducibility4,discrimination4,critique4,actionability3). Subjective confidence high for stated exact checks; real-image noise transfer and novelty unestablished. After breadth:30minutes on a consumer-owned model/board/coordinate/noise manifest plus exactrank/SPD/cheirality and quantitative gate, with20 semantic controls in next_block_protocol.json. No hardware or claim of general noisy calibration solved.

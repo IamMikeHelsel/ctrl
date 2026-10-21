@@ -1,0 +1,129 @@
+"""Isolated immutable-byte acceptance experiment; no production integration.
+
+Trust: Python runtime, this consumer, independently approved expected hashes and
+original checker semantics. A returned JSON report is NOT a portable proof or a
+signed attestation. Reusing a valid old certificate for the same model is allowed.
+"""
+from __future__ import annotations
+
+import copy
+import hashlib
+import json
+import tempfile
+from pathlib import Path
+
+HERE = Path(__file__).resolve().parent
+SOURCE = Path('/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/adjacent-controls/source-attribution')
+NAMES = ('model.json', 'check.py', 'experiment.py')
+
+
+def digest(blob):
+    return hashlib.sha256(blob).hexdigest()
+
+
+def unique_object(pairs):
+    result = {}
+    for key, value in pairs:
+        if key in result:
+            raise ValueError(f'Duplicate JSON key: {key}')
+        result[key] = value
+    return result
+
+
+def parse(blob):
+    return json.loads(blob, object_pairs_hook=unique_object)
+
+
+def accept(snapshot, certificate, expected):
+    if not __debug__:
+        raise RuntimeError('Assertions required by original checker')
+    if set(snapshot) != set(NAMES) or set(expected) != set(NAMES):
+        raise ValueError('Snapshot inventory differs from consumer expectation')
+    # Immutable bytes are hashed, parsed and executed directly; no source reread.
+    if any(type(blob) is not bytes for blob in snapshot.values()):
+        raise TypeError('Immutable byte snapshots required')
+    if any(digest(snapshot[name]) != expected[name] for name in NAMES):
+        raise ValueError('Snapshot content differs from consumer expectation')
+    model = parse(snapshot['model.json'])
+    result = parse(certificate)
+    with tempfile.TemporaryDirectory(prefix='s04-consumer-') as tmp:
+        private = Path(tmp)
+        # Existing checker rereads producer for provenance. Supply only captured
+        # bytes in a private directory, under a non-adversarial host assumption.
+        (private / 'experiment.py').write_bytes(snapshot['experiment.py'])
+        namespace = {'__name__': 's04_frozen_checker', '__file__': str(private / 'check.py')}
+        exec(compile(snapshot['check.py'], namespace['__file__'], 'exec'), namespace)
+        counts = namespace['verify'](result, model)
+    return {'counts': list(counts), 'model_sha256': expected['model.json'],
+            'certificate_sha256': digest(certificate),
+            'actions': {stage: {action: record['accepted'] for action, record in values['actions'].items()}
+                        for stage, values in result['stages'].items()}}
+
+
+def main():
+    snapshot = {name: (SOURCE / name).read_bytes() for name in NAMES}
+    # This experiment freezes observed approved-source hashes. Production must
+    # receive them from a separately authorized expectation, never its producer.
+    expected = json.loads((HERE / 'pm_expected.json').read_text())
+    raw = (SOURCE / 'results.json').read_bytes()
+    original = parse(raw)
+    positive = accept(snapshot, raw, expected)
+    checks = []
+
+    def case(name, change, should_accept=False, raw_override=None):
+        data, blobs = copy.deepcopy(original), dict(snapshot)
+        change(data, blobs)
+        encoded = raw_override if raw_override is not None else json.dumps(data).encode()
+        try:
+            value = accept(blobs, encoded, expected)
+            accepted, error = True, None
+            assert value['counts'] == [56, 1, 8]
+        except (AssertionError, ValueError, TypeError, KeyError) as exc:
+            accepted, error = False, type(exc).__name__ + ': ' + str(exc)
+        assert accepted == should_accept, (name, accepted, error)
+        checks.append({'name': name, 'accepted': accepted, 'expected_accept': should_accept, 'error': error})
+
+    stage = lambda r: r['stages']['baseline']
+    branch = lambda r: stage(r)['branches']['nonnegative_d']
+    case('missing_stage', lambda r, s: r['stages'].pop('trial'))
+    case('missing_branch', lambda r, s: stage(r)['branches'].pop('nonpositive_d'))
+    case('missing_bound', lambda r, s: branch(r)['bounds'].pop('wheel'))
+    case('missing_action', lambda r, s: stage(r)['actions'].pop('-1'))
+    case('missing_heldout', lambda r, s: r['held_out_checks'].pop('held_out'))
+    case('wrong_global_range', lambda r, s: stage(r)['ranges'].__setitem__('wheel', ['0', '0']))
+    case('wrong_accepted_flag', lambda r, s: stage(r)['actions']['-1'].__setitem__('accepted', True))
+    case('empty_vertex_list', lambda r, s: branch(r).__setitem__('vertices', []))
+    case('invalid_bound_witness', lambda r, s: branch(r)['bounds']['wheel'].__setitem__('upper_witness', ['99', '0', '0']))
+    case('changed_constraint', lambda r, s: branch(r)['constraints'][0].__setitem__('b', '999'))
+    case('wrong_model_reference', lambda r, s: r.__setitem__('model_sha256', '0'*64))
+    case('wrong_producer_reference', lambda r, s: r.__setitem__('script_sha256', '0'*64))
+    case('changed_model_bytes', lambda r, s: s.__setitem__('model.json', s['model.json'] + b' '))
+    case('changed_checker_bytes', lambda r, s: s.__setitem__('check.py', s['check.py'] + b'\n'))
+    case('changed_producer_bytes', lambda r, s: s.__setitem__('experiment.py', s['experiment.py'] + b'\n'))
+    case('missing_snapshot_input', lambda r, s: s.pop('model.json'))
+    case('extra_snapshot_input', lambda r, s: s.__setitem__('unapproved', b''))
+    case('mutable_snapshot_input', lambda r, s: s.__setitem__('model.json', bytearray(s['model.json'])))
+    duplicated = b'{"model_sha256":"wrong",' + raw.lstrip()[1:]
+    case('duplicate_json_key', lambda r, s: None, raw_override=duplicated)
+    case('false_heldout_summary', lambda r, s: r['held_out_checks']['held_out'].__setitem__('compatible_in_scalar_model', False))
+    case('redundant_constraint', lambda r, s: branch(r)['constraints'].append(copy.deepcopy(branch(r)['constraints'][0])), True)
+    case('redundant_vertex', lambda r, s: branch(r)['vertices'].append(copy.deepcopy(branch(r)['vertices'][0])), True)
+    case('one_nonempty_vertex_list', lambda r, s: branch(r).__setitem__('vertices', branch(r)['vertices'][:1]), True)
+    case('reverse_stage_order', lambda r, s: r.__setitem__('stages', dict(reversed(list(r['stages'].items())))), True)
+    case('certificate_encoding_only', lambda r, s: None, True)
+    # A snapshot remains about its captured old bytes if the live model changes.
+    # It must never be relabeled as a check of that new model.
+    new_live = snapshot['model.json'] + b' '
+    assert digest(new_live) != positive['model_sha256']
+    assert accept(snapshot, raw, expected) == positive
+    report = {'positive': positive, 'cases': checks, 'negative_count': 20,
+              'benign_count': 5, 'expected_sha256': expected,
+              'snapshot_reuse_scope': 'Old certificate reverified for unchanged expected model; no claim of new measurement or fresh physical state.',
+              'portable_report_trust': 'Report is data, not a proof. A third party must rerun checker or trust an authenticated verifier.',
+              'source_change_after_capture': 'Receipt stays bound to captured old model; does not certify changed live model.'}
+    (HERE / 'pm_snapshot.json').write_text(json.dumps(report, indent=2) + '\n')
+    print(json.dumps({'negative_count': 20, 'benign_count': 5, 'positive_counts': positive['counts']}))
+
+
+if __name__ == '__main__':
+    main()

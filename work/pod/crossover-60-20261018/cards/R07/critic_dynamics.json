@@ -1,0 +1,138 @@
+{
+  "torque_kernel": {
+    "M_diagonal": [
+      "1",
+      "2"
+    ],
+    "torque": [
+      "1",
+      "-1"
+    ],
+    "J_tau": "0",
+    "J_acceleration": "1/2",
+    "task_error_at_t_half": "1/16",
+    "corrected_feasible_torque": [
+      "1/2",
+      "-1"
+    ],
+    "scope": "Exact toy constant-inertia dynamics; no actual-arm model."
+  },
+  "sequential_projection": {
+    "state": [
+      "1",
+      "-1"
+    ],
+    "task_null_velocity": [
+      "1",
+      "-1"
+    ],
+    "clipped_velocity": [
+      "0",
+      "-1"
+    ],
+    "task_derivative": "-1",
+    "intersection": "v=(a,-a), a<=0; zero is feasible without posture recentering"
+  },
+  "configuration_obstacle": {
+    "samples": [
+      {
+        "t": "0",
+        "q": [
+          "1",
+          "-1"
+        ],
+        "configuration_radius_squared": "2",
+        "outside_abstract_obstacle": true
+      },
+      {
+        "t": "1/2",
+        "q": [
+          "1/2",
+          "-1/2"
+        ],
+        "configuration_radius_squared": "1/2",
+        "outside_abstract_obstacle": true
+      },
+      {
+        "t": "3/4",
+        "q": [
+          "1/4",
+          "-1/4"
+        ],
+        "configuration_radius_squared": "1/8",
+        "outside_abstract_obstacle": false
+      },
+      {
+        "t": "1",
+        "q": [
+          "0",
+          "0"
+        ],
+        "configuration_radius_squared": "0",
+        "outside_abstract_obstacle": false
+      },
+      {
+        "t": "3/2",
+        "q": [
+          "-1/2",
+          "1/2"
+        ],
+        "configuration_radius_squared": "1/2",
+        "outside_abstract_obstacle": true
+      },
+      {
+        "t": "2",
+        "q": [
+          "-1",
+          "1"
+        ],
+        "configuration_radius_squared": "2",
+        "outside_abstract_obstacle": true
+      }
+    ],
+    "scope": "Declared configuration-space forbidden disk, not a self-collision proof for a physical robot. Exact fiber q1+q2=0 minus disk has two components; endpoints cannot be joined within both constraints."
+  },
+  "singular_fiber": {
+    "task": "q1^2+q2^2",
+    "state": [
+      "0",
+      "0"
+    ],
+    "Jacobian": [
+      0,
+      0
+    ],
+    "linearized_null_dimension": 2,
+    "exact_zero_fiber_dimension": 0,
+    "task_after_tenth": "1/100"
+  },
+  "finite_step": {
+    "task": "q1^2+q2^2",
+    "initial_task": "1",
+    "Jacobian_times_v": "0",
+    "straight_step_task_error": "1/100",
+    "needed_acceleration_at_start": [
+      "-1",
+      "0"
+    ],
+    "reason": "Second derivative of task is2(v.v+q.a), so tangent acceleration alone fails."
+  },
+  "retained_velocity": {
+    "initial_task": "0",
+    "task_velocity": "0",
+    "q1": "9/10",
+    "v1": "1",
+    "maximum_braking_acceleration": "1",
+    "best_stop_q1": "7/5",
+    "scope": "Under the declared independent double-integrator acceleration bound, current task correctness and current joint-box membership do not imply viability."
+  },
+  "cost_scope": {
+    "null_displacement": [
+      "1/5",
+      "-1/5"
+    ],
+    "task_cost": "0",
+    "joint_posture_cost": "2/25",
+    "scope": "An extra posture/effort term changes preference on the fiber; do not infer it is physically task-irrelevant or free."
+  }
+}

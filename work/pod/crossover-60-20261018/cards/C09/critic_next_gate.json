@@ -1,0 +1,125 @@
+{
+  "status": "proposed next-block consumer suite, not all executed",
+  "tests": [
+    {
+      "id": 1,
+      "name": "real_vs_analytic",
+      "mutation": "Use scalar real sensor without image terms",
+      "expected": "reject"
+    },
+    {
+      "id": 2,
+      "name": "phase_frame",
+      "mutation": "Rotate both readouts but not correction frame",
+      "expected": "reject"
+    },
+    {
+      "id": 3,
+      "name": "clock_scale",
+      "mutation": "Add1% duration error without budget",
+      "expected": "reject"
+    },
+    {
+      "id": 4,
+      "name": "early_window",
+      "mutation": "Stop window halfway but reuse one-beat null",
+      "expected": "reject"
+    },
+    {
+      "id": 5,
+      "name": "frequency_scope",
+      "mutation": "Replace constant detuning with arbitrary waveform without proof",
+      "expected": "reject"
+    },
+    {
+      "id": 6,
+      "name": "transfer_gain",
+      "mutation": "Use displacement sensor with unit force gain",
+      "expected": "reject"
+    },
+    {
+      "id": 7,
+      "name": "retained_transient",
+      "mutation": "Reset initial oscillator state during acquisition",
+      "expected": "reject"
+    },
+    {
+      "id": 8,
+      "name": "boundary_terms",
+      "mutation": "Omit finite-window x/v endpoint terms",
+      "expected": "reject"
+    },
+    {
+      "id": 9,
+      "name": "same_support",
+      "mutation": "Change stiffness/damping between readouts",
+      "expected": "reject or enlarge joint set"
+    },
+    {
+      "id": 10,
+      "name": "source_drift",
+      "mutation": "Change wheel amplitude after measuring",
+      "expected": "reject or budget"
+    },
+    {
+      "id": 11,
+      "name": "nuisance_phase",
+      "mutation": "Allow arbitrary phase with unchanged magnitude",
+      "expected": "accept phase-free gate"
+    },
+    {
+      "id": 12,
+      "name": "nuisance_gain",
+      "mutation": "Let final nuisance gain exceed1",
+      "expected": "reject or recompute"
+    },
+    {
+      "id": 13,
+      "name": "duplicated_error",
+      "mutation": "Divide deterministic bound bysqrtN",
+      "expected": "reject"
+    },
+    {
+      "id": 14,
+      "name": "ABBA_curvature",
+      "mutation": "Omit bounded quadratic nuisance drift",
+      "expected": "reject false correction"
+    },
+    {
+      "id": 15,
+      "name": "empty_set",
+      "mutation": "Make observations consistent only outside prior",
+      "expected": "refuse action"
+    },
+    {
+      "id": 16,
+      "name": "certificate_binding",
+      "mutation": "Change witness leakage or observation",
+      "expected": "reject"
+    },
+    {
+      "id": 17,
+      "name": "correction_authority",
+      "mutation": "Apply c without physical gain/rate/phase authority",
+      "expected": "reject execution claim"
+    },
+    {
+      "id": 18,
+      "name": "force_removal",
+      "mutation": "End detuning but retain periodic forcing",
+      "expected": "reject decay claim"
+    },
+    {
+      "id": 19,
+      "name": "variable_damping",
+      "mutation": "Replace constant a by a(t) in transformed rectangle",
+      "expected": "require new proof"
+    },
+    {
+      "id": 20,
+      "name": "shared_budget",
+      "mutation": "Reuse joint contraction with ell>=1",
+      "expected": "reject division/contraction argument"
+    }
+  ]
+}

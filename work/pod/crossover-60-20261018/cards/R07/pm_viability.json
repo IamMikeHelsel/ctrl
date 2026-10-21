@@ -1,0 +1,11 @@
+{
+  "model": "M=diag(1,2), |tau1|<=1/10, |tau2|<=1/5; no gravity, friction or disturbance",
+  "obstacle": "z=q1-q2<=4/5; normalized configuration coordinates, not physical collision geometry",
+  "relative_acceleration_bound": "z''=tau1-tau2/2>=-1/5 for every admissible torque, regardless of task preservation",
+  "bad_entry": {"z0":"3/5","zdot0":"2/5","test_time":"2","lower_bound_z":"1","obstacle_excess":"1/5"},
+  "derivation": "Twice integrate z''>=-1/5: z(t)>=z0+zdot0*t-t^2/10. At t=2 this exceeds obstacle bound. Comparison/integration is hand-derived, not a kernel ODE theorem.",
+  "single_instant_derivative_gate": {"h":"1/5","hdot":"-2/5","gamma":"2","hdot_plus_gamma_h":"0","result":"Instantaneous first-order derivative inequality passes at a nonviable state. This does not refute control-barrier invariance theorems, which require appropriate all-time feasible dynamics hypotheses."},
+  "scalar_sharp_criterion": "For scalar z'' freely selectable in[-a,a], half-line z<=B and initial vz>=0, viability iff z+vz^2/(2a)<=B. Necessity from double integration; sufficiency brake -a for vz/a then0. Additional task, lower bounds or actuator coupling can invalidate sufficiency without changing necessity.",
+  "task_authority": "Safe variations are irrelevant only if excluded from the authoritative task. A specified joint posture makes these same variations task-relevant; an x-only task controller cannot silently replace that request.",
+  "evidence": "Exact rational arithmetic plus reviewed hand differential comparison. No CBF solver, physical robot or universal controller theorem."
+}

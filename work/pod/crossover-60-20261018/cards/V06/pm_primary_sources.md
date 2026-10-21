@@ -1,0 +1,7 @@
+# Primary-source scope check
+
+Reviewed19October2026. The local survey catalogued SE-Sync; it did not implement or independently audit the algorithm. Its broad novelty and universal-tightness language is not accepted evidence.
+
+Rosen, Carlone, Bandeira and Leonard, SE-Sync, extended report1612.07386v2: https://arxiv.org/html/1612.07386 . The paper uses a directed measurement model, separates SO(d) feasibility from its O(d)/SDP relaxations, and treats disconnected graphs componentwise. A feasible pose attaining a verified relaxation lower bound is globally optimal. Sufficient rank can establish uniqueness of the lifted optimum; a gauge still relates pose representatives. The model is not a guarantee of tightness for arbitrary data. These are established mechanisms; this campaign's tiny exact examples are not a new synchronization algorithm. Section2.2 explicitly notes that measurement noise is not invariant under SE(d) inversion, relevant to the tested translation-edge reversal.
+
+Author corrigendum: https://david-m-rosen.github.io/files/SESync_correction.pdf . Theorem12 remains as stated. The earlier proof mistakenly treated an interior KKT point as a maximum while omitting active inequalities. The replacement uses the singular-value bound by the number of nodes and a norm inequality. Our concrete sum-of-squares certificates do not rely on the erroneous step. No broader literature-wide absence-of-formalization claim was verified.

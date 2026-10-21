@@ -1,0 +1,135 @@
+MOVING GOAL 08 — DECISIVE BOUNDED COMPARISON
+
+Builder result: native fast Ruckig 18/24 valid tasks; minimum-duration Ruckig 18/24;
+retained four-box FIR 6/24. The same decisions hold at 1 ms and 0.5 ms.
+Independent 80-digit replay passed all 144 traces, with no decision mismatches.
+This is scalar-model numerical evidence, not a Franka model, hardware result,
+or new theorem.
+
+The jerk-only FIR admission rule worked as specified. It does not enforce the
+complete reference V/A/J contract or physical task. In the ordinary return,
+the rule accepts future reference jerk6.25<=7.5m/s^3 while reference acceleration
+reaches exactly21/32=.65625m/s^2, above the common.5 limit. In the larger reversal,
+the candidate jerk is45/4=11.25m/s^3, so the proposal is rejected. The prior+20mm
+goal remains active while the true goal is-20mm. Small tracking error therefore
+coexists with approximately40mm goal error. This is not a jerk-guard correctness
+failure and cannot be described as a successful smoother move.
+
+Protocol and fairness
+
+The protocol and exact inputs were frozen at06:16:49 UTC before reference or
+plant results. The12 schedules and all16 native plans passed the fixed native
+gate. The implementation/native evidence was frozen at06:20:42 UTC before plant.
+The complete144-trace batch took29.57s. No case, deadline, gain, filter width,
+limit or tolerance was tuned. No additional numerical resolution was used.
+
+All methods received both authoritative proposals. FIR rejection did not remove
+the proposal from the native baselines. Native references carried their own
+executed native q/v/a; FIR retained all accepted signed events. Physical x/v/a
+was never reset. The buffered case retained the common60ms prefix and replanned
+at execution.68s, not admission.62s. Native binary execution origins and rational
+FIR scheduler labels follow frozen06's explicit distinct clock conventions.
+
+There are72 parameter cases: four scenarios, three methods, three actuator rates,
+and two disturbances. Each has two resolutions, giving144 saved traces. A/B
+deliberately share identical physics and differ in deadline scoring;36 pairs
+of compressed physical traces are byte-identical. Thus there are54 distinct
+physical parameter cases, not72 independent motion histories. The16 native
+plans also include duplicated A/B histories.
+
+Fine-grid results (each cell covers six rate/disturbance cases)
+
+Case                       fast Ruckig  min-duration Ruckig  FIR
+Return0, deadline1.70s      6/6 valid    6/6 valid           0/6 valid
+Return0, deadline .51s     0/6 valid    0/6 valid           0/6 valid
+Late/buffered, deadline1.90 6/6 valid    6/6 valid           6/6 valid
+Reverse-20mm, deadline1.90  6/6 valid    6/6 valid           0/6 valid
+
+All72 cases pass the initial1mm progress obligation at.50s. An always-hold rule
+would fail it even when the final goal returns to zero. The .51s deadline is
+before delivery.52s; it fails the declared causal service promise, independently
+of endpoint scoring. All18 physical endpoint cases also fail that deadline.
+This is not a general impossibility claim about accidental endpoint coincidence.
+
+FIR's ordinary-return physical endpoint and remain tests pass6/6, but the
+acceleration limit fails. The buffered FIR return passes all six valid-task
+checks. The far FIR revision is one rejected reference proposal, affecting six
+physical parameter cases per grid; it is not six independent guard failures.
+Both native methods accept both goals and meet all stated tests in the three
+non-predelivery scenarios.
+
+Settling is sampled entry into the position/speed/acceleration tolerances and
+remaining through the fixed2.5s horizon. These are absolute times:
+ordinary return: fast1.0950-1.0955s, minimum-duration1.3170-1.3185s,
+FIR1.2635-1.2640s (FIR reference acceleration remains nonconforming).
+buffered return: fast1.1550-1.1555s, minimum-duration1.4775-1.4780s,
+FIR1.4235-1.4240s.
+far reversal: fast1.2895-1.2900s, minimum-duration1.3170-1.3180s;
+FIR does not settle to the new goal within the horizon.
+
+Effort is a tradeoff, not physical energy
+
+For the buffered case at rate100/s and disturbance.01m/s^2, all methods pass.
+Whole-horizon integrals of actual jerk squared are22.4960,20.1383,6.66365m^2/s^5
+for fast, minimum-duration and FIR. Command total variations are3.64106,3.62608,
+2.35707m/s^2. Fast settles at1.1555s, minimum-duration at1.4775s, FIR at1.4240s.
+However, their actual distances from the new zero goal at revision issue differ:
+8.6534,4.6723,1.2332mm respectively. This is not a same-distance energy-efficiency
+comparison. The data supports the declared speed/smoothness tradeoff only.
+Rejected or reference-limit-violating cases do not receive an effort win.
+The scalar model has no electrical or mechanical energy measurement.
+
+Verification and limits
+
+Native replay checked40439 absolute queries over eight histories, including
+switches and adjacent binary times. Maximum q/v/a residuals were
+[6.94e-18m,1.39e-17m/s,2.22e-16m/s^2], within the fixed reconstruction limits.
+Native carried input states and durations agreed exactly between frontends.
+There were no jerk-branch disagreements on these checked queries. This remains
+a finite check of an exported-polynomial interpretation, not firmware proof.
+
+Independent physical review reconstructed all 544,728 sampled state rows and
+3,264 event/jump rows using 80-digit polynomial particular solutions and a
+separate 3-by-3 matrix exponential. It started from the original zero state
+without reusing builder physical states. All task decisions matched. Maximum
+state differences were 4.20e-16 m, 5.61e-15 m/s and 7.55e-14 m/s^2.
+review-status.json binds the reviewer evidence and code hashes. These checks
+verify the numerical batch; they do not turn sampled task tests into all-time
+plant theorems.
+
+The shared numerical reference-limit allowance is1e-10 in each V/A/J SI unit.
+It is separate from native reconstruction tolerances and is not strict exact
+conformity. Signed nominal excess and exact FIR acceleration/jerk extrema remain
+in reference-extrema.json. An independent rational critic already confirmed
+every FIR admission knot and the exact acceleration/jerk results.
+
+The maximum sampled internal position error is.0303573mm across the batch,
+while the far rejected FIR case reaches40.0125mm deadline goal error. Actual
+state jumps are exactly zero in the saved numerical execution. All decision
+flags agree across the two grids. Maximum endpoint differences are4.72e-16m,
+6.38e-15m/s and2.89e-14m/s^2. Settling differs by at most.5ms. Integrated
+jerk-squared changes by at most.003765m^2/s^5; command TV by2.66e-5m/s^2.
+Extrema, remain and settling claims about the plant remain finite sampled checks.
+
+The saved-data causality audit checks identical proposals, readiness ordering,
+execution buffers and preservation of every old reference piece before the new
+execution instant. Its first attempt mistakenly indexed zero-duration metadata;
+the auditor was fixed to inspect positive phases, and the failed attempt is
+preserved. No schedule, native or physical data changed or reran for that fix.
+For rejected FIR D, an execution diagnostic labels the requested instant only;
+no new reference event was executed.
+
+This batch is outside the completed-tail task theorem. It does not solve intent
+inference, arbitrary replans, bounded queues, geometric planning, contacts,
+multi-joint dynamics, Franka limits, or physical endpoint certification. The
+new result argues against treating this fixed jerk-only FIR adapter as a general
+replacement for a capable online trajectory generator. A future method needs
+the complete motion/task contract and a competitive native baseline.
+
+Preservation
+
+All646 latency-noise05 builder files and692 native-execution06 builder files
+were rehashed against their existing manifests and unchanged. All08 input,
+implementation and raw-data freezes match. No Git, paper or older-source edits.
+Mike Helsel supplied the moving-goal question, task framing and industrial-demo
+direction. Root owns notebook sync/check, repository integration and publication.

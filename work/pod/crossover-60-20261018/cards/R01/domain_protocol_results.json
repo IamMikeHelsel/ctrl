@@ -1,0 +1,199 @@
+{
+  "scope": "All traces of length 0..5 over six specified packets; exact integer state",
+  "traces": 9331,
+  "transitions": 44790,
+  "invariant_failures": 0,
+  "examples": {
+    "duplicate_idempotence": {
+      "statuses": [
+        "accepted",
+        "duplicate_accepted"
+      ],
+      "state": {
+        "seen": [
+          [
+            1,
+            1000,
+            "accepted"
+          ]
+        ],
+        "high": 1,
+        "committed": [
+          1,
+          1000
+        ],
+        "busy": true,
+        "accepted": [
+          [
+            1,
+            1000
+          ]
+        ],
+        "reference_tails_done": []
+      }
+    },
+    "same_version_conflict": {
+      "statuses": [
+        "accepted",
+        "conflict"
+      ],
+      "state": {
+        "seen": [
+          [
+            1,
+            1000,
+            "accepted"
+          ]
+        ],
+        "high": 1,
+        "committed": [
+          1,
+          1000
+        ],
+        "busy": true,
+        "accepted": [
+          [
+            1,
+            1000
+          ]
+        ],
+        "reference_tails_done": []
+      }
+    },
+    "busy_is_failed_request_not_completed_task": {
+      "statuses": [
+        "accepted",
+        "busy_rejected",
+        "oracle_complete_tail",
+        "duplicate_busy_rejected"
+      ],
+      "state": {
+        "seen": [
+          [
+            1,
+            1000,
+            "accepted"
+          ],
+          [
+            2,
+            0,
+            "busy_rejected"
+          ]
+        ],
+        "high": 2,
+        "committed": [
+          1,
+          1000
+        ],
+        "busy": false,
+        "accepted": [
+          [
+            1,
+            1000
+          ]
+        ],
+        "reference_tails_done": [
+          [
+            1,
+            1000
+          ]
+        ]
+      }
+    },
+    "reorder_is_explicit_stale_rejection": {
+      "statuses": [
+        "accepted",
+        "oracle_complete_tail",
+        "stale"
+      ],
+      "state": {
+        "seen": [
+          [
+            2,
+            0,
+            "accepted"
+          ],
+          [
+            1,
+            1000,
+            "stale"
+          ]
+        ],
+        "high": 2,
+        "committed": [
+          2,
+          0
+        ],
+        "busy": false,
+        "accepted": [
+          [
+            2,
+            0
+          ]
+        ],
+        "reference_tails_done": [
+          [
+            2,
+            0
+          ]
+        ]
+      }
+    },
+    "advisory_preserves_task": {
+      "statuses": [
+        "accepted",
+        "advisory",
+        "advisory"
+      ],
+      "state": {
+        "seen": [
+          [
+            1,
+            1000,
+            "accepted"
+          ]
+        ],
+        "high": 1,
+        "committed": [
+          1,
+          1000
+        ],
+        "busy": true,
+        "accepted": [
+          [
+            1,
+            1000
+          ]
+        ],
+        "reference_tails_done": []
+      }
+    },
+    "wrong_session_replay": {
+      "statuses": [
+        "wrong_session"
+      ],
+      "state": {
+        "seen": [],
+        "high": 0,
+        "committed": [
+          0,
+          0
+        ],
+        "busy": false,
+        "accepted": [],
+        "reference_tails_done": []
+      }
+    }
+  },
+  "delayed_authority_indistinguishable": true,
+  "last_arrival_wins_stale_goal_um": 1000,
+  "restart_without_durable_fence_accepts_stale_revision": true,
+  "assumptions": [
+    "Trusted installed session and authentic command authority",
+    "Immutable version identity; complete payload simplified to goal here",
+    "Unbounded ledger retained during finite trace",
+    "oracle_complete_tail is trusted current-reference-tail completion, not a packet or physical rest",
+    "No in-flight supersession; busy revisions are failed requests",
+    "No bounded delivery, plant safety, deadline or actual-motion claim"
+  ]
+}

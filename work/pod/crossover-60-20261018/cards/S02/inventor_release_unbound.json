@@ -1,0 +1,37 @@
+{
+  "scope": "Executable finite consumer model; packet identities/stamps only, not full hybrid-plant construction.",
+  "exact_delay_patterns": 243,
+  "callback_order": "newest first within tied arrival groups",
+  "release_order_always_preserved": true,
+  "max_buffered_packets": 2,
+  "effective_sample_to_release_age": "1/2000",
+  "incoming_end_of_hold_age": "1/1000",
+  "rejected_controls": [
+    {
+      "mutation": "release before boundary arrival ingestion",
+      "reason": "missing packet at release watermark"
+    },
+    {
+      "mutation": "arrival exceeds declared latency bound",
+      "reason": "missing packet at release watermark"
+    }
+  ],
+  "larger_latency_boundary": {
+    "scope": "Separate2h latency extension; source C8 contract not preserved.",
+    "raw_arrivals_reordered": true,
+    "release_order": [
+      632,
+      633
+    ],
+    "sample_to_release_age": "1/1000",
+    "incoming_end_of_hold_age": "3/2000",
+    "violates_original_total_age": true,
+    "violates_original_startup_delay": true
+  },
+  "assumptions": [
+    "Every expected packet arrives with unchanged payload and original sample identity by its stamp+h.",
+    "All arrivals available at a deadline are ingested before release at that same real time.",
+    "Timestamp clocks are the original shared clock; no additional actuation delay is hidden.",
+    "The pending physical command is retained until the release; future packets are queued separately."
+  ]
+}

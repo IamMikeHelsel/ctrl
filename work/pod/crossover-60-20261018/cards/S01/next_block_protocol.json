@@ -1,0 +1,24 @@
+{
+  "duration_seconds": 1800,
+  "after": "all60_initial_reviews",
+  "objective": "Construct one nonanticipating bounded environment by node recursion and prove it instantiates the existing global execution.",
+  "positive": "Sensor error chosen from already available sampled node/history; next rate and target error chosen only after their dependencies exist. Use an explicit bounded corner policy.",
+  "negative": "Future-dependent binary selector b=1-b has no fixed point; reject causal dependency cycles rather than assume arbitrary streams solve them.",
+  "obligations": [
+    "Explicit ordering of node state, sample error, measured command, next cell rate and physical target error",
+    "Global stream bounds from selector bounds",
+    "Prefix agreement for different requested truncation horizons",
+    "Source globalState equality by recurrence induction",
+    "Unchanged all-time ceiling via accepted theorem"
+  ],
+  "semantic_mutations": [
+    "Horizon-dependent sensor stream",
+    "Incoming index replaced by outgoing at2h",
+    "Dispatch delay removed",
+    "Old future readings retained",
+    "Trajectory and readings use different streams",
+    "epsilon0 replaces initial retained measurement"
+  ],
+  "acceptance": "One source-bound causal construction theorem and independently replayed semantic negative control; compile/import errors do not count as rejected mutations.",
+  "limits": "Do not overlap jitter, floating point, within-cell adversaries or hardware; no30min block started."
+}

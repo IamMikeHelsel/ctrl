@@ -1,0 +1,82 @@
+C3 — TRANSLATED MEASURED ADMISSION WITH A DELAYED COMMAND
+18 October 2026. Builder packet; independent acceptance is pending.
+
+Result
+AdaptiveAdmission.delayed_sampled_hold replaces the old fixed-position
+reading with an evaluable measured guard. For the actual first reading m,
+choose the center ONCE as c=m_x+m_v/4+m_a/32. Keep that center thereafter.
+Require |m_v|<=.02 m/s and |m_a|<=1.25 m/s^2. Position is unrestricted by
+this guard. The theorem derives admission from the original sensor box and
+the pending-command ODE; it assumes no endpoint cube or aggregate mismatch.
+
+The interface retains one continuous physical state, the original reading
+timestamp zero, pending command -1.21 m/s^2, startup D<=.5 ms, total age
+<=1 ms, rates in [8,12]/s, the old sensor bounds, clipping, and target error.
+The command switches on the right at D. It keeps the old command on the left.
+The reading at D is still m with stamp zero. Startup consumes its age budget.
+
+Engineering benefit and cost
+The old theorem requires the first reading exactly (.14,-.01,-1.17), with
+c=.088125. The existing binary64 cases at rates 10 and 12/s peak below the
+fixed reading's necessary position interval [.139,.141]. This is diagnostic
+evidence, not a formal nonreachability theorem. C3 removes that absolute-position
+restriction. Translation
+of position, reading and center preserves the full execution and schedule.
+It does not prove that a detector samples the guard or that a prior stopping
+trajectory supplies the required continuation.
+
+The reference policy changes the command and certified tube. For the SAME
+nominal reading, the comparison is exact:
+                         Old fixed case       C3 measured center
+  center, metres         .088125              .1009375
+  position tube, m       [.0326,.14365]        [.0454125,.1564625]
+  first held target      +.23                 +.3325 m/s^2
+C3's center is 39.0625 mm behind measured position .14 m. This is not a
+hold-at-current-position policy. The upper tube exceeds .15 m. C3 does not
+preserve that clearance certificate or close C1's floor-only-rate handoff.
+Both results retain wide velocity/acceleration bounds; neither proves rest.
+
+Exact budget and proof order
+The sensor box gives initial |v|<=.03 and |a|<=1.30. The pending ODE proves
+|a|<=1.30 through startup. It then gives |v|<=.03065 and |a'|<=30.24.
+At D=.5 ms the derived transformed-coordinate budgets are
+  .045077825, .042740325, .054472825.
+All fit R=.055525, with minimum margin .001052175. The actual mixed-mode
+feedback slope is bounded by 8. The old two-pass age argument applies across
+the pending interval and later held commands, yielding W=.111 <2R=.11105.
+The final margin is .00005. First contact during startup is excluded by the
+derived startup cube; later contact uses the derived residual. The prefix
+assumption is discharged. Every admitted real time and dispatch is covered.
+
+Nonempty guard and witness
+Every sensor reading meets the guard if |true v|<=.01 and |true a|<=1.20.
+This is a proved positive-width physical sub-band, not detector liveness.
+A nonconstant exact witness has D=.5 ms, H=1 ms, r=8 and zero target error.
+Its pending and holding exponential phases join at the same full state.
+Acceleration changes before dispatch; the reading stays stamped zero.
+The command jumps from -1.21 to +.3325. No evolution after H is constructed.
+General existence remains open. Translation gives copies at arbitrary positions.
+
+Falsifiers and evidence
+Exact sensor-box states reject a measured-speed cap .03 or acceleration cap
+1.4: the claimed cube already fails at time zero. These refute those widened
+initial-cube certificates, not physical safety. The first-cell age theorem
+still forbids a held stamp-zero reading beyond global age 1 ms. A false
+fixed-center translation and a false .15 m tube claim are rejected.
+See verification.json, REPLAY.txt and VERIFICATION-SUMMARY.txt for fresh local
+closure builds, all theorem-closure audits, separate kernel replays and seven
+negative controls. No corpus code or new external source is imported.
+
+The old three-rate diagnostic now passes the guard and sensor sub-band for
+each first-zero state. Its nominal tube upper bounds are .1596209201 m at
+rate 8, .1509877192 m at rate 10, and .1450042998 m at rate 12. The first two
+still fail .15 m. These values remain binary64 evidence. They do not construct
+a sampled detector or a post-handoff execution. See admission-screen.json.
+
+Scope
+This is a conditional measured-admission repair using standard translation
+symmetry and the accepted delayed-hold argument. No novelty claim is made.
+There is no new C2 link: its residual is not directly inherited from this
+mixed-history budget. General existence, sampled reachability, task-specific
+clearance, complete stop-and-hold, coupled robots, contact and hardware remain
+open. Root owns the next integration decision after independent review.

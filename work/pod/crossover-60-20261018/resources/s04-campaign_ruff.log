@@ -1,0 +1,481 @@
+I001 [*] Import block is un-sorted or un-formatted
+  --> work/pod/crossover-60-20261018/cards/S04/critic_orchestration_cases/project_ABA/scripts/verify_project.py:3:1
+   |
+ 1 |   #!/usr/bin/env python3
+ 2 |   """Run all project checks and bind the resulting evidence to source hashes."""
+ 3 | / from datetime import datetime, timezone
+ 4 | | import hashlib
+ 5 | | import json
+ 6 | | from pathlib import Path
+ 7 | | import platform
+ 8 | | import subprocess
+ 9 | | import sys
+10 | | import time
+11 | | from lean_runtime import runtime
+   | |________________________________^
+12 |
+13 |   PROJECT = Path(__file__).resolve().parents[1]
+   |
+help: Organize imports
+   |
+2  | """Run all project checks and bind the resulting evidence to source hashes."""
+   - from datetime import datetime, timezone
+3  | import hashlib
+4  | import json
+   - from pathlib import Path
+5  | import platform
+6  | import subprocess
+7  | import sys
+8  | import time
+9  + from datetime import datetime, timezone
+10 + from pathlib import Path
+11 +
+12 | from lean_runtime import runtime
+   |
+
+UP017 [*] Use `datetime.UTC` alias
+  --> work/pod/crossover-60-20261018/cards/S04/critic_orchestration_cases/project_ABA/scripts/verify_project.py:34:61
+   |
+32 |     env['LAKE'] = lake
+33 |     initial = source_hashes()
+34 |     report = {'status':'running','started_utc':datetime.now(timezone.utc).isoformat(),
+   |                                                             ^^^^^^^^^^^^
+35 |               'platform':platform.platform(),'python':sys.version,
+36 |               'lean_toolchain':(PROJECT/'lean-toolchain').read_text().strip(),
+   |
+help: Convert to `datetime.UTC` alias
+   |
+2  | """Run all project checks and bind the resulting evidence to source hashes."""
+   - from datetime import datetime, timezone
+3  + from datetime import datetime, timezone, UTC
+4  | import hashlib
+--------------------------------------------------------------------------------
+33 |     initial = source_hashes()
+   -     report = {'status':'running','started_utc':datetime.now(timezone.utc).isoformat(),
+34 +     report = {'status':'running','started_utc':datetime.now(UTC).isoformat(),
+35 |               'platform':platform.platform(),'python':sys.version,
+   |
+
+UP017 [*] Use `datetime.UTC` alias
+  --> work/pod/crossover-60-20261018/cards/S04/critic_orchestration_cases/project_ABA/scripts/verify_project.py:76:47
+   |
+74 |         raise
+75 |     finally:
+76 |         report['finished_utc'] = datetime.now(timezone.utc).isoformat()
+   |                                               ^^^^^^^^^^^^
+77 |         save()
+78 |     print(f"Verified {report['audited_public_declarations']} named public declarations; {output}")
+   |
+help: Convert to `datetime.UTC` alias
+   |
+2  | """Run all project checks and bind the resulting evidence to source hashes."""
+   - from datetime import datetime, timezone
+3  + from datetime import datetime, timezone, UTC
+4  | import hashlib
+--------------------------------------------------------------------------------
+75 |     finally:
+   -         report['finished_utc'] = datetime.now(timezone.utc).isoformat()
+76 +         report['finished_utc'] = datetime.now(UTC).isoformat()
+77 |         save()
+   |
+
+I001 [*] Import block is un-sorted or un-formatted
+  --> work/pod/crossover-60-20261018/cards/S04/critic_orchestration_cases/project_persistent/scripts/verify_project.py:3:1
+   |
+ 1 |   #!/usr/bin/env python3
+ 2 |   """Run all project checks and bind the resulting evidence to source hashes."""
+ 3 | / from datetime import datetime, timezone
+ 4 | | import hashlib
+ 5 | | import json
+ 6 | | from pathlib import Path
+ 7 | | import platform
+ 8 | | import subprocess
+ 9 | | import sys
+10 | | import time
+11 | | from lean_runtime import runtime
+   | |________________________________^
+12 |
+13 |   PROJECT = Path(__file__).resolve().parents[1]
+   |
+help: Organize imports
+   |
+2  | """Run all project checks and bind the resulting evidence to source hashes."""
+   - from datetime import datetime, timezone
+3  | import hashlib
+4  | import json
+   - from pathlib import Path
+5  | import platform
+6  | import subprocess
+7  | import sys
+8  | import time
+9  + from datetime import datetime, timezone
+10 + from pathlib import Path
+11 +
+12 | from lean_runtime import runtime
+   |
+
+UP017 [*] Use `datetime.UTC` alias
+  --> work/pod/crossover-60-20261018/cards/S04/critic_orchestration_cases/project_persistent/scripts/verify_project.py:34:61
+   |
+32 |     env['LAKE'] = lake
+33 |     initial = source_hashes()
+34 |     report = {'status':'running','started_utc':datetime.now(timezone.utc).isoformat(),
+   |                                                             ^^^^^^^^^^^^
+35 |               'platform':platform.platform(),'python':sys.version,
+36 |               'lean_toolchain':(PROJECT/'lean-toolchain').read_text().strip(),
+   |
+help: Convert to `datetime.UTC` alias
+   |
+2  | """Run all project checks and bind the resulting evidence to source hashes."""
+   - from datetime import datetime, timezone
+3  + from datetime import datetime, timezone, UTC
+4  | import hashlib
+--------------------------------------------------------------------------------
+33 |     initial = source_hashes()
+   -     report = {'status':'running','started_utc':datetime.now(timezone.utc).isoformat(),
+34 +     report = {'status':'running','started_utc':datetime.now(UTC).isoformat(),
+35 |               'platform':platform.platform(),'python':sys.version,
+   |
+
+UP017 [*] Use `datetime.UTC` alias
+  --> work/pod/crossover-60-20261018/cards/S04/critic_orchestration_cases/project_persistent/scripts/verify_project.py:76:47
+   |
+74 |         raise
+75 |     finally:
+76 |         report['finished_utc'] = datetime.now(timezone.utc).isoformat()
+   |                                               ^^^^^^^^^^^^
+77 |         save()
+78 |     print(f"Verified {report['audited_public_declarations']} named public declarations; {output}")
+   |
+help: Convert to `datetime.UTC` alias
+   |
+2  | """Run all project checks and bind the resulting evidence to source hashes."""
+   - from datetime import datetime, timezone
+3  + from datetime import datetime, timezone, UTC
+4  | import hashlib
+--------------------------------------------------------------------------------
+75 |     finally:
+   -         report['finished_utc'] = datetime.now(timezone.utc).isoformat()
+76 +         report['finished_utc'] = datetime.now(UTC).isoformat()
+77 |         save()
+   |
+
+I001 [*] Import block is un-sorted or un-formatted
+  --> work/pod/crossover-60-20261018/cards/S04/critic_orchestration_cases/project_stale_preflight/scripts/verify_project.py:3:1
+   |
+ 1 |   #!/usr/bin/env python3
+ 2 |   """Run all project checks and bind the resulting evidence to source hashes."""
+ 3 | / from datetime import datetime, timezone
+ 4 | | import hashlib
+ 5 | | import json
+ 6 | | from pathlib import Path
+ 7 | | import platform
+ 8 | | import subprocess
+ 9 | | import sys
+10 | | import time
+11 | | from lean_runtime import runtime
+   | |________________________________^
+12 |
+13 |   PROJECT = Path(__file__).resolve().parents[1]
+   |
+help: Organize imports
+   |
+2  | """Run all project checks and bind the resulting evidence to source hashes."""
+   - from datetime import datetime, timezone
+3  | import hashlib
+4  | import json
+   - from pathlib import Path
+5  | import platform
+6  | import subprocess
+7  | import sys
+8  | import time
+9  + from datetime import datetime, timezone
+10 + from pathlib import Path
+11 +
+12 | from lean_runtime import runtime
+   |
+
+UP017 [*] Use `datetime.UTC` alias
+  --> work/pod/crossover-60-20261018/cards/S04/critic_orchestration_cases/project_stale_preflight/scripts/verify_project.py:34:61
+   |
+32 |     env['LAKE'] = lake
+33 |     initial = source_hashes()
+34 |     report = {'status':'running','started_utc':datetime.now(timezone.utc).isoformat(),
+   |                                                             ^^^^^^^^^^^^
+35 |               'platform':platform.platform(),'python':sys.version,
+36 |               'lean_toolchain':(PROJECT/'lean-toolchain').read_text().strip(),
+   |
+help: Convert to `datetime.UTC` alias
+   |
+2  | """Run all project checks and bind the resulting evidence to source hashes."""
+   - from datetime import datetime, timezone
+3  + from datetime import datetime, timezone, UTC
+4  | import hashlib
+--------------------------------------------------------------------------------
+33 |     initial = source_hashes()
+   -     report = {'status':'running','started_utc':datetime.now(timezone.utc).isoformat(),
+34 +     report = {'status':'running','started_utc':datetime.now(UTC).isoformat(),
+35 |               'platform':platform.platform(),'python':sys.version,
+   |
+
+UP017 [*] Use `datetime.UTC` alias
+  --> work/pod/crossover-60-20261018/cards/S04/critic_orchestration_cases/project_stale_preflight/scripts/verify_project.py:76:47
+   |
+74 |         raise
+75 |     finally:
+76 |         report['finished_utc'] = datetime.now(timezone.utc).isoformat()
+   |                                               ^^^^^^^^^^^^
+77 |         save()
+78 |     print(f"Verified {report['audited_public_declarations']} named public declarations; {output}")
+   |
+help: Convert to `datetime.UTC` alias
+   |
+2  | """Run all project checks and bind the resulting evidence to source hashes."""
+   - from datetime import datetime, timezone
+3  + from datetime import datetime, timezone, UTC
+4  | import hashlib
+--------------------------------------------------------------------------------
+75 |     finally:
+   -         report['finished_utc'] = datetime.now(timezone.utc).isoformat()
+76 +         report['finished_utc'] = datetime.now(UTC).isoformat()
+77 |         save()
+   |
+
+I001 [*] Import block is un-sorted or un-formatted
+ --> work/pod/crossover-60-20261018/cards/S04/critic_snapshot_copy/check.py:3:1
+  |
+1 |   #!/usr/bin/env python3
+2 |   """Check this fixed demo's complete certificates without rerunning LP search."""
+3 | / from fractions import Fraction as F
+4 | | from pathlib import Path
+5 | | import argparse
+6 | | import hashlib
+7 | | import json
+  | |___________^
+8 |
+9 |   ROOT = Path(__file__).resolve().parent
+  |
+help: Organize imports
+  |
+2 | """Check this fixed demo's complete certificates without rerunning LP search."""
+  - from fractions import Fraction as F
+  - from pathlib import Path
+3 | import argparse
+4 | import hashlib
+5 | import json
+6 + from fractions import Fraction as F
+7 + from pathlib import Path
+8 |
+  |
+
+B905 `zip()` without an explicit `strict=` parameter
+  --> work/pod/crossover-60-20261018/cards/S04/critic_snapshot_copy/check.py:20:33
+   |
+18 | def dot(a, b):
+19 |     assert len(a) == len(b), 'Vector length mismatch'
+20 |     return sum((x*y for x, y in zip(a, b)), F(0))
+   |                                 ^^^^^^^^^
+21 |
+22 | def weighted(c, terms):
+   |
+help: Add explicit value for parameter `strict=`
+   |
+19 |     assert len(a) == len(b), 'Vector length mismatch'
+   -     return sum((x*y for x, y in zip(a, b)), F(0))
+20 +     return sum((x*y for x, y in zip(a, b, strict=False)), F(0))
+21 |
+   |
+note: This is an unsafe fix and may change runtime behavior
+
+B905 `zip()` without an explicit `strict=` parameter
+  --> work/pod/crossover-60-20261018/cards/S04/critic_snapshot_copy/check.py:32:37
+   |
+30 |         assert weight >= 0, 'Negative certificate weight'
+31 |         row = c[index]
+32 |         a = [v+weight*z for v, z in zip(a, row[0])]
+   |                                     ^^^^^^^^^^^^^^
+33 |         b += weight*row[1]
+34 |     return tuple(a), b
+   |
+help: Add explicit value for parameter `strict=`
+   |
+31 |         row = c[index]
+   -         a = [v+weight*z for v, z in zip(a, row[0])]
+32 +         a = [v+weight*z for v, z in zip(a, row[0], strict=False)]
+33 |         b += weight*row[1]
+   |
+note: This is an unsafe fix and may change runtime behavior
+
+I001 [*] Import block is un-sorted or un-formatted
+  --> work/pod/crossover-60-20261018/cards/S04/critic_snapshot_copy/experiment.py:3:1
+   |
+ 1 |   #!/usr/bin/env python3
+ 2 |   """Exact rational bounded attribution. No packages, grid search, or Lean claim."""
+ 3 | / from fractions import Fraction as F
+ 4 | | from itertools import combinations, product
+ 5 | | from pathlib import Path
+ 6 | | import hashlib
+ 7 | | import json
+ 8 | | import time
+   | |___________^
+ 9 |
+10 |   ROOT = Path(__file__).resolve().parent
+   |
+help: Organize imports
+  |
+2 | """Exact rational bounded attribution. No packages, grid search, or Lean claim."""
+3 + import hashlib
+4 + import json
+5 + import time
+6 | from fractions import Fraction as F
+7 | from itertools import combinations, product
+8 | from pathlib import Path
+  - import hashlib
+  - import json
+  - import time
+9 |
+  |
+
+B905 `zip()` without an explicit `strict=` parameter
+  --> work/pod/crossover-60-20261018/cards/S04/critic_snapshot_copy/experiment.py:15:33
+   |
+14 | def dot(a, b):
+15 |     return sum((x*y for x, y in zip(a, b)), F(0))
+   |                                 ^^^^^^^^^
+16 |
+17 | def solve(a, b):
+   |
+help: Add explicit value for parameter `strict=`
+   |
+14 | def dot(a, b):
+   -     return sum((x*y for x, y in zip(a, b)), F(0))
+15 +     return sum((x*y for x, y in zip(a, b, strict=False)), F(0))
+16 |
+   |
+note: This is an unsafe fix and may change runtime behavior
+
+B905 `zip()` without an explicit `strict=` parameter
+  --> work/pod/crossover-60-20261018/cards/S04/critic_snapshot_copy/experiment.py:20:55
+   |
+18 |     """Exact square Gaussian elimination; None means singular."""
+19 |     n = len(b)
+20 |     m = [list(map(F, row)) + [F(rhs)] for row, rhs in zip(a, b)]
+   |                                                       ^^^^^^^^^
+21 |     for k in range(n):
+22 |         p = next((j for j in range(k, n) if m[j][k]), None)
+   |
+help: Add explicit value for parameter `strict=`
+   |
+19 |     n = len(b)
+   -     m = [list(map(F, row)) + [F(rhs)] for row, rhs in zip(a, b)]
+20 +     m = [list(map(F, row)) + [F(rhs)] for row, rhs in zip(a, b, strict=False)]
+21 |     for k in range(n):
+   |
+note: This is an unsafe fix and may change runtime behavior
+
+B905 `zip()` without an explicit `strict=` parameter
+  --> work/pod/crossover-60-20261018/cards/S04/critic_snapshot_copy/experiment.py:31:43
+   |
+29 |             if j != k:
+30 |                 v = m[j][k]
+31 |                 m[j] = [x-v*y for x, y in zip(m[j], m[k])]
+   |                                           ^^^^^^^^^^^^^^^
+32 |     return tuple(row[-1] for row in m)
+   |
+help: Add explicit value for parameter `strict=`
+   |
+30 |                 v = m[j][k]
+   -                 m[j] = [x-v*y for x, y in zip(m[j], m[k])]
+31 +                 m[j] = [x-v*y for x, y in zip(m[j], m[k], strict=False)]
+32 |     return tuple(row[-1] for row in m)
+   |
+note: This is an unsafe fix and may change runtime behavior
+
+B905 `zip()` without an explicit `strict=` parameter
+  --> work/pod/crossover-60-20261018/cards/S04/critic_snapshot_copy/experiment.py:83:64
+   |
+81 |         if weights is not None and min(weights) >= 0 and dot(weights, [c[i]['b'] for i in ids]) == optimum:
+82 |             assert all(sum((weights[k]*c[i]['a'][j] for k, i in enumerate(ids)), F(0)) == objective[j] for j in range(3))
+83 |             return [{'constraint': i, 'weight': w} for i, w in zip(ids, weights) if w]
+   |                                                                ^^^^^^^^^^^^^^^^^
+84 |     raise AssertionError('No exact upper-bound certificate')
+   |
+help: Add explicit value for parameter `strict=`
+   |
+82 |             assert all(sum((weights[k]*c[i]['a'][j] for k, i in enumerate(ids)), F(0)) == objective[j] for j in range(3))
+   -             return [{'constraint': i, 'weight': w} for i, w in zip(ids, weights) if w]
+83 +             return [{'constraint': i, 'weight': w} for i, w in zip(ids, weights, strict=False) if w]
+84 |     raise AssertionError('No exact upper-bound certificate')
+   |
+note: This is an unsafe fix and may change runtime behavior
+
+B905 `zip()` without an explicit `strict=` parameter
+  --> work/pod/crossover-60-20261018/cards/S04/critic_snapshot_copy/experiment.py:94:64
+   |
+92 |             assert all(sum((weights[k]*c[i]['a'][j] for k, i in enumerate(ids)), F(0)) == 0 for j in range(3))
+93 |             assert dot(weights, [c[i]['b'] for i in ids]) == -1
+94 |             return [{'constraint': i, 'weight': w} for i, w in zip(ids, weights) if w]
+   |                                                                ^^^^^^^^^^^^^^^^^
+95 |     raise AssertionError('No exact infeasibility certificate')
+   |
+help: Add explicit value for parameter `strict=`
+   |
+93 |             assert dot(weights, [c[i]['b'] for i in ids]) == -1
+   -             return [{'constraint': i, 'weight': w} for i, w in zip(ids, weights) if w]
+94 +             return [{'constraint': i, 'weight': w} for i, w in zip(ids, weights, strict=False) if w]
+95 |     raise AssertionError('No exact infeasibility certificate')
+   |
+note: This is an unsafe fix and may change runtime behavior
+
+B007 Loop control variable `w` not used within loop body
+   --> work/pod/crossover-60-20261018/cards/S04/critic_snapshot_copy/experiment.py:116:9
+    |
+114 |         return {'constraints': c, 'feasible': False, 'farkas': farkas(c)}
+115 |     # Each lifted vertex corresponds to a genuine shared leakage value.
+116 |     for w, d, q in v:
+    |         ^
+117 |         assert (d == 0 and q == 0) or (d != 0 and F(1, 5) <= q/d <= F(3, 10))
+118 |     return {'constraints': c, 'feasible': True, 'vertices': v,
+    |
+help: Rename unused `w` to `_w`
+    |
+115 |     # Each lifted vertex corresponds to a genuine shared leakage value.
+    -     for w, d, q in v:
+116 +     for _w, d, q in v:
+117 |         assert (d == 0 and q == 0) or (d != 0 and F(1, 5) <= q/d <= F(3, 10))
+    |
+note: This is an unsafe fix and may change runtime behavior
+
+E701 Multiple statements on one line (colon)
+   --> work/pod/crossover-60-20261018/cards/S04/critic_snapshot_copy/experiment.py:141:24
+    |
+140 | def encode(x):
+141 |     if isinstance(x, F): return str(x)
+    |                        ^
+142 |     if isinstance(x, dict): return {k: encode(v) for k, v in x.items()}
+143 |     if isinstance(x, (list, tuple)): return [encode(v) for v in x]
+    |
+
+E701 Multiple statements on one line (colon)
+   --> work/pod/crossover-60-20261018/cards/S04/critic_snapshot_copy/experiment.py:142:27
+    |
+140 | def encode(x):
+141 |     if isinstance(x, F): return str(x)
+142 |     if isinstance(x, dict): return {k: encode(v) for k, v in x.items()}
+    |                           ^
+143 |     if isinstance(x, (list, tuple)): return [encode(v) for v in x]
+144 |     return x
+    |
+
+E701 Multiple statements on one line (colon)
+   --> work/pod/crossover-60-20261018/cards/S04/critic_snapshot_copy/experiment.py:143:36
+    |
+141 |     if isinstance(x, F): return str(x)
+142 |     if isinstance(x, dict): return {k: encode(v) for k, v in x.items()}
+143 |     if isinstance(x, (list, tuple)): return [encode(v) for v in x]
+    |                                    ^
+144 |     return x
+    |
+
+Found 22 errors.
+[*] 11 fixable with `--fix` (8 unsafe fixes available with `--fix --unsafe-fixes`).

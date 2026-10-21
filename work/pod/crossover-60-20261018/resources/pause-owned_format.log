@@ -1,0 +1,312 @@
+unformatted: File would be reformatted
+  --> work/pod/crossover-60-20261018/cards/R03/critic_replay.py:13:11
+   |
+12 | P = Path(__file__).resolve().parent
+   - config = {"lean": "/Users/mike/.elan/toolchains/leanprover--lean4---v4.33.1/bin/lean", "lean_path": ""}
+13 + config = {
+14 +     "lean": "/Users/mike/.elan/toolchains/leanprover--lean4---v4.33.1/bin/lean",
+15 +     "lean_path": "",
+16 + }
+17 |
+--------------------------------------------------------------------------------
+23 |     env["LEAN_PATH"] = config["lean_path"]
+   -     r = subprocess.run(["lake", "env", "lean", str(f)], cwd="/Users/mike/Dev/ctrl/lean", capture_output=True, text=True)
+24 +     r = subprocess.run(
+25 +         ["lake", "env", "lean", str(f)],
+26 +         cwd="/Users/mike/Dev/ctrl/lean",
+27 +         capture_output=True,
+28 +         text=True,
+29 +     )
+30 |     (P / ("critic_" + name + ".log")).write_text(r.stdout + r.stderr)
+   |
+
+unformatted: File would be reformatted
+   --> work/pod/crossover-60-20261018/cards/R03/critic_sqlite_snapshot.py:2:1
+    |
+1   | """State-publication primitive only: local transactions, no robot/certificate executor."""
+2   +
+3   | import copy
+--------------------------------------------------------------------------------
+11  |
+    - P=Path(__file__).resolve().parent
+    - BASE={'events':[['11/50','1/50']],'offset':'0','width':'1/5','version':0,'task':{'goal':'0','deadline':'17/10','version':0},'frame':'world-v1','calibration':'cal-v1','clock_domain':'exec-1','clock_epoch':1,'owner_epoch':1}
+12  + P = Path(__file__).resolve().parent
+13  + BASE = {
+14  +     "events": [["11/50", "1/50"]],
+15  +     "offset": "0",
+16  +     "width": "1/5",
+17  +     "version": 0,
+18  +     "task": {"goal": "0", "deadline": "17/10", "version": 0},
+19  +     "frame": "world-v1",
+20  +     "calibration": "cal-v1",
+21  +     "clock_domain": "exec-1",
+22  +     "clock_epoch": 1,
+23  +     "owner_epoch": 1,
+24  + }
+25  +
+26  |
+27  | def encode(x):
+    -     return json.dumps(x,sort_keys=True,separators=(',',':'))
+28  +     return json.dumps(x, sort_keys=True, separators=(",", ":"))
+29  +
+30  |
+31  | def setup(path):
+32  |     with sqlite3.connect(path) as c:
+    -         c.execute('CREATE TABLE live (id INTEGER PRIMARY KEY CHECK(id=1), body TEXT NOT NULL)')
+    -         c.execute('CREATE TABLE outbox (event_id TEXT PRIMARY KEY, body TEXT NOT NULL)')
+    -         c.execute('INSERT INTO live VALUES (1,?)',(encode(BASE),))
+33  +         c.execute("CREATE TABLE live (id INTEGER PRIMARY KEY CHECK(id=1), body TEXT NOT NULL)")
+34  +         c.execute("CREATE TABLE outbox (event_id TEXT PRIMARY KEY, body TEXT NOT NULL)")
+35  +         c.execute("INSERT INTO live VALUES (1,?)", (encode(BASE),))
+36  +
+37  |
+38  | def state(path):
+39  |     with sqlite3.connect(path) as c:
+    -         return c.execute('SELECT body FROM live').fetchone()[0],c.execute('SELECT count(*) FROM outbox').fetchone()[0]
+40  +         return c.execute("SELECT body FROM live").fetchone()[0], c.execute(
+41  +             "SELECT count(*) FROM outbox"
+42  +         ).fetchone()[0]
+43  |
+    - def publish(path,expected,event_id,read_clock,*,fault=False,barrier=None):
+    -     if barrier is not None:barrier.wait()
+    -     c=sqlite3.connect(path,timeout=10,isolation_level=None)
+44  +
+45  + def publish(path, expected, event_id, read_clock, *, fault=False, barrier=None):
+46  +     if barrier is not None:
+47  +         barrier.wait()
+48  +     c = sqlite3.connect(path, timeout=10, isolation_level=None)
+49  |     try:
+    -         c.execute('BEGIN IMMEDIATE')
+    -         current=c.execute('SELECT body FROM live WHERE id=1').fetchone()[0]
+    -         if current!=expected:
+    -             c.execute('ROLLBACK');return 'stale'
+50  +         c.execute("BEGIN IMMEDIATE")
+51  +         current = c.execute("SELECT body FROM live WHERE id=1").fetchone()[0]
+52  +         if current != expected:
+53  +             c.execute("ROLLBACK")
+54  +             return "stale"
+55  |         # This callback supplies an interval for a model clock AFTER lock acquisition.
+56  |         # The publication-tail bound is a stated premise, not established by SQLite.
+    -         now_upper=read_clock()
+    -         publication_tail=F(1,100);dispatch_max=F(1,50);execution_lower=F(3,5)
+    -         if now_upper+publication_tail+dispatch_max>execution_lower:
+    -             c.execute('ROLLBACK');return 'expired'
+    -         next_state=json.loads(current)
+    -         next_state['events'].append(['31/50','-1/50'])
+    -         next_state['version']+=1
+    -         c.execute('UPDATE live SET body=? WHERE id=1',(encode(next_state),))
+    -         if fault:raise RuntimeError('injected before outbox insert')
+    -         c.execute('INSERT INTO outbox VALUES (?,?)',(event_id,encode({'execution':'31/50','delta':'-1/50','expected':expected})))
+    -         c.execute('COMMIT');return 'published'
+57  +         now_upper = read_clock()
+58  +         publication_tail = F(1, 100)
+59  +         dispatch_max = F(1, 50)
+60  +         execution_lower = F(3, 5)
+61  +         if now_upper + publication_tail + dispatch_max > execution_lower:
+62  +             c.execute("ROLLBACK")
+63  +             return "expired"
+64  +         next_state = json.loads(current)
+65  +         next_state["events"].append(["31/50", "-1/50"])
+66  +         next_state["version"] += 1
+67  +         c.execute("UPDATE live SET body=? WHERE id=1", (encode(next_state),))
+68  +         if fault:
+69  +             raise RuntimeError("injected before outbox insert")
+70  +         c.execute(
+71  +             "INSERT INTO outbox VALUES (?,?)",
+72  +             (event_id, encode({"execution": "31/50", "delta": "-1/50", "expected": expected})),
+73  +         )
+74  +         c.execute("COMMIT")
+75  +         return "published"
+76  |     except BaseException:
+    -         if c.in_transaction:c.execute('ROLLBACK')
+77  +         if c.in_transaction:
+78  +             c.execute("ROLLBACK")
+79  |         raise
+    -     finally:c.close()
+80  +     finally:
+81  +         c.close()
+82  |
+    - def mutate(path,field,value):
+83  +
+84  + def mutate(path, field, value):
+85  |     with sqlite3.connect(path) as c:
+    -         x=json.loads(c.execute('SELECT body FROM live').fetchone()[0]);x[field]=value
+    -         c.execute('UPDATE live SET body=?',(encode(x),))
+86  +         x = json.loads(c.execute("SELECT body FROM live").fetchone()[0])
+87  +         x[field] = value
+88  +         c.execute("UPDATE live SET body=?", (encode(x),))
+89  +
+90  |
+    - results=[]
+    - with tempfile.TemporaryDirectory(prefix='crossover-r03-') as td:
+    -     root=Path(td)
+91  + results = []
+92  + with tempfile.TemporaryDirectory(prefix="crossover-r03-") as td:
+93  +     root = Path(td)
+94  |     for k in range(32):
+    -         path=root/f'race{k}.db';setup(path);barrier=Barrier(2)
+95  +         path = root / f"race{k}.db"
+96  +         setup(path)
+97  +         barrier = Barrier(2)
+98  |         with ThreadPoolExecutor(max_workers=2) as pool:
+    -             fs=[pool.submit(publish,path,encode(BASE),f'event{i}',lambda:F(1,2),barrier=barrier) for i in range(2)]
+    -             rs=sorted(f.result() for f in fs)
+    -         assert rs==['published','stale']
+    -         body,count=state(path);x=json.loads(body)
+    -         assert x['version']==1 and len(x['events'])==2 and count==1
+    -         assert publish(path,encode(BASE),'retry',lambda:F(1,2))=='stale'
+99  +             fs = [
+100 +                 pool.submit(
+101 +                     publish, path, encode(BASE), f"event{i}", lambda: F(1, 2), barrier=barrier
+102 +                 )
+103 +                 for i in range(2)
+104 +             ]
+105 +             rs = sorted(f.result() for f in fs)
+106 +         assert rs == ["published", "stale"]
+107 +         body, count = state(path)
+108 +         x = json.loads(body)
+109 +         assert x["version"] == 1 and len(x["events"]) == 2 and count == 1
+110 +         assert publish(path, encode(BASE), "retry", lambda: F(1, 2)) == "stale"
+111 |         results.append(rs)
+    -     mutation_cases={
+    -         'history':('events',[['11/50','2/50']]),'offset':('offset','1/1000'),
+    -         'width':('width','1/4'),'frame':('frame','world-v2'),
+    -         'calibration':('calibration','cal-v2'),'clock_domain':('clock_domain','exec-2'),
+    -         'clock_epoch':('clock_epoch',2),'owner_epoch':('owner_epoch',2),
+    -         'task':('task',{'goal':'1','deadline':'17/10','version':0}),
+112 +     mutation_cases = {
+113 +         "history": ("events", [["11/50", "2/50"]]),
+114 +         "offset": ("offset", "1/1000"),
+115 +         "width": ("width", "1/4"),
+116 +         "frame": ("frame", "world-v2"),
+117 +         "calibration": ("calibration", "cal-v2"),
+118 +         "clock_domain": ("clock_domain", "exec-2"),
+119 +         "clock_epoch": ("clock_epoch", 2),
+120 +         "owner_epoch": ("owner_epoch", 2),
+121 +         "task": ("task", {"goal": "1", "deadline": "17/10", "version": 0}),
+122 |     }
+    -     for name,(field,value) in mutation_cases.items():
+    -         path=root/f'{name}.db';setup(path);mutate(path,field,value);old=state(path)
+    -         assert publish(path,encode(BASE),name,lambda:F(1,2))=='stale' and state(path)==old
+    -     path=root/'rollback.db';setup(path);old=state(path)
+    -     try:publish(path,encode(BASE),'fault',lambda:F(1,2),fault=True)
+    -     except RuntimeError:pass
+    -     else:raise AssertionError('fault not exercised')
+    -     assert state(path)==old
+    -     path=root/'late.db';setup(path);old=state(path)
+    -     assert publish(path,encode(BASE),'late',lambda:F(7,10))=='expired' and state(path)==old
+123 +     for name, (field, value) in mutation_cases.items():
+124 +         path = root / f"{name}.db"
+125 +         setup(path)
+126 +         mutate(path, field, value)
+127 +         old = state(path)
+128 +         assert publish(path, encode(BASE), name, lambda: F(1, 2)) == "stale" and state(path) == old
+129 +     path = root / "rollback.db"
+130 +     setup(path)
+131 +     old = state(path)
+132 +     try:
+133 +         publish(path, encode(BASE), "fault", lambda: F(1, 2), fault=True)
+134 +     except RuntimeError:
+135 +         pass
+136 +     else:
+137 +         raise AssertionError("fault not exercised")
+138 +     assert state(path) == old
+139 +     path = root / "late.db"
+140 +     setup(path)
+141 +     old = state(path)
+142 +     assert publish(path, encode(BASE), "late", lambda: F(7, 10)) == "expired" and state(path) == old
+143 |     # Deliberate wrong callback returns old interval: database atomicity does not repair it.
+    -     assert publish(path,encode(BASE),'stale-clock',lambda:F(1,2))=='published'
+    -     stale_clock_counter={'cached_upper':'1/2','true_publication_time':'7/10','earliest_execution':'3/5','published':True,'physical_ordering':False}
+144 +     assert publish(path, encode(BASE), "stale-clock", lambda: F(1, 2)) == "published"
+145 +     stale_clock_counter = {
+146 +         "cached_upper": "1/2",
+147 +         "true_publication_time": "7/10",
+148 +         "earliest_execution": "3/5",
+149 +         "published": True,
+150 +         "physical_ordering": False,
+151 +     }
+152 |     # Acknowledgement loss is outside a transaction over database rows.
+    -     outbox_external_trace=['database commit','external effect','acknowledgement lost','replay outbox','external effect again']
+    -     assert outbox_external_trace.count('external effect')+outbox_external_trace.count('external effect again')==2
+    - out={'sqlite_version':sqlite3.sqlite_version,'concurrent_two_writer_rounds':len(results),'each_round':['published','stale'],'full_snapshot_mutations_rejected':list(mutation_cases),'fault_rollback_preserves_both':True,'fresh_late_clock_rejected':True,'stale_callback_counterexample':stale_clock_counter,'external_ack_loss_trace':outbox_external_trace,'scope':'Real local SQLite transactions test atomic snapshot+append+outbox state publication. Synthetic certificate fixture and model clock; no verified source certificate checker, bounded OS/fsync tail, physical event-time mapping, actual dispatch exactly-once, hard real-time or robot validation. Epochs trusted distinct/unbounded in model; no reset/wrap guarantee.'}
+    - (P/'critic_sqlite_replay.json').write_text(json.dumps(out,indent=2)+'\n')
+153 +     outbox_external_trace = [
+154 +         "database commit",
+155 +         "external effect",
+156 +         "acknowledgement lost",
+157 +         "replay outbox",
+158 +         "external effect again",
+159 +     ]
+160 +     assert (
+161 +         outbox_external_trace.count("external effect")
+162 +         + outbox_external_trace.count("external effect again")
+163 +         == 2
+164 +     )
+165 + out = {
+166 +     "sqlite_version": sqlite3.sqlite_version,
+167 +     "concurrent_two_writer_rounds": len(results),
+168 +     "each_round": ["published", "stale"],
+169 +     "full_snapshot_mutations_rejected": list(mutation_cases),
+170 +     "fault_rollback_preserves_both": True,
+171 +     "fresh_late_clock_rejected": True,
+172 +     "stale_callback_counterexample": stale_clock_counter,
+173 +     "external_ack_loss_trace": outbox_external_trace,
+174 +     "scope": "Real local SQLite transactions test atomic snapshot+append+outbox state publication. Synthetic certificate fixture and model clock; no verified source certificate checker, bounded OS/fsync tail, physical event-time mapping, actual dispatch exactly-once, hard real-time or robot validation. Epochs trusted distinct/unbounded in model; no reset/wrap guarantee.",
+175 + }
+176 + (P / "critic_sqlite_replay.json").write_text(json.dumps(out, indent=2) + "\n")
+177 | print(json.dumps(out))
+    |
+
+unformatted: File would be reformatted
+   --> work/pod/crossover-60-20261018/cards/R03/inventor_clock.py:72:21
+    |
+71  | # Event installation at.58 is timely; clock-as-phase evaluation still breaks the reference.
+    - post_center = center+F(1, 10)
+    - post_phase = bias_clock(post_center-F(1, 10))+F(1, 10)
+72  + post_center = center + F(1, 10)
+73  + post_phase = bias_clock(post_center - F(1, 10)) + F(1, 10)
+74  | assert post_phase == RETURN[0]
+    - post_nominal = jet(post_phase, OLD+(RETURN,))
+75  + post_nominal = jet(post_phase, OLD + (RETURN,))
+76  | assert post_nominal[1] == F(1, 15)
+    - post_left_v, post_right_v = post_nominal[1]*F(3, 2), post_nominal[1]/2
+    - assert post_right_v-post_left_v == F(-1, 15)
+    - probe = post_center-F(1, 1000)
+    - probe_phase = bias_clock(probe-F(1, 10))+F(1, 10)
+    - probe_jerk = jet(probe_phase, OLD+(RETURN,))[3]*F(3, 2)**3
+    - assert F(57, 100)+F(1, 100) < post_center-F(1, 100)
+77  + post_left_v, post_right_v = post_nominal[1] * F(3, 2), post_nominal[1] / 2
+78  + assert post_right_v - post_left_v == F(-1, 15)
+79  + probe = post_center - F(1, 1000)
+80  + probe_phase = bias_clock(probe - F(1, 10)) + F(1, 10)
+81  + probe_jerk = jet(probe_phase, OLD + (RETURN,))[3] * F(3, 2) ** 3
+82  + assert F(57, 100) + F(1, 100) < post_center - F(1, 100)
+83  | assert abs(probe_jerk) > F(15, 2)
+--------------------------------------------------------------------------------
+138 |     "post_commit_timewarp": {
+    -         "saved_commit": F(57, 100), "dispatch": F(1, 100),
+    -         "installation": F(58, 100), "clock_correction_start": F(121, 200),
+    -         "physical_center": post_center, "phase_at_center": post_phase,
+    -         "nominal_velocity": post_nominal[1], "left_velocity": post_left_v,
+    -         "right_velocity": post_right_v, "velocity_jump": post_right_v-post_left_v,
+    -         "physical_probe_time": probe, "probe_phase": probe_phase,
+    -         "physical_time_reference_jerk": probe_jerk, "source_jerk_limit": F(15, 2),
+139 +         "saved_commit": F(57, 100),
+140 +         "dispatch": F(1, 100),
+141 +         "installation": F(58, 100),
+142 +         "clock_correction_start": F(121, 200),
+143 +         "physical_center": post_center,
+144 +         "phase_at_center": post_phase,
+145 +         "nominal_velocity": post_nominal[1],
+146 +         "left_velocity": post_left_v,
+147 +         "right_velocity": post_right_v,
+148 +         "velocity_jump": post_right_v - post_left_v,
+149 +         "physical_probe_time": probe,
+150 +         "probe_phase": probe_phase,
+151 +         "physical_time_reference_jerk": probe_jerk,
+152 +         "source_jerk_limit": F(15, 2),
+153 |         "scope": "Timely installation does not repair a later clock-as-phase correction.",
+    |
+
+3 files would be reformatted, 16 files already formatted

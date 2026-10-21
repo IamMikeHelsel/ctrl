@@ -1,0 +1,11 @@
+# Consumer contract for the continuation
+
+The certificate must bind a trusted expected manifest before its arithmetic is inspected: complete vertex set, exact directed edge multiset, rotational and translational weights, measurement matrices/vectors, group SO2 versus O2, objective normalization, anchor for each connected component, and the candidate poses. A hash supplied by the candidate is not an independent expected manifest.
+
+Optimality acceptance requires (i) exact candidate feasibility in the intended group and anchors, (ii) exact reconstruction of the intended objective and slack, (iii) a checked PSD certificate, and (iv) equality of the candidate objective and lower bound. Any changed input invalidates reuse unless the relevant identity is explicitly reproved. Exact arithmetic alone does not bind the wrong graph.
+
+Uniqueness has three outcomes: proved unique by sufficient nullspace/equality conditions; proved multiple by distinct anchored feasible attaining candidates; unresolved. Large slack nullity belongs to the third category unless the nonlinear feasible intersection is analyzed. The7/3/4 boundary supplies a concrete unique result despite excess nullity. A disconnected unused node requires its own anchor and cannot be hidden by an unchanged objective.
+
+For a future approximate candidate, a useful extension is a certified bounded-gap result, not a relaxed exact-optimum label. If an exact factorization proves S+epsilon*I positive semidefinite, shift each node dual block down byepsilon*I. With n poses of dimensiond, the valid lower bound decreases bydn*epsilon; compare the exact feasible objective against that lower bound. This follows from the trace of each orthogonal block beingd. The candidate still needs exact feasibility or a separately justified feasible enclosure; floating-point near-orthogonality and a negative eigenvalue tolerance are not accepted certificates. This extension is a proposed continuation, not implemented acceptance evidence in this review.
+
+Twenty held-out cases in next_block_protocol.json are a future combined adapter suite; distinguish them from the critic's20 already-executed mutations of the fixed rational fixture. No SE-Sync software was run, no new general tightness theorem established, and no estimated pose certified as physical truth.

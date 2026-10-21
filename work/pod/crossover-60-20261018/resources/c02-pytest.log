@@ -1,0 +1,59 @@
+........................................................................ [ 36%]
+........................................................................ [ 72%]
+.........F.....F........................................                 [100%]
+=================================== FAILURES ===================================
+_____________________ test_calibration_common_t_involution _____________________
+
+    def test_calibration_common_t_involution():
+        """Verify algebraic certificate on calibration pair diag(J, 2J, 3J) at A = (1/2) I_6."""
+        K, Y, A, T = make_calibration_pair()
+    
+        # Automatically find involution
+        T_found = find_common_t_involution(K, Y)
+>       assert T_found is not None
+E       assert None is not None
+
+tests/test_mf13_rational_cert.py:149: AssertionError
+____________________________ test_tamper_rejection _____________________________
+
+    def test_tamper_rejection():
+        """Verify that corrupt or invalid certificates/pairs are strictly rejected."""
+        K, Y, A, T = make_calibration_pair()
+    
+        # 1. Non-symmetric T
+        T_corrupt = RationalMatrix([list(row) for row in T.data])
+        T_corrupt.data[0][1] = Fraction(1)
+        with pytest.raises(ValueError, match="not a valid anticommuting involution"):
+            certify_common_t_involution(K, Y, T_corrupt, A)
+    
+        # 2. Non-involutive T (T^2 != I)
+        T_scaled = T * Fraction(2)
+        with pytest.raises(ValueError, match="not a valid anticommuting involution"):
+            certify_common_t_involution(K, Y, T_scaled, A)
+    
+        # 3. Non-anticommuting T
+        I6 = RationalMatrix.identity(6)
+        with pytest.raises(ValueError, match="not a valid anticommuting involution"):
+            certify_common_t_involution(K, Y, I6, A)
+    
+        # 4. Incompatible pair (Card M05 scalar product swap obstruction)
+        # K = diag(J, 2J, J/2), Y = diag(J, J/2, 2J) has m_j = 0 but is mathematically incompatible
+        k_incomp = [[Fraction(0) for _ in range(6)] for _ in range(6)]
+        y_incomp = [[Fraction(0) for _ in range(6)] for _ in range(6)]
+        for idx, w in enumerate([1, 2, Fraction(1, 2)]):
+            k_incomp[2 * idx][2 * idx + 1] = Fraction(w)
+            k_incomp[2 * idx + 1][2 * idx] = Fraction(-w)
+        for idx, w in enumerate([1, Fraction(1, 2), 2]):
+            y_incomp[2 * idx][2 * idx + 1] = Fraction(w)
+            y_incomp[2 * idx + 1][2 * idx] = Fraction(-w)
+    
+        analysis_incomp = analyze_byers_nash_pair(RationalMatrix(k_incomp), RationalMatrix(y_incomp))
+>       assert analysis_incomp.is_compatible is False
+E       AssertionError: assert True is False
+E        +  where True = ByersNashPairAnalysis(K=[['0', '1', '0', '0', '0', '0'], ['-1', '0', '0', '0', '0', '0'], ['0', '0', '0', '2', '0', '0..., '0', '0'], ['0', '0', '0', '0', '0', '0'], ['0', '0', '0', '0', '2', '0']]], residual_A0_K='0', residual_A0_Y='15/2').is_compatible
+
+tests/test_mf13_rational_cert.py:362: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_mf13_rational_cert.py::test_calibration_common_t_involution
+FAILED tests/test_mf13_rational_cert.py::test_tamper_rejection - AssertionErr...
+2 failed, 198 passed, 1 deselected in 5.07s

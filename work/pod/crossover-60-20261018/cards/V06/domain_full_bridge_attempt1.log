@@ -1,0 +1,68 @@
+Try this:
+  [apply] ring_nf
+  
+  The `ring` tactic failed to close the goal. Use `ring_nf` to obtain a normal form.
+    
+  Note that `ring` works primarily in *commutative* rings. If you have a noncommutative ring, abelian group or module, consider using `noncomm_ring`, `abel` or `module` instead.
+../work/pod/crossover-60-20261018/cards/V06/domain_full_bridge.lean:17:63: error: unsolved goals
+c s d t : ℝ
+p₁ p₂ : Fin 2 → ℝ
+⊢ 3 + s * p₁ 0 * (-8 / 5) + s * p₁ 1 * (6 / 5) + s * p₂ 0 * (8 / 5) + s * p₂ 1 * (-6 / 5) + s ^ 2 +
+                                  V06Bridge.matrixObjective !![c, -s; s, c] !![d, -t; t, d] -
+                                p₁ 0 * 2 -
+                              p₁ 0 * p₂ 0 * 2 +
+                            p₁ 0 * c * (6 / 5) +
+                          p₁ 0 ^ 2 * 2 +
+                        p₁ 1 * c * (8 / 5) -
+                      p₁ 1 * p₂ 1 * 2 +
+                    p₁ 1 ^ 2 * 2 -
+                  p₂ 0 * 2 +
+                p₂ 0 * c * (-6 / 5) +
+              p₂ 0 ^ 2 * 2 +
+            c * p₂ 1 * (-8 / 5) +
+          c ^ 2 -
+        p₂ 1 * 2 +
+      p₂ 1 ^ 2 * 2 =
+    3 + s * p₁ 0 * (-8 / 5) + s * p₁ 1 * (6 / 5) + s * p₂ 0 * (8 / 5) + s * p₂ 1 * (-6 / 5) + s ^ 2 - p₁ 0 * 2 -
+                                p₁ 0 * p₂ 0 * 2 +
+                              p₁ 0 * c * (6 / 5) +
+                            p₁ 0 ^ 2 * 2 +
+                          p₁ 1 * c * (8 / 5) -
+                        p₁ 1 * p₂ 1 * 2 +
+                      p₁ 1 ^ 2 * 2 -
+                    p₂ 0 * 2 +
+                  p₂ 0 * c * (-6 / 5) +
+                p₂ 0 ^ 2 * 2 +
+              c * p₂ 1 * (-8 / 5) +
+            c ^ 2 -
+          p₂ 1 * 2 +
+        p₂ 1 ^ 2 * 2 +
+      V06PM.objective c s d t
+../work/pod/crossover-60-20261018/cards/V06/domain_full_bridge.lean:18:28: warning: This simp argument is unused:
+  V06Bridge.expansion
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [fullMatrixObjective, vecSq, V06.rotation, Matrix.mulVec, dotProduct, Fin.sum_univ_two,
+    V06PM.fullObjective]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../work/pod/crossover-60-20261018/cards/V06/domain_full_bridge.lean:19:4: warning: This simp argument is unused:
+  Matrix.mulVec
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [fullMatrixObjective, V06Bridge.expansion, vecSq, V06.rotation, dotProduct, Fin.sum_univ_two,
+    V06PM.fullObjective]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+../work/pod/crossover-60-20261018/cards/V06/domain_full_bridge.lean:19:19: warning: This simp argument is unused:
+  dotProduct
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [fullMatrixObjective, V06Bridge.expansion, vecSq, V06.rotation, Matrix.mulVec, Fin.sum_univ_two,
+    V06PM.fullObjective]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+'V06FullBridge.expansion' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'V06FullBridge.actual_global_bound' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'V06FullBridge.actual_unique' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]
+'V06FullBridge.actual_candidate' depends on axioms: [propext, sorryAx, Classical.choice, Quot.sound]

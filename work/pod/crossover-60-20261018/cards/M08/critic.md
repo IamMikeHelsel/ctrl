@@ -1,0 +1,29 @@
+# M08 independent critique
+
+AI-generated independent review; inherited model, exact runtime identifier unavailable. Original files were read only. The primary draft was inspected as text and equation 9.3 visually on PDF page 43. No physical, author-intent, or novelty claim is accepted.
+
+## Accepted results
+
+The independently written tuple implementation keeps exterior-form degree and internal Clifford grade separate. Under signature (7,7), standard oriented Hodge, canonical sorted Phi1/Phi2, stated curvature normalization, and bracket assignment commutator/Jordan/Jordan, the final exterior Hodge identifies the source-shaped expression with **minus** the previous component E. This is a convention-fixed algebraic bridge, not proof that these choices uniquely instantiate the author's printed operator. All 1,274 vector/external-form basis legs and 8,281 bivector/external-form legs pass independently. Mixed R0707=-1 and positive R0101=1 pass the full calculation. Reversing orientation consistently does not repair the sign. Reversing Phi1 in both occurrences does. Doubling Phi2 changes the relative scalar coefficient, which cannot be repaired by one overall scale.
+
+All eight C/J bracket assignments were independently tested with exact real/imaginary rational components. Only CJJ matches the selected Einstein contraction on the positive sectional example. CCC produces Ricci-supported plane rows where the Einstein target has transverse support, so even a global rescaling cannot fix it. The draft supplies both products and an operator family; the unlabelled brackets and missing selection notes leave this choice material. Removing the two Jordan i factors is detected.
+
+An independent all-4,186 symmetric pair-basis audit verifies scalar part -scal and Q4_abcd = 4 s_a s_b s_c s_d (R_abcd-R_acbd+R_adbc). The disjoint quadruple blocks have rank 1,001, yielding the algebraic-Bianchi subspace dimension 3,185. E5_i=e_i wedge Q4 has coordinate squared norm sum ten times that of Q4. This is exact finite rational evidence and a linearity argument, not a kernel theorem. The coordinate norm is not Spin(7,7)-invariant: Q=e0123+e0127 has zero indefinite metric norm while nonzero.
+
+The independent non-Bianchi control has R0123=R2301=1 with pair symmetries, Ricci/scalar zero, Q4=4e0123, and ten nonzero grade-five E rows. The independent polynomial connection A=(e23/2)(x0 dx1-x1 dx0)+(e01/2)(x2 dx3-x3 dx2) has A wedge A=0, constant F=e23 dx01+e01 dx23, dF=0 and [A,F]=0 identically. Its algebraic cyclic defect is one. Thus differential gauge Bianchi does not supply algebraic Riemann Bianchi or a torsion-free soldering assumption.
+
+The sparse H000=1 differential-curvature jet independently satisfies all tested algebraic and differential index identities, with divRic=(13,0,...) and dscal=(26,0,...). It selects beta=1 in 2Ric-beta scal g only if divergence freedom is required on that admitted jet. No global metric or GU field configuration was constructed. Pointwise algebraic curvature alone and constant-scalar tests do not select beta. Weyl annihilation alone does not select beta either.
+
+Gaussian-rational Clifford conjugation independently verifies g=3/5+(4/5)i e0123, g inverse=3/5-(4/5)i e0123, and g^-1 e0 g=-(7/25)e0+(24/25)i e123. A grade-four blade likewise acquires a grade-two component. This proves a fixed grade projector is not preserved by that algebra automorphism. Admissibility under the source's actual adjoint and epsilon must be bound separately; conjugating every coefficient, including Phi, is distinct from transforming curvature alone.
+
+The independent right-inverse consumer reconstructs all 105 symmetric target basis tensors through sparse Kulkarni-Nomizu assembly and the actual Clifford contraction. It also consumes the inventor's five alternating targets (all signature parities) and verifies the combined target exactly in grades one and five. For T symmetric, h=(T-tr_g(T)g/13)/24 gives E_tensor=T; for a fully alternating component R_abcd=q/(12 s_a s_b s_c s_d), Q4=q. The general rank 1,106 and kernel dimension 3,080 follow by the hand right-inverse and grade-separation argument. These are not kernel-checked rank computations or a novel curvature decomposition.
+
+## Kernel evidence and limitations
+
+Independent successful Lean replays currently accept domain_hodge's six declarations and domain_beta's six declarations, with only propext, Classical.choice and Quot.sound. Hodge checks cover selected concrete basis signs, parity arithmetic and scalar assembly, not the complete operator. Beta checks are conditional scalar algebra, not a geometric contracted-Bianchi theorem. The additional two domain_jet scalar lemmas independently compile successfully with the same allowed axioms; 14 printed declarations are accepted in total, with hashes in critic_acceptance.json. No whole curvature identity, all-basis certificate, gauge connection or representation-theory statement is claimed kernel checked.
+
+## Recommendation
+
+GO for a source-bound convention adapter and an independently checked complete linear-operator certificate. HOLD the author-selected operator, full u(64,64) gauge-curvature reduction, displaced torsion sector, and physical interpretation. The next adapter must bind exterior and Clifford factors, signature, orientation, Phi normalizations, both Jordan factors, curvature lift, bracket choices, selected Spin/epsilon frame and the precise algebraic versus differential hypotheses. A raw grade-five zero test is a frame-bound algebraic diagnostic, not a general gauge-invariant field equation or a fault detector.
+
+Quality: 18/20 for the bounded review (source binding 4/5, independent exact checks 5/5, adversarial tests 5/5, full formal completion 4/5). Subjective confidence: high in the stated finite algebra, unresolved in identification with the author's intended full operator. The grade is not a probability of a new physical theory being correct.

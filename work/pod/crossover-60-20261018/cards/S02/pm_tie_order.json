@@ -1,0 +1,88 @@
+{
+  "scope": "All six logical orderings of one due receipt, one future receipt, and due commit at a tied real instant. No physical execution-time assertion.",
+  "rows": [
+    {
+      "events": [
+        "receive_due",
+        "receive_future",
+        "commit_due"
+      ],
+      "valid_due_before_commit": true,
+      "committed_due": true,
+      "max_application_packets": 2,
+      "remaining": [
+        633
+      ]
+    },
+    {
+      "events": [
+        "receive_due",
+        "commit_due",
+        "receive_future"
+      ],
+      "valid_due_before_commit": true,
+      "committed_due": true,
+      "max_application_packets": 1,
+      "remaining": [
+        633
+      ]
+    },
+    {
+      "events": [
+        "receive_future",
+        "receive_due",
+        "commit_due"
+      ],
+      "valid_due_before_commit": true,
+      "committed_due": true,
+      "max_application_packets": 2,
+      "remaining": [
+        633
+      ]
+    },
+    {
+      "events": [
+        "receive_future",
+        "commit_due",
+        "receive_due"
+      ],
+      "valid_due_before_commit": false,
+      "committed_due": false,
+      "max_application_packets": 2,
+      "remaining": [
+        632,
+        633
+      ]
+    },
+    {
+      "events": [
+        "commit_due",
+        "receive_due",
+        "receive_future"
+      ],
+      "valid_due_before_commit": false,
+      "committed_due": false,
+      "max_application_packets": 2,
+      "remaining": [
+        632,
+        633
+      ]
+    },
+    {
+      "events": [
+        "commit_due",
+        "receive_future",
+        "receive_due"
+      ],
+      "valid_due_before_commit": false,
+      "committed_due": false,
+      "max_application_packets": 2,
+      "remaining": [
+        632,
+        633
+      ]
+    }
+  ],
+  "conclusion": "Three orderings respect due-before-commit. One uses one application payload slot; two need two. Selecting the first ordering requires receive scheduling or an externally retained future packet. This does not reduce total physical buffering.",
+  "source_fixture": "Actual source first632 and nonqualifying633; packet identities must remain separate."
+}

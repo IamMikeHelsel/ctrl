@@ -1,0 +1,566 @@
+{
+  "inventory_stage": "candidate_selection_only",
+  "timed_sessions_started": false,
+  "evidence_note": "Local sources inspected; recorded proof claims are not freshly replayed in this inventory. Latest builder reports are explicitly distinguished from independent acceptance.",
+  "shortfall": {
+    "controls": 0,
+    "safety": 0
+  },
+  "candidates": [
+    {
+      "id": "C01",
+      "domain": "controls",
+      "title": "Slow command filters with useful forced tracking",
+      "question": "Can a causal slow command filter meet the fixed 0.2 mm tracking task while reducing actual jerk or command variation relative to direct control?",
+      "source_paths": [
+        "/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/pods/2026-10-17/round-summary.txt",
+        "/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/pods/2026-10-17/controls/filter-enclosure-08/builder/report.txt"
+      ],
+      "prior_work": "A common quadratic certificate supports unforced slow-filter stability; later exact-integer Taylor enclosures report violations for both fixed forced filters. Those enclosures are not Lean checked.",
+      "obstacle": "Unforced stability does not imply useful forced tracking; moving endpoints or granting preview changes the task.",
+      "reading_depth": "investigated",
+      "crossover_seed": "Borrow frequency-weighted model reduction and disturbance-observer residual cancellation, treating filter memory as a state.",
+      "cheap_test": "Derive the augmented transfer function and compare its low-frequency moments against direct feedback before any gain search.",
+      "wildcard": false,
+      "score_parts": {
+        "impact": 4,
+        "transfer": 4,
+        "testability": 4,
+        "readiness": 4,
+        "unexplored": 3
+      }
+    },
+    {
+      "id": "C02",
+      "domain": "controls",
+      "title": "Choose feedforward for the actual performance objective",
+      "question": "Which jerk-feedforward coefficient minimizes finite-horizon position error rather than the invariant-cube residual or initial jerk error?",
+      "source_paths": [
+        "/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/adjacent-controls/tracking-replans/README.txt"
+      ],
+      "prior_work": "Two different minimax objectives yield 5/(48 sigma) and 1/(10 sigma); numerical short-move cases can favor no jerk feedforward.",
+      "obstacle": "A certificate-optimal coefficient can be poor on the real task; varying-rate worst cases are not established.",
+      "reading_depth": "investigated",
+      "crossover_seed": "Import robust approximation equioscillation and horizon-weighted optimal transport of impulse-response mass.",
+      "cheap_test": "For a fixed polynomial reference compute exact low-order error series for the three coefficients and locate the horizon where their ranking reverses.",
+      "wildcard": false,
+      "score_parts": {
+        "impact": 4,
+        "transfer": 4,
+        "testability": 4,
+        "readiness": 4,
+        "unexplored": 3
+      }
+    },
+    {
+      "id": "C03",
+      "domain": "controls",
+      "title": "Causal high-order reference feasibility",
+      "question": "Can a compact admission rule reject impossible endpoint/deadline requests with bounded jerk, snap and latency before controller synthesis?",
+      "source_paths": [
+        "/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/pods/2026-10-17/controls/admission-04/analyst/report.txt"
+      ],
+      "prior_work": "An exact lower bound T >= a0/J + 2J/S rejects a prior endpoint; a different causal 0.6 m task has an explicit feasible polynomial reference.",
+      "obstacle": "Zero acceleration is not zero velocity; preserving a full endpoint is stricter than delaying one event.",
+      "reading_depth": "investigated",
+      "crossover_seed": "Treat derivative-constrained reachability as a moment problem with positive integration kernels and dual certificates.",
+      "cheap_test": "Derive simultaneous lower bounds on position and velocity from the extremal jerk profile and compare to the saved rejected endpoint.",
+      "wildcard": false,
+      "score_parts": {
+        "impact": 4,
+        "transfer": 4,
+        "testability": 4,
+        "readiness": 4,
+        "unexplored": 2
+      }
+    },
+    {
+      "id": "C04",
+      "domain": "controls",
+      "title": "Co-design digital hold gains and information age",
+      "question": "Can the fixed digital-hold controller admit a materially larger total information age without widening the declared clearance tube?",
+      "source_paths": [
+        "/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/controls-scope-review-20261018/AGE-BUDGET.txt",
+        "/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/pods/2026-10-18/method-transfer-01/controls/adaptive-admission-03/REPORT.txt",
+        "/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/pods/2026-10-18/method-transfer-01/controls/constructive-hold-07/REPORT.txt"
+      ],
+      "prior_work": "The later C3/C7 packets report derived mixed-history budgets and finite constructed holding at 1 ms total age; older planning notes are superseded for that milestone.",
+      "obstacle": "The sufficient budget has little slack and gain changes alter both sensor amplification and contraction.",
+      "reading_depth": "investigated",
+      "crossover_seed": "Use robust co-design as a small-gain loop between age-induced state error and feedback slope.",
+      "cheap_test": "Express the two-pass age inequality symbolically in gains and identify whether reducing slope increases admitted age after retaining the same cube.",
+      "wildcard": false,
+      "score_parts": {
+        "impact": 4,
+        "transfer": 4,
+        "testability": 4,
+        "readiness": 4,
+        "unexplored": 3
+      }
+    },
+    {
+      "id": "C05",
+      "domain": "controls",
+      "title": "Sharp stopping clearance from transient structure",
+      "question": "Can the derived-loss rate-floor model obtain a reusable tight clearance formula rather than a loose polynomial relaxation or one numerical instance?",
+      "source_paths": [
+        "/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/pods/2026-10-18/method-transfer-01/controls/milestone-01/REPORT.txt"
+      ],
+      "prior_work": "Builder packet reports an exact 0.142 m peak certificate through first zero versus a 0.1605859375 m relaxed formula; binary64 peak is about 0.1407108 m. Independent acceptance is not inferred here.",
+      "obstacle": "General parameter dependence and certified near-tightness remain separate from one fixed certificate.",
+      "reading_depth": "investigated",
+      "crossover_seed": "Use convex dual envelopes and optimal stopping: certify the velocity-root bracket and optimize only the corresponding position interval.",
+      "cheap_test": "On the saved instance derive a rational root bracket from monotone velocity and bound the position slack inside it.",
+      "wildcard": false,
+      "score_parts": {
+        "impact": 4,
+        "transfer": 3,
+        "testability": 4,
+        "readiness": 4,
+        "unexplored": 2
+      }
+    },
+    {
+      "id": "C06",
+      "domain": "controls",
+      "title": "Whole-region recovery controller comparison",
+      "question": "When braking and direct feedback share the same initial box and plant assumptions, which has the larger certified recovery region per checking cost?",
+      "source_paths": [
+        "/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/adjacent-controls/interval-checker/README.txt",
+        "/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/adjacent-controls/direct-comparison/README.txt"
+      ],
+      "prior_work": "A 25-step direct-feedback pilot is checked for one rate/state cell with a robust tail; the full initial-box/rate covering is not checked.",
+      "obstacle": "Single-cell wins and endpoint-only comparisons cannot establish whole-region superiority.",
+      "reading_depth": "investigated",
+      "crossover_seed": "Borrow branch-and-bound proof reuse and abstraction refinement: refine only cells whose certificates fail.",
+      "cheap_test": "Identify a pair of neighboring cells sharing valid coefficient bounds and test whether one terminal certificate can cover their union.",
+      "wildcard": false,
+      "score_parts": {
+        "impact": 3,
+        "transfer": 4,
+        "testability": 4,
+        "readiness": 4,
+        "unexplored": 2
+      }
+    },
+    {
+      "id": "C07",
+      "domain": "controls",
+      "title": "Sample-interval certificate conservatism",
+      "question": "How much allowable sampling range is lost to Bernstein/LDL certificates compared with true held-map stability on the same normalized plant?",
+      "source_paths": [
+        "/Users/mike/Dev/ctrl-research-notebook/research-notebook/lean-controls/README.txt",
+        "/Users/mike/Dev/ctrl-research-notebook/research-notebook/lean-controls/LeanControls/BernsteinCertificate.lean",
+        "/Users/mike/Dev/ctrl-research-notebook/research-notebook/lean-controls/benchmarks/double-integrator-wide.json"
+      ],
+      "prior_work": "Exact rational producer and Lean checker support interval energy decrease; a wider double-integrator variant reaches h=33/50 with smaller margin.",
+      "obstacle": "Failure of the chosen common quadratic or Bernstein coefficient test is not instability.",
+      "reading_depth": "investigated",
+      "crossover_seed": "Use polynomial approximation subdivision and common-metric geometry to separate representation conservatism from metric conservatism.",
+      "cheap_test": "For the 2-state benchmark compute the exact Schur stability polynomial and compare its boundary to the stored certificate interval.",
+      "wildcard": false,
+      "score_parts": {
+        "impact": 3,
+        "transfer": 4,
+        "testability": 4,
+        "readiness": 4,
+        "unexplored": 2
+      }
+    },
+    {
+      "id": "C08",
+      "domain": "controls",
+      "title": "Reusable certificates on a genuinely different plant",
+      "question": "Can an independent second plant use the unchanged interval-certificate interface with less manual proof work than a fresh bespoke derivation?",
+      "source_paths": [
+        "/Users/mike/Dev/ctrl-research-notebook/research-notebook/lean-controls/README.txt",
+        "/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/controls-scope-review-20261018/ASSESSMENT.txt"
+      ],
+      "prior_work": "Jerk, planar and actuator-lag benchmarks exist, but independent downstream reuse and quantitative engineering advantage are unestablished.",
+      "obstacle": "Another rescaling of the same model is not evidence of reusable abstraction.",
+      "reading_depth": "investigated",
+      "crossover_seed": "Transfer proof-carrying compilation: separate a small semantic model adapter from a generic untrusted producer and checker.",
+      "cheap_test": "Take the existing coupled-planar benchmark, list its model-specific proof obligations, and test whether its generated certificate can be consumed unchanged by the common interface.",
+      "wildcard": false,
+      "score_parts": {
+        "impact": 3,
+        "transfer": 3,
+        "testability": 4,
+        "readiness": 4,
+        "unexplored": 2
+      }
+    },
+    {
+      "id": "C09",
+      "domain": "controls",
+      "title": "Safe excitation for coupled-source identifiability",
+      "question": "Can a bounded intervention distinguish wheel imbalance from synchronous drivetrain forcing enough to change a safe control decision?",
+      "source_paths": [
+        "/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/adjacent-controls/adjacency-review/coupled-measurements.txt",
+        "/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/adjacent-controls/source-attribution/challenge.txt"
+      ],
+      "prior_work": "A source survey and a fixed synthetic exact-rational example show duplicate/trial readings need not identify baseline contribution; a separating reading can shrink the retained set.",
+      "obstacle": "Known trial sensitivity alone does not identify baseline imbalance; dynamic plant/interface and phase errors are absent.",
+      "reading_depth": "investigated",
+      "crossover_seed": "Use dual control and causal experimental design: optimize information gain subject to robust action envelopes.",
+      "cheap_test": "Construct the rank-deficient two-source observation map, then add one phase/order-separating row and quantify feasible-set width under bounded error.",
+      "wildcard": true,
+      "score_parts": {
+        "impact": 4,
+        "transfer": 4,
+        "testability": 4,
+        "readiness": 3,
+        "unexplored": 4
+      }
+    },
+    {
+      "id": "C10",
+      "domain": "controls",
+      "title": "Finite-horizon tracking bounds beyond invariant cubes",
+      "question": "Can a finite-horizon tube certify the short-move task that a global invariant cube makes excessively conservative?",
+      "source_paths": [
+        "/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/adjacent-controls/tracking-replans/README.txt",
+        "/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/pods/2026-10-17/controls/filter-enclosure-08/builder/report.txt"
+      ],
+      "prior_work": "Invariant-cube tracking and finite polynomial-reference comparisons exist; exact Taylor enclosures demonstrate a practical path to finite-time bounds.",
+      "obstacle": "An all-time cube discards transient cancellations; sampled numerical passes are not continuous enclosures.",
+      "reading_depth": "investigated",
+      "crossover_seed": "Import finite-time reachability and energy localization with a time-varying storage function.",
+      "cheap_test": "Propagate a small interval state through one saved polynomial phase and compare its position envelope to the fixed R tube without changing the task.",
+      "wildcard": false,
+      "score_parts": {
+        "impact": 4,
+        "transfer": 4,
+        "testability": 4,
+        "readiness": 4,
+        "unexplored": 3
+      }
+    },
+    {
+      "id": "C11",
+      "domain": "controls",
+      "title": "Active-facet geometry for invariant entry",
+      "question": "Can active-facet geometry yield a less conservative full-state entry test than independent box bounds for the tilted hold cube?",
+      "source_paths": [
+        "/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/pods/2026-10-18/method-transfer-01/controls/milestone-01/REPORT.txt",
+        "/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/pods/2026-10-18/method-transfer-01/controls/adaptive-admission-03/REPORT.txt"
+      ],
+      "prior_work": "The milestone packet explicitly defers family 149 active-facet entry; C3 derives a tilted-coordinate guard and exposes exact widening failures.",
+      "obstacle": "Shared physical coordinates couple the facets; independent coordinate extrema may be unattainable together.",
+      "reading_depth": "investigated",
+      "crossover_seed": "Borrow polyhedral contact geometry and complementary slackness to characterize only reachable active-face combinations.",
+      "cheap_test": "Enumerate signed active facets of the 3D tilted cube and find which combinations are feasible under the saved sensor and pending-command bounds.",
+      "wildcard": true,
+      "score_parts": {
+        "impact": 3,
+        "transfer": 4,
+        "testability": 4,
+        "readiness": 3,
+        "unexplored": 4
+      }
+    },
+    {
+      "id": "C12",
+      "domain": "controls",
+      "title": "Separate actuator response rate from authority loss",
+      "question": "What minimal varying-rate and effective-target model captures meaningful stopping variability without disguising reduced braking strength as slower response?",
+      "source_paths": [
+        "/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/adjacent-controls/adjacency-review/transient-variation.txt",
+        "/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/adjacent-controls/variable-response/README.txt"
+      ],
+      "prior_work": "Comparison envelopes support varying rate and target; earlier fixed-rate results cannot model changed steady acceleration or friction-brake modes merely by widening lag.",
+      "obstacle": "No calibrated mechanism or data validates a particular rate/target uncertainty set.",
+      "reading_depth": "investigated",
+      "crossover_seed": "Use dimensional analysis and set-membership identification to expose independently observable rate and authority directions.",
+      "cheap_test": "Construct equal-time-constant models with different steady acceleration and test the saved clearance contract on both; then identify the missing authority premise.",
+      "wildcard": false,
+      "score_parts": {
+        "impact": 4,
+        "transfer": 3,
+        "testability": 4,
+        "readiness": 3,
+        "unexplored": 3
+      }
+    },
+    {
+      "id": "S01",
+      "domain": "safety",
+      "title": "From finite constructed handoff to ongoing execution",
+      "question": "Can the finite recovery/detector/pending/hold construction be extended consistently to one infinite non-Zeno execution with the same safety ceiling?",
+      "source_paths": [
+        "/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/pods/2026-10-18/method-transfer-01/controls/constructed-handoff-08/REPORT.txt",
+        "/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/pods/2026-10-18/method-transfer-01/controls/constructive-hold-07/REPORT.txt"
+      ],
+      "prior_work": "C7/C8 builder packets construct arbitrary finite horizons and preserve the actual prefix, readings and clock; infinite execution remains explicitly open.",
+      "obstacle": "Compatible finite horizons and prefix agreement must be proved, rather than extending a finite formula outside its theorem domain.",
+      "reading_depth": "investigated",
+      "crossover_seed": "Use projective-limit style prefix consistency or stream coinduction with a positive clock step.",
+      "cheap_test": "Compare the N and N+1 recurrences symbolically on their common horizon and identify the exact index-stability lemma needed.",
+      "wildcard": false,
+      "score_parts": {
+        "impact": 4,
+        "transfer": 4,
+        "testability": 4,
+        "readiness": 4,
+        "unexplored": 3
+      }
+    },
+    {
+      "id": "S02",
+      "domain": "safety",
+      "title": "Detector correctness under variable dispatch latency",
+      "question": "Can first qualifying sampled readings remain causally linked to the switched plant when dispatch latency varies and messages can tie or reorder?",
+      "source_paths": [
+        "/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/pods/2026-10-18/method-transfer-01/controls/detector-bridge-06/REPORT.txt",
+        "/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/pods/2026-10-18/method-transfer-01/controls/constructed-handoff-08/REPORT.txt"
+      ],
+      "prior_work": "C6 proves finite guard detection on a 0.5 ms grid with common latency; it retains explicit counterexamples for tied dispatches and excessive age.",
+      "obstacle": "Common latency gives strict arrival order; arbitrary variable delays do not.",
+      "reading_depth": "investigated",
+      "crossover_seed": "Transfer distributed-systems causal clocks and sequence-number monotonicity into the hybrid controller contract.",
+      "cheap_test": "Construct two bounded-latency readings that arrive out of order and test a latest-timestamp-only acceptance rule against the age bound.",
+      "wildcard": false,
+      "score_parts": {
+        "impact": 4,
+        "transfer": 4,
+        "testability": 4,
+        "readiness": 4,
+        "unexplored": 3
+      }
+    },
+    {
+      "id": "S03",
+      "domain": "safety",
+      "title": "Machine arithmetic to real-valued control theorem",
+      "question": "What error contract lets a finite-word implementation inherit the real-valued clipped controller guarantee, including overflow and rounding?",
+      "source_paths": [
+        "/Users/mike/Dev/ctrl-research-notebook/research-notebook/lean-controls/README.txt",
+        "/Users/mike/Dev/ctrl-research-notebook/research-notebook/lean-controls/LeanControls/Quantized.lean",
+        "/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/adjacent-controls/adjacency-review/safety-filter-review.txt"
+      ],
+      "prior_work": "Ideal nearest-grid rounding is proved over mathematical reals; machine arithmetic and deployed executable correspondence are explicitly excluded.",
+      "obstacle": "Rounding, clamp order and overflow can violate the assumed error channel.",
+      "reading_depth": "investigated",
+      "crossover_seed": "Borrow sound abstract interpretation and proof-carrying compilation with outward interval arithmetic.",
+      "cheap_test": "Evaluate one control expression over boundary-state intervals using a declared fixed-point format and derive an exact worst rounding/overflow bound.",
+      "wildcard": false,
+      "score_parts": {
+        "impact": 4,
+        "transfer": 4,
+        "testability": 4,
+        "readiness": 3,
+        "unexplored": 3
+      }
+    },
+    {
+      "id": "S04",
+      "domain": "safety",
+      "title": "Complete model-bound certificate acceptance",
+      "question": "Can a certificate checker reject incomplete coverage, changed model semantics and stale artifacts without trusting the producer?",
+      "source_paths": [
+        "/Users/mike/Dev/ctrl-research-notebook/research-notebook/lean-controls/README.txt",
+        "/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/adjacent-controls/source-attribution/challenge.txt"
+      ],
+      "prior_work": "Producer/model negative controls exist; a prior source-attribution checker was repaired after omitted stage/branch/action cases could narrow its domain.",
+      "obstacle": "Mathematical validity of supplied branches does not prove all required branches were supplied.",
+      "reading_depth": "investigated",
+      "crossover_seed": "Use typed manifests as proof obligations and finite-cover certificates borrowed from exhaustive model checking.",
+      "cheap_test": "Delete one required branch from a copied in-memory certificate and verify that coverage fails before any accepted summary can be emitted.",
+      "wildcard": false,
+      "score_parts": {
+        "impact": 4,
+        "transfer": 4,
+        "testability": 4,
+        "readiness": 4,
+        "unexplored": 2
+      }
+    },
+    {
+      "id": "S05",
+      "domain": "safety",
+      "title": "Within-hold disturbance semantics",
+      "question": "Can the fixed held-error safety theorem tolerate bounded within-hold forcing without silently reusing constant-input formulas?",
+      "source_paths": [
+        "/Users/mike/Dev/ctrl-research-notebook/research-notebook/lean-controls/README.txt",
+        "/Users/mike/Dev/ctrl-research-notebook/research-notebook/lean-controls/LeanControls/HeldDisturbance.lean",
+        "/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/adjacent-controls/adjacency-review/transient-variation.txt"
+      ],
+      "prior_work": "Fixed-lag execution uses held command-equivalent errors; a separate varying-response comparison handles continuous effective targets for finite envelopes.",
+      "obstacle": "Constant-flow equalities and all-time energy certificates do not automatically transfer to arbitrary forcing.",
+      "reading_depth": "investigated",
+      "crossover_seed": "Use integral quadratic constraints or convolution-kernel L1 bounds to translate the disturbance history into a checked step residual.",
+      "cheap_test": "Compute the exact impulse-response sign pattern on one hold and compare constant worst-case forcing with a sign-aligned bounded forcing.",
+      "wildcard": false,
+      "score_parts": {
+        "impact": 4,
+        "transfer": 4,
+        "testability": 4,
+        "readiness": 3,
+        "unexplored": 3
+      }
+    },
+    {
+      "id": "S06",
+      "domain": "safety",
+      "title": "Own-state quantization and execution uniqueness",
+      "question": "Can existence and uniqueness be established for the sampled controller with deterministic state-dependent quantization rather than prescribed error sequences?",
+      "source_paths": [
+        "/Users/mike/Dev/ctrl-research-notebook/research-notebook/lean-controls/README.txt",
+        "/Users/mike/Dev/ctrl-research-notebook/research-notebook/lean-controls/LeanControls/ExecutionUniqueness.lean",
+        "/Users/mike/Dev/ctrl-research-notebook/research-notebook/lean-controls/LeanControls/Quantized.lean"
+      ],
+      "prior_work": "Uniqueness is proved for prescribed h,e,d; a nominal ideal-rounding theorem is separate and does not supply the requested uncertain execution claim.",
+      "obstacle": "An arbitrary bounded error sequence and a deterministic quantizer are different closed-loop interfaces.",
+      "reading_depth": "investigated",
+      "crossover_seed": "Use hybrid transition systems: evaluate quantization at sample boundaries, then solve a unique smooth held flow.",
+      "cheap_test": "Write the deterministic sample recurrence and check that a tie-breaking convention yields a unique next state even at quantizer boundaries.",
+      "wildcard": false,
+      "score_parts": {
+        "impact": 4,
+        "transfer": 3,
+        "testability": 4,
+        "readiness": 4,
+        "unexplored": 2
+      }
+    },
+    {
+      "id": "S07",
+      "domain": "safety",
+      "title": "Saturation certificate scope and hidden inactive regimes",
+      "question": "Can a robust invariant include genuinely active clipping throughout a region without relying on a budget that secretly forces clipping inactive?",
+      "source_paths": [
+        "/Users/mike/Dev/ctrl-research-notebook/research-notebook/lean-controls/LeanControls/SaturationBoundary.lean",
+        "/Users/mike/Dev/ctrl-research-notebook/research-notebook/lean-controls/LeanControls/TravelSafety.lean",
+        "/Users/mike/Dev/ctrl-research-notebook/research-notebook/lean-controls/README.txt"
+      ],
+      "prior_work": "The local rounded-controller budget is proved to exclude clipping; a different actuator-lag travel ellipsoid includes active clipping and a separate finite recovery trace exists.",
+      "obstacle": "Reusing the local budget as evidence for a broad saturated basin changes the proved statement.",
+      "reading_depth": "investigated",
+      "crossover_seed": "Use complementarity/sector partitions and piecewise storage functions tied to actual clamp modes.",
+      "cheap_test": "Find the exact intersection of each candidate invariant with the active-clamp halfspaces and reject any advertised clipping result with empty intersection.",
+      "wildcard": false,
+      "score_parts": {
+        "impact": 4,
+        "transfer": 4,
+        "testability": 4,
+        "readiness": 4,
+        "unexplored": 2
+      }
+    },
+    {
+      "id": "S08",
+      "domain": "safety",
+      "title": "Diagnose mismatch while a safe fallback remains reachable",
+      "question": "Can a runtime model monitor detect a specific actuator fault early enough that a certified fallback is still available?",
+      "source_paths": [
+        "/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/adjacent-controls/adjacency-review/performance-level-review.txt",
+        "/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/adjacent-controls/adjacency-review/safety-filter-review.txt"
+      ],
+      "prior_work": "The reviews distinguish logical fault detection, diagnostic coverage and complete stopping assurance; no local fault-to-fallback timing guarantee is supplied.",
+      "obstacle": "Detecting a model violation after the recoverable set has been left offers no safety guarantee.",
+      "reading_depth": "surveyed",
+      "crossover_seed": "Combine change detection with backward reachability: monitor threshold is constrained by the remaining backup reserve.",
+      "cheap_test": "For a declared bounded authority-loss fault, compare earliest distinguishable residual time with the latest safe brake-switch time.",
+      "wildcard": false,
+      "score_parts": {
+        "impact": 4,
+        "transfer": 4,
+        "testability": 3,
+        "readiness": 2,
+        "unexplored": 4
+      }
+    },
+    {
+      "id": "S09",
+      "domain": "safety",
+      "title": "Common-cause failures at the proof/reliability interface",
+      "question": "How can deterministic execution guarantees be composed with an explicit fault process without pretending proof success establishes a safety performance level?",
+      "source_paths": [
+        "/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/adjacent-controls/adjacency-review/performance-level-review.txt"
+      ],
+      "prior_work": "Prior review separates functional behavior, dangerous failure frequency and architecture/validation obligations; no component reliability data or PL claim exists.",
+      "obstacle": "A per-stop exceedance probability cannot be converted to an hourly failure rate without an operational model; shared causes defeat independent multiplication.",
+      "reading_depth": "surveyed",
+      "crossover_seed": "Borrow fault-tree cut sets and adversarial causal graphs to make shared sensor/clock/power assumptions visible.",
+      "cheap_test": "Build a minimal symbolic two-channel fault model with one shared cause and show the gap between independent and common-cause failure calculations.",
+      "wildcard": true,
+      "score_parts": {
+        "impact": 4,
+        "transfer": 4,
+        "testability": 4,
+        "readiness": 2,
+        "unexplored": 4
+      }
+    },
+    {
+      "id": "S10",
+      "domain": "safety",
+      "title": "Population uncertainty to a conditional envelope",
+      "question": "What evidence contract converts multi-unit, repeated-condition stopping data into a calibrated uncertainty set while retaining separate statistical and deterministic claims?",
+      "source_paths": [
+        "/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/adjacent-controls/adjacency-review/performance-level-review.txt",
+        "/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/adjacent-controls/adjacency-review/transient-variation.txt"
+      ],
+      "prior_work": "Existing review calls for held-out units/conditions, uncertainty-aware measurements and explicit population coverage; no hardware dataset is present.",
+      "obstacle": "Repeated measurements can share temperature and calibration errors; an empirical percentile is not an all-trajectories bound.",
+      "reading_depth": "surveyed",
+      "crossover_seed": "Use hierarchical set calibration and adversarial holdouts by unit/condition rather than row-wise random splits.",
+      "cheap_test": "Create a small exact synthetic shared-bias example showing row-wise replication reduces naive uncertainty while leaving between-unit uncertainty unchanged.",
+      "wildcard": false,
+      "score_parts": {
+        "impact": 4,
+        "transfer": 4,
+        "testability": 4,
+        "readiness": 2,
+        "unexplored": 3
+      }
+    },
+    {
+      "id": "S11",
+      "domain": "safety",
+      "title": "Travel containment versus maintained rest",
+      "question": "What additional controller and contract are needed to guarantee two-sided travel and explicit residual-motion tolerances after the finite first-zero maneuver?",
+      "source_paths": [
+        "/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/pods/2026-10-18/method-transfer-01/controls/constructed-handoff-08/REPORT.txt",
+        "/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/pods/2026-10-18/method-transfer-01/controls/milestone-01/REPORT.txt",
+        "/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/adjacent-controls/adjacency-review/performance-level-review.txt"
+      ],
+      "prior_work": "Latest finite handoff gives a forward ceiling, not lower travel, infinite holding or precision rest; an exact zero-speed positive-acceleration witness exposes the distinction.",
+      "obstacle": "First velocity zero is neither standstill nor a maintained stop; negative braking can reverse direction.",
+      "reading_depth": "investigated",
+      "crossover_seed": "Use viability kernels in position/velocity/acceleration and terminal-set design with a dwell-time motion predicate.",
+      "cheap_test": "Propagate the first-zero state under unchanged braking and construct the earliest backward-travel violation, then derive the necessary hold-switch reserve.",
+      "wildcard": false,
+      "score_parts": {
+        "impact": 4,
+        "transfer": 4,
+        "testability": 4,
+        "readiness": 4,
+        "unexplored": 3
+      }
+    },
+    {
+      "id": "S12",
+      "domain": "safety",
+      "title": "Uncertainty-preserving action under ambiguous attribution",
+      "question": "Can a safety decision remain sound when source attribution stays nonidentifiable and sensor observations contain duplicated shared information?",
+      "source_paths": [
+        "/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/adjacent-controls/source-attribution/challenge.txt",
+        "/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/research/adjacent-controls/adjacency-review/coupled-measurements.txt"
+      ],
+      "prior_work": "Exact-rational synthetic example retains a joint feasible set, rejects an empty set and distinguishes compatibility from all-state guarantee; no dynamic stop-model bridge exists.",
+      "obstacle": "Point estimates or falsely independent duplicated constraints can manufacture confidence; hull intersection can hide disconnected infeasibility.",
+      "reading_depth": "investigated",
+      "crossover_seed": "Transfer epistemic logic and abstract interpretation: act on every retained world, and make duplicate evidence idempotent.",
+      "cheap_test": "Compare an exact union-of-polyhedra feasible set with its interval hull on a held-out observation that intersects the hull but no actual branch.",
+      "wildcard": true,
+      "score_parts": {
+        "impact": 4,
+        "transfer": 4,
+        "testability": 4,
+        "readiness": 4,
+        "unexplored": 4
+      }
+    }
+  ]
+}

@@ -1,0 +1,87 @@
+{
+  "modules": [
+    {
+      "module": "domain_contract",
+      "source_sha256": "1b52aa7de80a58f71efeb7734c1a31099b64e79cd8d9480310a2fd976f43e3a2",
+      "declarations": 5,
+      "producer_exit_code": 0,
+      "axioms": {
+        "S03Domain.safe_step": "propext, Classical.choice, Quot.sound",
+        "S03Domain.safe_trajectory": "propext, Classical.choice, Quot.sound",
+        "S03Domain.raw_error": "propext, Classical.choice, Quot.sound",
+        "S03Domain.delivered_error": "propext, Classical.choice, Quot.sound",
+        "S03Domain.implementation_step": "propext, Classical.choice, Quot.sound"
+      }
+    },
+    {
+      "module": "domain_range",
+      "source_sha256": "bc8c71bbc967f829c032c6a9cd0baf4129627046aefe119a67efbe9746db3900",
+      "declarations": 3,
+      "producer_exit_code": 0,
+      "axioms": {
+        "S03Range.exact_support": "propext, Classical.choice, Quot.sound",
+        "S03Range.invariant_ranges": "propext, Classical.choice, Quot.sound",
+        "S03Range.preclamp_range": "propext, Classical.choice, Quot.sound"
+      }
+    },
+    {
+      "module": "domain_budget",
+      "source_sha256": "6eeea47995bddd6c044d772d5bb1b1d840581c9fe0482360949b191aa1894cf4",
+      "declarations": 3,
+      "producer_exit_code": 0,
+      "axioms": {
+        "S03Budget.safe_step": "propext, Classical.choice, Quot.sound",
+        "S03Budget.widened_budget": "propext, Classical.choice, Quot.sound",
+        "S03Budget.narrower_slack": "propext, Classical.choice, Quot.sound"
+      }
+    },
+    {
+      "module": "domain_overflow",
+      "source_sha256": "e15ab66588af123e4ec9cabda4de021766f8f046846d3dccbe2eac4a36216d35",
+      "declarations": 4,
+      "producer_exit_code": 0,
+      "axioms": {
+        "S03Overflow.admitted": "propext, Classical.choice, Quot.sound",
+        "S03Overflow.cell_admitted": "propext, Classical.choice, Quot.sound",
+        "S03Overflow.overflow_violates": "propext, Classical.choice, Quot.sound",
+        "S03Overflow.proper_arithmetic_safe": "propext, Classical.choice, Quot.sound"
+      }
+    },
+    {
+      "module": "domain_decimal",
+      "source_sha256": "2725b972b76b2f412b70fb846ec63bf7fe68aa2991f213d6ff421dff48023493",
+      "declarations": 5,
+      "producer_exit_code": 0,
+      "axioms": {
+        "S03Decimal.decoded_dot": "propext, Classical.choice, Quot.sound",
+        "S03Decimal.stale_identity": "propext, Classical.choice, Quot.sound",
+        "S03Decimal.stale_bound": "propext, Classical.choice, Quot.sound",
+        "S03Decimal.age_allowance": "propext, Classical.choice, Quot.sound",
+        "S03Decimal.decimal_step": "propext, Classical.choice, Quot.sound"
+      }
+    }
+  ],
+  "declarations": 20,
+  "independent_consumer": "Critic reported contract5/range3/budget3 independently passed. Overflow4 and new decimal5 replay requested; consult current critic manifests.",
+  "independent_critic_replay": {
+    "module": "critic_boundaries",
+    "exit_code": 0,
+    "declarations": 3,
+    "log": "domain_critic_boundaries.log"
+  },
+  "scope": "Source-specific conditional arithmetic interface and source-energy numeric negatives; original cached local dependencies, no formal compiler/ADC/DAC/physical correspondence.",
+  "supplement_scope": "Concrete decimal/DAC one-hold staleness composition assumes current invariant and exact retained prior-hold equations. Known-age propagated-box initialization prototype numerical-exact; complete checker bridge and general integral history outside kernel.",
+  "independent_critic_machine_replay": {
+    "module": "critic_machine",
+    "exit_code": 0,
+    "declarations": 4,
+    "sha256": "887a94387ae85abc76383a8f30f8303934a3c61da6892193266fd4456ca49f37",
+    "log": "domain_critic_machine.log"
+  },
+  "independent_pm_initialization_replay": {
+    "modules": 3,
+    "declarations": 7,
+    "all_exit_zero": true,
+    "manifest": "domain_initialization_replay.json"
+  }
+}

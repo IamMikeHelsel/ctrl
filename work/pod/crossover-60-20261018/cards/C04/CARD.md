@@ -1,0 +1,39 @@
+# C04 — digital hold gains and information age
+
+**PM GO, quality95/100 (19/20).** Two distinct candidates: unchanged gains at1.4ms total information age, and position gain changed from8 to16/3 at15ms. These are exact proof-budget candidates, not yet complete larger-age execution theorems. The original position clearance geometry, measured guard, center policy and pending command are retained.
+
+## Frozen question and provenance
+
+Can the fixed digital-hold controller admit a materially larger total information age without widening the declared clearance tube?
+
+The roster also explicitly proposes gain co-design as a route. We therefore separate the fixed-law1.4ms result from the retuned15ms result. Sources are AGE-BUDGET.txt, C3 adaptive-admission REPORT.txt and C7 constructive-hold REPORT.txt; paths and hashes are in source_binding.json. Supporting C7 inputs include DigitalHold, ClearancePolicy, ClearanceAdmission, ClearanceEntry and WeightedEntry. Originals are read-only.
+
+The strongest inherited result constructs finite sampled executions at1ms age; S01 separately addressed infinite assembly. C7 uses C5 measured guard m_x≤.143, |m_v|≤.01122, −1.27≤m_a≤−.2, the source-selected fixed center c(m), and weighted radius K(m) in[.045,2407079/50250000]. Weights are(1.02,1.01,1), shrink speed3/1700 down to.045. Its position ceiling is3013722449/20100000000=.15−1277551/20100000000. The outer radiusR=.055525 by itself is insufficient for this ceiling: nominal c+R>.15. C3's different center is not silently substituted.
+
+Plant x'=v,v'=a,a'=r(u+d−a), r∈[8,12], |d|≤.01, sensor box(.001,.01,.05), pending command−1.21 forD≤.5ms. Clipping to±2 precedes physical error. All timestamps remain on the original clock. Gain units are inherited SI units.
+
+## Transfers, tests and results
+
+1. **Order-preserving systems and robust linear design.** In fixed transformed coordinates, the old last row has coefficient4−r/2 on z0, negative forr>8. Choosing position gain16/3 with velocity6 and acceleration1/2 makes it4−r/3≥0; the other off-diagonal is3r/2−12≥0. This removes an adverse independent-box corner while preserving the certificate geometry. The uniform weighted static residual cap rises from.114 to.2364 atK=.045. Preserving the original shrink speed allowsW≤9947/42500≈.23404706. The choiceW=.23 has margin. Root independently shows16/3 maximizes this residual cap within fixed velocity/acceleration gains; this is not an information-age optimum or a general gain optimum. Gain0 fails the same face test even without mismatch, so weaker feedback is not monotonically better.
+2. **Small-gain iteration as a finite, noncircular proof calculation.** Start with two bounded commands and sensor/physical error, rather than assume the desired mismatch. For the retuned law, exact three passes at15ms produce residual1660366897/7500000000≈.2213822529<.23. The sensor-plus-physical cost is301/3000. Continuous-rate digital slope bounds, original pending bounds and clipping authority are retained. The source C5 pending bounds are |a|≤1.32, |v|≤.03066, giving retuned slope7.68352<8. An initial inventor calculation used obsolete C3 bounds1.30/.03065; the failed version is preserved and corrected, with unchanged accepted final pass result. Twenty-two supporting Lean declarations prove identities, all-rate faces/slopes, authority, finite algebra and original shrinking faces; no complete age-parameter execution theorem is claimed.
+3. **Unexpected transfer: an accumulated command-variation budget.** Split a stale interval's variation into its short pending overlap and later digital part, rather than charging the startup worst slope for its whole length. For unchanged gains, direct weighted-prefix bounds useKmax, pending slope7.76528, D≤.5ms and S(W)=max(97.28Kmax+4W,80.48Kmax+6W). At1.4ms, three finite passes giveW≈.1114781065 below the original shrink cap949/8500≈.1116470588. At1.5ms the tested recurrence remains above that cap; that rejects this bound, not the physical controller. A clock-reset counterexample keeps an old timestamp0 through6ms: relabeling it at a5ms dispatch would incorrectly charge only1ms. Variation accounting never renews a timestamp.
+
+The retuned sixteen-millisecond two-pass theorem preserves the static weighted box but does not alone prove the shrinking envelope. AtKmax its two-pass residual slightly exceeds the shrink cap; a further refinement can improve it. The PM retains15ms as the promoted retuned candidate because its full arithmetic and genuine-age numerical fixtures were checked. Neither candidate changes the declared tube.
+
+## Independent evidence and limitations
+
+Critic independently derives the retuned derivative from physical coordinates, checks exact faces and corrected startup vertices, and replays all22 printed Lean declarations with only permitted axioms. Root separately recompiles all five modules. The first weighted face exactly meets the original shrink speed atK=.045; the source's inflated first-contact argument is required, rather than an unsupported strictly inward claim.
+
+Root constructs64 binary64 trajectories over2seconds with continuous retained state, original guard/center,32 combinations of sensor/guard corners and two alternating rate/error schedules. Readings genuinely reach15ms old: first timestamp0 persists to.015; later samples every14.5ms dispatch after.5ms. The sampled maximum position is.145302505016, sampled weighted/shrinking box margin is at least.00018875, and unclipped command magnitude is below.545. These are samples from analytic constant-target segment solutions, not all-time enclosures. Independent DOP853 replay of the worst sampled-position fixture agrees in peak to2.8e−17 and final state within1e−10; exact rational schedule checks confirm age3/200. This is one independently replayed fixture, not64 independent integrations or hardware validation.
+
+The old source Execution and constructor hardcode1ms. New age, command, mixed-history and first-contact lemmas must be bound to an actual causal execution before claiming the safety extension. A larger bound on the existing.5ms clock would not demonstrate operation with older data. Source startup admission depends only on the unchanged pending command and original sensor/guard boxes; reuse still needs explicit theorem binding. Retuning changes post-dispatch behavior and stiffness; no precision-rest or performance superiority claim is made.
+
+Primary related work is recorded in pm_sources.md. Small-gain sampling analysis and emulation are established methods; novelty is unassessed. No robot commands, original-source edits, public CLI changes or frozen Challenge changes occurred.
+
+## PM gate and next action
+
+GO for a30-minute source-bound proof block after all60 initial reviews. First parameterize the unchanged-gain1.4ms execution with the exact weighted-prefix and split-history argument; then instantiate retuned15ms with the same center/guard and real older timestamps. Preserve startup continuity, left/right switching, clipping, current-state dependence, original shrink speed and position ceiling. Require a concrete nonconstant schedule beyond1ms and semantic negative controls. Full theorem and hardware acceptance remain HOLD.
+
+Rubric: faithfulness4, reproducibility4, discriminatory value4, independent critique4, actionability3 =19/20. Subjective confidence is high in the scoped arithmetic and kernel lemmas; full execution assembly and practical sensor/rate assumptions remain unresolved. Quality is not a probability of success.
+
+Root PM; domain inventory_math; inventor inventory_vision_robotics; critic inventory_controls_safety. Inherited root model, exact runtime ID unavailable; no alternate-family inference used. AI-written. Real credited timestamps are in state.json/activity.jsonl; setup and unrelated verification are excluded. A ten-minute review is not a ten-minute proof.

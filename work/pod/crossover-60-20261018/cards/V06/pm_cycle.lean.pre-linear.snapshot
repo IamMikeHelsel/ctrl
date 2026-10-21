@@ -1,0 +1,104 @@
+import Mathlib.Tactic
+noncomputable section
+namespace V06PM
+
+def objective (c s d t : ℝ) : ℝ :=
+  2*((c-1)^2+s^2+(d-c)^2+(t-s)^2+(d+44/125)^2+(t-117/125)^2)
+def a (c s d t : ℝ) : ℝ := 1-5*c/8+11*d/50-117*t/200
+def b (c s d t : ℝ) : ℝ := 5*s/8-117*d/200-11*t/50
+def f (c s d t : ℝ) : ℝ := c-4*d/5-3*t/5
+def g (c s d t : ℝ) : ℝ := -s-3*d/5+4*t/5
+
+theorem gap_identity (c s d t : ℝ) :
+  objective c s d t = 12/5 + (16/5)*((a c s d t)^2+(b c s d t)^2) +
+    (39/20)*((f c s d t)^2+(g c s d t)^2) + (4/5)*(c^2+s^2+d^2+t^2-2) := by
+  unfold objective a b f g
+  ring
+
+theorem global_lower (c s d t : ℝ) (h1 : c^2+s^2=1) (h2 : d^2+t^2=1) :
+    (12/5 : ℝ) ≤ objective c s d t := by
+  rw [gap_identity]
+  nlinarith [sq_nonneg (a c s d t),sq_nonneg (b c s d t),sq_nonneg (f c s d t),sq_nonneg (g c s d t)]
+
+theorem candidate :
+  (4/5 : ℝ)^2+(3/5)^2=1 ∧ (7/25 : ℝ)^2+(24/25)^2=1 ∧
+  objective (4/5) (3/5) (7/25) (24/25)=12/5 := by norm_num [objective]
+
+theorem unique_optimum (c s d t : ℝ) (h1 : c^2+s^2=1) (h2 : d^2+t^2=1)
+    (he : objective c s d t=12/5) : c=4/5 ∧ s=3/5 ∧ d=7/25 ∧ t=24/25 := by
+  have hi := gap_identity c s d t
+  have ha : (a c s d t)^2=0 := by
+    nlinarith [sq_nonneg (a c s d t),sq_nonneg (b c s d t),sq_nonneg (f c s d t),sq_nonneg (g c s d t)]
+  have hb : (b c s d t)^2=0 := by
+    nlinarith [sq_nonneg (a c s d t),sq_nonneg (b c s d t),sq_nonneg (f c s d t),sq_nonneg (g c s d t)]
+  have hf : (f c s d t)^2=0 := by
+    nlinarith [sq_nonneg (a c s d t),sq_nonneg (b c s d t),sq_nonneg (f c s d t),sq_nonneg (g c s d t)]
+  have hg : (g c s d t)^2=0 := by
+    nlinarith [sq_nonneg (a c s d t),sq_nonneg (b c s d t),sq_nonneg (f c s d t),sq_nonneg (g c s d t)]
+  have ha0 := (sq_eq_zero_iff).mp ha
+  have hb0 := (sq_eq_zero_iff).mp hb
+  have hf0 := (sq_eq_zero_iff).mp hf
+  have hg0 := (sq_eq_zero_iff).mp hg
+  unfold a at ha0
+  unfold b at hb0
+  unfold f at hf0
+  unfold g at hg0
+  exact ⟨by linarith,by linarith,by linarith,by linarith⟩
+
+#print axioms gap_identity
+#print axioms global_lower
+#print axioms candidate
+#print axioms unique_optimum
+
+/-- Full directed SE2 objective with t0=(0,0), nonzero measured translations,
+R0=I and positive unit rotational/translational weights. -/
+def fullObjective (c s d t x y z w : ℝ) : ℝ := objective c s d t +
+  (x-1)^2+y^2+(z-x-3*c/5+4*s/5)^2+(w-y-3*s/5-4*c/5)^2+(z-1)^2+(w-1)^2
+
+theorem full_global_lower (c s d t x y z w : ℝ)
+    (h1 : c^2+s^2=1) (h2 : d^2+t^2=1) :
+    (12/5 : ℝ) ≤ fullObjective c s d t x y z w := by
+  have hh := global_lower c s d t h1 h2
+  unfold fullObjective
+  nlinarith [sq_nonneg (x-1),sq_nonneg y,sq_nonneg (z-x-3*c/5+4*s/5),
+    sq_nonneg (w-y-3*s/5-4*c/5),sq_nonneg (z-1),sq_nonneg (w-1)]
+
+theorem full_candidate : fullObjective (4/5) (3/5) (7/25) (24/25) 1 0 1 1=12/5 := by
+  norm_num [fullObjective,objective]
+
+theorem full_unique (c s d t x y z w : ℝ)
+    (h1 : c^2+s^2=1) (h2 : d^2+t^2=1)
+    (he : fullObjective c s d t x y z w=12/5) :
+    c=4/5 ∧ s=3/5 ∧ d=7/25 ∧ t=24/25 ∧ x=1 ∧ y=0 ∧ z=1 ∧ w=1 := by
+  have hh := global_lower c s d t h1 h2
+  have ho : objective c s d t=12/5 := by
+    unfold fullObjective at he
+    nlinarith [sq_nonneg (x-1),sq_nonneg y,sq_nonneg (z-x-3*c/5+4*s/5),
+      sq_nonneg (w-y-3*s/5-4*c/5),sq_nonneg (z-1),sq_nonneg (w-1)]
+  obtain ⟨hc,hs,hd,ht⟩ := unique_optimum c s d t h1 h2 ho
+  have hhx : (x-1)^2=0 := by
+    unfold fullObjective at he
+    nlinarith [sq_nonneg (x-1),sq_nonneg y,sq_nonneg (z-x-3*c/5+4*s/5),
+      sq_nonneg (w-y-3*s/5-4*c/5),sq_nonneg (z-1),sq_nonneg (w-1)]
+  have hhy : y^2=0 := by
+    unfold fullObjective at he
+    nlinarith [sq_nonneg (x-1),sq_nonneg y,sq_nonneg (z-x-3*c/5+4*s/5),
+      sq_nonneg (w-y-3*s/5-4*c/5),sq_nonneg (z-1),sq_nonneg (w-1)]
+  have hhz : (z-1)^2=0 := by
+    unfold fullObjective at he
+    nlinarith [sq_nonneg (x-1),sq_nonneg y,sq_nonneg (z-x-3*c/5+4*s/5),
+      sq_nonneg (w-y-3*s/5-4*c/5),sq_nonneg (z-1),sq_nonneg (w-1)]
+  have hhw : (w-1)^2=0 := by
+    unfold fullObjective at he
+    nlinarith [sq_nonneg (x-1),sq_nonneg y,sq_nonneg (z-x-3*c/5+4*s/5),
+      sq_nonneg (w-y-3*s/5-4*c/5),sq_nonneg (z-1),sq_nonneg (w-1)]
+  have hx0 := (sq_eq_zero_iff).mp hhx
+  have hy0 := (sq_eq_zero_iff).mp hhy
+  have hz0 := (sq_eq_zero_iff).mp hhz
+  have hw0 := (sq_eq_zero_iff).mp hhw
+  exact ⟨hc,hs,hd,ht,by linarith,hy0,by linarith,by linarith⟩
+
+#print axioms full_global_lower
+#print axioms full_candidate
+#print axioms full_unique
+end V06PM

@@ -1,0 +1,218 @@
+I001 [*] Import block is un-sorted or un-formatted
+ --> work/pod/crossover-60-20261018/cards/R12/pm_kinematics.py:2:1
+  |
+1 |   """Independent recorded-state task-space decomposition; numerical, not a tube proof."""
+2 | / import hashlib
+3 | | import json
+4 | | from pathlib import Path
+5 | | import mujoco
+6 | | import numpy as np
+  | |__________________^
+7 |
+8 |   HERE=Path(__file__).resolve().parent
+  |
+help: Organize imports
+  |
+4 | from pathlib import Path
+5 +
+6 | import mujoco
+  |
+
+B023 Function definition does not bind loop variable `a`
+  --> work/pod/crossover-60-20261018/cards/R12/pm_kinematics.py:27:33
+   |
+25 |     a=np.genfromtxt(path,delimiter=',',names=True)
+26 |     def columns(names):
+27 |         return np.column_stack([a[n] for n in names])
+   |                                 ^
+28 |     q=columns([f'q_rad_{i}' for i in range(1,8)])
+29 |     ref=columns([f'command_rad_{i}' for i in range(1,8)])
+   |
+
+E702 Multiple statements on one line (semicolon)
+  --> work/pod/crossover-60-20261018/cards/R12/pm_kinematics.py:33:29
+   |
+31 |     target=columns([f'reference_flange_m_{c}' for c in 'xyz'])
+32 |     errors=np.linalg.norm(actual-target,axis=1)
+33 |     k=int(np.argmax(errors));qa=q[k];qr=ref[k]
+   |                             ^
+34 |     fa,fr=flange(qa),flange(qr)
+35 |     assert np.max(abs(fa-actual[k]))<1e-13 and np.max(abs(fr-target[k]))<1e-13
+   |
+
+E702 Multiple statements on one line (semicolon)
+  --> work/pod/crossover-60-20261018/cards/R12/pm_kinematics.py:33:37
+   |
+31 |     target=columns([f'reference_flange_m_{c}' for c in 'xyz'])
+32 |     errors=np.linalg.norm(actual-target,axis=1)
+33 |     k=int(np.argmax(errors));qa=q[k];qr=ref[k]
+   |                                     ^
+34 |     fa,fr=flange(qa),flange(qr)
+35 |     assert np.max(abs(fa-actual[k]))<1e-13 and np.max(abs(fr-target[k]))<1e-13
+   |
+
+E702 Multiple statements on one line (semicolon)
+  --> work/pod/crossover-60-20261018/cards/R12/pm_kinematics.py:36:20
+   |
+34 |     fa,fr=flange(qa),flange(qr)
+35 |     assert np.max(abs(fa-actual[k]))<1e-13 and np.max(abs(fr-target[k]))<1e-13
+36 |     only1=qr.copy();only1[0]=qa[0]
+   |                    ^
+37 |     others=qa.copy();others[0]=qr[0]
+38 |     f1,fo=flange(only1),flange(others)
+   |
+
+E702 Multiple statements on one line (semicolon)
+  --> work/pod/crossover-60-20261018/cards/R12/pm_kinematics.py:37:21
+   |
+35 |     assert np.max(abs(fa-actual[k]))<1e-13 and np.max(abs(fr-target[k]))<1e-13
+36 |     only1=qr.copy();only1[0]=qa[0]
+37 |     others=qa.copy();others[0]=qr[0]
+   |                     ^
+38 |     f1,fo=flange(only1),flange(others)
+39 |     flange(qr)
+   |
+
+E701 Multiple statements on one line (colon)
+  --> work/pod/crossover-60-20261018/cards/R12/pm_kinematics.py:46:61
+   |
+44 | (HERE/'pm_kinematics.json').write_text(json.dumps({'runtime':mujoco.__version__,'model_commit':manifest['commit'],'model_hashes_checke…
+45 | for x in results:
+46 |     if 'queued_reversal' in x['csv'] and '500us' in x['csv']:print(json.dumps(x,indent=2))
+   |                                                             ^
+
+I001 [*] Import block is un-sorted or un-formatted
+ --> work/pod/crossover-60-20261018/cards/R12/pm_lead.py:2:1
+  |
+1 |   """Isolated causal reference-velocity lead experiment; original task score retained."""
+2 | / import hashlib
+3 | | import importlib.util
+4 | | import inspect
+5 | | import json
+6 | | from pathlib import Path
+7 | | import numpy as np
+  | |__________________^
+8 |
+9 |   HERE=Path(__file__).resolve().parent
+  |
+help: Organize imports
+  |
+6 | from pathlib import Path
+7 +
+8 | import numpy as np
+  |
+
+E702 Multiple statements on one line (semicolon)
+  --> work/pod/crossover-60-20261018/cards/R12/pm_lead.py:13:45
+   |
+11 | MODEL=Path('/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/.tools/mujoco-menagerie')
+12 | spec=importlib.util.spec_from_file_location('source_smoke',SOURCE/'run_smoke.py')
+13 | module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
+   |                                             ^
+14 | source=inspect.getsource(module.run_one)
+15 | assert source.count('command[joint] += ref[0]')==1
+   |
+
+E702 Multiple statements on one line (semicolon)
+  --> work/pod/crossover-60-20261018/cards/R12/pm_lead.py:21:32
+   |
+19 | source=source.replace('reference_data.qpos[:] = command','reference_data.qpos[:] = home\n            reference_data.qpos[joint] += ref…
+20 | (HERE/'pm_lead_run_one.py.txt').write_text(source)
+21 | namespace=dict(module.__dict__);exec(compile(source,str(HERE/'pm_lead_run_one.py.txt'),'exec'),namespace)
+   |                                ^
+22 | config=json.loads((SOURCE/'protocol.json').read_text())
+23 | limits=np.array([87,87,87,87,12,12,12])
+   |
+
+E702 Multiple statements on one line (semicolon)
+  --> work/pod/crossover-60-20261018/cards/R12/pm_lead.py:30:25
+   |
+28 |         output.mkdir(parents=True,exist_ok=True)
+29 |         metric,arr=namespace['run_one'](MODEL,config,'queued_reversal','model_bias_compensation',dt,output,gain)
+30 |         raw=arr[:,34:41];bias=arr[:,41:48]
+   |                         ^
+31 |         total=np.clip(raw,-limits,limits)+bias
+32 |         if gain==0:
+   |
+
+E701 Multiple statements on one line (colon)
+  --> work/pod/crossover-60-20261018/cards/R12/pm_lead.py:36:13
+   |
+34 |             replay_error=float(np.max(abs(arr-original)))
+35 |             assert replay_error<1e-12,replay_error
+36 |         else:replay_error=None
+   |             ^
+37 |         rows.append({'integration_dt_s':dt,'lead_gain_s':gain,'metrics':metric,'original_replay_max_abs':replay_error,'max_raw_actuato…
+38 | result={'source_sha256':hashlib.sha256((SOURCE/'run_smoke.py').read_bytes()).hexdigest(),'transformation':'u1=qd1+0.1*qd_dot1 at1kHz; …
+   |
+
+E702 Multiple statements on one line (semicolon)
+  --> work/pod/crossover-60-20261018/cards/R12/pm_lead.py:39:67
+   |
+37 |         rows.append({'integration_dt_s':dt,'lead_gain_s':gain,'metrics':metric,'original_replay_max_abs':replay_error,'max_raw_actuato…
+38 | result={'source_sha256':hashlib.sha256((SOURCE/'run_smoke.py').read_bytes()).hexdigest(),'transformation':'u1=qd1+0.1*qd_dot1 at1kHz; …
+39 | (HERE/'pm_lead.json').write_text(json.dumps(result,indent=2)+'\n');print(json.dumps(result,indent=2))
+   |                                                                   ^
+
+I001 [*] Import block is un-sorted or un-formatted
+ --> work/pod/crossover-60-20261018/cards/R12/pm_lead_stock.py:2:1
+  |
+1 |   """Dependency negative: velocity lead cannot replace ideal gravity/bias assist."""
+2 | / import importlib.util
+3 | | import json
+4 | | from pathlib import Path
+5 | | import numpy as np
+  | |__________________^
+6 |
+7 |   HERE=Path(__file__).resolve().parent
+  |
+help: Organize imports
+  |
+4 | from pathlib import Path
+5 +
+6 | import numpy as np
+  |
+
+E702 Multiple statements on one line (semicolon)
+  --> work/pod/crossover-60-20261018/cards/R12/pm_lead_stock.py:10:91
+   |
+ 8 | SOURCE=Path('/Users/mike/Dev/ctrl-research-notebook/research-notebook/research/pods/2026-10-17/robot-motion/franka-demo-08')
+ 9 | MODEL=Path('/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/.tools/mujoco-menagerie')
+10 | spec=importlib.util.spec_from_file_location('source_smoke_negative',SOURCE/'run_smoke.py');module=importlib.util.module_from_spec(spec…
+   |                                                                                           ^
+11 | namespace=dict(module.__dict__)
+12 | source=(HERE/'pm_lead_run_one.py.txt').read_text()
+   |
+
+E702 Multiple statements on one line (semicolon)
+  --> work/pod/crossover-60-20261018/cards/R12/pm_lead_stock.py:10:136
+   |
+ 8 | …/research/pods/2026-10-17/robot-motion/franka-demo-08')
+ 9 | …0-minutes/.tools/mujoco-menagerie')
+10 | …OURCE/'run_smoke.py');module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
+   |                                                                    ^
+11 | …
+12 | …
+   |
+
+E702 Multiple statements on one line (semicolon)
+  --> work/pod/crossover-60-20261018/cards/R12/pm_lead_stock.py:14:49
+   |
+12 | source=(HERE/'pm_lead_run_one.py.txt').read_text()
+13 | exec(compile(source,str(HERE/'pm_lead_run_one.py.txt'),'exec'),namespace)
+14 | output=HERE/'pm_lead_runs'/'stock_500us_gain0.1';output.mkdir(parents=True,exist_ok=True)
+   |                                                 ^
+15 | metric,arr=namespace['run_one'](MODEL,json.loads((SOURCE/'protocol.json').read_text()),'queued_reversal','stock_position',.0005,output…
+16 | assert np.max(abs(arr[:,41:48]))==0
+   |
+
+E702 Multiple statements on one line (semicolon)
+  --> work/pod/crossover-60-20261018/cards/R12/pm_lead_stock.py:18:73
+   |
+16 | assert np.max(abs(arr[:,41:48]))==0
+17 | result={'negative':'Sameleadwithoutidealbiasassist; comparisonistooriginalsourcefinalwindowband, notanassumedtransientband.','metrics'…
+18 | (HERE/'pm_lead_stock.json').write_text(json.dumps(result,indent=2)+'\n');print(json.dumps(result,indent=2))
+   |                                                                         ^
+
+Found 18 errors.
+[*] 3 fixable with `--fix`.

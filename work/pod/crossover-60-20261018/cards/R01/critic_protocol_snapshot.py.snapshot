@@ -1,0 +1,157 @@
+"""Finite exact protocol experiment; no physical execution or timing guarantees."""
+
+from dataclasses import dataclass, replace
+from itertools import product
+import json
+from pathlib import Path
+
+
+@dataclass(frozen=True)
+class Packet:
+    kind: str
+    session: int = 1
+    version: int = 0
+    goal_um: int = 0
+
+
+@dataclass(frozen=True)
+class Receiver:
+    # Session 1 has been installed by a trusted authority, outside this model.
+    seen: tuple = ()
+    high: int = 0
+    committed: tuple = (0, 0)
+    busy: bool = False
+    accepted: tuple = ()
+    completed: tuple = ()
+
+
+def step(s, p):
+    if p.kind == "observe":
+        return s, "advisory"
+    if p.kind == "complete":
+        # Trusted external predicate: full old reference tail is complete.
+        if not s.busy:
+            return s, "no_active_task"
+        return replace(s, busy=False, completed=(*s.completed, s.committed)), "complete"
+    if p.session != 1:
+        return s, "wrong_session"
+    ledger = {v: (g, result) for v, g, result in s.seen}
+    if p.version in ledger:
+        g, result = ledger[p.version]
+        return s, "conflict" if p.goal_um != g else f"duplicate_{result}"
+    if p.version <= s.high:
+        result = "stale"
+    elif s.busy:
+        result = "busy_rejected"
+    else:
+        result = "accepted"
+    new = replace(
+        s,
+        seen=(*s.seen, (p.version, p.goal_um, result)),
+        high=max(s.high, p.version),
+    )
+    if result == "accepted":
+        new = replace(
+            new,
+            committed=(p.version, p.goal_um),
+            busy=True,
+            accepted=(*s.accepted, (p.version, p.goal_um)),
+        )
+    return new, result
+
+
+def check_step(old, packet, new, status):
+    assert new.high >= old.high
+    if status != "accepted":
+        assert new.committed == old.committed
+        assert new.accepted == old.accepted
+    else:
+        assert not old.busy
+        assert packet.version > old.high
+        assert packet.session == 1
+        assert new.committed == (packet.version, packet.goal_um)
+    if packet.kind != "complete":
+        assert new.completed == old.completed
+    if status.startswith("duplicate_") or status in {"conflict", "advisory", "wrong_session"}:
+        assert new == old
+    assert all(v1 < v2 for (v1, _), (v2, _) in zip(new.accepted, new.accepted[1:]))
+    assert all(item in new.accepted for item in new.completed)
+    assert len(new.completed) <= len(new.accepted)
+
+
+def run_trace(packets):
+    state = Receiver()
+    statuses = []
+    for packet in packets:
+        new, status = step(state, packet)
+        check_step(state, packet, new, status)
+        state = new
+        statuses.append(status)
+    return {"statuses": statuses, "state": state.__dict__}
+
+
+def main():
+    alphabet = [
+        Packet("observe", goal_um=1000),
+        Packet("revise", version=1, goal_um=1000),
+        Packet("revise", version=1, goal_um=-1000),
+        Packet("revise", version=2, goal_um=0),
+        Packet("revise", session=0, version=3, goal_um=-1000),
+        Packet("complete"),
+    ]
+    traces = transitions = 0
+    for length in range(6):
+        for packets in product(alphabet, repeat=length):
+            run_trace(packets)
+            traces += 1
+            transitions += length
+    move, hold, done = alphabet[1], alphabet[3], alphabet[5]
+    examples = {
+        "duplicate_idempotence": run_trace([move, move]),
+        "same_version_conflict": run_trace([move, alphabet[2]]),
+        "busy_is_failed_request_not_completed_move": run_trace([move, hold, done, hold]),
+        "reorder_is_explicit_stale_rejection": run_trace([hold, done, move]),
+        "advisory_preserves_task": run_trace([move, alphabet[0], alphabet[0]]),
+        "wrong_session_replay": run_trace([alphabet[4]]),
+    }
+    # A received, identical observation trace cannot reveal whether an authority
+    # has issued a new revision that the transport has not delivered yet.
+    receiver_hold_world = run_trace([alphabet[0]] * 3)
+    receiver_delayed_move_world = run_trace([alphabet[0]] * 3)
+    assert receiver_hold_world == receiver_delayed_move_world
+    # Naive last-arrival-wins changes new hold v2 back to stale move v1.
+    naive_goal = 0
+    for p in [hold, move]:
+        naive_goal = p.goal_um
+    assert naive_goal == 1000
+    # Erasing the durable watermark on restart also permits a stale v1 request.
+    before_restart = run_trace([hold, done])
+    after_reset = run_trace([move])
+    assert before_restart["state"]["high"] == 2
+    assert after_reset["state"]["committed"] == (1, 1000)
+    result = {
+        "scope": "All traces of length 0..5 over six specified packets; exact integer state",
+        "traces": traces,
+        "transitions": transitions,
+        "invariant_failures": 0,
+        "examples": examples,
+        "delayed_authority_indistinguishable": True,
+        "last_arrival_wins_stale_goal_um": naive_goal,
+        "restart_without_durable_fence_accepts_stale_revision": True,
+        "assumptions": [
+            "Trusted installed session and authentic command authority",
+            "Immutable version identity; complete payload simplified to goal here",
+            "Unbounded ledger retained during finite trace",
+            "COMPLETE is a trusted reference-tail barrier, not measured physical rest",
+            "No in-flight supersession; busy revisions are failed requests",
+            "No bounded delivery, plant safety, deadline or actual-motion claim",
+        ],
+    }
+    Path(__file__).with_name("domain_protocol_results.json").write_text(
+        json.dumps(result, indent=2) + "\n"
+    )
+    print(json.dumps({k: result[k] for k in ["traces", "transitions", "invariant_failures"]}))
+
+
+if __name__ == "__main__":
+    main()

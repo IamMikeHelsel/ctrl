@@ -1,0 +1,468 @@
+PDFPAGE 116
+Figure 5.11: Left and Middle: Helicopter MI-17 with the platform S250 mounted under-
+neath, Right: Touchscreen device used for operating the stabilized platform.
+Figure 5.12: Several screenshots created from the recorded video of a target tracking during
+the ﬂight experiment. Specifying the target is provided by a clicking the touchscreen device.
+The locked target is denoted by the green square — the aim of the control system is to keep
+this square (the target) in the center of the image.
+the measured or estimated translation velocity of the aircraft with respect to the observed
+target (to compensate for the paralactic phenomenon).
+The essence of the proposed design technique is that of a feedback linearization. The
+resulting controller enforces linear dynamics in the image plane. This not only makes the
+analysis and design systematic but putting it on the well-explored ground, but also makes
+the response of the system a bit more friendly for a human operator as the system follows
+linear paths in the image plane during (re)pointing.
+The proposed scheme was thoroughly simulated and veriﬁed by practical laboratory
+experiments with a realistic benchmark system and compared against the more intuitive
+decoupled control scheme. Possible simpliﬁcations were discussed and practical pitfalls were
+highlighted.
+104
+
+PDFPAGE 117
+Chapter 6
+Delay compensation in visual
+servoing (for aerial surveillance)
+This chapter presents a few simple techniques for compensation of a one-sampling-period
+delay in a slow-sampled outer (position or angle) loop within a cascade visual servomecha-
+nism that also includes a fast-sampled inner (velocity) feedback loop. The results are mainly
+relevant for visual servoing applications, since the velocity sensors such as tachometers or
+MEMS-based gyros usually achieve much higher sampling rates compared to computer vision
+systems used as position (or orientation) sensors. The proposed solutions only compensate
+for the motion of the camera and not the observed object; they are particularly useful when
+the visual servoing is combined with inertial stabilization. The problem is solved using two
+diﬀerent formalisms: ﬁrst, the problem is cast as an instance of a reset system with periodic
+resetting of the observer state. Second, a technique based on the concept of a modiﬁed
+Smith compensator is proposed wherein the undelayed output of a mathematical model is
+replaced by the measured rate signal from the inner loop. Numerical simulations are used
+to highlight the behavior of the proposed algorithms. Finally experimental results obtained
+with a real double gimbal camera system are presented.
+The content of this chapter is based on the conference paper [5] and on the submitted
+version of the journal paper [8].
+6.1 INTRODUCTION
+6.1.1 Deﬁnition of the problem
+A common control system conﬁguration for motion control applications is that of a two-level
+cascade. Such a control structure was thoroughly studied in chapter 3 of this thesis.
+The class of cascade systems that are considered in this chapter exhibits major
+disproportions between sampling rates of the inner and outer loops. Moreover, the outer
+loop contains a full one-sampling-period delay. This situation is typical of visual servoing
+105
+
+PDFPAGE 123
+θ(t)θr(t) ωr(k)
+-
+θr(k)
+Tθz
+z−1 z−1
+θ(k)
+z−1
+-
+-
+∫ω(t)
+ω(l)
+ZOHK
+u(l)eω(l)
+G
+Tω
+-
+ZOHP
+Tω
+Tθ
+T(z)
+Figure 6.6: Smith compensator used in a cascade visual servomechanism.
+system in the controller. Application of this concept to visual servoing is in Fig. 6.6. The
+inner closed-loop (red color for signals) is described by the transfer function T (s) from the
+reference velocityωr (as produced by the position controller) to the true velocity ω as mea-
+sured (neglecting the eﬀect of noise and bias for the moment). Ideally this should be close to
+one, at least within the bandwidth of the velocity loop. Resampling to the slower sampling
+period Tθ (and abusing the notation by using the same letter T ), the transfer function T (s)
+is viewed as T (z) by the slow controller.
+A major deﬁciency of Smith compensator is its sensitivity to discrepancies between
+the model and the reality. In particular, if the system is subject to an unmeasured distur-
+bance, the compensator is not aware of it and the performance is deteriorated. Modiﬁed
+Smith predictor has been proposed in literature, see [73, 74, 75], though it is diﬃcult to
+give a proper credit to its inventor. The key idea is that when some other variable is also
+measured on the system, why not use it to make the output of the Smith predictor more
+accurate? In particular, if the rate (velocity) variable is measured for the purpose of rate
+stabilization in a cascade feedback conﬁguration, why not use it in place of the output of the
+model T (z) in the Smith compensator as in Fig. 6.7? The position controller then increases
+its sampling frequency to that of the inner loop. A concise form of Fig. 6.7 is in Fig. 6.8.
+Though appearing justiﬁable, the output of this model does not compensate the
+delayed slow-sampled system output perfectly. The right model should downsample the
+output of the fast-sampled integrator and multiple-period delay before subtracting it from
+the delayed slow-sampled system output as visualized in Fig. 6.9. Comparing all the four
+compensation schemes mentioned so far, that is, B, C, D and E as in Fig. 6.4, 6.5, 6.8 and
+6.9, it can be concluded that all the four schemes are based on some kind of ﬁxed-interval
+integration of the rate signal and they diﬀer in characterization of the interval:
+• The intuitive integrate-over-last-period solution integrates over the ﬁxed-length inter-
+val [tk−1,tk) and keeps the estimate unchanged for the whole interval [ tk,tk+1).
+• The modiﬁed reset scheme integrates over an interval that stretches from [tk−1,tk) to
+111
+
+PDFPAGE 124
+∫ω(t) θ(t)
+ω(l)
+ZOHK
+u(l)eω(l)θr(t) ωr(l)
+-
+θr(l)
+G
+θ(k)
+z−1 Tθ
+-
+ˆθ(l) ˆθ(l − n)
+-
+Tω
+- θ(k − 1)
+P
+Tωz
+z−1 z−n
+ZOHTω
+Figure 6.7: Modiﬁed Smith compensator. Why relying on a mathematical model when
+another variable is measured with no delay? The discrete integrator and the delay block
+use the fast sampling rate. Assume Tθ =nTω.
+∫ω(t) θ(t)
+ω(l)
+ZOHK
+u(l)eω(l)θr(t) ωr(l)
+-
+θr(l)
+G
+θ(k)
+z−1 Tθ
+- -
+Tω
+θ(k − 1)
+P
+Tωz
+z−1
+ZOHTω
+1 − z−n
+Figure 6.8: Case D: Modiﬁed Smith compensator redrawn into a more compact form.
+∫ω(t) θ(t)
+ω(l)
+ZOHK
+u(l)eω(l)θr(t) ωr(l)
+-
+θr(l)
+G
+θ(k)
+z−1 Tθ
+-
+ˆθ(l) ˆθ(l − n)
+-
+Tω
+- θ(k − 1)
+P
+Tωz
+z−1 z−n
+ZOHTω
+ZOH Tθ
+Figure 6.9: Case E: Modiﬁed Smith compensator from Fig. 6.8 with added re-sampling term.
+112
+
+PDFPAGE 125
+[tk−1,tk+1) and then shrinks to [tk,tk+1) and repeats this “breathing” pattern.
+• The modiﬁed Smith compensator running at the fast sampling rate performs the in-
+tegration over the moving window (interval) of the width Tθ.
+• The modiﬁed Smith compensator followed by downsampling actually exhibits the same
+“breathing” integration pattern as observed with the reset observer above. They are
+equivalent, as can be seen from Fig. 6.9 and after pondering over the integration
+pattern of the former.
+In reality, it is inevitable that the measurement of the rate (velocity) signal is dis-
+torted by some constant or slowly varying oﬀset (bias). This is particularly pronounced
+for inertial measurements performed by cheap MEMS devices with a limited possibility of
+real-time recalibration. The performance of the schemes D and E (in Fig. 6.8 and 6.9 respec-
+tively) is deteriorated in presence of bias, even though not completely unworkable. Since the
+integrator only integrates the bias over the ﬁnite intervalTθ, the estimate cannot completely
+diverge. However, such ﬁnite-horizon integrator must be implemented in a way to avoid an
+overﬂow; for instance, surely it cannot be realized as a subtraction of two integrators as
+suggested in the block diagram in Fig. 6.8.
+6.4 MULTIRATE ESTIMATION APPROACHED VIA
+LIFTING TECHNIQUE
+The solution presented in the previous section can be viewed as an estimator that is fed
+with the input to the inner rate loop, that is, a reference rate ωr, and the measured output
+ω corrupted by noise. It computes an estimate ˆ ω, see Fig. 6.10. The particular estimator
+in Fig. 6.7 and Fig. 6.8 accomplishes this by directly using the measured value of ω as the
+estimate ˆω. Knowing the rate controller and the model of the system to be controlled, that
+is, the motor plus some electronics and gears, standard Kalman ﬁlter could be used to obtain
+an estimate ˆω of ω. This can alleviate troubles with the measurement noise.
+With the notion of an estimation brought to the forefront, a full estimation scheme
+can also be considered. This is depicted in Fig. 6.11. It assumes that the inner (rate)
+loop is not closed. The distinguished feature is that it must work with signals sampled
+with two diﬀerent sampling periods. The presence of delay in the slower signal calls for an
+introduction of one extra state. The solution seems attractive since it would account for some
+more advanced features such as friction compensation via friction force estimation. However,
+the cascade structure, which might be preferred from an implementation viewpoint, is lost.
+If there is a strong requirement for keeping the cascade structure, the scheme in Fig. 6.12
+can be used.
+The ﬁeld of multirate systems is broad and the tools are fairly advanced. In this
+section, one particular framework for analysis of multirate systems will be used, namely, the
+technique of lifting, which is described for example in [76] and [77].
+113
+
+PDFPAGE 126
+∫ω(t) θ(t)
+ω(l)
+ZOHK
+u(l)eω(l)θr(t) ωr(l)
+-
+θr(l)
+G
+θ(k)
+z−1 Tθ
+-
+ˆθ(l)
+-
+Tω
+- θ(k − 1)
+P
+Tωz
+z−1 z−n
+ZOHTω
+ZOH TθObserver
+ˆω(l)
+Figure 6.10: Modiﬁed Smith compensator with an estimator instead of a pure model.
+∫ω(t) θ(t)
+ZOH
+θr(t) u(l)θr(l)
+G
+θ(k)
+z−1 Tθ
+-
+Tω
+θ(k − 1)
+ω(l)
+Estimator
+ˆω(l)
+State gain
+ˆθ(l) ˆθ(k − 1)
+Figure 6.11: Multirate estimation of both the velocity and the position (and possibly some
+other states such as frictional force, bias of gyros, etc). State feedback can be then used to
+play the role of both rate and position (pointing) controllers.
+114
+
+PDFPAGE 127
+∫ω(t) θ(t)
+ω(l)
+ZOHK
+u(l)eω(l)θr(t) ωr(l)
+-
+θr(l)
+G
+θ(k)
+z−1 Tθ
+-
+Tω
+θ(k − 1)
+Estimator
+ˆω(l)
+State gain
+ˆθ(l) ˆθ(k − 1)
+ω(l)
+Figure 6.12: Multirate estimation with the inner loop already closed. States of the controller
+contribute to the full state vector.
+As the goal in this section is mainly to gain some insight, the situation will be
+simpliﬁed a bit. The conﬁguration as in Fig. 6.12 will be considered and it will be assumed
+that the inner loop is tuned so that the transfer function from ωr to ω is 1. Disregarding
+the delay for a moment, the scheme then reduces to the one in Fig. 6.13(a). Addition
+of a measurement delay modiﬁes the scheme to Fig. 6.13(b). In these diagrams and the
+subsequent text, the more familiar and technology-neutral notation u for the inputs and y
+for the outputs will be adopted temporarily.
+u(t) y(t)
+Estimator
+ˆy(l)
+u(k) y(l)
+T1 T2
+Integrator
+(a) Dual-rate estimation of
+the state of an integrator.
+u(t) y(t)
+Estimator
+ˆy(l)
+u(k) y(l)
+T1 T2
+Integrator
+z−1
+y(l − 1)
+(b) Dual-rate estimation of
+the state of an integrator
+with a delayed measure-
+ment.
+Figure 6.13: Dual-rate estimation of the state of an integrator without and with a measure-
+ment delay.
+115
+
+PDFPAGE 128
+6.4.1 Lifting of (the inputs of) the discrete-time integrator
+The technique of lifting consists of structuring the fast-sampled input into batches of sam-
+ples; these batches are then considered as arriving at the slower sampling rate. In other
+words, the dual-rate discrete-time model of an integrator is converted into a single-rate
+model operating at the slower sampling rate but with the input scalar signal turned into a
+vector one.
+Assume the integer ratio between the slower and faster sampling periods:
+T2 =nT1. (6.13)
+With the notation u(k) = u(kT1) for the fast-sampled variable, the samples of the
+lifted signal u(l) =u(lT2) are given by
+u(0) =
+
+
+u(0)
+u(1)
+...
+u(n− 1)
+
+, u(1) =
+
+
+u(n)
+u(n + 1)
+...
+u(2n− 1)
+
+, ... (6.14)
+A graphical block representation for the lifted integrator is in Fig. 6.14.
+Lifted
+integrator
+u(l) y(l) = y(l) = y(lT2)
+Figure 6.14: Integrator with a lifted input.
+For the state-space model of a general discrete-time LTI system given by the quadru-
+ple of matrices
+G =
+[
+A B
+C D
+]
+, (6.15)
+its counterpart with a lifted input is given by
+Glifted =
+[
+An An−1B A n−2B ... B
+C D 0 ... 0
+]
+, (6.16)
+For a discrete-time model of an integrator, the state space matrices are given by
+A = 1,B = T1,C = 1,D = 0 when forward Euler method is used, or A = 1,B = T1,C =
+1,D =T1 when backward Euler method is used. Note that the fast sampling rate T1 is used
+here. The lifted integrator is then
+Glifted forward integrator =
+[
+1 T1 T1 ... T 1
+1 0 0 ... 0
+]
+, (6.17)
+or
+116
+
+PDFPAGE 129
+Glifted backward integrator =
+[
+1 T1 T1 ... T 1
+1 T1 0 ... 0
+]
+. (6.18)
+Now the aim is to append a one full-sampling-period delay to the lifted integrator.
+Remember that the state-space model of a discrete-time system with a one-sampling-period
+delay is
+Gdelayed =
+
+
+A 0 B
+C 0 D
+0 I 0
+
+. (6.19)
+The delayed lifted forward integrator is then
+Gdelayed lifted forward integrator =
+
+
+1 0 T1 T1 ... T 1
+1 0 0 0 ... 0
+0 1 0 0 ... 0
+
+, (6.20)
+and similarly the delayed lifted backward integrator
+Gdelayed lifted backward integrator =
+
+
+1 0 T1 T1 ... T 1
+1 0 T1 0 ... 0
+0 1 0 0 ... 0
+
+. (6.21)
+6.4.2 Design of a reduced observer for a lifted delayed integrator
+Having obtained the models of the “plant”, the next task is to design an observer. Reduced
+observer will be designed here because one of the two states (the delayed output of the
+integrator) is immediately measured. The next few lines give a little refresher on the topic
+of reduced observer design.
+Consider a general state-space model of a discrete-time LTI system with the states
+split into two groups as in
+G =
+
+
+A11 A12 B1
+A21 A22 B2
+C1 C2 D
+
+. (6.22)
+Now, assume x2 is the state that need not be estimated because it is directly mea-
+sured. The second state equation can then be rewritten as
+x2(l + 1)−A22x2(l)−B2u(l)  
+measured output
+=A21x1(l), (6.23)
+and, similarly, in the ﬁrst equation the “known input” can be identiﬁed as in
+x1(l + 1) =A11x1(l) +A12x2(l) +B1u(l)  
+known input
+. (6.24)
+117
+
+PDFPAGE 130
+The reduced observer is
+ˆx1(l + 1) =A11ˆx1(l) +A12x2(l) +B1u(l) +L
+(
+x2(l + 1)−A22x2(l)−B2u(l)
+)
+(6.25)
+Applied to the lifted delayed discrete-time integrator, where the x2 state is the
+delayed measurement, the reduced observer turns out to be described by
+ˆx1(l + 1) = ˆx1(l) +
+[
+T1 T1 ... T 1
+]
+u(l)
+  
+
+u(nl)
+u(nl + 1)
+...
+u(nl +n− 1)
+
+ +L(x2(l + 1)  
+x1(l)
+−ˆx1(l)). (6.26)
+Rearranging the right hand side (by putting together the pieces related to ˆx1(l) one
+gets
+ˆx1(l + 1) = (1−L)ˆx1(l) +
+n−1∑
+k=0
+T1u(nl +k) +L x2(l + 1)  
+just measured
+. (6.27)
+The error dynamics of a general observer is given by the state matrix (A−LC), which
+should have all its eigenvalues inside the unit disc in the complex plane for the estimate to
+be stable. In the present case this condition boils down to
+|1−L|< 1 ⇒ L∈ (0, 2). (6.28)
+Picking the valueL = 1 well inside the interval, the reduced observer turns into the
+familiar “integrate of the last period” scheme introduced at the beginning of this chapter
+ˆx1(l + 1) =
+∑
+T1u +x2(l + 1). (6.29)
+This ﬁnally proves that such observer is stable. Certainly the lifting approach not
+only proved the stability of the practically appealing and simple compensation technique
+but also it showed that the intuitive method can be made more ﬂexible by weighting the
+estimated and the “just measured” values under the same guarantee of stability.
+Extension of the above theoretical analysis of stability for the two other presented
+compensation techniques remains to be done.
+6.5 SIMULATIONS
+In order to demonstrate the usefulness of proposed delay compensation schemes, numerical
+simulations were carried out in Simulink. For this purpose the elevation gimbal model from
+118

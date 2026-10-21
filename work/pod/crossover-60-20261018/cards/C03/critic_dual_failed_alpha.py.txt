@@ -1,0 +1,59 @@
+"""Independent exact integration and derivative binding; no producer routines."""
+from fractions import Fraction as F
+from pathlib import Path
+import json
+P=Path(__file__).resolve().parent
+
+def mul(a,b):
+ c=[F(0)]*(len(a)+len(b)-1)
+ for i,x in enumerate(a):
+  for j,y in enumerate(b): c[i+j]+=x*y
+ return c
+
+def integral(p,a,b):
+ return sum(c*(b**(i+1)-a**(i+1))/(i+1) for i,c in enumerate(p))
+
+def derivative(p): return [i*c for i,c in enumerate(p)][1:]
+def evaluate(p,x): return sum(c*x**i for i,c in enumerate(p))
+rows=[]
+for row in json.loads((P/'domain_dual.json').read_text())['dual_tests']:
+ T=F(row['T']);alpha=F(row['alpha']);J=F(10);S=F(400)
+ assert 2*J/S<=alpha<=T-J/S
+ knots=[F(0),2*J/S,alpha,T-J/S,T]
+ curves=[[J,-S],[-J],[J],[S*T,-S]]
+ upper=sum(integral(mul([-alpha,1],j),a,b) for j,a,b in zip(curves,knots,knots[1:],strict=False))-alpha*F(51,20)
+ assert upper==F(row['upper_first_jerk_moment'])
+ assert F(2601,8000)-upper==F(row['rejection_margin'])
+ rows.append({'T':str(T),'upper':str(upper),'margin':str(F(2601,8000)-upper)})
+# The no-terminal-jerk relaxation has no final ramp down.
+T=F(7,8);alpha=(T+F(51,200)+F(1,20))/2
+# Optimize by direct polynomial derivative: alpha=(a/J+T+J/S)/2.
+alpha=(F(51,200)+T+F(1,40))/2
+upper=sum(integral(mul([-alpha,1],j),a,b) for j,a,b in [([F(10),F(-400)],F(0),F(1,20)),([F(-10)],F(1,20),alpha),([F(10)],alpha,T)])-alpha*F(51,20)
+assert upper==F(8531,24000)>F(2601,8000)
+# Direct coefficient differentiation binds the entire septic chain.
+p=[F(0)]*4+[F(35),F(-84),F(70),F(-20)]
+derivatives=[p]
+for _ in range(4): derivatives.append(derivative(derivatives[-1]))
+expected=[[0,0,0,140,-420,420,-140],[0,0,420,-1680,2100,-840],[0,840,-5040,8400,-4200],[840,-10080,25200,-16800]]
+assert derivatives[1:]==expected
+assert evaluate(p,F(1))==1
+assert all(evaluate(z,F(0))==evaluate(z,F(1))==0 for z in derivatives[1:4])
+# Algebraic range proofs reviewed in Lean; exact sample check is a diagnostic only.
+for k in range(101):
+ x=F(k,100);z=x*(1-x)
+ assert 0<=z<=F(1,4)
+ assert 0<=evaluate(derivatives[1],x)<=F(35,16)
+ assert abs(evaluate(derivatives[2],x))<=F(105,4)
+ assert abs(evaluate(derivatives[3],x))<=F(105,2)
+ assert abs(evaluate(derivatives[4],x))<=840
+# Independent generalized moment rejection from actual execution state.
+T=F(11,25);a=F(51,20);v=F(2601,8000);j=F(10)
+lhs=abs(-a-2*(-v-a*T)/T+3*T*j/16)
+assert lhs-F(400)*T*T/16==F(113,8800)
+# Missing one terminal moment invalidates the position-support identity.
+assert integral([F(1,6),F(-1,2),F(1,2),F(-1,6)],F(0),F(1))==F(1,24)
+assert integral([F(1,96),F(-5,48),F(1,4),F(-1,6)],F(0),F(1))==0
+out={'domain_support':rows,'terminal_jerk_omission_upper':str(upper),'septic_derivatives':[[str(c) for c in z] for z in derivatives],'source_mixed_excess':str(lhs-F(400)*T*T/16),'bounds_scope':'polynomial identities plus reviewed analytic/Lean range bounds; grid alone not certificate','negative_controls':['terminal jerk omission changes rejection to relaxation pass','constant snap invalidates omitted-terminal-moment position identity']}
+(P/'critic_dual_replay.json').write_text(json.dumps(out,indent=2)+'\n')
+print(json.dumps({'rows':len(rows),'septic_derivative_orders':4,'source_excess':out['source_mixed_excess']}))

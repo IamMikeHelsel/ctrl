@@ -1,0 +1,1098 @@
+unformatted: File would be reformatted
+   --> work/pod/crossover-60-20261018/cards/S04/critic_orchestration_cases/project_ABA/scripts/verify_project.py:3:1
+    |
+2   | """Run all project checks and bind the resulting evidence to source hashes."""
+3   +
+4   | from datetime import datetime, timezone
+--------------------------------------------------------------------------------
+21  | def source_hashes():
+    -     files = [PROJECT/n for n in ['LeanControls.lean','Audit.lean','lean-toolchain',
+    -              'lakefile.toml','lake-manifest.json','check.sh','requirements.txt']]
+    -     for directory, pattern in [('LeanControls','*.lean'),('benchmarks','*.json'),('scripts','*.py')]:
+    -         files.extend((PROJECT/directory).rglob(pattern))
+    -     return {str(p.relative_to(PROJECT)):digest(p) for p in sorted(files)}
+22  +     files = [
+23  +         PROJECT / n
+24  +         for n in [
+25  +             "LeanControls.lean",
+26  +             "Audit.lean",
+27  +             "lean-toolchain",
+28  +             "lakefile.toml",
+29  +             "lake-manifest.json",
+30  +             "check.sh",
+31  +             "requirements.txt",
+32  +         ]
+33  +     ]
+34  +     for directory, pattern in [
+35  +         ("LeanControls", "*.lean"),
+36  +         ("benchmarks", "*.json"),
+37  +         ("scripts", "*.py"),
+38  +     ]:
+39  +         files.extend((PROJECT / directory).rglob(pattern))
+40  +     return {str(p.relative_to(PROJECT)): digest(p) for p in sorted(files)}
+41  |
+42  |
+43  | def main():
+    -     output = PROJECT/'evidence/project-verification.json'
+44  +     output = PROJECT / "evidence/project-verification.json"
+45  |     output.parent.mkdir(exist_ok=True)
+46  |     lake, env = runtime(PROJECT)
+    -     env['LAKE'] = lake
+47  +     env["LAKE"] = lake
+48  |     initial = source_hashes()
+    -     report = {'status':'running','started_utc':datetime.now(timezone.utc).isoformat(),
+    -               'platform':platform.platform(),'python':sys.version,
+    -               'lean_toolchain':(PROJECT/'lean-toolchain').read_text().strip(),
+    -               'source_sha256':initial,'steps':[]}
+49  +     report = {
+50  +         "status": "running",
+51  +         "started_utc": datetime.now(timezone.utc).isoformat(),
+52  +         "platform": platform.platform(),
+53  +         "python": sys.version,
+54  +         "lean_toolchain": (PROJECT / "lean-toolchain").read_text().strip(),
+55  +         "source_sha256": initial,
+56  +         "steps": [],
+57  +     }
+58  |
+59  |     def save():
+    -         output.write_text(json.dumps(report,indent=2)+'\n')
+60  +         output.write_text(json.dumps(report, indent=2) + "\n")
+61  |
+62  |     save()
+63  |     try:
+    -         steps = [('build-and-audit',['sh','check.sh']),
+    -                  ('producer-tests',[sys.executable,'scripts/test_certificate_producer.py','--lean']),
+    -                  ('model-bridge-tests',[sys.executable,'scripts/test_model_bridge.py']),
+    -                  ('benchmark-verification',[sys.executable,'scripts/verify_benchmarks.py']),
+    -                  ('uncertainty-artifact',[sys.executable,'scripts/verify_uncertainty_artifact.py'])]
+64  +         steps = [
+65  +             ("build-and-audit", ["sh", "check.sh"]),
+66  +             ("producer-tests", [sys.executable, "scripts/test_certificate_producer.py", "--lean"]),
+67  +             ("model-bridge-tests", [sys.executable, "scripts/test_model_bridge.py"]),
+68  +             ("benchmark-verification", [sys.executable, "scripts/verify_benchmarks.py"]),
+69  +             ("uncertainty-artifact", [sys.executable, "scripts/verify_uncertainty_artifact.py"]),
+70  +         ]
+71  |         for label, command in steps:
+    -             print(f'Checking {label}...',flush=True)
+72  +             print(f"Checking {label}...", flush=True)
+73  |             start = time.monotonic()
+    -             run = subprocess.run(command,cwd=PROJECT,env=env,capture_output=True,text=True,timeout=1200)
+    -             log = output.parent/f'{label}.log'
+    -             log.write_text(run.stdout+run.stderr)
+    -             report['steps'].append({'label':label,'command':command,'exit_code':run.returncode,
+    -                                     'seconds':time.monotonic()-start,
+    -                                     'log':str(log.relative_to(PROJECT)),'log_sha256':digest(log)})
+74  +             run = subprocess.run(
+75  +                 command, cwd=PROJECT, env=env, capture_output=True, text=True, timeout=1200
+76  +             )
+77  +             log = output.parent / f"{label}.log"
+78  +             log.write_text(run.stdout + run.stderr)
+79  +             report["steps"].append(
+80  +                 {
+81  +                     "label": label,
+82  +                     "command": command,
+83  +                     "exit_code": run.returncode,
+84  +                     "seconds": time.monotonic() - start,
+85  +                     "log": str(log.relative_to(PROJECT)),
+86  +                     "log_sha256": digest(log),
+87  +                 }
+88  +             )
+89  |             save()
+90  |             if run.returncode:
+    -                 raise RuntimeError(f'{label} failed; inspect {log}')
+    -         if source_hashes()!=initial:
+    -             raise RuntimeError('Sources changed during verification. Review and rerun.')
+    -         audits = json.loads((PROJECT/'evidence/axioms.json').read_text())
+    -         report['audited_public_declarations'] = len(audits)
+    -         report['allowed_axioms'] = ['Classical.choice','Quot.sound','propext']
+    -         report['benchmark_manifest'] = 'evidence/benchmarks/verification.json'
+    -         report['benchmark_manifest_sha256'] = digest(PROJECT/report['benchmark_manifest'])
+    -         report['uncertainty_manifest'] = 'evidence/uncertainty-artifact/verification.json'
+    -         report['uncertainty_manifest_sha256'] = digest(PROJECT/report['uncertainty_manifest'])
+    -         report['status'] = 'verified'
+91  +                 raise RuntimeError(f"{label} failed; inspect {log}")
+92  +         if source_hashes() != initial:
+93  +             raise RuntimeError("Sources changed during verification. Review and rerun.")
+94  +         audits = json.loads((PROJECT / "evidence/axioms.json").read_text())
+95  +         report["audited_public_declarations"] = len(audits)
+96  +         report["allowed_axioms"] = ["Classical.choice", "Quot.sound", "propext"]
+97  +         report["benchmark_manifest"] = "evidence/benchmarks/verification.json"
+98  +         report["benchmark_manifest_sha256"] = digest(PROJECT / report["benchmark_manifest"])
+99  +         report["uncertainty_manifest"] = "evidence/uncertainty-artifact/verification.json"
+100 +         report["uncertainty_manifest_sha256"] = digest(PROJECT / report["uncertainty_manifest"])
+101 +         report["status"] = "verified"
+102 |     except Exception as exc:
+    -         report['status'] = 'failed'
+    -         report['error'] = str(exc)
+103 +         report["status"] = "failed"
+104 +         report["error"] = str(exc)
+105 |         raise
+106 |     finally:
+    -         report['finished_utc'] = datetime.now(timezone.utc).isoformat()
+107 +         report["finished_utc"] = datetime.now(timezone.utc).isoformat()
+108 |         save()
+109 |     print(f"Verified {report['audited_public_declarations']} named public declarations; {output}")
+110 |
+111 |
+    - if __name__ == '__main__':
+112 + if __name__ == "__main__":
+113 |     main()
+    |
+
+unformatted: File would be reformatted
+   --> work/pod/crossover-60-20261018/cards/S04/critic_orchestration_cases/project_persistent/scripts/verify_project.py:3:1
+    |
+2   | """Run all project checks and bind the resulting evidence to source hashes."""
+3   +
+4   | from datetime import datetime, timezone
+--------------------------------------------------------------------------------
+21  | def source_hashes():
+    -     files = [PROJECT/n for n in ['LeanControls.lean','Audit.lean','lean-toolchain',
+    -              'lakefile.toml','lake-manifest.json','check.sh','requirements.txt']]
+    -     for directory, pattern in [('LeanControls','*.lean'),('benchmarks','*.json'),('scripts','*.py')]:
+    -         files.extend((PROJECT/directory).rglob(pattern))
+    -     return {str(p.relative_to(PROJECT)):digest(p) for p in sorted(files)}
+22  +     files = [
+23  +         PROJECT / n
+24  +         for n in [
+25  +             "LeanControls.lean",
+26  +             "Audit.lean",
+27  +             "lean-toolchain",
+28  +             "lakefile.toml",
+29  +             "lake-manifest.json",
+30  +             "check.sh",
+31  +             "requirements.txt",
+32  +         ]
+33  +     ]
+34  +     for directory, pattern in [
+35  +         ("LeanControls", "*.lean"),
+36  +         ("benchmarks", "*.json"),
+37  +         ("scripts", "*.py"),
+38  +     ]:
+39  +         files.extend((PROJECT / directory).rglob(pattern))
+40  +     return {str(p.relative_to(PROJECT)): digest(p) for p in sorted(files)}
+41  |
+42  |
+43  | def main():
+    -     output = PROJECT/'evidence/project-verification.json'
+44  +     output = PROJECT / "evidence/project-verification.json"
+45  |     output.parent.mkdir(exist_ok=True)
+46  |     lake, env = runtime(PROJECT)
+    -     env['LAKE'] = lake
+47  +     env["LAKE"] = lake
+48  |     initial = source_hashes()
+    -     report = {'status':'running','started_utc':datetime.now(timezone.utc).isoformat(),
+    -               'platform':platform.platform(),'python':sys.version,
+    -               'lean_toolchain':(PROJECT/'lean-toolchain').read_text().strip(),
+    -               'source_sha256':initial,'steps':[]}
+49  +     report = {
+50  +         "status": "running",
+51  +         "started_utc": datetime.now(timezone.utc).isoformat(),
+52  +         "platform": platform.platform(),
+53  +         "python": sys.version,
+54  +         "lean_toolchain": (PROJECT / "lean-toolchain").read_text().strip(),
+55  +         "source_sha256": initial,
+56  +         "steps": [],
+57  +     }
+58  |
+59  |     def save():
+    -         output.write_text(json.dumps(report,indent=2)+'\n')
+60  +         output.write_text(json.dumps(report, indent=2) + "\n")
+61  |
+62  |     save()
+63  |     try:
+    -         steps = [('build-and-audit',['sh','check.sh']),
+    -                  ('producer-tests',[sys.executable,'scripts/test_certificate_producer.py','--lean']),
+    -                  ('model-bridge-tests',[sys.executable,'scripts/test_model_bridge.py']),
+    -                  ('benchmark-verification',[sys.executable,'scripts/verify_benchmarks.py']),
+    -                  ('uncertainty-artifact',[sys.executable,'scripts/verify_uncertainty_artifact.py'])]
+64  +         steps = [
+65  +             ("build-and-audit", ["sh", "check.sh"]),
+66  +             ("producer-tests", [sys.executable, "scripts/test_certificate_producer.py", "--lean"]),
+67  +             ("model-bridge-tests", [sys.executable, "scripts/test_model_bridge.py"]),
+68  +             ("benchmark-verification", [sys.executable, "scripts/verify_benchmarks.py"]),
+69  +             ("uncertainty-artifact", [sys.executable, "scripts/verify_uncertainty_artifact.py"]),
+70  +         ]
+71  |         for label, command in steps:
+    -             print(f'Checking {label}...',flush=True)
+72  +             print(f"Checking {label}...", flush=True)
+73  |             start = time.monotonic()
+    -             run = subprocess.run(command,cwd=PROJECT,env=env,capture_output=True,text=True,timeout=1200)
+    -             log = output.parent/f'{label}.log'
+    -             log.write_text(run.stdout+run.stderr)
+    -             report['steps'].append({'label':label,'command':command,'exit_code':run.returncode,
+    -                                     'seconds':time.monotonic()-start,
+    -                                     'log':str(log.relative_to(PROJECT)),'log_sha256':digest(log)})
+74  +             run = subprocess.run(
+75  +                 command, cwd=PROJECT, env=env, capture_output=True, text=True, timeout=1200
+76  +             )
+77  +             log = output.parent / f"{label}.log"
+78  +             log.write_text(run.stdout + run.stderr)
+79  +             report["steps"].append(
+80  +                 {
+81  +                     "label": label,
+82  +                     "command": command,
+83  +                     "exit_code": run.returncode,
+84  +                     "seconds": time.monotonic() - start,
+85  +                     "log": str(log.relative_to(PROJECT)),
+86  +                     "log_sha256": digest(log),
+87  +                 }
+88  +             )
+89  |             save()
+90  |             if run.returncode:
+    -                 raise RuntimeError(f'{label} failed; inspect {log}')
+    -         if source_hashes()!=initial:
+    -             raise RuntimeError('Sources changed during verification. Review and rerun.')
+    -         audits = json.loads((PROJECT/'evidence/axioms.json').read_text())
+    -         report['audited_public_declarations'] = len(audits)
+    -         report['allowed_axioms'] = ['Classical.choice','Quot.sound','propext']
+    -         report['benchmark_manifest'] = 'evidence/benchmarks/verification.json'
+    -         report['benchmark_manifest_sha256'] = digest(PROJECT/report['benchmark_manifest'])
+    -         report['uncertainty_manifest'] = 'evidence/uncertainty-artifact/verification.json'
+    -         report['uncertainty_manifest_sha256'] = digest(PROJECT/report['uncertainty_manifest'])
+    -         report['status'] = 'verified'
+91  +                 raise RuntimeError(f"{label} failed; inspect {log}")
+92  +         if source_hashes() != initial:
+93  +             raise RuntimeError("Sources changed during verification. Review and rerun.")
+94  +         audits = json.loads((PROJECT / "evidence/axioms.json").read_text())
+95  +         report["audited_public_declarations"] = len(audits)
+96  +         report["allowed_axioms"] = ["Classical.choice", "Quot.sound", "propext"]
+97  +         report["benchmark_manifest"] = "evidence/benchmarks/verification.json"
+98  +         report["benchmark_manifest_sha256"] = digest(PROJECT / report["benchmark_manifest"])
+99  +         report["uncertainty_manifest"] = "evidence/uncertainty-artifact/verification.json"
+100 +         report["uncertainty_manifest_sha256"] = digest(PROJECT / report["uncertainty_manifest"])
+101 +         report["status"] = "verified"
+102 |     except Exception as exc:
+    -         report['status'] = 'failed'
+    -         report['error'] = str(exc)
+103 +         report["status"] = "failed"
+104 +         report["error"] = str(exc)
+105 |         raise
+106 |     finally:
+    -         report['finished_utc'] = datetime.now(timezone.utc).isoformat()
+107 +         report["finished_utc"] = datetime.now(timezone.utc).isoformat()
+108 |         save()
+109 |     print(f"Verified {report['audited_public_declarations']} named public declarations; {output}")
+110 |
+111 |
+    - if __name__ == '__main__':
+112 + if __name__ == "__main__":
+113 |     main()
+    |
+
+unformatted: File would be reformatted
+   --> work/pod/crossover-60-20261018/cards/S04/critic_orchestration_cases/project_stale_preflight/scripts/verify_project.py:3:1
+    |
+2   | """Run all project checks and bind the resulting evidence to source hashes."""
+3   +
+4   | from datetime import datetime, timezone
+--------------------------------------------------------------------------------
+21  | def source_hashes():
+    -     files = [PROJECT/n for n in ['LeanControls.lean','Audit.lean','lean-toolchain',
+    -              'lakefile.toml','lake-manifest.json','check.sh','requirements.txt']]
+    -     for directory, pattern in [('LeanControls','*.lean'),('benchmarks','*.json'),('scripts','*.py')]:
+    -         files.extend((PROJECT/directory).rglob(pattern))
+    -     return {str(p.relative_to(PROJECT)):digest(p) for p in sorted(files)}
+22  +     files = [
+23  +         PROJECT / n
+24  +         for n in [
+25  +             "LeanControls.lean",
+26  +             "Audit.lean",
+27  +             "lean-toolchain",
+28  +             "lakefile.toml",
+29  +             "lake-manifest.json",
+30  +             "check.sh",
+31  +             "requirements.txt",
+32  +         ]
+33  +     ]
+34  +     for directory, pattern in [
+35  +         ("LeanControls", "*.lean"),
+36  +         ("benchmarks", "*.json"),
+37  +         ("scripts", "*.py"),
+38  +     ]:
+39  +         files.extend((PROJECT / directory).rglob(pattern))
+40  +     return {str(p.relative_to(PROJECT)): digest(p) for p in sorted(files)}
+41  |
+42  |
+43  | def main():
+    -     output = PROJECT/'evidence/project-verification.json'
+44  +     output = PROJECT / "evidence/project-verification.json"
+45  |     output.parent.mkdir(exist_ok=True)
+46  |     lake, env = runtime(PROJECT)
+    -     env['LAKE'] = lake
+47  +     env["LAKE"] = lake
+48  |     initial = source_hashes()
+    -     report = {'status':'running','started_utc':datetime.now(timezone.utc).isoformat(),
+    -               'platform':platform.platform(),'python':sys.version,
+    -               'lean_toolchain':(PROJECT/'lean-toolchain').read_text().strip(),
+    -               'source_sha256':initial,'steps':[]}
+49  +     report = {
+50  +         "status": "running",
+51  +         "started_utc": datetime.now(timezone.utc).isoformat(),
+52  +         "platform": platform.platform(),
+53  +         "python": sys.version,
+54  +         "lean_toolchain": (PROJECT / "lean-toolchain").read_text().strip(),
+55  +         "source_sha256": initial,
+56  +         "steps": [],
+57  +     }
+58  |
+59  |     def save():
+    -         output.write_text(json.dumps(report,indent=2)+'\n')
+60  +         output.write_text(json.dumps(report, indent=2) + "\n")
+61  |
+62  |     save()
+63  |     try:
+    -         steps = [('build-and-audit',['sh','check.sh']),
+    -                  ('producer-tests',[sys.executable,'scripts/test_certificate_producer.py','--lean']),
+    -                  ('model-bridge-tests',[sys.executable,'scripts/test_model_bridge.py']),
+    -                  ('benchmark-verification',[sys.executable,'scripts/verify_benchmarks.py']),
+    -                  ('uncertainty-artifact',[sys.executable,'scripts/verify_uncertainty_artifact.py'])]
+64  +         steps = [
+65  +             ("build-and-audit", ["sh", "check.sh"]),
+66  +             ("producer-tests", [sys.executable, "scripts/test_certificate_producer.py", "--lean"]),
+67  +             ("model-bridge-tests", [sys.executable, "scripts/test_model_bridge.py"]),
+68  +             ("benchmark-verification", [sys.executable, "scripts/verify_benchmarks.py"]),
+69  +             ("uncertainty-artifact", [sys.executable, "scripts/verify_uncertainty_artifact.py"]),
+70  +         ]
+71  |         for label, command in steps:
+    -             print(f'Checking {label}...',flush=True)
+72  +             print(f"Checking {label}...", flush=True)
+73  |             start = time.monotonic()
+    -             run = subprocess.run(command,cwd=PROJECT,env=env,capture_output=True,text=True,timeout=1200)
+    -             log = output.parent/f'{label}.log'
+    -             log.write_text(run.stdout+run.stderr)
+    -             report['steps'].append({'label':label,'command':command,'exit_code':run.returncode,
+    -                                     'seconds':time.monotonic()-start,
+    -                                     'log':str(log.relative_to(PROJECT)),'log_sha256':digest(log)})
+74  +             run = subprocess.run(
+75  +                 command, cwd=PROJECT, env=env, capture_output=True, text=True, timeout=1200
+76  +             )
+77  +             log = output.parent / f"{label}.log"
+78  +             log.write_text(run.stdout + run.stderr)
+79  +             report["steps"].append(
+80  +                 {
+81  +                     "label": label,
+82  +                     "command": command,
+83  +                     "exit_code": run.returncode,
+84  +                     "seconds": time.monotonic() - start,
+85  +                     "log": str(log.relative_to(PROJECT)),
+86  +                     "log_sha256": digest(log),
+87  +                 }
+88  +             )
+89  |             save()
+90  |             if run.returncode:
+    -                 raise RuntimeError(f'{label} failed; inspect {log}')
+    -         if source_hashes()!=initial:
+    -             raise RuntimeError('Sources changed during verification. Review and rerun.')
+    -         audits = json.loads((PROJECT/'evidence/axioms.json').read_text())
+    -         report['audited_public_declarations'] = len(audits)
+    -         report['allowed_axioms'] = ['Classical.choice','Quot.sound','propext']
+    -         report['benchmark_manifest'] = 'evidence/benchmarks/verification.json'
+    -         report['benchmark_manifest_sha256'] = digest(PROJECT/report['benchmark_manifest'])
+    -         report['uncertainty_manifest'] = 'evidence/uncertainty-artifact/verification.json'
+    -         report['uncertainty_manifest_sha256'] = digest(PROJECT/report['uncertainty_manifest'])
+    -         report['status'] = 'verified'
+91  +                 raise RuntimeError(f"{label} failed; inspect {log}")
+92  +         if source_hashes() != initial:
+93  +             raise RuntimeError("Sources changed during verification. Review and rerun.")
+94  +         audits = json.loads((PROJECT / "evidence/axioms.json").read_text())
+95  +         report["audited_public_declarations"] = len(audits)
+96  +         report["allowed_axioms"] = ["Classical.choice", "Quot.sound", "propext"]
+97  +         report["benchmark_manifest"] = "evidence/benchmarks/verification.json"
+98  +         report["benchmark_manifest_sha256"] = digest(PROJECT / report["benchmark_manifest"])
+99  +         report["uncertainty_manifest"] = "evidence/uncertainty-artifact/verification.json"
+100 +         report["uncertainty_manifest_sha256"] = digest(PROJECT / report["uncertainty_manifest"])
+101 +         report["status"] = "verified"
+102 |     except Exception as exc:
+    -         report['status'] = 'failed'
+    -         report['error'] = str(exc)
+103 +         report["status"] = "failed"
+104 +         report["error"] = str(exc)
+105 |         raise
+106 |     finally:
+    -         report['finished_utc'] = datetime.now(timezone.utc).isoformat()
+107 +         report["finished_utc"] = datetime.now(timezone.utc).isoformat()
+108 |         save()
+109 |     print(f"Verified {report['audited_public_declarations']} named public declarations; {output}")
+110 |
+111 |
+    - if __name__ == '__main__':
+112 + if __name__ == "__main__":
+113 |     main()
+    |
+
+unformatted: File would be reformatted
+   --> work/pod/crossover-60-20261018/cards/S04/critic_snapshot_copy/check.py:3:1
+    |
+2   | """Check this fixed demo's complete certificates without rerunning LP search."""
+3   +
+4   | from fractions import Fraction as F
+--------------------------------------------------------------------------------
+10  | ROOT = Path(__file__).resolve().parent
+    - MODEL_SHA256 = '9f2ff239496551e75477405e91048a69d91eb3759d949a94501e3ebc13d9b867'
+    - STAGES = {'baseline', 'duplicate', 'trial', 'separated'}
+    - SIGNS = {'nonnegative_d', 'nonpositive_d'}
+    - OBJECTIVES = {'wheel': (F(1), F(0), F(0)), 'drivetrain': (F(0), F(1), F(0)),
+    -               'baseline_response': (F(1), F(1), F(0)),
+    -               'held_out_prediction': (F(1), F(0), F(1, 2))}
+    - HELD_OUT = {'held_out', 'deliberately_inconsistent_held_out'}
+11  + MODEL_SHA256 = "9f2ff239496551e75477405e91048a69d91eb3759d949a94501e3ebc13d9b867"
+12  + STAGES = {"baseline", "duplicate", "trial", "separated"}
+13  + SIGNS = {"nonnegative_d", "nonpositive_d"}
+14  + OBJECTIVES = {
+15  +     "wheel": (F(1), F(0), F(0)),
+16  +     "drivetrain": (F(0), F(1), F(0)),
+17  +     "baseline_response": (F(1), F(1), F(0)),
+18  +     "held_out_prediction": (F(1), F(0), F(1, 2)),
+19  + }
+20  + HELD_OUT = {"held_out", "deliberately_inconsistent_held_out"}
+21  +
+22  |
+23  | def dot(a, b):
+    -     assert len(a) == len(b), 'Vector length mismatch'
+    -     return sum((x*y for x, y in zip(a, b)), F(0))
+24  +     assert len(a) == len(b), "Vector length mismatch"
+25  +     return sum((x * y for x, y in zip(a, b)), F(0))
+26  +
+27  |
+28  | def weighted(c, terms):
+    -     a = [F(0)]*3
+29  +     a = [F(0)] * 3
+30  |     b = F(0)
+31  |     for term in terms:
+    -         assert set(term) == {'constraint', 'weight'}
+    -         index = term['constraint']
+    -         assert type(index) is int and 0 <= index < len(c), 'Bad constraint index'
+    -         weight = F(term['weight'])
+    -         assert weight >= 0, 'Negative certificate weight'
+32  +         assert set(term) == {"constraint", "weight"}
+33  +         index = term["constraint"]
+34  +         assert type(index) is int and 0 <= index < len(c), "Bad constraint index"
+35  +         weight = F(term["weight"])
+36  +         assert weight >= 0, "Negative certificate weight"
+37  |         row = c[index]
+    -         a = [v+weight*z for v, z in zip(a, row[0])]
+    -         b += weight*row[1]
+38  +         a = [v + weight * z for v, z in zip(a, row[0])]
+39  +         b += weight * row[1]
+40  |     return tuple(a), b
+41  |
+42  +
+43  | def expected(m, stage, sign):
+    -     wl, wu = map(F, m['prior']['w'])
+    -     dl, du = map(F, m['prior']['d'])
+    -     c = {((F(1), F(0), F(0)), wu), ((F(-1), F(0), F(0)), -wl),
+    -          ((F(0), F(1), F(0)), du), ((F(0), F(-1), F(0)), -dl)}
+    -     lo, hi = map(F, m['prior']['lambda'])
+    -     if sign == 'nonnegative_d':
+    -         c.update({((F(0), F(-1), F(0)), F(0)),
+    -                   ((F(0), lo, F(-1)), F(0)), ((F(0), -hi, F(1)), F(0))})
+44  +     wl, wu = map(F, m["prior"]["w"])
+45  +     dl, du = map(F, m["prior"]["d"])
+46  +     c = {
+47  +         ((F(1), F(0), F(0)), wu),
+48  +         ((F(-1), F(0), F(0)), -wl),
+49  +         ((F(0), F(1), F(0)), du),
+50  +         ((F(0), F(-1), F(0)), -dl),
+51  +     }
+52  +     lo, hi = map(F, m["prior"]["lambda"])
+53  +     if sign == "nonnegative_d":
+54  +         c.update(
+55  +             {((F(0), F(-1), F(0)), F(0)), ((F(0), lo, F(-1)), F(0)), ((F(0), -hi, F(1)), F(0))}
+56  +         )
+57  |     else:
+    -         assert sign == 'nonpositive_d'
+    -         c.update({((F(0), F(1), F(0)), F(0)),
+    -                   ((F(0), hi, F(-1)), F(0)), ((F(0), -lo, F(1)), F(0))})
+    -     readings = ['baseline'] + (['trial'] if stage in ('trial', 'separated') else []) + (['separating'] if stage == 'separated' else [])
+58  +         assert sign == "nonpositive_d"
+59  +         c.update({((F(0), F(1), F(0)), F(0)), ((F(0), hi, F(-1)), F(0)), ((F(0), -lo, F(1)), F(0))})
+60  +     readings = (
+61  +         ["baseline"]
+62  +         + (["trial"] if stage in ("trial", "separated") else [])
+63  +         + (["separating"] if stage == "separated" else [])
+64  +     )
+65  |     for name in readings:
+66  |         s = m[name]
+    -         a = tuple(map(F, s['row']))
+    -         y = F(s['value'])-F(s.get('wheel_offset', '0'))
+    -         e = F(s['error_bound'])
+    -         c.update({(a, y+e), (tuple(-z for z in a), -y+e)})
+67  +         a = tuple(map(F, s["row"]))
+68  +         y = F(s["value"]) - F(s.get("wheel_offset", "0"))
+69  +         e = F(s["error_bound"])
+70  +         c.update({(a, y + e), (tuple(-z for z in a), -y + e)})
+71  |     return c
+72  |
+73  +
+74  | def valid_witness(m, c, raw):
+75  |     witness = tuple(map(F, raw))
+76  |     assert len(witness) == 3
+    -     assert all(dot(a, witness) <= rhs for a, rhs in c), 'Infeasible witness'
+77  +     assert all(dot(a, witness) <= rhs for a, rhs in c), "Infeasible witness"
+78  |     w, d, q = witness
+    -     lo, hi = map(F, m['prior']['lambda'])
+    -     assert (d == 0 and q == 0) or (d != 0 and lo <= q/d <= hi), 'Invalid shared leakage'
+79  +     lo, hi = map(F, m["prior"]["lambda"])
+80  +     assert (d == 0 and q == 0) or (d != 0 and lo <= q / d <= hi), "Invalid shared leakage"
+81  |     return witness
+82  |
+83  +
+84  | def verify(r, m):
+    -     assert r['model_sha256'] == MODEL_SHA256, 'Result/model hash mismatch'
+    -     assert r['script_sha256'] == hashlib.sha256((ROOT/'experiment.py').read_bytes()).hexdigest(), 'Producer hash mismatch'
+    -     assert set(r['stages']) == STAGES, 'Stage set incomplete or unexpected'
+    -     assert set(m['actions']) == {'-1/2', '-1'} and len(m['actions']) == 2
+    -     action_keys = set(m['actions'])
+85  +     assert r["model_sha256"] == MODEL_SHA256, "Result/model hash mismatch"
+86  +     assert (
+87  +         r["script_sha256"] == hashlib.sha256((ROOT / "experiment.py").read_bytes()).hexdigest()
+88  +     ), "Producer hash mismatch"
+89  +     assert set(r["stages"]) == STAGES, "Stage set incomplete or unexpected"
+90  +     assert set(m["actions"]) == {"-1/2", "-1"} and len(m["actions"]) == 2
+91  +     action_keys = set(m["actions"])
+92  |     bound_count = empty_count = action_count = 0
+93  |     all_constraints = {}
+    -     for stage, s in r['stages'].items():
+    -         assert set(s['branches']) == SIGNS, 'Branch set incomplete or unexpected'
+    -         assert set(s['ranges']) == set(OBJECTIVES), 'Range set incomplete or unexpected'
+    -         assert set(s['actions']) == action_keys, 'Action set incomplete or unexpected'
+94  +     for stage, s in r["stages"].items():
+95  +         assert set(s["branches"]) == SIGNS, "Branch set incomplete or unexpected"
+96  +         assert set(s["ranges"]) == set(OBJECTIVES), "Range set incomplete or unexpected"
+97  +         assert set(s["actions"]) == action_keys, "Action set incomplete or unexpected"
+98  |         feasible = []
+    -         for sign, b in s['branches'].items():
+    -             assert type(b['feasible']) is bool, 'Feasibility flag must be Boolean'
+    -             c = [(tuple(map(F, z['a'])), F(z['b'])) for z in b['constraints']]
+    -             assert set(c) == expected(m, stage, sign), 'Constraint set does not match model'
+99  +         for sign, b in s["branches"].items():
+100 +             assert type(b["feasible"]) is bool, "Feasibility flag must be Boolean"
+101 +             c = [(tuple(map(F, z["a"])), F(z["b"])) for z in b["constraints"]]
+102 +             assert set(c) == expected(m, stage, sign), "Constraint set does not match model"
+103 |             all_constraints[stage, sign] = c
+    -             if not b['feasible']:
+    -                 assert set(b) == {'constraints', 'feasible', 'farkas'}, 'Unexpected infeasible-branch fields'
+    -                 assert weighted(c, b['farkas']) == ((F(0), F(0), F(0)), F(-1)), 'Invalid infeasibility certificate'
+104 +             if not b["feasible"]:
+105 +                 assert set(b) == {"constraints", "feasible", "farkas"}, (
+106 +                     "Unexpected infeasible-branch fields"
+107 +                 )
+108 +                 assert weighted(c, b["farkas"]) == ((F(0), F(0), F(0)), F(-1)), (
+109 +                     "Invalid infeasibility certificate"
+110 +                 )
+111 |                 empty_count += 1
+112 |                 continue
+    -             assert set(b) == {'constraints', 'feasible', 'vertices', 'bounds'}, 'Unexpected feasible-branch fields'
+    -             assert set(b['bounds']) == set(OBJECTIVES), 'Bound set incomplete or unexpected'
+    -             assert b['vertices'], 'Missing vertex witnesses'
+    -             for vertex in b['vertices']:
+113 +             assert set(b) == {"constraints", "feasible", "vertices", "bounds"}, (
+114 +                 "Unexpected feasible-branch fields"
+115 +             )
+116 +             assert set(b["bounds"]) == set(OBJECTIVES), "Bound set incomplete or unexpected"
+117 +             assert b["vertices"], "Missing vertex witnesses"
+118 +             for vertex in b["vertices"]:
+119 |                 valid_witness(m, c, vertex)
+120 |             feasible.append(b)
+    -             for name, cert in b['bounds'].items():
+121 +             for name, cert in b["bounds"].items():
+122 |                 objective = OBJECTIVES[name]
+    -                 lo, hi = map(F, cert['range'])
+123 +                 lo, hi = map(F, cert["range"])
+124 |                 assert lo <= hi
+    -                 for side, val in [('lower', lo), ('upper', hi)]:
+    -                     witness = valid_witness(m, c, cert[side+'_witness'])
+    -                     assert dot(objective, witness) == val, 'Bound endpoint not attained by witness'
+    -                 assert weighted(c, cert['upper_dual']) == (objective, hi), 'Invalid upper dual'
+    -                 assert weighted(c, cert['lower_dual_for_negative_objective']) == (tuple(-z for z in objective), -lo), 'Invalid lower dual'
+125 +                 for side, val in [("lower", lo), ("upper", hi)]:
+126 +                     witness = valid_witness(m, c, cert[side + "_witness"])
+127 +                     assert dot(objective, witness) == val, "Bound endpoint not attained by witness"
+128 +                 assert weighted(c, cert["upper_dual"]) == (objective, hi), "Invalid upper dual"
+129 +                 assert weighted(c, cert["lower_dual_for_negative_objective"]) == (
+130 +                     tuple(-z for z in objective),
+131 +                     -lo,
+132 +                 ), "Invalid lower dual"
+133 |                 bound_count += 2
+    -         assert feasible, 'Never certify an action from an empty model set'
+134 +         assert feasible, "Never certify an action from an empty model set"
+135 |         for name in OBJECTIVES:
+    -             exact_range = [min(F(b['bounds'][name]['range'][0]) for b in feasible),
+    -                            max(F(b['bounds'][name]['range'][1]) for b in feasible)]
+    -             assert list(map(F, s['ranges'][name])) == exact_range, 'Incorrect global range'
+    -         for ctext, a in s['actions'].items():
+136 +             exact_range = [
+137 +                 min(F(b["bounds"][name]["range"][0]) for b in feasible),
+138 +                 max(F(b["bounds"][name]["range"][1]) for b in feasible),
+139 +             ]
+140 +             assert list(map(F, s["ranges"][name])) == exact_range, "Incorrect global range"
+141 +         for ctext, a in s["actions"].items():
+142 |             c = F(ctext)
+    -             wr = [F(x)+c for x in s['ranges']['wheel']]
+    -             sr = [F(x)+c for x in s['ranges']['baseline_response']]
+    -             assert list(map(F, a['corrected_wheel_range'])) == wr, 'Incorrect corrected range'
+    -             assert F(a['worst_abs_wheel']) == max(map(abs, wr)), 'Incorrect wheel bound'
+    -             assert F(a['worst_abs_mixed_response_for_all_rho_0_1']) == max(map(abs, wr+sr)), 'Incorrect mixed bound'
+    -             assert type(a['accepted']) is bool
+    -             assert a['accepted'] == (max(map(abs, wr)) <= F(m['acceptance']['wheel_component_limit']) and max(map(abs, wr+sr)) <= F(m['acceptance']['mixed_response_limit'])), 'Incorrect action decision'
+143 +             wr = [F(x) + c for x in s["ranges"]["wheel"]]
+144 +             sr = [F(x) + c for x in s["ranges"]["baseline_response"]]
+145 +             assert list(map(F, a["corrected_wheel_range"])) == wr, "Incorrect corrected range"
+146 +             assert F(a["worst_abs_wheel"]) == max(map(abs, wr)), "Incorrect wheel bound"
+147 +             assert F(a["worst_abs_mixed_response_for_all_rho_0_1"]) == max(map(abs, wr + sr)), (
+148 +                 "Incorrect mixed bound"
+149 +             )
+150 +             assert type(a["accepted"]) is bool
+151 +             assert a["accepted"] == (
+152 +                 max(map(abs, wr)) <= F(m["acceptance"]["wheel_component_limit"])
+153 +                 and max(map(abs, wr + sr)) <= F(m["acceptance"]["mixed_response_limit"])
+154 +             ), "Incorrect action decision"
+155 |             action_count += 1
+    -     same = all(set(all_constraints[stage, sign]) == set(all_constraints['baseline', sign])
+    -                for stage in ('duplicate', 'trial') for sign in SIGNS)
+    -     assert same and r['duplicate_and_trial_sets_equal_baseline'] is True, 'Incorrect same-readings claim'
+    -     witnesses = r['indistinguishable_baseline_and_trial_witnesses_w_d_q']
+156 +     same = all(
+157 +         set(all_constraints[stage, sign]) == set(all_constraints["baseline", sign])
+158 +         for stage in ("duplicate", "trial")
+159 +         for sign in SIGNS
+160 +     )
+161 +     assert same and r["duplicate_and_trial_sets_equal_baseline"] is True, (
+162 +         "Incorrect same-readings claim"
+163 +     )
+164 +     witnesses = r["indistinguishable_baseline_and_trial_witnesses_w_d_q"]
+165 |     assert len(witnesses) == 2
+    -     wx = [valid_witness(m, all_constraints['trial', 'nonnegative_d'], x) for x in witnesses]
+166 +     wx = [valid_witness(m, all_constraints["trial", "nonnegative_d"], x) for x in witnesses]
+167 |     assert wx[0][0] != wx[1][0] and wx[0][1] != wx[1][1]
+    -     assert dot(OBJECTIVES['baseline_response'], wx[0]) == dot(OBJECTIVES['baseline_response'], wx[1]), 'Witnesses distinguishable by common row'
+    -     assert set(r['held_out_checks']) == HELD_OUT, 'Held-out case set incomplete or unexpected'
+168 +     assert dot(OBJECTIVES["baseline_response"], wx[0]) == dot(
+169 +         OBJECTIVES["baseline_response"], wx[1]
+170 +     ), "Witnesses distinguishable by common row"
+171 +     assert set(r["held_out_checks"]) == HELD_OUT, "Held-out case set incomplete or unexpected"
+172 |     # Only one nonempty convex branch: interval overlap is an existence test here.
+    -     assert {sign for sign in SIGNS if r['stages']['separated']['branches'][sign]['feasible']} == {'nonnegative_d'}
+    -     prediction = list(map(F, r['stages']['separated']['ranges']['held_out_prediction']))
+    -     for name, h in r['held_out_checks'].items():
+173 +     assert {sign for sign in SIGNS if r["stages"]["separated"]["branches"][sign]["feasible"]} == {
+174 +         "nonnegative_d"
+175 +     }
+176 +     prediction = list(map(F, r["stages"]["separated"]["ranges"]["held_out_prediction"]))
+177 +     for name, h in r["held_out_checks"].items():
+178 |         spec = m[name]
+    -         obs = [F(spec['value'])-F(spec['error_bound']), F(spec['value'])+F(spec['error_bound'])]
+    -         assert list(map(F, h['prediction'])) == prediction, 'Incorrect held-out prediction'
+    -         assert list(map(F, h['observed_interval'])) == obs, 'Incorrect held-out observation interval'
+179 +         obs = [F(spec["value"]) - F(spec["error_bound"]), F(spec["value"]) + F(spec["error_bound"])]
+180 +         assert list(map(F, h["prediction"])) == prediction, "Incorrect held-out prediction"
+181 +         assert list(map(F, h["observed_interval"])) == obs, (
+182 +             "Incorrect held-out observation interval"
+183 +         )
+184 |         compatible = max(prediction[0], obs[0]) <= min(prediction[1], obs[1])
+    -         assert type(h['compatible_in_scalar_model']) is bool and h['compatible_in_scalar_model'] == compatible, 'Incorrect held-out compatibility'
+    -         assert h['used_for_identification'] is False and spec['use_for_identification'] is False
+    -     assert r['held_out_checks']['held_out']['compatible_in_scalar_model'] is True
+    -     assert r['held_out_checks']['deliberately_inconsistent_held_out']['compatible_in_scalar_model'] is False
+    -     rejected = r['rejected_action_witness']
+    -     x = valid_witness(m, all_constraints['separated', 'nonnegative_d'], rejected['w_d_q'])
+    -     action = F(rejected['action'])
+    -     assert action == -1 and F(rejected['wheel_residual']) == x[0]+action
+    -     assert abs(x[0]+action) > F(m['acceptance']['wheel_component_limit']), 'Rejected witness does not violate limit'
+    -     assert (bound_count, empty_count, action_count) == (56, 1, 8), 'Unexpected checked certificate counts'
+185 +         assert (
+186 +             type(h["compatible_in_scalar_model"]) is bool
+187 +             and h["compatible_in_scalar_model"] == compatible
+188 +         ), "Incorrect held-out compatibility"
+189 +         assert h["used_for_identification"] is False and spec["use_for_identification"] is False
+190 +     assert r["held_out_checks"]["held_out"]["compatible_in_scalar_model"] is True
+191 +     assert (
+192 +         r["held_out_checks"]["deliberately_inconsistent_held_out"]["compatible_in_scalar_model"]
+193 +         is False
+194 +     )
+195 +     rejected = r["rejected_action_witness"]
+196 +     x = valid_witness(m, all_constraints["separated", "nonnegative_d"], rejected["w_d_q"])
+197 +     action = F(rejected["action"])
+198 +     assert action == -1 and F(rejected["wheel_residual"]) == x[0] + action
+199 +     assert abs(x[0] + action) > F(m["acceptance"]["wheel_component_limit"]), (
+200 +         "Rejected witness does not violate limit"
+201 +     )
+202 +     assert (bound_count, empty_count, action_count) == (56, 1, 8), (
+203 +         "Unexpected checked certificate counts"
+204 +     )
+205 |     return bound_count, empty_count, action_count
+206 |
+207 +
+208 | def main():
+209 |     if not __debug__:
+    -         raise RuntimeError('Run without Python -O: assertions are the checker conditions')
+210 +         raise RuntimeError("Run without Python -O: assertions are the checker conditions")
+211 |     parser = argparse.ArgumentParser(description=__doc__)
+    -     parser.add_argument('--input', type=Path, default=ROOT/'results.json')
+212 +     parser.add_argument("--input", type=Path, default=ROOT / "results.json")
+213 |     args = parser.parse_args()
+    -     assert hashlib.sha256((ROOT/'model.json').read_bytes()).hexdigest() == MODEL_SHA256, 'Predeclared model changed'
+    -     m = json.loads((ROOT/'model.json').read_text())
+214 +     assert hashlib.sha256((ROOT / "model.json").read_bytes()).hexdigest() == MODEL_SHA256, (
+215 +         "Predeclared model changed"
+216 +     )
+217 +     m = json.loads((ROOT / "model.json").read_text())
+218 |     counts = verify(json.loads(args.input.read_text()), m)
+    -     print(f'PASS: {counts[0]} exact bound certificates, {counts[1]} infeasibility certificate, {counts[2]} action evaluations; all stages nonempty.')
+    -     print('Complete stage/branch/objective/action coverage and held-out summaries checked.')
+    -     print('This is a Python/Fraction certificate check, not Lean/kernel verification or physical validation.')
+219 +     print(
+220 +         f"PASS: {counts[0]} exact bound certificates, {counts[1]} infeasibility certificate, {counts[2]} action evaluations; all stages nonempty."
+221 +     )
+222 +     print("Complete stage/branch/objective/action coverage and held-out summaries checked.")
+223 +     print(
+224 +         "This is a Python/Fraction certificate check, not Lean/kernel verification or physical validation."
+225 +     )
+226 +
+227 |
+    - if __name__ == '__main__':
+228 + if __name__ == "__main__":
+229 |     main()
+    |
+
+unformatted: File would be reformatted
+   --> work/pod/crossover-60-20261018/cards/S04/critic_snapshot_copy/experiment.py:3:1
+    |
+2   | """Exact rational bounded attribution. No packages, grid search, or Lean claim."""
+3   +
+4   | from fractions import Fraction as F
+--------------------------------------------------------------------------------
+11  | ROOT = Path(__file__).resolve().parent
+    - MODEL_PATH = ROOT / 'model.json'
+12  + MODEL_PATH = ROOT / "model.json"
+13  | MODEL = json.loads(MODEL_PATH.read_text())
+14  |
+15  +
+16  | def dot(a, b):
+    -     return sum((x*y for x, y in zip(a, b)), F(0))
+17  +     return sum((x * y for x, y in zip(a, b)), F(0))
+18  +
+19  |
+--------------------------------------------------------------------------------
+29  |         pivot = m[k][k]
+    -         m[k] = [x/pivot for x in m[k]]
+30  +         m[k] = [x / pivot for x in m[k]]
+31  |         for j in range(n):
+32  |             if j != k:
+33  |                 v = m[j][k]
+    -                 m[j] = [x-v*y for x, y in zip(m[j], m[k])]
+34  +                 m[j] = [x - v * y for x, y in zip(m[j], m[k])]
+35  |     return tuple(row[-1] for row in m)
+36  |
+37  +
+38  | def con(label, row, rhs):
+    -     return {'label': label, 'a': tuple(map(F, row)), 'b': F(rhs)}
+39  +     return {"label": label, "a": tuple(map(F, row)), "b": F(rhs)}
+40  +
+41  |
+42  | def observed(name):
+43  |     spec = MODEL[name]
+    -     a = tuple(map(F, spec['row']))
+    -     y = F(spec['value']) - F(spec.get('wheel_offset', '0'))
+    -     e = F(spec['error_bound'])
+    -     return [con(name+'_upper', a, y+e),
+    -             con(name+'_lower', tuple(-x for x in a), -y+e)]
+44  +     a = tuple(map(F, spec["row"]))
+45  +     y = F(spec["value"]) - F(spec.get("wheel_offset", "0"))
+46  +     e = F(spec["error_bound"])
+47  +     return [con(name + "_upper", a, y + e), con(name + "_lower", tuple(-x for x in a), -y + e)]
+48  +
+49  |
+50  | def constraints(stage, sign):
+    -     c = [con('w_upper', (1, 0, 0), 2), con('w_lower', (-1, 0, 0), 2),
+    -          con('d_upper', (0, 1, 0), 2), con('d_lower', (0, -1, 0), 2)]
+    -     lo, hi = map(F, MODEL['prior']['lambda'])
+    -     if sign == 'nonnegative_d':
+    -         c += [con('d_nonnegative', (0, -1, 0), 0),
+    -               con('leak_lower', (0, lo, -1), 0),
+    -               con('leak_upper', (0, -hi, 1), 0)]
+51  +     c = [
+52  +         con("w_upper", (1, 0, 0), 2),
+53  +         con("w_lower", (-1, 0, 0), 2),
+54  +         con("d_upper", (0, 1, 0), 2),
+55  +         con("d_lower", (0, -1, 0), 2),
+56  +     ]
+57  +     lo, hi = map(F, MODEL["prior"]["lambda"])
+58  +     if sign == "nonnegative_d":
+59  +         c += [
+60  +             con("d_nonnegative", (0, -1, 0), 0),
+61  +             con("leak_lower", (0, lo, -1), 0),
+62  +             con("leak_upper", (0, -hi, 1), 0),
+63  +         ]
+64  |     else:
+    -         c += [con('d_nonpositive', (0, 1, 0), 0),
+    -               con('leak_lower', (0, hi, -1), 0),
+    -               con('leak_upper', (0, -lo, 1), 0)]
+    -     c += observed('baseline')
+    -     if stage in ('duplicate', 'trial', 'separated'):
+    -         c += [con('duplicate_'+x['label'], x['a'], x['b']) for x in observed('baseline')]
+    -     if stage in ('trial', 'separated'):
+    -         c += observed('trial')
+    -     if stage == 'separated':
+    -         c += observed('separating')
+65  +         c += [
+66  +             con("d_nonpositive", (0, 1, 0), 0),
+67  +             con("leak_lower", (0, hi, -1), 0),
+68  +             con("leak_upper", (0, -lo, 1), 0),
+69  +         ]
+70  +     c += observed("baseline")
+71  +     if stage in ("duplicate", "trial", "separated"):
+72  +         c += [con("duplicate_" + x["label"], x["a"], x["b"]) for x in observed("baseline")]
+73  +     if stage in ("trial", "separated"):
+74  +         c += observed("trial")
+75  +     if stage == "separated":
+76  +         c += observed("separating")
+77  |     return c
+78  |
+79  +
+80  | def unique_constraints(c):
+    -     return sorted(set((x['a'], x['b']) for x in c))
+81  +     return sorted(set((x["a"], x["b"]) for x in c))
+82  +
+83  |
+84  | def vertices(c):
+85  |     out = set()
+86  |     for ids in combinations(range(len(c)), 3):
+    -         x = solve([c[i]['a'] for i in ids], [c[i]['b'] for i in ids])
+    -         if x is not None and all(dot(t['a'], x) <= t['b'] for t in c):
+87  +         x = solve([c[i]["a"] for i in ids], [c[i]["b"] for i in ids])
+88  +         if x is not None and all(dot(t["a"], x) <= t["b"] for t in c):
+89  |             out.add(x)
+90  |     return sorted(out)
+91  |
+92  +
+93  | def dual(c, objective, optimum, witness):
+    -     active = [i for i, t in enumerate(c) if dot(t['a'], witness) == t['b']]
+94  +     active = [i for i, t in enumerate(c) if dot(t["a"], witness) == t["b"]]
+95  |     for ids in combinations(active, 3):
+    -         weights = solve([[c[i]['a'][j] for i in ids] for j in range(3)], objective)
+    -         if weights is not None and min(weights) >= 0 and dot(weights, [c[i]['b'] for i in ids]) == optimum:
+    -             assert all(sum((weights[k]*c[i]['a'][j] for k, i in enumerate(ids)), F(0)) == objective[j] for j in range(3))
+    -             return [{'constraint': i, 'weight': w} for i, w in zip(ids, weights) if w]
+    -     raise AssertionError('No exact upper-bound certificate')
+96  +         weights = solve([[c[i]["a"][j] for i in ids] for j in range(3)], objective)
+97  +         if (
+98  +             weights is not None
+99  +             and min(weights) >= 0
+100 +             and dot(weights, [c[i]["b"] for i in ids]) == optimum
+101 +         ):
+102 +             assert all(
+103 +                 sum((weights[k] * c[i]["a"][j] for k, i in enumerate(ids)), F(0)) == objective[j]
+104 +                 for j in range(3)
+105 +             )
+106 +             return [{"constraint": i, "weight": w} for i, w in zip(ids, weights) if w]
+107 +     raise AssertionError("No exact upper-bound certificate")
+108 +
+109 |
+110 | def farkas(c):
+111 |     """Find nonnegative weights with sum weight*a=0, sum weight*b=-1."""
+112 |     for ids in combinations(range(len(c)), 4):
+    -         cols = [c[i]['a']+(c[i]['b'],) for i in ids]
+113 +         cols = [c[i]["a"] + (c[i]["b"],) for i in ids]
+114 |         weights = solve([[col[j] for col in cols] for j in range(4)], (0, 0, 0, -1))
+115 |         if weights is not None and min(weights) >= 0:
+    -             assert all(sum((weights[k]*c[i]['a'][j] for k, i in enumerate(ids)), F(0)) == 0 for j in range(3))
+    -             assert dot(weights, [c[i]['b'] for i in ids]) == -1
+    -             return [{'constraint': i, 'weight': w} for i, w in zip(ids, weights) if w]
+    -     raise AssertionError('No exact infeasibility certificate')
+116 +             assert all(
+117 +                 sum((weights[k] * c[i]["a"][j] for k, i in enumerate(ids)), F(0)) == 0
+118 +                 for j in range(3)
+119 +             )
+120 +             assert dot(weights, [c[i]["b"] for i in ids]) == -1
+121 +             return [{"constraint": i, "weight": w} for i, w in zip(ids, weights) if w]
+122 +     raise AssertionError("No exact infeasibility certificate")
+123 +
+124 |
+--------------------------------------------------------------------------------
+129 |     high_x = next(x for x in v if dot(objective, x) == hi)
+    -     return {'range': [lo, hi], 'lower_witness': low_x, 'upper_witness': high_x,
+    -             'lower_dual_for_negative_objective': dual(c, tuple(-z for z in objective), -lo, low_x),
+    -             'upper_dual': dual(c, objective, hi, high_x)}
+130 +     return {
+131 +         "range": [lo, hi],
+132 +         "lower_witness": low_x,
+133 +         "upper_witness": high_x,
+134 +         "lower_dual_for_negative_objective": dual(c, tuple(-z for z in objective), -lo, low_x),
+135 +         "upper_dual": dual(c, objective, hi, high_x),
+136 +     }
+137 +
+138 +
+139 + OBJECTIVES = {
+140 +     "wheel": (F(1), F(0), F(0)),
+141 +     "drivetrain": (F(0), F(1), F(0)),
+142 +     "baseline_response": (F(1), F(1), F(0)),
+143 +     "held_out_prediction": (F(1), F(0), F(1, 2)),
+144 + }
+145 |
+    - OBJECTIVES = {'wheel': (F(1), F(0), F(0)), 'drivetrain': (F(0), F(1), F(0)),
+    -               'baseline_response': (F(1), F(1), F(0)),
+    -               'held_out_prediction': (F(1), F(0), F(1, 2))}
+146 |
+--------------------------------------------------------------------------------
+150 |     if not v:
+    -         return {'constraints': c, 'feasible': False, 'farkas': farkas(c)}
+151 +         return {"constraints": c, "feasible": False, "farkas": farkas(c)}
+152 |     # Each lifted vertex corresponds to a genuine shared leakage value.
+153 |     for w, d, q in v:
+    -         assert (d == 0 and q == 0) or (d != 0 and F(1, 5) <= q/d <= F(3, 10))
+    -     return {'constraints': c, 'feasible': True, 'vertices': v,
+    -             'bounds': {name: bound(c, v, obj) for name, obj in OBJECTIVES.items()}}
+154 +         assert (d == 0 and q == 0) or (d != 0 and F(1, 5) <= q / d <= F(3, 10))
+155 +     return {
+156 +         "constraints": c,
+157 +         "feasible": True,
+158 +         "vertices": v,
+159 +         "bounds": {name: bound(c, v, obj) for name, obj in OBJECTIVES.items()},
+160 +     }
+161 +
+162 |
+163 | def stage_result(stage):
+    -     branches = {s: branch(stage, s) for s in ('nonnegative_d', 'nonpositive_d')}
+    -     feasible = [b for b in branches.values() if b['feasible']]
+    -     assert feasible, 'Empty feasible set: block action certification and reject model/data contract'
+    -     ranges = {name: [min(b['bounds'][name]['range'][0] for b in feasible),
+    -                      max(b['bounds'][name]['range'][1] for b in feasible)] for name in OBJECTIVES}
+164 +     branches = {s: branch(stage, s) for s in ("nonnegative_d", "nonpositive_d")}
+165 +     feasible = [b for b in branches.values() if b["feasible"]]
+166 +     assert feasible, "Empty feasible set: block action certification and reject model/data contract"
+167 +     ranges = {
+168 +         name: [
+169 +             min(b["bounds"][name]["range"][0] for b in feasible),
+170 +             max(b["bounds"][name]["range"][1] for b in feasible),
+171 +         ]
+172 +         for name in OBJECTIVES
+173 +     }
+174 |     actions = {}
+    -     for ctext in MODEL['actions']:
+175 +     for ctext in MODEL["actions"]:
+176 |         c = F(ctext)
+    -         wr = [z+c for z in ranges['wheel']]
+    -         sr = [z+c for z in ranges['baseline_response']]
+177 +         wr = [z + c for z in ranges["wheel"]]
+178 +         sr = [z + c for z in ranges["baseline_response"]]
+179 |         wheel = max(map(abs, wr))
+180 |         # For every fixed state, |w+c+rho*d| is convex in rho. Endpoints suffice.
+    -         mixed = max(map(abs, wr+sr))
+    -         actions[ctext] = {'corrected_wheel_range': wr, 'worst_abs_wheel': wheel,
+    -                           'worst_abs_mixed_response_for_all_rho_0_1': mixed,
+    -                           'accepted': wheel <= F(MODEL['acceptance']['wheel_component_limit']) and mixed <= F(MODEL['acceptance']['mixed_response_limit'])}
+    -     return {'branches': branches, 'ranges': ranges, 'actions': actions}
+181 +         mixed = max(map(abs, wr + sr))
+182 +         actions[ctext] = {
+183 +             "corrected_wheel_range": wr,
+184 +             "worst_abs_wheel": wheel,
+185 +             "worst_abs_mixed_response_for_all_rho_0_1": mixed,
+186 +             "accepted": wheel <= F(MODEL["acceptance"]["wheel_component_limit"])
+187 +             and mixed <= F(MODEL["acceptance"]["mixed_response_limit"]),
+188 +         }
+189 +     return {"branches": branches, "ranges": ranges, "actions": actions}
+190 +
+191 |
+192 | def encode(x):
+    -     if isinstance(x, F): return str(x)
+    -     if isinstance(x, dict): return {k: encode(v) for k, v in x.items()}
+    -     if isinstance(x, (list, tuple)): return [encode(v) for v in x]
+193 +     if isinstance(x, F):
+194 +         return str(x)
+195 +     if isinstance(x, dict):
+196 +         return {k: encode(v) for k, v in x.items()}
+197 +     if isinstance(x, (list, tuple)):
+198 +         return [encode(v) for v in x]
+199 |     return x
+200 |
+201 +
+202 | def main():
+203 |     start = time.monotonic()
+    -     stages = {s: stage_result(s) for s in ('baseline', 'duplicate', 'trial', 'separated')}
+    -     same = all(unique_constraints(constraints(s, sign)) == unique_constraints(constraints('baseline', sign))
+    -                for s, sign in product(('duplicate', 'trial'), ('nonnegative_d', 'nonpositive_d')))
+204 +     stages = {s: stage_result(s) for s in ("baseline", "duplicate", "trial", "separated")}
+205 +     same = all(
+206 +         unique_constraints(constraints(s, sign))
+207 +         == unique_constraints(constraints("baseline", sign))
+208 +         for s, sign in product(("duplicate", "trial"), ("nonnegative_d", "nonpositive_d"))
+209 +     )
+210 |     assert same
+    -     truth = tuple(F(MODEL['illustrative_truth_not_given_to_estimator'][k]) for k in ('w', 'd', 'lambda'))
+    -     tx = (truth[0], truth[1], truth[1]*truth[2])
+    -     assert all(dot(c['a'], tx) <= c['b'] for c in constraints('separated', 'nonnegative_d'))
+    -     held = stages['separated']['ranges']['held_out_prediction']
+211 +     truth = tuple(
+212 +         F(MODEL["illustrative_truth_not_given_to_estimator"][k]) for k in ("w", "d", "lambda")
+213 +     )
+214 +     tx = (truth[0], truth[1], truth[1] * truth[2])
+215 +     assert all(dot(c["a"], tx) <= c["b"] for c in constraints("separated", "nonnegative_d"))
+216 +     held = stages["separated"]["ranges"]["held_out_prediction"]
+217 |     held_checks = {}
+    -     for name in ('held_out', 'deliberately_inconsistent_held_out'):
+218 +     for name in ("held_out", "deliberately_inconsistent_held_out"):
+219 |         spec = MODEL[name]
+    -         obs = [F(spec['value'])-F(spec['error_bound']), F(spec['value'])+F(spec['error_bound'])]
+220 +         obs = [F(spec["value"]) - F(spec["error_bound"]), F(spec["value"]) + F(spec["error_bound"])]
+221 |         compatible = max(held[0], obs[0]) <= min(held[1], obs[1])
+    -         held_checks[name] = {'prediction': held, 'observed_interval': obs,
+    -                              'compatible_in_scalar_model': compatible,
+    -                              'used_for_identification': False}
+    -     assert held_checks['held_out']['compatible_in_scalar_model']
+    -     assert not held_checks['deliberately_inconsistent_held_out']['compatible_in_scalar_model']
+    -     assert stages['separated']['actions']['-1/2']['accepted']
+    -     assert not stages['separated']['actions']['-1']['accepted']
+222 +         held_checks[name] = {
+223 +             "prediction": held,
+224 +             "observed_interval": obs,
+225 +             "compatible_in_scalar_model": compatible,
+226 +             "used_for_identification": False,
+227 +         }
+228 +     assert held_checks["held_out"]["compatible_in_scalar_model"]
+229 +     assert not held_checks["deliberately_inconsistent_held_out"]["compatible_in_scalar_model"]
+230 +     assert stages["separated"]["actions"]["-1/2"]["accepted"]
+231 +     assert not stages["separated"]["actions"]["-1"]["accepted"]
+232 |     indistinguishable = [(F(1), F(0), F(0)), (F(0), F(1), F(1, 4))]
+    -     assert all(all(dot(c['a'], x) <= c['b'] for c in constraints('trial', 'nonnegative_d')) for x in indistinguishable)
+    -     result = {'status': 'Exact rational computation with checked linear bound certificates; not Lean verified',
+    -               'model_sha256': hashlib.sha256(MODEL_PATH.read_bytes()).hexdigest(),
+    -               'script_sha256': hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+    -               'duplicate_and_trial_sets_equal_baseline': same,
+    -               'indistinguishable_baseline_and_trial_witnesses_w_d_q': indistinguishable,
+    -               'stages': stages, 'held_out_checks': held_checks,
+    -               'rejected_action_witness': {'w_d_q': tx, 'action': F(-1), 'wheel_residual': tx[0]-1},
+    -               'runtime_seconds': time.monotonic()-start}
+    -     (ROOT/'results.json').write_text(json.dumps(encode(result), indent=2)+'\n')
+233 +     assert all(
+234 +         all(dot(c["a"], x) <= c["b"] for c in constraints("trial", "nonnegative_d"))
+235 +         for x in indistinguishable
+236 +     )
+237 +     result = {
+238 +         "status": "Exact rational computation with checked linear bound certificates; not Lean verified",
+239 +         "model_sha256": hashlib.sha256(MODEL_PATH.read_bytes()).hexdigest(),
+240 +         "script_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+241 +         "duplicate_and_trial_sets_equal_baseline": same,
+242 +         "indistinguishable_baseline_and_trial_witnesses_w_d_q": indistinguishable,
+243 +         "stages": stages,
+244 +         "held_out_checks": held_checks,
+245 +         "rejected_action_witness": {"w_d_q": tx, "action": F(-1), "wheel_residual": tx[0] - 1},
+246 +         "runtime_seconds": time.monotonic() - start,
+247 +     }
+248 +     (ROOT / "results.json").write_text(json.dumps(encode(result), indent=2) + "\n")
+249 |     for name, s in stages.items():
+    -         print(name, 'wheel=', s['ranges']['wheel'], 'actions=', s['actions'])
+    -     print('Held out:', held_checks)
+    -     print('Seconds:', result['runtime_seconds'])
+250 +         print(name, "wheel=", s["ranges"]["wheel"], "actions=", s["actions"])
+251 +     print("Held out:", held_checks)
+252 +     print("Seconds:", result["runtime_seconds"])
+253 +
+254 |
+    - if __name__ == '__main__':
+255 + if __name__ == "__main__":
+256 |     main()
+    |
+
+5 files would be reformatted, 462 files already formatted

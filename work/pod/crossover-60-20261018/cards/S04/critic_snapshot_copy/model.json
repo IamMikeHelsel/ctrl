@@ -1,0 +1,26 @@
+{
+  "declared_before_results": true,
+  "model": "Synthetic signed single-phase wheel/drivetrain amplitudes; no fitted vehicle model",
+  "variables": ["w", "d", "q"],
+  "prior": {"w": ["-2", "2"], "d": ["-2", "2"], "lambda": ["1/5", "3/10"], "relation": "q = lambda*d"},
+  "baseline": {"row": ["1", "1", "0"], "value": "1", "error_bound": "1/10"},
+  "duplicate": "Exact copy of baseline observation, including its error",
+  "trial": {"wheel_offset": "1/2", "row": ["1", "1", "0"], "value": "3/2", "error_bound": "1/10"},
+  "separating": {"row": ["1", "0", "1"], "value": "5/8", "error_bound": "1/40"},
+  "held_out": {"row": ["1", "0", "1/2"], "value": "9/16", "error_bound": "1/40", "use_for_identification": false},
+  "deliberately_inconsistent_held_out": {"value": "4/5", "error_bound": "1/40", "use_for_identification": false},
+  "actions": ["-1/2", "-1"],
+  "acceptance": {"wheel_component_limit": "1/8", "mixed_response_limit": "3/4", "mixed_response": "abs(w+c+rho*d), for every rho in [0,1]"},
+  "illustrative_truth_not_given_to_estimator": {"w": "1/2", "d": "1/2", "lambda": "1/4"},
+  "transfer_assumptions": [
+    "Wheel gain is exactly 1, with a common phase convention across all conditions.",
+    "The separating readout has real drivetrain leakage lambda in [1/5,3/10].",
+    "The held-out readout has exactly half that SAME leakage, lambda/2.",
+    "Sources and transfer paths are unchanged by the trial mass except for the known wheel offset.",
+    "Source amplitudes are unchanged across measurement conditions.",
+    "All errors satisfy the stated deterministic bounds; no independent-noise assumption is used.",
+    "A correction c changes w to w+c and leaves d and transfer parameters unchanged."
+  ],
+  "interpretation": "Changing relative frequencies and demodulation can separate sources; the stated leakage bounds and their cross-condition relation are assumptions, not derived from a vehicle or filter implementation.",
+  "scope": "Static scalar attribution and correction acceptance only. No quadrature/full imbalance norm, spin transient, actuator safety, vehicle validation, or Lean proof."
+}

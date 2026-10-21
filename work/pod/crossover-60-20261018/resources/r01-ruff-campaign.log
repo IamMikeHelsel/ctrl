@@ -1,0 +1,41 @@
+I001 [*] Import block is un-sorted or un-formatted
+ --> work/pod/crossover-60-20261018/cards/R01/critic_protocol_snapshot.py:3:1
+  |
+1 |   """Finite exact protocol experiment; no physical execution or timing guarantees."""
+2 |
+3 | / from dataclasses import dataclass, replace
+4 | | from itertools import product
+5 | | import json
+6 | | from pathlib import Path
+  | |________________________^
+help: Organize imports
+  |
+2 |
+3 + import json
+4 | from dataclasses import dataclass, replace
+5 | from itertools import product
+  - import json
+6 | from pathlib import Path
+  |
+
+B905 `zip()` without an explicit `strict=` parameter
+  --> work/pod/crossover-60-20261018/cards/R01/critic_protocol_snapshot.py:77:48
+   |
+75 |     if status.startswith("duplicate_") or status in {"conflict", "advisory", "wrong_session"}:
+76 |         assert new == old
+77 |     assert all(v1 < v2 for (v1, _), (v2, _) in zip(new.accepted, new.accepted[1:]))
+   |                                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+78 |     assert all(item in new.accepted for item in new.completed)
+79 |     assert len(new.completed) <= len(new.accepted)
+   |
+help: Add explicit value for parameter `strict=`
+   |
+76 |         assert new == old
+   -     assert all(v1 < v2 for (v1, _), (v2, _) in zip(new.accepted, new.accepted[1:]))
+77 +     assert all(v1 < v2 for (v1, _), (v2, _) in zip(new.accepted, new.accepted[1:], strict=False))
+78 |     assert all(item in new.accepted for item in new.completed)
+   |
+note: This is an unsafe fix and may change runtime behavior
+
+Found 2 errors.
+[*] 1 fixable with `--fix` (1 unsafe fix available with `--fix --unsafe-fixes`).

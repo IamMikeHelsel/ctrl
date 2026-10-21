@@ -1,0 +1,31 @@
+# Independent review — V12
+
+**Recommended gate: GO for a typed calibration-consistency and ambiguity certificate; HOLD for noisy physical calibration or an optimal-view policy.** Exact rank five is a useful necessary identifiability test within a fixed ideal model, not a physical or noise-robust acceptance certificate.
+
+## Source and primary-paper binding
+
+The frozen local proposal cites Zhang but contains no calibration implementation or accepted calibration theorem. The [official Zhang technical report](https://www.microsoft.com/en-us/research/wp-content/uploads/2016/02/tr98-71.pdf), sections 3–4, derives two homogeneous intrinsic constraints per planar view. Three suitably diverse views can determine the metric scale line; the two-view route needs an extra intrinsic restriction such as zero skew. Repeated plane orientation, including in-plane rotation, adds no independent calibration constraints. Its algebraic initialization is followed by reprojection refinement and distortion modeling. These are established methods, not campaign novelty.
+
+## Independently checked evidence
+
+`critic_rank.py/json` reconstructs the six coefficient rows with rational arithmetic. Three projective homographies have rank five and positive projective denominators over the board but unique metric line diag(1,1,-1), which has no positive-definite representative. These are intentionally nonphysical projective inputs, not alleged common-camera poses. A separate genuine SO(3) fixture keeps the rank-five positive metric but changes translation so board depths are -7/10 and 9/10. No homogeneous sign fixes both: visibility is additional to intrinsic consistency.
+
+The domain positive certificate was consumed without importing its producer routines. Each H was expanded to A; both U A=RREF and U inverse identities were checked; independent elimination confirms ranks 2,4,5. K inverse and B=K^-T K^-1 match. Five altered A/RREF/U/Uinverse/H fields were rejected. The supplied normalized B is positive definite through the explicit sum-of-squares identity, not merely its nonzero determinant.
+
+`critic_replay.py/json` independently forms full homogeneous camera matrices and projects all 27 points for each of the four root near-parallel fixtures. Both hypotheses have common positive intrinsic matrices, proper rotations, positive depth at every tested point, and exact design rank five. For t=1/1000 the focal ratio exceeds three while maximum coordinate discrepancy is about .00320253 pixels; shared midpoint measurements need only .00160127 pixels coordinatewise error. This is an exact finite-data ambiguity result under an explicitly chosen bounded-noise model, not a statistical claim or a bound over every board location. Root's Lean bound .0033 and midpoint .00165 are conservative and consistent.
+
+`critic_projector.py/json` consumes the three inventor projectors through symmetry, idempotence, trace two, independent row rank two, and A P=A. These properties uniquely bind the Euclidean orthogonal rowspace projectors. Three corruptions are rejected. Homography scale invariance removes an arbitrary algebraic weight, but a Euclidean parameter metric, calibrated residual covariance, and independent information are still separate requirements. Repeated observations can increase a summed projector without adding rank or independent evidence.
+
+The distortion negative maps a straight line through three radial-distorted image points that are noncollinear. A pinhole homography cannot explain that map; rank and SPD checks do not authorize silently ignoring distortion or target nonplanarity/unknown metric geometry.
+
+## Formal acceptance and limits
+
+All 26 declarations across seven modules independently compile with only permitted standard axioms. See `critic_acceptance.json` for file hashes, compile exits, axiom closures, and exact accepted count. The critic's four lemmas prove the indefinite kernel, impossible positive diagonal tests, line attainment, and sign-independent depth contradiction. The six input equations include a redundant row; the unused-premise warning is benign. The accepted fixed-row residual bounds are algebraic perturbation bounds in a normalized metric chart; they do not convert image noise into homography/row error. Kernel statements are literal scalar identities/constraints, with Python/manual matrix-to-source binding separately identified. No approved challenge or original source changed.
+
+A complete consumer must bind image and target coordinate charts, correspondence IDs, camera model, homography scales, intrinsic vector order and off-diagonal factors, positive-definite metric normalization, proper extrinsics, every claimed point's depth, and noise/distortion semantics. Rank six from noisy data is not a literal proof that the physical camera is impossible; a rank-five approximation is not an exact nullspace certificate. Singular-value thresholds require declared scaling and uncertainty. Successful algebraic recovery does not prove reprojection quality or physical truth.
+
+Quality: 18/20 (source binding 4, exact checks 4, independent challenge 4, reproducibility 4, practical closure 2). Subjective confidence: high in these exact fixtures and logical boundaries; uncalibrated, not a probability of real-camera success.
+
+The independent two-view supplement also verifies a distinct SPD zero-skew solution despite a true nonzero-skew fixture. It fits both tilted views exactly and fails the third view. Thus an extra assumed intrinsic prior can determine a solution without validating the prior.
+
+Final continuous extension: six root lemmas independently compile and prove a generic rational-projection bound plus the exact parameter inequalities. `critic_supplement.py/json` independently verifies a=cp/c, sp/f=a*s, 0<a<1, |1-a|≤1/62500 and |s|≤1/500. The denominator is at least4.99² and numerator at most.08, giving coordinate discrepancy≤.0033 throughout the closed board[-1,1]², hence shared midpoint noise≤.00165 per coordinate. Rx maps directly, Ry by coordinate exchange/sign of s, and the frontal view is identical. This extends the finite-data result through explicit hand camera mapping; it is not a single kernel theorem over a complete camera-calibration pipeline. Repaired failed root compilations remain preserved and excluded.

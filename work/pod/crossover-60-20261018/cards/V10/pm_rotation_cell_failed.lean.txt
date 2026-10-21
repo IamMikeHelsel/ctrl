@@ -1,0 +1,62 @@
+import Mathlib.Data.Real.Basic
+import Mathlib.Tactic
+namespace CampaignV10Cell
+
+theorem cayley_difference_numerator (a b c : ℝ) :
+    (-2*(b^2+c^2))^2 + (2*(a*b-c))^2 + (2*(a*c+b))^2 +
+    (2*(a*b+c))^2 + (-2*(a^2+c^2))^2 + (2*(b*c-a))^2 +
+    (2*(a*c-b))^2 + (2*(b*c+a))^2 + (-2*(a^2+b^2))^2 =
+    8*(a^2+b^2+c^2)*(1+a^2+b^2+c^2) := by ring
+
+theorem cayley_column_norm (a b c : ℝ) :
+    (1+a^2-b^2-c^2)^2 + (2*(a*b+c))^2 + (2*(a*c-b))^2 =
+    (1+a^2+b^2+c^2)^2 := by ring
+
+theorem cayley_column_dot (a b c : ℝ) :
+    (1+a^2-b^2-c^2)*(2*(a*b-c)) +
+    (2*(a*b+c))*(1-a^2+b^2-c^2) +
+    (2*(a*c-b))*(2*(b*c+a)) = 0 := by ring
+
+theorem cayley_determinant_numerator (a b c : ℝ) :
+    (1+a^2-b^2-c^2)*((1-a^2+b^2-c^2)*(1-a^2-b^2+c^2) - (2*(b*c-a))*(2*(b*c+a))) -
+    (2*(a*b-c))*((2*(a*b+c))*(1-a^2-b^2+c^2) - (2*(b*c-a))*(2*(a*c-b))) +
+    (2*(a*c+b))*((2*(a*b+c))*(2*(b*c+a)) - (1-a^2+b^2-c^2)*(2*(a*c-b))) =
+    (1+a^2+b^2+c^2)^3 := by ring
+
+theorem cayley_denominator_positive (a b c : ℝ) : 0 < 1+a^2+b^2+c^2 := by positivity
+
+/-- This parameter box is a declared local cell, not a cover of all SO(3). -/
+theorem cayley_cell_frobenius_budget (a b c : ℝ)
+    (ha : |a| ≤ 1/400) (hb : |b| ≤ 1/400) (hc : |c| ≤ 1/400) :
+    8*(a^2+b^2+c^2)/(1+a^2+b^2+c^2) ≤ (1/50 : ℝ)^2 := by
+  have ha2 : a^2 ≤ (1/400 : ℝ)^2 := (sq_le_sq₀ (abs_nonneg a) (by norm_num)).2 ha |>.trans_eq (sq_abs a)
+  have hb2 : b^2 ≤ (1/400 : ℝ)^2 := by nlinarith [sq_abs b, (sq_le_sq₀ (abs_nonneg b) (by norm_num)).2 hb]
+  have hc2 : c^2 ≤ (1/400 : ℝ)^2 := by nlinarith [sq_abs c, (sq_le_sq₀ (abs_nonneg c) (by norm_num)).2 hc]
+  apply (div_le_iff₀ (cayley_denominator_positive a b c)).2
+  nlinarith [sq_nonneg a, sq_nonneg b, sq_nonneg c]
+
+/-- Scalar final step of the outer cone map; norm/depth bounds explicit. -/
+theorem outer_cone_ratio (r0 z0 z gamma k m : ℝ) (hz : 0 < z)
+    (hk : k < 1) (hn : 0 ≤ gamma+m*k)
+    (hr : r0 ≤ (gamma+m*k)*z) (hd : (1-k)*z ≤ z0) :
+    0 < z0 ∧ r0 ≤ ((gamma+m*k)/(1-k))*z0 := by
+  have hp : 0 < 1-k := by linarith
+  have hq : 0 ≤ (gamma+m*k)/(1-k) := div_nonneg hn (le_of_lt hp)
+  have he : ((gamma+m*k)/(1-k))*((1-k)*z) = (gamma+m*k)*z := by field_simp
+  exact ⟨lt_of_lt_of_le (mul_pos hp hz) hd, le_trans hr (by rw [←he]; exact mul_le_mul_of_nonneg_left hd hq)⟩
+
+theorem declared_pixel_constants :
+    (5/4 : ℝ) ≤ (9/8)^2 ∧ (9/4 : ℝ) = (3/2)^2 ∧
+    1+((9/8 : ℝ)+1/10)^2 ≤ (8/5 : ℝ)^2 ∧
+    (1/50 : ℝ)*(8/5) = 4/125 ∧
+    ((1/10 : ℝ)+(3/2)*(4/125))/(1-4/125) = 37/242 ∧
+    (37/242 : ℝ) < 1/4 := by norm_num
+end CampaignV10Cell
+#print axioms CampaignV10Cell.cayley_difference_numerator
+#print axioms CampaignV10Cell.cayley_column_norm
+#print axioms CampaignV10Cell.cayley_column_dot
+#print axioms CampaignV10Cell.cayley_determinant_numerator
+#print axioms CampaignV10Cell.cayley_denominator_positive
+#print axioms CampaignV10Cell.cayley_cell_frobenius_budget
+#print axioms CampaignV10Cell.outer_cone_ratio
+#print axioms CampaignV10Cell.declared_pixel_constants

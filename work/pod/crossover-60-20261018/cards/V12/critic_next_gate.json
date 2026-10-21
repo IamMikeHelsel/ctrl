@@ -1,0 +1,106 @@
+{
+  "gate": "After breadth, construct typed exact/interval consumer; do not run an extension now",
+  "tests": [
+    {
+      "id": 1,
+      "case": "positive physical three-view fixture",
+      "expected": "ACCEPT exact modeled consistency with complete bindings"
+    },
+    {
+      "id": 2,
+      "case": "repeated frontoparallel view",
+      "expected": "UNKNOWN intrinsic uniqueness; rank stays2"
+    },
+    {
+      "id": 3,
+      "case": "in-plane spin only",
+      "expected": "UNKNOWN intrinsic uniqueness; rank stays2"
+    },
+    {
+      "id": 4,
+      "case": "two views without zero-skew assumption",
+      "expected": "UNKNOWN unrestricted five-parameter intrinsics; rank4"
+    },
+    {
+      "id": 5,
+      "case": "two views with explicitly authorized zero skew",
+      "expected": "ACCEPT conditional on independently authorized true zero-skew prior"
+    },
+    {
+      "id": 6,
+      "case": "rank-five indefinite metric",
+      "expected": "REJECT common physical pinhole calibration"
+    },
+    {
+      "id": 7,
+      "case": "rank-five singular semidefinite metric",
+      "expected": "REJECT nondegenerate physical intrinsics"
+    },
+    {
+      "id": 8,
+      "case": "rank-six exact inconsistency",
+      "expected": "REJECT exact model; noisy interpretation requires separate residual model"
+    },
+    {
+      "id": 9,
+      "case": "zero homography or forbidden normalization",
+      "expected": "REJECT invalid representation; never divide by chosen zero gauge"
+    },
+    {
+      "id": 10,
+      "case": "independent H scales and signs",
+      "expected": "ACCEPT same image/model result for nonzero scales"
+    },
+    {
+      "id": 11,
+      "case": "wrong symmetric off-diagonal coefficient",
+      "expected": "REJECT source-row mismatch"
+    },
+    {
+      "id": 12,
+      "case": "changed pixel normalization without metric transport",
+      "expected": "REJECT stale chart binding or correctly transport metric"
+    },
+    {
+      "id": 13,
+      "case": "changed target affine chart without Euclidean metric",
+      "expected": "UNKNOWN until target Euclidean metric is provided"
+    },
+    {
+      "id": 14,
+      "case": "SPD metric with board straddling depth zero",
+      "expected": "REJECT claimed visible-board capture"
+    },
+    {
+      "id": 15,
+      "case": "reflection instead of proper rotation",
+      "expected": "REJECT SO3 mismatch"
+    },
+    {
+      "id": 16,
+      "case": "near-parallel bounded-noise dual physical calibrations",
+      "expected": "RETURN AMBIGUOUS candidate set; do not assert unique focal"
+    },
+    {
+      "id": 17,
+      "case": "radial distortion omitted",
+      "expected": "REJECT zero-distortion exact model or include distortion parameters"
+    },
+    {
+      "id": 18,
+      "case": "correlated duplicate images treated as fresh evidence",
+      "expected": "REJECT independence claim; coverage rank unchanged"
+    },
+    {
+      "id": 19,
+      "case": "corrupted row-reduction inverse/minor",
+      "expected": "REJECT certificate"
+    },
+    {
+      "id": 20,
+      "case": "undeclared noise or incomplete correspondence coverage",
+      "expected": "UNKNOWN or REJECT incomplete contract, no unique calibration claim"
+    }
+  ],
+  "acceptance": "Positive exact model accepted with bound data, rank, SPD and all-point physical checks. Unsupported or ambiguous noisy models return UNKNOWN or a candidate set, never unique camera truth."
+}

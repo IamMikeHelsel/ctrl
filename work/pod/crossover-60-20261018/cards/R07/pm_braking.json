@@ -1,0 +1,120 @@
+{
+  "model": "q''=diag(1,1/2)*torque; no gravity, friction, Coriolis, delay except declared hold; normalized joint coordinates; task q1+q2=0 and configuration halfspace is an explicit obstacle surrogate, not an inferred Cartesian collision certificate.",
+  "positive": {
+    "q_initial": [
+      "1/5",
+      "-1/5"
+    ],
+    "v_initial": [
+      "1/5",
+      "-1/5"
+    ],
+    "delay": "0",
+    "brake_torque": [
+      "-1/10",
+      "1/5"
+    ],
+    "mass_matrix": [
+      [
+        "1",
+        "0"
+      ],
+      [
+        "0",
+        "2"
+      ]
+    ],
+    "stop_time": "2",
+    "q_final": [
+      "2/5",
+      "-2/5"
+    ],
+    "task_sum": "0",
+    "configuration_obstacle": "q1-q2 <= 4/5",
+    "final_constraint_excess": "0",
+    "joint_box": "[-1,1]^2",
+    "torque_limits": [
+      "1/10",
+      "1/5"
+    ]
+  },
+  "delayed": {
+    "q_initial": [
+      "1/5",
+      "-1/5"
+    ],
+    "v_initial": [
+      "1/5",
+      "-1/5"
+    ],
+    "delay": "1/100",
+    "brake_torque": [
+      "-1/10",
+      "1/5"
+    ],
+    "mass_matrix": [
+      [
+        "1",
+        "0"
+      ],
+      [
+        "0",
+        "2"
+      ]
+    ],
+    "stop_time": "201/100",
+    "q_final": [
+      "201/500",
+      "-201/500"
+    ],
+    "task_sum": "0",
+    "configuration_obstacle": "q1-q2 <= 4/5",
+    "final_constraint_excess": "1/250",
+    "joint_box": "[-1,1]^2",
+    "torque_limits": [
+      "1/10",
+      "1/5"
+    ]
+  },
+  "already_nonviable": {
+    "q_initial": [
+      "3/10",
+      "-3/10"
+    ],
+    "v_initial": [
+      "1/5",
+      "-1/5"
+    ],
+    "delay": "0",
+    "brake_torque": [
+      "-1/10",
+      "1/5"
+    ],
+    "mass_matrix": [
+      [
+        "1",
+        "0"
+      ],
+      [
+        "0",
+        "2"
+      ]
+    ],
+    "stop_time": "2",
+    "q_final": [
+      "1/2",
+      "-1/2"
+    ],
+    "task_sum": "0",
+    "configuration_obstacle": "q1-q2 <= 4/5",
+    "final_constraint_excess": "1/5",
+    "joint_box": "[-1,1]^2",
+    "torque_limits": [
+      "1/10",
+      "1/5"
+    ]
+  },
+  "all_time_positive": "Brake immediately for2s, then torque0; q1 rises monotonically .2\u2192.4 and q2=-q1. Task remains0, configuration bound and joint/torque limits hold. No return to q=(0,0) is required.",
+  "necessity_bridge": "For any acceleration a1>=-.1 and initialv1=.2, q1(2)>=q1(0)+.2 by double integration. Thus q1(0)=.3 cannot remain in task0 and q1-q2<=.8 through2s. Differential comparison/integration not kernel-checked in this script.",
+  "no_intervention_at_rest": "Any q=(r,-r), |r|<=.4, v0, torque0 stays task-satisfied and inside the declared halfspace/jointbox. Full joint regulation would unnecessarily change this declared task-equivalent state."
+}

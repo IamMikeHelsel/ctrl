@@ -1,0 +1,57 @@
+{
+  "scope": "Logical simultaneous-event ordering and explicitly counted application payload slots. Not a total-memory bound or real-time implementation proof.",
+  "tested_patterns": 243,
+  "max_application_slots": 1,
+  "max_external_ready_packets": 2,
+  "tied_logical_trace": [
+    [
+      "633/2000",
+      "ingest",
+      632
+    ],
+    [
+      "633/2000",
+      "release",
+      632
+    ],
+    [
+      "633/2000",
+      "ingest",
+      633
+    ],
+    [
+      "317/1000",
+      "release",
+      633
+    ]
+  ],
+  "immediate_FIFO_future_first": {
+    "accepted": false,
+    "reason": "future payload occupies only slot when due packet arrives"
+  },
+  "immediate_FIFO_due_first": {
+    "accepted": true,
+    "released": [
+      632
+    ],
+    "queued": 633
+  },
+  "unbudgeted_service_negative_control": {
+    "post_deadline_service_time": "1/100000",
+    "first_dispatch_age": "51/100000",
+    "next_incoming_hold_age": "101/100000",
+    "violates_original_startup": true,
+    "violates_original_total_age": true,
+    "required_ready_by_if_service_reserved": "49/100000",
+    "meaning": "A10microsecond cost after the nominal deadline violates the frozen timing contract. Reserve service within the original total bound or establish a new contract; logical same-time ordering is not a zero-time hardware claim."
+  },
+  "sufficient_boundary_order": "Only due packet readiness/ingestion must precede its release. A future packet at the same real time may be ingested after that release.",
+  "assumptions": [
+    "Expected index interval is externally fixed by the actual acquisition schedule.",
+    "Every ready event has completed all required validation and is actuation-ready within the existing bound; no payload-authentication implementation is modeled here.",
+    "Scheduler can select the due packet from the external ready set or callbacks are already deadline-prioritized.",
+    "Events at one real timestamp have a logical order; no claim is made that a physical processor executes them in zero time.",
+    "Positive implementation service/actuation latency must fit within the original stamp+h deadline, not be added after it."
+  ],
+  "conclusion": "One application slot is sufficient with the stated priority interface. Arbitrary immediate FIFO callbacks require two slots on the exhibited tie unless storage/deferral is provided elsewhere."
+}

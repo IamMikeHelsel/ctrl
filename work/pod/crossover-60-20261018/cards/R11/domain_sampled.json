@@ -1,0 +1,61 @@
+{
+  "parameters": {
+    "a": "40",
+    "h": "1/1000",
+    "delay": "1/500",
+    "base_rate": "1",
+    "initial_time": "1/500",
+    "initial_q": "-1/500",
+    "initial_world_error": "0",
+    "world_goal": "0",
+    "disturbance": "0",
+    "N": 80,
+    "evaluation_time": "41/500"
+  },
+  "hold_command": "c_n=-v*n*h+(missing-1)*v/a; released at n*h+delay",
+  "recurrence": "e_(n+1)=E*e_n+v*((delay+(missing-1)/a)*(1-E)+h)",
+  "equilibrium": "v*(delay+h/(1-E)+(missing-1)/a)",
+  "exp_interval": [
+    "28552162582979934452946541681102098969831695250084211685941983119386648262629/29717398442858284733858909021364524960517883300781250000000000000000000000000",
+    "17003769280186561460811836236884624696673962431811937480461726919733984077/17697706268699722918427141848951578140258789062500000000000000000000000000"
+  ],
+  "cases": [
+    {
+      "case": "coordinated",
+      "e_at_80th_release_interval": [
+        "300161483/125000000000",
+        "480258373/200000000000"
+      ],
+      "rad_interval_decimal_for_display": [
+        0.0024012918641118227,
+        0.0024012918641118227
+      ],
+      "exact_threshold_decision": "pass"
+    },
+    {
+      "case": "no_rate_feedforward",
+      "e_at_80th_release_interval": [
+        "6595559191/250000000000",
+        "5276447353/200000000000"
+      ],
+      "rad_interval_decimal_for_display": [
+        0.026382236764652667,
+        0.026382236764652667
+      ],
+      "exact_threshold_decision": "fail"
+    },
+    {
+      "case": "wrong_rate_sign",
+      "e_at_80th_release_interval": [
+        "10072636333/200000000000",
+        "25181590833/500000000000"
+      ],
+      "rad_interval_decimal_for_display": [
+        0.05036318166519351,
+        0.05036318166519351
+      ],
+      "exact_threshold_decision": "fail"
+    }
+  ],
+  "evidence": "Exact rational enclosure of analytic recurrence. ODE-to-recurrence derivation hand checked, not Lean certified. Same retained physical state for all variants."
+}

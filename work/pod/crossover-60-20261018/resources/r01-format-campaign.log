@@ -1,0 +1,58 @@
+unformatted: File would be reformatted
+  --> work/pod/crossover-60-20261018/cards/R01/critic_binding_snapshot.py:17:23
+   |
+16 |     if (c.session, c.revision, c.goal, c.deadline, c.h) != receipt:
+   -         return state, 'authority_binding_rejected'
+17 +         return state, "authority_binding_rejected"
+18 |     if c.event.time < admission_time:
+   -         return state, 'causality_rejected'
+19 +         return state, "causality_rejected"
+20 |     return append(state, c)
+21 |
+22 |
+23 | def main():
+   -     c = Commit(1, 1, F(1,1000), F(3,2), F(1,5), (), Event(F(11,50),F(1,1000)))
+   -     receipt=(1,1,F(1,1000),F(3,2),F(1,5))
+   -     forged=replace(c,goal=F(2,1000),event=replace(c.event,delta=F(2,1000)))
+24 +     c = Commit(1, 1, F(1, 1000), F(3, 2), F(1, 5), (), Event(F(11, 50), F(1, 1000)))
+25 +     receipt = (1, 1, F(1, 1000), F(3, 2), F(1, 5))
+26 +     forged = replace(c, goal=F(2, 1000), event=replace(c.event, delta=F(2, 1000)))
+27 |     # Self-consistency is not external task binding.
+   -     assert append(State(),forged)[1]=='appended'
+   -     assert bound_append(State(),forged,receipt,F(1,5))[1]=='authority_binding_rejected'
+   -     assert bound_append(State(),c,receipt,F(2))[1]=='causality_rejected'
+   -     assert bound_append(State(),c,receipt,F(1,5))[1]=='appended'
+28 +     assert append(State(), forged)[1] == "appended"
+29 +     assert bound_append(State(), forged, receipt, F(1, 5))[1] == "authority_binding_rejected"
+30 +     assert bound_append(State(), c, receipt, F(2))[1] == "causality_rejected"
+31 +     assert bound_append(State(), c, receipt, F(1, 5))[1] == "appended"
+32 |     # Copying forged content into the receipt defeats this check: no inference
+33 |     # of intent, authentication or authority truth is being claimed.
+   -     bad_receipt=(1,1,F(2,1000),F(3,2),F(1,5))
+   -     assert bound_append(State(),forged,bad_receipt,F(1,5))[1]=='appended'
+   -     out={'self_consistent_wrong_goal_without_receipt':'accepted',
+   -          'wrong_goal_with_true_receipt':'rejected','past_execution_at_admission':'rejected',
+   -          'correct_receipt_and_causal_time':'accepted','false_receipt':'still trusted; not detected',
+   -          'scope':'Five exact interface tests. Supplied receipt truth, common physical clock and durable atomic append are assumptions. No network, scheduler, physical task completion or integrated implementation.'}
+   -     Path(__file__).with_suffix('.json').write_text(json.dumps(out,indent=2)+'\n')
+   -     print(json.dumps(out,indent=2))
+34 +     bad_receipt = (1, 1, F(2, 1000), F(3, 2), F(1, 5))
+35 +     assert bound_append(State(), forged, bad_receipt, F(1, 5))[1] == "appended"
+36 +     out = {
+37 +         "self_consistent_wrong_goal_without_receipt": "accepted",
+38 +         "wrong_goal_with_true_receipt": "rejected",
+39 +         "past_execution_at_admission": "rejected",
+40 +         "correct_receipt_and_causal_time": "accepted",
+41 +         "false_receipt": "still trusted; not detected",
+42 +         "scope": "Five exact interface tests. Supplied receipt truth, common physical clock and durable atomic append are assumptions. No network, scheduler, physical task completion or integrated implementation.",
+43 +     }
+44 +     Path(__file__).with_suffix(".json").write_text(json.dumps(out, indent=2) + "\n")
+45 +     print(json.dumps(out, indent=2))
+46 |
+47 |
+   - if __name__=='__main__':
+48 + if __name__ == "__main__":
+49 |     main()
+   |
+
+1 file would be reformatted, 165 files already formatted

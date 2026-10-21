@@ -1,0 +1,1 @@
+Root replay compiled all six files successfully. The first output parser split axiom lists by lines and falsely flagged the wrapped matrix-identification list. Multiline bracket parsing corrects the checker; all27 declarations use only permitted axioms. Original parser result retained. No theorem or Lean source was changed.

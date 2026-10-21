@@ -1,0 +1,309 @@
+E702 Multiple statements on one line (semicolon)
+  --> work/pod/crossover-60-20261018/cards/R12/critic_kinematics.py:11:146
+   |
+ 9 | …
+10 | …pods/2026-10-17/robot-motion/franka-demo-08/results')
+11 | …nd-30-or-40-minutes/.tools/mujoco-menagerie/franka_fr3/scene.xml');d=mujoco.MjData(m)
+   |                                                                    ^
+12 | …
+13 | …
+   |
+
+E702 Multiple statements on one line (semicolon)
+  --> work/pod/crossover-60-20261018/cards/R12/critic_kinematics.py:14:13
+   |
+12 | site=mujoco.mj_name2id(m,mujoco.mjtObj.mjOBJ_SITE,'attachment_site')
+13 | def point(q):
+14 |  d.qpos[:]=q;mujoco.mj_forward(m,d);return d.site_xpos[site].copy()
+   |             ^
+15 | checks=[]
+16 | for r in json.loads((HERE/'pm_kinematics.json').read_text())['results']:
+   |
+
+E702 Multiple statements on one line (semicolon)
+  --> work/pod/crossover-60-20261018/cards/R12/critic_kinematics.py:14:36
+   |
+12 | site=mujoco.mj_name2id(m,mujoco.mjtObj.mjOBJ_SITE,'attachment_site')
+13 | def point(q):
+14 |  d.qpos[:]=q;mujoco.mj_forward(m,d);return d.site_xpos[site].copy()
+   |                                    ^
+15 | checks=[]
+16 | for r in json.loads((HERE/'pm_kinematics.json').read_text())['results']:
+   |
+
+E702 Multiple statements on one line (semicolon)
+  --> work/pod/crossover-60-20261018/cards/R12/critic_kinematics.py:19:61
+   |
+17 |  rows=list(csv.DictReader((SOURCE/r['csv']).open()))
+18 |  row=next(x for x in rows if float(x['time_s'])==r['peak_time_s'])
+19 |  qa=np.array([float(row[f'q_rad_{i}']) for i in range(1,8)]);qr=np.array([float(row[f'command_rad_{i}']) for i in range(1,8)])
+   |                                                             ^
+20 |  J=np.zeros((3,7));eps=1e-6
+21 |  for j in range(7):
+   |
+
+E702 Multiple statements on one line (semicolon)
+  --> work/pod/crossover-60-20261018/cards/R12/critic_kinematics.py:20:19
+   |
+18 |  row=next(x for x in rows if float(x['time_s'])==r['peak_time_s'])
+19 |  qa=np.array([float(row[f'q_rad_{i}']) for i in range(1,8)]);qr=np.array([float(row[f'command_rad_{i}']) for i in range(1,8)])
+20 |  J=np.zeros((3,7));eps=1e-6
+   |                   ^
+21 |  for j in range(7):
+22 |   e=np.eye(7)[j]*eps;J[:,j]=(point(qr+e)-point(qr-e))/(2*eps)
+   |
+
+E702 Multiple statements on one line (semicolon)
+  --> work/pod/crossover-60-20261018/cards/R12/critic_kinematics.py:22:21
+   |
+20 |  J=np.zeros((3,7));eps=1e-6
+21 |  for j in range(7):
+22 |   e=np.eye(7)[j]*eps;J[:,j]=(point(qr+e)-point(qr-e))/(2*eps)
+   |                     ^
+23 |  remainder=float(np.linalg.norm(point(qa)-point(qr)-J@(qa-qr))*1000)
+24 |  assert abs(remainder-r['linearization_remainder_mm'])<1e-7
+   |
+
+E702 Multiple statements on one line (semicolon)
+  --> work/pod/crossover-60-20261018/cards/R12/critic_lead.py:12:45
+   |
+10 | SRC=Path('/Users/mike/Dev/ctrl-research-notebook/research-notebook/research/pods/2026-10-17/robot-motion/franka-demo-08')
+11 | spec=importlib.util.spec_from_file_location('critic_reference_source',SRC/'run_smoke.py')
+12 | source=importlib.util.module_from_spec(spec);spec.loader.exec_module(source)
+   |                                             ^
+13 | config=json.loads((SRC/'protocol.json').read_text())
+14 | m=mujoco.MjModel.from_xml_path('/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/.tools/mujoco-menagerie/franka_fr3/…
+   |
+
+E702 Multiple statements on one line (semicolon)
+  --> work/pod/crossover-60-20261018/cards/R12/critic_lead.py:16:19
+   |
+14 | m=mujoco.MjModel.from_xml_path('/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/.tools/mujoco-menagerie/franka_fr3/…
+15 | m.opt.timestep=.0005
+16 | d=mujoco.MjData(m);refdata=mujoco.MjData(m);goaldata=mujoco.MjData(m)
+   |                   ^
+17 | for obj in (d,refdata,goaldata):mujoco.mj_resetDataKeyframe(m,obj,0);mujoco.mj_forward(m,obj)
+18 | home=d.qpos.copy();site=mujoco.mj_name2id(m,mujoco.mjtObj.mjOBJ_SITE,'attachment_site')
+   |
+
+E702 Multiple statements on one line (semicolon)
+  --> work/pod/crossover-60-20261018/cards/R12/critic_lead.py:16:44
+   |
+14 | m=mujoco.MjModel.from_xml_path('/Users/mike/Documents/Codex/2026-10-16/okay-spend-30-or-40-minutes/.tools/mujoco-menagerie/franka_fr3/…
+15 | m.opt.timestep=.0005
+16 | d=mujoco.MjData(m);refdata=mujoco.MjData(m);goaldata=mujoco.MjData(m)
+   |                                            ^
+17 | for obj in (d,refdata,goaldata):mujoco.mj_resetDataKeyframe(m,obj,0);mujoco.mj_forward(m,obj)
+18 | home=d.qpos.copy();site=mujoco.mj_name2id(m,mujoco.mjtObj.mjOBJ_SITE,'attachment_site')
+   |
+
+E701 Multiple statements on one line (colon)
+  --> work/pod/crossover-60-20261018/cards/R12/critic_lead.py:17:32
+   |
+15 | m.opt.timestep=.0005
+16 | d=mujoco.MjData(m);refdata=mujoco.MjData(m);goaldata=mujoco.MjData(m)
+17 | for obj in (d,refdata,goaldata):mujoco.mj_resetDataKeyframe(m,obj,0);mujoco.mj_forward(m,obj)
+   |                                ^
+18 | home=d.qpos.copy();site=mujoco.mj_name2id(m,mujoco.mjtObj.mjOBJ_SITE,'attachment_site')
+19 | history=source.ReferenceHistory(config['h_s']);packets=config['cases']['queued_reversal'];received=0
+   |
+
+E702 Multiple statements on one line (semicolon)
+  --> work/pod/crossover-60-20261018/cards/R12/critic_lead.py:17:69
+   |
+15 | m.opt.timestep=.0005
+16 | d=mujoco.MjData(m);refdata=mujoco.MjData(m);goaldata=mujoco.MjData(m)
+17 | for obj in (d,refdata,goaldata):mujoco.mj_resetDataKeyframe(m,obj,0);mujoco.mj_forward(m,obj)
+   |                                                                     ^
+18 | home=d.qpos.copy();site=mujoco.mj_name2id(m,mujoco.mjtObj.mjOBJ_SITE,'attachment_site')
+19 | history=source.ReferenceHistory(config['h_s']);packets=config['cases']['queued_reversal'];received=0
+   |
+
+E702 Multiple statements on one line (semicolon)
+  --> work/pod/crossover-60-20261018/cards/R12/critic_lead.py:18:19
+   |
+16 | d=mujoco.MjData(m);refdata=mujoco.MjData(m);goaldata=mujoco.MjData(m)
+17 | for obj in (d,refdata,goaldata):mujoco.mj_resetDataKeyframe(m,obj,0);mujoco.mj_forward(m,obj)
+18 | home=d.qpos.copy();site=mujoco.mj_name2id(m,mujoco.mjtObj.mjOBJ_SITE,'attachment_site')
+   |                   ^
+19 | history=source.ReferenceHistory(config['h_s']);packets=config['cases']['queued_reversal'];received=0
+20 | samples=[]
+   |
+
+E702 Multiple statements on one line (semicolon)
+  --> work/pod/crossover-60-20261018/cards/R12/critic_lead.py:19:47
+   |
+17 | for obj in (d,refdata,goaldata):mujoco.mj_resetDataKeyframe(m,obj,0);mujoco.mj_forward(m,obj)
+18 | home=d.qpos.copy();site=mujoco.mj_name2id(m,mujoco.mjtObj.mjOBJ_SITE,'attachment_site')
+19 | history=source.ReferenceHistory(config['h_s']);packets=config['cases']['queued_reversal'];received=0
+   |                                               ^
+20 | samples=[]
+21 | for step in range(4001):
+   |
+
+E702 Multiple statements on one line (semicolon)
+  --> work/pod/crossover-60-20261018/cards/R12/critic_lead.py:19:90
+   |
+17 | for obj in (d,refdata,goaldata):mujoco.mj_resetDataKeyframe(m,obj,0);mujoco.mj_forward(m,obj)
+18 | home=d.qpos.copy();site=mujoco.mj_name2id(m,mujoco.mjtObj.mjOBJ_SITE,'attachment_site')
+19 | history=source.ReferenceHistory(config['h_s']);packets=config['cases']['queued_reversal'];received=0
+   |                                                                                          ^
+20 | samples=[]
+21 | for step in range(4001):
+   |
+
+E702 Multiple statements on one line (semicolon)
+  --> work/pod/crossover-60-20261018/cards/R12/critic_lead.py:25:41
+   |
+23 |  if step%2==0:
+24 |   while received<len(packets) and packets[received]['arrival_ns']<=ns:
+25 |    history.receive(packets[received],ns);received+=1
+   |                                         ^
+26 |   ref=history.at(ns);command=home.copy();command[0]+=ref[0]+.1*ref[1];d.ctrl[:]=command
+27 |   issued=[p for p in packets if p['issue_ns']<=ns];goal=issued[-1]['target_rad'] if issued else 0
+   |
+
+E702 Multiple statements on one line (semicolon)
+  --> work/pod/crossover-60-20261018/cards/R12/critic_lead.py:26:21
+   |
+24 |   while received<len(packets) and packets[received]['arrival_ns']<=ns:
+25 |    history.receive(packets[received],ns);received+=1
+26 |   ref=history.at(ns);command=home.copy();command[0]+=ref[0]+.1*ref[1];d.ctrl[:]=command
+   |                     ^
+27 |   issued=[p for p in packets if p['issue_ns']<=ns];goal=issued[-1]['target_rad'] if issued else 0
+28 |   refdata.qpos[:]=home;refdata.qpos[0]+=ref[0]
+   |
+
+E702 Multiple statements on one line (semicolon)
+  --> work/pod/crossover-60-20261018/cards/R12/critic_lead.py:26:41
+   |
+24 |   while received<len(packets) and packets[received]['arrival_ns']<=ns:
+25 |    history.receive(packets[received],ns);received+=1
+26 |   ref=history.at(ns);command=home.copy();command[0]+=ref[0]+.1*ref[1];d.ctrl[:]=command
+   |                                         ^
+27 |   issued=[p for p in packets if p['issue_ns']<=ns];goal=issued[-1]['target_rad'] if issued else 0
+28 |   refdata.qpos[:]=home;refdata.qpos[0]+=ref[0]
+   |
+
+E702 Multiple statements on one line (semicolon)
+  --> work/pod/crossover-60-20261018/cards/R12/critic_lead.py:26:70
+   |
+24 |   while received<len(packets) and packets[received]['arrival_ns']<=ns:
+25 |    history.receive(packets[received],ns);received+=1
+26 |   ref=history.at(ns);command=home.copy();command[0]+=ref[0]+.1*ref[1];d.ctrl[:]=command
+   |                                                                      ^
+27 |   issued=[p for p in packets if p['issue_ns']<=ns];goal=issued[-1]['target_rad'] if issued else 0
+28 |   refdata.qpos[:]=home;refdata.qpos[0]+=ref[0]
+   |
+
+E702 Multiple statements on one line (semicolon)
+  --> work/pod/crossover-60-20261018/cards/R12/critic_lead.py:27:51
+   |
+25 |    history.receive(packets[received],ns);received+=1
+26 |   ref=history.at(ns);command=home.copy();command[0]+=ref[0]+.1*ref[1];d.ctrl[:]=command
+27 |   issued=[p for p in packets if p['issue_ns']<=ns];goal=issued[-1]['target_rad'] if issued else 0
+   |                                                   ^
+28 |   refdata.qpos[:]=home;refdata.qpos[0]+=ref[0]
+29 |   goaldata.qpos[:]=home;goaldata.qpos[0]+=goal
+   |
+
+E702 Multiple statements on one line (semicolon)
+  --> work/pod/crossover-60-20261018/cards/R12/critic_lead.py:28:23
+   |
+26 |   ref=history.at(ns);command=home.copy();command[0]+=ref[0]+.1*ref[1];d.ctrl[:]=command
+27 |   issued=[p for p in packets if p['issue_ns']<=ns];goal=issued[-1]['target_rad'] if issued else 0
+28 |   refdata.qpos[:]=home;refdata.qpos[0]+=ref[0]
+   |                       ^
+29 |   goaldata.qpos[:]=home;goaldata.qpos[0]+=goal
+30 |   mujoco.mj_forward(m,refdata);mujoco.mj_forward(m,goaldata)
+   |
+
+E702 Multiple statements on one line (semicolon)
+  --> work/pod/crossover-60-20261018/cards/R12/critic_lead.py:29:24
+   |
+27 |   issued=[p for p in packets if p['issue_ns']<=ns];goal=issued[-1]['target_rad'] if issued else 0
+28 |   refdata.qpos[:]=home;refdata.qpos[0]+=ref[0]
+29 |   goaldata.qpos[:]=home;goaldata.qpos[0]+=goal
+   |                        ^
+30 |   mujoco.mj_forward(m,refdata);mujoco.mj_forward(m,goaldata)
+31 |  mujoco.mj_forward(m,d);bias=d.qfrc_bias.copy();d.qfrc_applied[:]=bias;mujoco.mj_forward(m,d)
+   |
+
+E702 Multiple statements on one line (semicolon)
+  --> work/pod/crossover-60-20261018/cards/R12/critic_lead.py:30:31
+   |
+28 |   refdata.qpos[:]=home;refdata.qpos[0]+=ref[0]
+29 |   goaldata.qpos[:]=home;goaldata.qpos[0]+=goal
+30 |   mujoco.mj_forward(m,refdata);mujoco.mj_forward(m,goaldata)
+   |                               ^
+31 |  mujoco.mj_forward(m,d);bias=d.qfrc_bias.copy();d.qfrc_applied[:]=bias;mujoco.mj_forward(m,d)
+32 |  if step%2==0:
+   |
+
+E702 Multiple statements on one line (semicolon)
+  --> work/pod/crossover-60-20261018/cards/R12/critic_lead.py:31:24
+   |
+29 |   goaldata.qpos[:]=home;goaldata.qpos[0]+=goal
+30 |   mujoco.mj_forward(m,refdata);mujoco.mj_forward(m,goaldata)
+31 |  mujoco.mj_forward(m,d);bias=d.qfrc_bias.copy();d.qfrc_applied[:]=bias;mujoco.mj_forward(m,d)
+   |                        ^
+32 |  if step%2==0:
+33 |   samples.append(np.r_[ns/1e9,goal,ref,d.qpos,d.qvel,d.qacc,command,d.actuator_force,bias,d.site_xpos[site],refdata.site_xpos[site],go…
+   |
+
+E702 Multiple statements on one line (semicolon)
+  --> work/pod/crossover-60-20261018/cards/R12/critic_lead.py:31:48
+   |
+29 |   goaldata.qpos[:]=home;goaldata.qpos[0]+=goal
+30 |   mujoco.mj_forward(m,refdata);mujoco.mj_forward(m,goaldata)
+31 |  mujoco.mj_forward(m,d);bias=d.qfrc_bias.copy();d.qfrc_applied[:]=bias;mujoco.mj_forward(m,d)
+   |                                                ^
+32 |  if step%2==0:
+33 |   samples.append(np.r_[ns/1e9,goal,ref,d.qpos,d.qvel,d.qacc,command,d.actuator_force,bias,d.site_xpos[site],refdata.site_xpos[site],go…
+   |
+
+E702 Multiple statements on one line (semicolon)
+  --> work/pod/crossover-60-20261018/cards/R12/critic_lead.py:31:71
+   |
+29 |   goaldata.qpos[:]=home;goaldata.qpos[0]+=goal
+30 |   mujoco.mj_forward(m,refdata);mujoco.mj_forward(m,goaldata)
+31 |  mujoco.mj_forward(m,d);bias=d.qfrc_bias.copy();d.qfrc_applied[:]=bias;mujoco.mj_forward(m,d)
+   |                                                                       ^
+32 |  if step%2==0:
+33 |   samples.append(np.r_[ns/1e9,goal,ref,d.qpos,d.qvel,d.qacc,command,d.actuator_force,bias,d.site_xpos[site],refdata.site_xpos[site],go…
+   |
+
+E701 Multiple statements on one line (colon)
+  --> work/pod/crossover-60-20261018/cards/R12/critic_lead.py:34:14
+   |
+32 |  if step%2==0:
+33 |   samples.append(np.r_[ns/1e9,goal,ref,d.qpos,d.qvel,d.qacc,command,d.actuator_force,bias,d.site_xpos[site],refdata.site_xpos[site],go…
+34 |  if step<4000:mujoco.mj_step(m,d)
+   |              ^
+35 | a=np.array(samples)
+36 | producer=HERE/'pm_lead_runs/500us_gain0.1/queued_reversal__model_bias_compensation__500us.csv'
+   |
+
+E702 Multiple statements on one line (semicolon)
+  --> work/pod/crossover-60-20261018/cards/R12/critic_lead.py:38:30
+   |
+36 | producer=HERE/'pm_lead_runs/500us_gain0.1/queued_reversal__model_bias_compensation__500us.csv'
+37 | b=np.genfromtxt(producer,delimiter=',',skip_header=1)
+38 | maxdiff=float(abs(a-b).max());assert maxdiff<1e-12
+   |                              ^
+39 | tracking=np.linalg.norm(a[:,-9:-6]-a[:,-6:-3],axis=1);task=np.linalg.norm(a[:,-9:-6]-a[:,-3:],axis=1)
+40 | metrics={'peak_original_reference_tracking_mm':float(tracking.max()*1000),'final_task_window_mm':float(task[a[:,0]>=1.8].max()*1000),'…
+   |
+
+E702 Multiple statements on one line (semicolon)
+  --> work/pod/crossover-60-20261018/cards/R12/critic_lead.py:39:54
+   |
+37 | b=np.genfromtxt(producer,delimiter=',',skip_header=1)
+38 | maxdiff=float(abs(a-b).max());assert maxdiff<1e-12
+39 | tracking=np.linalg.norm(a[:,-9:-6]-a[:,-6:-3],axis=1);task=np.linalg.norm(a[:,-9:-6]-a[:,-3:],axis=1)
+   |                                                      ^
+40 | metrics={'peak_original_reference_tracking_mm':float(tracking.max()*1000),'final_task_window_mm':float(task[a[:,0]>=1.8].max()*1000),'…
+41 | result={'fresh_loop_vs_producer_max_absolute':maxdiff,'metrics':metrics,'shared_code':'Original ReferenceHistory only, disclosed; dyna…
+   |
+
+Found 31 errors (3 fixed, 28 remaining).

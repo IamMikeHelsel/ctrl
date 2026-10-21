@@ -1,0 +1,76 @@
+{
+  "status": "complete",
+  "kind": "exact synthetic analytic replay, not closed-loop physical simulation",
+  "source_hashes": {
+    "work/vision/timing-replay/timing_replay.py": "8b7b163976e6980421070b876ec34f90e8fdc605307a9e7201d92bf3ba0c6729",
+    "work/vision/timing-replay/timing_contract.py": "e048d38fbcfac22508bb6b2a1a82e833e33021aa825b9efba6cc032d50f4eb34"
+  },
+  "trajectory": "q=t-t^3/3, v=1-t^2, t in [0,2]; reversal t=1; |a|<=4, jerk=-2",
+  "sample_hz": 50,
+  "query_hz": 1000,
+  "clock_halfwidth_seconds": "1/500",
+  "maximum_age_seconds": "3/50",
+  "delay_milliseconds_cycle": [
+    0,
+    3,
+    7,
+    25,
+    80
+  ],
+  "blackout_capture_interval": [
+    "18/25",
+    "22/25"
+  ],
+  "reset_time_seconds": "1",
+  "first_new_epoch_packet_extra_delay_seconds": "1/100",
+  "valid_bound": {
+    "acceleration_bound": "4",
+    "counts": {
+      "ingest_accepted": 74,
+      "query_acquisition_not_definitely_past": 37,
+      "query_ready": 1813,
+      "ingest_reordered_or_duplicate": 105,
+      "query_expired": 141,
+      "reset": 1,
+      "query_no_state": 10,
+      "ingest_wrong_epoch": 2
+    },
+    "enclosure_violations": 0,
+    "first_violation_tick": null
+  },
+  "invalid_bound_negative_control": {
+    "acceleration_bound": "0",
+    "counts": {
+      "ingest_accepted": 74,
+      "query_acquisition_not_definitely_past": 37,
+      "query_ready": 1813,
+      "ingest_reordered_or_duplicate": 105,
+      "query_expired": 141,
+      "reset": 1,
+      "query_no_state": 10,
+      "ingest_wrong_epoch": 2
+    },
+    "enclosure_violations": 120,
+    "first_violation_tick": 684
+  },
+  "ordering_oracle": {
+    "chains": 1000,
+    "decisions": 3000,
+    "accepted": 2607,
+    "rejected": 393
+  },
+  "reset_boundary": {
+    "requery_after_reset": "no_state",
+    "old_packet_after_reset": "wrong_epoch",
+    "cached_prediction_is_not_revoked": true,
+    "consumer_obligation": "Re-query at application; do not queue unversioned predictions."
+  },
+  "limits": [
+    "Clock intervals and state-error bounds supplied using synthetic ground truth.",
+    "No runtime clock calibration or automatic reset detector is tested.",
+    "No actuator, plant integration, deadline, stability, or passivity result.",
+    "No numerical integration: exact analytic evaluation requires no step convergence.",
+    "Global interval consistency does not establish true hidden capture order.",
+    "Classical bound propagation and interval feasibility; no novelty claim."
+  ]
+}

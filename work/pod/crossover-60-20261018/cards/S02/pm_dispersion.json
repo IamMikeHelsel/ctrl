@@ -1,0 +1,41 @@
+{
+  "reserved_processing_tie": {
+    "reserve": "1/20000",
+    "old_network": "9/20000",
+    "old_processing": "1/20000",
+    "new_network": "0",
+    "new_processing": "0",
+    "equal_ready_time": "633/2000"
+  },
+  "derivation": "Forj>i: arrivalj-arrivali=(j-i)h+latencyj-latencyi >= (j-i)h-(upper-lower). Spread<h gives strict order; common offset cancels. Absolute latency still controls sample age. This analytic derivation is not newly kernel-proved here.",
+  "fixtures": [
+    {
+      "fixture": "original",
+      "old_latency": "1/2000",
+      "new_latency": "0",
+      "adjacent_arrival_gap": "0",
+      "strict_order": false,
+      "old_packet_end_hold_age": "1/1000",
+      "original_1ms_age_bound": true
+    },
+    {
+      "fixture": "reserved_network",
+      "old_latency": "9/20000",
+      "new_latency": "0",
+      "adjacent_arrival_gap": "1/20000",
+      "strict_order": true,
+      "old_packet_end_hold_age": "19/20000",
+      "original_1ms_age_bound": true
+    },
+    {
+      "fixture": "large_common_offset",
+      "old_latency": "251/2500",
+      "new_latency": "1/10",
+      "adjacent_arrival_gap": "1/10000",
+      "strict_order": true,
+      "old_packet_end_hold_age": "1009/10000",
+      "original_1ms_age_bound": false
+    }
+  ],
+  "boundary": "Reserved network budget need not imply strictly ordered end-to-end readiness if variable processing expands the total latency range back to[0,h]."
+}

@@ -1,0 +1,342 @@
+PDF PAGE 1
+Inertial stabilization, estimation and visual servoing for
+aerial surveillance
+by
+Ing. Martin ˇRez´ aˇ c
+supervised by Ing. Zdenˇ ek Hur´ ak, Ph.D.
+Dissertation
+Presented to the Faculty of Electrical Engineering of
+Czech Technical University in Prague
+in Partial Fulﬁllment of the Requirements
+for the Degree of
+Doctor
+in Ph.D. programme
+Electrical Engineering and Information Technology
+in the branch of study
+Control Engineering and Robotics
+Czech Technical University in Prague
+October 2013
+
+PDF PAGE 2
+
+
+PDF PAGE 3
+To my parents
+
+PDF PAGE 4
+
+
+PDF PAGE 5
+Acknowledgement
+First and the foremost, I would like to thank to Zdenˇ ek Hur´ ak for being a caring and
+enthusiastic supervisor. He was always ready for discussions, giving me not only a useful
+technical advise and a hint to a relevant literature but also a wealth of encouragement. His
+Advanced Algorithms for Control and Communications (AA4CC) group at the Department
+of Control Engineering, Faculty of Electrical Engineering, Czech Technical University in
+Prague was a stimulating place for several years.
+I am grateful for the opportunity to work in a broader industrial project consor-
+tium formed by a team from Czech Air Force and Air Defense Technological Institute
+(VT´ULaPVO) lead by Jiˇ r´ ı Noh´ yl, a team from ESSA company lead by Milan Bartoˇ s, a
+team from Center for Machine Perception (CMP) lead by V´ aclav Hlav´ aˇ c and our AA4CC
+team lead by Zdenˇ ek Hur´ ak. This gave my research activities a true multidisciplinary engi-
+neering ﬂavor. Negotiating major modiﬁcations of the mechanical design with a mechanical
+engineer, planning the ﬂight tests with the Air Force people, matching the performance of
+the camera system to that of the inertial stabilization loop with a computer vision expert,
+all these were very enriching.
+In order to keep my own research in algorithms and methods relevant from an
+engineering point of view, I relied a lot on both indoor and outdoor experiments with various
+hardware platforms. I am happy to acknowledge numerous assistance from my colleagues
+at the A44CC group. Above all, the successful accomplishment of my work was totally
+conditioned by the excellent work of the key developer of electronics — Jaroslav ˇZoha.
+I also feel privileged that I have witnessed a few of our graduate students growing into
+experienced control systems developers, namely Jan Sal´ aˇ sek, Ondˇ rej Mikul´ ın and Jarom´ ır
+Dvoˇ r´ ak. Collaboration with these young engineers was a pleasure.
+Although not immediately involved in the related research, Jiˇ r´ ı Zem´ anek — a doc-
+toral student at the AA4CC group — brought a lot of inspiration to me in diverse areas of
+engineering and science. I really enjoyed sharing a part of PhD student’s life with him.
+Finally, I would like to express the gratitude to my parents and my girlfriend Lenka
+for their love and patience not only during the time I was ﬁnishing this thesis.
+Martin ˇRez´aˇc
+Czech Technical University in Prague
+October 2013
+v
+
+PDF PAGE 6
+
+
+PDF PAGE 7
+Inertial stabilization, estimation and visual servoing for
+aerial surveillance
+Ing. Martin ˇRez´ aˇ c
+Czech Technical University in Prague, 2013
+Supervisor: Ing. Zdenˇ ek Hur´ ak, Ph.D.
+This thesis addresses a few technical problems that are all related to the central topic of
+inertial stabilization of the optical axis of an airborne camera system (so-called line-of-sight
+stabilization). First, the task of augmentation of the classical inertial stabilization loop with
+an automatic visual tracking loop is solved in a systematic way invoking the concepts from
+the young discipline of visual servoing. Second, the issue of computer-vision-induced delays
+was tackled and an intuitive engineering solution was formulated as a special instance of a
+reset control, a modiﬁed Smith predictor and a multirate control, which allowed to propose
+more eﬃcient solutions. Third, the advanced mechanical conﬁguration with two motors ac-
+tuating the rotation of the optical payload around a common axis (so-called dual-stage con-
+ﬁguration) was studied and recent numerical optimization tools for structured H∞-optimal
+controller design were used to provide controllers with a performance superior to the one
+obtained with classically tuned PID loops. Deﬁnition and selection of these research topics
+were motivated by a collaboration with an industrial partner within a series of projects.
+Therefore the thesis also documents a few routine engineering results for completeness.
+Namely, mathematical modeling of the kinematics and dynamics of common mechanical
+conﬁgurations such as double-gimbal and dual-stage conﬁgurations, inertial estimation, de-
+sign of a feedforward disturbance rejection controller and input command shaping ﬁlters.
+All the algorithms were always implemented in one of the available benchmark systems and
+tested either in a laboratory or even during helicopter ﬂights.
+vii
+
+PDF PAGE 8
+Contents
+Acknowledgement v
+Abstract vii
+Chapter 1 Introduction 1
+1.1 PROBLEM STATEMENT . . . . . . . . . . . . . . . . . . . . . . . . . . . . 1
+1.2 SHORT HISTORY OF THE RELATED PROJECTS SOLVED AT CTU . . 3
+1.3 STATE OF THE ART IN INERTIAL STABILIZATION FOR AERIAL AP-
+PLICATIONS . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 3
+1.3.1 Academic publications . . . . . . . . . . . . . . . . . . . . . . . . . . . 3
+1.3.2 Commercial products . . . . . . . . . . . . . . . . . . . . . . . . . . . 4
+1.4 CONTRIBUTION OF THE THESIS . . . . . . . . . . . . . . . . . . . . . . . 5
+1.5 SOME OTHER MEANS OF PRESENTATION . . . . . . . . . . . . . . . . . 7
+1.6 OUTLINE OF THE THESIS . . . . . . . . . . . . . . . . . . . . . . . . . . . 7
+Chapter 2 Mechanical conﬁgurations 9
+2.1 MAIN PRINCIPLES . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 9
+2.1.1 Mass stabilization of the camera . . . . . . . . . . . . . . . . . . . . . 9
+2.1.2 Fast steering mirrors . . . . . . . . . . . . . . . . . . . . . . . . . . . . 12
+2.2 DOUBLE GIMBAL PLATFORM (AZ-EL) . . . . . . . . . . . . . . . . . . . 14
+2.2.1 Benchmark systems . . . . . . . . . . . . . . . . . . . . . . . . . . . . 14
+2.2.2 Assumptions . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 15
+2.2.3 Notation for coordinate frames and their rotations . . . . . . . . . . . 15
+2.2.4 Forward recursion of Newton-Euler method, determining velocities
+and accelerations . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 17
+2.2.5 Backward recursion of Newton-Euler method, determining torques . . 20
+2.2.6 Nonlinear diﬀerential equations for dynamics of Az-El system . . . . . 21
+2.2.7 Rigid body dynamics modeling . . . . . . . . . . . . . . . . . . . . . . 22
+2.2.8 Modeling the friction . . . . . . . . . . . . . . . . . . . . . . . . . . . . 22
+2.2.9 Experimental identiﬁcation results . . . . . . . . . . . . . . . . . . . . 23
+2.3 INTRODUCING DUAL STAGES . . . . . . . . . . . . . . . . . . . . . . . . 25
+2.3.1 Short survey of dual-stage stabilization literature . . . . . . . . . . . . 25
+viii
+
+PDF PAGE 9
+2.4 SINGLE-AXIS DUAL-STAGE PLATFORM . . . . . . . . . . . . . . . . . . . 27
+2.4.1 Notation and coordinate frames . . . . . . . . . . . . . . . . . . . . . . 27
+2.4.2 Model of dynamics . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 28
+2.5 FOUR-GIMBAL DUAL-STAGE PLATFORM . . . . . . . . . . . . . . . . . 32
+2.5.1 Coordinate frames and their rotations . . . . . . . . . . . . . . . . . . 33
+2.5.2 Forward recursion of Newton-Euler method . . . . . . . . . . . . . . . 34
+2.5.3 Backward recursion of Newton-Euler method, determining the torques 36
+2.6 CONCLUSION . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 38
+Chapter 3 Single-axis control structure 39
+3.1 CASCADE CONTROL STRUCTURE . . . . . . . . . . . . . . . . . . . . . . 39
+3.2 CURRENT LOOP . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 40
+3.2.1 Current controller design . . . . . . . . . . . . . . . . . . . . . . . . . 42
+3.3 ANGULAR VELOCITY (RATE) LOOP . . . . . . . . . . . . . . . . . . . . 44
+3.3.1 Inertial angular rate sensors (gyroscopes) . . . . . . . . . . . . . . . . 45
+3.4 (ANGULAR) POSITION LOOP . . . . . . . . . . . . . . . . . . . . . . . . . 46
+3.4.1 Role of the feedforward and trajectory shaping . . . . . . . . . . . . . 48
+3.4.2 Reference shaping (or trajectory planning) while the target moves . . 48
+3.4.3 Trajectory shaping vs. tracking . . . . . . . . . . . . . . . . . . . . . . 49
+3.4.4 Trajectory shaping by using saturation and rate limiter . . . . . . . . 49
+3.5 SATURATING THE CONTROLLER SIGNAL . . . . . . . . . . . . . . . . . 50
+3.6 BIAS PRESENT IN GYRO RATE SIGNAL . . . . . . . . . . . . . . . . . . 50
+3.7 CONCLUSION . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 52
+Chapter 4 Line-of-sight inertial Stabilization 53
+4.1 DOUBLE GIMBAL INERTIAL STABILIZATION . . . . . . . . . . . . . . . 54
+4.1.1 LOS stabilization experiment with H240 platform . . . . . . . . . . . . 56
+4.2 SINGLE-AXIS DUAL-STAGE INERTIAL STABILIZATION . . . . . . . . . 58
+4.2.1 Feedback control conﬁguration . . . . . . . . . . . . . . . . . . . . . . 58
+4.2.2 Design of a structured MIMO low-order controller . . . . . . . . . . . 59
+4.2.3 Controllers designed using HIFOO and Hinfstruct . . . . . . . . . . . 62
+4.2.4 Experimental veriﬁcation . . . . . . . . . . . . . . . . . . . . . . . . . 64
+4.2.5 Conclusion . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 66
+4.3 FOUR-JOINT DUAL-STAGE STABILIZATION . . . . . . . . . . . . . . . . 68
+4.3.1 Stabilization of inertial angular rates . . . . . . . . . . . . . . . . . . . 69
+4.3.2 Closing the outer loops — the full dual-stage stabilization . . . . . . . 70
+4.3.3 Experimental results of the LOS stabilization . . . . . . . . . . . . . . 72
+4.4 DISTURBANCE REJECTION BY ACCELERATION FEEDFORWARD . . 75
+4.4.1 Projection of the base acceleration into other gimbals . . . . . . . . . 76
+4.4.2 Experimental identiﬁcation of elevation unbalance . . . . . . . . . . . 77
+4.4.3 Feedforward disturbance rejection . . . . . . . . . . . . . . . . . . . . 79
+4.4.4 Simulations . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 80
+4.4.5 Experimental results . . . . . . . . . . . . . . . . . . . . . . . . . . . . 80
+ix
+
+PDF PAGE 10
+4.5 CONCLUSIONS . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 83
+Chapter 5 Visual tracking on top of inertial stabilization 84
+5.1 IMAGE TRACKER DESCRIPTION . . . . . . . . . . . . . . . . . . . . . . . 85
+5.2 MODELING THE DYNAMICS FOR POINTING AND TRACKING . . . . 87
+5.2.1 Perspective projection . . . . . . . . . . . . . . . . . . . . . . . . . . . 87
+5.2.2 Camera motion and the interaction matrix . . . . . . . . . . . . . . . 88
+5.2.3 Linearization at distinguished operating points . . . . . . . . . . . . . 90
+5.2.4 Analysis of achievable bandwidth for pointing and tracking . . . . . . 91
+5.3 DECOUPLED POINTING AND TRACKING . . . . . . . . . . . . . . . . . 91
+5.4 FEEDBACK LINEARIZATION BASED VISUAL POINTING AND TRACK-
+ING . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 93
+5.4.1 Simple proportional image-based pointing and tracking . . . . . . . . 94
+5.4.2 Establishing the camera inertial rate using two motors . . . . . . . . . 95
+5.4.3 Summary of controller structure for pointing and tracking . . . . . . . 97
+5.4.4 Practical considerations for setting the image dynamics . . . . . . . . 98
+5.5 NUMERICAL SIMULATIONS . . . . . . . . . . . . . . . . . . . . . . . . . . 98
+5.6 LABORATORY EXPERIMENTS . . . . . . . . . . . . . . . . . . . . . . . . 100
+5.7 EXPERIMENT ON A HELICOPTER . . . . . . . . . . . . . . . . . . . . . . 102
+5.8 CONCLUSIONS . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 103
+Chapter 6 Delay compensation in visual servoing (for aerial surveillance) 105
+6.1 INTRODUCTION . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 105
+6.1.1 Deﬁnition of the problem . . . . . . . . . . . . . . . . . . . . . . . . . 105
+6.1.2 Notation . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 107
+6.2 INTUITIVE WAY OF DELAY COMPENSATION . . . . . . . . . . . . . . . 107
+6.2.1 Updating at the slow sampling rate (Case B) . . . . . . . . . . . . . . 107
+6.2.2 Updating at the fast sampling rate (Case C) . . . . . . . . . . . . . . 109
+6.3 MODIFIED SMITH PREDICTOR . . . . . . . . . . . . . . . . . . . . . . . . 110
+6.4 MULTIRATE ESTIMATION APPROACHED VIA LIFTING TECHNIQUE 113
+6.4.1 Lifting of (the inputs of) the discrete-time integrator . . . . . . . . . . 116
+6.4.2 Design of a reduced observer for a lifted delayed integrator . . . . . . 117
+6.5 SIMULATIONS . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 118
+6.6 EXPERIMENTAL RESULTS . . . . . . . . . . . . . . . . . . . . . . . . . . . 119
+6.7 IMPLEMENTATION ISSUES ON REAL SYSTEM . . . . . . . . . . . . . . 121
+6.7.1 Extension for camera gimbal . . . . . . . . . . . . . . . . . . . . . . . 121
+6.7.2 Bias present in gyro rate signal . . . . . . . . . . . . . . . . . . . . . . 125
+6.7.3 Bias estimation based on tracking image background . . . . . . . . . 125
+6.8 CONCLUSIONS . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 126
+x
+
+PDF PAGE 11
+Chapter 7 Attitude estimation using inertial measurements 128
+7.1 INTRODUCTION . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 128
+7.1.1 Motivation and goals . . . . . . . . . . . . . . . . . . . . . . . . . . . . 128
+7.1.2 Short survey of attitude estimation literature . . . . . . . . . . . . . . 129
+7.2 SENSORS MODELING . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 130
+7.3 ATTITUDE ESTIMATION . . . . . . . . . . . . . . . . . . . . . . . . . . . . 131
+7.3.1 The single-axis complementary ﬁlter . . . . . . . . . . . . . . . . . . . 131
+7.3.2 From 1D to 3D . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 133
+7.3.3 The resulting model to be used for estimation . . . . . . . . . . . . . . 133
+7.3.4 Filtering using Extended Kalman Filter . . . . . . . . . . . . . . . . . 135
+7.3.5 Filtering using feedback linearization method . . . . . . . . . . . . . . 136
+7.3.6 Extension for bias estimation . . . . . . . . . . . . . . . . . . . . . . . 137
+7.4 IMPLEMENTATION AND EXPERIMENTS . . . . . . . . . . . . . . . . . . 138
+7.4.1 Designed hardware . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 138
+7.4.2 Experimental results - indoor tests . . . . . . . . . . . . . . . . . . . . 139
+7.4.3 Troubles with disturbing translational accelerations . . . . . . . . . . 141
+7.5 SECOND GPS DERIVATIVE . . . . . . . . . . . . . . . . . . . . . . . . . . . 142
+7.5.1 Implementation of the second derivative . . . . . . . . . . . . . . . . . 142
+7.5.2 Obtaining the attitude estimate at current time . . . . . . . . . . . . . 143
+7.5.3 Estimation improvement results . . . . . . . . . . . . . . . . . . . . . . 144
+7.6 CONCLUSION . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 145
+Chapter 8 Conclusion 147
+Bibliography 149
+Videos attached on CD-ROM 156
+Vita 157
+xi
+
+PDF PAGE 12
+
+
+PDF PAGE 13
+Chapter 1
+Introduction
+This thesis addresses a few technical problems that are all related to the central topic of
+inertial stabilization of the optical axis of an airborne camera system (the so-called line-of-
+sight stabilization). They span several sub-disciplines, namely inertial stabilization, inertial
+estimation and visual servoing.
+Deﬁnition and selection of these research topics were motivated by a collaboration
+with an industrial partner within a series of projects. Therefore the thesis also documents
+few routine engineering results for completeness. All the algorithms were always imple-
+mented in one of the available benchmark systems and tested either in a laboratory or even
+during helicopter ﬂights.
+1.1 PROBLEM STATEMENT
+The typical scenario that is studied in this thesis from various control engineering viewpoints
+can be described using Fig. 1.1 as follows. Having an optical payload (day vision camera,
+night vision camera, laser rangeﬁnder, . . . ) mounted onto a mobile carrier such as an
+unmanned aircraft, helicopter or truck, the task for the control system is to ensure that
+the optical axis of the payload is stationary in the inertial space even when the carrier
+is a subject to an unwanted and usually unpredictable movement. In addition, some other
+disturbing phenomena like wind-induced torque are acting on the payload. The requirement
+of stationarity of the commanded optical axis is commonly denoted as an inertial line-of-
+sight stabilization. The device that is performing the line-of-sight stabilization is called the
+inertially stabilized platform in this thesis.
+Although the particular mechanical conﬁguration in Fig. 1.1 allows rotation of the
+camera with respect to its carrier around two axes only, there are many other conﬁgura-
+tions available. A rigorous analysis of a few of the most relevant mechanical conﬁgurations
+including their mathematical models is given in this thesis together with their capabilities
+to attenuate the inﬂuence of the (disturbing) carrier motion on the stationarity of the line
+of sight.
+1
+
+PDF PAGE 14
+Figure 1.1: Typical scenario for the inertial stabilization system. An optical device (camera)
+onboard the plane is used in a surveillance mission. As a part of the mission, it is requested
+to keep a selected ground target in the center of the ﬁeld of view in spite of the (disturbing)
+motion of the carrier (the aircraft) and the motion of the object on the ground.
+When the payload to be inertially stabilized contains a camera, some more advanced
+features such as an image-based tracking may be implemented. The incorporation of the
+camera in the feedback loop introduces a few technical issues and it turns out that some
+beneﬁt can be obtained by applying the results from the modern discipline ofvisual servoing.
+However, some clever modiﬁcations of the classical (robotics related) visual servoing theory
+are needed since it typically assumes that the robot sits on the ground and the image
+coordinate frame can be easily related with the coordinate frame of the individual joints.
+In aerial applications the angles or angular velocities of the joints are irrelevant from the
+viewpoint of positioning the image of the object in the image plane because the carrier itself
+can move (rotate and translate).
+Another challenge from a control-systems viewpoint is the issue of a one-sampling-
+period delay introduced into the pointing loop by the resource-intensive image-tracking
+routine. Although there are numerous techniques for compensation of a delay in the feedback
+loop, here the situation is special in that undelayed measurements from some other available
+sensors can be used to compensate at least for the rotation of the carrier during the time of
+processing the image information.
+Last but not least, there is a task that can be viewed as theinverse to the line-of-sight
+stabilization, that is, the task of determining the coordinates of the (ground) target tracked
+by the optical system. The terminology actually coincides with the inverse kinematic task
+in robotics. The crucial step is the inertial estimation of the attitude of the carrier relying
+on sensors such as gyros, accelerometers and magnetometers. Supplementing the estimated
+carrier attitude with its GPS coordinates, the joint/gimbal angles, and the measurement of
+the distance to the target, one may easily calculate the GPS coordinates of the target on
+the ground.
+2
+
+PDF PAGE 15
+1.2 SHORT HISTORY OF THE RELATED PROJECTS
+SOLVED AT CTU
+On the ground of Faculty of Electrical Engineering, Czech Technical University in Prague,
+the research (and partially development too) in the domain of inertial stabilization was ini-
+tiated in 2007 when the Czech Air Force and Air Defence Technological Institute (in Czech:
+Vojensk´ y technick´ y ´ ustav letectva a PVO, VT´ULaPVO) approached the university with an
+oﬀer of a contract. The goal was to develop a new aerial inertially stabilized camera plat-
+form tailored to a new UAV developed by VT ´ULaPVO at that time. The team comprising
+control specialists and computer vision experts was established. Namely, the Center of Ma-
+chine Perception (CMP) lead by Prof. V´ aclav Hlav´ aˇ c accepted the computer vision part of
+the task and the group of Dr. Zdenˇ ek Hur´ ak from Department of Control Engineering ac-
+cepted the responsibility for the inertial stabilization part. A small mechanical engineering
+company ESSA located in Prague was invited to the project consortium with the motivation
+to guarantee a professional-grade mechanical design. As a result, a functional prototype of
+a platform was developed from the very scratch and provided to VT ´ULaPVO in about a
+two-year time. It was at this time that I joined the group as a ﬁrst-year graduate student.
+Encouraged by the successful accomplishment of this ﬁrst project, the whole consor-
+tium searched for other opportunities and these were identiﬁed in both larger and smaller
+scales of inertially stabilized camera platforms. Two more projects have been started then,
+both ﬁnancially supported by the Ministry of Industry and Trade of the Czech Republic
+with VT ´ULaPVO becoming the key project partner. The more detailed description of the
+outcomes of these projects will be given in later sections, suﬃce to say now that at the
+time of submitting this thesis (fall 2013) heavy eﬀorts are invested by VT ´ULaPVO into
+commercialization.
+I was actively involved in these projects as a doctoral student till the end of summer
+2012, even though I was free of the standard hardware and software development duties and
+instead I could focus on research in algorithms and control design methods.
+1.3 STATE OF THE ART IN INERTIAL STABILIZA-
+TION FOR AERIAL APPLICATIONS
+1.3.1 Academic publications
+The design of control systems for stabilization of the line of sight of the optical payload
+was extensively studied by the engineering community during past decades but it is not
+always easy to document the history of this defense-related engineering discipline purely
+from academic publications. An up-to-date survey can be found in the February 2008 issue
+of the IEEE Control Systems Magazine , where the whole issue was dedicated to the topic
+of ”Inertially stabilized platform technology”.
+The most focused regular forum for discussion of technical issues related to inertial
+3

@@ -1,0 +1,91 @@
+"""Directed interval countermodel to composing the two aggregate toy contracts."""
+
+import json
+import math
+from fractions import Fraction as F
+from pathlib import Path
+
+S = 10**65
+
+
+def box(x):
+    x = F(x) * S
+    return x.numerator // x.denominator, -((-x.numerator) // x.denominator)
+
+
+def add(a, b):
+    return a[0] + b[0], a[1] + b[1]
+
+
+def neg(a):
+    return -a[1], -a[0]
+
+
+def mul(a, b):
+    q = [x * y for x in a for y in b]
+    return min(q) // S, -((-max(q)) // S)
+
+
+def scale(a, k):
+    return mul(a, box(k))
+
+
+def main():
+    z = F(4, 5)
+    terms = 110
+    lo = sum((z**k / math.factorial(k) for k in range(terms + 1)), F(0))
+    hi = lo + z ** (terms + 1) / math.factorial(terms + 1) / (1 - z / (terms + 2))
+    decay = box(1 / hi)[0], box(1 / lo)[1]
+    cap = F(23, 5000)
+    eta = [box(0), box(0)]
+    x = [box(F(1, 10000)), box(F(1, 10000))]
+    forces = (
+        [F(-1, 20), F(-1, 10), F(-3, 20)]
+        + [F(-23, 125)] * 100
+        + [F(-1, 20), F(1, 50), F(9, 100), F(4, 25)]
+        + [F(23, 125)] * 80
+    )
+    rows = []
+    for i, forcing in enumerate(forces):
+        assert abs(forcing) <= F(23, 125)
+        target = box(forcing / 40)
+        eta.append(add(target, mul(decay, add(eta[-1], neg(target)))))
+        va = scale(add(x[-2], eta[-3]), -10)
+        vb = scale(add(x[-1], eta[-2]), -10)
+        acc = scale(add(vb, neg(va)), 50)
+        x.append(add(x[-1], scale(add(va, vb), F(1, 100))))
+        actual = add(x[-1], eta[-1])
+        rows.append(
+            {
+                "step": i,
+                "force": str(forcing),
+                "actual": list(map(str, (F(actual[0], S), F(actual[1], S)))),
+                "accel_upper": str(F(max(map(abs, acc)), S)),
+                "speed_upper": str(F(max(map(abs, (*va, *vb))), S)),
+            }
+        )
+        assert max(map(abs, eta[-1])) <= cap * S + 2
+        assert max(map(abs, acc)) < S
+        assert max(map(abs, (*va, *vb))) < S / 10
+    peak = max(rows, key=lambda r: F(r["actual"][0]))
+    assert F(peak["actual"][0]) > F(57, 10000) > F(1, 200)
+    out = {
+        "model": "eta_dot=-40 eta+f; x next=x−(xprev+eta_prev+xprevprev+eta_prevprev)/10; y=x+eta",
+        "initial_x": "1/10000",
+        "initial_eta": "0",
+        "initial_reference_velocity": "-1/1000",
+        "sample_period": "1/50",
+        "eta_bound": str(cap),
+        "forcing_bound": "23/125",
+        "peak_witness": peak,
+        "maximum_ramp_acceleration_upper": str(max(F(r["accel_upper"]) for r in rows)),
+        "maximum_ramp_speed_upper": str(max(F(r["speed_upper"]) for r in rows)),
+        "rows": rows,
+        "scope": "Countermodel for aggregate bounded inner forcing plus nominal delayed ramp. Not a realization of the particular timestamp, sensor, and plant disturbance channels; those may correlate forcing with the ramp. Continuous eta comes from exact held forcing; all-time ramp speed/acceleration bounds follow affine/constant interval commands.",
+    }
+    Path(__file__).with_suffix(".json").write_text(json.dumps(out, indent=2) + "\n")
+    print(json.dumps({k: v for k, v in out.items() if k != "rows"}, indent=2))
+
+
+if __name__ == "__main__":
+    main()
