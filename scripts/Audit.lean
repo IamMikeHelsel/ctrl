@@ -341,3 +341,37 @@ import ControlsLean
 #print axioms ControlsLean.Bounty.erdos_275_extremal_sharpness
 #print axioms ControlsLean.Bounty.erdos_873_lcm_ge_add
 #print axioms ControlsLean.Bounty.erdos_1125_kemperman_monotone_chain
+
+-- Addition 27: Controls (Minimal-Hypothesis LQG Separation & Discrete-Time Bounded Real / H_inf Riccati Theory)
+#print axioms ControlsLean.Controls.lqg_closed_loop_stable_of_stabilizable_detectable
+#print axioms ControlsLean.Controls.hinf_stage_completion_of_squares
+#print axioms ControlsLean.Controls.hinf_stage_dissipation_of_fixed
+#print axioms ControlsLean.Controls.hinf_finite_horizon_identity
+#print axioms ControlsLean.Controls.hinf_l2_gain_bound
+#print axioms ControlsLean.Controls.hinf_worstCase_disturbance_tight
+#print axioms ControlsLean.Controls.schur_of_lyapunov_le_detectable
+#print axioms ControlsLean.Controls.hinf_schur_of_detectable
+
+-- Addition 28: Controls (Nonlinear Integrator Backstepping, Recursive CLFs & Sontag's Universal Formula)
+#print axioms ControlsLean.Controls.backsteppingLyapunov_posDef
+#print axioms ControlsLean.Controls.backstepping_lie_deriv_eq
+#print axioms ControlsLean.Controls.hasDerivAt_backstepping_lyapunov
+#print axioms ControlsLean.Controls.backstepping_closedLoop_lie_deriv
+#print axioms ControlsLean.Controls.hasDerivAt_backstepping_closedLoop
+#print axioms ControlsLean.Controls.backstepping_dissipation_bound
+#print axioms ControlsLean.Controls.backstepping_strict_negDef
+#print axioms ControlsLean.Controls.backstepping_chain_telescoping
+#print axioms ControlsLean.Controls.backstepping_chain_dissipation
+#print axioms ControlsLean.Controls.hasDerivAt_backstepping_chain
+#print axioms ControlsLean.Controls.sontag_universal_stabilizer
+#print axioms ControlsLean.Controls.sontag_clf_strict_decrease
+#print axioms ControlsLean.Controls.hasDerivAt_sontag_clf
+
+-- Addition 29: Bounty (Wave 2 Erdős Solutions: #1148, #1179, #1187, #311, #367, #455)
+#print axioms ControlsLean.Bounty.ErdosWave2.Erdos1148.erdos_1148.variants.weaker
+#print axioms ControlsLean.Bounty.ErdosWave2.Erdos1179.sum_repCount_eq_two_pow
+#print axioms ControlsLean.Bounty.ErdosWave2.Erdos1179.erdos_1179.variants.lower_bound
+#print axioms ControlsLean.Bounty.ErdosWave2.Erdos1187.erdos_1187.parts.ii
+#print axioms ControlsLean.Bounty.ErdosWave2.Erdos311.delta_ge_inv_lcm
+#print axioms ControlsLean.Bounty.ErdosWave2.Erdos367.erdos_367.variants.k_le_two
+#print axioms ControlsLean.Bounty.ErdosWave2.Erdos455.discreteConvex_quadratic_lower_bound

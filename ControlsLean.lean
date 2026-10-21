@@ -34,6 +34,9 @@ import ControlsLean.Estimation.KalmanOptimality
 import ControlsLean.Estimation.SteadyStateKalman
 import ControlsLean.Estimation.KalmanBucy
 import ControlsLean.Controls.LQG
+import ControlsLean.Controls.BoundedRealHInf
+import ControlsLean.Controls.BacksteppingCLF
 import ControlsLean.Tactics.ControlTactics
 import ControlsLean.Bounty.ErdosBounties
 import ControlsLean.Bounty.ErdosNewInsights
+import ControlsLean.Bounty.ErdosWave2
