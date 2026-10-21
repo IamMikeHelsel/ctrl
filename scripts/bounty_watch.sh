@@ -89,6 +89,45 @@ failed = [l for l in failed_str.splitlines() if l.strip()]
 now = datetime.datetime.now().astimezone().isoformat(timespec="seconds")
 RESOLVED = {"proved", "disproved", "solved"}
 
+# ---------- fast-filter index loading ----------
+fast_filter_plby = set()
+fast_filter_prs = {}
+fast_filter_erdos = {}
+try:
+    p_path = os.path.join(snap, "plby_erdos.json")
+    if os.path.exists(p_path):
+        fast_filter_plby = set(json.load(open(p_path)).get("solved_erdos", []))
+    a_path = os.path.join(snap, "awards_prs.json")
+    if os.path.exists(a_path):
+        for pr in json.load(open(a_path)).get("prs", []):
+            st = pr.get("state", "").upper()
+            jids = {f"JSP-{int(j):06d}" for j in re.findall(r'JSP-(\d+)', pr.get('title',''), re.IGNORECASE) + re.findall(r'jsp-(\d+)', pr.get('head',''), re.IGNORECASE)}
+            for jid in jids:
+                d = fast_filter_prs.setdefault(jid, {"open": 0, "merged": 0, "plby": False})
+                if st == "OPEN": d["open"] += 1
+                elif st == "MERGED": d["merged"] += 1
+                if "plby" in pr.get("title","").lower() or "plby" in pr.get("head","").lower():
+                    d["plby"] = True
+    m_path = os.path.join(snap, "jsp_erdos_map.json")
+    if os.path.exists(m_path):
+        fast_filter_erdos = {k: set(v) for k, v in json.load(open(m_path)).get("mappings", {}).items()}
+except Exception:
+    pass
+
+def jsp_filter_reason(jid):
+    reasons = []
+    pr = fast_filter_prs.get(jid, {})
+    if pr.get("plby"):
+        reasons.append("plby PR")
+    erdos_nums = fast_filter_erdos.get(jid, set())
+    if any(e in fast_filter_plby for e in erdos_nums):
+        reasons.append("in plby")
+    if pr.get("open", 0) > 0:
+        reasons.append(f"{pr['open']} open PRs")
+    if pr.get("merged", 0) > 0:
+        reasons.append(f"{pr['merged']} merged PRs")
+    return "; ".join(reasons)
+
 # ---------- parsers ----------
 def parse_jsp(d):
     files = sorted(f for f in os.listdir(d) if f.endswith(".md"))
@@ -198,7 +237,11 @@ def diff_jsp(old, new):
             if o["title"] != n["title"]:
                 ev.append(("RETITLED", k, f"{o['title']} -> {t}"))
         if jsp_unclaimed(n) and not jsp_unclaimed(o):
-            ev.append(("NEWLY UNCLAIMED (Solved, no Lean)", k, f"{t} [eligible={n['eligible']}]"))
+            reason = jsp_filter_reason(k)
+            if reason:
+                ev.append(("NEWLY UNCLAIMED (CONTESTED)", k, f"{t} [eligible={n['eligible']}; {reason}]"))
+            else:
+                ev.append(("NEWLY UNCLAIMED (UNCONTESTED!)", k, f"{t} [eligible={n['eligible']}]"))
     return ev
 
 def ep_base(s): return re.sub(r"\s*\(Lean\)$", "", s or "")
