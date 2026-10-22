@@ -1,0 +1,430 @@
+{
+  "schema_version": "1.0.0",
+  "updated_at": "2026-10-21",
+  "repository": "https://github.com/IamMikeHelsel/ctrl",
+  "summary": {
+    "controls_lean_modules": 53,
+    "controls_lean_loc": 14643,
+    "controls_lean_theorems": 872,
+    "audited_headline_theorems": 424,
+    "dev_ctrl_total_lean_modules": 98,
+    "dev_ctrl_total_lean_loc": 32900,
+    "python_lean_bound_functions": 48,
+    "python_lean_bound_theorems": 223,
+    "c99_max_parity_error": 8.881784197001252e-16,
+    "mujoco_closed_loop_benchmarks": 4,
+    "pytest_passing": 250
+  },
+  "rating_scales": {
+    "novelty": {
+      "N3": "Research breakthrough, new theorem on an open problem, or strict Pareto dominance over standard engineering baselines",
+      "N2": "Novel spectral-free or coordinate-free Lean 4 formalization architecture with new algebraic reductions",
+      "N1": "Foundational zero-sorry building block enabling higher-level compositions"
+    },
+    "applicability": {
+      "A3": "Drop-in production / real-time ready (bound to ctrl.robotics Python, C99/IEC 61131-3 ST codegen, or MuJoCo 3.16.0 benchmark)",
+      "A2": "System design, offline synthesis, or prize-submission ready",
+      "A1": "Theoretical / open-problem research engine"
+    },
+    "status": [
+      "ready_to_use",
+      "promising_near_complete",
+      "in_work"
+    ]
+  },
+  "ideas": [
+    {
+      "id": "CTRL-01",
+      "title": "Spectral-Free Detectable DARE, Infinite-Horizon LQR & Return-Difference Margins",
+      "domain": "Linear & Optimal Control",
+      "status": "ready_to_use",
+      "novelty": "N3",
+      "applicability": "A3",
+      "approach": "Forced-observer zero-step escape lemma proving Schur stability and uniqueness of DARE for positive semidefinite Q = C^T C >= 0 without eigenvalues, plus quadratic return-difference disk margins.",
+      "lean_modules": [
+        "ControlsLean/Controls/LQR.lean",
+        "ControlsLean/Controls/DARE.lean",
+        "ControlsLean/Controls/DAREExistence.lean",
+        "ControlsLean/Controls/DAREUniqueness.lean",
+        "ControlsLean/Controls/LQROptimality.lean",
+        "ControlsLean/Controls/DAREDetectable.lean",
+        "ControlsLean/Controls/SchurLyapunov.lean"
+      ],
+      "key_theorems": [
+        "dare_schur_of_detectable",
+        "dare_unique_of_detectable",
+        "lqr_existsUnique_of_stabilizable_detectable",
+        "dare_bellman_return_difference",
+        "dare_perturbed_dissipation_ge_of_margin"
+      ],
+      "python_entrypoints": [
+        "ctrl.robotics.estimation_lqr.dare_bellman_completion_of_squares",
+        "ctrl.robotics.estimation_lqr.dare_detectable_return_difference_margin"
+      ],
+      "combines_with": ["EST-01", "CTRL-02", "CTRL-04", "MATH-01"]
+    },
+    {
+      "id": "CTRL-02",
+      "title": "Minimal-Hypothesis LQG Separation & Discrete H_infinity Bounded Real Lemma",
+      "domain": "Robust & Output-Feedback Control",
+      "status": "ready_to_use",
+      "novelty": "N3",
+      "applicability": "A3",
+      "approach": "Indefinite minimax completion of squares with disturbance Hessian M_gamma(P) = gamma^2 I - D^T D - B^T P B certifying finite- and infinite-horizon l2-gain attenuation <= gamma and worst-case disturbance tightness.",
+      "lean_modules": [
+        "ControlsLean/Controls/BoundedRealHInf.lean",
+        "ControlsLean/Controls/LQG.lean",
+        "ControlsLean/Controls/Observer.lean"
+      ],
+      "key_theorems": [
+        "lqg_closed_loop_stable_of_stabilizable_detectable",
+        "hinf_stage_completion_of_squares",
+        "hinf_l2_gain_bound",
+        "hinf_worstCase_disturbance_tight",
+        "hinf_schur_of_detectable"
+      ],
+      "python_entrypoints": [
+        "ctrl.robotics.estimation_lqr.hinf_bounded_real_step",
+        "ctrl.robotics.estimation_lqr.luenberger_separation_step",
+        "ctrl.robotics.mujoco_benchmarks.run_arm6dof_disturbance_iss_hinf_benchmark"
+      ],
+      "measured_impact": "135.3x l2-gain disturbance attenuation (0.00246 vs 0.3325 nominal PD) and -99.59% peak joint error in 6-DOF MuJoCo benchmark.",
+      "combines_with": ["CTRL-03", "NL-01", "ROBO-01", "NL-03"]
+    },
+    {
+      "id": "CTRL-03",
+      "title": "Square-Root-Free Matrix Peter-Paul Input-to-State Stability (ISS)",
+      "domain": "Robust & Nonlinear Control",
+      "status": "ready_to_use",
+      "novelty": "N2",
+      "applicability": "A3",
+      "approach": "Bypasses matrix square roots P^(1/2) via an exact quadratic Peter-Paul identity to convert any discrete Stein Lyapunov equation into an explicit ISS trajectory bound and forward-invariant sublevel set.",
+      "lean_modules": [
+        "ControlsLean/Controls/ISS.lean",
+        "ControlsLean/Controls/SmallGain.lean",
+        "ControlsLean/Controls/ConverseLyapunov.lean",
+        "ControlsLean/Controls/DiscreteLyapunov.lean"
+      ],
+      "key_theorems": [
+        "quad_add_peter_paul_identity",
+        "quad_iss_of_stein_explicit",
+        "iss_lyapunov_step_bound",
+        "iss_invariant_sublevel",
+        "schur_quadratic_iss"
+      ],
+      "python_entrypoints": [
+        "ctrl.robotics.estimation_lqr.iss_peter_paul_envelope"
+      ],
+      "combines_with": ["CTRL-02", "NL-01", "NL-02"]
+    },
+    {
+      "id": "CTRL-04",
+      "title": "Constrained Receding-Horizon MPC Recursive Feasibility & Arimoto ILC",
+      "domain": "Optimal & Learning Control",
+      "status": "ready_to_use",
+      "novelty": "N2",
+      "applicability": "A2",
+      "approach": "Shifted-tail terminal-set recursive feasibility, CLF value descent, and lifted Toeplitz Iterative Learning Control geometric convergence.",
+      "lean_modules": [
+        "ControlsLean/Controls/MPCFeasibility.lean",
+        "ControlsLean/Controls/IterativeLearning.lean",
+        "ControlsLean/Controls/Gramian.lean"
+      ],
+      "key_theorems": [
+        "mpc_recursive_feasibility_step",
+        "mpc_optimal_value_descent",
+        "ilc_error_tendsto_zero",
+        "arimoto_error_tendsto_zero",
+        "gramian_steer"
+      ],
+      "python_entrypoints": [
+        "ctrl.robotics.estimation_lqr.mpc_warm_start_cost_descent"
+      ],
+      "combines_with": ["CTRL-01", "NL-02", "ROBO-01"]
+    },
+    {
+      "id": "NL-01",
+      "title": "Strict-Feedback Integrator Backstepping & Sontag's Universal CLF Formula",
+      "domain": "Nonlinear Control",
+      "status": "ready_to_use",
+      "novelty": "N2",
+      "applicability": "A3",
+      "approach": "Recursive virtual-control error coordinates z_i = x_i - alpha_{i-1} with tridiagonal skew cancellation, paired with Sontag's analytic universal stabilizer guaranteeing dV/dt <= -sqrt(a^2 + b^4).",
+      "lean_modules": [
+        "ControlsLean/Controls/BacksteppingCLF.lean"
+      ],
+      "key_theorems": [
+        "hasDerivAt_backstepping_closedLoop",
+        "backstepping_chain_telescoping",
+        "sontag_universal_stabilizer",
+        "sontag_clf_strict_decrease"
+      ],
+      "python_entrypoints": [
+        "ctrl.robotics.estimation_lqr.backstepping_and_sontag_clf"
+      ],
+      "c99_plc_kernels": [
+        "ctrl_sontag_clf",
+        "ctrl_backstepping_control",
+        "CTRL_SONTAG_CLF",
+        "CTRL_BACKSTEPPING_CONTROL"
+      ],
+      "combines_with": ["CTRL-02", "CTRL-03", "NL-03"]
+    },
+    {
+      "id": "NL-02",
+      "title": "3D 4-Contact Bilinear ZMP Wrench Allocator & Lorentz-Cone CBF Safety Filter",
+      "domain": "Legged Robotics & Safety-Critical Control",
+      "status": "ready_to_use",
+      "novelty": "N3",
+      "applicability": "A3",
+      "approach": "Closed-form conic duality for 3D 4-contact robots: proves exact biconditional deceleration limit min(mu, W/h_G)*g, zero 3D Euler angular-momentum drift (dL/dt = 0), and closed-form SOCP stopping-distance CBF without online QP solvers.",
+      "lean_modules": [
+        "lean/Research/LorentzConeCBF.lean",
+        "lean/Research/CentroidalDecelerationLimit.lean",
+        "ControlsLean/Controls/BarrierPassivity.lean"
+      ],
+      "key_theorems": [
+        "deceleration_safe_iff",
+        "quad_contact_net_force",
+        "quad_contact_zero_angular_momentum",
+        "quad_contact_in_lorentz_cone",
+        "centroidal_cbf_forward_invariant",
+        "lorentz_backup_controller_safe"
+      ],
+      "python_entrypoints": [
+        "ctrl.robotics.contact_cbf.safe_decel_max",
+        "ctrl.robotics.contact_cbf.quad_contact_forces",
+        "ctrl.robotics.contact_cbf.lorentz_cbf_safety_filter",
+        "ctrl.robotics.mujoco_benchmarks.run_quadruped_zmp_cbf_benchmark"
+      ],
+      "c99_plc_kernels": [
+        "ctrl_safe_decel_max",
+        "ctrl_directional_cbf",
+        "ctrl_lorentz_cbf_filter_3d",
+        "ctrl_quad_contact_allocator"
+      ],
+      "measured_impact": "Stops 3D quadruped safely at x = 1.1920 m < 1.20 m wall with 100% contact forces inside Lorentz cone (f_z,min = 22.14 N) and zero pitch/roll angular velocity (1.64e-15 rad/s).",
+      "combines_with": ["ROBO-03", "ROBO-04", "CTRL-04"]
+    },
+    {
+      "id": "NL-03",
+      "title": "Slotine-Li Passivity & Adaptive Manipulator Trajectory Tracking",
+      "domain": "Nonlinear Robotics Control",
+      "status": "ready_to_use",
+      "novelty": "N2",
+      "applicability": "A3",
+      "approach": "Exploits skew-symmetry of dM/dt - 2C on sliding error s = dq_tilde + Lambda q_tilde to achieve dV/dt = -s^T K_D s <= 0 without inverting M(q), plus adaptive parameter regressor cancellation.",
+      "lean_modules": [
+        "ControlsLean/Robotics/ManipulatorTracking.lean"
+      ],
+      "key_theorems": [
+        "slotine_li_lyapunov_deriv",
+        "slotine_li_adaptive_lyapunov_deriv",
+        "hasDerivAt_slotine_li_storage"
+      ],
+      "combines_with": ["ROBO-01", "NL-01", "CTRL-02"]
+    },
+    {
+      "id": "EST-01",
+      "title": "Multivariate Joseph MMSE Kalman Filter, Dual Steady-State DARE & Information Filter",
+      "domain": "State Estimation",
+      "status": "ready_to_use",
+      "novelty": "N2",
+      "applicability": "A3",
+      "approach": "Matrix completion of squares on the Bucy-Joseph covariance update proving Loewner PSD dominance and trace optimality, plus ring-general Sherman-Morrison-Woodbury equivalence to the Information filter.",
+      "lean_modules": [
+        "ControlsLean/Estimation/KalmanOptimality.lean",
+        "ControlsLean/Estimation/SteadyStateKalman.lean",
+        "ControlsLean/Estimation/InformationFilter.lean",
+        "ControlsLean/Estimation/AlphaBeta.lean",
+        "ControlsLean/Estimation/LeastSquares.lean"
+      ],
+      "key_theorems": [
+        "josephCov_completion_of_squares",
+        "trace_josephCov_le_of_psd",
+        "kalman_steady_state_of_stabilizable_detectable",
+        "woodbury_isInverse",
+        "rlsUpdate_isLeastSquares"
+      ],
+      "python_entrypoints": [
+        "ctrl.robotics.estimation_lqr.joseph_kalman_update",
+        "ctrl.robotics.estimation_lqr.kalata_alpha_beta_gains"
+      ],
+      "combines_with": ["CTRL-01", "CTRL-02", "VIS-01"]
+    },
+    {
+      "id": "EST-02",
+      "title": "Continuous-Time CARE, HJB Calculus & Dual Kalman-Bucy Differential Filter",
+      "domain": "Continuous Control & Estimation",
+      "status": "ready_to_use",
+      "novelty": "N2",
+      "applicability": "A3",
+      "approach": "Continuous Algebraic Riccati Equation completion of squares, HasDerivAt trajectory integration, and dual Kalman-Bucy differential covariance trace optimality.",
+      "lean_modules": [
+        "ControlsLean/Estimation/KalmanBucy.lean"
+      ],
+      "key_theorems": [
+        "care_hjb_completion_of_squares",
+        "hasDerivAt_care_hjb",
+        "kalmanBucy_loewner_optimal",
+        "kalmanBucy_trace_optimal"
+      ],
+      "python_entrypoints": [
+        "ctrl.robotics.estimation_lqr.kalman_bucy_continuous_step"
+      ],
+      "combines_with": ["MATH-01", "ROBO-03"]
+    },
+    {
+      "id": "EST-03",
+      "title": "POMDP Bayesian Belief Simplex & Smallwood-Sondik PWLC Bellman Backup",
+      "domain": "Planning Under Uncertainty",
+      "status": "ready_to_use",
+      "novelty": "N2",
+      "applicability": "A2",
+      "approach": "Proves simplex invariance of Bayesian belief updates and convexity/PWLC preservation of alpha-vector value functions under Smallwood-Sondik dynamic programming backup.",
+      "lean_modules": [
+        "ControlsLean/Estimation/POMDPBelief.lean"
+      ],
+      "key_theorems": [
+        "bayesUpdate_isBelief",
+        "pomdpValue_convex",
+        "bellman_backup_pwlc_preservation"
+      ],
+      "combines_with": ["EST-01", "ROBO-04"]
+    },
+    {
+      "id": "ROBO-01",
+      "title": "Pareto-Optimal 7th-Order Septic Electromechanical Trajectory Family",
+      "domain": "Robotics Motion Planning",
+      "status": "ready_to_use",
+      "novelty": "N3",
+      "applicability": "A3",
+      "approach": "Proves cross-power orthogonality int_0^T a(t)j(t) dt = 0 on rest-to-rest trajectories and reduces motor Joule + viscous dissipation to exact rational quadratic forms in eta, strictly dominating 5th-order minimum-jerk.",
+      "lean_modules": [
+        "lean/Research/RobotEnergySmoothness.lean"
+      ],
+      "key_theorems": [
+        "rest_to_rest_cross_power_zero",
+        "exact_integral_quadratic_forms",
+        "inertial_joule_minimized_at_minus_eleven"
+      ],
+      "python_entrypoints": [
+        "ctrl.robotics.trajectories.optimal_septic_eta",
+        "ctrl.robotics.trajectories.electromechanical_energy",
+        "ctrl.robotics.mujoco_benchmarks.run_arm6dof_septic_energy_benchmark"
+      ],
+      "c99_plc_kernels": [
+        "ctrl_septic_q",
+        "ctrl_septic_v",
+        "ctrl_septic_a",
+        "ctrl_septic_j"
+      ],
+      "measured_impact": "-22.47% dynamic Joule heat loss (theoretical -18.33%) and -10.85% viscous dissipation in 6-DOF MuJoCo manipulator benchmark.",
+      "combines_with": ["NL-03", "CTRL-02", "NL-01"]
+    },
+    {
+      "id": "ROBO-02",
+      "title": "6-DOF SE(3) Log-Depth Homography-Based Visual Servoing (HBVS)",
+      "domain": "Visual Servoing & Perception",
+      "status": "ready_to_use",
+      "novelty": "N3",
+      "applicability": "A3",
+      "approach": "Proves rotational invariance of log-depth feedback dd/dt = -lambda d ln(d/d*), convex trajectory lower bound, and eliminates the sec(theta/2)^2 camera-retreat divergence of classical IBVS.",
+      "lean_modules": [
+        "lean/Research/VisualServoingInvariant.lean",
+        "lean/Research/HomographyDecomposition.lean"
+      ],
+      "key_theorems": [
+        "closed_loop_depth_formula",
+        "depth_monotone_in_interval",
+        "depth_convexity_lower_bound",
+        "ibvs_retreat_exceeds_initial_depth"
+      ],
+      "python_entrypoints": [
+        "ctrl.robotics.vision_se3.se3_depth_derivative",
+        "ctrl.robotics.vision_se3.hbvs_vs_ibvs_depth_ratio",
+        "ctrl.robotics.mujoco_benchmarks.run_se3_visual_servoing_benchmark"
+      ],
+      "measured_impact": "Eliminates 5.76x (12.67 m) IBVS camera retreat under 155-deg optical-axis rotation in MuJoCo.",
+      "combines_with": ["VIS-01", "ROBO-03", "EST-01"]
+    },
+    {
+      "id": "MATH-01",
+      "title": "Byers-Nash n=6 Skew-Hamiltonian Conjecture (MF-13) & 15D Skew Parseval Decomposition",
+      "domain": "Matrix Analysis & Lyapunov Conditioning",
+      "status": "promising_near_complete",
+      "novelty": "N3",
+      "applicability": "A2",
+      "approach": "Orthogonal Lyapunov decoupling on S_n (+) K_n, unconditional exclusion for rank(K) <= 4, 8-involution (F,G)-Klein Haar identity, complete 15D Parseval decomposition of K_6, and 10/10 exact rational LDL^T > 0 certificates on non-Common-T grid.",
+      "lean_modules": [
+        "lean/Research/ByersNashDuality.lean",
+        "lean/Research/ByersNashMultiTerm.lean",
+        "lean/Research/ByersNashHaarIntertwiner.lean",
+        "lean/Research/ByersNashOffDiagComplete.lean",
+        "lean/Research/SkewNormalForm.lean",
+        "lean/Research/SkewRankFourNormalForm.lean"
+      ],
+      "key_theorems": [
+        "lyap_symm_skew_orthogonal_decomp",
+        "lyapunov_singular_value_robustness_bound",
+        "eight_involution_byers_nash_identity",
+        "skew6_fifteen_dim_parseval",
+        "canonical_four_term_norm_identity",
+        "byers_nash_universal_12_comparator_bound"
+      ],
+      "remaining_work": "Analytical cross-term bound between the 1D W_pq-commuting (J) and 3D W_pq-anticommuting ({I_2, F, G}) off-diagonal subspaces when 1/2 ||Y_off||_F^2 > 3/4 ||Y_diag||_F^2.",
+      "combines_with": ["EST-02", "CTRL-01"]
+    },
+    {
+      "id": "MATH-02",
+      "title": "Erdős #885 Genus-2 Quotient Tower, Absolute Jacobian Simplicity & Mumford/Cantor 2-Descent",
+      "domain": "Arithmetic Geometry & Number Theory",
+      "status": "promising_near_complete",
+      "novelty": "N3",
+      "applicability": "A1",
+      "approach": "Projection tower from P^6 onto 15 elliptic + 7 genus-2 curves; symplectic Frobenius trace proof that End(J_Qbar) = Z for all 14 Class 1 & 2 Jacobians; Cassels-Flynn (x-T) squareness on single points, degree-2 Mumford divisors, and 3-/5-point Cantor reductions.",
+      "lean_modules": [
+        "lean/Research/Erdos885QuotientGenus.lean",
+        "lean/Research/Erdos885JacobianSimplicity.lean",
+        "lean/Research/Erdos885MumfordChabauty.lean"
+      ],
+      "key_theorems": [
+        "sextic_quintic_birational_iff",
+        "class1_all_seven_jacobians_absolutely_simple",
+        "class2_all_seven_jacobians_absolutely_simple",
+        "class1_and_class2_all_column_pairs_cassels_flynn_square",
+        "cantor_reduced_divisor_cassels_flynn_square"
+      ],
+      "remaining_work": "Formalize rank-1 Mordell-Weil generator certificate and p-adic Coleman integral zero bound on residue disks for k=5.",
+      "combines_with": ["MATH-04"]
+    },
+    {
+      "id": "MATH-03",
+      "title": "Erdős #273 p-1 Covering Systems & 23-Smooth Euler Threshold",
+      "domain": "Analytic & Combinatorial Number Theory",
+      "status": "promising_near_complete",
+      "novelty": "N3",
+      "applicability": "A1",
+      "approach": "Weighted CRT density engine and prime-divisor sieve proving the exact 9-prime (23-smooth) Euler product threshold crossover 323323/110592 < 3 < 7436429/2433024.",
+      "lean_modules": [
+        "lean/Research/CoveringCapacity.lean",
+        "lean/Research/CoveringCRT.lean",
+        "lean/Research/CoveringMass.lean",
+        "lean/Research/CoveringTail.lean",
+        "lean/Research/CoveringEleven.lean",
+        "lean/Research/CoveringSeventeen.lean",
+        "lean/Research/CoveringAssembly.lean",
+        "lean/Research/CoveringFamily.lean"
+      ],
+      "key_theorems": [
+        "exists_uncovered_of_capacity",
+        "euler_product_17",
+        "euler_product_19",
+        "euler_product_23",
+        "smooth_covering_threshold_at_23"
+      ],
+      "remaining_work": "Extend local branch-and-bound obstruction certificates beyond 23-smooth prime-shifted moduli.",
+      "combines_with": ["MATH-04"]
+    }
+  ]
+}
