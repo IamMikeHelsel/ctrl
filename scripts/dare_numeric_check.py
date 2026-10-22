@@ -24,7 +24,7 @@ def T(P, A, B, Q, R):
 P = np.zeros((n, n))
 prev = None
 mono = True
-for k in range(500):
+for _ in range(500):
     Pn, K = T(P, A, B, Q, R)
     if np.min(np.linalg.eigvalsh(Pn - P)) < -1e-9:
         mono = False
@@ -36,7 +36,7 @@ print("monotone iterates        :", mono)
 print("|P_iter - P_scipy|       :", np.abs(P - Ps).max())
 print("rho(A - B K)             :", max(abs(np.linalg.eigvals(A - B @ K))))
 S = np.zeros((n, n))
-for k in range(500):
+for _ in range(500):
     S, L = T(S, A.T, C.T, W, V)
 Ss = solve_discrete_are(A.T, C.T, W, V)
 L = A @ S @ C.T @ np.linalg.inv(V + C @ S @ C.T)
