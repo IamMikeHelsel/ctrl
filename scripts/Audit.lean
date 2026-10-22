@@ -375,3 +375,26 @@ import ControlsLean
 #print axioms ControlsLean.Bounty.ErdosWave2.Erdos311.delta_ge_inv_lcm
 #print axioms ControlsLean.Bounty.ErdosWave2.Erdos367.erdos_367.variants.k_le_two
 #print axioms ControlsLean.Bounty.ErdosWave2.Erdos455.discreteConvex_quadratic_lower_bound
+
+-- Addition 30: Estimation (POMDP Bayesian Belief Simplex & Smallwood-Sondik PWLC Value Functions)
+#print axioms ControlsLean.Estimation.POMDPBelief.isBelief_convex_comb
+#print axioms ControlsLean.Estimation.POMDPBelief.beliefUpdate_isBelief
+#print axioms ControlsLean.Estimation.POMDPBelief.beliefPredict_isBelief
+#print axioms ControlsLean.Estimation.POMDPBelief.pomdpValue_ge_dot
+#print axioms ControlsLean.Estimation.POMDPBelief.exists_alpha_achieving_pomdpValue
+#print axioms ControlsLean.Estimation.POMDPBelief.pomdpValue_convex
+#print axioms ControlsLean.Estimation.POMDPBelief.bellman_backup_alpha_eq
+#print axioms ControlsLean.Estimation.POMDPBelief.bellman_backup_normalized_eq
+#print axioms ControlsLean.Estimation.POMDPBelief.bellman_backup_pwlc_preservation
+
+-- Addition 31: Robotics (Slotine-Li Passivity Manipulator Tracking & Adaptive Control)
+#print axioms ControlsLean.Robotics.slidingError_eq_velError_add
+#print axioms ControlsLean.Robotics.slotine_li_closed_loop_sliding
+#print axioms ControlsLean.Robotics.slotine_li_augmented_closed_loop
+#print axioms ControlsLean.Robotics.skew_coriolis_power_cancel
+#print axioms ControlsLean.Robotics.slotine_li_lyapunov_deriv
+#print axioms ControlsLean.Robotics.slotine_li_lyapunov_deriv_neg
+#print axioms ControlsLean.Robotics.slotine_li_augmented_lyapunov_deriv
+#print axioms ControlsLean.Robotics.slotine_li_adaptive_lyapunov_deriv
+#print axioms ControlsLean.Robotics.slotine_li_exponential_rate
+#print axioms ControlsLean.Robotics.hasDerivAt_slotine_li_storage

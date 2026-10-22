@@ -5,6 +5,7 @@ import ControlsLean.Vision.EightPoint
 import ControlsLean.Vision.Triangulation
 import ControlsLean.Robotics.SO3Rodrigues
 import ControlsLean.Robotics.SE3Kinematics
+import ControlsLean.Robotics.ManipulatorTracking
 import ControlsLean.Controls.Hurwitz2
 import ControlsLean.Controls.Jury2
 import ControlsLean.Controls.Reachability
@@ -33,6 +34,7 @@ import ControlsLean.Estimation.AlphaBeta
 import ControlsLean.Estimation.KalmanOptimality
 import ControlsLean.Estimation.SteadyStateKalman
 import ControlsLean.Estimation.KalmanBucy
+import ControlsLean.Estimation.POMDPBelief
 import ControlsLean.Controls.LQG
 import ControlsLean.Controls.BoundedRealHInf
 import ControlsLean.Controls.BacksteppingCLF
