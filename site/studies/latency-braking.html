@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>What does latency cost in stopping distance? · ctrl</title>
+<meta name="description" content="A bounded one-dimensional stopping-distance experiment with exact arithmetic, Lean polynomial bounds and an explanatory Manim animation.">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="../style.css"><link rel="stylesheet" href="../research.css"><script src="latency-braking.js" defer></script></head>
+<body><a class="skip-link" href="#main">Skip to content</a><div class="page"><header>
+<div class="breadcrumbs"><a href="../index.html">ctrl</a> / <a href="../research.html">Research</a> / Delayed braking</div>
+<div class="eyebrow">Study 01 · known algebra, proposed systems composition</div>
+<h1>A stopping rule needs a clock.</h1>
+<p class="subtitle">A 0.25 m nominal stop becomes 0.6825 m when this example includes speed uncertainty, position error and reaction delay. The value of the exercise is making those assumptions inspectable.</p>
+<nav class="nav-links" aria-label="Study navigation"><a href="#model">Model</a><a href="#explore">Explore</a><a href="#results">Results</a><a href="#animation">Animation</a><a href="#reproduce">Reproduce</a></nav>
+</header><main id="main"><section id="model"><h2>The model and the question</h2>
+<p class="measure">Consider a point mass moving toward a stationary wall. An admission rule asks whether its available clearance covers a worst-case stop. It does not issue a command or recover a state that is already too close.</p>
+<div class="grid"><article class="panel"><h3>Declared assumptions</h3><ul>
+<li>One-dimensional forward motion; no turns or moving obstacle.</li>
+<li>Position error is at most ε; speed is at most u = v̂ + δv at observation time.</li>
+<li>Total delay τ includes state age, computation, transport and actuator reaction.</li>
+<li>Forward acceleration during the delay is at most A.</li>
+<li>After the delay, deceleration is at least b &gt; 0 until rest; rest is then held.</li>
+</ul></article><article class="panel"><h3>Required clearance</h3>
+<p class="formula">D = ε + uτ + ½Aτ² + (u + Aτ)² / (2b)</p>
+<p>The terms are position uncertainty, motion during reaction, and braking after reaction. This is familiar constant-acceleration algebra.</p>
+<p class="small muted">A real plant needs valid bounds and a dynamics-to-envelope argument. The new Lean file proves the explicit polynomial bounds, not that a robot follows them.</p></article></div>
+<aside class="note"><strong>The literature connection.</strong> Recent work studies <a href="https://arxiv.org/abs/2610.10797">computation delays in safety filters</a> and <a href="https://arxiv.org/abs/2609.17292">escape maneuvers under actuator limits</a>. Those papers motivate this reduced experiment. This study does not reproduce their algorithms or claim their guarantees.</aside></section>
+<section id="explore"><h2>Explore the assumed margin</h2><p class="measure">Change an input to see which part of the model consumes clearance. Browser arithmetic is approximate and illustrative; the downloadable experiment uses exact fractions.</p>
+<div class="panel"><div class="controls">
+<label for="speed">Estimated speed <output class="reading" for="speed" id="speed-value">1.00</output> m/s<input id="speed" type="range" min="0" max="3" step="0.05" value="1"></label>
+<label for="speed-error">Speed error bound <output class="reading" for="speed-error" id="speed-error-value">0.10</output> m/s<input id="speed-error" type="range" min="0" max="0.5" step="0.01" value="0.1"></label>
+<label for="position-error">Position error bound <output class="reading" for="position-error" id="position-error-value">0.02</output> m<input id="position-error" type="range" min="0" max="0.1" step="0.005" value="0.02"></label>
+<label for="delay">Total delay <output class="reading" for="delay" id="delay-value">0.20</output> s<input id="delay" type="range" min="0" max="0.5" step="0.01" value="0.2"></label>
+<label for="acceleration">Delay acceleration bound <output class="reading" for="acceleration" id="acceleration-value">1.00</output> m/s²<input id="acceleration" type="range" min="0" max="4" step="0.1" value="1"></label>
+<label for="brake">Minimum brake deceleration <output class="reading" for="brake" id="brake-value">2.00</output> m/s²<input id="brake" type="range" min="0.5" max="4" step="0.1" value="2"></label>
+<label for="wall">Available clearance <output class="reading" for="wall" id="wall-value">0.50</output> m<input id="wall" type="range" min="0.1" max="4" step="0.05" value="0.5"></label>
+</div>
+<svg class="diagram" viewBox="0 0 800 220" role="img" aria-labelledby="diagram-title diagram-desc"><title id="diagram-title">Nominal and bounded stopping thresholds</title><desc id="diagram-desc">At the default inputs the nominal threshold is 0.25 metres and the bounded threshold is 0.6825 metres, beyond the 0.5 metre wall.</desc>
+<text x="10" y="28">Required clearance (m)</text><line class="base" x1="20" y1="170" x2="770" y2="170"/>
+<rect class="nominal" id="nominal-bar" x="20" y="50" width="250" height="25" rx="3"/><text x="25" y="98" id="nominal-label">Nominal: 0.2500 m</text>
+<rect class="bounded" id="bounded-bar" x="20" y="112" width="600" height="25" rx="3"/><text x="25" y="160" id="bounded-label">Bounded: 0.6825 m</text>
+<line class="marker" id="wall-line" x1="475" y1="40" x2="475" y2="180"/><text x="20" y="205" id="wall-label">Available: 0.5000 m</text></svg>
+<p id="verdict" class="verdict" aria-live="polite">Nominal admits; bounded rejects this model admission.</p>
+<p class="small muted">Exact equality permits touching the boundary. Near floating-point equality, this display reports a numerical boundary instead of deciding. For strictly positive clearance, add an explicit reserve. No hardware or control command is produced.</p></div>
+<noscript><p class="note">JavaScript is disabled. The static example, proof scope, results and video remain available; sliders require JavaScript.</p></noscript></section>
+<section id="results"><h2>What was checked</h2><div class="table-wrap" role="region" aria-label="Exact-grid experiment results" tabindex="0"><table>
+<caption>432 declared parameter combinations × 80 fixed wall clearances = 34,560 cases. Every rule uses the same worst-case trajectory.</caption>
+<thead><tr><th scope="col">Rule</th><th scope="col">Admitted cases</th><th scope="col">Admitted cases with a crossing witness</th></tr></thead>
+<tbody><tr><th scope="row">Instantaneous nominal stop</th><td>30,480</td><td>2,066</td></tr><tr><th scope="row">Delay + uncertainty envelope</th><td>28,414</td><td>0 within this model/grid</td></tr></tbody></table></div>
+<p class="measure">This is a constructed sharp worst-case model. Zero false admissions are expected from the envelope; the grid is a reproducibility check, not an empirical safety rate. It shows the cost of omitting declared terms, not a general performance improvement.</p>
+<div class="grid"><article class="panel"><h3>Lean evidence</h3><p>Four declarations compile: a completed-square braking bound, a reaction-phase bound, their combined polynomial envelope, and the numerical counterexample. Their printed axioms are <code>propext</code>, <code>Classical.choice</code> and <code>Quot.sound</code>.</p><p class="small muted">This is not an approved Challenge or a formal proof of the Python/JavaScript implementation.</p></article>
+<article class="panel"><h3>Executable evidence</h3><p>Ten focused tests cover the exact witness, independent integration of four varying acceleration intervals, stronger braking, boundary contact, rest, invalid inputs and an understated-delay failure.</p><p class="small muted">A separate AI reviewer reproduced the grid counts using different counting/integration logic. Human review and physical tests remain open.</p></article></div>
+<details><summary>Where the model can fail</summary><p>Underestimated data age, sensor error or actuator delay; overestimated braking authority; changing friction; slopes; moving obstacles; turning; and failure to hold rest can invalidate the envelope. If state has already been propagated to the decision time, do not also charge its entire age as future delay. Rejected admission is not an available recovery maneuver.</p><p>Not proved here: general bounded-dynamics comparison, runtime refinement, recursive feasibility, probabilistic coverage or physical parameter validity.</p></details></section>
+<section id="animation"><h2>A 25-second explanation</h2><figure class="study-figure"><video controls preload="metadata" poster="../assets/research/latency-braking-poster.png" aria-label="Silent Manim animation illustrating the delayed braking counterexample" aria-describedby="video-transcript"><source src="../assets/research/latency-braking.mp4" type="video/mp4">Download the <a href="../assets/research/latency-braking.mp4">animation</a>.</video><figcaption>A synthetic mathematical illustration made with Manim. No hardware footage, autoplay or experimental claim.</figcaption></figure>
+<details id="video-transcript"><summary>Text description of the animation</summary><p>Speed estimate 1.0 ± 0.1 m/s; position error 0.02 m; delay 0.20 s; acceleration during delay 1 m/s²; braking 2 m/s². The instantaneous rule requires 0.25 m. Including delay and uncertainty requires 0.6825 m. Available clearance is 0.5 m. A point moves through the delay phase and then brakes, crossing the wall before stopping. The bounded admission rule rejects the case; rejection does not repair an already-moving robot. Next steps are validation of bounds, backup feasibility and implementation.</p></details></section>
+<section id="reproduce"><h2>Inspect and reproduce</h2><p>Curated snapshots of this study are downloadable without repository access. The manifest identifies their original repository paths and content hashes.</p>
+<ul><li><a href="../assets/research/latency_braking.py">Exact Python experiment</a> · <a href="../assets/research/test_latency_braking.py">tests</a> · <a href="../assets/research/latency-braking-results.json">raw grid results</a></li>
+<li><a href="../assets/research/LatencyBraking.lean">Lean statements and proofs</a> · <a href="../assets/research/latency_braking_scene.py">Manim source</a> · <a href="../assets/research/manifest.json">artifact hashes</a></li></ul>
+<p class="small muted">Within the ctrl checkout (Lean 4.33.1, pinned mathlib environment):</p>
+<pre><code>uv run python experiments/research/latency_braking.py \
+  --output work/research/2026-10/latency-braking-results.json
+uv run pytest -q tests/test_latency_braking.py
+cd lean
+lake env lean Research/LatencyBraking.lean</code></pre>
+<p class="small muted">For the standalone Python download: <code>uv run --no-project latency_braking.py --output results.json</code>. It uses only the standard library. Tests require the original relative paths in the manifest. The full pinned Lean dependency environment currently requires access to the private repository.</p>
+<p class="measure"><strong>Next experiment:</strong> connect the existing timestamped-state sink to a delay budget with explicit clock and actuator contracts. Compare freshness-only rejection with model-based margins under matched latency traces; measure false admissions, availability and unnecessary rejection. A smaller margin is useful only if its input bounds remain valid.</p></section>
+<section><h2>One useful sensitivity question</h2><p class="measure">In the specified example, reducing total delay by 20 ms saves exactly 38.7 mm of required clearance. Reducing the speed-error bound by 0.02 m/s and the position-error bound by 10 mm together saves 26.9 mm. These are hypothetical changes with the other inputs fixed, not measured engineering improvements or a comparison of implementation cost.</p><p class="measure">That suggests testing the timestamp-to-brake path before adding model complexity. Improving an assumed bound on paper is not evidence that the system improved.</p></section>
+</main><footer><span>AI-assisted code, proof text, review and explanation · 21 October 2026</span><a href="../research.html">Back to research</a></footer></div></body></html>
