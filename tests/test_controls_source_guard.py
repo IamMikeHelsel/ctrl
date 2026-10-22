@@ -66,3 +66,25 @@ def test_interpolation_tail_is_deliberately_fail_closed():
     assert GUARD.violations(source) == [(2, "sorry"), (3, "admit")]
     # Comment/string markers in the uncertain tail must never hide subsequent code.
     assert GUARD.code_only(source) == source
+
+
+@pytest.mark.parametrize(
+    "trivia,opener,closer",
+    [
+        (" ", '"', '"'),
+        ("\n", '"', '"'),
+        (" /- comment -/ ", '"', '"'),
+        (' /- quoted "text" -/ ', '"', '"'),
+        (' /- outer /- nested "text" -/ outer -/ ', '"', '"'),
+        (" -- line comment\n", '"', '"'),
+        (" /- raw boundary -/ ", 'r#"', '"#'),
+    ],
+)
+def test_interpolation_trivia_cannot_hide_a_proof(trivia, opener, closer):
+    source = (
+        f'def bad : String := s!{trivia}{opener}{{("x" : String)}} {{(by sorry : Nat)}}{closer}'
+    )
+    assert [token for _, token in GUARD.violations(source)] == ["sorry"]
+    # Even a nested string spelling a comment opener cannot mask the remaining proof.
+    source = source.replace('("x" : String)', '("/-" : String)')
+    assert [token for _, token in GUARD.violations(source)] == ["sorry"]

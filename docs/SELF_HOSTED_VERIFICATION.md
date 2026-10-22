@@ -155,7 +155,7 @@ Publication readiness remains conditional on the administrator-level public-fork
 
 After adding the contribution pages, `uv run ruff check .` and
 `uv run ruff format --check .` passed (20 Python files formatted), and `uv run pytest -q`
-passed with **60 tests, one integration test deselected**. Sixteen of these exercise the new
+passed with **67 tests, one integration test deselected**. Twenty-three of these exercise the new
 ControlsLean source guard: all five banned tokens, comments/strings, line positions, actual
 source files, CLI failure, quote handling and an interpolation escape attempt.
 
@@ -190,3 +190,10 @@ inside a nested string, and explicit conservative rejection of later comment/str
 This closes the reproduced masking hole without claiming a full Lean parser. The portable
 `domain-inventory.json` snapshot referenced by the copied assessment was also included; it
 contains no absolute `/Users/` paths and identifies its research-checkout provenance.
+
+The second independent regression inserted whitespace, newlines or comments between `s!` and
+the quote. Detection now examines the preceding source after trivia has been blanked, so these
+separators cannot bypass fail-closed handling. Seven additional parameterized tests cover the
+reported cases, quoted text/nested comments, line comments and a conservative raw-literal
+boundary. Each also checks a nested string containing a comment opener. The raw case is a
+lexical uncertainty control, not a claim that every such spelling elaborates in Lean.

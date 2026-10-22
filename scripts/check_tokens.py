@@ -14,7 +14,8 @@ def code_only(source: str) -> str:
 
     Lean character literals are skipped too; a quote character inside one must not hide
     the following code. Identifier primes are not character-literal delimiters.
-    At an interpolated-string opener (! followed by a quote), leave the remainder
+    At an interpolated-string opener (! then trivia then an ordinary/raw quote),
+    leave the remainder
     unmasked. Nested quoted Lean terms otherwise defeat a simple string lexer. This
     deliberately may flag words in later prose/comments: fail closed and request review.
     This is a conservative lexical guard, not a Lean syntax/elaboration implementation.
@@ -45,12 +46,15 @@ def code_only(source: str) -> str:
                 else:
                     i += 1
         elif raw := re.match(r'r(#+)"', source[i:]):
+            if "".join(output[:i]).rstrip().endswith("!"):
+                break
             delimiter = '"' + raw[1]
             end = source.find(delimiter, i + len(raw[0]))
             i = len(source) if end < 0 else end + len(delimiter)
         elif source[i] == '"':
-            if i > 0 and source[i - 1] == "!":
-                # Do not resume masking after an uncertain interpolation boundary.
+            if "".join(output[:i]).rstrip().endswith("!"):
+                # Already-blanked comments and whitespace are trivia; they cannot
+                # make an interpolation safe to mask. Keep the entire tail visible.
                 break
             i += 1
             while i < len(source):

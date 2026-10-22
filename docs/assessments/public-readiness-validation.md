@@ -9,7 +9,7 @@ Contribution/PR/issue guidance; benefit-first homepage/README copy; adoption dia
 ## Local checks
 
 - `uv run ruff check .` and `uv run ruff format --check .`: PASS in this main-based checkout.
-- `uv run pytest -q`:60passed,1deselected. Sixteen source-guard tests cover forbidden code, nested comments, ordinary/raw strings, interpolation, character literals and rejection exit codes.
+- `uv run pytest -q`:67passed,1deselected. Twenty-three source-guard tests cover forbidden code, nested comments, ordinary/raw strings, interpolation, character literals and rejection exit codes.
 - `actionlint`1.7.7 with shellcheck: PASS; only unknown custom-label warnings suppressed after live label verification.
 - Shell syntax and `git diff --check`: PASS.
 - Four site pages: local links, assets and anchors PASS.60unique pipeline rows,12perfield,10wildcards;55GO/1HOLD/4NO-GO. M05 uses completed-extension evidence; S12 is explicitly partial.
@@ -36,3 +36,5 @@ The campaign remains paused within S12-B01 while this product work is performed;
 Candidate26b4298c passed all three self-hosted workflows: Lean39788575275 (55source files,445headline axiom checks), lint39788575296, Erdős39788575290 (56tests plus lab checks). An independent nested-interpolation probe nevertheless exposed a new lexical masking bug. The next revision keeps the uncertain interpolation tail unmasked, adds four regressions, and documents conservative rejection;60local tests pass. Earlier green evidence is not used to waive rerunning the repaired revision.
 
 The separate GitHub Copilot review39788723947 did not start because of the account payment/spending-limit restriction reported by GitHub. Its logs are unavailable; check-run annotations supplied the reason. No billing change was made. This is separate from the three successful self-hosted verification workflows and the independent agent review.
+
+A second independent probe established that Lean permits whitespace/newline/comments between an interpolation prefix and its quote. The repaired guard checks the prefix after masking prior trivia, including uncertain raw-literal forms, then preserves the entire remaining tail. Seven added regression variants and all55current ControlsLean files pass;67local tests pass. The independent critic replayed the nested-quote and separated-opener attacks. This remains a conservative source guard; standard-axiom checking is a separate gate.
