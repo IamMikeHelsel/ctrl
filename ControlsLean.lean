@@ -32,6 +32,7 @@ import ControlsLean.Controls.SchurLyapunov
 import ControlsLean.Controls.DAREUniqueness
 import ControlsLean.Controls.LQROptimality
 import ControlsLean.Controls.DAREDetectable
+import ControlsLean.Controls.DAREBellman
 import ControlsLean.Controls.ISS
 import ControlsLean.Controls.BarrierPassivity
 import ControlsLean.Estimation.ScalarKalman
@@ -41,6 +42,7 @@ import ControlsLean.Estimation.AlphaBeta
 import ControlsLean.Estimation.KalmanOptimality
 import ControlsLean.Estimation.SteadyStateKalman
 import ControlsLean.Estimation.KalmanBucy
+import ControlsLean.Estimation.KalmanBucyFilter
 import ControlsLean.Estimation.POMDPBelief
 import ControlsLean.Controls.LQG
 import ControlsLean.Controls.BoundedRealHInf
