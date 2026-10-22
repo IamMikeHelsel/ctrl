@@ -3,806 +3,1037 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>ctrl — Lean 4 Proofs &amp; Solver-Free C99/PLC Kernels for Robotics &amp; Control</title>
-  <meta name="description" content="Practical bridge between Lean 4 control theorems, dual-mode (exact rational + float64) Python reference kernels, zero-heap C99/IEC 61131-3 ST code generation, and MuJoCo physics benchmarks." />
+  <title>ctrl · Proved control kernels for Python, C99 and PLCs</title>
+  <meta name="description" content="Closed-form control, safety and estimation kernels backed by Lean 4 proofs. Use them from Python, emit zero-heap C99 or IEC 61131-3 Structured Text, and check them in MuJoCo." />
   <style>
     :root {
       --bg: #fafafa;
       --surface: #ffffff;
       --surface-alt: #f4f4f5;
+      --code-bg: #f4f4f5;
       --text: #111827;
       --muted: #4b5563;
       --border: #e5e7eb;
       --accent: #0f766e;
+      --accent-ink: #ffffff;
       --accent-soft: #ccfbf1;
       --ready-bg: #dcfce7;
       --ready-fg: #166534;
-      --promising-bg: #fef3c7;
-      --promising-fg: #92400e;
-      --work-bg: #e0e7ff;
-      --work-fg: #1e40af;
+      --py-bg: #e0e7ff;
+      --py-fg: #1e40af;
+      --lean-bg: #fef3c7;
+      --lean-fg: #92400e;
       --mono: "JetBrains Mono", "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
       --sans: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     }
-
     @media (prefers-color-scheme: dark) {
       :root {
         --bg: #0b0f17;
         --surface: #111827;
         --surface-alt: #1f2937;
+        --code-bg: #0d1320;
         --text: #f3f4f6;
         --muted: #9ca3af;
         --border: #263244;
         --accent: #2dd4bf;
+        --accent-ink: #042f2e;
         --accent-soft: #115e59;
         --ready-bg: #064e3b;
         --ready-fg: #a7f3d0;
-        --promising-bg: #78350f;
-        --promising-fg: #fde68a;
-        --work-bg: #1e3a8a;
-        --work-fg: #bfdbfe;
+        --py-bg: #1e3a8a;
+        --py-fg: #bfdbfe;
+        --lean-bg: #78350f;
+        --lean-fg: #fde68a;
       }
     }
-
-    * {
-      box-sizing: border-box;
-    }
-
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; scroll-padding-top: 4rem; }
     body {
       margin: 0;
-      padding: 0;
       background: var(--bg);
       color: var(--text);
       font-family: var(--sans);
-      line-height: 1.58;
+      line-height: 1.6;
       -webkit-font-smoothing: antialiased;
     }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .page { max-width: 1120px; margin: 0 auto; padding: 0 1rem 5rem; }
+    @media (min-width: 720px) { .page { padding: 0 1.5rem 5rem; } }
 
-    a {
-      color: var(--accent);
-      text-decoration: none;
-    }
-
-    a:hover {
-      text-decoration: underline;
-    }
-
-    .page {
-      max-width: 1120px;
-      margin: 0 auto;
-      padding: 2.5rem 1.5rem 5rem;
-    }
-
-    header {
+    /* Sticky top nav */
+    .topnav {
+      position: sticky; top: 0; z-index: 10;
+      background: color-mix(in srgb, var(--bg) 92%, transparent);
+      backdrop-filter: blur(6px);
       border-bottom: 1px solid var(--border);
-      padding-bottom: 1.75rem;
-      margin-bottom: 2rem;
     }
+    .topnav-inner {
+      max-width: 1120px; margin: 0 auto; padding: 0.55rem 1rem;
+      display: flex; gap: 1rem; align-items: center; overflow-x: auto;
+      font-family: var(--mono); font-size: 0.8rem; white-space: nowrap;
+    }
+    @media (min-width: 720px) { .topnav-inner { padding: 0.55rem 1.5rem; } }
+    .topnav-inner .brand { font-weight: 700; color: var(--text); margin-right: 0.25rem; }
+    .topnav-inner a:not(.brand) { color: var(--muted); }
+    .topnav-inner a:not(.brand):hover { color: var(--accent); text-decoration: none; }
 
+    header.hero { padding: 2.5rem 0 1.5rem; }
     .eyebrow {
-      font-family: var(--mono);
-      font-size: 0.78rem;
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
-      color: var(--accent);
-      margin-bottom: 0.5rem;
+      font-family: var(--mono); font-size: 0.76rem; letter-spacing: 0.05em;
+      text-transform: uppercase; color: var(--accent); margin-bottom: 0.5rem;
     }
-
     h1 {
-      font-size: clamp(1.65rem, 2.8vw, 2.2rem);
-      font-weight: 700;
-      letter-spacing: -0.02em;
-      margin: 0 0 0.75rem;
+      font-size: clamp(1.6rem, 3.4vw, 2.35rem); font-weight: 700;
+      letter-spacing: -0.02em; line-height: 1.2; margin: 0 0 0.85rem; max-width: 30ch;
     }
-
-    .subtitle {
-      font-size: 1.02rem;
-      color: var(--muted);
-      max-width: 82ch;
-      margin: 0 0 1.25rem;
+    .subtitle { font-size: 1.04rem; color: var(--muted); max-width: 70ch; margin: 0 0 1.4rem; }
+    .cta { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+    .btn {
+      display: inline-block; font-family: var(--mono); font-size: 0.84rem; font-weight: 600;
+      padding: 0.55rem 0.95rem; border-radius: 6px; border: 1px solid var(--border);
+      background: var(--surface); color: var(--text);
     }
+    .btn:hover { text-decoration: none; border-color: var(--accent); }
+    .btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
 
-    .nav-links {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.65rem 1.25rem;
-      font-family: var(--mono);
-      font-size: 0.82rem;
+    /* Pipeline strip */
+    .pipeline {
+      display: grid; grid-template-columns: 1fr; gap: 0.6rem; margin: 2rem 0 0.5rem;
+      counter-reset: stage;
     }
-
-    section {
-      margin-bottom: 3rem;
+    @media (min-width: 760px) { .pipeline { grid-template-columns: repeat(4, 1fr); } }
+    .stage {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+      padding: 0.85rem 0.95rem; position: relative;
     }
+    .stage-k { font-family: var(--mono); font-size: 0.72rem; color: var(--accent); font-weight: 700; text-transform: uppercase; }
+    .stage h3 { font-size: 0.98rem; margin: 0.2rem 0 0.3rem; }
+    .stage p { font-size: 0.84rem; color: var(--muted); margin: 0; }
+    .stage .gives { font-size: 0.8rem; margin-top: 0.45rem; color: var(--text); }
 
+    section { padding-top: 2.75rem; }
     h2 {
-      font-size: 1.28rem;
-      font-weight: 650;
-      letter-spacing: -0.01em;
-      border-bottom: 1px solid var(--border);
-      padding-bottom: 0.5rem;
-      margin: 0 0 1rem;
+      font-size: 1.35rem; font-weight: 680; letter-spacing: -0.01em;
+      border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; margin: 0 0 0.6rem;
     }
-
-    h3 {
-      font-size: 1.05rem;
-      margin: 0 0 0.45rem;
-    }
-
-    p {
-      margin: 0 0 0.85rem;
-    }
-
-    code, pre {
-      font-family: var(--mono);
-      font-size: 0.82rem;
-    }
-
-    code {
-      background: var(--surface-alt);
-      padding: 0.12rem 0.35rem;
-      border-radius: 4px;
-    }
-
+    .lede { color: var(--muted); max-width: 75ch; margin: 0 0 1.25rem; }
+    h3 { font-size: 1.06rem; margin: 0 0 0.45rem; }
+    h4 { font-size: 0.92rem; margin: 1rem 0 0.4rem; }
+    p { margin: 0 0 0.85rem; }
+    code, pre { font-family: var(--mono); font-size: 0.8rem; }
+    code { background: var(--surface-alt); padding: 0.1rem 0.32rem; border-radius: 4px; overflow-wrap: anywhere; }
     pre {
-      background: var(--surface-alt);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 0.9rem 1rem;
-      overflow-x: auto;
-      margin: 0 0 0.85rem;
-      line-height: 1.45;
+      background: var(--code-bg); border: 1px solid var(--border); border-radius: 6px;
+      padding: 0.85rem 1rem; overflow-x: auto; margin: 0 0 0.85rem; line-height: 1.5; position: relative;
     }
-
-    .walkthrough-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-      gap: 1rem;
-      margin-bottom: 1rem;
+    pre code { background: none; padding: 0; overflow-wrap: normal; }
+    pre.out { border-left: 3px solid var(--accent); }
+    pre.out::before {
+      content: "output"; display: block; font-size: 0.68rem; text-transform: uppercase;
+      letter-spacing: 0.05em; color: var(--muted); margin-bottom: 0.35rem;
     }
-
-    .panel {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 1.1rem;
+    .copy {
+      position: absolute; top: 0.4rem; right: 0.4rem; font-family: var(--mono); font-size: 0.7rem;
+      background: var(--surface); color: var(--muted); border: 1px solid var(--border);
+      border-radius: 4px; padding: 0.15rem 0.45rem; cursor: pointer; opacity: 0.85;
     }
+    .copy:hover { color: var(--accent); border-color: var(--accent); }
 
-    .panel-label {
-      font-family: var(--mono);
-      font-size: 0.75rem;
-      text-transform: uppercase;
-      color: var(--accent);
-      margin-bottom: 0.35rem;
-      font-weight: 600;
+    .panel, .card {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1.1rem;
     }
+    .grid2 { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+    @media (min-width: 860px) { .grid2 { grid-template-columns: 1fr 1fr; } }
 
-    .callout-note {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-left: 3px solid var(--accent);
-      border-radius: 6px;
-      padding: 0.9rem 1.1rem;
-      font-size: 0.9rem;
-      margin-top: 1rem;
+    .callout {
+      background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--accent);
+      border-radius: 6px; padding: 0.85rem 1.05rem; font-size: 0.9rem; margin: 1rem 0;
     }
+    .callout p:last-child { margin-bottom: 0; }
 
-    /* Pillar Showcase Cards with Embedded Scientific GIFs */
-    .pillar-list {
-      display: flex;
-      flex-direction: column;
-      gap: 1.5rem;
+    /* Quickstart steps */
+    ol.steps { list-style: none; padding: 0; margin: 0; counter-reset: s; }
+    ol.steps > li { counter-increment: s; position: relative; padding-left: 2.4rem; margin-bottom: 1.1rem; }
+    ol.steps > li::before {
+      content: counter(s); position: absolute; left: 0; top: 0; width: 1.7rem; height: 1.7rem;
+      border-radius: 50%; background: var(--accent); color: var(--accent-ink);
+      font-family: var(--mono); font-weight: 700; font-size: 0.85rem;
+      display: grid; place-items: center;
     }
+    ol.steps h3 { margin-top: 0.1rem; }
 
-    .pillar-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 1.35rem;
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 1.25rem;
-      align-items: start;
-    }
-
-    @media (min-width: 860px) {
-      .pillar-card {
-        grid-template-columns: 1.05fr 1.15fr;
-      }
-    }
-
-    .pillar-tag {
-      font-family: var(--mono);
-      font-size: 0.76rem;
-      color: var(--accent);
-      font-weight: 600;
-      margin-bottom: 0.35rem;
-    }
-
-    .pillar-figure {
-      margin: 0;
-      background: #0b0f17;
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      overflow: hidden;
-    }
-
-    .pillar-figure img {
-      display: block;
-      width: 100%;
-      height: auto;
-    }
-
-    .pillar-caption {
-      font-family: var(--mono);
-      font-size: 0.74rem;
-      color: var(--muted);
-      padding: 0.5rem 0.75rem;
-      background: var(--surface-alt);
-      border-top: 1px solid var(--border);
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.86rem;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      margin-bottom: 1rem;
-    }
-
-    th, td {
-      text-align: left;
-      padding: 0.65rem 0.8rem;
-      border-bottom: 1px solid var(--border);
-      vertical-align: top;
-    }
-
+    /* Tables */
+    .table-wrap { overflow-x: auto; margin-bottom: 1rem; border: 1px solid var(--border); border-radius: 6px; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.85rem; background: var(--surface); }
+    th, td { text-align: left; padding: 0.6rem 0.75rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+    tr:last-child td { border-bottom: none; }
     th {
-      font-family: var(--mono);
-      font-size: 0.75rem;
-      text-transform: uppercase;
-      color: var(--muted);
-      background: var(--surface-alt);
+      font-family: var(--mono); font-size: 0.72rem; text-transform: uppercase; color: var(--muted);
+      background: var(--surface-alt); white-space: nowrap;
     }
 
-    .synergy-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-      gap: 1rem;
+    /* Status chips */
+    .chip-s {
+      display: inline-block; font-family: var(--mono); font-size: 0.68rem; font-weight: 700;
+      padding: 0.08rem 0.4rem; border-radius: 3px; white-space: nowrap; vertical-align: 1px;
     }
+    .s-c { background: var(--ready-bg); color: var(--ready-fg); }
+    .s-py { background: var(--py-bg); color: var(--py-fg); }
+    .s-lean { background: var(--lean-bg); color: var(--lean-fg); }
 
-    .synergy-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 1.15rem;
+    /* Problem chooser */
+    .chooser { display: grid; grid-template-columns: 1fr; gap: 0.6rem; margin-bottom: 1.5rem; }
+    @media (min-width: 640px) { .chooser { grid-template-columns: 1fr 1fr; } }
+    .chooser a {
+      display: block; background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+      padding: 0.8rem 0.95rem; color: var(--text);
     }
+    .chooser a:hover { border-color: var(--accent); text-decoration: none; }
+    .chooser .q { font-weight: 600; display: block; margin-bottom: 0.15rem; }
+    .chooser .a { font-size: 0.82rem; color: var(--muted); font-family: var(--mono); }
 
-    .synergy-chain {
-      font-family: var(--mono);
-      font-size: 0.76rem;
-      color: var(--accent);
-      margin-bottom: 0.4rem;
+    /* Recipes */
+    .recipe { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 1.2rem; margin-bottom: 1.4rem; }
+    .recipe-head { display: flex; flex-wrap: wrap; gap: 0.4rem 0.75rem; align-items: baseline; margin-bottom: 0.35rem; }
+    .recipe-tag { font-family: var(--mono); font-size: 0.74rem; color: var(--accent); font-weight: 700; }
+    .facts { display: grid; grid-template-columns: 1fr; gap: 0.5rem 1.2rem; margin: 0.75rem 0 1rem; font-size: 0.87rem; }
+    @media (min-width: 760px) { .facts { grid-template-columns: repeat(3, 1fr); } }
+    .facts div { border-top: 1px dashed var(--border); padding-top: 0.45rem; }
+    .facts b { display: block; font-family: var(--mono); font-size: 0.7rem; text-transform: uppercase; color: var(--muted); letter-spacing: 0.04em; }
+
+    .tabs [role="tablist"] { display: flex; gap: 0.3rem; flex-wrap: wrap; margin-bottom: -1px; }
+    .tabs [role="tab"] {
+      font-family: var(--mono); font-size: 0.78rem; background: var(--surface-alt); color: var(--muted);
+      border: 1px solid var(--border); border-bottom: none; border-radius: 6px 6px 0 0;
+      padding: 0.35rem 0.75rem; cursor: pointer;
     }
+    .tabs [role="tab"][aria-selected="true"] { background: var(--code-bg); color: var(--text); font-weight: 700; }
+    .tabs [role="tabpanel"] > pre:first-child { border-top-left-radius: 0; }
+    .tabs [role="tabpanel"][hidden] { display: none; }
+    .note { font-size: 0.82rem; color: var(--muted); }
 
-    /* Filter Toolbar */
+    /* Combinations */
+    .combo { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 1.2rem; margin-bottom: 1.2rem; }
+    .combo-k { font-family: var(--mono); font-size: 0.74rem; color: var(--accent); font-weight: 700; }
+    ol.tick { list-style: none; padding: 0; margin: 0.6rem 0 0.8rem; counter-reset: t; }
+    ol.tick li {
+      counter-increment: t; display: grid; grid-template-columns: 1.6rem 1fr; gap: 0.15rem 0.6rem;
+      padding: 0.5rem 0; border-top: 1px solid var(--border); font-size: 0.88rem;
+    }
+    ol.tick li::before {
+      content: counter(t); font-family: var(--mono); font-weight: 700; color: var(--accent); grid-row: span 2;
+    }
+    ol.tick .fn { font-family: var(--mono); font-size: 0.8rem; }
+    ol.tick .line { grid-column: 2; display: flex; flex-wrap: wrap; gap: 0.3rem 0.5rem; align-items: center; }
+    ol.tick .why { grid-column: 2; }
+    ol.tick .why { color: var(--muted); font-size: 0.84rem; }
+    .legend { display: flex; flex-wrap: wrap; gap: 0.5rem 1rem; font-size: 0.82rem; color: var(--muted); margin-bottom: 1rem; }
+
+    /* Results */
+    .result { display: grid; grid-template-columns: 1fr; gap: 1.1rem; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 1.2rem; margin-bottom: 1.2rem; }
+    @media (min-width: 860px) { .result { grid-template-columns: 1fr 1.1fr; align-items: start; } }
+    .result figure { margin: 0; background: #0b0f17; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+    .result img { display: block; width: 100%; height: auto; }
+    .result figcaption { font-family: var(--mono); font-size: 0.72rem; color: var(--muted); padding: 0.5rem 0.75rem; background: var(--surface-alt); border-top: 1px solid var(--border); }
+    .nums { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0.6rem 0 0.8rem; }
+    .num { background: var(--surface-alt); border-radius: 6px; padding: 0.4rem 0.65rem; }
+    .num b { display: block; font-family: var(--mono); font-size: 1rem; }
+    .num span { font-size: 0.74rem; color: var(--muted); }
+
+
+    /* Media */
+    .hero-media { margin: 1.6rem 0 0; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; background: #0b0f17; }
+    .hero-media img, .show img { display: block; width: 100%; height: auto; }
+    .hero-media figcaption, .show figcaption { font-size: 0.82rem; color: var(--muted); padding: 0.7rem 0.95rem; background: var(--surface); border-top: 1px solid var(--border); }
+    .show { margin: 0 0 1.4rem; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; background: #0b0f17; }
+    .show-grid { display: grid; grid-template-columns: 1fr; gap: 1.2rem; }
+    .show-grid .show { max-width: 900px; }
+    .show-body { padding: 0.95rem 1rem 1rem; background: var(--surface); border-top: 1px solid var(--border); }
+    .show-body h3 { margin-bottom: 0.3rem; }
+    .show-body p { font-size: 0.9rem; margin-bottom: 0.6rem; }
+
+    /* Perspective */
+    .essay { max-width: 820px; }
+    .essay > p, .essay > h3 { max-width: 72ch; }
+    .essay h3 { font-size: 1.02rem; margin: 1.4rem 0 0.35rem; }
+    .essay p { color: var(--text); }
+    .essay .src { font-size: 0.78rem; color: var(--muted); }
+
+    /* Catalog */
     .filter-bar {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.65rem;
-      align-items: center;
-      margin-bottom: 1.25rem;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 0.75rem 1rem;
+      display: flex; flex-wrap: wrap; gap: 0.65rem; align-items: center; margin-bottom: 1.25rem;
+      background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 0.75rem 1rem;
     }
-
-    .filter-group {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.35rem;
-      align-items: center;
-    }
-
-    .filter-label {
-      font-family: var(--mono);
-      font-size: 0.75rem;
-      color: var(--muted);
-      margin-right: 0.25rem;
-    }
-
+    .filter-group { display: flex; flex-wrap: wrap; gap: 0.35rem; align-items: center; }
+    .filter-label { font-family: var(--mono); font-size: 0.75rem; color: var(--muted); margin-right: 0.25rem; }
     button.chip {
-      font-family: var(--mono);
-      font-size: 0.75rem;
-      background: var(--surface-alt);
-      color: var(--text);
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      padding: 0.28rem 0.6rem;
-      cursor: pointer;
+      font-family: var(--mono); font-size: 0.75rem; background: var(--surface-alt); color: var(--text);
+      border: 1px solid var(--border); border-radius: 4px; padding: 0.28rem 0.6rem; cursor: pointer;
     }
-
-    button.chip[aria-pressed="true"] {
-      background: var(--accent);
-      color: #ffffff;
-      border-color: var(--accent);
-    }
-
-    /* Size-aware container query setup per modern-web-guidance: size-aware-styling */
-    .idea-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
-      gap: 1rem;
-    }
-
-    .idea-cell {
-      container-type: inline-size;
-    }
-
+    button.chip[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+    .idea-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 330px), 1fr)); gap: 1rem; }
+    .idea-cell { container-type: inline-size; }
     .idea-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 1.1rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0.6rem;
-      height: 100%;
+      background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--border);
+      border-radius: 6px; padding: 1.1rem; display: flex; flex-direction: column; gap: 0.6rem; height: 100%;
     }
+    .idea-card.has-impact { border-left-color: var(--accent); }
+    .card-header { display: flex; flex-direction: column; gap: 0.35rem; }
+    @container (min-width: 420px) { .card-header { flex-direction: row; justify-content: space-between; align-items: flex-start; } }
+    .idea-id { font-family: var(--mono); font-size: 0.77rem; font-weight: 700; color: var(--accent); }
+    .badges { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+    .badge { font-family: var(--mono); font-size: 0.69rem; padding: 0.12rem 0.45rem; border-radius: 3px; font-weight: 600; }
+    .badge-ready { background: var(--ready-bg); color: var(--ready-fg); }
+    .badge-promising { background: var(--lean-bg); color: var(--lean-fg); }
+    .badge-tier { background: var(--surface-alt); color: var(--muted); border: 1px solid var(--border); }
+    .impact-callout { background: var(--surface-alt); border-radius: 4px; padding: 0.55rem 0.7rem; font-size: 0.82rem; }
+    .meta-list { font-size: 0.8rem; color: var(--muted); display: flex; flex-direction: column; gap: 0.25rem; margin-top: auto; padding-top: 0.5rem; border-top: 1px dashed var(--border); }
 
-    /* Content-based styling per modern-web-guidance: content-based-styling */
-    .idea-card:has(.impact-callout) {
-      border-left: 3px solid var(--accent);
-    }
-
-    .idea-card:not(:has(.impact-callout)) {
-      border-left: 3px solid var(--border);
-    }
-
-    @supports not selector(:has(*)) {
-      .idea-card.has-impact {
-        border-left: 3px solid var(--accent);
-      }
-      .idea-card:not(.has-impact) {
-        border-left: 3px solid var(--border);
-      }
-    }
-
-    .card-header {
-      display: flex;
-      flex-direction: column;
-      gap: 0.35rem;
-    }
-
-    @container (min-width: 420px) {
-      .card-header {
-        flex-direction: row;
-        justify-content: space-between;
-        align-items: flex-start;
-      }
-    }
-
-    .idea-id {
-      font-family: var(--mono);
-      font-size: 0.77rem;
-      font-weight: 700;
-      color: var(--accent);
-    }
-
-    .badges {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.35rem;
-    }
-
-    .badge {
-      font-family: var(--mono);
-      font-size: 0.69rem;
-      padding: 0.12rem 0.45rem;
-      border-radius: 3px;
-      font-weight: 600;
-    }
-
-    .badge-ready {
-      background: var(--ready-bg);
-      color: var(--ready-fg);
-    }
-
-    .badge-promising {
-      background: var(--promising-bg);
-      color: var(--promising-fg);
-    }
-
-    .badge-tier {
-      background: var(--surface-alt);
-      color: var(--muted);
-      border: 1px solid var(--border);
-    }
-
-    .impact-callout {
-      background: var(--surface-alt);
-      border-radius: 4px;
-      padding: 0.55rem 0.7rem;
-      font-size: 0.82rem;
-    }
-
-    .meta-list {
-      font-size: 0.8rem;
-      color: var(--muted);
-      display: flex;
-      flex-direction: column;
-      gap: 0.25rem;
-      margin-top: auto;
-      padding-top: 0.5rem;
-      border-top: 1px dashed var(--border);
-    }
-
-    details {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 0.85rem 1.1rem;
-      margin-top: 1rem;
-    }
-
-    summary {
-      font-family: var(--mono);
-      font-size: 0.85rem;
-      font-weight: 600;
-      cursor: pointer;
-    }
+    details { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 0.85rem 1.05rem; margin-top: 1rem; }
+    summary { font-family: var(--mono); font-size: 0.85rem; font-weight: 600; cursor: pointer; }
+    details[open] summary { margin-bottom: 0.75rem; }
 
     footer {
-      margin-top: 4rem;
-      padding-top: 1.5rem;
-      border-top: 1px solid var(--border);
-      font-size: 0.82rem;
-      color: var(--muted);
-      display: flex;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 1rem;
+      margin-top: 4rem; padding-top: 1.5rem; border-top: 1px solid var(--border);
+      font-size: 0.82rem; color: var(--muted); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 1rem;
     }
   </style>
 </head>
 <body>
-  <div class="page">
-    <header>
-      <div class="eyebrow">Lean 4 + Dual-Mode Python (Exact &#8474; &amp; Float64) + C99 / IEC 61131-3 ST + MuJoCo</div>
-      <h1>ctrl &mdash; Closed-Form Control &amp; Robotics Kernels Backed by Lean 4 Proofs</h1>
+  <nav class="topnav" aria-label="Sections">
+    <div class="topnav-inner">
+      <a class="brand" href="#top">ctrl</a>
+      <a href="#pillars">See it work</a>
+      <a href="#why">Why</a>
+      <a href="#start">Quickstart</a>
+      <a href="#recipes">Recipes</a>
+      <a href="#kernels">Kernel reference</a>
+      <a href="#combinations">Combining modules</a>
+      <a href="#verification-boundary">Proved vs tested</a>
+      <a href="#catalog">Catalog</a>
+      <a href="#community">In work</a>
+      <a href="https://github.com/IamMikeHelsel/ctrl">GitHub</a>
+    </div>
+  </nav>
+
+  <div class="page" id="top">
+    <header class="hero">
+      <div class="eyebrow">Lean 4 proofs · Python reference · C99 · IEC 61131-3 ST · MuJoCo</div>
+      <h1>Control and safety kernels that come with a proof, and drop into a 1 kHz loop</h1>
       <p class="subtitle">
-        <code>ctrl</code> pairs machine-checked Lean 4 theorems about control, state estimation, and multi-contact robotics with runnable Python reference implementations, solver-free C99 / PLC Structured Text kernels, and MuJoCo physics simulations. Where possible, we replace online iterative QP/SOCP solvers inside 1&ndash;10 kHz control loops with proved closed-form algebraic laws that run in deterministic time with zero heap allocation.
+        <code>ctrl</code> replaces online QP/SOCP solves with closed-form laws that are proved in Lean 4. You call them from Python while you prototype, then emit the same math as zero-heap C99 for a microcontroller or Structured Text for a PLC. Every kernel is checked against its Python reference and exercised in MuJoCo.
       </p>
-      <nav class="nav-links" aria-label="Primary navigation">
-        <a href="#pillars">1. Four Core Application Pillars (with MuJoCo Animations)</a>
-        <a href="#walkthrough">2. End-to-End Code Walkthrough</a>
-        <a href="#verification-boundary">3. What's Proved vs. Tested</a>
-        <a href="#combinations">4. Multi-Module Application Blueprints</a>
-        <a href="#catalog">5. Domain Catalog</a>
-        <a href="#community">6. Ongoing Work &amp; Community Formalizations</a>
-        <a href="synergy.html">Synergy Lens</a>
-        <a href="AGENT_IDEA_INDEX.json">AGENT_IDEA_INDEX.json</a>
-        <a href="https://github.com/IamMikeHelsel/ctrl">GitHub</a>
-      </nav>
+      <div class="cta">
+        <a class="btn primary" href="#start">Run it in 5 minutes</a>
+        <a class="btn" href="#why">Why this matters</a>
+        <a class="btn" href="#recipes">Pick a problem</a>
+        <a class="btn" href="#combinations">Wire modules together</a>
+      </div>
+
+      <figure class="hero-media">
+        <img src="assets/brake_shield.gif" width="800" height="450" fetchpriority="high"
+             alt="Two identical wheeled robots drive at 3 m/s toward a dock edge. The one running the ctrl shield brakes and stops with its front wheels at the edge; the one running the planner alone drives off and flips." />
+        <figcaption>
+          MuJoCo, shown at 0.25× speed. Both robots run the same planner, which keeps asking for forward acceleration. The shielded robot blends toward braking only as much as its stopping-distance barrier requires, stops 9 mm from the limit, and never unloads a wheel (minimum 22 N). The other leaves the dock at 3.5 m/s. The controller only sees a 1.20 m limit, exactly as in <code>run_quadruped_zmp_cbf_benchmark()</code>; the dock is there so you can see what the limit protects.
+        </figcaption>
+      </figure>
+
+      <div class="pipeline" aria-label="How a result moves from proof to deployment">
+        <div class="stage">
+          <div class="stage-k">1 · Lean 4</div>
+          <h3>Theorem over ℝ</h3>
+          <p>The control law is stated in closed form and proved with no <code>sorry</code> and only standard axioms.</p>
+          <div class="gives">Gives you: the guarantee and its exact hypotheses.</div>
+        </div>
+        <div class="stage">
+          <div class="stage-k">2 · Python</div>
+          <h3><code>ctrl.robotics</code></h3>
+          <p>Each function runs on <code>float</code> or exact <code>Fraction</code>, and names the Lean theorems it implements.</p>
+          <div class="gives">Gives you: a reference you can prototype and unit test with.</div>
+        </div>
+        <div class="stage">
+          <div class="stage-k">3 · Codegen</div>
+          <h3>C99 and ST</h3>
+          <p>No loops over data, no heap, no solver iterations. Compiled with <code>-Werror</code> and diffed against Python.</p>
+          <div class="gives">Gives you: files you paste into firmware or a PLC project.</div>
+        </div>
+        <div class="stage">
+          <div class="stage-k">4 · MuJoCo</div>
+          <h3>Closed-loop benchmark</h3>
+          <p>Rigid-body rollouts against tuned baselines, so you see the effect under real dynamics.</p>
+          <div class="gives">Gives you: numbers you can reproduce with one call.</div>
+        </div>
+      </div>
     </header>
 
-    <!-- 1. FOUR CORE APPLICATION PILLARS WITH SCIENTIFIC ANIMATIONS -->
+    <!-- SEE IT WORK -->
     <section id="pillars">
-      <h2>1. Most Promising Application Pillars &amp; Closed-Loop MuJoCo Animations</h2>
-      <p>
-        Each animation below is generated directly from live closed-loop MuJoCo 3.16.0 RK4 rollouts (<code>tools/generate_site_gifs.py</code>) comparing our Lean-backed closed-form kernels against standard and tuned engineering baselines.
-      </p>
-
-      <div class="pillar-list">
-        <!-- Pillar 1 -->
-        <article class="pillar-card">
-          <div>
-            <div class="pillar-tag">Pillar I &middot; Legged &amp; Mobile Safety Control (<code>LorentzConeCBF.lean</code> + <code>CentroidalDecelerationLimit.lean</code>)</div>
-            <h3>Solver-Free 3D Lorentz-Cone CBF &amp; 4-Foot Bilinear ZMP Braking</h3>
-            <p>
-              <strong>Domain problem:</strong> When a quadruped or wheeled mobile robot brakes hard before an obstacle, it risks either sliding its feet outside the friction cone (&mu;) or pitching over its front support edge when the Zero-Moment Point (ZMP) leaves the footprint of half-width <em>W</em> at center-of-mass height <em>h<sub>G</sub></em>. Standard implementations solve a 12-variable Second-Order Cone Program (SOCP) or QP-CBF at every 1 kHz tick, which takes 50&ndash;250 &mu;s and can fail to converge near singular contact configurations.
-            </p>
-            <p>
-              <strong>Our approach &amp; practical impact:</strong> We proved in Lean 4 that the exact maximum safe deceleration is <code>a_max = min(&mu;, W/h_G) * g</code> (biconditional theorem <code>deceleration_safe_iff</code>), and that a closed-form bilinear normal force + proportional shear allocator realizes any acceleration inside that bound across 4 contacts with <strong>identically zero net 3D Euler torque</strong> (<code>quad_contact_zero_angular_momentum</code>). Paired with a directional stopping-distance barrier <code>h(r, v)</code>, this gives the same physical stopping safety as an exact SOCP solver while running in <strong>&lt;100 ns in C99 or PLC Structured Text</strong> with zero heap allocation.
-            </p>
+      <h2>See it work</h2>
+      <p class="lede">Each animation is a closed-loop simulation using the same functions the recipes below call. Nothing is keyframed. Scripts to regenerate them are in <a href="https://github.com/IamMikeHelsel/ctrl/tree/claude/arm-benchmark-fix/tools/site_animations"><code>tools/site_animations/</code></a>.</p>
+      <div class="show-grid">
+        <figure class="show">
+          <img src="assets/septic_arm.gif" width="800" height="450" loading="lazy"
+               alt="Two identical 6-axis arms make the same move and return. Joint housings glow with winding power; the minimum-jerk arm accumulates 1810 J of motion heat and the septic arm 1408 J." />
+          <div class="show-body">
+            <div class="recipe-tag">Septic trajectory · Recipe 2</div>
+            <h3>Same move, same time, about a fifth less motion heat</h3>
+            <p>Only the time profile changes, from 5th-order minimum jerk to the septic profile at η = −11. Joint housings glow with instantaneous winding power. Over one move the dynamic I²R drops 22% (904 → 704 J) and viscous loss 10.8%, matching the proved 10.79%. Total I²R falls 3.3%, because holding the arm up against gravity dominates and no time profile changes that.</p>
+            <div class="nums">
+              <div class="num"><b>−22%</b><span>heat from motion</span></div>
+              <div class="num"><b>−10.8%</b><span>viscous loss</span></div>
+              <div class="num"><b>−3.3%</b><span>total, incl. gravity</span></div>
+            </div>
           </div>
-          <figure class="pillar-figure">
-            <!-- LCP candidate image: fetchpriority="high" per modern-web-guidance: optimize-image-priority -->
-            <img src="assets/pillar1_lorentz_cbf.gif"
-                 alt="Animated MuJoCo simulation of 3D quadruped emergency braking before a wall at 1.20m showing stopping-distance barrier h(r,v) and minimum foot normal force"
-                 fetchpriority="high"
-                 width="800" height="360" />
-            <figcaption class="pillar-caption">
-              MuJoCo 3.16.0 rollout (<code>run_quadruped_zmp_cbf_benchmark</code>): 40 kg trunk at 3.0 m/s stops safely at <code>1.192 m &lt; 1.20 m</code> wall, <code>f_z,min = 22.14 N &gt; 0</code>, pitch/roll rate <code>1.64e-15 rad/s</code>.
-            </figcaption>
-          </figure>
-        </article>
-
-        <!-- Pillar 2 -->
-        <article class="pillar-card">
-          <div>
-            <div class="pillar-tag">Pillar II &middot; Industrial Manipulator Motion Planning (<code>RobotEnergySmoothness.lean</code>)</div>
-            <h3>7th-Order Septic Rest-to-Rest Trajectory Shaping (&eta; = &minus;11)</h3>
-            <p>
-              <strong>Domain problem:</strong> Industrial robot arms executing repetitive pick-and-place cycles are often thermally limited by motor winding Joule heating (&int; <em>I</em><sup>2</sup><em>R dt</em>) and joint viscous dissipation (&int; <em>B q&#775;</em><sup>2</sup> <em>dt</em>). Classical 5th-order minimum-jerk trajectories minimize &int; <em>j</em>(<em>t</em>)<sup>2</sup> <em>dt</em>, which leaves a free degree of freedom unused when boundary jerk is unconstrained.
-            </p>
-            <p>
-              <strong>Our approach &amp; realistic improvement range:</strong> By parameterizing a 7th-order septic family with free parameter &eta; and proving in Lean 4 that the cross-power integral &int;<sub>0</sub><sup><em>T</em></sup> <em>a</em>(<em>t</em>)<em>j</em>(<em>t</em>) <em>dt</em> vanishes identically on rest-to-rest motions (<code>rest_to_rest_cross_power_zero</code>), the electromechanical energy reduces to an exact rational quadratic form minimized at <code>&eta; = &minus;11</code>. In a 6-DOF MuJoCo manipulator rollout, this yields a modest, practical <strong><code>4.1%</code> reduction in total motor <em>I</em><sup>2</sup><em>R</em></strong> (when static gravity holding dominates), <strong><code>10.8%</code> reduction in viscous loss</strong> (matching the 1D theoretical <code>10.79%</code>), and <strong><code>18.3%&ndash;22.5%</code> reduction in dynamic motion Joule heat</strong> (where the 6-DOF arm slightly exceeds the <code>18.33%</code> 1D linear inertia prediction because lower mid-stroke velocity also reduces quadratic Coriolis/centripetal cross-torques).
-            </p>
+        </figure>
+        <figure class="show">
+          <img src="assets/servo_roll.gif" width="800" height="450" loading="lazy"
+               alt="Two cameras above identical four-marker targets must rotate 160 degrees and descend from 2.2 to 1.0 meters. The classical IBVS camera shoots up to 9.3 meters before coming back; the depth-decoupled camera descends smoothly while rotating." />
+          <div class="show-body">
+            <div class="recipe-tag">Depth-decoupled servoing · Recipe 4</div>
+            <h3>A 160° roll without the camera running away</h3>
+            <p>Classical image-based servoing drives each feature in a straight line on the image, which for a large roll means shrinking the pattern, so the camera backs away. Here it climbs from 2.2 m to 9.3 m before returning. Regulating depth to the plane separately from roll keeps the camera inside [1.0, 2.2] m the whole way. Both controllers are simulated with the real point-feature model at the same gain.</p>
+            <div class="nums">
+              <div class="num"><b>9.3 m</b><span>IBVS peak height</span></div>
+              <div class="num"><b>[1.0, 2.2] m</b><span>decoupled range</span></div>
+            </div>
           </div>
-          <figure class="pillar-figure">
-            <!-- Below-the-fold image: loading="lazy" without fetchpriority="low" per modern-web-guidance: optimize-image-priority -->
-            <img src="assets/pillar2_septic_energy.gif"
-                 alt="Animated MuJoCo comparison of instantaneous dynamic motor power and cumulative Joule heat for 5th-order minimum-jerk vs 7th-order septic trajectory"
-                 loading="lazy"
-                 width="800" height="360" />
-            <figcaption class="pillar-caption">
-              MuJoCo 3.16.0 6-DOF RNE rollout (<code>run_arm6dof_septic_energy_benchmark</code>): Septic (<code>&eta; = &minus;11</code>) trims peak dynamic power and cuts dynamic motion winding heat from <code>773.2 J</code> to <code>599.5 J</code>.
-            </figcaption>
-          </figure>
-        </article>
+        </figure>
+      </div>
 
-        <!-- Pillar 3 -->
-        <article class="pillar-card">
-          <div>
-            <div class="pillar-tag">Pillar III &middot; Nonlinear Disturbance Rejection (<code>BacksteppingCLF.lean</code> + <code>BoundedRealHInf.lean</code> + <code>ISS.lean</code>)</div>
-            <h3>Sontag Universal CLF + <em>H</em><sub>&infin;</sub>/ISS Damping Under Torque Impulses</h3>
-            <p>
-              <strong>Domain problem:</strong> Contact-rich manipulation (deburring, insertion, payload handoff) subjects robot joints to sudden impulsive torque spikes on top of multi-frequency vibration. A fixed-gain linear Computed-Torque Controller (CTC) must trade off steady-state noise amplification against peak excursion during a transient impact.
-            </p>
-            <p>
-              <strong>Our approach &amp; comparison against a strong CTC baseline:</strong> We combine strict-feedback integrator backstepping and Sontag's analytic universal Control Lyapunov Function stabilizer (<code>sontag_universal_stabilizer</code>, guaranteeing <em>V&#775;</em> &le; &minus;&radic;(<em>a</em><sup>2</sup> + <em>b</em><sup>4</sup>)) with a discrete <em>H</em><sub>&infin;</sub> minimax disturbance gain (<code>hinf_l2_gain_bound</code>) and a square-root-free matrix Peter&ndash;Paul ISS tube (<code>iss_invariant_sublevel</code>). Tested in MuJoCo against a <strong>well-tuned high-gain Computed-Torque Controller with matched linear poles</strong> (<em>K<sub>p</sub></em> = 416, <em>K<sub>d</sub></em> = 42 + sliding damping), Sontag's nonlinear gain scaling reduces peak joint error during a mid-maneuver torque impulse by a realistic <strong><code>39.4%</code></strong> (<code>27.1 mrad &rarr; 16.4 mrad</code>) and RMS tracking error by <strong><code>39.6%</code></strong>.
-            </p>
-          </div>
-          <figure class="pillar-figure">
-            <img src="assets/pillar3_sontag_hinf.gif"
-                 alt="Animated MuJoCo comparison of 6-DOF joint tracking error under sinusoidal and impulsive torque disturbances for tuned high-gain CTC vs Sontag CLF + H-infinity controller"
-                 loading="lazy"
-                 width="800" height="360" />
-            <figcaption class="pillar-caption">
-              MuJoCo 3.16.0 6-DOF rollout (<code>run_arm6dof_disturbance_iss_hinf_benchmark</code>): Sontag CLF + <em>H</em><sub>&infin;</sub> cuts impulse peak error by <code>39.4%</code> vs. matched-pole high-gain Computed-Torque Control.
-            </figcaption>
-          </figure>
-        </article>
+      <article class="result" style="grid-template-columns: 1fr;">
+        <div>
+          <div class="recipe-tag">Sontag CLF + H∞/ISS · Recipe 3</div>
+          <h3>Smaller excursion under a torque impulse than computed torque</h3>
+          <p>6-DOF arm tracking a septic move while a sinusoidal disturbance and an impulse of up to 14 N·m hit every joint. Against a high-gain computed-torque controller (K<sub>p</sub> = 416, K<sub>d</sub> = 42 plus sliding damping), peak error falls 39.4% (27.1 → 16.4 mrad) and RMS error 39.6%. <code>run_arm6dof_disturbance_iss_hinf_benchmark()</code></p>
+        </div>
+      </article>
+    </section>
 
-        <!-- Pillar 4 -->
-        <article class="pillar-card">
-          <div>
-            <div class="pillar-tag">Pillar IV &middot; 6-DOF Pose &amp; Visual Servoing (<code>VisualServoingInvariant.lean</code> + <code>HomographyDecomposition.lean</code>)</div>
-            <h3>Chirality-Filtered Homography &amp; Log-Depth <em>SE</em>(3) Visual Servoing</h3>
-            <p>
-              <strong>Domain problem:</strong> In classical 2D Image-Based Visual Servoing (IBVS), commanding a large optical-axis camera roll (&Delta;&phi; &rarr; 180&deg;) causes image features to move along straight lines in pixel space, which forces the physical camera to retreat backwards along its optical axis by a factor of <code>sec(&Delta;&phi;/2)</code> (the Chaumette camera-retreat pathology) and risks hitting workspace limits.
-            </p>
-            <p>
-              <strong>Our approach &amp; practical impact:</strong> We formalized 4-point projective homography uniqueness (<code>homography_unique_four_points</code>), Faugeras rank-2 decomposition with chirality branch filtering (<code>n &middot; X &gt; 0</code>), and decoupled <em>SE</em>(3) log-depth feedback <code>d&#775; = &minus;&lambda; d ln(d/d*)</code> (<code>closed_loop_depth_formula</code>). Because optical-axis roll lies in the kernel of the depth Lie derivative, camera depth converges monotonically inside <code>[1.015 m, 2.200 m]</code> under a 160&deg; roll in MuJoCo, completely avoiding the 5.76&times; (<code>12.67 m</code>) backwards retreat of classical IBVS.
-            </p>
-          </div>
-          <figure class="pillar-figure">
-            <img src="assets/pillar4_se3_servoing.gif"
-                 alt="Animated MuJoCo comparison of camera depth trajectory under 160-degree optical-axis roll showing IBVS retreat to 12.67m vs monotone HBVS convergence"
-                 loading="lazy"
-                 width="800" height="360" />
-            <figcaption class="pillar-caption">
-              MuJoCo 3.16.0 6-DOF camera rollout (<code>run_se3_visual_servoing_benchmark</code>): Log-depth HBVS stays strictly inside <code>[1.015 m, 2.20 m]</code> and above its proved convex lower bound.
-            </figcaption>
-          </figure>
-        </article>
+    <!-- WHY -->
+    <section id="why">
+      <h2>Why there is so much room left</h2>
+      <div class="essay">
+          <p>Control theory is one of the most mature parts of engineering. Most of what runs on factory floors still looks like it did decades ago. That gap is the opportunity, and it isn't a gap in ideas.</p>
+
+          <h3>Plants still run on PID, and most loops are not tuned well</h3>
+          <p>In a survey of 11,600 controllers across eighteen facilities, 97% of regulatory controllers were PID. In a separate sample of about 26,000 loops, only about a third performed acceptably, and 36% were running open loop. The better algorithms exist. They just don't get deployed.</p>
+          <p class="src">Desborough and Miller, <a href="https://skoge.folk.ntnu.no/prost/proceedings/cpc6-jan2002/desborough.pdf">Increasing Customer Value of Industrial Control Performance Monitoring</a>, CPC6, 2002.</p>
+
+          <h3>The good stuff lives behind a solver</h3>
+          <p>Model predictive control, safety filters, contact-force allocation and friction-cone constraints are usually posed as a QP or SOCP and solved every tick. On a workstation that is fine. Inside a 1 kHz PLC task, or in front of a functional-safety assessor, it is hard: the iteration count depends on the state, the worst case is hard to bound, and "the solver didn't converge" needs a fallback anyway. The chart below is a real 12-variable SOCP against the closed-form kernel that does the same job.</p>
+        <figure class="show" style="max-width: 820px; margin: 1.2rem 0 0.4rem;">
+          <img src="assets/why_timing.gif" width="800" height="450" loading="lazy"
+               alt="Strip chart of per-tick compute time on a log scale. SOCP solve times scatter between about 70 microseconds and 2.7 milliseconds with 5 to 13 iterations; the closed-form C99 kernel sits flat near 43 nanoseconds." />
+          <figcaption>3,000 random states. Clarabel SOCP: median 122 µs, 5 to 13 iterations, worst 2.7 ms (4 ticks over a 1 ms budget). C99 kernel, which also runs the safety filter: median 43 ns, no iterations. One Xeon core in a cloud VM; both see the same OS jitter.</figcaption>
+        </figure>
+
+          <h3>Many of those problems have a closed form hiding in them</h3>
+          <p>After the right change of variables, the optimum is often a formula. The largest braking that neither slips nor tips is min(μ, W/h)·g. The least-intrusive safe command is a single blend factor. The septic profile that minimizes inertial heat is η = −11, exactly. Formulas like these are trivial to run and easy to certify. Historically they have been expensive to find and hard to trust, because a sign error in a hand derivation is a crash in the field.</p>
+
+          <h3>Proof assistants make trust cheap, and AI makes finding cheaper</h3>
+          <p>Lean checks every identity mechanically, including the edge cases a paper waves through. AI-assisted proving is bringing the cost of formalizing a textbook control result down from a thesis to a project, which changes which problems are worth reformulating. Each kernel here carries the names of the theorems it implements, and a test fails if any of them is missing or uses an escape hatch.</p>
+
+          <h3>Small percentages on a very large base</h3>
+          <p>Electric motor systems used about 53% of the world's electricity in 2023, and 72% of industrial electricity. A time profile that trims a fifth of the motion heat costs one polynomial in firmware and no new hardware. A shield that never needs a solver can run on the controller you already have.</p>
+          <p class="src">IEA 4E Electric Motor Systems Platform, <a href="https://www.iea-4e.org/emsa/publications/policy-brief-electric-motor-systems-why-are-they-important/">Electric motor systems: why are they important?</a></p>
+
+          <h3>The last mile is the file format</h3>
+          <p>A result that ships as a paper rarely reaches a machine. A result that ships as a Structured Text block someone can drop into TwinCAT or CODESYS might. That is why every kernel here ends as C99 and IEC 61131-3, with the proof and the test right next to it.</p>
       </div>
     </section>
 
-    <!-- 2. ONE CLEAR END-TO-END CODE WALKTHROUGH -->
-    <section id="walkthrough">
-      <h2>2. Code Walkthrough: How a Lean 4 Theorem Becomes a C99 Kernel</h2>
-      <div class="walkthrough-grid">
-        <div class="panel">
-          <div class="panel-label">Step 1 &middot; Lean 4 Proof Over &#8477; (<code>LorentzConeCBF.lean</code>)</div>
-          <p>
-            We prove in Lean 4 (<code>0 sorry</code>) that setting the maximum deceleration to <code>a_max = min(&mu;, W/h_G) * g</code> and distributing ground forces across the 4 feet via a bilinear Zero-Moment-Point (ZMP) + proportional shear law satisfies:
-          </p>
-          <pre><code>theorem quad_contact_zero_angular_momentum (p : QuadParams) (ax ay : &#8477;) :
+    <!-- QUICKSTART -->
+    <section id="start">
+      <h2>Quickstart</h2>
+      <p class="lede">Python 3.11+, a C compiler, and about five minutes. These commands were run from a clean clone; the output blocks are what you should see.</p>
+
+      <div class="callout">
+        <p><strong>Where the code lives today.</strong> The Python runtime, code generator and MuJoCo benchmarks are on the <a href="https://github.com/IamMikeHelsel/ctrl/tree/crossover-research-2026-10-19/src/ctrl/robotics"><code>crossover-research-2026-10-19</code></a> branch, not <code>main</code>. The general Lean library (<a href="https://github.com/IamMikeHelsel/ctrl/tree/main/ControlsLean"><code>ControlsLean/</code></a>) is on <code>main</code>. The robotics-specific Lean modules (<code>LorentzConeCBF</code>, <code>RobotEnergySmoothness</code>, <code>VisualServoingInvariant</code>, <code>RoboLean/*</code>) are in <a href="https://github.com/IamMikeHelsel/ctrl/tree/ca83c44aa954977db918052d4a9273da27c0c6ca/lean/Research">this snapshot</a> until they land on a branch.</p>
+      </div>
+
+      <ol class="steps">
+        <li>
+          <h3>Clone and install</h3>
+<pre><code>git clone -b crossover-research-2026-10-19 https://github.com/IamMikeHelsel/ctrl
+cd ctrl
+uv venv && uv pip install -e . numpy mujoco     # or: python -m venv .venv && pip install -e . numpy mujoco
+source .venv/bin/activate</code></pre>
+        </li>
+        <li>
+          <h3>Generate the C99 and PLC kernels and check them against Python</h3>
+<pre><code>python - &lt;&lt;'EOF'
+from pathlib import Path
+import ctrl.robotics as r
+print(r.emit_c99_and_iec61131(Path("out")))      # writes .h, .c, .st
+print(r.compile_and_verify_c99_kernels())         # clang -std=c99 -O3 -Werror + ctypes diff
+EOF</code></pre>
+<pre class="out"><code>{'header': PosixPath('out/ctrl_robotics_kernels.h'), 'c_source': PosixPath('out/ctrl_robotics_kernels.c'), 'st_source': PosixPath('out/ctrl_robotics_kernels.st')}
+{'compiled_ok': True, 'max_c99_vs_python_error': 0.0, 'parity_verified': True}</code></pre>
+          <p class="note"><code>out/</code> now holds 12 C functions and 4 Structured Text POUs. The <a href="#kernels">kernel reference</a> lists each one with the Lean theorem behind it.</p>
+        </li>
+        <li>
+          <h3>Reproduce the benchmarks</h3>
+<pre><code>python -c "import ctrl.robotics as r; q = r.run_quadruped_zmp_cbf_benchmark(); print(q['max_x_reached_m'], q['safety_verified'])"</code></pre>
+<pre class="out"><code>1.1919725647447998 True</code></pre>
+          <p class="note"><code>run_all_mujoco_benchmarks()</code> runs all four in under a second. <code>pytest tests/test_ctrl_robotics_lib.py</code> runs the unit tests; the Lean-binding audit in that file needs the robotics Lean sources checked out alongside (see the note above).</p>
+        </li>
+      </ol>
+
+      <h3>Which layer do you need?</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>You are</th><th>Use</th><th>Start with</th></tr></thead>
+          <tbody>
+            <tr><td>Prototyping a controller or writing tests</td><td>Python, <code>float</code> inputs</td><td><a href="#recipes">Recipes</a>, Python tab</td></tr>
+            <tr><td>Checking an algebraic property exactly (no rounding)</td><td>Python, <code>Fraction</code> inputs</td><td>Same functions, pass <code>fractions.Fraction</code></td></tr>
+            <tr><td>Shipping on an MCU, RTOS task, or C/C++ stack</td><td>Generated C99</td><td><code>ctrl_robotics_kernels.{h,c}</code>, C99 tab</td></tr>
+            <tr><td>Shipping on a PLC (TwinCAT, CODESYS, TIA)</td><td>Generated Structured Text</td><td><code>ctrl_robotics_kernels.st</code>, PLC tab</td></tr>
+            <tr><td>Reviewing what is actually guaranteed</td><td>Lean 4</td><td><a href="#verification-boundary">Proved vs tested</a></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- RECIPES -->
+    <section id="recipes">
+      <h2>Recipes: pick the problem you have</h2>
+      <p class="lede">Each recipe is one control tick or one planning call, with the inputs you supply, the call, and real output. Switch tabs to see the same thing in C99 or Structured Text.</p>
+
+      <div class="chooser">
+        <a href="#r-brake"><span class="q">My robot must stop before an obstacle without slipping or tipping</span><span class="a">safe_decel_max · lorentz_cbf_safety_filter · quad_contact_forces</span></a>
+        <a href="#r-septic"><span class="q">My arm's pick-and-place cycle is thermally limited</span><span class="a">optimal_septic_eta · septic_q / v / a</span></a>
+        <a href="#r-clf"><span class="q">A joint takes torque hits and needs a stabilizing law with a certificate</span><span class="a">ctrl_sontag_clf · ctrl_backstepping_control</span></a>
+        <a href="#r-servo"><span class="q">My eye-in-hand servo backs away when the target rolls</span><span class="a">se3_depth_derivative · hbvs_vs_ibvs_depth_ratio</span></a>
+      </div>
+
+      <!-- Recipe 1 -->
+      <article class="recipe" id="r-brake">
+        <div class="recipe-head">
+          <span class="recipe-tag">Recipe 1 · Legged and wheeled safety</span>
+          <span class="chip-s s-c">C99</span><span class="chip-s s-c">ST</span><span class="chip-s s-py">Python</span>
+        </div>
+        <h3>Emergency braking shield for a 4-contact base</h3>
+        <p>Your planner sends an acceleration command. Each tick, the shield checks a stopping-distance barrier and, only when needed, blends the command toward a backup brake by the smallest amount that keeps the barrier satisfied. The blended command is then split into four foot forces that stay in the friction cone and produce zero net torque about the CoM.</p>
+        <div class="facts">
+          <div><b>You supply</b>mass, CoM height, stance half-widths, μ; position and velocity; planner command; wall position</div>
+          <div><b>You get</b>blend factor λ ∈ [0, 1], safe acceleration, four 3D foot forces</div>
+          <div><b>Proved</b><code>deceleration_safe_iff</code>, <code>lorentz_backup_controller_safe</code>, <code>quad_contact_zero_angular_momentum</code></div>
+        </div>
+
+        <div class="tabs">
+          <div role="tablist" aria-label="Recipe 1 language">
+            <button role="tab" aria-selected="true">Python</button>
+            <button role="tab" aria-selected="false">C99</button>
+            <button role="tab" aria-selected="false">PLC (ST)</button>
+          </div>
+          <div role="tabpanel">
+<pre><code>from fractions import Fraction as F
+from ctrl.robotics import (CentroidalQuadParams, safe_decel_max, directional_cbf,
+    lorentz_cbf_safety_filter, quad_contact_forces, verify_quad_wrench_balance)
+
+# 40 kg trunk, CoM 0.45 m high, stance half-widths 0.25 x 0.18 m, mu = 0.6
+p = CentroidalQuadParams(m=40.0, g=9.81, h_g=0.45, w_x=0.25, w_y=0.18, mu=0.60)
+a_max = safe_decel_max(p.g, p.mu, p.w_x, p.h_g)     # min(mu, W/h) * g
+a_brake = 0.92 * a_max
+
+# One 1 kHz tick: robot at x = 0.9 m moving 1.5 m/s toward a wall at 1.2 m
+r, v = (0.90, 0.0, p.h_g), (1.5, 0.0, 0.0)
+h = directional_cbf((1.20, 0.0, p.h_g), r, v, (1.0, 0.0, 0.0), a_brake)
+b_req = min(a_brake * (1 - 3.5 * h / max(v[0], 0.1)), a_brake)
+
+u_nom = (1.2, 0.0, p.g)            # planner still wants to accelerate
+pi_b  = (-a_brake, 0.0, p.g)       # backup: brake at a_brake
+lam, u_safe = lorentz_cbf_safety_filter((-1.0, 0.0, 0.0), b_req, u_nom, pi_b)
+feet = quad_contact_forces(p, u_safe[0], u_safe[1])
+
+print(f"a_max={a_max:.3f}  h={h:.4f}  lambda={lam:.3f}  ax_safe={u_safe[0]:.3f}")
+for corner, f in feet.items():
+    print(corner, tuple(round(x, 2) for x in f))
+
+# Same allocator in exact rational arithmetic: torque is exactly zero, not ~1e-16
+q = CentroidalQuadParams(m=F(40), g=F(981, 100), h_g=F(9, 20), w_x=F(1, 4), w_y=F(9, 50), mu=F(3, 5))
+print(verify_quad_wrench_balance(q, F(-5), F(1, 2))["net_torque"])</code></pre>
+<pre class="out"><code>a_max=5.450  h=0.0756  lambda=0.858  ax_safe=-4.129
+(-1, -1) (-10.01, 0.0, 23.77)
+(-1, 1) (-10.01, 0.0, 23.77)
+(1, -1) (-72.58, 0.0, 172.43)
+(1, 1) (-72.58, 0.0, 172.43)
+(Fraction(0, 1), Fraction(0, 1), Fraction(0, 1))</code></pre>
+            <p class="note">Corners are <code>(ex, ey)</code> with <code>ex = +1</code> at the front. Braking loads the front feet, and every foot stays inside μ = 0.6.</p>
+          </div>
+          <div role="tabpanel" hidden>
+<pre><code>#include &lt;stdio.h&gt;
+#include "ctrl_robotics_kernels.h"
+
+int main(void) {
+    /* Barrier a.u &gt;= b_req on the forward axis: a = (-1, 0, 0) */
+    const double a_cbf[3] = {-1.0, 0.0, 0.0};
+    const double u_nom[3] = { 1.2, 0.0, 9.81};
+    const double pi_b[3]  = {-5.014, 0.0, 9.81};
+    double u_safe[3], f[3];
+
+    double lam = ctrl_lorentz_cbf_filter(a_cbf, 4.129, u_nom, pi_b, u_safe);
+    printf("lambda=%.3f ax_safe=%.3f\n", lam, u_safe[0]);
+
+    for (int ex = -1; ex &lt;= 1; ex += 2)
+        for (int ey = -1; ey &lt;= 1; ey += 2) {
+            ctrl_quad_contact_force(40.0, 9.81, 0.45, 0.25, 0.18,
+                                    u_safe[0], u_safe[1], ex, ey, f);
+            printf("(%+d,%+d) fx=%7.2f fz=%7.2f\n", ex, ey, f[0], f[2]);
+        }
+    return 0;
+}</code></pre>
+<pre><code>clang -std=c99 -O3 -Wall -Wextra -Werror -Iout main.c out/ctrl_robotics_kernels.c -lm -o brake && ./brake</code></pre>
+<pre class="out"><code>lambda=0.858 ax_safe=-4.129
+(-1,-1) fx= -10.01 fz=  23.78
+(-1,+1) fx= -10.01 fz=  23.78
+(+1,-1) fx= -72.57 fz= 172.42
+(+1,+1) fx= -72.57 fz= 172.42</code></pre>
+            <p class="note">Compute <code>h</code> and <code>b_req</code> in your own code (two lines, shown in the Python tab). The filter and allocator are branch-bounded with no allocation.</p>
+          </div>
+          <div role="tabpanel" hidden>
+<pre><code>VAR
+    fbShield : FB_CTRL_QUAD_WRENCH_CBF;
+    h, bReq  : LREAL;
+END_VAR
+
+(* Stopping-distance barrier on the forward axis, computed by the caller *)
+h    := (X_LIMIT - xPos) - (vx * vx) / (2.0 * A_BRAKE);
+bReq := MIN(A_BRAKE * (1.0 - 3.5 * h / MAX(vx, 0.1)), A_BRAKE);
+
+fbShield(M := 40.0, G := 9.81, H_G := 0.45, W_X := 0.25, W_Y := 0.18,
+         AX_NOM := axPlanner, AY_NOM := ayPlanner,
+         AX_BRAKE := -A_BRAKE, B_BARRIER := bReq);
+
+axCmd := fbShield.AX_SAFE;
+ayCmd := fbShield.AY_SAFE;
+(* fbShield.FZ_FL / FZ_FR / FZ_RL / FZ_RR are the four normal forces *)</code></pre>
+            <p class="note">The ST block specializes the barrier to the forward axis (<code>a = (-1, 0, 0)</code>) and the backup lateral command to zero, which is the common case for a single forward obstacle. Use the C99 filter if you need an arbitrary barrier direction.</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Recipe 2 -->
+      <article class="recipe" id="r-septic">
+        <div class="recipe-head">
+          <span class="recipe-tag">Recipe 2 · Manipulator motion planning</span>
+          <span class="chip-s s-c">C99</span><span class="chip-s s-c">ST</span><span class="chip-s s-py">Python</span>
+        </div>
+        <h3>Lower-heat rest-to-rest moves with the septic profile (η = −11)</h3>
+        <p>A drop-in replacement for the 5th-order minimum-jerk profile. Same boundary conditions (rest to rest, zero acceleration at both ends), one extra parameter η. At η = −11 the inertial part of winding heat <code>∫ I²R dt</code> falls by exactly 11/60 (18.33%) for the same move time. Sample it at your loop rate and feed it to whatever tracker you already run.</p>
+        <div class="facts">
+          <div><b>You supply</b>displacement D, move time T; optionally inertia, viscous B, R, K<sub>t</sub> to compute η*</div>
+          <div><b>You get</b>q(t), q̇(t), q̈(t) via <code>s = t/T</code>, scaled by D, D/T, D/T²</div>
+          <div><b>Proved</b><code>rest_to_rest_cross_power_zero</code>, <code>exact_integral_quadratic_forms</code>, <code>exact_savings_at_minus_eleven</code></div>
+        </div>
+        <div class="tabs">
+          <div role="tablist" aria-label="Recipe 2 language">
+            <button role="tab" aria-selected="true">Python</button>
+            <button role="tab" aria-selected="false">C99</button>
+            <button role="tab" aria-selected="false">PLC (ST)</button>
+          </div>
+          <div role="tabpanel">
+<pre><code>from fractions import Fraction as F
+import numpy as np
+from ctrl.robotics import optimal_septic_eta, septic_accel_integral, septic_q, septic_v, septic_a
+
+# Joint: 2.0 kg*m^2 reflected inertia, viscous B = 0.05, R = 0.8 ohm, Kt = 0.12, 0.6 s move
+eta = optimal_septic_eta(m=2.0, b=0.05, r_elec=0.8, k_t=0.12, duration=0.6)
+print("eta* =", eta)
+
+# The accel cost integral is exact: 120/7 for min-jerk (eta=0) vs 14 at eta=-11
+print("I_a(0) =", septic_accel_integral(F(0)), " I_a(-11) =", septic_accel_integral(F(-11)))
+
+# Sample a 1 rad, 0.6 s move at 1 kHz
+T, D = 0.6, 1.0
+s = np.linspace(0.0, 1.0, 601)
+q, qd, qdd = D * septic_q(-11.0, s), D / T * septic_v(-11.0, s), D / T**2 * septic_a(-11.0, s)
+print(f"q_end={q[-1]:.6f} rad  peak qd={qd.max():.3f} rad/s  peak |qdd|={abs(qdd).max():.2f} rad/s^2")</code></pre>
+<pre class="out"><code>eta* = -11.0
+I_a(0) = 120/7  I_a(-11) = 14
+q_end=1.000000 rad  peak qd=2.552 rad/s  peak |qdd|=17.21 rad/s^2</code></pre>
+            <p class="note"><code>optimal_septic_eta</code> clamps to the monotone range by default, so with any real viscous term it returns −11. Pass <code>clamp_monotone=False</code> to see the unconstrained minimizer.</p>
+          </div>
+          <div role="tabpanel" hidden>
+<pre><code>#include "ctrl_robotics_kernels.h"
+
+/* Called every tick: t in [0, T] */
+void septic_setpoint(double t, double T, double D, double *q, double *qd, double *qdd) {
+    double s = t &lt; T ? t / T : 1.0;
+    *q   = D            * ctrl_septic_q(-11.0, s);
+    *qd  = D / T        * ctrl_septic_v(-11.0, s);
+    *qdd = D / (T * T)  * ctrl_septic_a(-11.0, s);
+}</code></pre>
+            <p class="note"><code>ctrl_septic_j</code> gives jerk (scale by D/T³). <code>ctrl_septic_ia</code> and <code>ctrl_septic_iv</code> return the exact cost integrals if you want to pick η on the target.</p>
+          </div>
+          <div role="tabpanel" hidden>
+<pre><code>s    := MIN(tMove / T_MOVE, 1.0);
+qRef := D_MOVE * CTRL_SEPTIC_Q(ETA := -11.0, S := s);</code></pre>
+            <p class="note">Only the position profile is emitted to ST today. Velocity and acceleration feedforward are available in C99 and Python.</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Recipe 3 -->
+      <article class="recipe" id="r-clf">
+        <div class="recipe-head">
+          <span class="recipe-tag">Recipe 3 · Nonlinear stabilization</span>
+          <span class="chip-s s-c">C99</span><span class="chip-s s-c">ST</span><span class="chip-s s-py">Python</span>
+        </div>
+        <h3>Sontag's universal formula and 2-state backstepping</h3>
+        <p>If you have a control Lyapunov function V for a single-input system, Sontag's formula turns the two Lie derivatives into a control with a guaranteed decrease rate. If your plant is strict-feedback (<code>ẋ₁ = f₁(x₁) + x₂</code>, <code>ẋ₂ = f₂(x) + u</code>), backstepping gives you the control directly with V̇ certified negative.</p>
+        <div class="facts">
+          <div><b>You supply</b>Sontag: <code>a = ∇V·f</code>, <code>b = ∇V·g</code>. Backstepping: gains c₁, c₂, f₁, f₁′, f₂ and state</div>
+          <div><b>You get</b>u, with V̇ = −√(a² + b⁴) for Sontag</div>
+          <div><b>Proved</b><code>sontag_universal_stabilizer</code>, <code>backstepping_closedLoop_lie_deriv</code></div>
+        </div>
+        <div class="tabs">
+          <div role="tablist" aria-label="Recipe 3 language">
+            <button role="tab" aria-selected="true">Python</button>
+            <button role="tab" aria-selected="false">C99</button>
+            <button role="tab" aria-selected="false">PLC (ST)</button>
+          </div>
+          <div role="tabpanel">
+<pre><code>from ctrl.robotics import backstepping_and_sontag_clf
+
+out = backstepping_and_sontag_clf(c1=2.0, c2=3.0, f1=0.0, df1=0.0, f2=0.0,
+                                  x1=0.4, x2=-0.1, a_lie=0.3, b_lie=0.8)
+print({k: round(v, 4) if isinstance(v, float) else v for k, v in out.items()})</code></pre>
+<pre class="out"><code>{'u_backstepping': -2.3, 'z2_error': 0.7, 'backstepping_lie_deriv': -1.79,
+ 'backstepping_expected_lie_deriv': -1.79, 'backstepping_identity_error': 0.0,
+ 'u_sontag': -1.2585, 'sontag_lie_deriv': -0.7068, 'sontag_identity_error': 0.0,
+ 'sontag_strict_decrease': True}</code></pre>
+            <p class="note">The Python call also reports the achieved V̇ and the residual against the proved identity, which is useful in unit tests.</p>
+          </div>
+          <div role="tabpanel" hidden>
+<pre><code>double u_s  = ctrl_sontag_clf(a_lie, b_lie);                       /* -(a + sqrt(a^2 + b^4)) / b */
+double u_bs = ctrl_backstepping_control(c1, c2, f1, df1, f2, x1, x2);</code></pre>
+            <p class="note">Sontag returns 0 when <code>b == 0</code>; the CLF property then requires <code>a &lt; 0</code> at that state, which is a condition on your V, not on the kernel.</p>
+          </div>
+          <div role="tabpanel" hidden>
+<pre><code>u := CTRL_SONTAG_CLF(A := aLie, B := bLie);
+u := CTRL_BACKSTEPPING_CONTROL(C1 := 2.0, C2 := 3.0, F1 := f1, DF1 := df1, F2 := f2, X1 := x1, X2 := x2);</code></pre>
+          </div>
+        </div>
+      </article>
+
+      <!-- Recipe 4 -->
+      <article class="recipe" id="r-servo">
+        <div class="recipe-head">
+          <span class="recipe-tag">Recipe 4 · Visual servoing</span>
+          <span class="chip-s s-py">Python</span>
+        </div>
+        <h3>Decouple depth from camera roll</h3>
+        <p>Classical image-based servoing can force the camera to retreat by <code>sec(Δφ/2)</code> during a large roll. The fix is to control depth to the target plane directly: the rate of change of plane depth does not depend on angular velocity at all, so you can command any roll and regulate depth with translation along the normal. The Python reference shows the rotational term vanish exactly.</p>
+        <div class="facts">
+          <div><b>You supply</b>plane normal n and a point X in camera frame, camera twist (v, ω)</div>
+          <div><b>You get</b>ḋ, split into rotational (exactly 0) and translational (−n·v) parts</div>
+          <div><b>Proved</b><code>se3_depth_hasDerivAt</code>, <code>visual_servoing_depth_positive</code>, <code>homography_unique_four_points</code></div>
+        </div>
+<pre><code>from fractions import Fraction as F
+from ctrl.robotics import se3_depth_derivative, hbvs_vs_ibvs_depth_ratio
+import math
+
+n, X = (F(0), F(0), F(1)), (F(1, 10), F(-1, 5), F(11, 5))
+v, w = (F(0), F(0), F(3, 10)), (F(0), F(0), F(5))      # 5 rad/s about the optical axis
+d = se3_depth_derivative(X, n, v, w)
+print(d["rotational_lie_derivative"], d["total_depth_derivative"], d["translational_formula"])
+
+# 160 deg roll while closing from 2.2 m to 1.0 m
+print(hbvs_vs_ibvs_depth_ratio(d0=2.2, d_star=1.0, lam=1.5, t=0.5, delta_phi_rad=math.radians(160)))</code></pre>
+<pre class="out"><code>0 -3/10 -3/10
+{'d_hbvs': 1.5668398632892178, 'ibvs_midpoint_depth': 5.758770483143631, 'hbvs_stays_bounded': True}</code></pre>
+        <p class="note">Pose extraction from four points (<code>verify_homography_singular_sandwich</code>, <code>filter_faugeras_chirality_branches</code>) and two-view depth (<code>triangulate_two_view_rays</code>) are in the same module. No C99 emission for vision yet.</p>
+      </article>
+    </section>
+
+    <!-- KERNEL REFERENCE -->
+    <section id="kernels">
+      <h2>Kernel reference</h2>
+      <p class="lede">Everything <code>emit_c99_and_iec61131()</code> writes, with the Python reference and the Lean declarations it is checked against. All C functions are <code>double</code>-only, reentrant, and allocate nothing.</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>C99</th><th>ST</th><th>Python reference</th><th>Computes</th><th>Lean</th></tr></thead>
+          <tbody>
+            <tr><td><code>ctrl_lorentz_cbf_filter</code></td><td><code>FB_CTRL_QUAD_WRENCH_CBF</code></td><td><code>lorentz_cbf_safety_filter</code></td><td>Smallest λ blending u_nom toward π_b so that a·u ≥ b; returns λ</td><td><code>LorentzConeCBF.lorentz_backup_controller_safe</code></td></tr>
+            <tr><td><code>ctrl_quad_contact_force</code></td><td>(inside the FB)</td><td><code>quad_contact_forces</code></td><td>3D force at one corner from bilinear ZMP + proportional shear</td><td><code>quad_contact_net_force</code>, <code>quad_contact_zero_angular_momentum</code></td></tr>
+            <tr><td><code>ctrl_septic_q / _v / _a / _j</code></td><td><code>CTRL_SEPTIC_Q</code></td><td><code>septic_q / _v / _a / _j</code></td><td>Normalized septic profile and derivatives on s ∈ [0, 1]</td><td><code>RobotEnergySmoothness.qProfile</code> … <code>jProfile</code></td></tr>
+            <tr><td><code>ctrl_septic_ia / _iv</code></td><td>·</td><td><code>septic_accel_integral</code>, <code>septic_velocity_integral</code></td><td>Exact ∫a² and ∫v² as functions of η</td><td><code>exact_integral_quadratic_forms</code></td></tr>
+            <tr><td><code>ctrl_sontag_clf</code></td><td><code>CTRL_SONTAG_CLF</code></td><td><code>backstepping_and_sontag_clf</code></td><td>Sontag's universal stabilizer from (L<sub>f</sub>V, L<sub>g</sub>V)</td><td><code>BacksteppingCLF.sontag_universal_stabilizer</code></td></tr>
+            <tr><td><code>ctrl_backstepping_control</code></td><td><code>CTRL_BACKSTEPPING_CONTROL</code></td><td><code>backstepping_and_sontag_clf</code></td><td>2-state strict-feedback backstepping law</td><td><code>backstepping_closedLoop_lie_deriv</code></td></tr>
+            <tr><td><code>ctrl_minimal_intervention_ik</code></td><td>·</td><td><code>minimal_intervention_ik</code></td><td>Closest q to q_nom satisfying one task constraint J·q = v</td><td><code>WorldFrameTransport.minimal_intervention_pythagorean_optimality</code></td></tr>
+            <tr><td><code>ctrl_kalata_alpha_beta</code></td><td>·</td><td><code>kalata_alpha_beta_gains</code></td><td>Steady-state α–β tracker gains from sample period and noise variances</td><td><code>AlphaBeta.kalataU_spec</code>, <code>exists_gains</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="note">Python-only today (no codegen): Joseph-form Kalman update, information filter, DARE/LQR certificates, H<sub>∞</sub> step, ISS envelope, MPC warm-start descent, response-time analysis, homography and triangulation. Full list: <code>ctrl.robotics.__all__</code>, or <code>LEAN_THEOREM_REGISTRY</code> for each function's Lean bindings (48 functions, 223 declarations).</p>
+
+      <details id="walkthrough">
+        <summary>How one theorem becomes one kernel (Lorentz-cone CBF)</summary>
+        <div class="grid2">
+          <div>
+            <h4>Lean 4, over ℝ</h4>
+<pre><code>theorem quad_contact_zero_angular_momentum (p : QuadParams) (ax ay : ℝ) :
     netEulerTorque p (quadContactForce p ax ay) = 0
 
-theorem quad_contact_in_lorentz_cone (p : QuadParams) (ax ay : &#8477;)
-    (h_accel : ax^2 + ay^2 &le; (safeDecelMax p)^2) :
-    &forall; corner, inLorentzCone p.mu (quadContactForce p ax ay corner)</code></pre>
-        </div>
-
-        <div class="panel">
-          <div class="panel-label">Step 2 &middot; Zero-Heap C99 / PLC Kernel (<code>codegen.py</code>)</div>
-          <p>
-            Because the safe acceleration set and stopping-distance barrier <code>h(r, v) = n &middot; (r_lim &minus; r) &minus; v_n^2 / (2 a_brake)</code> have an exact convex-interpolation solution between the nominal command <code>u_nom</code> and backup braking <code>pi_b</code>, the deployed C99 filter has no loops, no heap allocation, and no solver failure states:
-          </p>
-          <pre><code>void ctrl_lorentz_cbf_filter_3d(
-    const double a[3], double b,
+theorem quad_contact_in_lorentz_cone (p : QuadParams) (ax ay : ℝ)
+    (h_accel : ax^2 + ay^2 ≤ (safeDecelMax p)^2) :
+    ∀ corner, inLorentzCone p.mu (quadContactForce p ax ay corner)</code></pre>
+          </div>
+          <div>
+            <h4>Generated C99</h4>
+<pre><code>double ctrl_lorentz_cbf_filter(
+    const double a_cbf[3], double b_barrier,
     const double u_nom[3], const double pi_b[3],
-    double *lam_out, double u_safe[3]) {
-  double num = b - ctrl_dot3(a, u_nom);
-  double den = ctrl_dot3(a, pi_b) - ctrl_dot3(a, u_nom);
-  double lam = (num &lt;= 0.0) ? 0.0 : ((den &gt; 0.0 &amp;&amp; num &lt; den) ? (num / den) : 1.0);
-  *lam_out = lam;
-  for (int i = 0; i &lt; 3; ++i) u_safe[i] = (1.0 - lam) * u_nom[i] + lam * pi_b[i];
+    double out_u_safe[3]) {
+    double a_nom = dot3(a_cbf, u_nom);
+    double a_pi  = dot3(a_cbf, pi_b);
+    double lam   = 0.0;
+    if (a_nom &gt;= b_barrier)  lam = 0.0;
+    else if (a_pi &lt;= a_nom)  lam = 1.0;
+    else {
+        double ratio = (b_barrier - a_nom) / (a_pi - a_nom);
+        lam = (ratio &lt; 0.0) ? 0.0 : ((ratio &gt; 1.0) ? 1.0 : ratio);
+    }
+    for (int i = 0; i &lt; 3; ++i)
+        out_u_safe[i] = (1.0 - lam) * u_nom[i] + lam * pi_b[i];
+    return lam;
 }</code></pre>
+          </div>
         </div>
-      </div>
-
-      <div class="callout-note">
-        <strong>Why the C99 kernel and the Lean theorem match (and where the boundary lies):</strong>
-        Each theorem-backed function in <code>src/ctrl/robotics/</code> runs in <strong>two modes</strong>: exact rational arithmetic (<code>fractions.Fraction</code>) on rational test grids to verify exact algebraic equivalence with the Lean polynomial/rational formulas over &#8474; &sub; &#8477;, and IEEE-754 <code>float64</code> for runtime execution. The C99 shared library is compiled with <code>clang -std=c99 -O3 -Werror</code> and checked via <code>ctypes</code> against the Python reference to <code>8.88 &times; 10<sup>&minus;16</sup></code> (1 ULP).
-      </div>
+        <p class="note">The Python reference runs the same formula on <code>Fraction</code> to confirm the identities exactly on rational grids, and on <code>float</code> to diff against the compiled C through <code>ctypes</code>.</p>
+      </details>
     </section>
 
-    <!-- 3. HONEST VERIFICATION BOUNDARY TABLE -->
-    <section id="verification-boundary">
-      <h2>3. What Is Formally Proved vs. What Is Empirically Tested</h2>
-      <p>
-        Formal verification in control theory has a well-known gap between continuous real-number proofs and floating-point physics execution. Here is the exact division of guarantees in <code>ctrl</code>:
-      </p>
-      <table>
-        <thead>
-          <tr>
-            <th>Layer</th>
-            <th>Artifact &amp; Size</th>
-            <th>What Is Guaranteed</th>
-            <th>What Is <em>Not</em> Proved in Lean</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><strong>1. Lean 4 Theorem Library</strong></td>
-            <td><code>ControlsLean/</code> (<strong>53 modules</strong>, 424 audited theorems on <code>main</code>)<br><code>lean/</code> (<strong>98 modules</strong> total across the monorepo)</td>
-            <td>100% <code>sorry</code>-free proofs over exact real/rational/field arithmetic (&#8477;, &#8474;, <em>K</em>) using only Lean's standard axioms (<code>propext</code>, <code>Classical.choice</code>, <code>Quot.sound</code>).</td>
-            <td>Does not model IEEE-754 floating-point rounding, subnormals, or C compiler instruction selection (unlike CompCert/VCFloat).</td>
-          </tr>
-          <tr>
-            <td><strong>2. Spec-Manifest Audit</strong><br>(<code>registry.py</code>)</td>
-            <td><strong>48 Python functions</strong> decorated with <code>@lean_theorem</code> referencing <strong>223 named Lean declarations</strong> across 79 robotics/control Lean files</td>
-            <td>Automated AST/source check (<code>verify_lean_bindings()</code>) verifying every referenced theorem name exists in the target <code>.lean</code> file and that zero <code>sorry</code>, <code>admit</code>, or <code>native_decide</code> tokens exist.</td>
-            <td>The binding between a Python function and its Lean theorem is audited by exact rational (<code>Fraction</code>) unit tests, not formal extraction from Lean IR.</td>
-          </tr>
-          <tr>
-            <td><strong>3. C99 &amp; IEC 61131-3 ST Codegen</strong><br>(<code>codegen.py</code>)</td>
-            <td>10 core real-time kernels (septic trajectories, ZMP allocator, Lorentz CBF filter, Sontag CLF, backstepping)</td>
-            <td>Compiles cleanly under <code>clang -std=c99 -O3 -Wall -Wextra -Werror</code>; matches Python <code>float64</code> reference within <code>8.88 &times; 10<sup>&minus;16</sup></code> across randomized test suites; zero dynamic allocation.</td>
-            <td>Equivalence to Python is tested via <code>ctypes</code> differential testing, not proved via a formal C semantics.</td>
-          </tr>
-          <tr>
-            <td><strong>4. MuJoCo 3.16.0 Rollouts</strong><br>(<code>mujoco_benchmarks.py</code>)</td>
-            <td>4 closed-loop multi-body RK4 simulations (1&ndash;2 ms timestep)</td>
-            <td>Empirically validates that the continuous/discrete theorems hold up under full 6-DOF rigid-body dynamics, Coriolis coupling, and discrete sampling.</td>
-            <td>Physics simulator integration error and unmodeled actuator saturation are evaluated empirically.</td>
-          </tr>
-        </tbody>
-      </table>
-    </section>
-
-    <!-- 4. COMPOSITE APPLICATION BLUEPRINTS -->
+    <!-- COMBINATIONS -->
     <section id="combinations">
-      <h2>4. How Bodies of Work Combine in Applications</h2>
-      <div class="synergy-grid">
-        <div class="synergy-card">
-          <div class="synergy-chain">Combination A &middot; Industrial 6-DOF Manipulators</div>
-          <h3>Septic Trajectory Shaping + Slotine&ndash;Li Passivity + Sontag CLF / <em>H</em><sub>&infin;</sub></h3>
-          <p>
-            <strong>Modules:</strong> <code>RobotEnergySmoothness.lean</code> + <code>ManipulatorTracking.lean</code> + <code>BacksteppingCLF.lean</code> + <code>BoundedRealHInf.lean</code>.<br>
-            <strong>Why they fit together:</strong> Rest-to-rest 7th-order septic profiles (&eta; = &minus;11) smooth out peak acceleration at the endpoints to reduce motor winding heat, while Slotine&ndash;Li passivity tracks the reference using skew-symmetry of <em>M&#775; &minus; 2C</em> (avoiding noisy <em>M</em>(<em>q</em>)<sup>&minus;1</sup> inversions), and Sontag's universal CLF + <em>H</em><sub>&infin;</sub> damping add a closed-form nonlinear disturbance rejection term.
-          </p>
-        </div>
+      <h2>Combining modules into a controller</h2>
+      <p class="lede">Each blueprint below is one control tick, in order, with the function that does each step and how far it is wired up today. The ones with code have been run end to end.</p>
+      <div class="legend">
+        <span><span class="chip-s s-c">C99 / ST</span> emitted kernel</span>
+        <span><span class="chip-s s-py">Python</span> reference only</span>
+        <span><span class="chip-s s-lean">Lean only</span> proved, not yet callable</span>
+      </div>
 
-        <div class="synergy-card">
-          <div class="synergy-chain">Combination B &middot; Legged &amp; Wheeled Mobile Robots</div>
-          <h3>3D Lorentz-Cone CBF + Bilinear 4-Foot ZMP Allocator + Real-Time Simplex</h3>
-          <p>
-            <strong>Modules:</strong> <code>LorentzConeCBF.lean</code> + <code>CentroidalDecelerationLimit.lean</code> + <code>SE3Kinematics.lean</code> + <code>RoboLean/RealTime.lean</code> + <code>RoboLean/Reliability.lean</code>.<br>
-            <strong>Why they fit together:</strong> Combines worst-case response-time schedulability and Simplex architecture switching with an analytical 3D stopping-distance barrier and 4-foot wrench allocator. Gives legged/wheeled robots a deterministic reflex shield that runs on microcontrollers or PLCs where OSQP/ECOS cannot run reliably.
-          </p>
-        </div>
+      <article class="combo" id="combo-b">
+        <div class="combo-k">Blueprint B · Legged and wheeled mobile robots</div>
+        <h3>Reflex shield: stopping barrier + friction-safe force allocation + schedulability</h3>
+        <p>A deterministic safety layer under any planner or MPC. It runs every tick on an MCU or PLC and only intervenes near the limit.</p>
+        <ol class="tick">
+          <li><div class="line"><span class="fn">safe_decel_max(g, μ, W, h)</span> <span class="chip-s s-py">Python</span></div><span class="why">Once at startup: the largest braking that neither slips nor tips. Pick a_brake a bit under it.</span></li>
+          <li><div class="line"><span class="fn">directional_cbf(r_lim, r, v, n̂, a_brake)</span> <span class="chip-s s-py">Python</span></div><span class="why">Stopping-distance margin h. Two lines of arithmetic; inline it in C or ST.</span></li>
+          <li><div class="line"><span class="fn">ctrl_lorentz_cbf_filter</span> <span class="chip-s s-c">C99 / ST</span></div><span class="why">Blend planner command toward the backup brake just enough to keep ḣ + αh ≥ 0.</span></li>
+          <li><div class="line"><span class="fn">ctrl_quad_contact_force × 4</span> <span class="chip-s s-c">C99 / ST</span></div><span class="why">Foot forces with zero net torque and inside the friction cone.</span></li>
+          <li><div class="line"><span class="fn">response_time_analysis(C, [(Cⱼ, Tⱼ)], D)</span> <span class="chip-s s-py">Python</span></div><span class="why">Offline: confirm the shield task meets its deadline under higher-priority load.</span></li>
+          <li><div class="line"><span class="fn">SE3Kinematics, RoboLean/Reliability</span> <span class="chip-s s-lean">Lean only</span></div><span class="why">Frame transport and Simplex switching proofs; not exposed as functions yet.</span></li>
+        </ol>
+        <details>
+          <summary>Full tick loop (from the MuJoCo benchmark)</summary>
+<pre><code>for step in range(steps):
+    r_cur, v_cur = data.qpos[0:3], data.qvel[0:3]
+    h_val = directional_cbf(r_limit, r_cur, v_cur, n_hat, a_brake)
+    u_nom = (1.2, -1.5 * v_cur[1], p.g)                          # planner (unsafe near wall)
+    pi_b  = (-a_brake if v_cur[0] &gt; 0.02 else 0.0, -2.0 * v_cur[1], p.g)
+    b_req = min(a_brake * (1.0 - alpha * h_val / max(v_cur[0], 0.1)), a_brake) if v_cur[0] &gt; 0.02 else -10.0
 
-        <div class="synergy-card">
-          <div class="synergy-chain">Combination C &middot; Eye-in-Hand Visual Inspection &amp; Docking</div>
-          <h3>4-Point Homography Rigidity + Faugeras Chirality Filter + Log-Depth <em>SE</em>(3) Servoing</h3>
-          <p>
-            <strong>Modules:</strong> <code>HomographyUniqueness.lean</code> + <code>HomographyDecomposition.lean</code> + <code>VisualServoingInvariant.lean</code> + <code>KalmanOptimality.lean</code>.<br>
-            <strong>Why they fit together:</strong> Extracts planar pose from 4 feature correspondences, eliminates the unphysical Faugeras reflection branches via chirality (<em>n &middot; X &gt; 0</em>), filters pose noise with a Bucy&ndash;Joseph covariance update, and decouples optical-axis roll from depth control so large camera rotations never trigger backwards camera retreat.
-          </p>
-        </div>
+    _, u_safe = lorentz_cbf_safety_filter(a_cbf, b_req, u_nom, pi_b)
+    forces = quad_contact_forces(p, u_safe[0], u_safe[1])        # apply as foot wrenches
+    ...
+    mujoco.mj_step(model, data)
 
-        <div class="synergy-card">
-          <div class="synergy-chain">Combination D &middot; Minimal-Sensor Embedded Estimation &amp; Control</div>
-          <h3>Detectable DARE + Steady-State Kalman / Information Filter + Peter&ndash;Paul ISS</h3>
-          <p>
-            <strong>Modules:</strong> <code>DAREDetectable.lean</code> + <code>SteadyStateKalman.lean</code> + <code>InformationFilter.lean</code> + <code>ISS.lean</code>.<br>
-            <strong>Why they fit together:</strong> Certifies LQR and Kalman convergence when only a low-dimensional output <em>y = Cx</em> is measured (<em>Q = C<sup>&top;</sup>C &succeq; 0</em> positive semidefinite rather than positive definite), pairs it with the Sherman&ndash;Morrison&ndash;Woodbury information update for multi-sensor fusion, and computes an explicit Peter&ndash;Paul ISS invariant tube under bounded process noise.
-          </p>
-        </div>
+# Schedulability, offline: shield WCET 20 us, two higher-priority tasks (C, T) in us
+response_time_analysis(wcet=20, higher_priority_tasks=[(10, 100), (30, 250)], deadline=1000)   # -&gt; 60</code></pre>
+          <p class="note">Source: <a href="https://github.com/IamMikeHelsel/ctrl/blob/crossover-research-2026-10-19/src/ctrl/robotics/mujoco_benchmarks.py"><code>run_quadruped_zmp_cbf_benchmark</code></a>.</p>
+        </details>
+      </article>
+
+      <article class="combo" id="combo-a">
+        <div class="combo-k">Blueprint A · Industrial 6-DOF manipulators</div>
+        <h3>Low-heat reference + certified tracking + disturbance damping</h3>
+        <p>Generate the septic reference, track it in error coordinates with backstepping, and add H<sub>∞</sub>/ISS margins on top. Slotine–Li passivity (which avoids inverting M(q)) is proved but not callable yet.</p>
+        <ol class="tick">
+          <li><div class="line"><span class="fn">ctrl_septic_q / _v / _a</span> <span class="chip-s s-c">C99 / ST</span></div><span class="why">Reference q, q̇, q̈ for the move.</span></li>
+          <li><div class="line"><span class="fn">ctrl_backstepping_control</span> <span class="chip-s s-c">C99 / ST</span></div><span class="why">Acceleration correction from e₁ = q − q_ref, e₂ = q̇ − q̇_ref.</span></li>
+          <li><div class="line"><span class="fn">hinf_bounded_real_step, iss_peter_paul_envelope</span> <span class="chip-s s-py">Python</span></div><span class="why">Offline: certify the l₂ gain γ and the ISS tube for your gains.</span></li>
+          <li><div class="line"><span class="fn">ManipulatorTracking (Slotine–Li)</span> <span class="chip-s s-lean">Lean only</span></div><span class="why">Map acceleration command to joint torque without M(q)⁻¹. Binding in work.</span></li>
+        </ol>
+        <details>
+          <summary>Per-joint sketch (Python, runs as-is)</summary>
+<pre><code>from ctrl.robotics import septic_q, septic_v, septic_a, backstepping_and_sontag_clf
+
+T, D, dt = 0.6, 1.0, 1e-3          # 1 rad move in 0.6 s, 1 kHz loop
+q, qd = 0.0, 0.0
+for k in range(int(0.8 / dt)):
+    s = min(k * dt / T, 1.0)
+    q_ref, qd_ref, qdd_ref = D * septic_q(-11.0, s), D / T * septic_v(-11.0, s), D / T**2 * septic_a(-11.0, s)
+    e1, e2 = q - q_ref, qd - qd_ref
+    v = backstepping_and_sontag_clf(c1=20.0, c2=20.0, f1=0.0, df1=0.0, f2=0.0,
+                                    x1=e1, x2=e2, a_lie=0.0, b_lie=1.0)["u_backstepping"]
+    qdd = qdd_ref + v + (5.0 if 300 &lt;= k &lt; 310 else 0.0)  # 10 ms disturbance pulse
+    qd += qdd * dt; q += qd * dt
+print(f"final error {q - D:+.2e} rad")</code></pre>
+<pre class="out"><code>final error -4.96e-05 rad</code></pre>
+        </details>
+      </article>
+
+      <article class="combo" id="combo-c">
+        <div class="combo-k">Blueprint C · Eye-in-hand inspection and docking</div>
+        <h3>Pose from four points + reject mirror solutions + roll-free depth control</h3>
+        <ol class="tick">
+          <li><div class="line"><span class="fn">verify_homography_singular_sandwich, gram_homography_vec</span> <span class="chip-s s-py">Python</span></div><span class="why">Planar pose from four correspondences; uniqueness is proved.</span></li>
+          <li><div class="line"><span class="fn">filter_faugeras_chirality_branches</span> <span class="chip-s s-py">Python</span></div><span class="why">Drop decomposition branches that put the plane behind the camera.</span></li>
+          <li><div class="line"><span class="fn">joseph_kalman_update</span> <span class="chip-s s-py">Python</span></div><span class="why">Filter pose noise with a covariance update that stays PSD.</span></li>
+          <li><div class="line"><span class="fn">se3_depth_derivative</span> <span class="chip-s s-py">Python</span></div><span class="why">Regulate depth with translation along n; roll freely. See <a href="#r-servo">Recipe 4</a>.</span></li>
+        </ol>
+      </article>
+
+      <article class="combo" id="combo-d">
+        <div class="combo-k">Blueprint D · Minimal-sensor embedded estimation</div>
+        <h3>Cheap tracker + optimal update + a disturbance tube you can quote</h3>
+        <p>For loops with one measured output. The DARE and Kalman results hold with Q = CᵀC only positive semidefinite, which is the realistic case.</p>
+        <ol class="tick">
+          <li><div class="line"><span class="fn">ctrl_kalata_alpha_beta</span> <span class="chip-s s-c">C99</span></div><span class="why">Steady-state α–β gains; run the tracker with two multiplies per tick.</span></li>
+          <li><div class="line"><span class="fn">joseph_kalman_update</span> <span class="chip-s s-py">Python</span></div><span class="why">When you need the full covariance: trace-optimal gain, PSD by construction.</span></li>
+          <li><div class="line"><span class="fn">dare_detectable_return_difference_margin</span> <span class="chip-s s-py">Python</span></div><span class="why">Check LQR stability and gain margin under detectability only.</span></li>
+          <li><div class="line"><span class="fn">iss_peter_paul_envelope</span> <span class="chip-s s-py">Python</span></div><span class="why">Explicit ISS bound for x⁺ = Ax + d with bounded d.</span></li>
+        </ol>
+        <details>
+          <summary>Example (Python, runs as-is)</summary>
+<pre><code>import numpy as np
+from ctrl.robotics import kalata_alpha_beta_gains, joseph_kalman_update, iss_peter_paul_envelope
+
+g = kalata_alpha_beta_gains(sample_period=0.01, accel_var=4.0, meas_var=1e-4)
+print(f"alpha={g['alpha']:.4f} beta={g['beta']:.4f}")
+
+P = np.array([[1e-2, 5e-3], [5e-3, 1e-1]]); C = np.array([[1.0, 0.0]]); R = np.array([[1e-4]])
+k = joseph_kalman_update(P, C, R)
+print("K* =", k["k_star"].ravel().round(4), " trace P+ =", round(float(k["trace_star"]), 5))
+
+A = np.array([[0.9, 0.05], [-0.1, 0.85]]); Q = np.eye(2)
+Pl = sum(np.linalg.matrix_power(A.T, i) @ Q @ np.linalg.matrix_power(A, i) for i in range(400))
+env = iss_peter_paul_envelope(A, Pl, Q, eps=0.05, x0=np.array([0.2, 0.0]), d_seq=np.full((200, 2), 1e-3))
+print(env["iss_envelope_holds"], round(env["sublevel_radius"], 4))</code></pre>
+<pre class="out"><code>alpha=0.1812 beta=0.0181
+K* = [0.9901 0.495 ]  trace P+ = 0.09762
+True 0.0014</code></pre>
+        </details>
+      </article>
+      <p class="note">For every pairing the repo knows about, with weights, see the <a href="synergy.html">Synergy Lens</a>.</p>
+    </section>
+
+    <!-- VERIFICATION BOUNDARY -->
+    <section id="verification-boundary">
+      <h2>What is proved and what is tested</h2>
+      <p class="lede">The proofs are over exact arithmetic. Everything after that is checked by testing. Here is the line.</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Layer</th><th>Artifact</th><th>Guaranteed</th><th>Not proved</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><strong>Lean 4</strong></td>
+              <td><code>ControlsLean/</code> on <code>main</code> (55 modules, 445 audited headline theorems) plus robotics modules under <code>lean/Research</code> and <code>lean/RoboLean</code></td>
+              <td>No <code>sorry</code>, <code>admit</code> or custom axioms; headline theorems depend only on <code>propext</code>, <code>Classical.choice</code>, <code>Quot.sound</code>.</td>
+              <td>IEEE-754 rounding, subnormals, compiler behavior.</td>
+            </tr>
+            <tr>
+              <td><strong>Binding audit</strong></td>
+              <td><code>registry.py</code>: 48 functions decorated with <code>@lean_theorem</code>, 223 Lean declarations</td>
+              <td><code>verify_lean_bindings()</code> checks every named declaration exists and the files contain no escape hatches. Exact <code>Fraction</code> tests check the formulas match.</td>
+              <td>No extraction from Lean; the Python is hand-written and tested against the statements.</td>
+            </tr>
+            <tr>
+              <td><strong>C99 / ST</strong></td>
+              <td><code>codegen.py</code>: 12 C functions, 4 ST POUs</td>
+              <td>Compiles under <code>clang -std=c99 -O3 -Wall -Wextra -Werror</code>; matches the Python <code>float64</code> reference within 1 ULP on randomized inputs; no allocation.</td>
+              <td>Equivalence is differential testing, not a verified compiler.</td>
+            </tr>
+            <tr>
+              <td><strong>MuJoCo</strong></td>
+              <td><code>mujoco_benchmarks.py</code>: 4 closed-loop rollouts</td>
+              <td>The laws behave as claimed under full rigid-body dynamics and discrete sampling.</td>
+              <td>Sim-to-real gaps: sensor noise, actuator limits, structural compliance.</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </section>
 
-    <!-- 5. INTERACTIVE DOMAIN CATALOG -->
+    <!-- CATALOG -->
     <section id="catalog">
-      <h2>5. Domain-Organized Module Catalog (Ready to Use vs. Ongoing Work)</h2>
+      <h2>Module catalog</h2>
+      <p class="lede">Every area with its Lean modules and headline theorems. Filter by status or domain.</p>
       <div class="filter-bar" role="region" aria-label="Filter modules">
         <div class="filter-group" id="status-filters">
           <span class="filter-label">Status:</span>
-          <button class="chip" data-status="all" aria-pressed="true">All (14)</button>
-          <button class="chip" data-status="ready_to_use" aria-pressed="false">Ready to Use (11)</button>
-          <button class="chip" data-status="in_work" aria-pressed="false">Ongoing / In Work (3)</button>
+          <button class="chip" data-status="all" aria-pressed="true">All</button>
+          <button class="chip" data-status="ready_to_use" aria-pressed="false">Ready to use</button>
+          <button class="chip" data-status="in_work" aria-pressed="false">In work</button>
         </div>
         <div class="filter-group" id="domain-filters">
           <span class="filter-label">Domain:</span>
-          <button class="chip" data-domain="all" aria-pressed="true">All Domains</button>
-          <button class="chip" data-domain="Control" aria-pressed="false">Control &amp; Safety</button>
+          <button class="chip" data-domain="all" aria-pressed="true">All</button>
+          <button class="chip" data-domain="Control" aria-pressed="false">Control &amp; safety</button>
           <button class="chip" data-domain="Estimation" aria-pressed="false">Estimation &amp; POMDP</button>
-          <button class="chip" data-domain="Robotics" aria-pressed="false">Robotics &amp; Vision</button>
-          <button class="chip" data-domain="Math" aria-pressed="false">Applied Math &amp; Conditioning</button>
+          <button class="chip" data-domain="Robotics" aria-pressed="false">Robotics &amp; vision</button>
+          <button class="chip" data-domain="Math" aria-pressed="false">Applied math</button>
         </div>
       </div>
-
       <div class="idea-grid" id="idea-grid"></div>
+      <p class="note">Machine-readable: <a href="AGENT_IDEA_INDEX.json">AGENT_IDEA_INDEX.json</a>.</p>
     </section>
 
-    <!-- 6. ONGOING WORK & COMMUNITY FORMALIZATIONS -->
+    <!-- IN WORK + COMMUNITY -->
     <section id="community">
-      <h2>6. What's Still In Work &amp; Community Mathlib / Formal-Conjectures Contributions</h2>
-      <div class="synergy-grid">
-        <div class="synergy-card">
-          <div class="synergy-chain">In Work &middot; Robotics Runtime</div>
-          <h3>1. C99 / MuJoCo Payload-Adaptation Binding for Slotine&ndash;Li &amp; POMDPs</h3>
-          <p>
-            <code>ManipulatorTracking.lean</code> (Slotine&ndash;Li passivity and adaptive regressor cancellation) and <code>POMDPBelief.lean</code> (Smallwood&ndash;Sondik piecewise-linear convex Bellman backups) are proved in Lean 4 on <code>main</code>, and are currently being wired into <code>src/ctrl/robotics/</code> C99 codegen and a payload-uncertainty MuJoCo benchmark.
-          </p>
+      <h2>In work</h2>
+      <div class="grid2">
+        <div class="card">
+          <div class="recipe-tag">Robotics runtime</div>
+          <h3>Slotine–Li and POMDP bindings</h3>
+          <p><code>ManipulatorTracking.lean</code> (passivity-based tracking and adaptive regressor) and <code>POMDPBelief.lean</code> (Smallwood–Sondik backups) are proved on <code>main</code>. Wiring them into <code>src/ctrl/robotics</code>, C99 codegen, and a payload-uncertainty benchmark is next.</p>
         </div>
-        <div class="synergy-card">
-          <div class="synergy-chain">In Work &middot; Lyapunov Conditioning (<code>MF-13</code>)</div>
-          <h3>2. Symmetric vs. Skew Lyapunov Conditioning (Byers&ndash;Nash <em>n</em>=6)</h3>
-          <p>
-            For the continuous Lyapunov operator &#8466;<sub><em>A</em></sub>(<em>X</em>) = <em>A</em><sup>&top;</sup><em>X</em> + <em>XA</em>, Byers and Nash asked whether the minimum singular value on skew matrices <em>k</em>(<em>A</em>) is always &le; the minimum singular value on symmetric matrices <em>s</em>(<em>A</em>). In control theory, this determines whether symmetric Lyapunov/Riccati SDP solvers can miss a near-singular skew mode. We formalized orthogonal decoupling on &#120138;<sub><em>n</em></sub> &oplus; &#120130;<sub><em>n</em></sub>, unconditional exclusion for rank &le; 4, and a 15D Parseval decomposition of &#120130;<sub>6</sub>, plus exact rational <em>LDL</em><sup>&top;</sup> &succ; 0 certificates on a 10-pair non-Common-<em>T</em> grid. Bounding the remaining 3D commuting off-diagonal cross-term analytically is in work.
-          </p>
+        <div class="card">
+          <div class="recipe-tag">Lyapunov conditioning · MF-13</div>
+          <h3>Byers–Nash, n = 6</h3>
+          <p>Whether the Lyapunov operator <em>A</em>ᵀ<em>X</em> + <em>XA</em> can be worse conditioned on skew matrices than on symmetric ones. This decides whether symmetric Lyapunov/Riccati solvers can miss a near-singular mode. Rank ≤ 4 is excluded, a 15-dimensional Parseval decomposition of 𝕂₆ is proved, and 10 exact rational certificates are in; one off-diagonal cross-term bound remains.</p>
         </div>
       </div>
 
       <details>
-        <summary>Community Service: Formalizing Published Solutions for DeepMind's formal-conjectures</summary>
-        <p style="margin-top: 0.75rem;">
-          Alongside the control and robotics library, we contribute Lean 4 formalizations of <strong>already-solved mathematical problems, published counterexamples, and elementary sub-cases</strong> from Google DeepMind's <a href="https://github.com/google-deepmind/formal-conjectures"><code>formal-conjectures</code></a> repository. These are community formalizations of theorems proved by other mathematicians in the literature (not claims of solving open Erd&#337;s problems):
-        </p>
-        <table>
-          <thead>
-            <tr>
-              <th>Module</th>
-              <th>Problem IDs (<a href="https://www.erdosproblems.com">erdosproblems.com</a>)</th>
-              <th>Published Result Formalized in Lean 4</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><code>Bounty/ErdosBounties.lean</code><br>&amp; <code>ErdosLab/Erdos834.lean</code></td>
-              <td><a href="https://www.erdosproblems.com/261">#261</a>, <a href="https://www.erdosproblems.com/834">#834</a>, <a href="https://www.erdosproblems.com/931">#931</a>, <a href="https://www.erdosproblems.com/951">#951</a>, <a href="https://www.erdosproblems.com/143">#143</a></td>
-              <td>Lean 4 formalizations of Borwein &amp; Loring's (1990) identity for #261; Li's 3-uniform hypergraph coloring for #834; Tijdeman's symmetric <em>k</em><sub>1</sub>=<em>k</em><sub>2</sub>=3 counterexample for #931; and elementary special cases / sub-variants from the <code>formal-conjectures</code> backlog.</td>
-            </tr>
-            <tr>
-              <td><code>Bounty/ErdosNewInsights.lean</code></td>
-              <td><a href="https://www.erdosproblems.com/370">#370</a>, <a href="https://www.erdosproblems.com/645">#645</a>, <a href="https://www.erdosproblems.com/493">#493</a>, <a href="https://www.erdosproblems.com/275">#275</a></td>
-              <td>Lean 4 formalizations of Steiner's published elementary proof of #370 (<code>erdos_370</code>), the 2-coloring arithmetic progression bound <em>d</em> &le; 47 for #645 (<code>erdos_645</code>), the <em>k</em>=2 identity for #493, and the 2<sup><em>r</em></sup> congruential sharpness bound for #275.</td>
-            </tr>
-            <tr>
-              <td><code>Bounty/ErdosWave2.lean</code></td>
-              <td><a href="https://www.erdosproblems.com/1148">#1148</a>, <a href="https://www.erdosproblems.com/455">#455</a>, <a href="https://www.erdosproblems.com/367">#367</a>, <a href="https://www.erdosproblems.com/1179">#1179</a>, <a href="https://www.erdosproblems.com/1187">#1187</a>, <a href="https://www.erdosproblems.com/311">#311</a></td>
-              <td>Lean 4 formalizations of the <code>variants.weaker</code> reduction for #1148 (above explicit threshold <em>n</em> &gt; 6563), the discrete convexity quadratic lower bound for #455, the <em>k</em> &le; 2 sub-case of #367, and lower-bound sub-parts of #1179, #1187, and #311.</td>
-            </tr>
-          </tbody>
-        </table>
+        <summary>Community formalizations for DeepMind's formal-conjectures</summary>
+        <p>Lean 4 formalizations of <strong>already-published</strong> results, counterexamples and elementary sub-cases from <a href="https://github.com/google-deepmind/formal-conjectures"><code>formal-conjectures</code></a>. These formalize other mathematicians' proofs; they are not claims of solving open Erdős problems.</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Module</th><th>Problems (<a href="https://www.erdosproblems.com">erdosproblems.com</a>)</th><th>Result formalized</th></tr></thead>
+            <tbody>
+              <tr>
+                <td><code>Bounty/ErdosBounties.lean</code>, <code>ErdosLab/Erdos834.lean</code></td>
+                <td><a href="https://www.erdosproblems.com/261">#261</a>, <a href="https://www.erdosproblems.com/834">#834</a>, <a href="https://www.erdosproblems.com/931">#931</a>, <a href="https://www.erdosproblems.com/951">#951</a>, <a href="https://www.erdosproblems.com/143">#143</a></td>
+                <td>Borwein and Loring (1990) for #261; Li's 3-uniform hypergraph coloring for #834; Tijdeman's k₁ = k₂ = 3 counterexample for #931; special cases from the backlog.</td>
+              </tr>
+              <tr>
+                <td><code>Bounty/ErdosNewInsights.lean</code></td>
+                <td><a href="https://www.erdosproblems.com/370">#370</a>, <a href="https://www.erdosproblems.com/645">#645</a>, <a href="https://www.erdosproblems.com/493">#493</a>, <a href="https://www.erdosproblems.com/275">#275</a></td>
+                <td>Steiner's elementary proof of #370; the 2-coloring bound d ≤ 47 for #645; the k = 2 identity for #493; the 2<sup>r</sup> congruential bound for #275.</td>
+              </tr>
+              <tr>
+                <td><code>Bounty/ErdosWave2.lean</code></td>
+                <td><a href="https://www.erdosproblems.com/1148">#1148</a>, <a href="https://www.erdosproblems.com/455">#455</a>, <a href="https://www.erdosproblems.com/367">#367</a>, <a href="https://www.erdosproblems.com/1179">#1179</a>, <a href="https://www.erdosproblems.com/1187">#1187</a>, <a href="https://www.erdosproblems.com/311">#311</a></td>
+                <td>The <code>variants.weaker</code> reduction for #1148 (n &gt; 6563); a quadratic lower bound for #455; the k ≤ 2 case of #367; lower-bound parts of #1179, #1187, #311.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </details>
     </section>
 
     <footer>
+      <div><strong>ctrl</strong> · Lean 4 control, estimation and robotics library · MIT</div>
       <div>
-        <strong>ctrl</strong> &middot; Lean 4 Control, Estimation &amp; Robotics Library
-      </div>
-      <div>
-        <a href="AGENT_IDEA_INDEX.json">Agent JSON Index</a> &middot;
-        <a href="synergy.html">Synergy Lens</a> &middot;
-        <a href="https://github.com/IamMikeHelsel/ctrl">GitHub Repository</a>
+        <a href="https://github.com/IamMikeHelsel/ctrl">GitHub</a> ·
+        <a href="https://github.com/IamMikeHelsel/ctrl/tree/crossover-research-2026-10-19/src/ctrl/robotics">Runtime source</a> ·
+        <a href="synergy.html">Synergy Lens</a> ·
+        <a href="AGENT_IDEA_INDEX.json">Agent index</a>
       </div>
     </footer>
   </div>
@@ -1002,78 +1233,99 @@ theorem quad_contact_in_lorentz_cone (p : QuadParams) (ax ay : &#8477;)
     let activeStatus = "all";
     let activeDomain = "all";
 
+    function countLabel(btn, n) {
+      if (!btn.dataset.base) btn.dataset.base = btn.textContent;
+      btn.textContent = `${btn.dataset.base} (${n})`;
+    }
+
     function renderIdeas() {
       const grid = document.getElementById("idea-grid");
       grid.innerHTML = "";
-      const filtered = IDEAS.filter(item => {
-        const statusOk = activeStatus === "all" || item.status === activeStatus;
-        const domainOk = activeDomain === "all" || item.domainGroup === activeDomain;
-        return statusOk && domainOk;
-      });
-
-      filtered.forEach(item => {
+      IDEAS.filter(item =>
+        (activeStatus === "all" || item.status === activeStatus) &&
+        (activeDomain === "all" || item.domainGroup === activeDomain)
+      ).forEach(item => {
+        const ready = item.status === "ready_to_use";
         const cell = document.createElement("div");
         cell.className = "idea-cell";
-
-        const badgeClass = item.status === "ready_to_use" ? "badge-ready" : "badge-promising";
-        const badgeLabel = item.status === "ready_to_use" ? "READY TO USE" : "IN WORK";
-
-        const impactHtml = item.impact
-          ? `<div class="impact-callout"><strong>Application note:</strong> ${item.impact}</div>`
-          : "";
-
         cell.innerHTML = `
-          <article class="idea-card">
+          <article class="idea-card${item.impact ? " has-impact" : ""}">
             <div class="card-header">
-              <span class="idea-id">${item.id} &middot; ${item.domain}</span>
+              <span class="idea-id">${item.id} · ${item.domain}</span>
               <div class="badges">
-                <span class="badge ${badgeClass}">${badgeLabel}</span>
+                <span class="badge ${ready ? "badge-ready" : "badge-promising"}">${ready ? "READY" : "IN WORK"}</span>
                 <span class="badge badge-tier">Novelty ${item.novelty}</span>
                 <span class="badge badge-tier">App ${item.applicability}</span>
               </div>
             </div>
             <h3>${item.title}</h3>
             <p>${item.approach}</p>
-            ${impactHtml}
+            ${item.impact ? `<div class="impact-callout"><strong>Application note:</strong> ${item.impact}</div>` : ""}
             <div class="meta-list">
               <div><strong>Modules:</strong> <code>${item.modules.join("</code>, <code>")}</code></div>
               <div><strong>Theorems:</strong> <code>${item.theorems.join("</code>, <code>")}</code></div>
               <div><strong>Combines with:</strong> <code>${item.combines.join("</code> + <code>")}</code></div>
             </div>
-          </article>
-        `;
+          </article>`;
         grid.appendChild(cell);
       });
-
-      /* Fallback for browsers without CSS :has() support per modern-web-guidance: content-based-styling */
-      if (!CSS.supports("selector(:has(*))")) {
-        document.querySelectorAll(".idea-card").forEach(card => {
-          if (card.querySelector(".impact-callout")) {
-            card.classList.add("has-impact");
-          }
-        });
-      }
     }
 
-    document.querySelectorAll("#status-filters button").forEach(btn => {
-      btn.addEventListener("click", () => {
-        document.querySelectorAll("#status-filters button").forEach(b => b.setAttribute("aria-pressed", "false"));
-        btn.setAttribute("aria-pressed", "true");
-        activeStatus = btn.getAttribute("data-status");
-        renderIdeas();
+    function wireFilter(groupId, attr, setter) {
+      const buttons = document.querySelectorAll(`#${groupId} button`);
+      buttons.forEach(btn => {
+        const v = btn.getAttribute(attr);
+        countLabel(btn, v === "all" ? IDEAS.length :
+          IDEAS.filter(i => (attr === "data-status" ? i.status : i.domainGroup) === v).length);
+        btn.addEventListener("click", () => {
+          buttons.forEach(b => b.setAttribute("aria-pressed", "false"));
+          btn.setAttribute("aria-pressed", "true");
+          setter(v);
+          renderIdeas();
+        });
       });
-    });
-
-    document.querySelectorAll("#domain-filters button").forEach(btn => {
-      btn.addEventListener("click", () => {
-        document.querySelectorAll("#domain-filters button").forEach(b => b.setAttribute("aria-pressed", "false"));
-        btn.setAttribute("aria-pressed", "true");
-        activeDomain = btn.getAttribute("data-domain");
-        renderIdeas();
-      });
-    });
-
+    }
+    wireFilter("status-filters", "data-status", v => { activeStatus = v; });
+    wireFilter("domain-filters", "data-domain", v => { activeDomain = v; });
     renderIdeas();
+
+    /* Tabs */
+    document.querySelectorAll(".tabs").forEach((tabs, ti) => {
+      const tabBtns = tabs.querySelectorAll('[role="tab"]');
+      const panels = tabs.querySelectorAll('[role="tabpanel"]');
+      tabBtns.forEach((btn, i) => {
+        btn.id = `t${ti}-${i}`;
+        panels[i].id = `p${ti}-${i}`;
+        btn.setAttribute("aria-controls", panels[i].id);
+        panels[i].setAttribute("aria-labelledby", btn.id);
+        btn.tabIndex = i === 0 ? 0 : -1;
+        btn.addEventListener("click", () => select(i));
+        btn.addEventListener("keydown", e => {
+          if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
+            const n = (i + (e.key === "ArrowRight" ? 1 : tabBtns.length - 1)) % tabBtns.length;
+            select(n); tabBtns[n].focus();
+          }
+        });
+      });
+      function select(i) {
+        tabBtns.forEach((b, j) => { b.setAttribute("aria-selected", String(j === i)); b.tabIndex = j === i ? 0 : -1; });
+        panels.forEach((p, j) => { p.hidden = j !== i; });
+      }
+    });
+
+    /* Copy buttons on code (not on output blocks) */
+    document.querySelectorAll("pre:not(.out)").forEach(pre => {
+      const btn = document.createElement("button");
+      btn.className = "copy"; btn.type = "button"; btn.textContent = "copy";
+      btn.addEventListener("click", async () => {
+        try {
+          await navigator.clipboard.writeText(pre.querySelector("code").innerText);
+          btn.textContent = "copied";
+        } catch (e) { btn.textContent = "select + copy"; }
+        setTimeout(() => { btn.textContent = "copy"; }, 1400);
+      });
+      pre.appendChild(btn);
+    });
   </script>
 </body>
 </html>
