@@ -12,7 +12,7 @@
 
 **What this checkout provides:** public Lean sources, build/audit scripts, documentation and saved research animations. Python robotics references, C99/IEC 61131-3 Structured Text generators and MuJoCo benchmark sources described below live in a separate research checkout; they are **not installed by cloning this branch**. A theorem-name binding or simulator result is not proof of executable or physical safety.
 
-Start with the [adoption guide](site/adopt.html), [research pipeline](site/pipeline.html), or [novelty assessment](site/novelty.html), browse the [application examples](site/index.html#pillars), or read [CONTRIBUTING.md](CONTRIBUTING.md). The [combination guide](site/index.html#combinations) explains what additional work connects individual results into a system.
+Start with [your existing library](site/consumers.html), the [adoption guide](site/adopt.html), [research pipeline](site/pipeline.html), or [novelty assessment](site/novelty.html), browse the [application examples](site/index.html#pillars), or read [CONTRIBUTING.md](CONTRIBUTING.md). The [combination guide](site/index.html#combinations) explains what additional work connects individual results into a system.
 
 Run `scripts/check.sh` to build and audit the public control library. Headline declarations are checked against Lean's permitted standard axioms (`propext`, `Classical.choice`, `Quot.sound`). The Erdős lab uses its separate statement-binding checks below. These checks establish the stated mathematical results, not compiler correctness or hardware conformance.
 

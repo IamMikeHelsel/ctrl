@@ -1,0 +1,262 @@
+{
+  "as_of": "2026-10-22",
+  "scope": "Many-to-many opportunity map, not installed integrations, partnerships, measured speedups or a fastest-library ranking. Used means research checkout, not current main dependencies.",
+  "records": [
+    {
+      "id": "mujoco",
+      "library": "MuJoCo",
+      "field": "motion",
+      "relationship": "Used in research checkout",
+      "integration_route": "Local benchmark kit",
+      "pipeline_ids": [
+        "R08",
+        "R12",
+        "R09"
+      ],
+      "job": "Compare two ways of moving the same robot.",
+      "deliverable": "Trajectory samples, model/actuator settings and a reproducible effort/tracking report.",
+      "next_test": "Match task, duration, limits and tuned baseline; label total energy separately from torque proxies.",
+      "priority_reason": "Start here: existing research code and a small offline boundary.",
+      "primary_source": "https://mujoco.readthedocs.io/en/stable/overview.html",
+      "status": "proposed integration; evidence varies by underlying asset",
+      "adjacent_question": "Which measured energy port and actuator limits change the ranking between two otherwise matched motions?"
+    },
+    {
+      "id": "osqp",
+      "library": "CVXPY / OSQP",
+      "field": "optimization",
+      "relationship": "Used in research checkout",
+      "integration_route": "Offline wrapper",
+      "pipeline_ids": [
+        "S04",
+        "S12",
+        "C06",
+        "C07"
+      ],
+      "job": "Independently check a solver-produced candidate.",
+      "deliverable": "Exact certificate, versioned model/context and an accepted/rejected result.",
+      "next_test": "Include rationalization, verification and updates; compare existing residual checks and cached solver setup.",
+      "priority_reason": "Start here: a checker can help without replacing the solver.",
+      "primary_source": "https://osqp.org/docs/codegen/index.html",
+      "status": "proposed integration; evidence varies by underlying asset",
+      "adjacent_question": "When can an approximate solver result be reconstructed into a strict exact bound, and when must checking remain inconclusive?"
+    },
+    {
+      "id": "moveit",
+      "library": "MoveIt",
+      "field": "motion",
+      "relationship": "Proposed target",
+      "integration_route": "Adapter / upstream fixture",
+      "pipeline_ids": [
+        "R02",
+        "R04",
+        "R05",
+        "R08",
+        "R09"
+      ],
+      "job": "Compare motion changes without losing path and execution constraints.",
+      "deliverable": "Trajectory adapter plus limits, replacement trace and benchmark.",
+      "next_test": "Compare existing TOTG/Ruckig path; check collision margins, timing and buffered replacements.",
+      "priority_reason": "Next pilot after a standalone matched trajectory example.",
+      "primary_source": "https://moveit.picknik.ai/main/api/html/ruckig__traj__smoothing_8hpp_source.html",
+      "status": "proposed integration; evidence varies by underlying asset",
+      "adjacent_question": "Can a lower-effort profile preserve collision margins, duration and queued replacement commitments?"
+    },
+    {
+      "id": "ruckig",
+      "library": "Ruckig",
+      "field": "motion",
+      "relationship": "Proposed target",
+      "integration_route": "External adapter first",
+      "pipeline_ids": [
+        "R02",
+        "R05",
+        "R09",
+        "R10"
+      ],
+      "job": "Keep continuity and commitments when targets change.",
+      "deliverable": "Replacement/retained-history wrapper and adversarial traces.",
+      "next_test": "Preserve native position/velocity/acceleration/jerk and timing semantics; count wrapper cost.",
+      "priority_reason": "A regression fixture may be more useful than a new planner.",
+      "primary_source": "https://github.com/pantor/ruckig",
+      "status": "proposed integration; evidence varies by underlying asset",
+      "adjacent_question": "What extra execution contract preserves the native trajectory across repeated replacements without losing progress?"
+    },
+    {
+      "id": "ros2",
+      "library": "ROS 2 / tf2",
+      "field": "execution",
+      "relationship": "Proposed target",
+      "integration_route": "Node or boundary wrapper",
+      "pipeline_ids": [
+        "R03",
+        "R06",
+        "C04",
+        "S02"
+      ],
+      "job": "Know which frame and how-old state a command uses.",
+      "deliverable": "Frame/time contract and recorded delayed/reordered-message replay.",
+      "next_test": "Check clock domains, extrapolation, buffer age and coherent command use; defaults do not establish hard bounds.",
+      "priority_reason": "Integrate after units, frames and timestamp ownership are explicit.",
+      "primary_source": "https://github.com/ros2/ros2_documentation/blob/rolling/source/ROS-Framework/interfaces/About-Tf2/About-Tf2.rst",
+      "status": "proposed integration; evidence varies by underlying asset",
+      "adjacent_question": "Can versioned frame history preserve a future command and its derivative bounds through calibration changes?"
+    },
+    {
+      "id": "nav2",
+      "library": "Nav2",
+      "field": "execution",
+      "relationship": "Proposed target",
+      "integration_route": "Monitor comparison / adapter",
+      "pipeline_ids": [
+        "S08",
+        "C05",
+        "C12",
+        "S10"
+      ],
+      "job": "Compare stopping decisions when state or braking response is uncertain.",
+      "deliverable": "A model-specific margin/monitor with a reproducible navigation trace.",
+      "next_test": "Compare current Collision Monitor and speed policies; measure missed obstacles, intervention, delay and availability.",
+      "priority_reason": "Research: physical braking/error bounds remain application inputs.",
+      "primary_source": "https://docs.nav2.org/rolling/configuration_and_development/configuration_guide/core_servers/collision_monitor/configuring_collision_monitor_node/",
+      "status": "proposed integration; evidence varies by underlying asset",
+      "adjacent_question": "Can a state-dependent age limit reduce unnecessary stops while preserving a modeled stopping reserve?"
+    },
+    {
+      "id": "opencv",
+      "library": "OpenCV",
+      "field": "vision",
+      "relationship": "Proposed target",
+      "integration_route": "Diagnostic wrapper / regression fixture",
+      "pipeline_ids": [
+        "V02",
+        "V07",
+        "V08",
+        "V12"
+      ],
+      "job": "Recognize ambiguous or degenerate pose estimates.",
+      "deliverable": "Pose/candidate checks and a small exact/noisy fixture corpus.",
+      "next_test": "Compare existing solvePnP/decomposeHomography/calibration behavior; preserve all admissible candidates and track recall.",
+      "priority_reason": "Start with a diagnostic around an existing solver, not a replacement claim.",
+      "primary_source": "https://docs.opencv.org/4.x/d9/d0c/group__calib3d.html",
+      "status": "proposed integration; evidence varies by underlying asset",
+      "adjacent_question": "Can a certificate retain every admissible pose while identifying exceptional families under bounded image error?"
+    },
+    {
+      "id": "yolo",
+      "library": "Ultralytics YOLO",
+      "field": "vision",
+      "relationship": "User-nominated target",
+      "integration_route": "Profile, then optional wrapper",
+      "pipeline_ids": [
+        "M12",
+        "V04",
+        "R06",
+        "S08"
+      ],
+      "job": "Spend less detector-pipeline time while retaining required detections.",
+      "deliverable": "Stage profile; exact spatial filter or refresh-policy experiment if justified.",
+      "next_test": "Pin model/head/backend; charge rebuild/transfer overhead; report recall, small objects, new-object delay and whole-pipeline latency.",
+      "priority_reason": "GO for profiling; no measured neural-forward speedup.",
+      "primary_source": "https://docs.ultralytics.com/modes/predict/",
+      "status": "proposed integration; evidence varies by underlying asset",
+      "adjacent_question": "What uncertainty signal requires a full-frame refresh, including new objects outside every tracked region?"
+    },
+    {
+      "id": "acados",
+      "library": "acados",
+      "field": "optimization",
+      "relationship": "Proposed target",
+      "integration_route": "Offline evidence adapter",
+      "pipeline_ids": [
+        "C06",
+        "C07",
+        "S03",
+        "S04"
+      ],
+      "job": "Connect generated controller choices to checkable model obligations.",
+      "deliverable": "Fixed model/gain/constraint record, arithmetic assumptions and checker output.",
+      "next_test": "Compare existing generated solver at matched precision and constraints; include infeasible and ill-conditioned cases.",
+      "priority_reason": "A generated file is not target execution or timing proof.",
+      "primary_source": "https://docs.acados.org/embedded_workflow/index.html",
+      "status": "proposed integration; evidence varies by underlying asset",
+      "adjacent_question": "Can a cheap independent recovery check admit useful early-terminated solutions under bounded model mismatch?"
+    },
+    {
+      "id": "python-control",
+      "library": "python-control / SciPy",
+      "field": "optimization",
+      "relationship": "Used in research checkout",
+      "integration_route": "Analysis helper",
+      "pipeline_ids": [
+        "C06",
+        "C07",
+        "C08"
+      ],
+      "job": "Explain a numerical stability or margin result.",
+      "deliverable": "Residual, conditioning and exact-obligation report for a supplied model.",
+      "next_test": "Test stable/unstable/near-boundary models; compare existing library result and scale sensitivity.",
+      "priority_reason": "Known control theory; useful evidence and diagnostics are the proposed product.",
+      "primary_source": "https://python-control.readthedocs.io/en/latest/",
+      "status": "proposed integration; evidence varies by underlying asset",
+      "adjacent_question": "Can one unchanged certificate interface reduce manual proof work on a genuinely different plant?"
+    },
+    {
+      "id": "drake",
+      "library": "Drake",
+      "field": "motion",
+      "relationship": "Proposed target",
+      "integration_route": "External example first",
+      "pipeline_ids": [
+        "R07",
+        "R12",
+        "V05"
+      ],
+      "job": "Test a scoped control or geometry result in a richer robot model.",
+      "deliverable": "One model, task contract and matched baseline example.",
+      "next_test": "Recheck dynamics, contacts, actuation and representation assumptions; measure violations and task completion.",
+      "priority_reason": "Broader model support can expose why a simple theorem stops applying.",
+      "primary_source": "https://drake.mit.edu/python_bindings.html",
+      "status": "proposed integration; evidence varies by underlying asset",
+      "adjacent_question": "Do certified bounds survive actual trajectory replacement, interpolation and scalar conversion?"
+    },
+    {
+      "id": "openrr",
+      "library": "OpenRR",
+      "field": "execution",
+      "relationship": "Proposed target",
+      "integration_route": "Rust client adapter",
+      "pipeline_ids": [
+        "R02",
+        "R03",
+        "R05"
+      ],
+      "job": "Keep command history and validity visible at the robot-client boundary.",
+      "deliverable": "A typed adapter, mock client and replacement/cancellation corpus.",
+      "next_test": "Check buffered commitments, thread/clock semantics and rejection before hardware use.",
+      "priority_reason": "Candidate Rust consumer after a supported Rust core exists.",
+      "primary_source": "https://github.com/openrr/openrr",
+      "status": "proposed integration; evidence varies by underlying asset",
+      "adjacent_question": "What cancellation and publication protocol preserves both accepted commitments and authoritative current state?"
+    },
+    {
+      "id": "plc",
+      "library": "PLC Structured Text",
+      "field": "execution",
+      "relationship": "Research examples only",
+      "integration_route": "Target-specific example",
+      "pipeline_ids": [
+        "S03",
+        "S06",
+        "S12"
+      ],
+      "job": "Make command checks small and inspectable in a PLC scan.",
+      "deliverable": "Integer-scaled guard, versioned payload and signed-boundary test vectors.",
+      "next_test": "Name compiler/runtime; test rounding, overflow, repeated scans, cold start and context changes.",
+      "priority_reason": "No compiler-validated PLC package or safety certification yet.",
+      "primary_source": "https://plcverif-oss.gitlab.io/plcverif-docs/userdocs/QuickStart.html",
+      "status": "proposed integration; evidence varies by underlying asset",
+      "adjacent_question": "How does a static checked correction become a sound repeated-scan protocol with explicit rounding and update semantics?"
+    }
+  ]
+}
