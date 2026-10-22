@@ -1,5 +1,5 @@
 # ctrl 
-## Control Theory, Robotics, State Estimation, Vision & Open Math Research in Lean 4
+## Applied Math for Controls, Robotics, Simulation, Perception
 
 [![Lean 4](https://img.shields.io/badge/Lean%204-v4.36.0--rc1-blue)](https://github.com/leanprover/lean4)
 [![Mathlib](https://img.shields.io/badge/Mathlib-4.36.0--rc1-brightgreen)](https://github.com/leanprover-community/mathlib4)
