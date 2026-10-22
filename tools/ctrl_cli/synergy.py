@@ -181,6 +181,20 @@ class SynergyGraph:
             total += e.weight
         return total
 
+    def builds_on_readiness(self, nid: str) -> float:
+        """Mean readiness of the ideas a candidate builds on (SED counts 0.8)."""
+        sc = self.weights.get("scoring", {}).get("readiness", {})
+        refs = self.nodes[nid].raw.get("builds_on", [])
+        if not refs:
+            return 0.5
+        vals = []
+        for r in refs:
+            if r == "SED":
+                vals.append(0.8)
+            elif r in self.nodes:
+                vals.append(sc.get(self.nodes[r].status, 0.6))
+        return sum(vals) / len(vals) if vals else 0.5
+
     def unlock_out(self, nid: str) -> float:
         return sum(e.weight for e in self.out_edges(nid))
 
@@ -205,7 +219,7 @@ class SynergyGraph:
         # Soft saturation: 1.5 total incoming weight -> 0.76, 3.0 -> 0.96.
         uin = math.tanh(self.unlock_in(nid) / 1.5)
         uout = math.tanh(self.unlock_out(nid) / 1.5)
-        pull = 1.0 if n.external_pull else 0.0
+        pull = pull_tier(n.external_pull)
         base = (
             c.get("w_nov", 0.15) * n.novelty / 3.0
             + c.get("w_app", 0.15) * n.applicability / 3.0
@@ -216,6 +230,9 @@ class SynergyGraph:
         )
         effort_pen = c.get("w_eff", 0.15) * math.log1p(max(0.0, n.effort_weeks)) / math.log1p(26.0)
         ready_mult = readiness.get(n.status, 0.6)
+        if n.kind == "candidate":
+            # a candidate inherits readiness from what it builds on (XD scout rule)
+            ready_mult = 0.6 + 0.4 * self.builds_on_readiness(nid)
         value = n.confidence * ready_mult * base - effort_pen
         rel = 1.0
         if goal:
@@ -413,6 +430,22 @@ def _edge_dict(e: Edge, nodes: Dict[str, Node]) -> dict:
         "from_title": nodes[e.src].title if e.src in nodes else "",
         "to_title": nodes[e.dst].title if e.dst in nodes else "",
     }
+
+
+PULL_STRONG = ("bounty", "prize", "customer", "contract", "grant", "fund", "revenue", "paying", "market")
+PULL_STANDARD = ("standard", "certif", "iso ", "iso/", "iec ", "do-178", "do-333", "regulat", "passport", "fda", "sil ", "asil")
+
+
+def pull_tier(text: str) -> float:
+    """1.0 money/customer, 0.7 standard/certification, 0.4 community, 0 none."""
+    t = (text or "").lower().strip()
+    if not t or t in ("none", "n/a", "-"):
+        return 0.0
+    if any(k in t for k in PULL_STRONG):
+        return 1.0
+    if any(k in t for k in PULL_STANDARD):
+        return 0.7
+    return 0.4
 
 
 def tokens(text: str) -> List[str]:
