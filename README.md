@@ -14,6 +14,29 @@ Every theorem in `ctrl` is **100% `sorry`-free**, contains **zero `admit` or cus
 
 ---
 
+## Erdős lab: bounty formalization pipeline (`erdos/`, `erdos` CLI)
+
+A separate Lake project, [`erdos/`](erdos/), holds machine-checked solutions to Erdős problems.
+It pins DeepMind's Formal Conjectures (`d9ce556`, Lean v4.33.1) so challenge statements are copied
+verbatim from the community source. It has to be a separate project because FC's toolchain differs
+from ControlsLean's.
+
+Every solution proves a frozen, human-approved `Challenge.ErdosNNN.statement : Prop`. A
+uv-managed CLI checks the build, forbidden tokens, axioms, the `Expr.const` binding to the
+statement, and that the challenge hasn't changed since approval:
+
+```sh
+uv sync && uv run erdos doctor          # Mac + DGX Spark toolchains
+uv run erdos targets --tab formalize    # scored targets (Drive: lean/erdos-data)
+uv run erdos check --all               # verified so far: Erdős #261, #834 (part ii), #931
+uv run erdos spark prove NNN            # local Leanstral prover on the Spark
+```
+
+Docs: [docs/erdos-lab/](docs/erdos-lab/README.md) covers the architecture, the CLI contract, the
+dev → test → improve loop with its subagents in `.claude/agents/`, machine setup and targets.
+
+---
+
 ## Executive Maturity Matrix: What's Ready, What Worked, What's Promising & What's In Work
 
 | Tier | Status | Scope & Where It Lives | Key Highlights |

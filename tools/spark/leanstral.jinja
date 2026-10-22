@@ -1,0 +1,86 @@
+{#- Leanstral chat template for Claude Code via Ollama's Anthropic shim (ctrl tools/spark).
+    Based on the Mistral template embedded in GZGavinZhao's Leanstral-1.5 GGUF (from Leanstral-2603).
+    Changes: leading system messages are merged into one [SYSTEM_PROMPT]; later system messages are
+    rendered in place (hoisting them would change the prompt prefix every turn and defeat
+    llama.cpp's KV prefix cache); no strict role-alternation check; reasoning_effort defaults to
+    REASONING (or a [ctrl:reasoning=...] marker in the system prompt) when the caller does not set it. -#}
+{%- set REASONING = 'high' %}
+{{- '<s>' }}
+{%- set ns = namespace(sys='', lead=true, nlead=0) %}
+{%- for message in messages %}
+    {%- if message['role'] != 'system' %}{%- set ns.lead = false %}{%- endif %}
+    {%- if message['role'] == 'system' and ns.lead %}
+        {%- set ns.nlead = ns.nlead + 1 %}
+        {%- if ns.sys != '' %}{%- set ns.sys = ns.sys + '\n\n' %}{%- endif %}
+        {%- if message['content'] is string %}
+            {%- set ns.sys = ns.sys + message['content'] %}
+        {%- else %}
+            {%- for block in message['content'] %}
+                {%- if block['type'] == 'text' %}{%- set ns.sys = ns.sys + block['text'] %}{%- endif %}
+            {%- endfor %}
+        {%- endif %}
+    {%- endif %}
+{%- endfor %}
+{%- if ns.sys != '' %}
+    {{- '[SYSTEM_PROMPT]' + ns.sys + '[/SYSTEM_PROMPT]' }}
+{%- endif %}
+{%- if tools is defined and tools is not none and tools|length > 0 %}
+    {{- '[AVAILABLE_TOOLS]' + (tools | tojson) + '[/AVAILABLE_TOOLS]' }}
+{%- endif %}
+{#- Per-run override without a second model: a system prompt containing [ctrl:reasoning=none] or
+    [ctrl:reasoning=high] (prove-run.sh passes it via --append-system-prompt) wins over REASONING. #}
+{%- if '[ctrl:reasoning=none]' in ns.sys %}{%- set REASONING = 'none' %}
+{%- elif '[ctrl:reasoning=high]' in ns.sys %}{%- set REASONING = 'high' %}{%- endif %}
+{%- set reasoning_effort = reasoning_effort if reasoning_effort is defined and reasoning_effort is not none else REASONING %}
+{%- if reasoning_effort not in ['none', 'high'] %}{%- set reasoning_effort = 'high' %}{%- endif %}
+{{- '[MODEL_SETTINGS]{"reasoning_effort": "' + reasoning_effort + '"}[/MODEL_SETTINGS]' }}
+{%- for message in messages %}
+    {%- if loop.index0 < ns.nlead %}
+    {%- elif message['role'] == 'system' %}
+        {{- '[SYSTEM_PROMPT]' }}
+        {%- if message['content'] is string %}{{- message['content'] }}
+        {%- else %}
+            {%- for block in message['content'] %}
+                {%- if block['type'] == 'text' %}{{- block['text'] }}{%- endif %}
+            {%- endfor %}
+        {%- endif %}
+        {{- '[/SYSTEM_PROMPT]' }}
+    {%- elif message['role'] == 'user' %}
+        {%- if message['content'] is string %}
+            {{- '[INST]' + message['content'] + '[/INST]' }}
+        {%- else %}
+            {{- '[INST]' }}
+            {%- for block in message['content'] %}
+                {%- if block['type'] == 'text' %}{{- block['text'] }}
+                {%- elif block['type'] in ['image', 'image_url'] %}{{- '[IMG]' }}
+                {%- endif %}
+            {%- endfor %}
+            {{- '[/INST]' }}
+        {%- endif %}
+    {%- elif message['role'] == 'assistant' %}
+        {#- Leanstral sometimes opens reasoning without a parsed [THINK]; the parser then returns
+            "reasoning[/THINK]answer" as text. Re-render it balanced so the history stays well formed. #}
+        {%- if message['content'] is string %}
+            {%- set t = message['content'] %}
+            {%- if '[/THINK]' in t and '[THINK]' not in t %}{{- '[THINK]' + t }}{%- else %}{{- t }}{%- endif %}
+        {%- elif message['content'] is not none %}
+            {%- for block in message['content'] %}
+                {%- if block['type'] == 'text' %}
+                    {%- if '[/THINK]' in block['text'] and '[THINK]' not in block['text'] %}{{- '[THINK]' + block['text'] }}{%- else %}{{- block['text'] }}{%- endif %}
+                {%- elif block['type'] == 'thinking' %}{{- '[THINK]' + block['thinking'] + '[/THINK]' }}
+                {%- endif %}
+            {%- endfor %}
+        {%- endif %}
+        {%- if message['tool_calls'] is defined and message['tool_calls'] is not none %}
+            {%- for tool in message['tool_calls'] %}
+                {%- set arguments = tool['function']['arguments'] %}
+                {%- if arguments is not string %}{%- set arguments = arguments | tojson | safe %}
+                {%- elif arguments == '' %}{%- set arguments = '{}' %}{%- endif %}
+                {{- '[TOOL_CALLS]' + tool['function']['name'] + '[ARGS]' + arguments }}
+            {%- endfor %}
+        {%- endif %}
+        {{- '</s>' }}
+    {%- elif message['role'] == 'tool' %}
+        {{- '[TOOL_RESULTS]' + message['content'] | string + '[/TOOL_RESULTS]' }}
+    {%- endif %}
+{%- endfor %}
