@@ -609,24 +609,151 @@ def verify_eight_involution_dominance_and_intertwiner(
     }
 
 
+def make_plane_swap_involutions() -> tuple[
+    dict[str, RationalMatrix], dict[str, RationalMatrix]
+]:
+    """Construct the plane-swap involutions W12, W13, W23 and F-weighted involutions P12_F, P13_F, P23_F."""
+    perms = {
+        "12": [2, 3, 0, 1, 4, 5],
+        "13": [4, 5, 2, 3, 0, 1],
+        "23": [0, 1, 4, 5, 2, 3],
+    }
+    T0 = make_klein_four_involutions()[0]
+    W_map: dict[str, RationalMatrix] = {}
+    P_map: dict[str, RationalMatrix] = {}
+    for key, p in perms.items():
+        w_data = [
+            [Fraction(1) if j == p[i] else Fraction(0) for j in range(6)]
+            for i in range(6)
+        ]
+        W = RationalMatrix(w_data)
+        W_map[key] = W
+        P_map[key] = T0 @ W
+    return W_map, P_map
+
+
+def verify_fifteen_dim_skew_parseval_and_swap_involutions(
+    Y: RationalMatrix,
+    A: RationalMatrix | None = None,
+) -> dict[str, Any]:
+    """Verify the Wave 3 Lean 4 theorems over Q:
+
+    1. Plane-swap involutions W12, W13, W23 and F-weighted P12_F, P13_F, P23_F properties
+       and equal-frequency Darboux anticommutation.
+    2. 15-dimensional orthogonal Parseval decomposition of K_6 (skew6_fifteen_dim_parseval).
+    3. Canonical 4-term norm identity (canonical_four_term_norm_identity):
+       sum_{r=0}^3 ||Y_r T_r||_F^2 == (1/4) ||Y_diag||_F^2 + (1/2) ||Y_off||_F^2.
+    4. Lyapunov symmetric-skew orthogonal decoupling (lyap_symm_skew_orthogonal_decomp).
+    """
+    I6 = RationalMatrix.identity(6)
+    W_map, P_map = make_plane_swap_involutions()
+
+    swap_props_ok = True
+    for key in ["12", "13", "23"]:
+        W = W_map[key]
+        P = P_map[key]
+        if (W - W.transpose()).max_abs_entry() != Fraction(0):
+            swap_props_ok = False
+        if ((W @ W) - I6).max_abs_entry() != Fraction(0):
+            swap_props_ok = False
+        if (P - P.transpose()).max_abs_entry() != Fraction(0):
+            swap_props_ok = False
+        if ((P @ P) - I6).max_abs_entry() != Fraction(0):
+            swap_props_ok = False
+
+    K_12 = make_skew_witness_6(2, 2, 5)
+    K_13 = make_skew_witness_6(2, 5, 2)
+    K_23 = make_skew_witness_6(2, 5, 5)
+    equal_freq_anticomm_ok = (
+        ((P_map["12"] @ K_12) + (K_12 @ P_map["12"])).max_abs_entry() == Fraction(0)
+        and ((P_map["13"] @ K_13) + (K_13 @ P_map["13"])).max_abs_entry() == Fraction(0)
+        and ((P_map["23"] @ K_23) + (K_23 @ P_map["23"])).max_abs_entry() == Fraction(0)
+    )
+
+    Y_diag = diag_blocks_6(Y)
+    Y_off = off_diag_blocks_6(Y)
+    bp12 = block_pair_6(Y, 0, 1)
+    bp13 = block_pair_6(Y, 0, 2)
+    bp23 = block_pair_6(Y, 1, 2)
+
+    a12, c12 = anticomm_part(W_map["12"], bp12), comm_part(W_map["12"], bp12)
+    a13, c13 = anticomm_part(W_map["13"], bp13), comm_part(W_map["13"], bp13)
+    a23, c23 = anticomm_part(W_map["23"], bp23), comm_part(W_map["23"], bp23)
+
+    reconstructed = Y_diag + a12 + c12 + a13 + c13 + a23 + c23
+    norm_sum = (
+        frobenius_norm_sq(Y_diag)
+        + frobenius_norm_sq(a12)
+        + frobenius_norm_sq(c12)
+        + frobenius_norm_sq(a13)
+        + frobenius_norm_sq(c13)
+        + frobenius_norm_sq(a23)
+        + frobenius_norm_sq(c23)
+    )
+    fifteen_dim_parseval_ok = (
+        (reconstructed - Y).max_abs_entry() == Fraction(0)
+        and norm_sum == frobenius_norm_sq(Y)
+    )
+
+    decomp = canonical_four_term_decomposition(Y)
+    sum_Ur_sq = sum(frobenius_norm_sq(Y_r @ T_r) for Y_r, T_r in decomp)
+    sum_Yr_sq = sum(frobenius_norm_sq(Y_r) for Y_r, _ in decomp)
+    expected_Ur_sq = (
+        Fraction(1, 4) * frobenius_norm_sq(Y_diag)
+        + Fraction(1, 2) * frobenius_norm_sq(Y_off)
+    )
+    canonical_norm_id_ok = (
+        sum_Ur_sq == sum_Yr_sq
+        and sum_Yr_sq == expected_Ur_sq
+        and sum_Yr_sq
+        == Fraction(1, 2) * frobenius_norm_sq(Y)
+        - Fraction(1, 4) * frobenius_norm_sq(Y_diag)
+    )
+
+    lyap_decoupling_ok = True
+    if A is not None:
+        X_test = A + Y
+        X_sym = (X_test + X_test.transpose()) * Fraction(1, 2)
+        X_skew = (X_test - X_test.transpose()) * Fraction(1, 2)
+        LX = lyapunov_eval(A, X_test)
+        LX_sym = lyapunov_eval(A, X_sym)
+        LX_skew = lyapunov_eval(A, X_skew)
+        lyap_decoupling_ok = (
+            frobenius_inner(LX_sym, LX_skew) == Fraction(0)
+            and frobenius_norm_sq(LX)
+            == frobenius_norm_sq(LX_sym) + frobenius_norm_sq(LX_skew)
+        )
+
+    return {
+        "swap_involutions_valid": swap_props_ok,
+        "equal_freq_anticomm_exact": equal_freq_anticomm_ok,
+        "fifteen_dim_parseval_exact": fifteen_dim_parseval_ok,
+        "canonical_four_term_norm_identity_exact": canonical_norm_id_ok,
+        "lyap_symm_skew_decoupling_exact": lyap_decoupling_ok,
+        "norm_Y_diag_sq": str(frobenius_norm_sq(Y_diag)),
+        "norm_Y_off_sq": str(frobenius_norm_sq(Y_off)),
+        "off_diag_dominated": frobenius_norm_sq(Y_off) > frobenius_norm_sq(Y_diag),
+    }
+
+
 NON_COMMON_T_GRID_PARAMS: list[tuple[str, str]] = [
     ("1/2", "1/10"),
     ("1/2", "1/8"),
     ("1/2", "1/6"),
     ("1/2", "1/5"),
+    ("1/2", "1/4"),
     ("1/3", "1/10"),
     ("1/3", "1/8"),
     ("1/3", "1/6"),
     ("1/3", "1/5"),
-    ("2/5", "1/10"),
-    ("2/5", "1/8"),
+    ("3/5", "1/10"),
 ]
 
 
 def certify_non_common_t_grid(
     grid_params: list[tuple[str, str]] | None = None,
 ) -> list[dict[str, Any]]:
-    """Certify a 10-pair grid of strictly non-Common-T 3-frequency compatible pairs over Q.
+    """Certify a 10-pair grid of strictly non-Common-T off-diagonal-dominated pairs over Q.
 
     Uses the 8-involution (F, G)-Klein family combined with the algebraically solved
     symmetric intertwiner S in S_6 (S K = Y S, S^2 = I_6) and U_S = -Y S Y.
@@ -660,15 +787,20 @@ def certify_non_common_t_grid(
         )
         A_min = RationalMatrix([[Fraction(x) for x in row] for row in cert.minimizer_A])
         dom_info = verify_eight_involution_dominance_and_intertwiner(K, Y, A_min)
+        wave3_info = verify_fifteen_dim_skew_parseval_and_swap_involutions(Y, A_min)
 
         records.append({
             "t1": t1,
             "t2": t2,
             "has_common_t": common_t is not None,
+            "off_diag_dominated": wave3_info["off_diag_dominated"],
+            "norm_Y_diag_sq": wave3_info["norm_Y_diag_sq"],
+            "norm_Y_off_sq": wave3_info["norm_Y_off_sq"],
             "min_pivot": cert.min_pivot,
             "certified_s_sq_bound": cert.certified_s_sq_bound,
             "excludes_s_below_one": cert.excludes_s_below_one,
             "dominance_and_intertwiner": dom_info,
+            "fifteen_dim_and_swap": wave3_info,
         })
 
     return records

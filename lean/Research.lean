@@ -2,6 +2,7 @@
 import Research.ByersNashDuality
 import Research.ByersNashMultiTerm
 import Research.ByersNashHaarIntertwiner
+import Research.ByersNashOffDiagComplete
 import Research.CentroidalDecelerationLimit
 import Research.ControlCertificates
 import Research.CoveringCapacity
@@ -14,6 +15,7 @@ import Research.CoveringAssembly
 import Research.CoveringFamily
 import Research.Erdos885QuotientGenus
 import Research.Erdos885JacobianSimplicity
+import Research.Erdos885MumfordChabauty
 import Research.HomographyDecomposition
 import Research.LorentzConeCBF
 import Research.RobotEnergySmoothness

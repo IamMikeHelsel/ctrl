@@ -136,13 +136,76 @@ theorem euler_product_step_ratio :
     ((323323 / 110592 : ℝ) < 3) := by
   norm_num
 
+/-- Nine-prime exponent tuples for `{2, 3, 5, 7, 11, 13, 17, 19, 23}`. -/
+abbrev Exponents23 := Exponents19 × ℕ
+
+/-- Reciprocal modulus weight `1 / (2^(a+1) * 3^b * 5^c * 7^d * 11^e * 13^f * 17^g * 19^k * 23^m)`. -/
+noncomputable def weight23 (v : Exponents23) : ℝ :=
+  weight19 v.1 * (1 / 23 : ℝ) ^ v.2
+
+theorem weight23_nonneg (v : Exponents23) : 0 ≤ weight23 v := by
+  unfold weight23
+  have hw := weight19_nonneg v.1
+  positivity
+
+/-- The 9-prime (23-smooth) Euler product:
+`(323323 / 110592) * (23 / 22) = 7436429 / 2433024 = 676039 / 221184` (`≈ 3.056455`). -/
+theorem euler_product_23 : HasSum weight23 (7436429 / 2433024) := by
+  have h23 : HasSum (fun m : ℕ => (1 / 23 : ℝ) ^ m) (23 / 22) := by
+    convert hasSum_geometric_of_lt_one (r := (1 / 23 : ℝ)) (by norm_num) (by norm_num) using 1
+    norm_num
+  have h := euler_product_19.mul h23 (euler_product_19.summable.mul_of_nonneg h23.summable
+    (fun _ => weight19_nonneg _) (fun _ => by positivity))
+  have heq : (7436429 / 2433024 : ℝ) = (323323 / 110592) * (23 / 22) := by norm_num
+  rw [heq]
+  exact h
+
+/-- Alias for `euler_product_23` matching the `weight*_hasSum` convention. -/
+theorem weight23_hasSum : HasSum weight23 (7436429 / 2433024) :=
+  euler_product_23
+
+/-- The `10 × 7 × 5 × 4 × 5 × 4 × 3 × 3 × 3` finite exponent box for `{2, 3, 5, 7, 11, 13, 17, 19, 23}`. -/
+def box23 : Finset Exponents23 :=
+  box19 ×ˢ Finset.range 3
+
+theorem box23_mass : ∑ v ∈ box23, weight23 v =
+    (1023 / 1024 : ℝ) * (1093 / 729) * (781 / 625) * (400 / 343) *
+      (16105 / 14641) * (2380 / 2197) * (307 / 289) * (381 / 361) * (553 / 529) := by
+  simp only [box23, weight23, Finset.sum_product]
+  simp only [← Finset.sum_mul, ← Finset.mul_sum]
+  rw [box19_mass]
+  norm_num [Finset.sum_range_succ]
+
+/-- Exact unconditional tail bound outside `box23`:
+`(7436429 / 2433024) - box23_mass = 32349958263925903 / 4008669253835710464` (`≈ 8.0700 × 10⁻³`). -/
+theorem finite_tail_bound_23 (s : Finset Exponents23) (h : Disjoint s box23) :
+    ∑ v ∈ s, weight23 v ≤ 32349958263925903 / 4008669253835710464 := by
+  have hu : ∑ v ∈ s.disjUnion box23 h, weight23 v ≤ 7436429 / 2433024 := by
+    rw [← euler_product_23.tsum_eq]
+    exact Summable.sum_le_tsum (s.disjUnion box23 h) (fun _ _ => weight23_nonneg _)
+      euler_product_23.summable
+  rw [Finset.sum_disjUnion h, box23_mass] at hu
+  norm_num at hu
+  linarith
+
+/-- Smooth-Covering Capacity Phase Transition Theorem at $p_9 = 23$:
+The 8-prime (19-smooth) Euler product `323323 / 110592 ≈ 2.923566` is the last smooth prime
+stage strictly below `3`, whereas adjoining the 9th prime `23` pushes the Euler product to
+`7436429 / 2433024 = 676039 / 221184 ≈ 3.056455 > 3`. -/
+theorem smooth_covering_threshold_at_23 :
+    ((7436429 / 2433024 : ℝ) = (323323 / 110592) * (23 / 22)) ∧
+    ((7436429 / 2433024 : ℝ) = 676039 / 221184) ∧
+    ((323323 / 110592 : ℝ) < 3) ∧
+    ((3 : ℝ) < 7436429 / 2433024) := by
+  norm_num
+
 /-- General prime-extension step ratio lemma: for any real modulus base `p > 1` and
 positive base capacity `S > 0`, multiplying by the geometric series sum `(p / (p - 1))`
 strictly increases the capacity ceiling. -/
 theorem prime_extension_capacity_strict_mono {S p : ℝ} (hS : 0 < S) (hp : 1 < p) :
     S < S * (p / (p - 1)) := by
   have hp1 : 0 < p - 1 := by linarith
-  have h_gt_one : 1 < p / (p - 1) := ( one_lt_div hp1 ).mpr (by linarith)
+  have h_gt_one : 1 < p / (p - 1) := (one_lt_div hp1).mpr (by linarith)
   nlinarith
 
 #print axioms euler_product_17
@@ -151,7 +214,11 @@ theorem prime_extension_capacity_strict_mono {S p : ℝ} (hS : 0 < S) (hp : 1 < 
 #print axioms euler_product_19
 #print axioms box19_mass
 #print axioms finite_tail_bound_19
+#print axioms euler_product_23
+#print axioms box23_mass
+#print axioms finite_tail_bound_23
 #print axioms euler_product_step_ratio
+#print axioms smooth_covering_threshold_at_23
 #print axioms prime_extension_capacity_strict_mono
 
 end Research.CoveringSeventeen

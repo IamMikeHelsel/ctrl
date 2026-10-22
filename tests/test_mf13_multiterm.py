@@ -42,6 +42,7 @@ from tools.certify_mf13_multiterm import (  # noqa: E402
     run_multiterm_benchmark_suite,
     sym_part_ak,
     verify_eight_involution_dominance_and_intertwiner,
+    verify_fifteen_dim_skew_parseval_and_swap_involutions,
     verify_multiterm_involution_hierarchy,
 )
 from tools.certify_mf13_pair import (
@@ -271,6 +272,8 @@ def test_eight_involution_dominance_and_symmetric_intertwiner_grid_10() -> None:
 
     for entry in grid_results:
         assert entry["has_common_t"] is False
+        assert entry["off_diag_dominated"] is True
+        assert Fraction(entry["norm_Y_off_sq"]) > Fraction(entry["norm_Y_diag_sq"])
         assert Fraction(entry["min_pivot"]) > Fraction(0)
         assert Fraction(entry["certified_s_sq_bound"]) > Fraction(1)
         assert entry["excludes_s_below_one"] is True
@@ -279,6 +282,12 @@ def test_eight_involution_dominance_and_symmetric_intertwiner_grid_10() -> None:
         assert dom["implication_valid"] is True
         assert dom["intertwiner_found"] is True
         assert dom["intertwiner_duality_exact"] is True
+        w3 = entry["fifteen_dim_and_swap"]
+        assert w3["swap_involutions_valid"] is True
+        assert w3["equal_freq_anticomm_exact"] is True
+        assert w3["fifteen_dim_parseval_exact"] is True
+        assert w3["canonical_four_term_norm_identity_exact"] is True
+        assert w3["lyap_symm_skew_decoupling_exact"] is True
 
     # Also verify on Calibration Pair where dominance condition 4||H||^2 + 4||H_iso||^2 >= ||Y_off||^2 holds
     K_cal, Y_cal, A_cal, _ = make_calibration_pair()
@@ -287,6 +296,10 @@ def test_eight_involution_dominance_and_symmetric_intertwiner_grid_10() -> None:
     assert dom_cal["condition_holds"] is True
     assert dom_cal["max_8_dominates"] is True
     assert dom_cal["implication_valid"] is True
+    w3_cal = verify_fifteen_dim_skew_parseval_and_swap_involutions(Y_cal, A_cal)
+    assert w3_cal["fifteen_dim_parseval_exact"] is True
+    assert w3_cal["canonical_four_term_norm_identity_exact"] is True
+    assert w3_cal["lyap_symm_skew_decoupling_exact"] is True
 
 
 def test_run_multiterm_benchmark_suite() -> None:
