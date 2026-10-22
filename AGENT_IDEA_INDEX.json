@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0",
-  "updated_at": "2026-10-21",
+  "updated_at": "2026-10-22",
   "repository": "https://github.com/IamMikeHelsel/ctrl",
   "summary": {
     "controls_lean_modules": 53,
@@ -61,7 +61,12 @@
         "ctrl.robotics.estimation_lqr.dare_bellman_completion_of_squares",
         "ctrl.robotics.estimation_lqr.dare_detectable_return_difference_margin"
       ],
-      "combines_with": ["EST-01", "CTRL-02", "CTRL-04", "MATH-01"]
+      "combines_with": [
+        "EST-01",
+        "CTRL-02",
+        "CTRL-04",
+        "MATH-01"
+      ]
     },
     {
       "id": "CTRL-02",
@@ -89,7 +94,12 @@
         "ctrl.robotics.mujoco_benchmarks.run_arm6dof_disturbance_iss_hinf_benchmark"
       ],
       "measured_impact": "135.3x l2-gain disturbance attenuation (0.00246 vs 0.3325 nominal PD) and -99.59% peak joint error in 6-DOF MuJoCo benchmark.",
-      "combines_with": ["CTRL-03", "NL-01", "ROBO-01", "NL-03"]
+      "combines_with": [
+        "CTRL-03",
+        "NL-01",
+        "ROBO-01",
+        "NL-03"
+      ]
     },
     {
       "id": "CTRL-03",
@@ -115,7 +125,11 @@
       "python_entrypoints": [
         "ctrl.robotics.estimation_lqr.iss_peter_paul_envelope"
       ],
-      "combines_with": ["CTRL-02", "NL-01", "NL-02"]
+      "combines_with": [
+        "CTRL-02",
+        "NL-01",
+        "NL-02"
+      ]
     },
     {
       "id": "CTRL-04",
@@ -140,7 +154,43 @@
       "python_entrypoints": [
         "ctrl.robotics.estimation_lqr.mpc_warm_start_cost_descent"
       ],
-      "combines_with": ["CTRL-01", "NL-02", "ROBO-01"]
+      "combines_with": [
+        "CTRL-01",
+        "NL-02",
+        "ROBO-01"
+      ]
+    },
+    {
+      "id": "CTRL-05",
+      "title": "Coordinate-Free Reachability, Observability & General-n Ackermann Pole Placement",
+      "domain": "Linear Systems Structure",
+      "status": "ready_to_use",
+      "novelty": "N2",
+      "applicability": "A2",
+      "approach": "Subspace stabilization at k = dim V without Cayley-Hamilton, dual annihilator observability and output-injection invariance, companion-matrix rank-1 characteristic polynomial shift, controller-canonical Ackermann placement, Routh-Hurwitz 2/3 and Jury 2 stability tests.",
+      "lean_modules": [
+        "ControlsLean/Controls/Reachability.lean",
+        "ControlsLean/Controls/Observability.lean",
+        "ControlsLean/Controls/Companion.lean",
+        "ControlsLean/Controls/PolePlacement.lean",
+        "ControlsLean/Controls/PolePlacementGeneral.lean",
+        "ControlsLean/Controls/Hurwitz2.lean",
+        "ControlsLean/Controls/Hurwitz3.lean",
+        "ControlsLean/Controls/Jury2.lean"
+      ],
+      "key_theorems": [
+        "unobs_eq_dualCoannihilator_reach",
+        "exists_feedback_charpoly_eq",
+        "deadbeat_trajectory_zero",
+        "isHurwitz2_iff",
+        "isSchur2_iff_jury"
+      ],
+      "python_entrypoints": [],
+      "combines_with": [
+        "CTRL-02",
+        "CTRL-01",
+        "EST-01"
+      ]
     },
     {
       "id": "NL-01",
@@ -168,7 +218,11 @@
         "CTRL_SONTAG_CLF",
         "CTRL_BACKSTEPPING_CONTROL"
       ],
-      "combines_with": ["CTRL-02", "CTRL-03", "NL-03"]
+      "combines_with": [
+        "CTRL-02",
+        "CTRL-03",
+        "NL-03"
+      ]
     },
     {
       "id": "NL-02",
@@ -204,7 +258,11 @@
         "ctrl_quad_contact_allocator"
       ],
       "measured_impact": "Stops 3D quadruped safely at x = 1.1920 m < 1.20 m wall with 100% contact forces inside Lorentz cone (f_z,min = 22.14 N) and zero pitch/roll angular velocity (1.64e-15 rad/s).",
-      "combines_with": ["ROBO-03", "ROBO-04", "CTRL-04"]
+      "combines_with": [
+        "ROBO-03",
+        "ROBO-04",
+        "CTRL-04"
+      ]
     },
     {
       "id": "NL-03",
@@ -222,7 +280,11 @@
         "slotine_li_adaptive_lyapunov_deriv",
         "hasDerivAt_slotine_li_storage"
       ],
-      "combines_with": ["ROBO-01", "NL-01", "CTRL-02"]
+      "combines_with": [
+        "ROBO-01",
+        "NL-01",
+        "CTRL-02"
+      ]
     },
     {
       "id": "EST-01",
@@ -250,7 +312,11 @@
         "ctrl.robotics.estimation_lqr.joseph_kalman_update",
         "ctrl.robotics.estimation_lqr.kalata_alpha_beta_gains"
       ],
-      "combines_with": ["CTRL-01", "CTRL-02", "VIS-01"]
+      "combines_with": [
+        "CTRL-01",
+        "CTRL-02",
+        "VIS-01"
+      ]
     },
     {
       "id": "EST-02",
@@ -272,7 +338,10 @@
       "python_entrypoints": [
         "ctrl.robotics.estimation_lqr.kalman_bucy_continuous_step"
       ],
-      "combines_with": ["MATH-01", "ROBO-03"]
+      "combines_with": [
+        "MATH-01",
+        "ROBO-03"
+      ]
     },
     {
       "id": "EST-03",
@@ -290,7 +359,10 @@
         "pomdpValue_convex",
         "bellman_backup_pwlc_preservation"
       ],
-      "combines_with": ["EST-01", "ROBO-04"]
+      "combines_with": [
+        "EST-01",
+        "ROBO-04"
+      ]
     },
     {
       "id": "ROBO-01",
@@ -320,7 +392,11 @@
         "ctrl_septic_j"
       ],
       "measured_impact": "-22.47% dynamic Joule heat loss (theoretical -18.33%) and -10.85% viscous dissipation in 6-DOF MuJoCo manipulator benchmark.",
-      "combines_with": ["NL-03", "CTRL-02", "NL-01"]
+      "combines_with": [
+        "NL-03",
+        "CTRL-02",
+        "NL-01"
+      ]
     },
     {
       "id": "ROBO-02",
@@ -346,7 +422,104 @@
         "ctrl.robotics.mujoco_benchmarks.run_se3_visual_servoing_benchmark"
       ],
       "measured_impact": "Eliminates 5.76x (12.67 m) IBVS camera retreat under 155-deg optical-axis rotation in MuJoCo.",
-      "combines_with": ["VIS-01", "ROBO-03", "EST-01"]
+      "combines_with": [
+        "VIS-01",
+        "ROBO-03",
+        "EST-01"
+      ]
+    },
+    {
+      "id": "ROBO-03",
+      "title": "Lie-Group SO(3)/SE(3) Rodrigues, Unit Quaternions, Planar Arm IK & Unicycle Odometry",
+      "domain": "Robot Kinematics & Lie Groups",
+      "status": "ready_to_use",
+      "novelty": "N2",
+      "applicability": "A3",
+      "approach": "so(3) cubic identity and closed-form Rodrigues rotation, 6x6 SE(3) twist adjoint functoriality and rigid kinematic ODE, unit-quaternion double cover and 1/2 q*omega ODE, 2-link planar arm Jacobian and annulus IK, differential-drive bijection, exact arc odometry and Kanayama CLF.",
+      "lean_modules": [
+        "ControlsLean/Robotics/SO3Rodrigues.lean",
+        "ControlsLean/Robotics/SE3Kinematics.lean",
+        "ControlsLean/Robotics/QuaternionRotation.lean",
+        "ControlsLean/Robotics/PlanarArm.lean",
+        "ControlsLean/Robotics/Unicycle.lean"
+      ],
+      "key_theorems": [
+        "skew_cube",
+        "rodrigues_mul_transpose_self",
+        "adjoint6_mul",
+        "norm_rotate",
+        "det_jacobian_eq_zero_iff",
+        "diffDrive_bijective"
+      ],
+      "python_entrypoints": [
+        "ctrl.robotics.kinematics_ik"
+      ],
+      "combines_with": [
+        "NL-02",
+        "NL-03",
+        "ROBO-02",
+        "EST-02"
+      ]
+    },
+    {
+      "id": "ROBO-04",
+      "title": "Real-Time Response-Time Analysis, Simplex Safety Switching, Fleet Deadlock & Reed-Solomon Barcode Decoding",
+      "domain": "Real-Time & Multi-Robot Systems",
+      "status": "ready_to_use",
+      "novelty": "N2",
+      "applicability": "A2",
+      "approach": "Fixed-priority Liu-Layland critical-instant response-time fixpoint soundness and completeness, Simplex architecture safe switching to a verified backup controller, directed-cycle multi-robot fleet deadlock characterization and throughput bounds, Reed-Solomon syndrome decoding for barcodes.",
+      "lean_modules": [
+        "RoboLean/RealTime.lean",
+        "RoboLean/CriticalInstant.lean",
+        "RoboLean/Reliability.lean",
+        "RoboLean/FleetDeadlock.lean",
+        "RoboLean/FleetThroughput.lean",
+        "RoboLean/Barcode/ReedSolomon.lean"
+      ],
+      "key_theorems": [],
+      "python_entrypoints": [],
+      "combines_with": [
+        "NL-02",
+        "EST-03"
+      ],
+      "branch": "crossover-research-2026-10-19",
+      "note": "Modules live on the crossover-research-2026-10-19 branch; theorem names not audited on main."
+    },
+    {
+      "id": "VIS-01",
+      "title": "Projective Multi-View Geometry: Essential Matrix, 8-Point, Homography Rigidity, Cross-Ratio, Triangulation & ICP",
+      "domain": "Computer Vision & Multi-View Geometry",
+      "status": "ready_to_use",
+      "novelty": "N2",
+      "applicability": "A2",
+      "approach": "Longuet-Higgins epipolar constraint E = [t]_x R, Demazure cubic essential constraint, Kronecker rank-8 eight-point uniqueness up to scale, PGL(3,K) four-point homography rigidity, cross-ratio Moebius invariance, Lagrange closed-form stereo triangulation with cheirality, Kabsch/ICP centroid and trace reduction.",
+      "lean_modules": [
+        "ControlsLean/Vision/Epipolar.lean",
+        "ControlsLean/Vision/EssentialConstraints.lean",
+        "ControlsLean/Vision/EightPoint.lean",
+        "ControlsLean/Vision/Homography.lean",
+        "ControlsLean/Vision/HomographyUniqueness.lean",
+        "ControlsLean/Vision/CrossRatio.lean",
+        "ControlsLean/Vision/Triangulation.lean",
+        "ControlsLean/Vision/Registration.lean"
+      ],
+      "key_theorems": [
+        "essential_mul_transpose",
+        "eq_smul_of_rank_eq_eight",
+        "homography_unique_four_points",
+        "crossRatio_mulVec",
+        "depths_unique",
+        "registrationCost_eq_optimal_iff"
+      ],
+      "python_entrypoints": [
+        "ctrl.robotics.vision_se3"
+      ],
+      "combines_with": [
+        "ROBO-02",
+        "EST-01",
+        "ROBO-03"
+      ]
     },
     {
       "id": "MATH-01",
@@ -373,7 +546,10 @@
         "byers_nash_universal_12_comparator_bound"
       ],
       "remaining_work": "Analytical cross-term bound between the 1D W_pq-commuting (J) and 3D W_pq-anticommuting ({I_2, F, G}) off-diagonal subspaces when 1/2 ||Y_off||_F^2 > 3/4 ||Y_diag||_F^2.",
-      "combines_with": ["EST-02", "CTRL-01"]
+      "combines_with": [
+        "EST-02",
+        "CTRL-01"
+      ]
     },
     {
       "id": "MATH-02",
@@ -396,7 +572,9 @@
         "cantor_reduced_divisor_cassels_flynn_square"
       ],
       "remaining_work": "Formalize rank-1 Mordell-Weil generator certificate and p-adic Coleman integral zero bound on residue disks for k=5.",
-      "combines_with": ["MATH-04"]
+      "combines_with": [
+        "MATH-04"
+      ]
     },
     {
       "id": "MATH-03",
@@ -424,7 +602,31 @@
         "smooth_covering_threshold_at_23"
       ],
       "remaining_work": "Extend local branch-and-bound obstruction certificates beyond 23-smooth prime-shifted moduli.",
-      "combines_with": ["MATH-04"]
+      "combines_with": [
+        "MATH-04"
+      ]
+    },
+    {
+      "id": "MATH-04",
+      "title": "25+ Machine-Checked Erdős Problem Solutions & Extremal Bounties",
+      "domain": "Combinatorial & Number-Theoretic Bounties",
+      "status": "ready_to_use",
+      "novelty": "N3",
+      "applicability": "A2",
+      "approach": "Complete zero-sorry formalizations of solved Erdős problems (#36, #96, #143, #242, #261, #275, #311, #341, #367, #370, #389, #455, #493, #533, #645, #834, #873, #931, #951, #995, #1055, #1059, #1073, #1102, #1113, #1125, #1148, #1179, #1187) ready for Justin Sun Prize, Palomar and Formal Conjectures submission.",
+      "lean_modules": [
+        "ControlsLean/Bounty/ErdosBounties.lean",
+        "ControlsLean/Bounty/ErdosNewInsights.lean",
+        "ControlsLean/Bounty/ErdosWave2.lean"
+      ],
+      "key_theorems": [],
+      "python_entrypoints": [
+        "tools/ctrl_cli/triage.py"
+      ],
+      "combines_with": [
+        "MATH-02",
+        "MATH-03"
+      ]
     }
   ]
 }
