@@ -1,18 +1,21 @@
 name: Erdős lab checks
 
-# Check-only (lint, tests, Lean audit). Never pushes, merges or writes anywhere.
-# Runs on the self-hosted runner on sparky (no GitHub-hosted runners for private repos), but the
-# gates themselves run inside docker/erdos-lab.Dockerfile with no network, as a non-root user, and
-# without the host's $HOME, so nothing a job runs (including agent-written proofs) can leave state
-# behind for later jobs. Trust boundary: this repo is private and non-fork (add-runner.sh refuses
-# public repos), so only collaborators can trigger it. Note the runner user is in the docker group.
+# Persistent local hosts execute only trusted pushes or an explicitly reviewed commit.
+# Fork PRs are reviewed/promoted by a maintainer; never approve their Actions runs.
+# See docs/SELF_HOSTED_VERIFICATION.md for the required repository-level public gate.
 on:
-  pull_request:
-    paths: ["erdos/**", "src/**", "tests/**", "work/**", "docker/**", "pyproject.toml", "uv.lock", ".github/workflows/erdos-lab.yml"]
   push:
-    branches: [main]
-    paths: ["erdos/**", "src/**", "tests/**", "work/**", "docker/**", "pyproject.toml", "uv.lock", ".github/workflows/erdos-lab.yml"]
+    branches: [main, 'ci/trusted/**']
   workflow_dispatch:
+    inputs:
+      reviewed_sha:
+        description: 'Full 40-character commit SHA reviewed for execution on persistent local hosts'
+        required: true
+        type: string
+      trust_acknowledgement:
+        description: 'Type TRUSTED_LOCAL_EXECUTION after reviewing the entire commit and build inputs'
+        required: true
+        type: string
 
 permissions:
   contents: read
@@ -23,13 +26,33 @@ concurrency:
 
 jobs:
   check:
+    if: >-
+      github.repository == 'IamMikeHelsel/ctrl' &&
+      (github.event_name == 'push' ||
+       (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' &&
+        inputs.trust_acknowledgement == 'TRUSTED_LOCAL_EXECUTION'))
     # Needs a Docker daemon: pinned to sparky (the Mac ctrl-local runner has no daemon running).
     runs-on: [self-hosted, ARM64, ctrl-local, sparky]
     timeout-minutes: 90
     env:
       IMAGE: erdos-lab:ci-${{ github.run_id }}
     steps:
+      - name: Validate reviewed commit
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          REVIEWED_SHA: ${{ inputs.reviewed_sha }}
+        shell: bash
+        run: |
+          if [[ ! "$REVIEWED_SHA" =~ ^[0-9a-f]{40}$ ]]; then
+            echo 'reviewed_sha must be a full lowercase 40-character commit SHA' >&2
+            exit 1
+          fi
       - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.reviewed_sha || github.sha }}
+          persist-credentials: false
+      # This builds trusted code using the host Docker daemon; it is not a sandbox
+      # for an untrusted Dockerfile or repository. Container isolation starts later.
       - name: Build the test image (Mathlib cache lives in a cached layer)
         run: docker build -q -f docker/erdos-lab.Dockerfile -t "$IMAGE" .
       - name: Gates in the container (ruff, pytest, erdos check --all)

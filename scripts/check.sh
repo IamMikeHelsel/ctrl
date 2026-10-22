@@ -62,7 +62,7 @@ else
   files=($(find ControlsLean -name '*.lean'))
 fi
 
-if grep -nE '\b(sorry|admit)\b|^axiom ' "${files[@]}"; then
+if ! uv run --no-project python scripts/check_tokens.py "${files[@]}"; then
   echo "FAIL: escape hatch found" >&2
   exit 1
 fi
@@ -81,4 +81,4 @@ if [[ -z "$target_file" && "$fast_mode" -eq 0 ]]; then
   echo "$audit" | wc -l | xargs echo "Axiom audit passed for headline theorems:"
 fi
 
-echo "OK: ${#files[@]} file(s) checked, no sorry/admit/axiom"
+echo "OK: ${#files[@]} file(s) checked, no forbidden proof escapes"
