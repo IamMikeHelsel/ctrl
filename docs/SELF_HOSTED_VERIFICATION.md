@@ -155,7 +155,7 @@ Publication readiness remains conditional on the administrator-level public-fork
 
 After adding the contribution pages, `uv run ruff check .` and
 `uv run ruff format --check .` passed (20 Python files formatted), and `uv run pytest -q`
-passed with **56 tests, one integration test deselected**. Twelve of these exercise the new
+passed with **60 tests, one integration test deselected**. Sixteen of these exercise the new
 ControlsLean source guard: all five banned tokens, comments/strings, line positions, actual
 source files, CLI failure, quote handling and an interpolation escape attempt.
 
@@ -163,7 +163,8 @@ Lean CI now explicitly runs `scripts/check.sh` after `lean-action`, with `setup-
 Upstream `lean-action` defaults its own axiom audit to false; the explicit repository script
 is needed for the advertised source-policy and headline-axiom gate. The new standard-library
 lexer masks nested comments and ordinary/raw strings, conservatively scans interpolation text,
-and checks `sorry`, `admit`, `axiom`, `native_decide`, `implemented_by`. This is a lexical
+and leaves all source after a recognized interpolation opener unmasked (deliberately
+fail-closed, including possible later prose false positives), then checks `sorry`, `admit`, `axiom`, `native_decide`, `implemented_by`. This is a lexical
 guard, not a complete Lean parser or protection against arbitrary metaprogramming; kernel and
 headline dependency checks remain separate. No existing proof source was changed.
 
@@ -180,3 +181,12 @@ one HOLD; these are research decisions. Browser/layout testing is a separate own
 Five copied assessment links to absent campaign files were replaced with explicit research
 provenance text; copied inventory/adoption notes now distinguish the research checkout from
 this main-branch package.
+
+A follow-up independent pinned-Lean regression demonstrated that nested quotes inside string
+interpolation could hide a `sorry` from the initial lexical guard. The repaired guard stops
+masking at the first recognized interpolation opener and scans the entire remaining source.
+Tests include the exact accepted-by-Lean regression, nested interpolation, a comment delimiter
+inside a nested string, and explicit conservative rejection of later comment/string words.
+This closes the reproduced masking hole without claiming a full Lean parser. The portable
+`domain-inventory.json` snapshot referenced by the copied assessment was also included; it
+contains no absolute `/Users/` paths and identifies its research-checkout provenance.

@@ -14,6 +14,9 @@ def code_only(source: str) -> str:
 
     Lean character literals are skipped too; a quote character inside one must not hide
     the following code. Identifier primes are not character-literal delimiters.
+    At an interpolated-string opener (! followed by a quote), leave the remainder
+    unmasked. Nested quoted Lean terms otherwise defeat a simple string lexer. This
+    deliberately may flag words in later prose/comments: fail closed and request review.
     This is a conservative lexical guard, not a Lean syntax/elaboration implementation.
     """
     output = list(source)
@@ -46,6 +49,9 @@ def code_only(source: str) -> str:
             end = source.find(delimiter, i + len(raw[0]))
             i = len(source) if end < 0 else end + len(delimiter)
         elif source[i] == '"':
+            if i > 0 and source[i - 1] == "!":
+                # Do not resume masking after an uncertain interpolation boundary.
+                break
             i += 1
             while i < len(source):
                 if source[i] == "\\":
@@ -66,10 +72,6 @@ def code_only(source: str) -> str:
             i += len(char[0])
         else:
             i += 1
-            continue
-        # Interpolated strings can contain Lean terms. Conservatively scan their
-        # entire text rather than masking a proof inside an interpolation.
-        if source[start] == '"' and start > 0 and source[start - 1] == "!":
             continue
         blank(start, i)
     return "".join(output)

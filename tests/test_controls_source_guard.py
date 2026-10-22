@@ -18,6 +18,9 @@ SPEC.loader.exec_module(GUARD)
     [
         ("theorem bad : True := by sorry", "sorry"),
         ('def s := s!"{(by sorry : Nat)}"', "sorry"),
+        ('def bad : String := s!"{("x" : String)} {(by sorry : Nat)}"', "sorry"),
+        ('def bad := s!"{("/-" : String)} {(by sorry : Nat)}"', "sorry"),
+        ('def bad := s!"{s!"nested"} {(by sorry : Nat)}"', "sorry"),
         ("theorem bad : True := by admit", "admit"),
         ("  axiom bad : False", "axiom"),
         ("theorem bad : True := by native_decide", "native_decide"),
@@ -56,3 +59,10 @@ def test_cli_return_codes_and_actual_sources(tmp_path, capsys):
     root = Path(__file__).parents[1]
     paths = sorted((root / "ControlsLean").rglob("*.lean"))
     assert paths and GUARD.main([str(p) for p in paths]) == 0
+
+
+def test_interpolation_tail_is_deliberately_fail_closed():
+    source = 'def good := s!"{("x" : String)}"\n-- prose: sorry\ndef text := "admit"'
+    assert GUARD.violations(source) == [(2, "sorry"), (3, "admit")]
+    # Comment/string markers in the uncertain tail must never hide subsequent code.
+    assert GUARD.code_only(source) == source
