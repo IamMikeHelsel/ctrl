@@ -433,7 +433,7 @@ def run_arm6dof_disturbance_iss_hinf_benchmark(duration: float = 1.6) -> dict[st
     certified_gamma = 0.20
 
     rollouts: dict[str, dict[str, Any]] = {}
-    for mode in ("nominal_pd", "iss_hinf_sontag_clf"):
+    for mode in ("nominal_pd", "tuned_ctc_high_gain", "iss_hinf_sontag_clf"):
         mujoco.mj_resetData(model, data)
         peak_err = 0.0
         sq_err_sum = 0.0
@@ -467,6 +467,12 @@ def run_arm6dof_disturbance_iss_hinf_benchmark(duration: float = 1.6) -> dict[st
             if mode == "nominal_pd":
                 ddq_cmd = ddq_des - 90.0 * e_pos - 18.0 * e_vel
                 tau_aux = np.zeros(6)
+            elif mode == "tuned_ctc_high_gain":
+                # Strong baseline: well-tuned Computed-Torque Control (CTC) with matched Kp=416, Kd=42
+                # (same linear pole structure as c1=16, c2=26 backstepping) + linear sliding damping
+                ddq_cmd = ddq_des - 416.0 * e_pos - 42.0 * e_vel
+                z2_vec = e_vel + 16.0 * e_pos
+                tau_aux = -12.0 * z2_vec
             else:
                 # Strict-feedback backstepping + Sontag universal CLF + H-infinity disturbance damping
                 c1, c2 = 16.0, 26.0
@@ -522,24 +528,31 @@ def run_arm6dof_disturbance_iss_hinf_benchmark(duration: float = 1.6) -> dict[st
         }
 
     nom = rollouts["nominal_pd"]
+    ctc = rollouts["tuned_ctc_high_gain"]
     hinf = rollouts["iss_hinf_sontag_clf"]
     peak_red_pct = 100.0 * (nom["peak_pos_err_rad"] - hinf["peak_pos_err_rad"]) / nom["peak_pos_err_rad"]
     rms_red_pct = 100.0 * (nom["rms_pos_err_rad"] - hinf["rms_pos_err_rad"]) / nom["rms_pos_err_rad"]
+    peak_red_vs_ctc_pct = 100.0 * (ctc["peak_pos_err_rad"] - hinf["peak_pos_err_rad"]) / ctc["peak_pos_err_rad"]
+    rms_red_vs_ctc_pct = 100.0 * (ctc["rms_pos_err_rad"] - hinf["rms_pos_err_rad"]) / ctc["rms_pos_err_rad"]
 
     # Certified ISS sublevel bound: V_max <= (sigma / alpha) * ||B^T P B|| * w_peak_sq
     iss_sublevel_bound = 0.025 * hinf["w_peak_sq"]
     iss_verified = (
         hinf["empirical_l2_gain"] < certified_gamma
+        and hinf["empirical_l2_gain"] < ctc["empirical_l2_gain"]
         and hinf["empirical_l2_gain"] < nom["empirical_l2_gain"]
-        and peak_red_pct > 50.0
+        and peak_red_vs_ctc_pct > 25.0
         and hinf["max_lyapunov_v"] <= iss_sublevel_bound
     )
 
     return {
         "nominal_pd": nom,
+        "tuned_ctc_high_gain": ctc,
         "iss_hinf_sontag_clf": hinf,
         "peak_error_reduction_pct": peak_red_pct,
         "rms_error_reduction_pct": rms_red_pct,
+        "peak_error_reduction_vs_ctc_pct": peak_red_vs_ctc_pct,
+        "rms_error_reduction_vs_ctc_pct": rms_red_vs_ctc_pct,
         "certified_gamma": certified_gamma,
         "iss_sublevel_bound": iss_sublevel_bound,
         "disturbance_attenuation_verified": iss_verified,
