@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# List Erdős problems in formal-conjectures that are marked solved but have no Lean proof,
-# shortest statement first. Usage: scripts/bounty_triage.sh [N]   (default 30)
+# List Erdős problems in formal-conjectures that are marked solved, have a `sorry` proof, and
+# carry no `formal_proof` link to an external Lean proof. Shortest statement first. Usage: scripts/bounty_triage.sh [N]   (default 30)
 set -euo pipefail
 N="${1:-30}"
 FC="${FC_DIR:-$HOME/lean-work/formal-conjectures}"
@@ -12,5 +12,6 @@ fi
 echo "formal-conjectures @ $(git -C "$FC" rev-parse --short HEAD)"
 for f in $(rg -l 'category research solved' "$FC/FormalConjectures/ErdosProblems"); do
   rg -q '\bsorry\b' "$f" || continue
+  rg -q 'formal_proof' "$f" && continue
   printf '%6d  %s\n' "$(wc -l < "$f")" "$(basename "$f" .lean)"
 done | sort -n | head -n "$N" | awk '{printf "%5s lines  Erdős #%s  https://www.erdosproblems.com/%s\n", $1, $2, $2}'
