@@ -531,3 +531,28 @@ import ControlsLean
 #print axioms ControlsLean.Controls.arimoto_spectralRadius_lt_one
 #print axioms ControlsLean.Controls.arimoto_tendsto_pow
 #print axioms ControlsLean.Controls.arimoto_error_tendsto_zero
+
+-- Addition 41: Controls (DARE Bellman residual, LQR completion of squares & closed-loop stability; PR #27)
+#print axioms ControlsLean.Controls.inputGram_transpose
+#print axioms ControlsLean.Controls.quad_inputGram_nonneg
+#print axioms ControlsLean.Controls.bellmanResidual_opt_eq
+#print axioms ControlsLean.Controls.bellman_completion_of_squares
+#print axioms ControlsLean.Controls.bellmanResidual_eq_zero_of_dare
+#print axioms ControlsLean.Controls.bellmanResidual_eq_of_dare
+#print axioms ControlsLean.Controls.quad_bellman_le
+#print axioms ControlsLean.Controls.quad_bellman_nonneg_of_dare
+#print axioms ControlsLean.Controls.dare_closed_loop_lyapunov
+#print axioms ControlsLean.Controls.dare_closed_loop_dissipation
+#print axioms ControlsLean.Controls.dare_closed_loop_tendsto_zero
+#print axioms ControlsLean.Controls.dare_closed_loop_tendsto_zero_of_posDef_Q
+
+-- Addition 42: Estimation (Kalman-Bucy filter generator & DRE/CARE identities; PR #28)
+#print axioms ControlsLean.Estimation.filterGen_transpose
+#print axioms ControlsLean.Estimation.filterGen_opt_eq_dre
+#print axioms ControlsLean.Estimation.filterGen_completion_of_squares
+#print axioms ControlsLean.Estimation.filterGen_of_CARE
+#print axioms ControlsLean.Estimation.quad_filterGen_le
+#print axioms ControlsLean.Estimation.trace_filterGen_eq
+#print axioms ControlsLean.Estimation.trace_filterGen_le
+#print axioms ControlsLean.Estimation.trace_filterGen_CARE_nonneg
+#print axioms ControlsLean.Estimation.care_lyapunov_identity
