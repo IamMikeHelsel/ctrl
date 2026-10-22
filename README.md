@@ -2,8 +2,8 @@
 
 [![Lean 4](https://img.shields.io/badge/Lean%204-v4.36.0--rc1-blue)](https://github.com/leanprover/lean4)
 [![Mathlib](https://img.shields.io/badge/Mathlib-4.36.0--rc1-brightgreen)](https://github.com/leanprover-community/mathlib4)
-[![ControlsLean Modules](https://img.shields.io/badge/ControlsLean-53%20Verified%20Modules-success)](ControlsLean.lean)
-[![Axiom Audit](https://img.shields.io/badge/Axiom%20Audit-424%20Headline%20Theorems-success)](scripts/Audit.lean)
+[![ControlsLean Modules](https://img.shields.io/badge/ControlsLean-55%20Verified%20Modules-success)](ControlsLean.lean)
+[![Axiom Audit](https://img.shields.io/badge/Axiom%20Audit-445%20Headline%20Theorems-success)](scripts/Audit.lean)
 [![Robotics Runtime](https://img.shields.io/badge/Robotics%20Runtime-48%20%40lean__theorem%20Kernels%20%7C%20C99%20%7C%20MuJoCo-informational)](docs/STATUS_AND_ROADMAP.md)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
@@ -17,7 +17,7 @@ Every theorem in `ctrl` is **100% `sorry`-free**, contains **zero `admit` or cus
 
 | Tier | Status | Scope & Where It Lives | Key Highlights |
 | :--- | :---: | :--- | :--- |
-| **1. Ready to Use (Production-Verified)** | **READY** | `ControlsLean/` (**53 modules**, **14,643 LOC**, **872 theorems**, **424 audited headline theorems**) + `src/ctrl/robotics/` (**48 `@lean_theorem` Python functions**, **C99 & IEC 61131-3 ST codegen**, **4 MuJoCo 3.16.0 benchmarks**) | Full LQR/DARE/CARE/LQG/Kalman–Bucy, $H_\infty$ Bounded Real Lemma, ISS Peter–Paul envelopes, Backstepping & Sontag CLF, Slotine–Li manipulator tracking, $SO(3)/SE(3)$/Quaternion/PlanarArm/Unicycle kinematics, POMDP Smallwood–Sondik convexity, 3D Lorentz-cone CBF & ZMP allocation, 8-point/Homography/ICP vision, and **25 solved Erdős problem formalizations**. |
+| **1. Ready to Use (Production-Verified)** | **READY** | `ControlsLean/` (**55 modules**, **15,260 LOC**, **906 theorems**, **445 audited headline theorems**) + `src/ctrl/robotics/` (**48 `@lean_theorem` Python functions**, **C99 & IEC 61131-3 ST codegen**, **4 MuJoCo 3.16.0 benchmarks**) | Full LQR/DARE/CARE/LQG/Kalman–Bucy, $H_\infty$ Bounded Real Lemma, ISS Peter–Paul envelopes, Backstepping & Sontag CLF, Slotine–Li manipulator tracking, $SO(3)/SE(3)$/Quaternion/PlanarArm/Unicycle kinematics, POMDP Smallwood–Sondik convexity, 3D Lorentz-cone CBF & ZMP allocation, 8-point/Homography/ICP vision, and **25 solved Erdős problem formalizations**. |
 | **2. What Worked (Verified Breakthroughs & Quantitative Gains)** | **PROVED + BENCHMARKED** | Closed-loop MuJoCo 3.16.0 benchmarks (`mujoco_benchmarks.py`), C99/PLC codegen (`codegen.py`), and spectral-free matrix proof techniques | **`-99.59%` peak tracking error** ($135.3\times$ $\ell_2$ disturbance attenuation) via $H_\infty$+ISS+Sontag CLF; **`-22.47%` dynamic Joule loss** via optimal septic trajectories ($\eta=-11$); **zero tip-over** 3D quadruped emergency braking; **zero camera retreat** in 6-DOF $SE(3)$ visual servoing; **$8.88 \times 10^{-16}$** C99-vs-Python parity. |
 | **3. Promising Frontiers (90%+ Proved in Lean 4 + Exact $\mathbb{Q}$ Certificates)** | **HIGH PROMISE** | `lean/Research/ByersNash*.lean`, `Erdos885*.lean`, `Covering*.lean` (`crossover-research-2026-10-19` branch) | **Byers–Nash $n=6$ (`MF-13`)**: Unconditional rank $\le 4$ exclusion + 8-involution Haar identity + 15D Parseval decomposition of $\mathbb{K}_6$ + 10/10 non-Common-$T$ exact rational $LDL^\top \succ 0$ certificates ($s(A)^2 \in [1.1509, 3.4292] > 1$). **Erdős #885**: All 14 Class 1 & Class 2 genus-2 Jacobians proved absolutely simple ($\operatorname{End}(J_{\overline{\mathbb{Q}}}) = \mathbb{Z}$) + Cassels–Flynn & Cantor division-by-2 reductions. **Erdős #273**: Exact 23-smooth Euler product crossover $\frac{323323}{110592} < 3 < \frac{7436429}{2433024}$. |
 | **4. Still In Work (Active Next Steps)** | **IN WORK** | `docs/STATUS_AND_ROADMAP.md` §4 | (a) Analytical cross-term closure between 1D $W_{pq}$-commuting ($J$) and 3D $W_{pq}$-anticommuting ($\{I_2,F,G\}$) off-diagonal blocks for $n=6$ Byers–Nash; (b) $p$-adic Coleman / Chabauty rank-1 annihilator formalization for $k=5$ Erdős #885; (c) Whole-body $SE(3)$ geometric tracking & multi-contact MPC integration in MuJoCo. |
@@ -26,13 +26,13 @@ Every theorem in `ctrl` is **100% `sorry`-free**, contains **zero `admit` or cus
 
 ## 1. What's Ready to Use Today
 
-### 1.1 `ControlsLean`: 53 Machine-Checked Lean 4 Modules (424 Audited Headline Theorems)
+### 1.1 `ControlsLean`: 55 Machine-Checked Lean 4 Modules (445 Audited Headline Theorems)
 
 ```text
 ctrl/
-├── ControlsLean.lean                        # Root import (53 verified modules, 14,643 LOC, 872 theorems)
+├── ControlsLean.lean                        # Root import (55 verified modules, 15,260 LOC, 906 theorems)
 ├── ControlsLean/
-│   ├── Controls/                            # 26 Modules: Linear, Optimal, Robust & Nonlinear Control
+│   ├── Controls/                            # 27 Modules: Linear, Optimal, Robust & Nonlinear Control
 │   │   ├── Hurwitz2.lean, Hurwitz3.lean     # 2nd- and 3rd-order Routh–Hurwitz continuous-time stability
 │   │   ├── Jury2.lean                       # 2nd-order discrete-time Jury / Schur unit-disk stability
 │   │   ├── Reachability.lean                # Subspace stabilization at k = dim(V) without Cayley–Hamilton
@@ -49,6 +49,7 @@ ctrl/
 │   │   ├── DAREUniqueness.lean              # Stabilizing DARE uniqueness & closed-loop comparison
 │   │   ├── LQROptimality.lean               # Infinite-horizon LQR optimality & cost-to-go convergence
 │   │   ├── DAREDetectable.lean              # Spectral-free detectable DARE/LQR/Kalman & return-difference margins
+│   │   ├── DAREBellman.lean                 # DARE Bellman residual, LQR completion of squares & closed-loop decay
 │   │   ├── Observer.lean                    # Luenberger state observers & polynomial Separation Principle
 │   │   ├── LQG.lean                         # Output-feedback LQG block-triangular asymptotic stability
 │   │   ├── BoundedRealHInf.lean             # Minimal-hypothesis LQG & H_inf Bounded Real Lemma / l2-gain
@@ -58,7 +59,7 @@ ctrl/
 │   │   ├── BacksteppingCLF.lean             # Strict-feedback n-step integrator backstepping & Sontag's CLF
 │   │   ├── MPCFeasibility.lean              # Constrained receding-horizon MPC recursive feasibility & descent
 │   │   └── IterativeLearning.lean           # Lifted Iterative Learning Control (ILC) & Arimoto convergence
-│   ├── Estimation/                          # 9 Modules: Kalman Filtering, CARE, Least Squares & POMDPs
+│   ├── Estimation/                          # 10 Modules: Kalman Filtering, CARE, Least Squares & POMDPs
 │   │   ├── ScalarKalman.lean                # Scalar MMSE Bayes update & harmonic precision additivity
 │   │   ├── RiccatiConvergence.lean          # Scalar Riccati geometric contraction & steady-state limit
 │   │   ├── InformationFilter.lean           # Ring-general Sherman–Morrison–Woodbury & Information equivalence
@@ -66,6 +67,7 @@ ctrl/
 │   │   ├── KalmanOptimality.lean            # Multivariate Bucy–Joseph covariance & MMSE trace optimality
 │   │   ├── SteadyStateKalman.lean           # Dual estimator DARE & steady-state Kalman gain
 │   │   ├── KalmanBucy.lean                  # Continuous-time CARE, HJB calculus & Kalman–Bucy optimality
+│   │   ├── KalmanBucyFilter.lean            # Kalman–Bucy covariance generator, DRE completion of squares & CARE
 │   │   ├── LeastSquares.lean                # Normal equations, weighted LS & Sherman–Morrison recursive LS
 │   │   └── POMDPBelief.lean                 # Bayesian belief simplex, PWLC convexity & Smallwood–Sondik backup
 │   ├── Robotics/                            # 6 Modules: Lie Groups, Manipulators, Quaternions & Mobile Robots
@@ -91,8 +93,8 @@ ctrl/
 │       ├── ErdosNewInsights.lean            # Erdős #370, #645 (universal 2-coloring <= 47), #493, #275, #873, #1125
 │       └── ErdosWave2.lean                  # Erdős #1148, #1179, #1187, #311, #367, #455
 ├── scripts/
-│   ├── check.sh                             # Full build, escape-hatch ban & 424-theorem axiom auditor
-│   ├── Audit.lean                           # Programmatic #print axioms check on all 424 headline theorems
+│   ├── check.sh                             # Full build, escape-hatch ban & 445-theorem axiom auditor
+│   ├── Audit.lean                           # Programmatic #print axioms check on all 445 headline theorems
 │   ├── scratch_check.sh                     # Sub-second isolated lemma sandbox
 │   └── loogle.sh                            # 300ms semantic/type Mathlib lemma search
 └── docs/
@@ -151,7 +153,7 @@ In the `crossover-research-2026-10-19` branch (`src/ctrl/robotics/`), **48 Pytho
 ```bash
 export PATH="$HOME/.elan/bin:$PATH"
 
-# Full build, escape-hatch ban, and 424-theorem axiom audit (53 modules)
+# Full build, escape-hatch ban, and 445-theorem axiom audit (55 modules)
 bash scripts/check.sh
 
 # Fast single-file verification (~1.5s - 2.5s)
