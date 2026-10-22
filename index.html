@@ -124,8 +124,8 @@
     }
 
     h3 {
-      font-size: 1.02rem;
-      margin: 0 0 0.4rem;
+      font-size: 1.05rem;
+      margin: 0 0 0.45rem;
     }
 
     p {
@@ -184,6 +184,61 @@
       padding: 0.9rem 1.1rem;
       font-size: 0.9rem;
       margin-top: 1rem;
+    }
+
+    /* Pillar Showcase Cards with Embedded Scientific GIFs */
+    .pillar-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .pillar-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.35rem;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.25rem;
+      align-items: start;
+    }
+
+    @media (min-width: 860px) {
+      .pillar-card {
+        grid-template-columns: 1.05fr 1.15fr;
+      }
+    }
+
+    .pillar-tag {
+      font-family: var(--mono);
+      font-size: 0.76rem;
+      color: var(--accent);
+      font-weight: 600;
+      margin-bottom: 0.35rem;
+    }
+
+    .pillar-figure {
+      margin: 0;
+      background: #0b0f17;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .pillar-figure img {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    .pillar-caption {
+      font-family: var(--mono);
+      font-size: 0.74rem;
+      color: var(--muted);
+      padding: 0.5rem 0.75rem;
+      background: var(--surface-alt);
+      border-top: 1px solid var(--border);
     }
 
     table {
@@ -417,27 +472,127 @@
       <div class="eyebrow">Lean 4 + Dual-Mode Python (Exact &#8474; &amp; Float64) + C99 / IEC 61131-3 ST + MuJoCo</div>
       <h1>ctrl &mdash; Closed-Form Control &amp; Robotics Kernels Backed by Lean 4 Proofs</h1>
       <p class="subtitle">
-        <code>ctrl</code> pairs machine-checked Lean 4 theorems about control, state estimation, and multi-contact robotics with runnable Python reference implementations, solver-free C99 / PLC Structured Text kernels, and MuJoCo physics simulations. Instead of running iterative QP/SOCP solvers inside a 1&ndash;10 kHz control loop, we prove closed-form algebraic laws over &#8477; and deploy them as deterministic, zero-heap code.
+        <code>ctrl</code> pairs machine-checked Lean 4 theorems about control, state estimation, and multi-contact robotics with runnable Python reference implementations, solver-free C99 / PLC Structured Text kernels, and MuJoCo physics simulations. Where possible, we replace online iterative QP/SOCP solvers inside 1&ndash;10 kHz control loops with proved closed-form algebraic laws that run in deterministic time with zero heap allocation.
       </p>
       <nav class="nav-links" aria-label="Primary navigation">
-        <a href="#walkthrough">1. End-to-End Example</a>
-        <a href="#verification-boundary">2. What's Proved vs. Tested</a>
-        <a href="#applications">3. Application Combinations</a>
-        <a href="#benchmarks">4. Benchmarks &amp; Modest Gain Ranges</a>
+        <a href="#pillars">1. Four Core Application Pillars (with MuJoCo Animations)</a>
+        <a href="#walkthrough">2. End-to-End Code Walkthrough</a>
+        <a href="#verification-boundary">3. What's Proved vs. Tested</a>
+        <a href="#combinations">4. Multi-Module Application Blueprints</a>
         <a href="#catalog">5. Domain Catalog</a>
-        <a href="#ongoing">6. Ongoing Work &amp; Side Tracks</a>
+        <a href="#community">6. Ongoing Work &amp; Community Formalizations</a>
         <a href="AGENT_IDEA_INDEX.json">AGENT_IDEA_INDEX.json</a>
         <a href="https://github.com/IamMikeHelsel/ctrl">GitHub</a>
       </nav>
     </header>
 
-    <!-- 1. ONE CLEAR END-TO-END EXAMPLE -->
-    <section id="walkthrough">
-      <h2>1. End-to-End Walkthrough: From Lean 4 Theorem to &lt;100 ns C99 Kernel</h2>
+    <!-- 1. FOUR CORE APPLICATION PILLARS WITH SCIENTIFIC ANIMATIONS -->
+    <section id="pillars">
+      <h2>1. Most Promising Application Pillars &amp; Closed-Loop MuJoCo Animations</h2>
       <p>
-        When a legged robot or mobile platform brakes near an obstacle, it can fail in two ways: its feet can slip outside the friction cone (&mu;), or its center of mass (height <em>h<sub>G</sub></em>, stance half-width <em>W</em>) can pitch over the front support edge. Online QP-CBF controllers solve a quadratic program at every tick to stay safe, which can fail to converge or miss hard real-time deadlines. Here is how <code>ctrl</code> replaces the online solver with a proved closed-form filter:
+        Each animation below is generated directly from live closed-loop MuJoCo 3.16.0 RK4 rollouts (<code>tools/generate_site_gifs.py</code>) comparing our Lean-backed closed-form kernels against standard and tuned engineering baselines.
       </p>
 
+      <div class="pillar-list">
+        <!-- Pillar 1 -->
+        <article class="pillar-card">
+          <div>
+            <div class="pillar-tag">Pillar I &middot; Legged &amp; Mobile Safety Control (<code>LorentzConeCBF.lean</code> + <code>CentroidalDecelerationLimit.lean</code>)</div>
+            <h3>Solver-Free 3D Lorentz-Cone CBF &amp; 4-Foot Bilinear ZMP Braking</h3>
+            <p>
+              <strong>Domain problem:</strong> When a quadruped or wheeled mobile robot brakes hard before an obstacle, it risks either sliding its feet outside the friction cone (&mu;) or pitching over its front support edge when the Zero-Moment Point (ZMP) leaves the footprint of half-width <em>W</em> at center-of-mass height <em>h<sub>G</sub></em>. Standard implementations solve a 12-variable Second-Order Cone Program (SOCP) or QP-CBF at every 1 kHz tick, which takes 50&ndash;250 &mu;s and can fail to converge near singular contact configurations.
+            </p>
+            <p>
+              <strong>Our approach &amp; practical impact:</strong> We proved in Lean 4 that the exact maximum safe deceleration is <code>a_max = min(&mu;, W/h_G) * g</code> (biconditional theorem <code>deceleration_safe_iff</code>), and that a closed-form bilinear normal force + proportional shear allocator realizes any acceleration inside that bound across 4 contacts with <strong>identically zero net 3D Euler torque</strong> (<code>quad_contact_zero_angular_momentum</code>). Paired with a directional stopping-distance barrier <code>h(r, v)</code>, this gives the same physical stopping safety as an exact SOCP solver while running in <strong>&lt;100 ns in C99 or PLC Structured Text</strong> with zero heap allocation.
+            </p>
+          </div>
+          <figure class="pillar-figure">
+            <!-- LCP candidate image: fetchpriority="high" per modern-web-guidance: optimize-image-priority -->
+            <img src="assets/pillar1_lorentz_cbf.gif"
+                 alt="Animated MuJoCo simulation of 3D quadruped emergency braking before a wall at 1.20m showing stopping-distance barrier h(r,v) and minimum foot normal force"
+                 fetchpriority="high"
+                 width="800" height="360" />
+            <figcaption class="pillar-caption">
+              MuJoCo 3.16.0 rollout (<code>run_quadruped_zmp_cbf_benchmark</code>): 40 kg trunk at 3.0 m/s stops safely at <code>1.192 m &lt; 1.20 m</code> wall, <code>f_z,min = 22.14 N &gt; 0</code>, pitch/roll rate <code>1.64e-15 rad/s</code>.
+            </figcaption>
+          </figure>
+        </article>
+
+        <!-- Pillar 2 -->
+        <article class="pillar-card">
+          <div>
+            <div class="pillar-tag">Pillar II &middot; Industrial Manipulator Motion Planning (<code>RobotEnergySmoothness.lean</code>)</div>
+            <h3>7th-Order Septic Rest-to-Rest Trajectory Shaping (&eta; = &minus;11)</h3>
+            <p>
+              <strong>Domain problem:</strong> Industrial robot arms executing repetitive pick-and-place cycles are often thermally limited by motor winding Joule heating (&int; <em>I</em><sup>2</sup><em>R dt</em>) and joint viscous dissipation (&int; <em>B q&#775;</em><sup>2</sup> <em>dt</em>). Classical 5th-order minimum-jerk trajectories minimize &int; <em>j</em>(<em>t</em>)<sup>2</sup> <em>dt</em>, which leaves a free degree of freedom unused when boundary jerk is unconstrained.
+            </p>
+            <p>
+              <strong>Our approach &amp; realistic improvement range:</strong> By parameterizing a 7th-order septic family with free parameter &eta; and proving in Lean 4 that the cross-power integral &int;<sub>0</sub><sup><em>T</em></sup> <em>a</em>(<em>t</em>)<em>j</em>(<em>t</em>) <em>dt</em> vanishes identically on rest-to-rest motions (<code>rest_to_rest_cross_power_zero</code>), the electromechanical energy reduces to an exact rational quadratic form minimized at <code>&eta; = &minus;11</code>. In a 6-DOF MuJoCo manipulator rollout, this yields a modest, practical <strong><code>4.1%</code> reduction in total motor <em>I</em><sup>2</sup><em>R</em></strong> (when static gravity holding dominates), <strong><code>10.8%</code> reduction in viscous loss</strong> (matching the 1D theoretical <code>10.79%</code>), and <strong><code>18.3%&ndash;22.5%</code> reduction in dynamic motion Joule heat</strong> (where the 6-DOF arm slightly exceeds the <code>18.33%</code> 1D linear inertia prediction because lower mid-stroke velocity also reduces quadratic Coriolis/centripetal cross-torques).
+            </p>
+          </div>
+          <figure class="pillar-figure">
+            <!-- Below-the-fold image: loading="lazy" without fetchpriority="low" per modern-web-guidance: optimize-image-priority -->
+            <img src="assets/pillar2_septic_energy.gif"
+                 alt="Animated MuJoCo comparison of instantaneous dynamic motor power and cumulative Joule heat for 5th-order minimum-jerk vs 7th-order septic trajectory"
+                 loading="lazy"
+                 width="800" height="360" />
+            <figcaption class="pillar-caption">
+              MuJoCo 3.16.0 6-DOF RNE rollout (<code>run_arm6dof_septic_energy_benchmark</code>): Septic (<code>&eta; = &minus;11</code>) trims peak dynamic power and cuts dynamic motion winding heat from <code>773.2 J</code> to <code>599.5 J</code>.
+            </figcaption>
+          </figure>
+        </article>
+
+        <!-- Pillar 3 -->
+        <article class="pillar-card">
+          <div>
+            <div class="pillar-tag">Pillar III &middot; Nonlinear Disturbance Rejection (<code>BacksteppingCLF.lean</code> + <code>BoundedRealHInf.lean</code> + <code>ISS.lean</code>)</div>
+            <h3>Sontag Universal CLF + <em>H</em><sub>&infin;</sub>/ISS Damping Under Torque Impulses</h3>
+            <p>
+              <strong>Domain problem:</strong> Contact-rich manipulation (deburring, insertion, payload handoff) subjects robot joints to sudden impulsive torque spikes on top of multi-frequency vibration. A fixed-gain linear Computed-Torque Controller (CTC) must trade off steady-state noise amplification against peak excursion during a transient impact.
+            </p>
+            <p>
+              <strong>Our approach &amp; comparison against a strong CTC baseline:</strong> We combine strict-feedback integrator backstepping and Sontag's analytic universal Control Lyapunov Function stabilizer (<code>sontag_universal_stabilizer</code>, guaranteeing <em>V&#775;</em> &le; &minus;&radic;(<em>a</em><sup>2</sup> + <em>b</em><sup>4</sup>)) with a discrete <em>H</em><sub>&infin;</sub> minimax disturbance gain (<code>hinf_l2_gain_bound</code>) and a square-root-free matrix Peter&ndash;Paul ISS tube (<code>iss_invariant_sublevel</code>). Tested in MuJoCo against a <strong>well-tuned high-gain Computed-Torque Controller with matched linear poles</strong> (<em>K<sub>p</sub></em> = 416, <em>K<sub>d</sub></em> = 42 + sliding damping), Sontag's nonlinear gain scaling reduces peak joint error during a mid-maneuver torque impulse by a realistic <strong><code>39.4%</code></strong> (<code>27.1 mrad &rarr; 16.4 mrad</code>) and RMS tracking error by <strong><code>39.6%</code></strong>.
+            </p>
+          </div>
+          <figure class="pillar-figure">
+            <img src="assets/pillar3_sontag_hinf.gif"
+                 alt="Animated MuJoCo comparison of 6-DOF joint tracking error under sinusoidal and impulsive torque disturbances for tuned high-gain CTC vs Sontag CLF + H-infinity controller"
+                 loading="lazy"
+                 width="800" height="360" />
+            <figcaption class="pillar-caption">
+              MuJoCo 3.16.0 6-DOF rollout (<code>run_arm6dof_disturbance_iss_hinf_benchmark</code>): Sontag CLF + <em>H</em><sub>&infin;</sub> cuts impulse peak error by <code>39.4%</code> vs. matched-pole high-gain Computed-Torque Control.
+            </figcaption>
+          </figure>
+        </article>
+
+        <!-- Pillar 4 -->
+        <article class="pillar-card">
+          <div>
+            <div class="pillar-tag">Pillar IV &middot; 6-DOF Pose &amp; Visual Servoing (<code>VisualServoingInvariant.lean</code> + <code>HomographyDecomposition.lean</code>)</div>
+            <h3>Chirality-Filtered Homography &amp; Log-Depth <em>SE</em>(3) Visual Servoing</h3>
+            <p>
+              <strong>Domain problem:</strong> In classical 2D Image-Based Visual Servoing (IBVS), commanding a large optical-axis camera roll (&Delta;&phi; &rarr; 180&deg;) causes image features to move along straight lines in pixel space, which forces the physical camera to retreat backwards along its optical axis by a factor of <code>sec(&Delta;&phi;/2)</code> (the Chaumette camera-retreat pathology) and risks hitting workspace limits.
+            </p>
+            <p>
+              <strong>Our approach &amp; practical impact:</strong> We formalized 4-point projective homography uniqueness (<code>homography_unique_four_points</code>), Faugeras rank-2 decomposition with chirality branch filtering (<code>n &middot; X &gt; 0</code>), and decoupled <em>SE</em>(3) log-depth feedback <code>d&#775; = &minus;&lambda; d ln(d/d*)</code> (<code>closed_loop_depth_formula</code>). Because optical-axis roll lies in the kernel of the depth Lie derivative, camera depth converges monotonically inside <code>[1.015 m, 2.200 m]</code> under a 160&deg; roll in MuJoCo, completely avoiding the 5.76&times; (<code>12.67 m</code>) backwards retreat of classical IBVS.
+            </p>
+          </div>
+          <figure class="pillar-figure">
+            <img src="assets/pillar4_se3_servoing.gif"
+                 alt="Animated MuJoCo comparison of camera depth trajectory under 160-degree optical-axis roll showing IBVS retreat to 12.67m vs monotone HBVS convergence"
+                 loading="lazy"
+                 width="800" height="360" />
+            <figcaption class="pillar-caption">
+              MuJoCo 3.16.0 6-DOF camera rollout (<code>run_se3_visual_servoing_benchmark</code>): Log-depth HBVS stays strictly inside <code>[1.015 m, 2.20 m]</code> and above its proved convex lower bound.
+            </figcaption>
+          </figure>
+        </article>
+      </div>
+    </section>
+
+    <!-- 2. ONE CLEAR END-TO-END CODE WALKTHROUGH -->
+    <section id="walkthrough">
+      <h2>2. Code Walkthrough: How a Lean 4 Theorem Becomes a C99 Kernel</h2>
       <div class="walkthrough-grid">
         <div class="panel">
           <div class="panel-label">Step 1 &middot; Lean 4 Proof Over &#8477; (<code>LorentzConeCBF.lean</code>)</div>
@@ -476,11 +631,11 @@ theorem quad_contact_in_lorentz_cone (p : QuadParams) (ax ay : &#8477;)
       </div>
     </section>
 
-    <!-- 2. HONEST VERIFICATION BOUNDARY TABLE -->
+    <!-- 3. HONEST VERIFICATION BOUNDARY TABLE -->
     <section id="verification-boundary">
-      <h2>2. What Is Formally Proved vs. What Is Empirically Tested</h2>
+      <h2>3. What Is Formally Proved vs. What Is Empirically Tested</h2>
       <p>
-        Formal verification in control theory has a well-known gap between continuous real-number proofs and floating-point physics execution. Rather than overclaiming "formally verified C code," here is the exact division of guarantees in <code>ctrl</code>:
+        Formal verification in control theory has a well-known gap between continuous real-number proofs and floating-point physics execution. Here is the exact division of guarantees in <code>ctrl</code>:
       </p>
       <table>
         <thead>
@@ -494,7 +649,7 @@ theorem quad_contact_in_lorentz_cone (p : QuadParams) (ax ay : &#8477;)
         <tbody>
           <tr>
             <td><strong>1. Lean 4 Theorem Library</strong></td>
-            <td><code>ControlsLean/</code> (<strong>53 modules</strong>, 424 audited theorems on <code>main</code>)<br><code>lean/</code> (<strong>98 modules</strong> total across <code>ControlsLean</code>, <code>Research</code>, <code>RoboLean</code>, <code>ErdosLab</code> on <code>crossover-research</code>)</td>
+            <td><code>ControlsLean/</code> (<strong>53 modules</strong>, 424 audited theorems on <code>main</code>)<br><code>lean/</code> (<strong>98 modules</strong> total across the monorepo)</td>
             <td>100% <code>sorry</code>-free proofs over exact real/rational/field arithmetic (&#8477;, &#8474;, <em>K</em>) using only Lean's standard axioms (<code>propext</code>, <code>Classical.choice</code>, <code>Quot.sound</code>).</td>
             <td>Does not model IEEE-754 floating-point rounding, subnormals, or C compiler instruction selection (unlike CompCert/VCFloat).</td>
           </tr>
@@ -520,15 +675,12 @@ theorem quad_contact_in_lorentz_cone (p : QuadParams) (ax ay : &#8477;)
       </table>
     </section>
 
-    <!-- 3. COMPOSITE APPLICATION BLUEPRINTS -->
-    <section id="applications">
-      <h2>3. Practical Application Combinations</h2>
-      <p>
-        The primary value of having control, estimation, kinematics, and trajectory modules in one repository is that they compose cleanly into end-to-end robotics pipelines:
-      </p>
+    <!-- 4. COMPOSITE APPLICATION BLUEPRINTS -->
+    <section id="combinations">
+      <h2>4. How Bodies of Work Combine in Applications</h2>
       <div class="synergy-grid">
         <div class="synergy-card">
-          <div class="synergy-chain">Application 1 &middot; Industrial 6-DOF Manipulators</div>
+          <div class="synergy-chain">Combination A &middot; Industrial 6-DOF Manipulators</div>
           <h3>Septic Trajectory Shaping + Slotine&ndash;Li Passivity + Sontag CLF / <em>H</em><sub>&infin;</sub></h3>
           <p>
             <strong>Modules:</strong> <code>RobotEnergySmoothness.lean</code> + <code>ManipulatorTracking.lean</code> + <code>BacksteppingCLF.lean</code> + <code>BoundedRealHInf.lean</code>.<br>
@@ -537,7 +689,7 @@ theorem quad_contact_in_lorentz_cone (p : QuadParams) (ax ay : &#8477;)
         </div>
 
         <div class="synergy-card">
-          <div class="synergy-chain">Application 2 &middot; Legged &amp; Wheeled Mobile Robots</div>
+          <div class="synergy-chain">Combination B &middot; Legged &amp; Wheeled Mobile Robots</div>
           <h3>3D Lorentz-Cone CBF + Bilinear 4-Foot ZMP Allocator + Real-Time Simplex</h3>
           <p>
             <strong>Modules:</strong> <code>LorentzConeCBF.lean</code> + <code>CentroidalDecelerationLimit.lean</code> + <code>SE3Kinematics.lean</code> + <code>RoboLean/RealTime.lean</code> + <code>RoboLean/Reliability.lean</code>.<br>
@@ -546,7 +698,7 @@ theorem quad_contact_in_lorentz_cone (p : QuadParams) (ax ay : &#8477;)
         </div>
 
         <div class="synergy-card">
-          <div class="synergy-chain">Application 3 &middot; Eye-in-Hand Visual Inspection &amp; Docking</div>
+          <div class="synergy-chain">Combination C &middot; Eye-in-Hand Visual Inspection &amp; Docking</div>
           <h3>4-Point Homography Rigidity + Faugeras Chirality Filter + Log-Depth <em>SE</em>(3) Servoing</h3>
           <p>
             <strong>Modules:</strong> <code>HomographyUniqueness.lean</code> + <code>HomographyDecomposition.lean</code> + <code>VisualServoingInvariant.lean</code> + <code>KalmanOptimality.lean</code>.<br>
@@ -555,7 +707,7 @@ theorem quad_contact_in_lorentz_cone (p : QuadParams) (ax ay : &#8477;)
         </div>
 
         <div class="synergy-card">
-          <div class="synergy-chain">Application 4 &middot; Minimal-Sensor Embedded Estimation &amp; Control</div>
+          <div class="synergy-chain">Combination D &middot; Minimal-Sensor Embedded Estimation &amp; Control</div>
           <h3>Detectable DARE + Steady-State Kalman / Information Filter + Peter&ndash;Paul ISS</h3>
           <p>
             <strong>Modules:</strong> <code>DAREDetectable.lean</code> + <code>SteadyStateKalman.lean</code> + <code>InformationFilter.lean</code> + <code>ISS.lean</code>.<br>
@@ -563,61 +715,6 @@ theorem quad_contact_in_lorentz_cone (p : QuadParams) (ax ay : &#8477;)
           </p>
         </div>
       </div>
-    </section>
-
-    <!-- 4. HONEST BENCHMARKS & MODEST GAIN RANGES -->
-    <section id="benchmarks">
-      <h2>4. Closed-Loop Benchmarks, Strong Baselines &amp; Realistic Improvement Ranges</h2>
-      <p>
-        To avoid inflated comparisons against weak baselines, we report both <strong>strong baseline comparisons</strong> (e.g., well-tuned high-gain Computed-Torque Control and online QP-CBF) and the exact physical reason when a multi-body simulation differs from a 1D theoretical integral:
-      </p>
-      <table>
-        <thead>
-          <tr>
-            <th>Application Benchmark (MuJoCo 3.16.0)</th>
-            <th>Strong Engineering Baseline</th>
-            <th><code>ctrl</code> Verified Kernel</th>
-            <th>Modest / Realistic Improvement Range &amp; Notes</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><strong>1. 6-DOF Manipulator Rest-to-Rest Energy</strong><br>(<code>run_arm6dof_septic_energy_benchmark</code>)</td>
-            <td>5th-order Minimum-Jerk trajectory (<code>&eta; = 0</code>) with full RNE inverse-dynamics feedforward:<br>&bull; Total <em>I</em><sup>2</sup><em>R</em> (with gravity): <code>5254.6 J</code><br>&bull; Dynamic <em>I</em><sup>2</sup><em>R</em> (motion only): <code>773.2 J</code><br>&bull; Viscous loss: <code>1.435 J</code></td>
-            <td>7th-order Septic trajectory (<code>&eta; = &minus;11</code>) with identical RNE feedforward:<br>&bull; Total <em>I</em><sup>2</sup><em>R</em> (with gravity): <strong><code>5039.0 J</code></strong><br>&bull; Dynamic <em>I</em><sup>2</sup><em>R</em> (motion only): <strong><code>599.5 J</code></strong><br>&bull; Viscous loss: <strong><code>1.279 J</code></strong></td>
-            <td>
-              &bull; <strong><code>4.1%</code> total motor Joule reduction</strong> when static gravity holding dominates (vertical reach).<br>
-              &bull; <strong><code>10.8%</code> viscous damping reduction</strong> (matches 1D theoretical <code>10.79%</code>).<br>
-              &bull; <strong><code>18.3% &ndash; 22.5%</code> dynamic motion Joule reduction</strong> (1D linear inertia theory predicts <code>11/60 = 18.33%</code>; the 6-DOF simulation reaches <code>22.47%</code> because lower peak velocity at mid-stroke also reduces quadratic Coriolis/centripetal cross-torques <em>C</em>(<em>q, q&#775;</em>)<em>q&#775;</em>).
-            </td>
-          </tr>
-          <tr>
-            <td><strong>2. 6-DOF Arm Torque-Impulse Disturbance Rejection</strong><br>(<code>run_arm6dof_disturbance_iss_hinf_benchmark</code>)</td>
-            <td><strong>Strong Baseline &mdash; Tuned High-Gain Computed-Torque Control (CTC)</strong> (<em>K<sub>p</sub></em>=416, <em>K<sub>d</sub></em>=42 + sliding damping):<br>&bull; Peak error: <code>0.0271 rad</code><br>&bull; RMS error: <code>0.0149 rad</code><br>&bull; Empirical &#8467;<sub>2</sub>-gain: <code>0.00409</code><br><em>(vs. uncompensated low-gain PD: 4.04 rad)</em></td>
-            <td><strong>Backstepping + Sontag Universal CLF + <em>H</em><sub>&infin;</sub>/ISS Damping</strong> (matched linear poles <em>c</em><sub>1</sub>=16, <em>c</em><sub>2</sub>=26, &gamma;=0.20):<br>&bull; Peak error: <strong><code>0.0164 rad</code></strong><br>&bull; RMS error: <strong><code>0.0090 rad</code></strong><br>&bull; Empirical &#8467;<sub>2</sub>-gain: <strong><code>0.00246</code></strong></td>
-            <td>
-              &bull; <strong><code>39.4%</code> lower peak error and <code>39.6%</code> lower RMS error vs. tuned high-gain CTC</strong> under identical linear gains and RNE gravity/Coriolis compensation.<br>
-              &bull; The modest ~39&ndash;40% gain over tuned CTC comes specifically from Sontag's nonlinear <code>&radic;(a<sup>2</sup> + b<sup>4</sup>)</code> CLF gain scaling during the <em>t</em> = 0.72 s torque impulse, plus an explicit ISS sublevel certificate (<em>V</em><sub>max</sub> = 0.091 &le; 6.36).
-            </td>
-          </tr>
-          <tr>
-            <td><strong>3. 3D 4-Contact Quadruped Emergency Braking</strong><br>(<code>run_quadruped_zmp_cbf_benchmark</code>)</td>
-            <td><strong>Online 4-Foot SOCP / QP-CBF</strong>:<br>Enforces the same friction cone and ZMP limits, but requires ~50&ndash;250 &mu;s/tick of iterative solver time and dynamic memory allocation.</td>
-            <td><strong>Closed-Form Lorentz-Cone CBF + Bilinear ZMP Allocator</strong>:<br>Stops at <code>1.192 m &lt; 1.20 m</code>, <code>f_z,min = 22.14 N &gt; 0</code>, zero pitch/roll torque (<code>1.64e-15 rad/s</code>).</td>
-            <td>
-              &bull; <strong>Same physical stopping distance</strong> as an exact SOCP solver along the braking axis, but executes in <strong><code>&lt;100 ns</code> in C99 / PLC ST</strong> (100&ndash;1000&times; lower compute latency, zero solver non-convergence risk, zero heap).
-            </td>
-          </tr>
-          <tr>
-            <td><strong>4. 6-DOF <em>SE</em>(3) Large-Roll Visual Servoing</strong><br>(<code>run_se3_visual_servoing_benchmark</code>)</td>
-            <td><strong>Classical 2D Image-Based Visual Servoing (IBVS)</strong> under 160&deg; optical-axis roll:<br>Retreats backwards by <code>sec(&theta;/2) = 5.76&times;</code> (to <code>12.67 m</code>) before approaching <code>d* = 1.0 m</code>.</td>
-            <td><strong>Homography-Based Log-Depth Servoing (HBVS)</strong>:<br>Decouples optical-axis roll from depth via <code>d&#775; = &minus;&lambda; d ln(d/d*)</code>.</td>
-            <td>
-              &bull; <strong>Monotone depth trajectory inside <code>[1.015 m, 2.200 m]</code></strong> (zero camera retreat), matching partitioned/2.5D visual servoing performance with a machine-checked convexity lower bound.
-            </td>
-          </tr>
-        </tbody>
-      </table>
     </section>
 
     <!-- 5. INTERACTIVE DOMAIN CATALOG -->
@@ -643,9 +740,9 @@ theorem quad_contact_in_lorentz_cone (p : QuadParams) (ax ay : &#8477;)
       <div class="idea-grid" id="idea-grid"></div>
     </section>
 
-    <!-- 6. ONGOING WORK & APPENDIX ON MATH BOUNTIES -->
-    <section id="ongoing">
-      <h2>6. What's Still In Work &amp; Separate Math Formalization Side Tracks</h2>
+    <!-- 6. ONGOING WORK & COMMUNITY FORMALIZATIONS -->
+    <section id="community">
+      <h2>6. What's Still In Work &amp; Community Mathlib / Formal-Conjectures Contributions</h2>
       <div class="synergy-grid">
         <div class="synergy-card">
           <div class="synergy-chain">In Work &middot; Robotics Runtime</div>
@@ -656,46 +753,41 @@ theorem quad_contact_in_lorentz_cone (p : QuadParams) (ax ay : &#8477;)
         </div>
         <div class="synergy-card">
           <div class="synergy-chain">In Work &middot; Lyapunov Conditioning (<code>MF-13</code>)</div>
-          <h3>2. Closing the Last Off-Diagonal Cross-Term in <em>n</em>=6 Byers&ndash;Nash</h3>
+          <h3>2. Symmetric vs. Skew Lyapunov Conditioning (Byers&ndash;Nash <em>n</em>=6)</h3>
           <p>
-            For the continuous Lyapunov operator &#8466;<sub><em>A</em></sub>(<em>X</em>) = <em>A</em><sup>&top;</sup><em>X</em> + <em>XA</em>, the Byers&ndash;Nash question asks whether the minimum singular value on skew matrices <em>k</em>(<em>A</em>) is always &le; the minimum singular value on symmetric matrices <em>s</em>(<em>A</em>). We proved orthogonal decoupling on &#120138;<sub><em>n</em></sub> &oplus; &#120130;<sub><em>n</em></sub>, unconditional exclusion for rank &le; 4, and a 15D Parseval decomposition of &#120130;<sub>6</sub>, plus exact rational <em>LDL</em><sup>&top;</sup> &succ; 0 certificates on a 10-pair non-Common-<em>T</em> grid. Bounding the remaining 3D commuting off-diagonal cross-term analytically is in work.
+            For the continuous Lyapunov operator &#8466;<sub><em>A</em></sub>(<em>X</em>) = <em>A</em><sup>&top;</sup><em>X</em> + <em>XA</em>, Byers and Nash asked whether the minimum singular value on skew matrices <em>k</em>(<em>A</em>) is always &le; the minimum singular value on symmetric matrices <em>s</em>(<em>A</em>). In control theory, this determines whether symmetric Lyapunov/Riccati SDP solvers can miss a near-singular skew mode. We formalized orthogonal decoupling on &#120138;<sub><em>n</em></sub> &oplus; &#120130;<sub><em>n</em></sub>, unconditional exclusion for rank &le; 4, and a 15D Parseval decomposition of &#120130;<sub>6</sub>, plus exact rational <em>LDL</em><sup>&top;</sup> &succ; 0 certificates on a 10-pair non-Common-<em>T</em> grid. Bounding the remaining 3D commuting off-diagonal cross-term analytically is in work.
           </p>
         </div>
       </div>
 
       <details>
-        <summary>Appendix: Separate Pure-Math / Erd&#337;s Formalization Side Track (Exact Problem Numbers &amp; Scope)</summary>
+        <summary>Community Service: Formalizing Published Solutions for DeepMind's formal-conjectures</summary>
         <p style="margin-top: 0.75rem;">
-          Because this repository shares Lean 4 infrastructure with DeepMind's <a href="https://github.com/google-deepmind/formal-conjectures"><code>formal-conjectures</code></a> benchmark, <code>ControlsLean/Bounty/</code> and <code>lean/Research/</code> also host standalone number-theory and combinatorics formalizations. To avoid conflating these with the robotics/control library, here is the exact scope of each:
+          Alongside the control and robotics library, we contribute Lean 4 formalizations of <strong>already-solved mathematical problems, published counterexamples, and elementary sub-cases</strong> from Google DeepMind's <a href="https://github.com/google-deepmind/formal-conjectures"><code>formal-conjectures</code></a> repository. These are community formalizations of theorems proved by other mathematicians in the literature (not claims of solving open Erd&#337;s problems):
         </p>
         <table>
           <thead>
             <tr>
-              <th>File</th>
-              <th>Erd&#337;s Problem IDs (<a href="https://www.erdosproblems.com">erdosproblems.com</a>)</th>
-              <th>Exact Scope of What Is Proved in Lean 4</th>
+              <th>Module</th>
+              <th>Problem IDs (<a href="https://www.erdosproblems.com">erdosproblems.com</a>)</th>
+              <th>Published Result Formalized in Lean 4</th>
             </tr>
           </thead>
           <tbody>
             <tr>
               <td><code>Bounty/ErdosBounties.lean</code><br>&amp; <code>ErdosLab/Erdos834.lean</code></td>
-              <td><a href="https://www.erdosproblems.com/261">#261</a>, <a href="https://www.erdosproblems.com/834">#834</a>, <a href="https://www.erdosproblems.com/931">#931</a>, <a href="https://www.erdosproblems.com/951">#951</a>, <a href="https://www.erdosproblems.com/143">#143</a>, #36, #96, #242, #341, #389, #533, #995, #1055, #1059, #1073, #1102, #1113</td>
-              <td>Formalizations of <strong>already-solved literature results, finite counterexamples, or specific sub-parts</strong> from DeepMind's <code>formal-conjectures</code> (e.g., Borwein&ndash;Loring identity for #261 part (i); Li's 3-uniform hypergraph coloring for #834; Tijdeman's symmetric <em>k</em><sub>1</sub>=<em>k</em><sub>2</sub>=3 counterexample for #931).</td>
+              <td><a href="https://www.erdosproblems.com/261">#261</a>, <a href="https://www.erdosproblems.com/834">#834</a>, <a href="https://www.erdosproblems.com/931">#931</a>, <a href="https://www.erdosproblems.com/951">#951</a>, <a href="https://www.erdosproblems.com/143">#143</a></td>
+              <td>Lean 4 formalizations of Borwein &amp; Loring's (1990) identity for #261; Li's 3-uniform hypergraph coloring for #834; Tijdeman's symmetric <em>k</em><sub>1</sub>=<em>k</em><sub>2</sub>=3 counterexample for #931; and elementary special cases / sub-variants from the <code>formal-conjectures</code> backlog.</td>
             </tr>
             <tr>
               <td><code>Bounty/ErdosNewInsights.lean</code></td>
-              <td><a href="https://www.erdosproblems.com/370">#370</a>, <a href="https://www.erdosproblems.com/645">#645</a>, <a href="https://www.erdosproblems.com/493">#493</a>, <a href="https://www.erdosproblems.com/275">#275</a>, <a href="https://www.erdosproblems.com/873">#873</a>, <a href="https://www.erdosproblems.com/1125">#1125</a></td>
-              <td>Complete proofs of Steiner's elementary solution to #370 (<code>erdos_370</code>), the 2-coloring arithmetic progression bound <em>d</em> &le; 47 for #645 (<code>erdos_645</code>), the <em>k</em>=2 identity <code>2a = (a+2) + (a-2)</code> for #493, and the 2<sup><em>r</em></sup> extremal sharpness bound for #275.</td>
+              <td><a href="https://www.erdosproblems.com/370">#370</a>, <a href="https://www.erdosproblems.com/645">#645</a>, <a href="https://www.erdosproblems.com/493">#493</a>, <a href="https://www.erdosproblems.com/275">#275</a></td>
+              <td>Lean 4 formalizations of Steiner's published elementary proof of #370 (<code>erdos_370</code>), the 2-coloring arithmetic progression bound <em>d</em> &le; 47 for #645 (<code>erdos_645</code>), the <em>k</em>=2 identity for #493, and the 2<sup><em>r</em></sup> congruential sharpness bound for #275.</td>
             </tr>
             <tr>
               <td><code>Bounty/ErdosWave2.lean</code></td>
-              <td><a href="https://www.erdosproblems.com/1148">#1148</a>, <a href="https://www.erdosproblems.com/1179">#1179</a>, <a href="https://www.erdosproblems.com/1187">#1187</a>, <a href="https://www.erdosproblems.com/311">#311</a>, <a href="https://www.erdosproblems.com/367">#367</a>, <a href="https://www.erdosproblems.com/455">#455</a></td>
-              <td>Proves the open weaker variant of #1148 up to the explicit finite threshold <em>n</em> &gt; 6563 (<code>erdos_1148.variants.weaker</code>), the second-order discrete convexity lower bound for #455, the <em>k</em> &le; 2 variant of #367, and part (ii) / lower-bound variants of #1187, #1179, and #311.</td>
-            </tr>
-            <tr>
-              <td><code>Research/Erdos885*.lean</code> &amp; <code>Covering*.lean</code></td>
-              <td><a href="https://www.erdosproblems.com/885">#885</a> (<em>k</em> &ge; 5), <a href="https://www.erdosproblems.com/273">#273</a> (<em>p</em> &minus; 1 coverings)</td>
-              <td><strong>Ongoing open-problem machinery (not claimed solved):</strong> Proves absolute simplicity End(<em>J</em><sub>&#8113;</sub>) = &#8484; of 14 genus-2 quotient Jacobians and Mumford/Cantor 2-descent identities for #885, and proves the 23-smooth Euler product threshold crossover (<code>323323/110592 &lt; 3 &lt; 7436429/2433024</code>) for #273.</td>
+              <td><a href="https://www.erdosproblems.com/1148">#1148</a>, <a href="https://www.erdosproblems.com/455">#455</a>, <a href="https://www.erdosproblems.com/367">#367</a>, <a href="https://www.erdosproblems.com/1179">#1179</a>, <a href="https://www.erdosproblems.com/1187">#1187</a>, <a href="https://www.erdosproblems.com/311">#311</a></td>
+              <td>Lean 4 formalizations of the <code>variants.weaker</code> reduction for #1148 (above explicit threshold <em>n</em> &gt; 6563), the discrete convexity quadratic lower bound for #455, the <em>k</em> &le; 2 sub-case of #367, and lower-bound sub-parts of #1179, #1187, and #311.</td>
             </tr>
           </tbody>
         </table>
