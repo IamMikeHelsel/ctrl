@@ -23,7 +23,8 @@ concurrency:
 
 jobs:
   check:
-    runs-on: [self-hosted, ARM64, ctrl-local]
+    # Needs a Docker daemon: pinned to sparky (the Mac ctrl-local runner has no daemon running).
+    runs-on: [self-hosted, ARM64, ctrl-local, sparky]
     timeout-minutes: 90
     env:
       IMAGE: erdos-lab:ci-${{ github.run_id }}
