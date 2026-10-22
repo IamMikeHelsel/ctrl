@@ -21,11 +21,12 @@ jobs:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v6
       - name: ruff format
-        run: uvx ruff format --check .
+        # Python sources only; newer ruff also formats code blocks inside Markdown docs.
+        run: git ls-files -z '*.py' '*.pyi' | xargs -0 -r uvx ruff format --check
       - name: ruff check
         # TODO: make blocking once existing findings are fixed
         continue-on-error: true
-        run: uvx ruff check --output-format=github .
+        run: git ls-files -z '*.py' '*.pyi' | xargs -0 -r uvx ruff check --output-format=github
 
   shell:
     runs-on: ${{ fromJSON(vars.RUNNER || '["self-hosted","ARM64","ctrl-local"]') }}
