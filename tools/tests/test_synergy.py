@@ -76,15 +76,19 @@ class TinyGraphTests(unittest.TestCase):
         self.assertEqual(rows[0]["id"], "X-01")
         self.assertGreater(rows[0]["relevance"], rows[1]["relevance"])
         rows = g.rank(domains=["estimation"], kinds=("idea",))
-        self.assertEqual(rows[0]["id"], "A-01")  # controls->estimation 0.9 beats math->estimation 0
+        self.assertEqual([r["id"] for r in rows[:2]], ["B-01", "A-01"])  # in-domain first, then strongest unlocker
+        self.assertEqual(g.domain_affinity("B-01", ["estimation"]), 1.0)
+        self.assertAlmostEqual(g.domain_affinity("A-01", ["estimation"]), 0.45)  # 0.5 * 0.9
         self.assertEqual(g.domain_affinity("C-01", ["estimation"]), 0.0)
 
     def test_next_respects_budget(self):
         g = tiny()
         plan = g.next_plan(budget_weeks=5)
         self.assertEqual([r["id"] for r in plan], ["X-01"])
-        plan = g.next_plan(budget_weeks=30)
+        plan = g.next_plan(budget_weeks=30, min_score=0.0)
         self.assertEqual(sorted(r["id"] for r in plan), ["X-01", "X-02"])
+        plan = g.next_plan(budget_weeks=30, min_score=0.9)
+        self.assertEqual(plan, [])
 
     def test_path_and_unlock(self):
         g = tiny()

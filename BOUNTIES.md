@@ -1,5 +1,25 @@
 # Bounty and prize sources for Lean solves
 
+> **Update 2026-10-22** (research scout, primary sources: TheJustinSunPrize/awards, a fresh
+> formal-conjectures clone, plby/lean-proofs `data/sources.yaml`; details and URLs in
+> `docs/RESEARCH_FRONTIER_2026-10.md`, lane MATH). What changed since 2026-10-17:
+> * JSP has 9 confirmed awards (4 Lean-formalizer awards, all to one person), an empty candidate
+>   register, zero merged participant proof PRs, and a prepared "MathDB pilot" (50 famous problems,
+>   50% solution / 30% Lean / 20% exposition, results must be public after 2026-01-01).
+> * The solved-but-unformalized pool is about 15 hard statements, not 680: 363 of 424 solved
+>   Erdős statements in formal-conjectures already link an external `formal_proof`, and
+>   plby/lean-proofs covers 563 problems. **Our own #261 (Palomar), #291 and #367 (plby) were
+>   formalized by others since 10-17.** Priority rescue for the rest is candidate `MATH-06`.
+> * formal-conjectures now recommends a Palomar entry for every research-grade formal proof.
+> * conjectures.io sits at about $4.9k per settled problem (274 open). AI for Math Fund could not be
+>   re-verified this session.
+> * The README lists 29 solved Erdős numbers; only 17 appear in `ControlsLean/Bounty/*.lean` on
+>   `main`. Verify against the formal-conjectures main statement before claiming any of them.
+> * Remaining realistic lanes: Byers–Nash n = 6 (now the only open order of the conjecture),
+>   control-theory formalizations nobody has (KYP, Kharitonov), SAIR Lean Kernel Challenge
+>   (deadline 2026-11-20, recognition only).
+
+
 Verified from primary sources on 2026-10-17 unless marked otherwise. Amounts and rules change
 often, so re-check the organiser's own page before investing effort.
 

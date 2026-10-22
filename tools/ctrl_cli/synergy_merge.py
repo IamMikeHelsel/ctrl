@@ -92,7 +92,12 @@ def main(argv) -> int:
         existing[n["id"]] = n
         xe = c.get("cross_domain_edge")
         if isinstance(xe, dict) and xe.get("from") and xe.get("to"):
-            _merge_domain_edge(w, {**xe, "evidence": [f"candidate {n['id']}"]}, known_domains)
+            # a single scout's proposed edge is discounted by that scout's confidence
+            try:
+                wt = round(float(xe.get("weight", 0)) * n["confidence"], 2)
+            except (TypeError, ValueError):
+                wt = 0.0
+            _merge_domain_edge(w, {**xe, "weight": wt, "evidence": [f"candidate {n['id']}"]}, known_domains)
     order = ["IND", "ROB", "EST", "MATH", "TOOL", "SED", "XD"]
     w["candidates"] = sorted(existing.values(), key=lambda c: (
         order.index(c["id"].split("-")[0]) if c["id"].split("-")[0] in order else 99, c["id"]))

@@ -204,11 +204,13 @@ class SynergyGraph:
         if not targets:
             return 1.0
         node = self.nodes[nid]
+        if any(d in targets for d in node.domains):
+            return 1.0
         best = 0.0
         for a in node.domains or [""]:
             for b in targets:
                 best = max(best, self.domain_weight(a, b))
-        return best
+        return 0.5 * best  # off-domain work only counts through its unlock edge, halved
 
     # --------------------------------------------------------------- scoring
     def score(self, nid: str, goal: Optional[str] = None, target_domains: Iterable[str] = ()) -> dict:
@@ -270,9 +272,11 @@ class SynergyGraph:
         rows.sort(key=lambda r: (-r["score"], r["id"]))
         return rows[:limit] if limit else rows
 
-    def next_plan(self, budget_weeks: float, goal: Optional[str] = None, domains: Iterable[str] = ()) -> List[dict]:
-        """Greedy knapsack by score-per-week on candidates only."""
-        rows = [r for r in self.rank(goal, kinds=("candidate",), domains=domains) if r["effort_weeks"] > 0]
+    def next_plan(self, budget_weeks: float, goal: Optional[str] = None, domains: Iterable[str] = (),
+                  min_score: float = 0.2) -> List[dict]:
+        """Greedy knapsack by score-per-week on candidates only; ignores low-score fillers."""
+        rows = [r for r in self.rank(goal, kinds=("candidate",), domains=domains)
+                if r["effort_weeks"] > 0 and r["score"] >= min_score]
         rows.sort(key=lambda r: -(r["score"] / r["effort_weeks"]))
         plan, used = [], 0.0
         for r in rows:
@@ -550,7 +554,7 @@ def run_synergy_cli(args, repo_root: Path) -> int:
             kinds = () if args.all else ("candidate",) if args.candidates else ()
             rows = g.rank(args.goal, kinds=kinds, domains=domains, cand_kind=args.kind, limit=args.limit)
         else:
-            rows = g.next_plan(args.budget, args.goal, domains)
+            rows = g.next_plan(args.budget, args.goal, domains, args.min_score)
         if as_json:
             print(json.dumps(rows, indent=2))
             return 0
@@ -626,6 +630,7 @@ def add_synergy_parser(subparsers) -> None:
     nx.add_argument("-b", "--budget", type=float, default=12.0, help="Engineer-weeks available (default 12)")
     nx.add_argument("-g", "--goal")
     nx.add_argument("-d", "--domain")
+    nx.add_argument("--min-score", type=float, default=0.2, help="Skip candidates scoring below this (default 0.2)")
     nx.add_argument("--json", action="store_true")
 
     gp = sp.add_parser("gaps", help="Strong domain pairs with no concrete idea edge")
