@@ -1,0 +1,53 @@
+name: Lint
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: lint-${{ github.ref }}
+  cancel-in-progress: true
+
+# Lean is linted by the existing Lean Action CI (lake build with mathlib linters).
+# This workflow covers the Python tooling (tools/ctrl_cli) and shell scripts.
+jobs:
+  python:
+    runs-on: ${{ fromJSON(vars.RUNNER || '["self-hosted","ARM64","ctrl-local"]') }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - name: ruff format
+        # Python sources only; newer ruff also formats code blocks inside Markdown docs.
+        run: git ls-files -z '*.py' '*.pyi' | xargs -0 -r uvx ruff format --check
+      - name: ruff check
+        # TODO: make blocking once existing findings are fixed
+        continue-on-error: true
+        run: git ls-files -z '*.py' '*.pyi' | xargs -0 -r uvx ruff check --output-format=github
+
+  shell:
+    runs-on: ${{ fromJSON(vars.RUNNER || '["self-hosted","ARM64","ctrl-local"]') }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install shellcheck
+        run: |
+          if ! command -v shellcheck >/dev/null; then
+            case "$(uname -m)" in
+              aarch64|arm64) arch=aarch64 ;;
+              *) arch=x86_64 ;;
+            esac
+            case "$(uname -s)" in
+              Darwin) os=darwin ;;
+              *) os=linux ;;
+            esac
+            v=v0.10.0
+            curl -fsSL "https://github.com/koalaman/shellcheck/releases/download/${v}/shellcheck-${v}.${os}.${arch}.tar.xz" | tar -xJ -C "$RUNNER_TEMP"
+            echo "$RUNNER_TEMP/shellcheck-${v}" >> "$GITHUB_PATH"
+          fi
+      - name: shellcheck
+        # TODO: make blocking once existing findings are fixed
+        continue-on-error: true
+        run: git ls-files -z '*.sh' | xargs -0 -r shellcheck -x
