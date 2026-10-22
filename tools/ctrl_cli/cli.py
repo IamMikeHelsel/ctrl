@@ -245,6 +245,13 @@ def run_loop(args):
     run_loop_cli(args)
 
 
+def run_synergy(args):
+    """Query the cross-domain unlock graph (docs/SYNERGY_WEIGHTS.json)."""
+    from .synergy import run_synergy_cli
+
+    sys.exit(run_synergy_cli(args, REPO_ROOT))
+
+
 def main():
     parser = argparse.ArgumentParser(
         prog="ctrl",
@@ -402,6 +409,12 @@ def main():
         "--ids-only", action="store_true", help="Output only surviving IDs"
     )
 
+
+    # Command: synergy
+    from .synergy import add_synergy_parser
+
+    add_synergy_parser(subparsers)
+
     # Command: tactics
     subparsers.add_parser(
         "tactics", help="List and inspect ControlsLean tactics and helper macros"
@@ -430,6 +443,7 @@ def main():
         "scratch": run_scratch,
         "search": run_search,
         "triage": run_triage,
+        "synergy": run_synergy,
         "tactics": run_tactics,
         "playbook": run_playbook,
         "status": run_status,

@@ -101,6 +101,8 @@ ctrl/
     ├── STATUS_AND_ROADMAP.md                # Comprehensive guide: Ready vs. Promising vs. In-Work
     ├── IDEA_PORTFOLIO_AND_SYNERGIES.md      # Domain-organized idea catalog, novelty/applicability & synergy graph
     ├── AGENT_IDEA_INDEX.json                # Machine-readable JSON index for autonomous agent review
+    ├── SYNERGY_WEIGHTS.json                 # Weighted domain/idea unlock graph + research candidates (`./ctrl synergy`)
+    ├── RESEARCH_FRONTIER_2026-10.md         # Scouted problems to explore / productionize / industrialize
     ├── architecture.md                      # Design principles, matrix representations & proof idioms
     ├── landscape.md                         # 3-way survey (ctrl vs LeanForControl vs Mathlib)
     ├── playbook.md                          # Proof engineering playbook & gotchas guide

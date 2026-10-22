@@ -1,0 +1,537 @@
+{
+  "schema_version": "1.0.0",
+  "updated_at": "2026-10-22",
+  "description": "Weighted cross-domain unlock graph for the ctrl program (and the sediment sibling repo). Consumed by `./ctrl synergy`. Domain edges say how strongly results in domain A tend to unlock work in domain B. Idea edges connect concrete idea IDs from AGENT_IDEA_INDEX.json and candidate IDs below. Weights are in [0,1] and are directed.",
+  "domains": {
+    "controls": {
+      "label": "Linear, Optimal & Robust Control",
+      "description": "LQR/DARE/LQG/H-inf/ISS/MPC/ILC, pole placement, reachability."
+    },
+    "nonlinear_safety": {
+      "label": "Nonlinear & Safety-Critical Control",
+      "description": "Backstepping, Sontag CLF, CBF/Lorentz cone, ZMP allocation, passivity."
+    },
+    "estimation": {
+      "label": "State Estimation & Belief Planning",
+      "description": "Kalman/Bucy, information filter, least squares, POMDP belief."
+    },
+    "robotics": {
+      "label": "Robot Kinematics, Dynamics & Trajectories",
+      "description": "SO(3)/SE(3), quaternions, manipulators, mobile robots, septic trajectories."
+    },
+    "vision": {
+      "label": "Projective & Multi-View Vision",
+      "description": "Epipolar, homography, cross-ratio, triangulation, ICP, visual servoing."
+    },
+    "realtime_systems": {
+      "label": "Real-Time & Multi-Robot Systems",
+      "description": "Response-time analysis, Simplex, fleet deadlock, Reed-Solomon."
+    },
+    "math": {
+      "label": "Pure & Applied Mathematics",
+      "description": "Byers-Nash, Erdős problems, covering systems, arithmetic geometry."
+    },
+    "codegen_certification": {
+      "label": "Codegen, Numerics & Certification",
+      "description": "C99/IEC 61131-3 emission, IEEE-754 parity, standards evidence (DO-178C, IEC 61508, ISO 26262)."
+    },
+    "lean_tooling": {
+      "label": "Lean Ecosystem & Agent Tooling",
+      "description": "Proof automation, Mathlib upstreaming, CLI, agent-facing indexes."
+    },
+    "rust_systems": {
+      "label": "Local-First Rust Systems (sediment)",
+      "description": "Archive formats, extraction safety, verified parsers, desktop packaging."
+    },
+    "prizes": {
+      "label": "Prizes, Bounties & Grants",
+      "description": "Justin Sun Prize, conjectures.io, Palomar, AI for Math Fund."
+    }
+  },
+  "idea_domains": {
+    "CTRL-01": [
+      "controls"
+    ],
+    "CTRL-02": [
+      "controls"
+    ],
+    "CTRL-03": [
+      "controls",
+      "nonlinear_safety"
+    ],
+    "CTRL-04": [
+      "controls"
+    ],
+    "CTRL-05": [
+      "controls"
+    ],
+    "NL-01": [
+      "nonlinear_safety"
+    ],
+    "NL-02": [
+      "nonlinear_safety",
+      "robotics"
+    ],
+    "NL-03": [
+      "nonlinear_safety",
+      "robotics"
+    ],
+    "EST-01": [
+      "estimation"
+    ],
+    "EST-02": [
+      "estimation",
+      "controls"
+    ],
+    "EST-03": [
+      "estimation"
+    ],
+    "ROBO-01": [
+      "robotics"
+    ],
+    "ROBO-02": [
+      "vision",
+      "robotics"
+    ],
+    "ROBO-03": [
+      "robotics"
+    ],
+    "ROBO-04": [
+      "realtime_systems"
+    ],
+    "VIS-01": [
+      "vision"
+    ],
+    "MATH-01": [
+      "math",
+      "controls"
+    ],
+    "MATH-02": [
+      "math"
+    ],
+    "MATH-03": [
+      "math"
+    ],
+    "MATH-04": [
+      "math",
+      "prizes"
+    ]
+  },
+  "edge_types": {
+    "certifies": "A provides a proof/conditioning guarantee that B's result relies on",
+    "feeds": "A produces the reference signal, model, or data that B consumes",
+    "composes": "A and B are stacked into one closed-loop or pipeline",
+    "dualizes": "A is the mathematical dual of B (same theorem, transposed)",
+    "benchmarks": "A gives the testbed on which B is measured",
+    "shares_method": "A's proof technique transfers directly to B",
+    "packages": "A turns B into a deliverable (kernel, submission, product)"
+  },
+  "domain_edges": [
+    {
+      "from": "controls",
+      "to": "estimation",
+      "weight": 0.9,
+      "why": "DARE/LQR results dualize to the steady-state Kalman filter; detectability and stabilizability swap roles."
+    },
+    {
+      "from": "estimation",
+      "to": "controls",
+      "weight": 0.8,
+      "why": "Observer and Kalman results close the loop in LQG via the separation principle."
+    },
+    {
+      "from": "controls",
+      "to": "nonlinear_safety",
+      "weight": 0.8,
+      "why": "ISS envelopes and H-inf bounds become the outer loop for CLF/CBF designs; MPC terminal sets supply invariant sets."
+    },
+    {
+      "from": "nonlinear_safety",
+      "to": "robotics",
+      "weight": 0.9,
+      "why": "CBF filters, ZMP allocation and Slotine-Li tracking are the controllers that run on manipulators and legged robots."
+    },
+    {
+      "from": "robotics",
+      "to": "nonlinear_safety",
+      "weight": 0.6,
+      "why": "Lie-group kinematics give the state manifolds on which CLF/CBF certificates must be stated."
+    },
+    {
+      "from": "robotics",
+      "to": "vision",
+      "weight": 0.7,
+      "why": "SE(3) kinematics are what visual servoing and pose estimation drive."
+    },
+    {
+      "from": "vision",
+      "to": "robotics",
+      "weight": 0.8,
+      "why": "Homography/essential decompositions and triangulation deliver the pose feedback for servoing."
+    },
+    {
+      "from": "vision",
+      "to": "estimation",
+      "weight": 0.7,
+      "why": "Multi-view measurements are the observation model for pose filters and VIO."
+    },
+    {
+      "from": "estimation",
+      "to": "vision",
+      "weight": 0.6,
+      "why": "Kalman/information fusion stabilizes noisy multi-view pose estimates."
+    },
+    {
+      "from": "estimation",
+      "to": "robotics",
+      "weight": 0.7,
+      "why": "State estimates feed every closed-loop robot controller; POMDP belief planning drives fleets."
+    },
+    {
+      "from": "math",
+      "to": "controls",
+      "weight": 0.6,
+      "why": "Lyapunov-operator conditioning (Byers-Nash) bounds Riccati/Lyapunov sensitivity; matrix identities feed spectral-free proofs."
+    },
+    {
+      "from": "math",
+      "to": "estimation",
+      "weight": 0.5,
+      "why": "Same conditioning bounds apply to CARE and Kalman-Bucy."
+    },
+    {
+      "from": "controls",
+      "to": "math",
+      "weight": 0.4,
+      "why": "Spectral-free quadratic-form techniques transfer back to matrix-inequality research."
+    },
+    {
+      "from": "math",
+      "to": "realtime_systems",
+      "weight": 0.5,
+      "why": "Covering systems and pinwheel/periodic scheduling share the same CRT density arguments."
+    },
+    {
+      "from": "realtime_systems",
+      "to": "codegen_certification",
+      "weight": 0.8,
+      "why": "Response-time analysis is the WCET/schedulability evidence certification bodies want next to a verified kernel."
+    },
+    {
+      "from": "realtime_systems",
+      "to": "nonlinear_safety",
+      "weight": 0.6,
+      "why": "Simplex switching gives the architecture in which a verified safety controller takes over."
+    },
+    {
+      "from": "realtime_systems",
+      "to": "rust_systems",
+      "weight": 0.5,
+      "why": "Reed-Solomon decoding and deadline-bounded cancellation transfer to archive recovery records and cooperative cancellation."
+    },
+    {
+      "from": "nonlinear_safety",
+      "to": "codegen_certification",
+      "weight": 0.8,
+      "why": "Closed-form CBF/ZMP kernels are the drop-in C99/ST artifacts with the clearest certification story."
+    },
+    {
+      "from": "controls",
+      "to": "codegen_certification",
+      "weight": 0.7,
+      "why": "Riccati-based gains and ISS margins are what a certified kernel catalog ships."
+    },
+    {
+      "from": "codegen_certification",
+      "to": "robotics",
+      "weight": 0.6,
+      "why": "Zero-heap kernels are what actually runs on robot hardware at 1-10 kHz."
+    },
+    {
+      "from": "codegen_certification",
+      "to": "prizes",
+      "weight": 0.5,
+      "why": "A verified kernel pipeline is grant-shaped (AI for Math Fund tools track, DARPA formal methods programs)."
+    },
+    {
+      "from": "lean_tooling",
+      "to": "controls",
+      "weight": 0.6,
+      "why": "Tactics, Loogle search and the inner loop lower the cost of every new module."
+    },
+    {
+      "from": "lean_tooling",
+      "to": "math",
+      "weight": 0.7,
+      "why": "Triage and proof automation are what make the Erdős bounty pipeline cheap."
+    },
+    {
+      "from": "lean_tooling",
+      "to": "prizes",
+      "weight": 0.6,
+      "why": "Submission tooling (lean-verify, Palomar packaging) converts proofs into claims."
+    },
+    {
+      "from": "math",
+      "to": "prizes",
+      "weight": 0.9,
+      "why": "Solved-but-unformalized Erdős problems are the direct money lane."
+    },
+    {
+      "from": "prizes",
+      "to": "lean_tooling",
+      "weight": 0.4,
+      "why": "Prize rules (standard axioms, public SHA pinning) shape the tooling."
+    },
+    {
+      "from": "lean_tooling",
+      "to": "rust_systems",
+      "weight": 0.4,
+      "why": "Aeneas/Verus-style pipelines let the Lean verification habit reach the Rust archive engine."
+    },
+    {
+      "from": "rust_systems",
+      "to": "codegen_certification",
+      "weight": 0.3,
+      "why": "A hardened, auditable extraction engine is a small worked example of shipping a verified artifact."
+    },
+    {
+      "from": "controls",
+      "to": "realtime_systems",
+      "weight": 0.5,
+      "why": "Sampled-data stability margins bound the jitter and deadline misses a scheduler may allow."
+    }
+  ],
+  "idea_edges": [
+    {
+      "from": "CTRL-01",
+      "to": "EST-01",
+      "type": "dualizes",
+      "weight": 0.9,
+      "why": "Detectable DARE uniqueness is the dual steady-state Kalman DARE."
+    },
+    {
+      "from": "CTRL-01",
+      "to": "CTRL-02",
+      "type": "composes",
+      "weight": 0.8,
+      "why": "DARE gain plus observer gives output-feedback LQG."
+    },
+    {
+      "from": "CTRL-01",
+      "to": "CTRL-04",
+      "type": "feeds",
+      "weight": 0.7,
+      "why": "P_inf is the MPC terminal cost that makes recursive feasibility and descent go through."
+    },
+    {
+      "from": "MATH-01",
+      "to": "CTRL-01",
+      "type": "certifies",
+      "weight": 0.6,
+      "why": "Byers-Nash k(A) <= s(A) controls Lyapunov/Riccati conditioning on the symmetric cone."
+    },
+    {
+      "from": "MATH-01",
+      "to": "EST-02",
+      "type": "certifies",
+      "weight": 0.6,
+      "why": "Same conditioning bound for CARE and Kalman-Bucy sensitivity."
+    },
+    {
+      "from": "CTRL-02",
+      "to": "CTRL-03",
+      "type": "composes",
+      "weight": 0.8,
+      "why": "H-inf Riccati solution is a Stein certificate the Peter-Paul ISS envelope consumes."
+    },
+    {
+      "from": "CTRL-03",
+      "to": "NL-01",
+      "type": "composes",
+      "weight": 0.8,
+      "why": "ISS sublevel invariants wrap the backstepping/Sontag inner loop."
+    },
+    {
+      "from": "CTRL-03",
+      "to": "NL-02",
+      "type": "composes",
+      "weight": 0.6,
+      "why": "ISS envelope bounds disturbance entering the CBF safety filter."
+    },
+    {
+      "from": "NL-01",
+      "to": "NL-03",
+      "type": "composes",
+      "weight": 0.7,
+      "why": "Sontag CLF outer loop around Slotine-Li passivity tracking."
+    },
+    {
+      "from": "ROBO-01",
+      "to": "NL-03",
+      "type": "feeds",
+      "weight": 0.9,
+      "why": "Septic trajectory supplies q_r, dq_r, ddq_r for the Slotine-Li regressor."
+    },
+    {
+      "from": "ROBO-01",
+      "to": "CTRL-02",
+      "type": "benchmarks",
+      "weight": 0.7,
+      "why": "Energy-optimal reference is the test trajectory of the H-inf/ISS MuJoCo benchmark."
+    },
+    {
+      "from": "ROBO-01",
+      "to": "CTRL-04",
+      "type": "feeds",
+      "weight": 0.6,
+      "why": "Septic references are the repeated-trial targets ILC refines."
+    },
+    {
+      "from": "ROBO-03",
+      "to": "NL-02",
+      "type": "feeds",
+      "weight": 0.8,
+      "why": "SE(3) centroidal kinematics state the ZMP/CBF constraints."
+    },
+    {
+      "from": "ROBO-03",
+      "to": "NL-03",
+      "type": "feeds",
+      "weight": 0.7,
+      "why": "Jacobians and Lie-group kinematics define the manipulator model."
+    },
+    {
+      "from": "ROBO-03",
+      "to": "ROBO-02",
+      "type": "feeds",
+      "weight": 0.8,
+      "why": "SE(3) twist kinematics are what the visual-servoing velocity law drives."
+    },
+    {
+      "from": "ROBO-03",
+      "to": "EST-02",
+      "type": "feeds",
+      "weight": 0.5,
+      "why": "Continuous rigid-body kinematics are the process model for Kalman-Bucy on poses."
+    },
+    {
+      "from": "VIS-01",
+      "to": "ROBO-02",
+      "type": "feeds",
+      "weight": 0.9,
+      "why": "Four-point homography uniqueness and chirality filtering give the pose used by HBVS."
+    },
+    {
+      "from": "VIS-01",
+      "to": "EST-01",
+      "type": "feeds",
+      "weight": 0.7,
+      "why": "Triangulated/registered poses are the measurements the Joseph Kalman filter fuses."
+    },
+    {
+      "from": "EST-01",
+      "to": "ROBO-02",
+      "type": "composes",
+      "weight": 0.6,
+      "why": "Filtered pose stabilizes the servoing loop under measurement noise."
+    },
+    {
+      "from": "EST-01",
+      "to": "CTRL-02",
+      "type": "composes",
+      "weight": 0.8,
+      "why": "Kalman gain is the observer half of LQG."
+    },
+    {
+      "from": "EST-01",
+      "to": "EST-03",
+      "type": "feeds",
+      "weight": 0.5,
+      "why": "Gaussian belief is the continuous analogue of the POMDP belief simplex."
+    },
+    {
+      "from": "EST-03",
+      "to": "ROBO-04",
+      "type": "composes",
+      "weight": 0.6,
+      "why": "PWLC belief planning plus fleet deadlock graph gives partially-observed fleet scheduling."
+    },
+    {
+      "from": "ROBO-04",
+      "to": "NL-02",
+      "type": "composes",
+      "weight": 0.7,
+      "why": "Simplex switching and response-time guarantees host the verified CBF backup controller."
+    },
+    {
+      "from": "NL-02",
+      "to": "CTRL-04",
+      "type": "composes",
+      "weight": 0.6,
+      "why": "CBF shield as terminal safety filter under MPC."
+    },
+    {
+      "from": "CTRL-05",
+      "to": "CTRL-02",
+      "type": "feeds",
+      "weight": 0.6,
+      "why": "Ackermann/pole placement assigns Luenberger observer poles."
+    },
+    {
+      "from": "CTRL-05",
+      "to": "CTRL-01",
+      "type": "certifies",
+      "weight": 0.5,
+      "why": "Reachability/observability are the hypotheses of DARE stabilizability/detectability."
+    },
+    {
+      "from": "MATH-04",
+      "to": "MATH-02",
+      "type": "shares_method",
+      "weight": 0.5,
+      "why": "Erdős bounty tactics and submission pipeline carry over to #885."
+    },
+    {
+      "from": "MATH-04",
+      "to": "MATH-03",
+      "type": "shares_method",
+      "weight": 0.5,
+      "why": "Same pipeline for #273 covering systems."
+    },
+    {
+      "from": "MATH-02",
+      "to": "MATH-04",
+      "type": "packages",
+      "weight": 0.4,
+      "why": "A closed #885 becomes a new bounty entry."
+    },
+    {
+      "from": "MATH-03",
+      "to": "MATH-04",
+      "type": "packages",
+      "weight": 0.4,
+      "why": "A closed #273 becomes a new bounty entry."
+    }
+  ],
+  "scoring": {
+    "description": "score = readiness * confidence * (w_nov*novelty/3 + w_app*applicability/3 + w_pay*payoff/5 + w_unlock*tanh(unlock_in/1.5) + w_out*tanh(unlock_out/1.5) + w_pull*pull) - w_eff*log1p(effort_weeks)/log1p(26). unlock_in = sum of incoming idea-edge weights from ready_to_use nodes; unlock_out = sum of outgoing weights; pull = 1 if an external pull is named. With --goal, score is multiplied by 0.25 + 0.75*keyword_overlap(goal, node text); with --domain, by 0.25 + 0.75*max domain->domain weight into the target domains. Readiness: ready_to_use 1.0, promising_near_complete 0.85, in_work 0.7, candidate 0.6.",
+    "coefficients": {
+      "w_nov": 0.15,
+      "w_app": 0.15,
+      "w_pay": 0.25,
+      "w_unlock": 0.2,
+      "w_out": 0.1,
+      "w_pull": 0.1,
+      "w_eff": 0.15
+    },
+    "readiness": {
+      "ready_to_use": 1.0,
+      "promising_near_complete": 0.85,
+      "in_work": 0.7,
+      "candidate": 0.6
+    },
+    "rationale": "Payoff and unlock-in dominate so that cheap work sitting one edge away from a READY node outranks ambitious isolated work; effort is log-damped so a 12-week project is not crushed, just discounted."
+  },
+  "candidates": []
+}
