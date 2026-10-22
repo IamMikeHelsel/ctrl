@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>ctrl — Machine-Checked Control Theory, Robotics, Vision &amp; Open Math Lab</title>
-  <meta name="description" content="Minimalist technical reference for ctrl: 98 zero-sorry Lean 4 modules, 48 @lean_theorem Python/C99/PLC kernels, 4 closed-loop MuJoCo 3.16.0 benchmarks, domain idea catalog, and composite application blueprints." />
+  <title>ctrl — Lean 4 Proofs &amp; Solver-Free C99/PLC Kernels for Robotics &amp; Control</title>
+  <meta name="description" content="Practical bridge between Lean 4 control theorems, dual-mode (exact rational + float64) Python reference kernels, zero-heap C99/IEC 61131-3 ST code generation, and MuJoCo physics benchmarks." />
   <style>
     :root {
       --bg: #fafafa;
@@ -54,7 +54,7 @@
       background: var(--bg);
       color: var(--text);
       font-family: var(--sans);
-      line-height: 1.55;
+      line-height: 1.58;
       -webkit-font-smoothing: antialiased;
     }
 
@@ -68,7 +68,7 @@
     }
 
     .page {
-      max-width: 1140px;
+      max-width: 1120px;
       margin: 0 auto;
       padding: 2.5rem 1.5rem 5rem;
     }
@@ -82,14 +82,14 @@
     .eyebrow {
       font-family: var(--mono);
       font-size: 0.78rem;
-      letter-spacing: 0.06em;
+      letter-spacing: 0.05em;
       text-transform: uppercase;
       color: var(--accent);
       margin-bottom: 0.5rem;
     }
 
     h1 {
-      font-size: clamp(1.75rem, 3vw, 2.35rem);
+      font-size: clamp(1.65rem, 2.8vw, 2.2rem);
       font-weight: 700;
       letter-spacing: -0.02em;
       margin: 0 0 0.75rem;
@@ -98,43 +98,16 @@
     .subtitle {
       font-size: 1.02rem;
       color: var(--muted);
-      max-width: 84ch;
+      max-width: 82ch;
       margin: 0 0 1.25rem;
     }
 
     .nav-links {
       display: flex;
       flex-wrap: wrap;
-      gap: 0.75rem 1.25rem;
+      gap: 0.65rem 1.25rem;
       font-family: var(--mono);
-      font-size: 0.83rem;
-    }
-
-    .metrics-strip {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
-      gap: 0.85rem;
-      margin-bottom: 2.5rem;
-    }
-
-    .metric-box {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 0.9rem 1rem;
-    }
-
-    .metric-val {
-      font-family: var(--mono);
-      font-size: 1.35rem;
-      font-weight: 700;
-      color: var(--text);
-    }
-
-    .metric-label {
-      font-size: 0.78rem;
-      color: var(--muted);
-      margin-top: 0.2rem;
+      font-size: 0.82rem;
     }
 
     section {
@@ -142,7 +115,7 @@
     }
 
     h2 {
-      font-size: 1.3rem;
+      font-size: 1.28rem;
       font-weight: 650;
       letter-spacing: -0.01em;
       border-bottom: 1px solid var(--border);
@@ -161,13 +134,100 @@
 
     code, pre {
       font-family: var(--mono);
-      font-size: 0.84rem;
+      font-size: 0.82rem;
     }
 
     code {
       background: var(--surface-alt);
       padding: 0.12rem 0.35rem;
       border-radius: 4px;
+    }
+
+    pre {
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 0.9rem 1rem;
+      overflow-x: auto;
+      margin: 0 0 0.85rem;
+      line-height: 1.45;
+    }
+
+    .walkthrough-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 1.1rem;
+    }
+
+    .panel-label {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 0.35rem;
+      font-weight: 600;
+    }
+
+    .callout-note {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: 6px;
+      padding: 0.9rem 1.1rem;
+      font-size: 0.9rem;
+      margin-top: 1rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.86rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      margin-bottom: 1rem;
+    }
+
+    th, td {
+      text-align: left;
+      padding: 0.65rem 0.8rem;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+
+    th {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      color: var(--muted);
+      background: var(--surface-alt);
+    }
+
+    .synergy-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 1rem;
+    }
+
+    .synergy-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 1.15rem;
+    }
+
+    .synergy-chain {
+      font-family: var(--mono);
+      font-size: 0.76rem;
+      color: var(--accent);
+      margin-bottom: 0.4rem;
     }
 
     /* Filter Toolbar */
@@ -199,7 +259,7 @@
 
     button.chip {
       font-family: var(--mono);
-      font-size: 0.76rem;
+      font-size: 0.75rem;
       background: var(--surface-alt);
       color: var(--text);
       border: 1px solid var(--border);
@@ -232,7 +292,7 @@
       padding: 1.1rem;
       display: flex;
       flex-direction: column;
-      gap: 0.65rem;
+      gap: 0.6rem;
       height: 100%;
     }
 
@@ -270,7 +330,7 @@
 
     .idea-id {
       font-family: var(--mono);
-      font-size: 0.78rem;
+      font-size: 0.77rem;
       font-weight: 700;
       color: var(--accent);
     }
@@ -283,7 +343,7 @@
 
     .badge {
       font-family: var(--mono);
-      font-size: 0.7rem;
+      font-size: 0.69rem;
       padding: 0.12rem 0.45rem;
       border-radius: 3px;
       font-weight: 600;
@@ -299,11 +359,6 @@
       color: var(--promising-fg);
     }
 
-    .badge-work {
-      background: var(--work-bg);
-      color: var(--work-fg);
-    }
-
     .badge-tier {
       background: var(--surface-alt);
       color: var(--muted);
@@ -314,11 +369,11 @@
       background: var(--surface-alt);
       border-radius: 4px;
       padding: 0.55rem 0.7rem;
-      font-size: 0.83rem;
+      font-size: 0.82rem;
     }
 
     .meta-list {
-      font-size: 0.81rem;
+      font-size: 0.8rem;
       color: var(--muted);
       display: flex;
       flex-direction: column;
@@ -328,47 +383,19 @@
       border-top: 1px dashed var(--border);
     }
 
-    .synergy-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-      gap: 1rem;
-    }
-
-    .synergy-card {
+    details {
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: 6px;
-      padding: 1.15rem;
+      padding: 0.85rem 1.1rem;
+      margin-top: 1rem;
     }
 
-    .synergy-chain {
+    summary {
       font-family: var(--mono);
-      font-size: 0.78rem;
-      color: var(--accent);
-      margin-bottom: 0.45rem;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.87rem;
-      background: var(--surface);
-      border: 1px solid var(--border);
-    }
-
-    th, td {
-      text-align: left;
-      padding: 0.65rem 0.8rem;
-      border-bottom: 1px solid var(--border);
-      vertical-align: top;
-    }
-
-    th {
-      font-family: var(--mono);
-      font-size: 0.76rem;
-      text-transform: uppercase;
-      color: var(--muted);
-      background: var(--surface-alt);
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
     }
 
     footer {
@@ -387,222 +414,297 @@
 <body>
   <div class="page">
     <header>
-      <div class="eyebrow">Lean 4 + Python + C99 / IEC 61131-3 ST + MuJoCo 3.16.0</div>
-      <h1>ctrl &mdash; Formal Control, Robotics, Vision &amp; Open Mathematics Lab</h1>
+      <div class="eyebrow">Lean 4 + Dual-Mode Python (Exact &#8474; &amp; Float64) + C99 / IEC 61131-3 ST + MuJoCo</div>
+      <h1>ctrl &mdash; Closed-Form Control &amp; Robotics Kernels Backed by Lean 4 Proofs</h1>
       <p class="subtitle">
-        A zero-<code>sorry</code> machine-checked theorem corpus paired with executable dual-mode (NumPy <code>float64</code> + exact-&#8474; <code>Fraction</code>) robotics kernels, deterministic C99/PLC code generation, and closed-loop MuJoCo physics benchmarks.
+        <code>ctrl</code> pairs machine-checked Lean 4 theorems about control, state estimation, and multi-contact robotics with runnable Python reference implementations, solver-free C99 / PLC Structured Text kernels, and MuJoCo physics simulations. Instead of running iterative QP/SOCP solvers inside a 1&ndash;10 kHz control loop, we prove closed-form algebraic laws over &#8477; and deploy them as deterministic, zero-heap code.
       </p>
       <nav class="nav-links" aria-label="Primary navigation">
-        <a href="#approach">1. Approach</a>
-        <a href="#synergies">2. Application Blueprints &amp; Combinations</a>
-        <a href="#catalog">3. Domain Catalog (Ready / Promising / In-Work)</a>
-        <a href="#benchmarks">4. MuJoCo &amp; C99 Benchmarks</a>
-        <a href="#ongoing">5. Ongoing Frontiers</a>
-        <a href="AGENT_IDEA_INDEX.json">AGENT_IDEA_INDEX.json (Agent API)</a>
-        <a href="https://github.com/IamMikeHelsel/ctrl">GitHub Repo</a>
+        <a href="#walkthrough">1. End-to-End Example</a>
+        <a href="#verification-boundary">2. What's Proved vs. Tested</a>
+        <a href="#applications">3. Application Combinations</a>
+        <a href="#benchmarks">4. Benchmarks &amp; Modest Gain Ranges</a>
+        <a href="#catalog">5. Domain Catalog</a>
+        <a href="#ongoing">6. Ongoing Work &amp; Side Tracks</a>
+        <a href="AGENT_IDEA_INDEX.json">AGENT_IDEA_INDEX.json</a>
+        <a href="https://github.com/IamMikeHelsel/ctrl">GitHub</a>
       </nav>
     </header>
 
-    <div class="metrics-strip">
-      <div class="metric-box">
-        <div class="metric-val">53 / 98</div>
-        <div class="metric-label">Verified Lean 4 Modules (<code>ControlsLean</code> / Full Monorepo)</div>
-      </div>
-      <div class="metric-box">
-        <div class="metric-val">424</div>
-        <div class="metric-label">Headline Theorems Audited (<code>0 sorry</code>, Standard Axioms)</div>
-      </div>
-      <div class="metric-box">
-        <div class="metric-val">48 / 223</div>
-        <div class="metric-label"><code>@lean_theorem</code> Python Functions / Bound Theorems</div>
-      </div>
-      <div class="metric-box">
-        <div class="metric-val">8.88e-16</div>
-        <div class="metric-label">Max C99 vs. Python Error (<code>clang -O3 -Werror</code>)</div>
-      </div>
-      <div class="metric-box">
-        <div class="metric-val">135.3&times;</div>
-        <div class="metric-label">MuJoCo &#8467;<sub>2</sub> Disturbance Attenuation (<code>-99.59%</code> Peak Error)</div>
-      </div>
-      <div class="metric-box">
-        <div class="metric-val">25</div>
-        <div class="metric-label">Solved Erd&#337;s Problems Formalized in Lean 4</div>
-      </div>
-    </div>
+    <!-- 1. ONE CLEAR END-TO-END EXAMPLE -->
+    <section id="walkthrough">
+      <h2>1. End-to-End Walkthrough: From Lean 4 Theorem to &lt;100 ns C99 Kernel</h2>
+      <p>
+        When a legged robot or mobile platform brakes near an obstacle, it can fail in two ways: its feet can slip outside the friction cone (&mu;), or its center of mass (height <em>h<sub>G</sub></em>, stance half-width <em>W</em>) can pitch over the front support edge. Online QP-CBF controllers solve a quadratic program at every tick to stay safe, which can fail to converge or miss hard real-time deadlines. Here is how <code>ctrl</code> replaces the online solver with a proved closed-form filter:
+      </p>
 
-    <section id="approach">
-      <h2>1. Core Technical Approach</h2>
-      <div class="synergy-grid">
-        <div class="synergy-card">
-          <div class="synergy-chain">Pillar I &middot; Spectral-Free Matrix Proofs</div>
-          <h3>Operator Identities Over Jordan Forms</h3>
+      <div class="walkthrough-grid">
+        <div class="panel">
+          <div class="panel-label">Step 1 &middot; Lean 4 Proof Over &#8477; (<code>LorentzConeCBF.lean</code>)</div>
           <p>
-            Instead of brittle eigenvalue or matrix-square-root arguments, we prove detectable DARE Schur stability via <strong>forced-observer zero-step escape</strong> (<code>DAREDetectable.lean</code>), discrete ISS via a <strong>square-root-free matrix Peter&ndash;Paul identity</strong> (<code>ISS.lean</code>), and <em>H</em><sub>&infin;</sub> attenuation via <strong>indefinite minimax completion of squares</strong> (<code>BoundedRealHInf.lean</code>).
+            We prove in Lean 4 (<code>0 sorry</code>) that setting the maximum deceleration to <code>a_max = min(&mu;, W/h_G) * g</code> and distributing ground forces across the 4 feet via a bilinear Zero-Moment-Point (ZMP) + proportional shear law satisfies:
           </p>
+          <pre><code>theorem quad_contact_zero_angular_momentum (p : QuadParams) (ax ay : &#8477;) :
+    netEulerTorque p (quadContactForce p ax ay) = 0
+
+theorem quad_contact_in_lorentz_cone (p : QuadParams) (ax ay : &#8477;)
+    (h_accel : ax^2 + ay^2 &le; (safeDecelMax p)^2) :
+    &forall; corner, inLorentzCone p.mu (quadContactForce p ax ay corner)</code></pre>
         </div>
-        <div class="synergy-card">
-          <div class="synergy-chain">Pillar II &middot; Closed-Form Conic Duality</div>
-          <h3>Zero-Solver 1&ndash;10 kHz Safety Shields</h3>
+
+        <div class="panel">
+          <div class="panel-label">Step 2 &middot; Zero-Heap C99 / PLC Kernel (<code>codegen.py</code>)</div>
           <p>
-            Online QP/SOCP solvers introduce non-convergence risk and WCET jitter. We prove analytical conic-duality solutions in Lean 4 (<code>LorentzConeCBF.lean</code>, <code>BacksteppingCLF.lean</code>) and emit recursion-free C99 &amp; IEC 61131-3 ST kernels (<code>ctrl_lorentz_cbf_filter_3d</code>, <code>ctrl_sontag_clf</code>) executing in &lt;100 ns.
+            Because the safe acceleration set and stopping-distance barrier <code>h(r, v) = n &middot; (r_lim &minus; r) &minus; v_n^2 / (2 a_brake)</code> have an exact convex-interpolation solution between the nominal command <code>u_nom</code> and backup braking <code>pi_b</code>, the deployed C99 filter has no loops, no heap allocation, and no solver failure states:
           </p>
+          <pre><code>void ctrl_lorentz_cbf_filter_3d(
+    const double a[3], double b,
+    const double u_nom[3], const double pi_b[3],
+    double *lam_out, double u_safe[3]) {
+  double num = b - ctrl_dot3(a, u_nom);
+  double den = ctrl_dot3(a, pi_b) - ctrl_dot3(a, u_nom);
+  double lam = (num &lt;= 0.0) ? 0.0 : ((den &gt; 0.0 &amp;&amp; num &lt; den) ? (num / den) : 1.0);
+  *lam_out = lam;
+  for (int i = 0; i &lt; 3; ++i) u_safe[i] = (1.0 - lam) * u_nom[i] + lam * pi_b[i];
+}</code></pre>
         </div>
-        <div class="synergy-card">
-          <div class="synergy-chain">Pillar III &middot; Finite Group Parseval Projections</div>
-          <h3>Non-Convex Matrix Variety Decomposition</h3>
-          <p>
-            For open problems like the Byers&ndash;Nash <em>n</em>=6 conjecture (<code>MF-13</code>), we act on 15D skew space &#120130;<sub>6</sub> with the 8-element (<em>F</em>,<em>G</em>)-Klein involution group and 3 plane-swap involutions <em>W</em><sub>12</sub>, <em>W</em><sub>13</sub>, <em>W</em><sub>23</sub> to obtain an exact 15D orthogonal Parseval decomposition (<code>ByersNashOffDiagComplete.lean</code>).
-          </p>
-        </div>
+      </div>
+
+      <div class="callout-note">
+        <strong>Why the C99 kernel and the Lean theorem match (and where the boundary lies):</strong>
+        Each theorem-backed function in <code>src/ctrl/robotics/</code> runs in <strong>two modes</strong>: exact rational arithmetic (<code>fractions.Fraction</code>) on rational test grids to verify exact algebraic equivalence with the Lean polynomial/rational formulas over &#8474; &sub; &#8477;, and IEEE-754 <code>float64</code> for runtime execution. The C99 shared library is compiled with <code>clang -std=c99 -O3 -Werror</code> and checked via <code>ctypes</code> against the Python reference to <code>8.88 &times; 10<sup>&minus;16</sup></code> (1 ULP).
       </div>
     </section>
 
-    <section id="synergies">
-      <h2>2. Bodies of Work That Combine in Real-World Applications</h2>
+    <!-- 2. HONEST VERIFICATION BOUNDARY TABLE -->
+    <section id="verification-boundary">
+      <h2>2. What Is Formally Proved vs. What Is Empirically Tested</h2>
       <p>
-        Each formal module in <code>ctrl</code> is designed as a composable block. Below are the five highest-leverage multi-module combinations for physical robotics and embedded control:
+        Formal verification in control theory has a well-known gap between continuous real-number proofs and floating-point physics execution. Rather than overclaiming "formally verified C code," here is the exact division of guarantees in <code>ctrl</code>:
+      </p>
+      <table>
+        <thead>
+          <tr>
+            <th>Layer</th>
+            <th>Artifact &amp; Size</th>
+            <th>What Is Guaranteed</th>
+            <th>What Is <em>Not</em> Proved in Lean</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>1. Lean 4 Theorem Library</strong></td>
+            <td><code>ControlsLean/</code> (<strong>53 modules</strong>, 424 audited theorems on <code>main</code>)<br><code>lean/</code> (<strong>98 modules</strong> total across <code>ControlsLean</code>, <code>Research</code>, <code>RoboLean</code>, <code>ErdosLab</code> on <code>crossover-research</code>)</td>
+            <td>100% <code>sorry</code>-free proofs over exact real/rational/field arithmetic (&#8477;, &#8474;, <em>K</em>) using only Lean's standard axioms (<code>propext</code>, <code>Classical.choice</code>, <code>Quot.sound</code>).</td>
+            <td>Does not model IEEE-754 floating-point rounding, subnormals, or C compiler instruction selection (unlike CompCert/VCFloat).</td>
+          </tr>
+          <tr>
+            <td><strong>2. Spec-Manifest Audit</strong><br>(<code>registry.py</code>)</td>
+            <td><strong>48 Python functions</strong> decorated with <code>@lean_theorem</code> referencing <strong>223 named Lean declarations</strong> across 79 robotics/control Lean files</td>
+            <td>Automated AST/source check (<code>verify_lean_bindings()</code>) verifying every referenced theorem name exists in the target <code>.lean</code> file and that zero <code>sorry</code>, <code>admit</code>, or <code>native_decide</code> tokens exist.</td>
+            <td>The binding between a Python function and its Lean theorem is audited by exact rational (<code>Fraction</code>) unit tests, not formal extraction from Lean IR.</td>
+          </tr>
+          <tr>
+            <td><strong>3. C99 &amp; IEC 61131-3 ST Codegen</strong><br>(<code>codegen.py</code>)</td>
+            <td>10 core real-time kernels (septic trajectories, ZMP allocator, Lorentz CBF filter, Sontag CLF, backstepping)</td>
+            <td>Compiles cleanly under <code>clang -std=c99 -O3 -Wall -Wextra -Werror</code>; matches Python <code>float64</code> reference within <code>8.88 &times; 10<sup>&minus;16</sup></code> across randomized test suites; zero dynamic allocation.</td>
+            <td>Equivalence to Python is tested via <code>ctypes</code> differential testing, not proved via a formal C semantics.</td>
+          </tr>
+          <tr>
+            <td><strong>4. MuJoCo 3.16.0 Rollouts</strong><br>(<code>mujoco_benchmarks.py</code>)</td>
+            <td>4 closed-loop multi-body RK4 simulations (1&ndash;2 ms timestep)</td>
+            <td>Empirically validates that the continuous/discrete theorems hold up under full 6-DOF rigid-body dynamics, Coriolis coupling, and discrete sampling.</td>
+            <td>Physics simulator integration error and unmodeled actuator saturation are evaluated empirically.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 3. COMPOSITE APPLICATION BLUEPRINTS -->
+    <section id="applications">
+      <h2>3. Practical Application Combinations</h2>
+      <p>
+        The primary value of having control, estimation, kinematics, and trajectory modules in one repository is that they compose cleanly into end-to-end robotics pipelines:
       </p>
       <div class="synergy-grid">
         <div class="synergy-card">
-          <div class="synergy-chain">ROBO-01 + NL-03 + CTRL-02 + CTRL-03 + NL-01</div>
-          <h3>1. Energy-Optimal, Disturbance-Immune 6-DOF Industrial Manipulator</h3>
+          <div class="synergy-chain">Application 1 &middot; Industrial 6-DOF Manipulators</div>
+          <h3>Septic Trajectory Shaping + Slotine&ndash;Li Passivity + Sontag CLF / <em>H</em><sub>&infin;</sub></h3>
           <p>
-            <strong>How they combine:</strong> <code>ROBO-01</code> (<code>RobotEnergySmoothness.lean</code>) generates the 7th-order septic rest-to-rest reference (&eta; = &minus;11) cutting motor winding Joule heat by <strong>22.47%</strong>. <code>NL-03</code> (<code>ManipulatorTracking.lean</code>) cancels nonlinear Coriolis/centripetal dynamics via Slotine&ndash;Li passivity without inverting <em>M</em>(<em>q</em>). <code>CTRL-02</code> (<em>H</em><sub>&infin;</sub> Riccati) + <code>CTRL-03</code> (Peter&ndash;Paul ISS) + <code>NL-01</code> (Sontag CLF) shield the outer loop against external torque impacts, cutting peak tracking error by <strong>99.59%</strong> (135.3&times; &#8467;<sub>2</sub> attenuation in MuJoCo).
+            <strong>Modules:</strong> <code>RobotEnergySmoothness.lean</code> + <code>ManipulatorTracking.lean</code> + <code>BacksteppingCLF.lean</code> + <code>BoundedRealHInf.lean</code>.<br>
+            <strong>Why they fit together:</strong> Rest-to-rest 7th-order septic profiles (&eta; = &minus;11) smooth out peak acceleration at the endpoints to reduce motor winding heat, while Slotine&ndash;Li passivity tracks the reference using skew-symmetry of <em>M&#775; &minus; 2C</em> (avoiding noisy <em>M</em>(<em>q</em>)<sup>&minus;1</sup> inversions), and Sontag's universal CLF + <em>H</em><sub>&infin;</sub> damping add a closed-form nonlinear disturbance rejection term.
           </p>
         </div>
 
         <div class="synergy-card">
-          <div class="synergy-chain">ROBO-03 + NL-02 + ROBO-04</div>
-          <h3>2. Hard-Real-Time 3D Legged Quadruped Reflex &amp; ZMP Shield</h3>
+          <div class="synergy-chain">Application 2 &middot; Legged &amp; Wheeled Mobile Robots</div>
+          <h3>3D Lorentz-Cone CBF + Bilinear 4-Foot ZMP Allocator + Real-Time Simplex</h3>
           <p>
-            <strong>How they combine:</strong> <code>ROBO-03</code> (<code>SO3Rodrigues.lean</code>, <code>SE3Kinematics.lean</code>) provides drift-free <em>SE</em>(3) kinematics. <code>NL-02</code> (<code>LorentzConeCBF.lean</code>, <code>CentroidalDecelerationLimit.lean</code>) enforces the exact biconditional deceleration limit <em>a</em><sub>max</sub> = min(&mu;, <em>W</em>/<em>h<sub>G</sub></em>)<em>g</em> and distributes 3D ground-reaction forces across 4 feet inside Lorentz friction cones with <strong>zero Euler torque</strong> (<em>L&#775;</em> = 0). <code>ROBO-04</code> (<code>RealTime.lean</code>, <code>Reliability.lean</code>) certifies worst-case response time and Simplex fallback safety.
+            <strong>Modules:</strong> <code>LorentzConeCBF.lean</code> + <code>CentroidalDecelerationLimit.lean</code> + <code>SE3Kinematics.lean</code> + <code>RoboLean/RealTime.lean</code> + <code>RoboLean/Reliability.lean</code>.<br>
+            <strong>Why they fit together:</strong> Combines worst-case response-time schedulability and Simplex architecture switching with an analytical 3D stopping-distance barrier and 4-foot wrench allocator. Gives legged/wheeled robots a deterministic reflex shield that runs on microcontrollers or PLCs where OSQP/ECOS cannot run reliably.
           </p>
         </div>
 
         <div class="synergy-card">
-          <div class="synergy-chain">VIS-01 + ROBO-02 + EST-01</div>
-          <h3>3. Chirality-Filtered 6-DOF Eye-in-Hand Visual Servoing</h3>
+          <div class="synergy-chain">Application 3 &middot; Eye-in-Hand Visual Inspection &amp; Docking</div>
+          <h3>4-Point Homography Rigidity + Faugeras Chirality Filter + Log-Depth <em>SE</em>(3) Servoing</h3>
           <p>
-            <strong>How they combine:</strong> <code>VIS-01</code> (<code>HomographyUniqueness.lean</code>, <code>HomographyDecomposition.lean</code>) proves 4-point projective frame rigidity and filters the 8 Faugeras homography branches down to the unique physical pose. <code>EST-01</code> (<code>KalmanOptimality.lean</code>, <code>InformationFilter.lean</code>) fuses pose measurements via Loewner-optimal Bucy&ndash;Joseph updates. <code>ROBO-02</code> (<code>VisualServoingInvariant.lean</code>) drives the camera via log-depth feedback <em>d&#775;</em> = &minus;&lambda;<em>d</em> ln(<em>d</em>/<em>d</em>*), completely eliminating the 5.76&times; IBVS camera-retreat divergence.
+            <strong>Modules:</strong> <code>HomographyUniqueness.lean</code> + <code>HomographyDecomposition.lean</code> + <code>VisualServoingInvariant.lean</code> + <code>KalmanOptimality.lean</code>.<br>
+            <strong>Why they fit together:</strong> Extracts planar pose from 4 feature correspondences, eliminates the unphysical Faugeras reflection branches via chirality (<em>n &middot; X &gt; 0</em>), filters pose noise with a Bucy&ndash;Joseph covariance update, and decouples optical-axis roll from depth control so large camera rotations never trigger backwards camera retreat.
           </p>
         </div>
 
         <div class="synergy-card">
-          <div class="synergy-chain">MATH-01 + CTRL-01 + EST-02</div>
-          <h3>4. Certified Conditioning for Continuous &amp; Discrete Riccati Solvers</h3>
+          <div class="synergy-chain">Application 4 &middot; Minimal-Sensor Embedded Estimation &amp; Control</div>
+          <h3>Detectable DARE + Steady-State Kalman / Information Filter + Peter&ndash;Paul ISS</h3>
           <p>
-            <strong>How they combine:</strong> <code>MATH-01</code> (<code>ByersNashOffDiagComplete.lean</code>) proves that the Lyapunov operator &#8466;<sub><em>A</em></sub>(<em>X</em>) = <em>A</em><sup>&top;</sup><em>X</em> + <em>XA</em> decouples orthogonally across &#120138;<sub><em>n</em></sub> &oplus; &#120130;<sub><em>n</em></sub> and that <em>k</em>(<em>A</em>) &le; <em>s</em>(<em>A</em>) prevents hidden skew-symmetric near-singularities. Combined with <code>CTRL-01</code> (<code>DAREDetectable.lean</code>) and <code>EST-02</code> (<code>KalmanBucy.lean</code>), this guarantees numerical conditioning and 6-dB/&plusmn;60&deg; return-difference margins for minimal-sensor LQR and Kalman&ndash;Bucy estimators.
-          </p>
-        </div>
-
-        <div class="synergy-card">
-          <div class="synergy-chain">EST-03 + ROBO-04 + CTRL-04</div>
-          <h3>5. Deadlock-Free Multi-Robot Fleet Planning Under Partial Observability</h3>
-          <p>
-            <strong>How they combine:</strong> <code>EST-03</code> (<code>POMDPBelief.lean</code>) proves that Smallwood&ndash;Sondik Bellman backups preserve piecewise-linear convexity over the Bayesian belief simplex. Combined with <code>ROBO-04</code> (<code>FleetDeadlock.lean</code>, <code>FleetThroughput.lean</code>, <code>Barcode/ReedSolomon.lean</code>) and <code>CTRL-04</code> (<code>MPCFeasibility.lean</code>), this provides end-to-end verified warehouse/inspection autonomy from optical fiducial decoding to deadlock-free receding-horizon routing.
+            <strong>Modules:</strong> <code>DAREDetectable.lean</code> + <code>SteadyStateKalman.lean</code> + <code>InformationFilter.lean</code> + <code>ISS.lean</code>.<br>
+            <strong>Why they fit together:</strong> Certifies LQR and Kalman convergence when only a low-dimensional output <em>y = Cx</em> is measured (<em>Q = C<sup>&top;</sup>C &succeq; 0</em> positive semidefinite rather than positive definite), pairs it with the Sherman&ndash;Morrison&ndash;Woodbury information update for multi-sensor fusion, and computes an explicit Peter&ndash;Paul ISS invariant tube under bounded process noise.
           </p>
         </div>
       </div>
     </section>
 
+    <!-- 4. HONEST BENCHMARKS & MODEST GAIN RANGES -->
+    <section id="benchmarks">
+      <h2>4. Closed-Loop Benchmarks, Strong Baselines &amp; Realistic Improvement Ranges</h2>
+      <p>
+        To avoid inflated comparisons against weak baselines, we report both <strong>strong baseline comparisons</strong> (e.g., well-tuned high-gain Computed-Torque Control and online QP-CBF) and the exact physical reason when a multi-body simulation differs from a 1D theoretical integral:
+      </p>
+      <table>
+        <thead>
+          <tr>
+            <th>Application Benchmark (MuJoCo 3.16.0)</th>
+            <th>Strong Engineering Baseline</th>
+            <th><code>ctrl</code> Verified Kernel</th>
+            <th>Modest / Realistic Improvement Range &amp; Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>1. 6-DOF Manipulator Rest-to-Rest Energy</strong><br>(<code>run_arm6dof_septic_energy_benchmark</code>)</td>
+            <td>5th-order Minimum-Jerk trajectory (<code>&eta; = 0</code>) with full RNE inverse-dynamics feedforward:<br>&bull; Total <em>I</em><sup>2</sup><em>R</em> (with gravity): <code>5254.6 J</code><br>&bull; Dynamic <em>I</em><sup>2</sup><em>R</em> (motion only): <code>773.2 J</code><br>&bull; Viscous loss: <code>1.435 J</code></td>
+            <td>7th-order Septic trajectory (<code>&eta; = &minus;11</code>) with identical RNE feedforward:<br>&bull; Total <em>I</em><sup>2</sup><em>R</em> (with gravity): <strong><code>5039.0 J</code></strong><br>&bull; Dynamic <em>I</em><sup>2</sup><em>R</em> (motion only): <strong><code>599.5 J</code></strong><br>&bull; Viscous loss: <strong><code>1.279 J</code></strong></td>
+            <td>
+              &bull; <strong><code>4.1%</code> total motor Joule reduction</strong> when static gravity holding dominates (vertical reach).<br>
+              &bull; <strong><code>10.8%</code> viscous damping reduction</strong> (matches 1D theoretical <code>10.79%</code>).<br>
+              &bull; <strong><code>18.3% &ndash; 22.5%</code> dynamic motion Joule reduction</strong> (1D linear inertia theory predicts <code>11/60 = 18.33%</code>; the 6-DOF simulation reaches <code>22.47%</code> because lower peak velocity at mid-stroke also reduces quadratic Coriolis/centripetal cross-torques <em>C</em>(<em>q, q&#775;</em>)<em>q&#775;</em>).
+            </td>
+          </tr>
+          <tr>
+            <td><strong>2. 6-DOF Arm Torque-Impulse Disturbance Rejection</strong><br>(<code>run_arm6dof_disturbance_iss_hinf_benchmark</code>)</td>
+            <td><strong>Strong Baseline &mdash; Tuned High-Gain Computed-Torque Control (CTC)</strong> (<em>K<sub>p</sub></em>=416, <em>K<sub>d</sub></em>=42 + sliding damping):<br>&bull; Peak error: <code>0.0271 rad</code><br>&bull; RMS error: <code>0.0149 rad</code><br>&bull; Empirical &#8467;<sub>2</sub>-gain: <code>0.00409</code><br><em>(vs. uncompensated low-gain PD: 4.04 rad)</em></td>
+            <td><strong>Backstepping + Sontag Universal CLF + <em>H</em><sub>&infin;</sub>/ISS Damping</strong> (matched linear poles <em>c</em><sub>1</sub>=16, <em>c</em><sub>2</sub>=26, &gamma;=0.20):<br>&bull; Peak error: <strong><code>0.0164 rad</code></strong><br>&bull; RMS error: <strong><code>0.0090 rad</code></strong><br>&bull; Empirical &#8467;<sub>2</sub>-gain: <strong><code>0.00246</code></strong></td>
+            <td>
+              &bull; <strong><code>39.4%</code> lower peak error and <code>39.6%</code> lower RMS error vs. tuned high-gain CTC</strong> under identical linear gains and RNE gravity/Coriolis compensation.<br>
+              &bull; The modest ~39&ndash;40% gain over tuned CTC comes specifically from Sontag's nonlinear <code>&radic;(a<sup>2</sup> + b<sup>4</sup>)</code> CLF gain scaling during the <em>t</em> = 0.72 s torque impulse, plus an explicit ISS sublevel certificate (<em>V</em><sub>max</sub> = 0.091 &le; 6.36).
+            </td>
+          </tr>
+          <tr>
+            <td><strong>3. 3D 4-Contact Quadruped Emergency Braking</strong><br>(<code>run_quadruped_zmp_cbf_benchmark</code>)</td>
+            <td><strong>Online 4-Foot SOCP / QP-CBF</strong>:<br>Enforces the same friction cone and ZMP limits, but requires ~50&ndash;250 &mu;s/tick of iterative solver time and dynamic memory allocation.</td>
+            <td><strong>Closed-Form Lorentz-Cone CBF + Bilinear ZMP Allocator</strong>:<br>Stops at <code>1.192 m &lt; 1.20 m</code>, <code>f_z,min = 22.14 N &gt; 0</code>, zero pitch/roll torque (<code>1.64e-15 rad/s</code>).</td>
+            <td>
+              &bull; <strong>Same physical stopping distance</strong> as an exact SOCP solver along the braking axis, but executes in <strong><code>&lt;100 ns</code> in C99 / PLC ST</strong> (100&ndash;1000&times; lower compute latency, zero solver non-convergence risk, zero heap).
+            </td>
+          </tr>
+          <tr>
+            <td><strong>4. 6-DOF <em>SE</em>(3) Large-Roll Visual Servoing</strong><br>(<code>run_se3_visual_servoing_benchmark</code>)</td>
+            <td><strong>Classical 2D Image-Based Visual Servoing (IBVS)</strong> under 160&deg; optical-axis roll:<br>Retreats backwards by <code>sec(&theta;/2) = 5.76&times;</code> (to <code>12.67 m</code>) before approaching <code>d* = 1.0 m</code>.</td>
+            <td><strong>Homography-Based Log-Depth Servoing (HBVS)</strong>:<br>Decouples optical-axis roll from depth via <code>d&#775; = &minus;&lambda; d ln(d/d*)</code>.</td>
+            <td>
+              &bull; <strong>Monotone depth trajectory inside <code>[1.015 m, 2.200 m]</code></strong> (zero camera retreat), matching partitioned/2.5D visual servoing performance with a machine-checked convexity lower bound.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 5. INTERACTIVE DOMAIN CATALOG -->
     <section id="catalog">
-      <h2>3. Interactive Domain Catalog: Ready to Use, Promising &amp; In Work</h2>
-      <div class="filter-bar" role="region" aria-label="Filter ideas">
+      <h2>5. Domain-Organized Module Catalog (Ready to Use vs. Ongoing Work)</h2>
+      <div class="filter-bar" role="region" aria-label="Filter modules">
         <div class="filter-group" id="status-filters">
           <span class="filter-label">Status:</span>
-          <button class="chip" data-status="all" aria-pressed="true">All (15)</button>
-          <button class="chip" data-status="ready_to_use" aria-pressed="false">Ready to Use (12)</button>
-          <button class="chip" data-status="promising_near_complete" aria-pressed="false">Promising / Active Math (3)</button>
+          <button class="chip" data-status="all" aria-pressed="true">All (14)</button>
+          <button class="chip" data-status="ready_to_use" aria-pressed="false">Ready to Use (11)</button>
+          <button class="chip" data-status="in_work" aria-pressed="false">Ongoing / In Work (3)</button>
         </div>
         <div class="filter-group" id="domain-filters">
           <span class="filter-label">Domain:</span>
           <button class="chip" data-domain="all" aria-pressed="true">All Domains</button>
-          <button class="chip" data-domain="Control" aria-pressed="false">Control &amp; CLF/CBF</button>
+          <button class="chip" data-domain="Control" aria-pressed="false">Control &amp; Safety</button>
           <button class="chip" data-domain="Estimation" aria-pressed="false">Estimation &amp; POMDP</button>
           <button class="chip" data-domain="Robotics" aria-pressed="false">Robotics &amp; Vision</button>
-          <button class="chip" data-domain="Math" aria-pressed="false">Open Math &amp; Bounties</button>
+          <button class="chip" data-domain="Math" aria-pressed="false">Applied Math &amp; Conditioning</button>
         </div>
       </div>
 
       <div class="idea-grid" id="idea-grid"></div>
     </section>
 
-    <section id="benchmarks">
-      <h2>4. Closed-Loop MuJoCo 3.16.0 &amp; C99/PLC Benchmark Summary</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Benchmark / Target</th>
-            <th>Baseline Controller</th>
-            <th>Lean-Verified Controller</th>
-            <th>Measured Performance Impact</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><strong>6-DOF Arm Disturbance &amp; Impact Rejection</strong><br><code>run_arm6dof_disturbance_iss_hinf_benchmark</code></td>
-            <td>Nominal PD under multi-tone torque + impulse (<code>||w||_max^2 = 254.5 N^2m^2</code>): Peak err <code>4.038 rad</code>, &#8467;<sub>2</sub>-gain <code>0.3325</code></td>
-            <td><em>H</em><sub>&infin;</sub> + Backstepping + Sontag CLF (<code>&gamma;_cert = 0.20</code>): Peak err <strong><code>0.0164 rad</code></strong>, &#8467;<sub>2</sub>-gain <strong><code>0.00246</code></strong></td>
-            <td><strong><code>-99.59%</code> peak error</strong> (246&times; tighter), <strong><code>-99.64%</code> RMS error</strong>, <strong><code>135.3&times;</code> &#8467;<sub>2</sub> attenuation</strong></td>
-          </tr>
-          <tr>
-            <td><strong>6-DOF Arm Electromechanical Energy</strong><br><code>run_arm6dof_septic_energy_benchmark</code></td>
-            <td>Classical 5th-order Minimum-Jerk (<code>&eta; = 0</code>): <code>E_dyn = 773.18 J</code></td>
-            <td>Optimal 7th-order Septic (<code>&eta;* = -11</code>): <code>E_dyn = 599.45 J</code></td>
-            <td><strong><code>-22.47%</code> dynamic Joule heat</strong> (theoretical <code>-18.33%</code>) &amp; <strong><code>-10.85%</code> viscous loss</strong></td>
-          </tr>
-          <tr>
-            <td><strong>3D 4-Contact Quadruped Emergency Braking</strong><br><code>run_quadruped_zmp_cbf_benchmark</code></td>
-            <td>Unshielded forward lunge toward wall at <code>x_lim = 1.20 m</code> (tips over / slips)</td>
-            <td>3D Lorentz-Cone CBF + Bilinear ZMP Allocator (<code>a_max = min(&mu;, W/h_G)g</code>)</td>
-            <td><strong>Stops safely at <code>1.1920 m &lt; 1.20 m</code></strong>, 100% inside Lorentz cone (<code>f_z,min = 22.14 N</code>), <strong>zero pitch/roll</strong> (<code>1.64e-15 rad/s</code>)</td>
-          </tr>
-          <tr>
-            <td><strong>6-DOF <em>SE</em>(3) Eye-in-Hand Visual Servoing</strong><br><code>run_se3_visual_servoing_benchmark</code></td>
-            <td>Classical IBVS under 155&deg; optical-axis rotation (retreats 5.76&times; to <code>12.67 m</code>)</td>
-            <td>Homography-Based Visual Servoing (HBVS) with log-depth <code>d&#775; = -&lambda; d ln(d/d*)</code></td>
-            <td><strong>Eliminates camera-retreat pathology</strong>: depth stays strictly monotone inside <code>[1.015 m, 2.200 m]</code></td>
-          </tr>
-          <tr>
-            <td><strong>C99 &amp; IEC 61131-3 ST Real-Time Codegen</strong><br><code>compile_and_verify_c99_kernels</code></td>
-            <td>Python <code>float64</code> reference kernels</td>
-            <td><code>clang -std=c99 -O3 -Wall -Wextra -Werror</code> shared library verified via <code>ctypes</code></td>
-            <td><strong><code>8.88e-16</code> max error</strong> (1-ULP IEEE-754 parity), zero heap allocation, &lt;100 ns/call</td>
-          </tr>
-        </tbody>
-      </table>
-    </section>
-
+    <!-- 6. ONGOING WORK & APPENDIX ON MATH BOUNTIES -->
     <section id="ongoing">
-      <h2>5. What's Still In Work (Active Next Frontiers)</h2>
+      <h2>6. What's Still In Work &amp; Separate Math Formalization Side Tracks</h2>
       <div class="synergy-grid">
         <div class="synergy-card">
-          <div class="synergy-chain">In Work &middot; MATH-01</div>
-          <h3>1. Analytical Off-Diagonal Cross-Term Closure for <em>n</em>=6 Byers&ndash;Nash</h3>
+          <div class="synergy-chain">In Work &middot; Robotics Runtime</div>
+          <h3>1. C99 / MuJoCo Payload-Adaptation Binding for Slotine&ndash;Li &amp; POMDPs</h3>
           <p>
-            With <code>skew6_fifteen_dim_parseval</code>, <code>eight_involution_byers_nash_identity</code>, and <code>canonical_four_term_norm_identity</code> proved in Lean 4—and 10/10 non-Common-<em>T</em> grid pairs certified via exact rational <em>LDL</em><sup>&top;</sup> &succ; 0—the remaining analytical step is bounding the cross-term between the 1D <em>W<sub>pq</sub></em>-commuting (<em>J</em>) and 3D <em>W<sub>pq</sub></em>-anticommuting ({<em>I</em><sub>2</sub>, <em>F</em>, <em>G</em>}) off-diagonal subspaces when &frac12;||<em>Y</em><sub>off</sub>||<sub><em>F</em></sub><sup>2</sup> &gt; &frac34;||<em>Y</em><sub>diag</sub>||<sub><em>F</em></sub><sup>2</sup>.
+            <code>ManipulatorTracking.lean</code> (Slotine&ndash;Li passivity and adaptive regressor cancellation) and <code>POMDPBelief.lean</code> (Smallwood&ndash;Sondik piecewise-linear convex Bellman backups) are proved in Lean 4 on <code>main</code>, and are currently being wired into <code>src/ctrl/robotics/</code> C99 codegen and a payload-uncertainty MuJoCo benchmark.
           </p>
         </div>
         <div class="synergy-card">
-          <div class="synergy-chain">In Work &middot; MATH-02</div>
-          <h3>2. Erd&#337;s #885 <em>p</em>-adic Coleman / Chabauty Rank-1 Annihilator</h3>
+          <div class="synergy-chain">In Work &middot; Lyapunov Conditioning (<code>MF-13</code>)</div>
+          <h3>2. Closing the Last Off-Diagonal Cross-Term in <em>n</em>=6 Byers&ndash;Nash</h3>
           <p>
-            Having proved absolute simplicity End(<em>J</em><sub>&#8113;</sub>) = &#8484; for all 14 Class 1 &amp; Class 2 genus-2 Jacobians (<code>Erdos885JacobianSimplicity.lean</code>) and formalized degree-2 Mumford &amp; 3-/5-point Cantor division-by-2 squareness (<code>Erdos885MumfordChabauty.lean</code>), the next milestone is formalizing the rank-1 Mordell&ndash;Weil generator certificate and <em>p</em>-adic Coleman power-series zero bound for <em>k</em>=5.
-          </p>
-        </div>
-        <div class="synergy-card">
-          <div class="synergy-chain">In Work &middot; NL-03 + ROBO-03</div>
-          <h3>3. Whole-Body <em>SE</em>(3) Geometric Control &amp; Slotine&ndash;Li C99/MuJoCo Benchmark</h3>
-          <p>
-            Binding <code>ControlsLean.Robotics.ManipulatorTracking</code> (<code>slotine_li_lyapunov_deriv</code>, <code>slotine_li_adaptive_lyapunov_deriv</code>) and <code>ControlsLean.Estimation.POMDPBelief</code> into <code>ctrl.robotics</code> with a generated C99 kernel <code>ctrl_slotine_li_torque</code> and a closed-loop payload-adaptation MuJoCo benchmark.
+            For the continuous Lyapunov operator &#8466;<sub><em>A</em></sub>(<em>X</em>) = <em>A</em><sup>&top;</sup><em>X</em> + <em>XA</em>, the Byers&ndash;Nash question asks whether the minimum singular value on skew matrices <em>k</em>(<em>A</em>) is always &le; the minimum singular value on symmetric matrices <em>s</em>(<em>A</em>). We proved orthogonal decoupling on &#120138;<sub><em>n</em></sub> &oplus; &#120130;<sub><em>n</em></sub>, unconditional exclusion for rank &le; 4, and a 15D Parseval decomposition of &#120130;<sub>6</sub>, plus exact rational <em>LDL</em><sup>&top;</sup> &succ; 0 certificates on a 10-pair non-Common-<em>T</em> grid. Bounding the remaining 3D commuting off-diagonal cross-term analytically is in work.
           </p>
         </div>
       </div>
+
+      <details>
+        <summary>Appendix: Separate Pure-Math / Erd&#337;s Formalization Side Track (Exact Problem Numbers &amp; Scope)</summary>
+        <p style="margin-top: 0.75rem;">
+          Because this repository shares Lean 4 infrastructure with DeepMind's <a href="https://github.com/google-deepmind/formal-conjectures"><code>formal-conjectures</code></a> benchmark, <code>ControlsLean/Bounty/</code> and <code>lean/Research/</code> also host standalone number-theory and combinatorics formalizations. To avoid conflating these with the robotics/control library, here is the exact scope of each:
+        </p>
+        <table>
+          <thead>
+            <tr>
+              <th>File</th>
+              <th>Erd&#337;s Problem IDs (<a href="https://www.erdosproblems.com">erdosproblems.com</a>)</th>
+              <th>Exact Scope of What Is Proved in Lean 4</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>Bounty/ErdosBounties.lean</code><br>&amp; <code>ErdosLab/Erdos834.lean</code></td>
+              <td><a href="https://www.erdosproblems.com/261">#261</a>, <a href="https://www.erdosproblems.com/834">#834</a>, <a href="https://www.erdosproblems.com/931">#931</a>, <a href="https://www.erdosproblems.com/951">#951</a>, <a href="https://www.erdosproblems.com/143">#143</a>, #36, #96, #242, #341, #389, #533, #995, #1055, #1059, #1073, #1102, #1113</td>
+              <td>Formalizations of <strong>already-solved literature results, finite counterexamples, or specific sub-parts</strong> from DeepMind's <code>formal-conjectures</code> (e.g., Borwein&ndash;Loring identity for #261 part (i); Li's 3-uniform hypergraph coloring for #834; Tijdeman's symmetric <em>k</em><sub>1</sub>=<em>k</em><sub>2</sub>=3 counterexample for #931).</td>
+            </tr>
+            <tr>
+              <td><code>Bounty/ErdosNewInsights.lean</code></td>
+              <td><a href="https://www.erdosproblems.com/370">#370</a>, <a href="https://www.erdosproblems.com/645">#645</a>, <a href="https://www.erdosproblems.com/493">#493</a>, <a href="https://www.erdosproblems.com/275">#275</a>, <a href="https://www.erdosproblems.com/873">#873</a>, <a href="https://www.erdosproblems.com/1125">#1125</a></td>
+              <td>Complete proofs of Steiner's elementary solution to #370 (<code>erdos_370</code>), the 2-coloring arithmetic progression bound <em>d</em> &le; 47 for #645 (<code>erdos_645</code>), the <em>k</em>=2 identity <code>2a = (a+2) + (a-2)</code> for #493, and the 2<sup><em>r</em></sup> extremal sharpness bound for #275.</td>
+            </tr>
+            <tr>
+              <td><code>Bounty/ErdosWave2.lean</code></td>
+              <td><a href="https://www.erdosproblems.com/1148">#1148</a>, <a href="https://www.erdosproblems.com/1179">#1179</a>, <a href="https://www.erdosproblems.com/1187">#1187</a>, <a href="https://www.erdosproblems.com/311">#311</a>, <a href="https://www.erdosproblems.com/367">#367</a>, <a href="https://www.erdosproblems.com/455">#455</a></td>
+              <td>Proves the open weaker variant of #1148 up to the explicit finite threshold <em>n</em> &gt; 6563 (<code>erdos_1148.variants.weaker</code>), the second-order discrete convexity lower bound for #455, the <em>k</em> &le; 2 variant of #367, and part (ii) / lower-bound variants of #1187, #1179, and #311.</td>
+            </tr>
+            <tr>
+              <td><code>Research/Erdos885*.lean</code> &amp; <code>Covering*.lean</code></td>
+              <td><a href="https://www.erdosproblems.com/885">#885</a> (<em>k</em> &ge; 5), <a href="https://www.erdosproblems.com/273">#273</a> (<em>p</em> &minus; 1 coverings)</td>
+              <td><strong>Ongoing open-problem machinery (not claimed solved):</strong> Proves absolute simplicity End(<em>J</em><sub>&#8113;</sub>) = &#8484; of 14 genus-2 quotient Jacobians and Mumford/Cantor 2-descent identities for #885, and proves the 23-smooth Euler product threshold crossover (<code>323323/110592 &lt; 3 &lt; 7436429/2433024</code>) for #273.</td>
+            </tr>
+          </tbody>
+        </table>
+      </details>
     </section>
 
     <footer>
       <div>
-        <strong>ctrl</strong> &middot; Machine-Checked Control Theory, Robotics, Vision &amp; Open Mathematics in Lean 4
+        <strong>ctrl</strong> &middot; Lean 4 Control, Estimation &amp; Robotics Library
       </div>
       <div>
         <a href="AGENT_IDEA_INDEX.json">Agent JSON Index</a> &middot;
@@ -615,81 +717,81 @@
     const IDEAS = [
       {
         id: "CTRL-01",
-        title: "Spectral-Free Detectable DARE, Infinite-Horizon LQR & Return-Difference Margins",
+        title: "Detectable DARE, Infinite-Horizon LQR & Return-Difference Margins",
         domain: "Linear & Optimal Control",
         domainGroup: "Control",
         status: "ready_to_use",
-        novelty: "N3",
+        novelty: "N2",
         applicability: "A3",
-        approach: "Forced-observer zero-step escape lemma proving Schur stability and uniqueness of DARE for positive semidefinite Q = C^T C >= 0 without eigenvalues, plus quadratic return-difference disk margins.",
+        approach: "Proves existence, uniqueness, and Schur stability of the Discrete Algebraic Riccati Equation under (A,C)-detectability (Q = C^T C >= 0 positive semidefinite) without complex Jordan forms, plus Bellman return-difference disk margins.",
         modules: ["Controls/LQR.lean", "Controls/DAREDetectable.lean", "Controls/DAREExistence.lean", "Controls/LQROptimality.lean"],
         theorems: ["dare_schur_of_detectable", "lqr_existsUnique_of_stabilizable_detectable", "dare_bellman_return_difference"],
         combines: ["EST-01", "CTRL-02", "CTRL-04", "MATH-01"]
       },
       {
         id: "CTRL-02",
-        title: "Minimal-Hypothesis LQG Separation & Discrete H_infinity Bounded Real Lemma",
-        domain: "Robust & Output-Feedback Control",
+        title: "Output-Feedback LQG Separation & Discrete H-infinity Bounded Real Lemma",
+        domain: "Robust Control",
         domainGroup: "Control",
         status: "ready_to_use",
-        novelty: "N3",
+        novelty: "N2",
         applicability: "A3",
-        approach: "Indefinite minimax completion of squares with disturbance Hessian M_gamma(P) = gamma^2 I - D^T D - B^T P B certifying l2-gain <= gamma and worst-case disturbance tightness.",
-        impact: "Measured in MuJoCo: 135.3x l2-gain disturbance attenuation (0.00246 vs 0.3325 nominal PD) and -99.59% peak joint tracking error.",
+        approach: "Saddle-point completion of squares with disturbance Hessian M_gamma(P) = gamma^2 I - D^T D - B^T P B certifying finite- and infinite-horizon l2-gain attenuation <= gamma.",
+        impact: "Combined with Sontag CLF in MuJoCo: reduces peak & RMS tracking error by ~39.5% compared to a well-tuned high-gain Computed-Torque Controller under torque impulses.",
         modules: ["Controls/BoundedRealHInf.lean", "Controls/LQG.lean", "Controls/Observer.lean"],
         theorems: ["lqg_closed_loop_stable_of_stabilizable_detectable", "hinf_stage_completion_of_squares", "hinf_l2_gain_bound"],
         combines: ["CTRL-03", "NL-01", "ROBO-01", "NL-03"]
       },
       {
         id: "CTRL-03",
-        title: "Square-Root-Free Matrix Peter–Paul Input-to-State Stability (ISS)",
-        domain: "Robust & Nonlinear Control",
+        title: "Matrix Peter–Paul Input-to-State Stability (ISS) Envelopes",
+        domain: "Robust Control",
         domainGroup: "Control",
         status: "ready_to_use",
         novelty: "N2",
         applicability: "A3",
-        approach: "Bypasses matrix square roots P^(1/2) via an exact quadratic Peter–Paul identity to convert any discrete Stein Lyapunov equation into an explicit ISS trajectory bound and forward-invariant sublevel set.",
+        approach: "Uses an exact quadratic Peter–Paul inequality (avoiding matrix square roots P^(1/2)) to convert any discrete Stein Lyapunov equation into an explicit ISS decay + disturbance gain bound and invariant sublevel set.",
         modules: ["Controls/ISS.lean", "Controls/SmallGain.lean", "Controls/ConverseLyapunov.lean"],
         theorems: ["quad_add_peter_paul_identity", "quad_iss_of_stein_explicit", "iss_invariant_sublevel"],
         combines: ["CTRL-02", "NL-01", "NL-02"]
       },
       {
         id: "CTRL-04",
-        title: "Constrained Receding-Horizon MPC Recursive Feasibility & Arimoto ILC",
-        domain: "Optimal & Learning Control",
+        title: "Constrained Receding-Horizon MPC Feasibility & Iterative Learning Control",
+        domain: "Optimal & Repetitive Control",
         domainGroup: "Control",
         status: "ready_to_use",
-        novelty: "N2",
+        novelty: "N1",
         applicability: "A2",
-        approach: "Shifted-tail terminal-set recursive feasibility, CLF optimal value descent, and lifted Toeplitz Iterative Learning Control geometric convergence.",
+        approach: "Shifted-tail terminal-set recursive feasibility, CLF value descent for constrained MPC, and lifted Toeplitz Arimoto ILC convergence when ||I - GL|| < 1.",
         modules: ["Controls/MPCFeasibility.lean", "Controls/IterativeLearning.lean", "Controls/Gramian.lean"],
         theorems: ["mpc_recursive_feasibility_step", "mpc_optimal_value_descent", "arimoto_error_tendsto_zero"],
         combines: ["CTRL-01", "NL-02", "ROBO-01"]
       },
       {
         id: "NL-01",
-        title: "Strict-Feedback Integrator Backstepping & Sontag's Universal CLF Formula",
+        title: "Strict-Feedback Integrator Backstepping & Sontag's Universal CLF",
         domain: "Nonlinear Control",
         domainGroup: "Control",
         status: "ready_to_use",
         novelty: "N2",
         applicability: "A3",
-        approach: "Recursive virtual-control error coordinates z_i = x_i - alpha_{i-1} with tridiagonal skew cancellation, paired with Sontag's analytic universal stabilizer guaranteeing dV/dt <= -sqrt(a^2 + b^4).",
-        impact: "Emitted to zero-heap C99 (ctrl_sontag_clf, ctrl_backstepping_control) & IEC 61131-3 ST with 8.88e-16 parity.",
+        approach: "Recursive virtual-control error coordinates z_i = x_i - alpha_{i-1} with tridiagonal skew cancellation, paired with Sontag's analytic formula guaranteeing dV/dt <= -sqrt(a^2 + b^4).",
+        impact: "Emitted to zero-heap C99 (ctrl_sontag_clf, ctrl_backstepping_control) & IEC 61131-3 ST with 8.88e-16 float64 parity.",
         modules: ["Controls/BacksteppingCLF.lean"],
         theorems: ["hasDerivAt_backstepping_closedLoop", "backstepping_chain_telescoping", "sontag_clf_strict_decrease"],
         combines: ["CTRL-02", "CTRL-03", "NL-03"]
       },
       {
         id: "NL-02",
-        title: "3D 4-Contact Bilinear ZMP Wrench Allocator & Lorentz-Cone CBF Safety Filter",
-        domain: "Legged Robotics & Safety Control",
+        title: "3D 4-Contact Bilinear ZMP Allocator & Closed-Form Lorentz-Cone CBF",
+        domain: "Legged & Mobile Safety Control",
         domainGroup: "Control",
         status: "ready_to_use",
         novelty: "N3",
         applicability: "A3",
-        approach: "Closed-form conic duality for 3D 4-contact robots: proves exact biconditional deceleration limit min(mu, W/h_G)*g, zero 3D Euler angular-momentum drift (dL/dt = 0), and closed-form SOCP stopping-distance CBF.",
-        impact: "MuJoCo 3D Quadruped: stops safely at 1.1920 m < 1.20 m wall, 100% forces in Lorentz cone (f_z,min = 22.14 N), zero pitch/roll (1.64e-15 rad/s).",
+        approach: "Proves the exact biconditional deceleration limit min(mu, W/h_G)*g, a 4-foot bilinear ZMP + proportional shear allocator with zero 3D Euler torque (dL/dt = 0), and a closed-form stopping-distance CBF.",
+        impact: "Matches exact SOCP stopping safety in MuJoCo (stops at 1.192 m < 1.20 m wall, f_z,min = 22.14 N) while running in <100 ns in C99 with zero solver failure modes.",
         modules: ["Research/LorentzConeCBF.lean", "Research/CentroidalDecelerationLimit.lean", "Controls/BarrierPassivity.lean"],
         theorems: ["deceleration_safe_iff", "quad_contact_zero_angular_momentum", "centroidal_cbf_forward_invariant"],
         combines: ["ROBO-03", "ROBO-04", "CTRL-04"]
@@ -699,23 +801,23 @@
         title: "Slotine–Li Passivity & Adaptive Manipulator Trajectory Tracking",
         domain: "Nonlinear Robotics Control",
         domainGroup: "Robotics",
-        status: "ready_to_use",
+        status: "in_work",
         novelty: "N2",
-        applicability: "A3",
-        approach: "Exploits skew-symmetry of dM/dt - 2C on sliding error s = dq_tilde + Lambda q_tilde to achieve dV/dt = -s^T K_D s <= 0 without inverting M(q), plus adaptive parameter regressor cancellation.",
+        applicability: "A2",
+        approach: "Exploits skew-symmetry of dM/dt - 2C on sliding error s = dq_tilde + Lambda q_tilde to achieve dV/dt = -s^T K_D s <= 0 without inverting M(q), plus adaptive parameter regressor cancellation. (Lean proof complete; C99/MuJoCo binding in work.)",
         modules: ["Robotics/ManipulatorTracking.lean"],
         theorems: ["slotine_li_lyapunov_deriv", "slotine_li_adaptive_lyapunov_deriv", "hasDerivAt_slotine_li_storage"],
         combines: ["ROBO-01", "NL-01", "CTRL-02"]
       },
       {
         id: "EST-01",
-        title: "Multivariate Joseph MMSE Kalman Filter, Dual Steady-State DARE & Information Filter",
+        title: "Multivariate Bucy–Joseph Kalman Filter, Information Filter & Recursive LS",
         domain: "State Estimation",
         domainGroup: "Estimation",
         status: "ready_to_use",
         novelty: "N2",
         applicability: "A3",
-        approach: "Matrix completion of squares on the Bucy–Joseph covariance update proving Loewner PSD dominance and trace optimality, plus ring-general Sherman–Morrison–Woodbury equivalence to the Information filter.",
+        approach: "Matrix completion of squares on the stabilized Joseph covariance update proving Loewner PSD dominance and trace optimality, plus Sherman–Morrison–Woodbury Information filter equivalence and RLS.",
         modules: ["Estimation/KalmanOptimality.lean", "Estimation/SteadyStateKalman.lean", "Estimation/InformationFilter.lean", "Estimation/LeastSquares.lean"],
         theorems: ["josephCov_completion_of_squares", "kalman_steady_state_of_stabilizable_detectable", "woodbury_isInverse"],
         combines: ["CTRL-01", "CTRL-02", "VIS-01"]
@@ -738,24 +840,24 @@
         title: "POMDP Bayesian Belief Simplex & Smallwood–Sondik PWLC Bellman Backup",
         domain: "Planning Under Uncertainty",
         domainGroup: "Estimation",
-        status: "ready_to_use",
+        status: "in_work",
         novelty: "N2",
         applicability: "A2",
-        approach: "Proves simplex invariance of Bayesian belief updates and convexity/PWLC preservation of alpha-vector value functions under Smallwood–Sondik dynamic programming backup.",
+        approach: "Proves simplex invariance of Bayesian belief updates and piecewise-linear convexity (PWLC) preservation of alpha-vector value functions under Smallwood–Sondik Bellman backup. (Lean proof complete; Python planner binding in work.)",
         modules: ["Estimation/POMDPBelief.lean"],
         theorems: ["bayesUpdate_isBelief", "pomdpValue_convex", "bellman_backup_pwlc_preservation"],
         combines: ["EST-01", "ROBO-04"]
       },
       {
         id: "ROBO-01",
-        title: "Pareto-Optimal 7th-Order Septic Electromechanical Trajectory Family",
+        title: "7th-Order Septic Rest-to-Rest Electromechanical Trajectory Shaping",
         domain: "Robotics Motion Planning",
         domainGroup: "Robotics",
         status: "ready_to_use",
         novelty: "N3",
         applicability: "A3",
-        approach: "Proves cross-power orthogonality int_0^T a(t)j(t) dt = 0 on rest-to-rest trajectories and reduces motor Joule + viscous dissipation to exact rational quadratic forms in eta.",
-        impact: "MuJoCo 6-DOF Manipulator: -22.47% dynamic Joule heat loss (theoretical -18.33%) and -10.85% viscous dissipation vs. minimum-jerk.",
+        approach: "Uses cross-power orthogonality int_0^T a(t)j(t) dt = 0 on rest-to-rest trajectories to express motor winding + viscous losses as exact rational quadratic forms in eta.",
+        impact: "Modest, practical energy reduction over 5th-order minimum-jerk: 4.1% total I^2 R (gravity-dominated), 10.8% viscous loss, and 18.3%–22.5% dynamic motion Joule heat.",
         modules: ["Research/RobotEnergySmoothness.lean"],
         theorems: ["rest_to_rest_cross_power_zero", "exact_integral_quadratic_forms", "inertial_joule_minimized_at_minus_eleven"],
         combines: ["NL-03", "CTRL-02", "NL-01"]
@@ -763,56 +865,43 @@
       {
         id: "ROBO-02",
         title: "6-DOF SE(3) Log-Depth Homography-Based Visual Servoing (HBVS)",
-        domain: "Visual Servoing & Perception",
+        domain: "Visual Servoing & Multi-View Geometry",
         domainGroup: "Robotics",
         status: "ready_to_use",
-        novelty: "N3",
+        novelty: "N2",
         applicability: "A3",
-        approach: "Proves rotational invariance of log-depth feedback dd/dt = -lambda d ln(d/d*), convex trajectory lower bound, and eliminates the sec(theta/2)^2 camera-retreat divergence of classical IBVS.",
-        impact: "MuJoCo SE(3) Servoing: eliminates 5.76x (12.67 m) IBVS camera retreat under 155-deg optical-axis rotation.",
-        modules: ["Research/VisualServoingInvariant.lean", "Research/HomographyDecomposition.lean"],
-        theorems: ["closed_loop_depth_formula", "depth_convexity_lower_bound", "ibvs_retreat_exceeds_initial_depth"],
-        combines: ["VIS-01", "ROBO-03", "EST-01"]
+        approach: "Combines 4-point projective homography rigidity and Faugeras chirality filtering with decoupled log-depth feedback dd/dt = -lambda d ln(d/d*) to avoid IBVS optical-axis roll retreat.",
+        impact: "Maintains monotone depth inside [1.015 m, 2.200 m] under 160-deg camera roll in MuJoCo.",
+        modules: ["Research/VisualServoingInvariant.lean", "Research/HomographyDecomposition.lean", "Vision/HomographyUniqueness.lean"],
+        theorems: ["closed_loop_depth_formula", "depth_convexity_lower_bound", "homography_unique_four_points"],
+        combines: ["EST-01", "ROBO-03"]
+      },
+      {
+        id: "ROBO-03",
+        title: "SO(3)/SE(3) Rodrigues, Unit Quaternions, Non-Inertial Transport & Real-Time RTA",
+        domain: "Kinematics & Real-Time Execution",
+        domainGroup: "Robotics",
+        status: "ready_to_use",
+        novelty: "N2",
+        applicability: "A3",
+        approach: "Formalizes so(3) Rodrigues rotations, unit-quaternion kinematics, 2-link planar arm & unicycle odometry, Euler–centripetal orthogonality, minimum-norm IK, and fixed-priority response-time analysis.",
+        modules: ["Robotics/SO3Rodrigues.lean", "Robotics/SE3Kinematics.lean", "Robotics/QuaternionRotation.lean", "Research/WorldFrameTransport.lean", "RoboLean/RealTime.lean"],
+        theorems: ["rodrigues_belongs_to_SO3", "rotMatrix_mem_specialOrthogonalGroup", "pythagorean_ik_optimality", "fixLoop_sound"],
+        combines: ["NL-02", "ROBO-02"]
       },
       {
         id: "MATH-01",
-        title: "Byers–Nash n=6 Skew-Hamiltonian Conjecture (MF-13) & 15D Skew Parseval",
-        domain: "Matrix Analysis & Lyapunov Conditioning",
+        title: "Symmetric vs. Skew Lyapunov Conditioning & Byers–Nash n=6 (MF-13)",
+        domain: "Applied Matrix Analysis",
         domainGroup: "Math",
-        status: "promising_near_complete",
+        status: "in_work",
         novelty: "N3",
         applicability: "A2",
-        approach: "Orthogonal Lyapunov decoupling on S_n (+) K_n, unconditional exclusion for rank(K) <= 4, 8-involution (F,G)-Klein Haar identity, complete 15D Parseval decomposition of K_6, and 10/10 exact rational LDL^T > 0 certificates.",
-        impact: "Certifies that symmetric Lyapunov SDP solvers never miss a near-singular skew mode; 1 off-diagonal cross-term remains for full n=6 analytical closure.",
+        approach: "Proves that L_A(X) = A^T X + X A decouples orthogonally on S_n (+) K_n, rules out rank <= 4 counterexamples, proves a 15D Parseval decomposition of K_6 via Klein & plane-swap involutions, and certifies 10/10 non-Common-T grid pairs over Q.",
+        impact: "Directly governs whether symmetric Lyapunov/Riccati SDP solvers can miss a near-singular skew mode; 1 off-diagonal cross-term inequality remains in work.",
         modules: ["Research/ByersNashOffDiagComplete.lean", "Research/ByersNashHaarIntertwiner.lean", "Research/ByersNashMultiTerm.lean"],
-        theorems: ["lyap_symm_skew_orthogonal_decomp", "eight_involution_byers_nash_identity", "skew6_fifteen_dim_parseval"],
+        theorems: ["lyap_symm_skew_orthogonal_decomp", "lyapunov_singular_value_robustness_bound", "skew6_fifteen_dim_parseval"],
         combines: ["EST-02", "CTRL-01"]
-      },
-      {
-        id: "MATH-02",
-        title: "Erdős #885 Genus-2 Quotient Tower, Jacobian Simplicity & Mumford/Cantor 2-Descent",
-        domain: "Arithmetic Geometry & Number Theory",
-        domainGroup: "Math",
-        status: "promising_near_complete",
-        novelty: "N3",
-        applicability: "A1",
-        approach: "Projection tower from P^6 onto 15 elliptic + 7 genus-2 curves; symplectic Frobenius trace proof that End(J_Qbar) = Z for all 14 Class 1 & 2 Jacobians; Cassels–Flynn & Cantor division-by-2 squareness.",
-        modules: ["Research/Erdos885QuotientGenus.lean", "Research/Erdos885JacobianSimplicity.lean", "Research/Erdos885MumfordChabauty.lean"],
-        theorems: ["class1_all_seven_jacobians_absolutely_simple", "class2_all_seven_jacobians_absolutely_simple", "cantor_reduced_divisor_cassels_flynn_square"],
-        combines: ["MATH-04"]
-      },
-      {
-        id: "MATH-03",
-        title: "Erdős #273 p-1 Covering Systems, 23-Smooth Euler Threshold & 25 Solved Bounties",
-        domain: "Analytic & Combinatorial Number Theory",
-        domainGroup: "Math",
-        status: "promising_near_complete",
-        novelty: "N3",
-        applicability: "A2",
-        approach: "Weighted CRT density engine proving the exact 23-smooth Euler product crossover 323323/110592 < 3 < 7436429/2433024, alongside 25 complete Erdős formalizations (#261, #370, #645, #834, #1148...).",
-        modules: ["Research/CoveringSeventeen.lean", "Bounty/ErdosBounties.lean", "Bounty/ErdosNewInsights.lean", "Bounty/ErdosWave2.lean"],
-        theorems: ["smooth_covering_threshold_at_23", "erdos_370", "erdos_645_bounded_47", "erdos_1148_weaker"],
-        combines: ["MATH-02"]
       }
     ];
 
@@ -833,10 +922,10 @@
         cell.className = "idea-cell";
 
         const badgeClass = item.status === "ready_to_use" ? "badge-ready" : "badge-promising";
-        const badgeLabel = item.status === "ready_to_use" ? "READY TO USE" : "PROMISING / ACTIVE";
+        const badgeLabel = item.status === "ready_to_use" ? "READY TO USE" : "IN WORK";
 
         const impactHtml = item.impact
-          ? `<div class="impact-callout"><strong>Impact:</strong> ${item.impact}</div>`
+          ? `<div class="impact-callout"><strong>Application note:</strong> ${item.impact}</div>`
           : "";
 
         cell.innerHTML = `
