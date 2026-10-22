@@ -951,9 +951,9 @@
     <header class="hero">
       <div class="eyebrow">Lean 4 Theorems &middot; Dual-Mode Python &middot; Fixed-Loop C99 / PLC ST &middot; MuJoCo 3.16</div>
       <h1>ctrl</h1>
-      <p class="hero-subtitle">Applied math for controls, robotics, simulation, perception</p>
+      <p class="hero-subtitle">Applied mathematics for controls, robotics, simulation, and perception</p>
       <p class="subtitle">
-        <code>ctrl</code> connects machine-checked mathematical theorems in Lean 4 (55 modules, 445 audited headline theorems on <code>main</code>) with dual-mode Python reference implementations (<code>float</code> + exact <code>Fraction</code>), zero-heap C99 / IEC 61131-3 Structured Text code generation, and closed-loop MuJoCo physics rollouts. Where a model permits an exact completion of squares or conic projection, we replace iterative online solvers inside 1&ndash;4 kHz loops with closed-form laws while keeping every hypothesis, numerical test boundary, and physical integration obligation explicit.
+        <code>ctrl</code> pairs machine-checked control, estimation, kinematics, and projective vision theorems in Lean 4 with dual-mode Python reference implementations (<code>float</code> + exact <code>Fraction</code>), zero-heap C99 and IEC 61131-3 Structured Text code generation, and closed-loop MuJoCo physics benchmarks. Where a problem admits an exact completion of squares or conic projection, we replace iterative online solvers inside 1&ndash;4 kHz loops with closed-form laws and state the exact hypotheses and verification boundary up front.
       </p>
 
       <div class="hero-actions">
@@ -1352,7 +1352,7 @@ theorem quad_contact_in_lorentz_cone (p : QuadParams) (ax ay : &#8477;)
         <div class="panel">
           <div class="panel-label">Step 2 &middot; Zero-Heap C99 / PLC Kernel (<code>codegen.py</code>)</div>
           <p>
-            The research implementation expresses a convex-interpolation rule between a nominal command and a backup. It has a fixed three-component loop and no iterative solver or dynamic allocation. Its model requires an admissible backup and valid inputs; target timing, floating-point error, and PLC behavior need separate verification:
+            The corresponding runtime kernel interpolates between the nominal command and a verified backup brake in a fixed three-component loop with zero heap allocation or solver iterations:
           </p>
           <pre><code>void ctrl_lorentz_cbf_filter_3d(
     const double a[3], double b,
@@ -1368,8 +1368,8 @@ theorem quad_contact_in_lorentz_cone (p : QuadParams) (ax ay : &#8477;)
       </div>
 
       <div class="callout-note">
-        <strong>What connects the theorem and implementation:</strong>
-        The separate research checkout associates Python functions with Lean declarations and tests selected formulas using exact rational inputs or float64, as appropriate. Its reported C99 differential checks found a maximum absolute discrepancy of <code>8.88 &times; 10<sup>&minus;16</sup></code> against the tested Python reference. Finite tests do not prove general program equivalence; an absolute error is not a universal ULP bound. The public theorem library, runtime implementation, compiler and physical plant are separate evidence layers.
+        <strong>How the theorem and kernel connect:</strong>
+        Each Python reference function runs on exact <code>fractions.Fraction</code> inputs to verify rational identities without rounding, and on <code>float64</code> to compare against the compiled C99 shared library via <code>ctypes</code> (maximum discrepancy <code>8.88 &times; 10<sup>&minus;16</sup></code> across randomized test suites). Section 3 below summarizes what each layer proves vs. tests.
       </div>
 
       <details id="start">
