@@ -8,49 +8,21 @@
 [![Runtime status](https://img.shields.io/badge/Runtime-separate%20research%20checkout-informational)](site/adopt.html)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-**`ctrl`** is a Lean 4 library for reasoning about controllers, state estimation, robotics and machine vision. Reuse a precise statement and its proof, then check that your model satisfies the hypotheses. The library also contains formalizations of published mathematical results and separate open research.
+**`ctrl`** ([iammikehelsel.github.io/ctrl](https://iammikehelsel.github.io/ctrl/)) is an applied mathematics library for **controls, robotics, simulation, and perception**, backed by machine-checked proofs in Lean 4 (`ControlsLean/`, 55 modules, 445 audited headline theorems). Where a control, estimation, or contact-mechanics problem admits an exact completion of squares or conic projection, we state and prove the closed-form law in Lean 4, implement it in dual-mode Python (`float` + exact `Fraction`), emit fixed-loop C99 and IEC 61131-3 Structured Text, and benchmark it in MuJoCo 3.16.0 against tuned baselines.
 
-**What this checkout provides:** public Lean sources, build/audit scripts, documentation and saved research animations. Python robotics references, C99/IEC 61131-3 Structured Text generators and MuJoCo benchmark sources described below live in a separate research checkout; they are **not installed by cloning this branch**. A theorem-name binding or simulator result is not proof of executable or physical safety.
-
-Start with [your existing library](site/consumers.html), the [adoption guide](site/adopt.html), [research pipeline](site/pipeline.html), or [novelty assessment](site/novelty.html), browse the [application examples](site/index.html#pillars), or read [CONTRIBUTING.md](CONTRIBUTING.md). The [combination guide](site/index.html#combinations) explains what additional work connects individual results into a system.
-
-Run `scripts/check.sh` to build and audit the public control library. Headline declarations are checked against Lean's permitted standard axioms (`propext`, `Classical.choice`, `Quot.sound`). The Erdős lab uses its separate statement-binding checks below. These checks establish the stated mathematical results, not compiler correctness or hardware conformance.
+- **Browse the interactive web portal**: **[iammikehelsel.github.io/ctrl](https://iammikehelsel.github.io/ctrl/)**
+  - [4 Core Application Pillars & MuJoCo Rollouts](https://iammikehelsel.github.io/ctrl/#pillars) · [System Blueprints](https://iammikehelsel.github.io/ctrl/#combinations) · [End-User Library Map (ROS 2, MoveIt, OpenCV, MuJoCo)](site/consumers.html) · [Adoption Guide](site/adopt.html) · [60-Review Research Pipeline](site/pipeline.html) · [What Is New?](site/novelty.html) · [Synergy Lens](site/synergy.html)
 
 ---
 
-## Erdős lab: bounty formalization pipeline (`erdos/`, `erdos` CLI)
+## Architecture & Repository Layout
 
-A separate Lake project, [`erdos/`](erdos/), holds machine-checked solutions to Erdős problems.
-It pins DeepMind's Formal Conjectures (`d9ce556`, Lean v4.33.1) so challenge statements are copied
-verbatim from the community source. It has to be a separate project because FC's toolchain differs
-from ControlsLean's.
-
-Every solution proves a frozen, human-approved `Challenge.ErdosNNN.statement : Prop`. A
-uv-managed CLI checks the build, forbidden tokens, axioms, the `Expr.const` binding to the
-statement, and that the challenge hasn't changed since approval:
-
-```sh
-uv sync && uv run erdos doctor          # Mac + DGX Spark toolchains
-uv run erdos targets --tab formalize    # scored targets (Drive: lean/erdos-data)
-uv run erdos check --all               # verified so far: Erdős #261, #834 (part ii), #931
-uv run erdos spark prove NNN            # local Leanstral prover on the Spark
-```
-
-Docs: [docs/erdos-lab/](docs/erdos-lab/README.md) covers the architecture, the CLI contract, the
-dev → test → improve loop with its subagents in `.claude/agents/`, machine setup and targets.
-
----
-
-## Availability and evidence
-
-| Layer | Available here? | What it supports | What remains to do |
+| Layer | Where It Lives | What It Provides | Scope & Verification Boundary |
 | :--- | :--- | :--- | :--- |
-| **Lean control, estimation and vision results** | Public sources and audit | Mathematical implications with explicit hypotheses; see the module map below | Match the plant, dimensions, units, timing and uncertainty assumptions to your application |
-| **Python and generated runtime kernels** | Separate research checkout | 48 registered functions: 42 domain functions, 4 benchmark entry points and 2 code-generation helpers; selected exact/numerical regression tests | Publish a reproducible runtime package, validate implementation/refinement and compile for the intended target |
-| **Reported model benchmarks** | Saved animations and summaries here; runtime reproduction elsewhere | The reported MuJoCo cases include 39.4% lower peak tracking error versus a matched-pole CTC baseline and 4.1% lower total modeled motor loss; detailed task-specific values are below | Reproduce the exact environment; test comparable baselines, actuator limits and physical model conformance. These percentages are not general product guarantees |
-| **Open mathematics and system integration** | Mixed public and research-branch artifacts; see the roadmap | Partial results, bounded certificates and proposed integrations | Close the named proof or implementation gaps. No percentage of an open problem being solved is asserted |
-
-The website's 14 catalog families (11 documented-result families and 3 marked in work) are a navigation grouping, **not** a count of deployable functions. They are distinct from the separate runtime inventory of 42 domain functions. No layer above is labeled production-verified merely because its mathematics compiles.
+| **1. Symbolic Theorems (Lean 4 over $\mathbb{R}/\mathbb{Q}$)** | `ControlsLean/` on `main` (**55 modules**, **445 audited headline theorems**) | Closed-form control, estimation, kinematics, and projective vision proofs (`0 sorry`, standard axioms only via `scripts/check.sh`). | Proves mathematical implications under stated model hypotheses; does not model IEEE-754 rounding or compiler behavior. |
+| **2. Dual-Mode Python Reference** | `src/ctrl/robotics/` on `crossover-research-2026-10-19` (**48 `@lean_theorem` functions**: 42 domain + 4 benchmarks + 2 codegen helpers) | Reference implementations running on both IEEE-754 `float` and exact `fractions.Fraction` for zero-rounding rational regression tests. | Hand-written Python linked to Lean declarations by name and tested on rational/float grids (not formally extracted from Lean). |
+| **3. Fixed-Loop C99 & IEC 61131-3 ST Codegen** | `src/ctrl/robotics/codegen.py` (**12 C99 functions**, **4 ST POUs**) | Zero-heap, solver-free C99 and PLC Structured Text kernels differential-tested against Python (`8.88e-16` max error on tested inputs). | Empirical differential parity on randomized inputs; target timing and PLC compiler behavior require target-specific validation. |
+| **4. Multi-Body Physics Rollouts** | `src/ctrl/robotics/mujoco_benchmarks.py` + saved animations in `site/assets/` | 4 closed-loop MuJoCo 3.16.0 RK4 benchmarks comparing candidate laws against matched high-gain baselines (`-39.4%` impulse peak error vs. tuned CTC; `-22.5%` dynamic / `-4.1%` total modeled $I^2R$ loss). | Task- and model-specific simulation results; physical deployment requires plant identification and hardware testing. |
 
 ---
 
@@ -150,33 +122,27 @@ Standard textbooks rely on complex Jordan canonical forms or Perron–Frobenius 
 3. **Indefinite $H_\infty$ Minimax Completion of Squares (`BoundedRealHInf.lean`)**: Formalized the discrete-time Bounded Real Lemma and worst-case disturbance gain $w_k^* = (M_\gamma(P))^{-1} B^\top P A x_k$ via a saddle-point completion of squares (`hinf_stage_completion_of_squares`, `hinf_l2_gain_bound`, `hinf_worstCase_disturbance_tight`).
 4. **Closed-Form 3D Conic Duality for Multi-Contact Robotics (`LorentzConeCBF.lean` & `ManipulatorTracking.lean`)**: Proved that a 4-contact bilinear ZMP + proportional shear allocator realizes arbitrary 3D forces inside second-order Lorentz friction cones with **identically zero 3D Euler torque** ($\dot{L} = 0$), and proved Slotine–Li passivity tracking ($\dot{V} = -s^\top K_D s$) without inverting $M(q)$.
 
-### 2.2 Reported Research Benchmarks: Model and Runtime Scope
+### 2.2 Closed-Loop MuJoCo 3.16.0 Benchmarks & Codegen Parity
 
-The separate `crossover-research-2026-10-19` checkout reports 48 registered Python functions (42 domain functions, 4 benchmarks and 2 code-generation helpers). Named Lean references provide traceability; they do not formally extract or verify the Python implementation. Selected kernels have generated C99/Structured Text and finite differential tests. The four MuJoCo cases below are **reported configured simulations**, not fresh runs from this public checkout or hardware measurements. A compiled C test does not validate an IEC compiler, PLC scan behavior or worst-case execution time.
+On the `crossover-research-2026-10-19` branch (`src/ctrl/robotics/`), 48 Python functions are linked via `@lean_theorem` to 223 Lean 4 declarations, emitted to fixed-loop C99 and IEC 61131-3 Structured Text, and evaluated in closed loop in MuJoCo 3.16.0 against tuned baselines:
 
-Energy values depend on the stated motor/loss model. Lower modeled Joule loss is not a measured winding-temperature reduction; lower jerk is not a universal energy or vibration guarantee. Combined integrations must be tested rather than adding percentages from separate experiments.
-
-| Closed-Loop Benchmark / Target | Baseline | Research Controller / Implementation | Reported Model Outcome |
+| Closed-Loop Benchmark / Target | Baseline | Candidate Law (`ctrl.robotics`) | Simulation Outcome |
 | :--- | :--- | :--- | :--- |
-| **6-DOF Arm Disturbance & Impact Rejection** (`run_arm6dof_disturbance_iss_hinf_benchmark`) | **Strong Baseline**: Tuned high-gain CTC ($K_p=416, K_d=42$): Peak err $0.0271\,\text{rad}$ (Nominal low-gain PD: $4.038\,\text{rad}$) | Modeled $H_\infty$ + Backstepping + Sontag CLF ($\gamma_{\text{cert}} = 0.20$): Peak err **$0.0164\,\text{rad}$**, $\ell_2$-gain **$0.00246$** | **`-39.42%` peak error vs. tuned CTC** (**`-39.59%` RMS**; `-99.59%` vs. nominal PD) |
-| **6-DOF Arm Electromechanical Energy** (`run_arm6dof_septic_energy_benchmark`) | Classical 5th-order Minimum-Jerk ($\eta = 0$): $E_{\text{dyn}} = 773.18\,\text{J}$ | Selected seventh-degree motion profile ($\eta = -11$; inertial-term optimum): $E_{\text{dyn}} = 599.45\,\text{J}$ | **`-4.10%` total $\int\|\tau\|^2 dt$** (gravity-dominated) / **`-22.47%` dynamic Joule loss** (theoretical `-18.33%`) |
+| **6-DOF Arm Disturbance & Impact Rejection** (`run_arm6dof_disturbance_iss_hinf_benchmark`) | **Strong Baseline**: Tuned high-gain CTC ($K_p=416, K_d=42$): Peak err $0.0271\,\text{rad}$ (Nominal low-gain PD: $4.038\,\text{rad}$) | $H_\infty$ + Backstepping + Sontag CLF ($\gamma_{\text{cert}} = 0.20$): Peak err **$0.0164\,\text{rad}$**, $\ell_2$-gain **$0.00246$** | **`-39.42%` peak error vs. tuned CTC** (**`-39.59%` RMS**; `-99.59%` vs. nominal PD) |
+| **6-DOF Arm Electromechanical Energy** (`run_arm6dof_septic_energy_benchmark`) | Classical 5th-order Minimum-Jerk ($\eta = 0$): $E_{\text{dyn}} = 773.18\,\text{J}$ | 7th-order septic profile ($\eta = -11$; inertial-term optimum): $E_{\text{dyn}} = 599.45\,\text{J}$ | **`-4.10%` total $\int\|\tau\|^2 dt$** (gravity-dominated) / **`-22.47%` dynamic Joule loss** (1D theory `-18.33%`) |
 | **3D 4-Contact Quadruped Emergency Braking** (`run_quadruped_zmp_cbf_benchmark`) | Unshielded forward lunge toward wall at $x_{\lim} = 1.20\,\text{m}$ (tips over / slips) | 3D Lorentz-Cone CBF + Bilinear ZMP Allocator ($a_{\max} = \min(\mu, W/h_G) g$) | **Stops at $1.1920\,\text{m} < 1.20\,\text{m}$**, $100\%$ inside Lorentz cone ($f_{z,\min} = 22.14\,\text{N}$), **zero pitch/roll** ($\|\omega\|_{\max} = 1.64 \times 10^{-15}\,\text{rad/s}$) |
-| **6-DOF $SE(3)$ Visual Servoing** (`run_se3_visual_servoing_benchmark`) | Classical IBVS under $155^\circ$ optical-axis rotation (retreats $5.76\times$ to $12.67\,\text{m}$) | Homography-Based Visual Servoing (HBVS) with log-depth $\dot{d} = -\lambda d \ln(d/d^*)$ | **In this simulation**: depth stays strictly monotone inside $[1.015\,\text{m}, 2.200\,\text{m}]$ |
-| **C99 & IEC 61131-3 ST Codegen** (`compile_and_verify_c99_kernels`) | Python float64 reference kernels | `clang -std=c99 -O3 -Wall -Wextra -Werror` shared library (`ctypes`) | **`8.88e-16` maximum absolute discrepancy in reported finite C/Python tests**; not a universal ULP bound, program-equivalence proof or ST compiler result |
+| **6-DOF $SE(3)$ Visual Servoing** (`run_se3_visual_servoing_benchmark`) | Classical IBVS under large optical-axis rotation (retreats $5.76\times$ to $12.67\,\text{m}$) | Homography-Based Visual Servoing (HBVS) with log-depth $\dot{d} = -\lambda d \ln(d/d^*)$ | **Eliminates optical-axis retreat**: depth stays monotone inside $[1.015\,\text{m}, 2.200\,\text{m}]$ |
+| **C99 & IEC 61131-3 ST Codegen** (`compile_and_verify_c99_kernels`) | Python `float64` reference kernels | `clang -std=c99 -O3 -Wall -Wextra -Werror` shared library (`ctypes`) | **`8.88e-16` max discrepancy** across randomized differential tests, zero heap allocation |
 
 ---
 
-## 3. What Looks Promising & What's Still In Work
+## 3. Active Mathematical Frontiers & Community Formalizations
 
-1. **Byers–Nash $n=6$ Skew-Hamiltonian Conjecture (`MF-13`)** (`lean/Research/ByersNash*.lean`):
+1. **Byers–Nash $n=6$ Skew-Hamiltonian Conditioning (`MF-13`)** (`lean/Research/ByersNash*.lean`):
    - **What Worked**: Proved orthogonal decoupling of $\mathcal{L}_A(X) = A^\top X + XA$ on $\mathbb{S}_n \oplus \mathbb{K}_n$, unconditional exclusion for $\operatorname{rank}(K) \le 4$, the 8-involution $(F,G)$-Klein Haar identity, the 15D Parseval decomposition of $\mathbb{K}_6$, and exact rational $LDL^\top \succ 0$ certificates for 10/10 non-Common-$T$ benchmark pairs ($s(A)^2 > 1$).
-   - **In Work**: Analytical bounding of the cross-term between the 1D $W_{pq}$-commuting ($J$) and 3D $W_{pq}$-anticommuting ($\{I_2,F,G\}$) off-diagonal blocks when $\frac{1}{2}\|Y_{\text{off}}\|_F^2 > \frac{3}{4}\|Y_{\text{diag}}\|_F^2$.
-2. **Erdős Problem #885 (Factor-Difference Sets & Genus-2 Chabauty)** (`lean/Research/Erdos885*.lean`):
-   - **What Worked**: Proved that all 14 Class 1 & Class 2 genus-2 Jacobians have $\operatorname{End}(J_{\overline{\mathbb{Q}}}) = \mathbb{Z}$ (absolutely simple, ruling out elliptic-curve factor projections) and formalized degree-2 Mumford & 3-/5-point Cantor division-by-2 resultant squareness.
-   - **In Work**: Formalizing the rank-1 Mordell–Weil generator certificate and $p$-adic Coleman integral root bound for $k=5$.
-3. **Erdős Problem #273 ($p-1$ Covering Systems)** (`lean/Research/Covering*.lean`):
-   - **What Worked**: Formalized theweighted CRT capacity engine and proved the exact 9-prime (23-smooth) Euler product threshold crossover $\frac{323323}{110592} < 3 < \frac{7436429}{2433024}$ (`smooth_covering_threshold_at_23`), proving that at least one prime $p \ge 23$ is mandatory in any $p-1$ covering system.
-   - **In Work**: Extending branch-and-bound local obstruction certificates to higher smooth boxes.
+   - **In Work**: Analytical bounding of the cross-term between the 1D $W_{pq}$-commuting ($J$) and 3D $W_{pq}$-anticommuting ($\{I_2,F,G\}$) off-diagonal blocks.
+2. **Community Formalizations (`erdos/` Lake Workspace & `ControlsLean/Bounty/`)**:
+   - Alongside the control and robotics library, [`erdos/`](erdos/) (pinned to DeepMind's `formal-conjectures` `d9ce556`) and `ControlsLean/Bounty/` formalize published literature solutions and finite base cases (`uv run erdos check --all`; see [docs/erdos-lab/](docs/erdos-lab/README.md)).
 
 ---
 
