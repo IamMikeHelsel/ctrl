@@ -154,10 +154,13 @@ def run_arm6dof_septic_energy_benchmark(
             dq_err = dq_des - data.qvel[:6]
             qacc_cmd = ddq_des + kp * q_err + kd * dq_err
 
-            # Full inverse dynamics via mj_rne (includes gravity, Coriolis, inertia, damping)
+            # Inverse dynamics via mj_rne (rigid-body inertia, Coriolis, gravity). mj_rne leaves out
+            # rotor armature and joint damping, which the simulator still applies, so add them here;
+            # without this the light wrist joints lag the reference by more than a radian.
             data.qacc[:6] = qacc_cmd
             tau_full = np.zeros(6)
             mujoco.mj_rne(model, data, 1, tau_full)
+            tau_full += model.dof_armature[:6] * qacc_cmd + model.dof_damping[:6] * data.qvel[:6]
 
             # Gravity-only torque at current posture to isolate dynamic motion Joule heating
             qvel_save = data.qvel[:6].copy()
