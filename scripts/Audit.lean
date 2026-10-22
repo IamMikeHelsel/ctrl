@@ -398,3 +398,136 @@ import ControlsLean
 #print axioms ControlsLean.Robotics.slotine_li_adaptive_lyapunov_deriv
 #print axioms ControlsLean.Robotics.slotine_li_exponential_rate
 #print axioms ControlsLean.Robotics.hasDerivAt_slotine_li_storage
+
+-- Addition 32: Controls (Routh-Hurwitz criterion for cubics)
+#print axioms ControlsLean.Controls.isHurwitz3_iff
+#print axioms ControlsLean.Controls.isHurwitz3_of_pos
+#print axioms ControlsLean.Controls.cubic_123_hurwitz
+#print axioms ControlsLean.Controls.pGain_s_s1_s2_hurwitz_iff
+
+-- Addition 33: Robotics (Unit-quaternion rotations & kinematics)
+#print axioms ControlsLean.Robotics.re_rotate
+#print axioms ControlsLean.Robotics.rotate_re_eq_zero
+#print axioms ControlsLean.Robotics.normSq_rotate
+#print axioms ControlsLean.Robotics.norm_rotate
+#print axioms ControlsLean.Robotics.rotate_mul
+#print axioms ControlsLean.Robotics.rotate_neg
+#print axioms ControlsLean.Robotics.rotMatrix_transpose_mul_self
+#print axioms ControlsLean.Robotics.rotMatrix_mul_transpose_self
+#print axioms ControlsLean.Robotics.det_rotMatrix
+#print axioms ControlsLean.Robotics.rotMatrix_mem_specialOrthogonalGroup
+#print axioms ControlsLean.Robotics.rotMatrix_mulVec_imVec
+#print axioms ControlsLean.Robotics.hasDerivAt_normSq_kinematics
+
+-- Addition 34: Robotics (Planar two-link arm kinematics & workspace)
+#print axioms ControlsLean.Robotics.det_jacobian
+#print axioms ControlsLean.Robotics.det_jacobian_eq_zero_iff
+#print axioms ControlsLean.Robotics.det_jacobian_eq_zero_iff_exists_int
+#print axioms ControlsLean.Robotics.hasFDerivAt_fk
+#print axioms ControlsLean.Robotics.jacobianCLM_apply
+#print axioms ControlsLean.Robotics.hasDerivAt_fk_fst_q1
+#print axioms ControlsLean.Robotics.hasDerivAt_fk_fst_q2
+#print axioms ControlsLean.Robotics.hasDerivAt_fk_snd_q1
+#print axioms ControlsLean.Robotics.hasDerivAt_fk_snd_q2
+#print axioms ControlsLean.Robotics.radius_sq_fk
+#print axioms ControlsLean.Robotics.radius_fk_le_add
+#print axioms ControlsLean.Robotics.abs_sub_le_radius_fk
+#print axioms ControlsLean.Robotics.fk_complex
+#print axioms ControlsLean.Robotics.fk_ik
+#print axioms ControlsLean.Robotics.reachable_iff
+
+-- Addition 35: Robotics (Unicycle / differential drive & Kanayama tracking)
+#print axioms ControlsLean.Robotics.diffDriveInverse_diffDrive
+#print axioms ControlsLean.Robotics.diffDrive_diffDriveInverse
+#print axioms ControlsLean.Robotics.diffDriveEquiv
+#print axioms ControlsLean.Robotics.diffDrive_bijective
+#print axioms ControlsLean.Robotics.hasDerivAt_arcX
+#print axioms ControlsLean.Robotics.hasDerivAt_arcY
+#print axioms ControlsLean.Robotics.hasDerivAt_arcTheta
+#print axioms ControlsLean.Robotics.tendsto_arcX_straight
+#print axioms ControlsLean.Robotics.tendsto_arcY_straight
+#print axioms ControlsLean.Robotics.nonholonomic_constraint
+#print axioms ControlsLean.Robotics.arc_nonholonomic
+#print axioms ControlsLean.Robotics.hasDerivAt_errX
+#print axioms ControlsLean.Robotics.hasDerivAt_errY
+#print axioms ControlsLean.Robotics.hasDerivAt_errTheta
+#print axioms ControlsLean.Robotics.kanayamaV_nonneg
+#print axioms ControlsLean.Robotics.hasDerivAt_kanayamaV_comp
+#print axioms ControlsLean.Robotics.hasDerivAt_kanayamaV
+#print axioms ControlsLean.Robotics.kanayamaV_deriv_nonpos
+#print axioms ControlsLean.Robotics.hasDerivAt_kanayamaV_classic
+#print axioms ControlsLean.Robotics.kanayamaV_classic_deriv_nonpos
+
+-- Addition 36: Vision (Cross-ratio projective invariance)
+#print axioms ControlsLean.Vision.crossRatio_mulVec
+#print axioms ControlsLean.Vision.crossRatio_smul
+#print axioms ControlsLean.Vision.crossRatioAffine_mobius
+#print axioms ControlsLean.Vision.crossRatioFrom_linePt
+#print axioms ControlsLean.Vision.crossRatioFrom_homography
+#print axioms ControlsLean.Vision.crossRatio_collinear_homography
+#print axioms ControlsLean.Vision.crossRatio_midpoint_infinity
+#print axioms ControlsLean.Vision.crossRatio_harmonic_homography
+#print axioms ControlsLean.Vision.road_markers_mobius
+
+-- Addition 37: Vision (Essential matrix constraints & twisted pair)
+#print axioms ControlsLean.Vision.essential_mul_transpose
+#print axioms ControlsLean.Vision.trace_essential_mul_transpose
+#print axioms ControlsLean.Vision.essential_mul_transpose_mul_essential
+#print axioms ControlsLean.Vision.essential_cubic_constraint
+#print axioms ControlsLean.Vision.essential_mul_transpose_mulVec_of_orthogonal
+#print axioms ControlsLean.Vision.essential_mul_transpose_mulVec_self
+#print axioms ControlsLean.Vision.transpose_essential_mulVec_self
+#print axioms ControlsLean.Vision.essential_twist
+#print axioms ControlsLean.Vision.rotPiAbout_transpose_mul_self
+#print axioms ControlsLean.Vision.det_rotPiAbout
+#print axioms ControlsLean.Vision.rotPiAbout_mulVec_self
+#print axioms ControlsLean.Vision.rotPiAbout_mem_specialOrthogonalGroup
+#print axioms ControlsLean.Vision.rotPiAbout_mem_specialOrthogonalGroup_real
+
+-- Addition 38: Vision (Point-cloud registration: ICP / Kabsch reductions)
+#print axioms ControlsLean.Vision.registrationCost_eq
+#print axioms ControlsLean.Vision.registrationCost_optimalTranslation_le
+#print axioms ControlsLean.Vision.registrationCost_eq_optimal_iff
+#print axioms ControlsLean.Vision.registrationCost_optimalTranslation
+#print axioms ControlsLean.Vision.sum_norm_sub_sq_le_iff
+#print axioms ControlsLean.Vision.registrationCost_le_of_crossCorrelation_max
+#print axioms ControlsLean.Vision.sum_mulVec_dotProduct_eq_trace
+#print axioms ControlsLean.Vision.sum_inner_toEuclideanLin_eq_trace
+#print axioms ControlsLean.Vision.mul_cos_add_mul_sin_le
+#print axioms ControlsLean.Vision.mul_cos_add_mul_sin_arg
+#print axioms ControlsLean.Vision.angle_eq_arg_of_eq_sqrt
+#print axioms ControlsLean.Vision.rot2Cost_arg_le
+
+-- Addition 39: Estimation (Least squares, weighted LS & recursive LS)
+#print axioms ControlsLean.Estimation.rss_eq_add_of_normal
+#print axioms ControlsLean.Estimation.isLeastSquares_iff
+#print axioms ControlsLean.Estimation.rss_eq_norm_sq
+#print axioms ControlsLean.Estimation.det_transpose_mul_self_ne_zero
+#print axioms ControlsLean.Estimation.isLeastSquares_iff_eq_inv
+#print axioms ControlsLean.Estimation.isLeastSquares_iff_eq_inv_of_injective
+#print axioms ControlsLean.Estimation.wrss_eq_add_of_normal
+#print axioms ControlsLean.Estimation.isWeightedLeastSquares_iff
+#print axioms ControlsLean.Estimation.isWeightedLeastSquares_iff_eq_inv_of_injective
+#print axioms ControlsLean.Estimation.mul_shermanMorrison
+#print axioms ControlsLean.Estimation.shermanMorrison_mul
+#print axioms ControlsLean.Estimation.shermanMorrison_mulVec
+#print axioms ControlsLean.Estimation.rlsUpdate_normal
+#print axioms ControlsLean.Estimation.rlsUpdate_isLeastSquares
+#print axioms ControlsLean.Estimation.lineFit_isMin_iff
+#print axioms ControlsLean.Estimation.lineFit_isMin_iff_eq
+
+-- Addition 40: Controls (Iterative learning control & Arimoto condition)
+#print axioms ControlsLean.Controls.ilc_error_succ
+#print axioms ControlsLean.Controls.ilc_error_eq_pow
+#print axioms ControlsLean.Controls.ilc_norm_error_le
+#print axioms ControlsLean.Controls.ilc_norm_error_antitone
+#print axioms ControlsLean.Controls.ilc_error_tendsto_zero
+#print axioms ControlsLean.Controls.ilc_input_converges
+#print axioms ControlsLean.Controls.spectrum_algebraMap_add_subset
+#print axioms ControlsLean.Controls.tendsto_pow_algebraMap_add_of_isNilpotent
+#print axioms ControlsLean.Controls.isNilpotent_of_strictLower
+#print axioms ControlsLean.Controls.one_sub_smul_lowerToeplitz_eq
+#print axioms ControlsLean.Controls.arimoto_spectrum_subset
+#print axioms ControlsLean.Controls.arimoto_spectralRadius_lt_one
+#print axioms ControlsLean.Controls.arimoto_tendsto_pow
+#print axioms ControlsLean.Controls.arimoto_error_tendsto_zero

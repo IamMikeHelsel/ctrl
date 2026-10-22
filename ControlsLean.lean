@@ -3,10 +3,17 @@ import ControlsLean.Vision.Homography
 import ControlsLean.Vision.HomographyUniqueness
 import ControlsLean.Vision.EightPoint
 import ControlsLean.Vision.Triangulation
+import ControlsLean.Vision.CrossRatio
+import ControlsLean.Vision.EssentialConstraints
+import ControlsLean.Vision.Registration
 import ControlsLean.Robotics.SO3Rodrigues
 import ControlsLean.Robotics.SE3Kinematics
 import ControlsLean.Robotics.ManipulatorTracking
+import ControlsLean.Robotics.QuaternionRotation
+import ControlsLean.Robotics.PlanarArm
+import ControlsLean.Robotics.Unicycle
 import ControlsLean.Controls.Hurwitz2
+import ControlsLean.Controls.Hurwitz3
 import ControlsLean.Controls.Jury2
 import ControlsLean.Controls.Reachability
 import ControlsLean.Controls.Observability
@@ -38,6 +45,8 @@ import ControlsLean.Estimation.POMDPBelief
 import ControlsLean.Controls.LQG
 import ControlsLean.Controls.BoundedRealHInf
 import ControlsLean.Controls.BacksteppingCLF
+import ControlsLean.Controls.IterativeLearning
+import ControlsLean.Estimation.LeastSquares
 import ControlsLean.Tactics.ControlTactics
 import ControlsLean.Bounty.ErdosBounties
 import ControlsLean.Bounty.ErdosNewInsights
