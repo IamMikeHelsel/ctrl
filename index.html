@@ -241,6 +241,25 @@
     .num b { display: block; font-family: var(--mono); font-size: 1rem; }
     .num span { font-size: 0.74rem; color: var(--muted); }
 
+
+    /* Media */
+    .hero-media { margin: 1.6rem 0 0; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; background: #0b0f17; }
+    .hero-media img, .show img { display: block; width: 100%; height: auto; }
+    .hero-media figcaption, .show figcaption { font-size: 0.82rem; color: var(--muted); padding: 0.7rem 0.95rem; background: var(--surface); border-top: 1px solid var(--border); }
+    .show { margin: 0 0 1.4rem; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; background: #0b0f17; }
+    .show-grid { display: grid; grid-template-columns: 1fr; gap: 1.2rem; }
+    .show-grid .show { max-width: 900px; }
+    .show-body { padding: 0.95rem 1rem 1rem; background: var(--surface); border-top: 1px solid var(--border); }
+    .show-body h3 { margin-bottom: 0.3rem; }
+    .show-body p { font-size: 0.9rem; margin-bottom: 0.6rem; }
+
+    /* Perspective */
+    .essay { max-width: 820px; }
+    .essay > p, .essay > h3 { max-width: 72ch; }
+    .essay h3 { font-size: 1.02rem; margin: 1.4rem 0 0.35rem; }
+    .essay p { color: var(--text); }
+    .essay .src { font-size: 0.78rem; color: var(--muted); }
+
     /* Catalog */
     .filter-bar {
       display: flex; flex-wrap: wrap; gap: 0.65rem; align-items: center; margin-bottom: 1.25rem;
@@ -285,11 +304,12 @@
   <nav class="topnav" aria-label="Sections">
     <div class="topnav-inner">
       <a class="brand" href="#top">ctrl</a>
+      <a href="#pillars">See it work</a>
+      <a href="#why">Why</a>
       <a href="#start">Quickstart</a>
       <a href="#recipes">Recipes</a>
       <a href="#kernels">Kernel reference</a>
       <a href="#combinations">Combining modules</a>
-      <a href="#pillars">Results</a>
       <a href="#verification-boundary">Proved vs tested</a>
       <a href="#catalog">Catalog</a>
       <a href="#community">In work</a>
@@ -306,9 +326,18 @@
       </p>
       <div class="cta">
         <a class="btn primary" href="#start">Run it in 5 minutes</a>
+        <a class="btn" href="#why">Why this matters</a>
         <a class="btn" href="#recipes">Pick a problem</a>
         <a class="btn" href="#combinations">Wire modules together</a>
       </div>
+
+      <figure class="hero-media">
+        <img src="assets/brake_shield.gif" width="800" height="450" fetchpriority="high"
+             alt="Two identical wheeled robots drive at 3 m/s toward a dock edge. The one running the ctrl shield brakes and stops with its front wheels at the edge; the one running the planner alone drives off and flips." />
+        <figcaption>
+          MuJoCo, shown at 0.25× speed. Both robots run the same planner, which keeps asking for forward acceleration. The shielded robot blends toward braking only as much as its stopping-distance barrier requires, stops 9 mm from the limit, and never unloads a wheel (minimum 22 N). The other leaves the dock at 3.5 m/s. The controller only sees a 1.20 m limit, exactly as in <code>run_quadruped_zmp_cbf_benchmark()</code>; the dock is there so you can see what the limit protects.
+        </figcaption>
+      </figure>
 
       <div class="pipeline" aria-label="How a result moves from proof to deployment">
         <div class="stage">
@@ -337,6 +366,82 @@
         </div>
       </div>
     </header>
+
+    <!-- SEE IT WORK -->
+    <section id="pillars">
+      <h2>See it work</h2>
+      <p class="lede">Each animation is a closed-loop simulation using the same functions the recipes below call. Nothing is keyframed. Scripts to regenerate them are in <a href="https://github.com/IamMikeHelsel/ctrl/tree/claude/arm-benchmark-fix/tools/site_animations"><code>tools/site_animations/</code></a>.</p>
+      <div class="show-grid">
+        <figure class="show">
+          <img src="assets/septic_arm.gif" width="800" height="450" loading="lazy"
+               alt="Two identical 6-axis arms make the same move and return. Joint housings glow with winding power; the minimum-jerk arm accumulates 1810 J of motion heat and the septic arm 1408 J." />
+          <div class="show-body">
+            <div class="recipe-tag">Septic trajectory · Recipe 2</div>
+            <h3>Same move, same time, about a fifth less motion heat</h3>
+            <p>Only the time profile changes, from 5th-order minimum jerk to the septic profile at η = −11. Joint housings glow with instantaneous winding power. Over one move the dynamic I²R drops 22% (904 → 704 J) and viscous loss 10.8%, matching the proved 10.79%. Total I²R falls 3.3%, because holding the arm up against gravity dominates and no time profile changes that.</p>
+            <div class="nums">
+              <div class="num"><b>−22%</b><span>heat from motion</span></div>
+              <div class="num"><b>−10.8%</b><span>viscous loss</span></div>
+              <div class="num"><b>−3.3%</b><span>total, incl. gravity</span></div>
+            </div>
+          </div>
+        </figure>
+        <figure class="show">
+          <img src="assets/servo_roll.gif" width="800" height="450" loading="lazy"
+               alt="Two cameras above identical four-marker targets must rotate 160 degrees and descend from 2.2 to 1.0 meters. The classical IBVS camera shoots up to 9.3 meters before coming back; the depth-decoupled camera descends smoothly while rotating." />
+          <div class="show-body">
+            <div class="recipe-tag">Depth-decoupled servoing · Recipe 4</div>
+            <h3>A 160° roll without the camera running away</h3>
+            <p>Classical image-based servoing drives each feature in a straight line on the image, which for a large roll means shrinking the pattern, so the camera backs away. Here it climbs from 2.2 m to 9.3 m before returning. Regulating depth to the plane separately from roll keeps the camera inside [1.0, 2.2] m the whole way. Both controllers are simulated with the real point-feature model at the same gain.</p>
+            <div class="nums">
+              <div class="num"><b>9.3 m</b><span>IBVS peak height</span></div>
+              <div class="num"><b>[1.0, 2.2] m</b><span>decoupled range</span></div>
+            </div>
+          </div>
+        </figure>
+      </div>
+
+      <article class="result" style="grid-template-columns: 1fr;">
+        <div>
+          <div class="recipe-tag">Sontag CLF + H∞/ISS · Recipe 3</div>
+          <h3>Smaller excursion under a torque impulse than computed torque</h3>
+          <p>6-DOF arm tracking a septic move while a sinusoidal disturbance and an impulse of up to 14 N·m hit every joint. Against a high-gain computed-torque controller (K<sub>p</sub> = 416, K<sub>d</sub> = 42 plus sliding damping), peak error falls 39.4% (27.1 → 16.4 mrad) and RMS error 39.6%. <code>run_arm6dof_disturbance_iss_hinf_benchmark()</code></p>
+        </div>
+      </article>
+    </section>
+
+    <!-- WHY -->
+    <section id="why">
+      <h2>Why there is so much room left</h2>
+      <div class="essay">
+          <p>Control theory is one of the most mature parts of engineering. Most of what runs on factory floors still looks like it did decades ago. That gap is the opportunity, and it isn't a gap in ideas.</p>
+
+          <h3>Plants still run on PID, and most loops are not tuned well</h3>
+          <p>In a survey of 11,600 controllers across eighteen facilities, 97% of regulatory controllers were PID. In a separate sample of about 26,000 loops, only about a third performed acceptably, and 36% were running open loop. The better algorithms exist. They just don't get deployed.</p>
+          <p class="src">Desborough and Miller, <a href="https://skoge.folk.ntnu.no/prost/proceedings/cpc6-jan2002/desborough.pdf">Increasing Customer Value of Industrial Control Performance Monitoring</a>, CPC6, 2002.</p>
+
+          <h3>The good stuff lives behind a solver</h3>
+          <p>Model predictive control, safety filters, contact-force allocation and friction-cone constraints are usually posed as a QP or SOCP and solved every tick. On a workstation that is fine. Inside a 1 kHz PLC task, or in front of a functional-safety assessor, it is hard: the iteration count depends on the state, the worst case is hard to bound, and "the solver didn't converge" needs a fallback anyway. The chart below is a real 12-variable SOCP against the closed-form kernel that does the same job.</p>
+        <figure class="show" style="max-width: 820px; margin: 1.2rem 0 0.4rem;">
+          <img src="assets/why_timing.gif" width="800" height="450" loading="lazy"
+               alt="Strip chart of per-tick compute time on a log scale. SOCP solve times scatter between about 70 microseconds and 2.7 milliseconds with 5 to 13 iterations; the closed-form C99 kernel sits flat near 43 nanoseconds." />
+          <figcaption>3,000 random states. Clarabel SOCP: median 122 µs, 5 to 13 iterations, worst 2.7 ms (4 ticks over a 1 ms budget). C99 kernel, which also runs the safety filter: median 43 ns, no iterations. One Xeon core in a cloud VM; both see the same OS jitter.</figcaption>
+        </figure>
+
+          <h3>Many of those problems have a closed form hiding in them</h3>
+          <p>After the right change of variables, the optimum is often a formula. The largest braking that neither slips nor tips is min(μ, W/h)·g. The least-intrusive safe command is a single blend factor. The septic profile that minimizes inertial heat is η = −11, exactly. Formulas like these are trivial to run and easy to certify. Historically they have been expensive to find and hard to trust, because a sign error in a hand derivation is a crash in the field.</p>
+
+          <h3>Proof assistants make trust cheap, and AI makes finding cheaper</h3>
+          <p>Lean checks every identity mechanically, including the edge cases a paper waves through. AI-assisted proving is bringing the cost of formalizing a textbook control result down from a thesis to a project, which changes which problems are worth reformulating. Each kernel here carries the names of the theorems it implements, and a test fails if any of them is missing or uses an escape hatch.</p>
+
+          <h3>Small percentages on a very large base</h3>
+          <p>Electric motor systems used about 53% of the world's electricity in 2023, and 72% of industrial electricity. A time profile that trims a fifth of the motion heat costs one polynomial in firmware and no new hardware. A shield that never needs a solver can run on the controller you already have.</p>
+          <p class="src">IEA 4E Electric Motor Systems Platform, <a href="https://www.iea-4e.org/emsa/publications/policy-brief-electric-motor-systems-why-are-they-important/">Electric motor systems: why are they important?</a></p>
+
+          <h3>The last mile is the file format</h3>
+          <p>A result that ships as a paper rarely reaches a machine. A result that ships as a Structured Text block someone can drop into TwinCAT or CODESYS might. That is why every kernel here ends as C99 and IEC 61131-3, with the proof and the test right next to it.</p>
+      </div>
+    </section>
 
     <!-- QUICKSTART -->
     <section id="start">
@@ -815,83 +920,6 @@ True 0.0014</code></pre>
         </details>
       </article>
       <p class="note">For every pairing the repo knows about, with weights, see the <a href="synergy.html">Synergy Lens</a>.</p>
-    </section>
-
-    <!-- RESULTS -->
-    <section id="pillars">
-      <h2>Results in MuJoCo</h2>
-      <p class="lede">MuJoCo 3.16.0, 1 to 2 ms steps, compared against tuned baselines rather than strawmen. Each card names the function that reproduces it. Animations come from <code>tools/generate_site_gifs.py</code>.</p>
-
-      <article class="result">
-        <div>
-          <div class="recipe-tag">Braking shield · Recipe 1</div>
-          <h3>Stops before the wall with every foot loaded</h3>
-          <p>40 kg trunk at 3.0 m/s toward a wall at 1.20 m. The usual approach solves a 12-variable SOCP every tick (50 to 250 μs, with convergence risk near singular contacts). The closed-form shield does the same job in under 100 ns.</p>
-          <div class="nums">
-            <div class="num"><b>1.192 m</b><span>max reach, wall at 1.20</span></div>
-            <div class="num"><b>22.14 N</b><span>min foot normal force</span></div>
-            <div class="num"><b>~1e-15 rad/s</b><span>body rotation rate</span></div>
-          </div>
-          <p class="note"><code>run_quadruped_zmp_cbf_benchmark()</code></p>
-        </div>
-        <figure>
-          <img src="assets/pillar1_lorentz_cbf.gif" alt="MuJoCo quadruped braking before a wall at 1.20 m, showing the stopping-distance barrier and minimum foot normal force" fetchpriority="high" width="800" height="360" />
-          <figcaption>Barrier h(r, v) stays positive; all forces inside the friction cone.</figcaption>
-        </figure>
-      </article>
-
-      <article class="result">
-        <div>
-          <div class="recipe-tag">Septic trajectory · Recipe 2</div>
-          <h3>Less winding heat for the same move time</h3>
-          <p>6-DOF arm, same move and duration, minimum-jerk vs septic η = −11. Total savings are small when gravity holding dominates; the motion part is where the difference shows. The 6-DOF dynamic number beats the 1D prediction because lower mid-stroke velocity also trims Coriolis torque.</p>
-          <div class="nums">
-            <div class="num"><b>−22.5%</b><span>dynamic Joule heat (773 → 599 J)</span></div>
-            <div class="num"><b>−10.8%</b><span>viscous loss (theory 10.79%)</span></div>
-            <div class="num"><b>−4.1%</b><span>total I²R incl. gravity</span></div>
-          </div>
-          <p class="note"><code>run_arm6dof_septic_energy_benchmark()</code></p>
-        </div>
-        <figure>
-          <img src="assets/pillar2_septic_energy.gif" alt="Dynamic motor power and cumulative Joule heat, minimum-jerk vs septic trajectory" loading="lazy" width="800" height="360" />
-          <figcaption>Instantaneous dynamic power and cumulative heat.</figcaption>
-        </figure>
-      </article>
-
-      <article class="result">
-        <div>
-          <div class="recipe-tag">Sontag CLF + H∞/ISS · Recipe 3</div>
-          <h3>Smaller excursion under a torque impulse than tuned computed torque</h3>
-          <p>Baseline is a high-gain computed-torque controller with matched linear poles (K<sub>p</sub> = 416, K<sub>d</sub> = 42 plus sliding damping), not plain PD. Sontag's nonlinear gain scaling responds harder only when the error is large.</p>
-          <div class="nums">
-            <div class="num"><b>−39.4%</b><span>peak error (27.1 → 16.4 mrad)</span></div>
-            <div class="num"><b>−39.6%</b><span>RMS error</span></div>
-            <div class="num"><b>γ = 0.2</b><span>certified l₂ gain</span></div>
-          </div>
-          <p class="note"><code>run_arm6dof_disturbance_iss_hinf_benchmark()</code></p>
-        </div>
-        <figure>
-          <img src="assets/pillar3_sontag_hinf.gif" alt="Joint tracking error under torque disturbances, tuned CTC vs Sontag CLF with H-infinity damping" loading="lazy" width="800" height="360" />
-          <figcaption>Joint error under sinusoidal plus impulsive torque.</figcaption>
-        </figure>
-      </article>
-
-      <article class="result">
-        <div>
-          <div class="recipe-tag">Depth-decoupled servoing · Recipe 4</div>
-          <h3>No camera retreat under a 160° roll</h3>
-          <p>Classical IBVS pulls the camera back to 12.67 m (5.76×) during the roll. Controlling plane depth directly keeps it inside the start and goal depths the whole time.</p>
-          <div class="nums">
-            <div class="num"><b>[1.015, 2.20] m</b><span>depth range during roll</span></div>
-            <div class="num"><b>12.67 m</b><span>IBVS retreat avoided</span></div>
-          </div>
-          <p class="note"><code>run_se3_visual_servoing_benchmark()</code></p>
-        </div>
-        <figure>
-          <img src="assets/pillar4_se3_servoing.gif" alt="Camera depth under a 160 degree roll, IBVS retreat vs depth-decoupled servoing" loading="lazy" width="800" height="360" />
-          <figcaption>Depth trajectory, IBVS vs depth-decoupled.</figcaption>
-        </figure>
-      </article>
     </section>
 
     <!-- VERIFICATION BOUNDARY -->
