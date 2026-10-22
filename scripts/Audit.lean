@@ -172,6 +172,17 @@ import ControlsLean
 #print axioms ControlsLean.Estimation.trace_josephCov_le
 #print axioms ControlsLean.Estimation.trace_josephCov_le_of_psd
 
+-- Addition 13: Estimation (Continuous Kalman–Bucy Filter Generator & DRE/CARE Identities)
+#print axioms ControlsLean.Estimation.filterGen_transpose
+#print axioms ControlsLean.Estimation.filterGen_opt_eq_dre
+#print axioms ControlsLean.Estimation.filterGen_completion_of_squares
+#print axioms ControlsLean.Estimation.filterGen_of_CARE
+#print axioms ControlsLean.Estimation.quad_filterGen_le
+#print axioms ControlsLean.Estimation.trace_filterGen_eq
+#print axioms ControlsLean.Estimation.trace_filterGen_le
+#print axioms ControlsLean.Estimation.trace_filterGen_CARE_nonneg
+#print axioms ControlsLean.Estimation.care_lyapunov_identity
+
 -- Addition 12: Bounty (Uncontested Erdős Problem Solutions, Variants & Counterexamples)
 #print axioms ControlsLean.Bounty.sum_range_shifted_div_two_pow
 #print axioms ControlsLean.Bounty.sum_Ioc_div_two_pow

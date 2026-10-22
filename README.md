@@ -2,19 +2,19 @@
 
 [![Lean 4](https://img.shields.io/badge/Lean%204-v4.36.0--rc1-blue)](https://github.com/leanprover/lean4)
 [![Mathlib](https://img.shields.io/badge/Mathlib-4.36.0--rc1-brightgreen)](https://github.com/leanprover-community/mathlib4)
-[![Modules](https://img.shields.io/badge/Modules-25%20Verified-success)](ControlsLean.lean)
-[![Axiom Audit](https://img.shields.io/badge/Axioms-139%20Theorems%20Standard%20Only-success)](scripts/Audit.lean)
+[![Modules](https://img.shields.io/badge/Modules-26%20Verified-success)](ControlsLean.lean)
+[![Axiom Audit](https://img.shields.io/badge/Axioms-148%20Theorems%20Standard%20Only-success)](scripts/Audit.lean)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 **`ctrl`** (`https://github.com/IamMikeHelsel/ctrl`) is a verified library of formal, machine-checked mathematics in modern control theory, robotic state estimation, projective computer vision, and formal mathematics bounties, built on Lean 4 and Mathlib.
 
-Every declaration in `ctrl` is 100% `sorry`-free, contains zero custom axioms or unverified escape hatches, and every public headline theorem (**139 audited theorems** across **25 modules**) is programmatically audited to depend solely on Lean's standard foundational axioms (`propext`, `Classical.choice`, `Quot.sound`).
+Every declaration in `ctrl` is 100% `sorry`-free, contains zero custom axioms or unverified escape hatches, and every public headline theorem (**148 audited theorems** across **26 modules**) is programmatically audited to depend solely on Lean's standard foundational axioms (`propext`, `Classical.choice`, `Quot.sound`).
 
 ---
 
-## Library Architecture & Modules (25 Verified Modules)
+## Library Architecture & Modules (26 Verified Modules)
 
-The library is organized under the top-level namespace `ControlsLean` and root file `ControlsLean.lean`, comprising **25 verified modules** spanning control engineering, estimation, vision, proof automation, and formal math bounties:
+The library is organized under the top-level namespace `ControlsLean` and root file `ControlsLean.lean`, comprising **26 verified modules** spanning control engineering, estimation, vision, proof automation, and formal math bounties:
 
 ```text
 ctrl/
@@ -45,7 +45,8 @@ ctrl/
 │   │   ├── InformationFilter.lean       # Multi-dimensional Sherman–Morrison–Woodbury & precision update
 │   │   ├── RiccatiConvergence.lean      # Scalar Riccati iterates converge geometrically to steady state
 │   │   ├── AlphaBeta.lean               # Steady-state α–β filter & the Kalata relation
-│   │   └── KalmanOptimality.lean        # Multivariate Bucy–Joseph covariance & MMSE trace optimality
+│   │   ├── KalmanOptimality.lean        # Multivariate Bucy–Joseph covariance & MMSE trace optimality
+│   │   └── KalmanBucy.lean              # Continuous Kalman–Bucy generator & DRE/CARE identities
 │   ├── Tactics/
 │   │   └── ControlTactics.lean          # Specialized macros, block quadratic forms & Lyapunov chaining
 │   └── Bounty/
@@ -60,7 +61,7 @@ ctrl/
 │   ├── scratch_check.sh                 # Rapid sub-second isolated lemma sandbox
 │   ├── loogle.sh                        # 300ms semantic/type Mathlib lemma lookup
 │   ├── ensure_cache.sh                  # Worktree cache auto-discovery & safeguard
-│   ├── Audit.lean                       # Programmatic #print axioms check on 139 headline theorems
+│   ├── Audit.lean                       # Programmatic #print axioms check on 148 headline theorems
 │   ├── sync.sh                          # Google Drive backup synchronization
 │   └── bounty_triage.sh                 # Formal mathematics bounty triage utility
 └── docs/
@@ -79,14 +80,15 @@ ctrl/
         ├── 06_homography_uniqueness.md
         ├── 07_mpc_recursive_feasibility.md
         ├── 08_multivariate_kalman_optimality.md
-        └── 09_uncontested_erdos_bounties.md
+        ├── 09_uncontested_erdos_bounties.md
+        └── 11_kalman_bucy_dre.md
 ```
 
 ---
 
-## Audited Headline Theorems (139 Total Across 25 Modules)
+## Audited Headline Theorems (148 Total Across 26 Modules)
 
-All 139 headline theorems are registered in [`scripts/Audit.lean`](scripts/Audit.lean) and verified by [`scripts/check.sh`](scripts/check.sh):
+All 148 headline theorems are registered in [`scripts/Audit.lean`](scripts/Audit.lean) and verified by [`scripts/check.sh`](scripts/check.sh):
 
 | Discipline | Module | Core Mathematical Content | Key Audited Theorems |
 |---|---|---|---|
@@ -113,6 +115,7 @@ All 139 headline theorems are registered in [`scripts/Audit.lean`](scripts/Audit
 | **State Estimation** | `Estimation/RiccatiConvergence.lean` | Geometric convergence of discrete scalar Riccati iterates $|P_{k+1} - S| \le (R/(Q+R))^{2k} |P_1 - S|$ from any $P_0 \ge 0$; steady-state gain limit. | `abs_riccati_iterate_sub_le`<br>`tendsto_riccati_iterate`<br>`tendsto_gain_riccati_iterate` |
 | **State Estimation** | `Estimation/AlphaBeta.lean` | Steady-state $\alpha\text{–}\beta$ tracking filter; algebraic Riccati reduction; the Kalata relation $\beta^2 / (1 - \alpha) = T^4 \sigma_w^2 / \sigma_v^2$. | `AlphaBeta.riccatiMap_eq_iff`<br>`AlphaBeta.kalata`<br>`AlphaBeta.exists_gains`<br>`AlphaBeta.exists_steadyState` |
 | **State Estimation** | `Estimation/KalmanOptimality.lean` | Multivariate Bucy–Joseph stabilized covariance update; matrix completion of squares; Loewner PSD dominance; global MMSE trace optimality $\operatorname{tr}(P^+(K^*)) \le \operatorname{tr}(P^+(K))$. | `josephCov_transpose`<br>`josephCov_completion_of_squares`<br>`quad_josephCov_le`<br>`trace_josephCov_le`<br>`trace_josephCov_le_of_psd` |
+| **State Estimation** | `Estimation/KalmanBucy.lean` | Continuous-time Bucy–Joseph filter generator $\mathcal{L}(K)$; DRE/CARE reduction at $K^*R = PC^\top$; matrix completion of squares; Loewner and instantaneous-trace optimality of the Kalman–Bucy gain. | `filterGen_opt_eq_dre`<br>`filterGen_completion_of_squares`<br>`quad_filterGen_le`<br>`trace_filterGen_le`<br>`care_lyapunov_identity` |
 | **Proof Tactics** | `Tactics/ControlTactics.lean` | Block quadratic form reductions; transpose/skew invariance; bidirectional `PosDef` to `quad` equivalences; parallel sum inversion; Lyapunov chaining. | `posDef_iff_quad_pos`<br>`quad_fromBlocks`<br>`inv_parallel_sum`<br>`riccati_lft_form`<br>`quad_lyapunov_geometric` |
 | **Math Bounties** | `Bounty/ErdosBounties.lean` | Uncontested Erdős / JSP formalizations: Erdős #261 (Borwein–Loring identity & infinite solutions), #931 (symmetric $k_1=k_2=3$ prime-factor counterexamples), #951 (Beurling prime separation), #143 (1-separated logarithmic density), #834 (Li's 3-critical hypergraph). | `erdos_261_borwein_loring`<br>`erdos_261_parts_i`<br>`erdos_931_counterexample_symmetric_2_7`<br>`erdos_931_additional_condition_nonempty`<br>`erdos_951_isBeurlingPrimes`<br>`erdos_143_ncard_le_floor`<br>`erdos_834_parts_ii` |
 

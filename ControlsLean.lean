@@ -21,5 +21,6 @@ import ControlsLean.Estimation.InformationFilter
 import ControlsLean.Estimation.RiccatiConvergence
 import ControlsLean.Estimation.AlphaBeta
 import ControlsLean.Estimation.KalmanOptimality
+import ControlsLean.Estimation.KalmanBucy
 import ControlsLean.Tactics.ControlTactics
 import ControlsLean.Bounty.ErdosBounties

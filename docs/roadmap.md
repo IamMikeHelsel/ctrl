@@ -108,7 +108,7 @@ The next phase of `ctrl` targets the central pillars of modern linear systems an
 ├─────────────────────────────────────────────────────────────────────────────┤
 │ 1. Luenberger Observer & The Separation Principle                           │
 │ 2. Discrete-Time Algebraic Riccati Equation (DARE)                          │
-│ 3. Continuous-Time Kalman–Bucy Filter (Differential Riccati)                │
+│ 3. Continuous-Time Kalman–Bucy Filter (Differential Riccati) — delivered ★ │
 │ 4. Multi-View Geometry: 8-Point Algorithm & Essential Matrix SVD            │
 │ 5. Discrete-Time Polynomial Jury Stability Criterion                        │
 └─────────────────────────────────────────────────────────────────────────────┘
@@ -137,15 +137,19 @@ The next phase of `ctrl` targets the central pillars of modern linear systems an
 - **Target File**: `ControlsLean/Controls/DARE.lean`
 - **Primary Reference**: Anderson & Moore (1979); Lancaster & Rodman (1995), *Algebraic Riccati Equations*.
 
-### 3.3 Continuous-Time Kalman–Bucy Filter & Differential Riccati Equations
-- **Objective**: Extend state estimation to continuous-time stochastic differential systems.
-- **Mathematical Content**:
-  - State dynamics $\dot{x}(t) = A x(t) + w(t)$ and measurement $y(t) = C x(t) + v(t)$.
-  - Differential Riccati Equation (DRE):
-    $$\dot{P}(t) = A P(t) + P(t) A^\top - P(t) C^\top R^{-1} C P(t) + Q.$$
-  - Optimal Kalman gain $K(t) = P(t) C^\top R^{-1}$.
-  - Prove error covariance decay and asymptotic stability of the continuous observer.
-- **Target File**: `ControlsLean/Estimation/KalmanBucy.lean`
+### 3.3 Continuous-Time Kalman–Bucy Filter & Differential Riccati Equations ★ Delivered (algebraic core)
+- **Module**: `ControlsLean/Estimation/KalmanBucy.lean`
+- **Proposal**: `docs/proposals/11_kalman_bucy_dre.md`
+- **Delivered**:
+  - Continuous Bucy–Joseph filter generator
+    $\mathcal{L}(K) = (A - K C) P + P (A - K C)^\top + Q + K R K^\top$.
+  - Inverse-free optimal gain equation $K^* R = P C^\top$ and DRE reduction
+    `filterGen_opt_eq_dre`: $\mathcal{L}(K^*) = A P + P A^\top - K^* R (K^*)^\top + Q$.
+  - Matrix completion of squares `filterGen_completion_of_squares` and Loewner / instantaneous-trace
+    optimality of the Kalman–Bucy gain (`quad_filterGen_le`, `trace_filterGen_le`).
+  - CARE steady-state Lyapunov identity `care_lyapunov_identity`.
+- **Deferred**: Existence/uniqueness of DRE trajectories, geometric convergence to the CARE
+  fixed point, and continuous-time observer asymptotic stability via a continuous Lyapunov theorem.
 - **Primary Reference**: Kalman & Bucy (1961), *New Results in Linear Filtering and Prediction Theory*.
 
 ### 3.4 Multi-View Geometry: Eight-Point Algorithm & Essential Matrix SVD
