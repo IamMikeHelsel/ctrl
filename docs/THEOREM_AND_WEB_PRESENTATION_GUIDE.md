@@ -221,3 +221,14 @@ def cbf_safety_filter_1d(
   </div>
 </div>
 ```
+
+---
+
+## 6. Theorem Explainers
+
+Pillar cards sell a capability. Explainers teach one theorem: what it says, why it holds, a
+simple and a harder worked example with short manim animations, where it might apply and
+where it stops. They live in `site/explainers/<slug>/`, are built by `tools/explainer/`, and
+follow `.claude/skills/theorem-explainer/SKILL.md`. Rules 1, 4 and 6 above apply unchanged;
+explainers add a required "What it does not say" section and an independent claims audit
+(`.claude/agents/explainer-auditor.md`) before publishing.
