@@ -19,7 +19,7 @@
 
 ## Caveats the scouts flagged
 
-- The `crossover-research-2026-10-19` branch (RoboLean, `src/ctrl/robotics`, Reed–Solomon, response-time analysis) is referenced throughout the docs but is **not present in this checkout or on `origin`**. Every candidate that builds on `ROBO-04` or the Python runtime assumes that branch exists elsewhere.
+- **Correction (2026-10-24).** An earlier version of this report said the research code was missing from `origin`. It is not. `origin/crossover-research-2026-10-19` holds `lean/Research/` (Byers–Nash, Erdős #885, covering systems) and the `src/ctrl/robotics/` Python/C99 runtime. RoboLean (`Barcode/ReedSolomon.lean`, `RealTime.lean`) lives on `origin/backup/20261020/dev-ctrl/snapshot`. Candidates that build on `ROBO-04`, `MATH-01..03` or the runtime are grounded in real code; none of it is on `main`.
 - Several hosts (arxiv.org, lean-lang.org, reservoir, galois.com, conjectures.io, palomar-registry.org, erdosproblems.com) were blocked by the session proxy. Paper-level claims rest on search-result snippets and GitHub mirrors; each candidate lists only URLs the scout actually saw.
 - The README credits 29 solved Erdős problems, but only 17 of those numbers appear in `ControlsLean/Bounty/*.lean` on `main` (36, 96, 242, 341, 389, 533, 995, 1055, 1059, 1073, 1102, 1113 do not). Verify each against the Formal Conjectures main statement before any priority claim (`MATH-06`).
 - Effort estimates are for one strong engineer and do not include Mathlib review latency, which is the bottleneck for anything upstreamed.
