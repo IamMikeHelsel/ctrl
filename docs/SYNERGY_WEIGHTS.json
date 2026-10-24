@@ -1,0 +1,4004 @@
+{
+  "schema_version": "1.0.0",
+  "updated_at": "2026-10-24",
+  "description": "Weighted cross-domain unlock graph for the ctrl program (and the sediment sibling repo). Consumed by `./ctrl synergy`. Domain edges say how strongly results in domain A tend to unlock work in domain B. Idea edges connect concrete idea IDs from AGENT_IDEA_INDEX.json and candidate IDs below. Weights are in [0,1] and are directed.",
+  "domains": {
+    "controls": {
+      "label": "Linear, Optimal & Robust Control",
+      "description": "LQR/DARE/LQG/H-inf/ISS/MPC/ILC, pole placement, reachability."
+    },
+    "nonlinear_safety": {
+      "label": "Nonlinear & Safety-Critical Control",
+      "description": "Backstepping, Sontag CLF, CBF/Lorentz cone, ZMP allocation, passivity."
+    },
+    "estimation": {
+      "label": "State Estimation & Belief Planning",
+      "description": "Kalman/Bucy, information filter, least squares, POMDP belief."
+    },
+    "robotics": {
+      "label": "Robot Kinematics, Dynamics & Trajectories",
+      "description": "SO(3)/SE(3), quaternions, manipulators, mobile robots, septic trajectories."
+    },
+    "vision": {
+      "label": "Projective & Multi-View Vision",
+      "description": "Epipolar, homography, cross-ratio, triangulation, ICP, visual servoing."
+    },
+    "realtime_systems": {
+      "label": "Real-Time & Multi-Robot Systems",
+      "description": "Response-time analysis, Simplex, fleet deadlock, Reed-Solomon."
+    },
+    "math": {
+      "label": "Pure & Applied Mathematics",
+      "description": "Byers-Nash, Erdős problems, covering systems, arithmetic geometry."
+    },
+    "codegen_certification": {
+      "label": "Codegen, Numerics & Certification",
+      "description": "C99/IEC 61131-3 emission, IEEE-754 parity, standards evidence (DO-178C, IEC 61508, ISO 26262)."
+    },
+    "lean_tooling": {
+      "label": "Lean Ecosystem & Agent Tooling",
+      "description": "Proof automation, Mathlib upstreaming, CLI, agent-facing indexes."
+    },
+    "rust_systems": {
+      "label": "Local-First Rust Systems (sediment)",
+      "description": "Archive formats, extraction safety, verified parsers, desktop packaging."
+    },
+    "prizes": {
+      "label": "Prizes, Bounties & Grants",
+      "description": "Justin Sun Prize, conjectures.io, Palomar, AI for Math Fund."
+    }
+  },
+  "idea_domains": {
+    "CTRL-01": [
+      "controls"
+    ],
+    "CTRL-02": [
+      "controls"
+    ],
+    "CTRL-03": [
+      "controls",
+      "nonlinear_safety"
+    ],
+    "CTRL-04": [
+      "controls"
+    ],
+    "CTRL-05": [
+      "controls"
+    ],
+    "NL-01": [
+      "nonlinear_safety"
+    ],
+    "NL-02": [
+      "nonlinear_safety",
+      "robotics"
+    ],
+    "NL-03": [
+      "nonlinear_safety",
+      "robotics"
+    ],
+    "EST-01": [
+      "estimation"
+    ],
+    "EST-02": [
+      "estimation",
+      "controls"
+    ],
+    "EST-03": [
+      "estimation"
+    ],
+    "ROBO-01": [
+      "robotics"
+    ],
+    "ROBO-02": [
+      "vision",
+      "robotics"
+    ],
+    "ROBO-03": [
+      "robotics"
+    ],
+    "ROBO-04": [
+      "realtime_systems"
+    ],
+    "VIS-01": [
+      "vision"
+    ],
+    "MATH-01": [
+      "math",
+      "controls"
+    ],
+    "MATH-02": [
+      "math"
+    ],
+    "MATH-03": [
+      "math"
+    ],
+    "MATH-04": [
+      "math",
+      "prizes"
+    ]
+  },
+  "edge_types": {
+    "certifies": "A provides a proof/conditioning guarantee that B's result relies on",
+    "feeds": "A produces the reference signal, model, or data that B consumes",
+    "composes": "A and B are stacked into one closed-loop or pipeline",
+    "dualizes": "A is the mathematical dual of B (same theorem, transposed)",
+    "benchmarks": "A gives the testbed on which B is measured",
+    "shares_method": "A's proof technique transfers directly to B",
+    "packages": "A turns B into a deliverable (kernel, submission, product)"
+  },
+  "domain_edges": [
+    {
+      "from": "controls",
+      "to": "estimation",
+      "weight": 0.9,
+      "why": "DARE/Kalman duality already proven in repo (CTRL-01 <-> EST-01).",
+      "evidence": [
+        "candidate EST-05",
+        "candidate EST-09",
+        "candidate EST-12"
+      ]
+    },
+    {
+      "from": "estimation",
+      "to": "controls",
+      "weight": 0.64,
+      "why": "Kalman innovation null space (EST-01) is exactly the stochastic DeePC constraint subspace.",
+      "evidence": [
+        "candidate EST-04"
+      ]
+    },
+    {
+      "from": "controls",
+      "to": "nonlinear_safety",
+      "weight": 0.8,
+      "why": "DARE terminal cost, shifted-tail feasibility and ISS sublevel invariants are the terminal/switching ingredients predictive safety filters and CBF shields need.",
+      "evidence": [
+        "https://arxiv.org/pdf/2212.02111",
+        "https://arxiv.org/pdf/2605.05575",
+        "https://heemels.tue.nl/content/papers/KatSha_CDC23a.pdf",
+        "candidate MATH-07"
+      ]
+    },
+    {
+      "from": "nonlinear_safety",
+      "to": "robotics",
+      "weight": 0.8,
+      "why": "Lorentz-cone CBF and ZMP allocator are the legged-robot safety layer (in repo).",
+      "evidence": [
+        "candidate IND-04"
+      ]
+    },
+    {
+      "from": "robotics",
+      "to": "nonlinear_safety",
+      "weight": 0.6,
+      "why": "SE(3) kinematics feed the centroidal CBF (in repo).",
+      "evidence": [
+        "candidate ROB-01"
+      ]
+    },
+    {
+      "from": "robotics",
+      "to": "vision",
+      "weight": 0.5,
+      "why": "SE(3) log-depth servoing (in repo).",
+      "evidence": []
+    },
+    {
+      "from": "vision",
+      "to": "robotics",
+      "weight": 0.8,
+      "why": "Ground-plane homography is the standard single-matrix camera-to-ground model and planar-region extraction feeds footstep planners.",
+      "evidence": [
+        "https://www.doc.ic.ac.uk/~ajd/Robotics/RoboticsResources/lecture7.pdf",
+        "https://openaccess.thecvf.com/content_cvpr_2014/papers/Dragon_Ground_Plane_Estimation_2014_CVPR_paper.pdf",
+        "https://groups.csail.mit.edu/robotics-center/public_papers/Fallon15.pdf",
+        "candidate ROB-09"
+      ]
+    },
+    {
+      "from": "vision",
+      "to": "estimation",
+      "weight": 0.6,
+      "why": "Multi-view measurement models for filters.",
+      "evidence": []
+    },
+    {
+      "from": "estimation",
+      "to": "vision",
+      "weight": 0.7,
+      "why": "Kalman pose filtering of homography measurements and POMDP observation models for occluded targets.",
+      "evidence": [
+        "https://arxiv.org/pdf/1912.06754v1",
+        "candidate XD-04",
+        "candidate EST-08"
+      ]
+    },
+    {
+      "from": "estimation",
+      "to": "robotics",
+      "weight": 0.8,
+      "why": "Quaternion error-state KF is the standard IMU attitude estimator and POMDP belief planning is the standard formalism for active perception.",
+      "evidence": [
+        "https://arxiv.org/abs/1711.02508v1",
+        "https://arxiv.org/pdf/2012.04075",
+        "https://arxiv.org/pdf/1912.06754v1",
+        "candidate EST-13"
+      ]
+    },
+    {
+      "from": "math",
+      "to": "controls",
+      "weight": 0.6,
+      "why": "Byers-Nash k(A)<=s(A) makes sep checkable on the symmetric cone; sep governs Lyapunov and first-order Riccati conditioning.",
+      "evidence": [
+        "https://www3.math.tu-berlin.de/Vorlesungen/SoSe11/Kontrolltheorie/uebung4.pdf",
+        "https://arxiv.org/pdf/1601.03787",
+        "candidate EST-11",
+        "candidate TOOL-03"
+      ]
+    },
+    {
+      "from": "math",
+      "to": "estimation",
+      "weight": 0.6,
+      "why": "Same sep-based conditioning applies to the Kalman DARE/CARE and the discrete Lyapunov equation.",
+      "evidence": [
+        "https://arxiv.org/pdf/1601.03787",
+        "https://arxiv.org/pdf/1803.04046",
+        "candidate XD-03",
+        "candidate EST-07",
+        "candidate MATH-05"
+      ]
+    },
+    {
+      "from": "controls",
+      "to": "math",
+      "weight": 0.3,
+      "why": "Riccati sensitivity reduces to a Lyapunov equation whose conditioning is sep-governed, motivating Byers-Nash.",
+      "evidence": [
+        "https://arxiv.org/pdf/1601.03787",
+        "https://www3.math.tu-berlin.de/Vorlesungen/SoSe11/Kontrolltheorie/uebung4.pdf"
+      ]
+    },
+    {
+      "from": "math",
+      "to": "realtime_systems",
+      "weight": 0.7,
+      "why": "CoveringCRT exact density products and prime sieves compute exactly what decides exact pinwheel covering/packing feasibility.",
+      "evidence": [
+        "https://arxiv.org/pdf/2607.28574",
+        "https://arxiv.org/pdf/2508.18422",
+        "candidate XD-01"
+      ]
+    },
+    {
+      "from": "realtime_systems",
+      "to": "codegen_certification",
+      "weight": 0.8,
+      "why": "RTA consumes WCET; DO-178C 6.3.4f recommends WCET determination with qualified tools, and Prosa/Rocq is the verified-RTA prior art.",
+      "evidence": [
+        "https://www.rapitasystems.com/files/MC-WP-004%20Automating%20WCET%20analysis%20for%20DO-178C_3.pdf",
+        "https://rocq-prover.org/p/rocq-prosa",
+        "https://drops.dagstuhl.de/entities/document/10.4230/LIPIcs.ECRTS.2020.22",
+        "candidate IND-07",
+        "candidate ROB-13"
+      ]
+    },
+    {
+      "from": "realtime_systems",
+      "to": "nonlinear_safety",
+      "weight": 0.5,
+      "why": "Simplex is a real-time architecture (in repo).",
+      "evidence": [
+        "https://arxiv.org/pdf/1908.00528"
+      ]
+    },
+    {
+      "from": "realtime_systems",
+      "to": "rust_systems",
+      "weight": 0.5,
+      "why": "Reed-Solomon decoding and deadline-bounded cancellation transfer to archive recovery records and cooperative cancellation.",
+      "evidence": [
+        "candidate SED-09"
+      ]
+    },
+    {
+      "from": "nonlinear_safety",
+      "to": "codegen_certification",
+      "weight": 0.5,
+      "why": "Sub-100ns zero-heap safety filters are the certifiable artefact for DO-178C-style timing evidence.",
+      "evidence": [
+        "https://www.rapitasystems.com/files/MC-WP-004%20Automating%20WCET%20analysis%20for%20DO-178C_3.pdf",
+        "candidate IND-05"
+      ]
+    },
+    {
+      "from": "controls",
+      "to": "codegen_certification",
+      "weight": 0.6,
+      "why": "Closed-form (solver-free) kernels are what makes a control loop WCET-analysable for certification.",
+      "evidence": [
+        "https://www.absint.com/tum_absint.pdf",
+        "candidate MATH-08"
+      ]
+    },
+    {
+      "from": "codegen_certification",
+      "to": "robotics",
+      "weight": 0.6,
+      "why": "MuJoCo/C99 parity feeds benchmark evidence back (in repo).",
+      "evidence": [
+        "candidate ROB-04",
+        "candidate TOOL-10"
+      ]
+    },
+    {
+      "from": "codegen_certification",
+      "to": "prizes",
+      "weight": 0.5,
+      "why": "A verified kernel pipeline is grant-shaped (AI for Math Fund tools track, DARPA formal methods programs)."
+    },
+    {
+      "from": "lean_tooling",
+      "to": "controls",
+      "weight": 0.6,
+      "why": "Tactics, Loogle search and the inner loop lower the cost of every new module.",
+      "evidence": [
+        "candidate TOOL-02"
+      ]
+    },
+    {
+      "from": "lean_tooling",
+      "to": "math",
+      "weight": 0.7,
+      "why": "Triage and proof automation are what make the Erdős bounty pipeline cheap.",
+      "evidence": [
+        "candidate TOOL-01"
+      ]
+    },
+    {
+      "from": "lean_tooling",
+      "to": "prizes",
+      "weight": 0.72,
+      "why": "Prize eligibility and formalizer attribution both require an earliest public commit.",
+      "evidence": [
+        "candidate TOOL-04",
+        "candidate TOOL-08"
+      ]
+    },
+    {
+      "from": "math",
+      "to": "prizes",
+      "weight": 0.9,
+      "why": "Solved-but-unformalized Erdős problems are the direct money lane."
+    },
+    {
+      "from": "prizes",
+      "to": "lean_tooling",
+      "weight": 0.4,
+      "why": "Prize rules (standard axioms, public SHA pinning) shape the tooling.",
+      "evidence": [
+        "candidate MATH-06"
+      ]
+    },
+    {
+      "from": "lean_tooling",
+      "to": "rust_systems",
+      "weight": 0.4,
+      "why": "Aeneas/Verus-style pipelines let the Lean verification habit reach the Rust archive engine.",
+      "evidence": [
+        "candidate SED-01"
+      ]
+    },
+    {
+      "from": "rust_systems",
+      "to": "codegen_certification",
+      "weight": 0.3,
+      "why": "A hardened, auditable extraction engine is a small worked example of shipping a verified artifact."
+    },
+    {
+      "from": "controls",
+      "to": "realtime_systems",
+      "weight": 0.4,
+      "why": "ISS/small-gain envelopes quantify the disturbance budget that timing jitter and deadline misses consume; adjacent literature only.",
+      "evidence": [
+        "https://arxiv.org/pdf/1702.01031",
+        "candidate XD-07"
+      ]
+    },
+    {
+      "from": "controls",
+      "to": "robotics",
+      "weight": 0.7,
+      "why": "ILC contraction on a parametrised septic reference family is basis-function ILC for task flexibility.",
+      "evidence": [
+        "https://research.tue.nl/en/publications/combined-time-domain-optimization-design-for-task-flexible-and-hi/",
+        "https://export.arxiv.org/pdf/2505.05835",
+        "candidate XD-05",
+        "candidate ROB-05"
+      ]
+    },
+    {
+      "from": "nonlinear_safety",
+      "to": "controls",
+      "weight": 0.6,
+      "why": "A CBF-defined terminal set gives MPC recursive feasibility with a larger feasible region than classic invariant sets.",
+      "evidence": [
+        "https://arxiv.org/pdf/2605.05575",
+        "https://arxiv.org/html/2309.11124v2",
+        "candidate XD-06",
+        "candidate MATH-11"
+      ]
+    },
+    {
+      "from": "nonlinear_safety",
+      "to": "realtime_systems",
+      "weight": 0.6,
+      "why": "Simplex decision modules derive cheap switching conditions from a barrier certificate (Bb-Simplex); NL-02's closed-form barrier is that certificate.",
+      "evidence": [
+        "https://par.nsf.gov/biblio/10686450",
+        "https://arxiv.org/pdf/1908.00528",
+        "candidate XD-12"
+      ]
+    },
+    {
+      "from": "estimation",
+      "to": "realtime_systems",
+      "weight": 0.4,
+      "why": "Information-consensus filters are the distributed-estimation primitive for robot/sensor networks.",
+      "evidence": [
+        "https://skoge.folk.ntnu.no/prost/proceedings/acc09/data/papers/1107.pdf",
+        "https://strathprints.strath.ac.uk/47249/",
+        "candidate XD-08"
+      ]
+    },
+    {
+      "from": "estimation",
+      "to": "math",
+      "weight": 0.3,
+      "why": "Kalman/Riccati numerical conditioning pulls on sep(A).",
+      "evidence": [
+        "https://arxiv.org/pdf/1601.03787"
+      ]
+    },
+    {
+      "from": "estimation",
+      "to": "codegen_certification",
+      "weight": 0.4,
+      "why": "A machine-checked covariance update is the kind of evidence ISO 26262 tool-qualification arguments lack for BMS software.",
+      "evidence": [
+        "candidate IND-03",
+        "candidate IND-09",
+        "candidate EST-14",
+        "candidate EST-15"
+      ]
+    },
+    {
+      "from": "robotics",
+      "to": "estimation",
+      "weight": 0.6,
+      "why": "SO(3)/quaternion kinematics and non-inertial transport are the manifold and process model of the ESKF.",
+      "evidence": [
+        "https://arxiv.org/abs/1711.02508v1",
+        "candidate ROB-02",
+        "candidate EST-06"
+      ]
+    },
+    {
+      "from": "robotics",
+      "to": "realtime_systems",
+      "weight": 0.5,
+      "why": "Fleet deadlock/throughput and 1 kHz loop deadlines (in repo).",
+      "evidence": [
+        "candidate ROB-11"
+      ]
+    },
+    {
+      "from": "robotics",
+      "to": "codegen_certification",
+      "weight": 0.6,
+      "why": "Septic/IK kernels already generated to C99.",
+      "evidence": []
+    },
+    {
+      "from": "vision",
+      "to": "nonlinear_safety",
+      "weight": 0.5,
+      "why": "A camera-estimated terrain plane changes the support polygon and ZMP constraint; literature couples vision to steppable regions under ZMP/DCM constraints but not to the closed-form deceleration bound.",
+      "evidence": [
+        "https://arxiv.org/pdf/2603.07400",
+        "https://ori.ox.ac.uk/media/5629/2015humanoids_fallon.pdf",
+        "candidate XD-09"
+      ]
+    },
+    {
+      "from": "vision",
+      "to": "realtime_systems",
+      "weight": 0.4,
+      "why": "Projective-invariant fiducials (Pi-Tag, X-tag) use cross-ratios for detection; AprilTag decodes by Hamming code tables, so the unlock is cross-ratio geometry plus an RS-coded ID.",
+      "evidence": [
+        "https://www.dsi.unive.it/~atorsell/papers/Conferences/3dimpvt2011-tag.pdf",
+        "https://campar.in.tum.de/pub/tbirdal20163dv/tbirdal20163dv.pdf",
+        "https://april.eecs.umich.edu/pdfs/wang2016iros.pdf",
+        "candidate XD-11"
+      ]
+    },
+    {
+      "from": "vision",
+      "to": "math",
+      "weight": 0.2,
+      "why": "Projective geometry draws on algebraic invariants; weak.",
+      "evidence": []
+    },
+    {
+      "from": "realtime_systems",
+      "to": "math",
+      "weight": 0.7,
+      "why": "Exact pinwheel covering is an Erdos covering system; Kawamura's 5/6 density theorem is a covering-density schedulability statement, giving MATH-03 an applied audience and new finite instances.",
+      "evidence": [
+        "https://drops.dagstuhl.de/storage/00lipics/lipics-vol359-isaac2025/html/LIPIcs.ISAAC.2025.47/LIPIcs.ISAAC.2025.47.html",
+        "https://arxiv.org/pdf/2607.28574",
+        "https://arxiv.org/pdf/2609.20075",
+        "https://www.kurims.kyoto-u.ac.jp/~kawamura/pinwheel"
+      ]
+    },
+    {
+      "from": "realtime_systems",
+      "to": "controls",
+      "weight": 0.5,
+      "why": "RTA guarantees the sampling-period assumption of every discrete-time theorem.",
+      "evidence": []
+    },
+    {
+      "from": "realtime_systems",
+      "to": "robotics",
+      "weight": 0.5,
+      "why": "Fleet deadlock (in repo).",
+      "evidence": []
+    },
+    {
+      "from": "realtime_systems",
+      "to": "estimation",
+      "weight": 0.3,
+      "why": "Event-triggered / communication-limited information filters.",
+      "evidence": [
+        "https://research.buaa.edu.cn/en/publications/distributed-event-triggered-cubature-information-filtering-based-/"
+      ]
+    },
+    {
+      "from": "math",
+      "to": "codegen_certification",
+      "weight": 0.3,
+      "why": "Exact rational LDL^T certificates are the evidence pattern for certification.",
+      "evidence": []
+    },
+    {
+      "from": "math",
+      "to": "vision",
+      "weight": 0.6,
+      "why": "Exact rational PSD certificates developed for an open matrix inequality become proof-carrying perception outputs.",
+      "evidence": [
+        "candidate ROB-07",
+        "candidate ROB-08"
+      ]
+    },
+    {
+      "from": "math",
+      "to": "nonlinear_safety",
+      "weight": 0.2,
+      "why": "Conic duality is algebra; weak.",
+      "evidence": []
+    },
+    {
+      "from": "math",
+      "to": "robotics",
+      "weight": 0.48,
+      "why": "Mathlib spectral graph theory becomes a multi-robot convergence certificate.",
+      "evidence": [
+        "candidate ROB-10"
+      ]
+    },
+    {
+      "from": "codegen_certification",
+      "to": "realtime_systems",
+      "weight": 0.7,
+      "why": "Straight-line zero-heap C99 admits a syntactic WCET bound; without C_i the RTA theorem has no input.",
+      "evidence": [
+        "https://www.absint.com/tum_absint.pdf",
+        "candidate XD-10"
+      ]
+    },
+    {
+      "from": "codegen_certification",
+      "to": "controls",
+      "weight": 0.4,
+      "why": "Benchmark feedback loop (in repo).",
+      "evidence": []
+    },
+    {
+      "from": "codegen_certification",
+      "to": "estimation",
+      "weight": 0.3,
+      "why": "Exact-Q vs float parity for filters.",
+      "evidence": []
+    },
+    {
+      "from": "codegen_certification",
+      "to": "nonlinear_safety",
+      "weight": 0.3,
+      "why": "Closed-form safety filters already emitted.",
+      "evidence": []
+    },
+    {
+      "from": "codegen_certification",
+      "to": "vision",
+      "weight": 0.2,
+      "why": "Weak.",
+      "evidence": []
+    },
+    {
+      "from": "codegen_certification",
+      "to": "math",
+      "weight": 0.1,
+      "why": "Weak.",
+      "evidence": []
+    },
+    {
+      "from": "math",
+      "to": "rust_systems",
+      "weight": 0.35,
+      "why": "A crisp finite-field invertibility theorem is the missing certificate behind every PAR2 repair.",
+      "evidence": [
+        "candidate XD-02"
+      ]
+    },
+    {
+      "from": "lean_tooling",
+      "to": "codegen_certification",
+      "weight": 0.42,
+      "why": "Turns the axiom audit into a sellable, re-checkable artifact.",
+      "evidence": [
+        "candidate IND-01",
+        "candidate IND-02",
+        "candidate IND-06",
+        "candidate MATH-10",
+        "candidate TOOL-06",
+        "candidate TOOL-12"
+      ]
+    },
+    {
+      "from": "prizes",
+      "to": "codegen_certification",
+      "weight": 0.14,
+      "why": "Grant money is the only realistic way to fund the 8-week float-bound work that certification bodies will demand.",
+      "evidence": [
+        "candidate IND-08"
+      ]
+    },
+    {
+      "from": "controls",
+      "to": "vision",
+      "weight": 0.49,
+      "why": "Coordinate-free observability from CTRL-05 turns a VIO folklore result into a theorem.",
+      "evidence": [
+        "candidate ROB-03"
+      ]
+    },
+    {
+      "from": "nonlinear_safety",
+      "to": "lean_tooling",
+      "weight": 0.52,
+      "why": "Turns ctrl's CBF theorems into the consumer of TorchLean's bound certificates.",
+      "evidence": [
+        "candidate ROB-06"
+      ]
+    },
+    {
+      "from": "estimation",
+      "to": "nonlinear_safety",
+      "weight": 0.33,
+      "why": "Kalman covariance feeds the probabilistic reachable set used to tighten CBF/MPC constraints.",
+      "evidence": [
+        "candidate EST-10"
+      ]
+    },
+    {
+      "from": "math",
+      "to": "lean_tooling",
+      "weight": 0.1,
+      "why": "Extremal-graph and interpolation proofs stress finite-combinatorics automation reusable elsewhere.",
+      "evidence": [
+        "candidate MATH-09"
+      ]
+    },
+    {
+      "from": "rust_systems",
+      "to": "robotics",
+      "weight": 0.14,
+      "why": "A verified Rust kernel is the artifact ROS 2 safety vendors could consume.",
+      "evidence": [
+        "candidate TOOL-07"
+      ]
+    },
+    {
+      "from": "controls",
+      "to": "lean_tooling",
+      "weight": 0.36,
+      "why": "ctrl's corpus is the out-of-distribution test the prover community lacks.",
+      "evidence": [
+        "candidate TOOL-09"
+      ]
+    },
+    {
+      "from": "rust_systems",
+      "to": "lean_tooling",
+      "weight": 0.21,
+      "why": "One structured index feeds both web crawlers and MCP clients.",
+      "evidence": [
+        "candidate TOOL-11"
+      ]
+    },
+    {
+      "from": "robotics",
+      "to": "rust_systems",
+      "weight": 0.39,
+      "why": "ctrl's verified Reed-Solomon field lemmas and theorem-to-C99 codegen pipeline become the proof core of a PAR2 recovery feature; the erasure-decoder correctness is the new part.",
+      "evidence": [
+        "candidate SED-03"
+      ]
+    }
+  ],
+  "idea_edges": [
+    {
+      "from": "CTRL-01",
+      "to": "EST-01",
+      "type": "dualizes",
+      "weight": 0.9,
+      "why": "Detectable DARE uniqueness is the dual steady-state Kalman DARE."
+    },
+    {
+      "from": "CTRL-01",
+      "to": "CTRL-02",
+      "type": "composes",
+      "weight": 0.8,
+      "why": "DARE gain plus observer gives output-feedback LQG."
+    },
+    {
+      "from": "CTRL-01",
+      "to": "CTRL-04",
+      "type": "feeds",
+      "weight": 0.7,
+      "why": "P_inf is the MPC terminal cost that makes recursive feasibility and descent go through."
+    },
+    {
+      "from": "MATH-01",
+      "to": "CTRL-01",
+      "type": "certifies",
+      "weight": 0.6,
+      "why": "Byers-Nash k(A) <= s(A) controls Lyapunov/Riccati conditioning on the symmetric cone."
+    },
+    {
+      "from": "MATH-01",
+      "to": "EST-02",
+      "type": "certifies",
+      "weight": 0.6,
+      "why": "Same conditioning bound for CARE and Kalman-Bucy sensitivity."
+    },
+    {
+      "from": "CTRL-02",
+      "to": "CTRL-03",
+      "type": "composes",
+      "weight": 0.8,
+      "why": "H-inf Riccati solution is a Stein certificate the Peter-Paul ISS envelope consumes."
+    },
+    {
+      "from": "CTRL-03",
+      "to": "NL-01",
+      "type": "composes",
+      "weight": 0.8,
+      "why": "ISS sublevel invariants wrap the backstepping/Sontag inner loop."
+    },
+    {
+      "from": "CTRL-03",
+      "to": "NL-02",
+      "type": "composes",
+      "weight": 0.6,
+      "why": "ISS envelope bounds disturbance entering the CBF safety filter."
+    },
+    {
+      "from": "NL-01",
+      "to": "NL-03",
+      "type": "composes",
+      "weight": 0.7,
+      "why": "Sontag CLF outer loop around Slotine-Li passivity tracking."
+    },
+    {
+      "from": "ROBO-01",
+      "to": "NL-03",
+      "type": "feeds",
+      "weight": 0.9,
+      "why": "Septic trajectory supplies q_r, dq_r, ddq_r for the Slotine-Li regressor."
+    },
+    {
+      "from": "ROBO-01",
+      "to": "CTRL-02",
+      "type": "benchmarks",
+      "weight": 0.7,
+      "why": "Energy-optimal reference is the test trajectory of the H-inf/ISS MuJoCo benchmark."
+    },
+    {
+      "from": "ROBO-01",
+      "to": "CTRL-04",
+      "type": "feeds",
+      "weight": 0.6,
+      "why": "Septic references are the repeated-trial targets ILC refines."
+    },
+    {
+      "from": "ROBO-03",
+      "to": "NL-02",
+      "type": "feeds",
+      "weight": 0.8,
+      "why": "SE(3) centroidal kinematics state the ZMP/CBF constraints."
+    },
+    {
+      "from": "ROBO-03",
+      "to": "NL-03",
+      "type": "feeds",
+      "weight": 0.7,
+      "why": "Jacobians and Lie-group kinematics define the manipulator model."
+    },
+    {
+      "from": "ROBO-03",
+      "to": "ROBO-02",
+      "type": "feeds",
+      "weight": 0.8,
+      "why": "SE(3) twist kinematics are what the visual-servoing velocity law drives."
+    },
+    {
+      "from": "ROBO-03",
+      "to": "EST-02",
+      "type": "feeds",
+      "weight": 0.5,
+      "why": "Continuous rigid-body kinematics are the process model for Kalman-Bucy on poses."
+    },
+    {
+      "from": "VIS-01",
+      "to": "ROBO-02",
+      "type": "feeds",
+      "weight": 0.9,
+      "why": "Four-point homography uniqueness and chirality filtering give the pose used by HBVS."
+    },
+    {
+      "from": "VIS-01",
+      "to": "EST-01",
+      "type": "feeds",
+      "weight": 0.7,
+      "why": "Triangulated/registered poses are the measurements the Joseph Kalman filter fuses."
+    },
+    {
+      "from": "EST-01",
+      "to": "ROBO-02",
+      "type": "composes",
+      "weight": 0.6,
+      "why": "Filtered pose stabilizes the servoing loop under measurement noise."
+    },
+    {
+      "from": "EST-01",
+      "to": "CTRL-02",
+      "type": "composes",
+      "weight": 0.8,
+      "why": "Kalman gain is the observer half of LQG."
+    },
+    {
+      "from": "EST-01",
+      "to": "EST-03",
+      "type": "feeds",
+      "weight": 0.5,
+      "why": "Gaussian belief is the continuous analogue of the POMDP belief simplex."
+    },
+    {
+      "from": "EST-03",
+      "to": "ROBO-04",
+      "type": "composes",
+      "weight": 0.6,
+      "why": "PWLC belief planning plus fleet deadlock graph gives partially-observed fleet scheduling."
+    },
+    {
+      "from": "ROBO-04",
+      "to": "NL-02",
+      "type": "composes",
+      "weight": 0.7,
+      "why": "Simplex switching and response-time guarantees host the verified CBF backup controller."
+    },
+    {
+      "from": "NL-02",
+      "to": "CTRL-04",
+      "type": "composes",
+      "weight": 0.6,
+      "why": "CBF shield as terminal safety filter under MPC."
+    },
+    {
+      "from": "CTRL-05",
+      "to": "CTRL-02",
+      "type": "feeds",
+      "weight": 0.6,
+      "why": "Ackermann/pole placement assigns Luenberger observer poles."
+    },
+    {
+      "from": "CTRL-05",
+      "to": "CTRL-01",
+      "type": "certifies",
+      "weight": 0.5,
+      "why": "Reachability/observability are the hypotheses of DARE stabilizability/detectability."
+    },
+    {
+      "from": "MATH-04",
+      "to": "MATH-02",
+      "type": "shares_method",
+      "weight": 0.5,
+      "why": "Erdős bounty tactics and submission pipeline carry over to #885."
+    },
+    {
+      "from": "MATH-04",
+      "to": "MATH-03",
+      "type": "shares_method",
+      "weight": 0.5,
+      "why": "Same pipeline for #273 covering systems."
+    },
+    {
+      "from": "MATH-02",
+      "to": "MATH-04",
+      "type": "packages",
+      "weight": 0.4,
+      "why": "A closed #885 becomes a new bounty entry."
+    },
+    {
+      "from": "MATH-03",
+      "to": "MATH-04",
+      "type": "packages",
+      "weight": 0.4,
+      "why": "A closed #273 becomes a new bounty entry."
+    }
+  ],
+  "scoring": {
+    "description": "score = readiness * confidence * (w_nov*novelty/3 + w_app*applicability/3 + w_pay*payoff/5 + w_unlock*tanh(unlock_in/1.5) + w_out*tanh(unlock_out/1.5) + w_pull*pull) - w_eff*log1p(effort_weeks)/log1p(26). unlock_in = sum of incoming idea-edge weights from ready_to_use nodes; unlock_out = sum of outgoing weights; pull = 1.0 for bounty/customer/grant, 0.7 for a standard or certification, 0.4 for community demand, 0 for none. For candidates readiness = 0.6 + 0.4 * mean readiness of builds_on (SED counts 0.8). With --goal, score is multiplied by 0.25 + 0.75*keyword_overlap(goal, node text); with --domain, by 0.25 + 0.75*max domain->domain weight into the target domains. Readiness: ready_to_use 1.0, promising_near_complete 0.85, in_work 0.7, candidate 0.6.",
+    "coefficients": {
+      "w_nov": 0.15,
+      "w_app": 0.15,
+      "w_pay": 0.25,
+      "w_unlock": 0.2,
+      "w_out": 0.1,
+      "w_pull": 0.1,
+      "w_eff": 0.15
+    },
+    "readiness": {
+      "ready_to_use": 1.0,
+      "promising_near_complete": 0.85,
+      "in_work": 0.7,
+      "candidate": 0.6
+    },
+    "rationale": "Payoff and unlock-in dominate so that cheap work sitting one edge away from a READY node outranks ambitious isolated work; effort is log-damped so a 12-week project is not crushed, just discounted."
+  },
+  "candidates": [
+    {
+      "id": "IND-01",
+      "title": "DO-333 evidence pack generator for a verified kernel",
+      "kind": "industrialize",
+      "domains": [
+        "codegen_certification",
+        "controls",
+        "estimation",
+        "lean_tooling"
+      ],
+      "builds_on": [
+        "CTRL-01",
+        "EST-01",
+        "ROBO-03"
+      ],
+      "unlocks": [
+        "IND-04",
+        "IND-05",
+        "IND-06"
+      ],
+      "why_now": "CompCert was qualified for the Airbus/ATR MFC_NG in March 2026 with credit claimed under DO-178C, DO-333 and DO-330 — the first public case of proof-based tool credit in airborne certification — and Polytechnique Montréal's 2025-2026 DO-178C UAV work names traceability and labour-intensive formal verification as the open pain points.",
+      "evidence": [
+        "https://compcert.org/",
+        "https://hal-univ-tlse3.archives-ouvertes.fr/INRIA/hal-01643290",
+        "https://learn-latest.adacore.com/booklets/adacore-technologies-for-airborne-software/chapters/standards.html",
+        "https://shemesh.larc.nasa.gov/fm/DO-333-case-studies.html",
+        "https://publications.polymtl.ca/72401/",
+        "https://hal.archives-ouvertes.fr/hal-02156141"
+      ],
+      "prior_art": "AdaCore SPARK DO-333 process booklets; NASA DO-333 case studies (theorem proving / model checking / abstract interpretation); CAP2018 drone autopilot at DO-178C Level A using DO-331/332/333; CompCert qualification papers. None generate a trace matrix from proof-assistant metadata.",
+      "missing_capability": "A script that walks the 48 @lean_theorem bindings and emits a DO-333-shaped artifact bundle for one kernel (steady-state Kalman gain or LQR step): formal LLR = theorem statement, proof hash + axiom audit, C99/ST source hash, parity test log, and an objective-by-objective mapping to DO-178C Table A-5/A-6 with an explicit 'not covered' list (float error, WCET, MC/DC, tool qualification).",
+      "effort_weeks": 4.0,
+      "payoff": 3.0,
+      "confidence": 0.5,
+      "external_pull": "standard: DO-178C/DO-333 with the 2026 CompCert precedent; customer: DO-178C UAV programs (Polytechnique/CAP2018 lineage)",
+      "cross_domain_edge": {
+        "from": "lean_tooling",
+        "to": "certification",
+        "weight": 0.7,
+        "why": "The @lean_theorem decorator metadata is already a machine-readable trace link; certification bodies want exactly that link made explicit."
+      },
+      "status": "candidate",
+      "source_report": "IND.md"
+    },
+    {
+      "id": "IND-02",
+      "title": "Proved IEEE-754 error bounds for straight-line C99 kernels in Lean",
+      "kind": "explore",
+      "domains": [
+        "codegen_certification",
+        "lean_tooling",
+        "robotics",
+        "estimation"
+      ],
+      "builds_on": [
+        "ROBO-03",
+        "EST-01",
+        "CTRL-01"
+      ],
+      "unlocks": [
+        "IND-01",
+        "IND-03",
+        "IND-05"
+      ],
+      "why_now": "In 2025-2026 Lean finally got usable rigorous-numerics pieces (Irving's interval, LeanCert, the DSLean gappa tactic, the FloatSpec Flocq port), while the DSLean authors still note the lack of Lean floating-point results — the gap is open and the tools to close it for small kernels now exist.",
+      "evidence": [
+        "https://arxiv.org/pdf/2602.18657",
+        "https://reservoir.lean-lang.org/@Beneficial-AI-Foundation/FloatSpec",
+        "https://reservoir.lean-lang.org/@girving/interval/dependencies",
+        "https://reservoir.lean-lang.org/@alerad/LeanCert",
+        "https://lean-lang.org/doc/reference/4.35.0/Basic-Types/Floating-Point-Numbers/",
+        "https://www.cs.princeton.edu/~appel/papers/vcfloat2.pdf",
+        "https://arxiv.org/pdf/0801.0523"
+      ],
+      "prior_art": "Coq/Rocq: Flocq, Gappa, VCFloat2 (CPP 2024, sound round-off bounds on Clight), CompCert. Lean: FloatSpec (~270 sorry at listing), flean (axiomatic, no intervals), girving/interval, LeanCert, DSLean gappa tactic. ctrl already has exact-Q vs float64 parity tests but no proved bound.",
+      "missing_capability": "For 2-3 straight-line kernels (Rodrigues rotation, scalar/2x2 Kalman update, LQR gain application) a Lean theorem of the form |float_kernel(x) - real_kernel(x)| <= eps on a stated input box, discharged with the gappa tactic or LeanCert, plus a C99 emission rule that preserves the evaluation order the bound assumes (no FMA, no reassociation).",
+      "effort_weeks": 8.0,
+      "payoff": 4.0,
+      "confidence": 0.5,
+      "external_pull": "standard: every DO-333/IEC 61508 assessor's first question about real-number proofs; community: Lean numerics is a visible gap named in the DSLean paper",
+      "cross_domain_edge": {
+        "from": "lean_tooling",
+        "to": "codegen",
+        "weight": 0.8,
+        "why": "A proved float bound only holds if codegen fixes evaluation order, turning the emitter into part of the trusted argument."
+      },
+      "status": "candidate",
+      "source_report": "IND.md"
+    },
+    {
+      "id": "IND-03",
+      "title": "Verified numeric function-block library for IEC 61131-3 ST with PLCverif cross-check",
+      "kind": "industrialize",
+      "domains": [
+        "codegen_certification",
+        "controls",
+        "estimation",
+        "realtime_systems"
+      ],
+      "builds_on": [
+        "EST-01",
+        "CTRL-01",
+        "CTRL-03",
+        "ROBO-04"
+      ],
+      "unlocks": [
+        "IND-07"
+      ],
+      "why_now": "CERN-GSI published 'formal verification of PLCs as a service' for safety-critical programs in Feb 2025 framed against IEC 61508/61511, CODESYS shipped SIL2 (first LTS) and a TÜV Süd SIL3 virtual safety controller in 2025, and all existing PLC verification is bounded model checking of discrete logic — numeric filters/observers/gains in ST are entirely unverified.",
+      "evidence": [
+        "https://arxiv.org/pdf/2502.19150",
+        "https://jacow.org/ICALEPCS2015/papers/WEPGF092.pdf",
+        "https://www.catalyzex.com/author/Pierre%20Dantas",
+        "https://doaj.org/article/a130e6215ea943258ad3ed311261d8e2",
+        "https://www.codesys.com/products/codesys-safety.html",
+        "https://codesys.com/products/codesys-safety/safety-sil2.html",
+        "https://www.controleng.com/articles/plcopen-certifies-br-3s-software-solutions/",
+        "https://eschertech.com/standards/iec61508.php"
+      ],
+      "prior_art": "PLCverif (CERN, ST, CBMC backend, bounded), ESBMC-PLC (Ladder/PLCopen XML), K-ST semantics (found OpenPLC compiler bugs), Soliman-Frey timed-automata models of PLCopen safety FBs, CODESYS validated codegen. No proved numeric FB library.",
+      "missing_capability": "Package ctrl's ST emitter output as PLCopen-XML function blocks (alpha-beta tracker, steady-state Kalman, LQR gain, ISS-bounded saturation) with Lean-derived invariants exported as PLCverif/ESBMC assertions, run bounded checks on the emitted ST, and document the IEC 61508-3 table entries (A.5/A.9) each artifact addresses; test-import into OpenPLC Editor and CODESYS.",
+      "effort_weeks": 5.0,
+      "payoff": 3.0,
+      "confidence": 0.5,
+      "external_pull": "standard: IEC 61508 SIL2/3 and ISO 13849 PLd/e via CODESYS Safety; customer-shaped: CERN-GSI verification service, CODESYS-ecosystem safety OEMs",
+      "cross_domain_edge": {
+        "from": "estimation",
+        "to": "certification",
+        "weight": 0.6,
+        "why": "Kalman/alpha-beta blocks are the first numeric PLC blocks anyone could ship with a proof, which bounded model checkers cannot provide."
+      },
+      "status": "candidate",
+      "source_report": "IND.md"
+    },
+    {
+      "id": "IND-04",
+      "title": "ros2_control / Nav2 plugin wrapping zero-heap verified kernels",
+      "kind": "productionize",
+      "domains": [
+        "robotics",
+        "codegen_certification",
+        "controls"
+      ],
+      "builds_on": [
+        "NL-02",
+        "EST-01",
+        "ROBO-03",
+        "CTRL-03"
+      ],
+      "unlocks": [
+        "IND-05"
+      ],
+      "why_now": "Apex.Grace is ISO 26262 ASIL D with a ROS 2-compatible API and static memory pools, SYSGO markets reuse of ROS 2 functions up to ASIL D/SIL 4, yet the ROS 2 Safety WG repos have been idle since early 2024 and nothing in Nav2/ros2_control is safety-certified — the algorithm layer is the empty slot.",
+      "evidence": [
+        "https://www.apex.ai/apexgrace",
+        "https://www.sysgo.com/technology-alliances/apexai",
+        "https://vimeo.com/649645295",
+        "https://github.com/ros-safety",
+        "https://discourse.openrobotics.org/t/safety-working-group-survey-on-ros-2-safety/23511",
+        "https://fictionlab.pl/glossary/iso-3691-4/"
+      ],
+      "prior_art": "Apex.OS/Grace (certified middleware, 13-step per-package process), ros-safety software_watchdog, ISO 3691-4 practice of a separate safety-rated stop subsystem. No verified controller/estimator plugin for ros2_control found.",
+      "missing_capability": "A ros2_control ControllerInterface and a Nav2 controller/safety-filter plugin that call only the C99 kernels (no heap, no exceptions in the update path), ship the Lean theorem IDs in the plugin description, and demonstrate the CBF safety filter as the 'separate stop logic' the ISO 3691-4 guidance asks for, benchmarked on a MuJoCo or Gazebo unicycle.",
+      "effort_weeks": 4.0,
+      "payoff": 2.0,
+      "confidence": 0.45,
+      "external_pull": "community: ROS 2 Safety WG / Open Robotics; customer-shaped: Apex.AI-SYSGO integrators needing certified algorithm blocks",
+      "cross_domain_edge": {
+        "from": "nonlinear_safety",
+        "to": "robotics",
+        "weight": 0.6,
+        "why": "The Lorentz-cone CBF filter becomes a drop-in 'safety-rated' stop layer for AMR stacks that currently have none."
+      },
+      "status": "candidate",
+      "source_report": "IND.md"
+    },
+    {
+      "id": "IND-05",
+      "title": "Verified attitude/geofence safety module for PX4/ArduPilot with DO-178C-style trace",
+      "kind": "industrialize",
+      "domains": [
+        "robotics",
+        "nonlinear_safety",
+        "codegen_certification"
+      ],
+      "builds_on": [
+        "ROBO-03",
+        "NL-02",
+        "CTRL-03"
+      ],
+      "unlocks": [
+        "IND-01"
+      ],
+      "why_now": "No formal verification or DO-178C credit exists for PX4/ArduPilot; 2025-2026 academic DO-178C UAV compliance work (Polytechnique) and the CAP2018 Level-A drone process show the demand, and the CompCert 2026 qualification lowers the perceived risk of proof-based credit.",
+      "evidence": [
+        "https://ispras.ru/proceedings/docs/2019/31/4/isp_31_2019_4_39.pdf",
+        "https://arxiv.org/pdf/2412.08102",
+        "https://publications.polymtl.ca/63404/1/2025_RimZrelli.pdf",
+        "https://hal.archives-ouvertes.fr/hal-02156141",
+        "https://compcert.org/"
+      ],
+      "prior_art": "ISP RAS partitioned-RTOS quadcopter with deductive + dL proofs on ArduPilot-derived PID; CAP2018 DO-178C Level A drone autopilot; Galois HACMS flight control. No verified SO(3)/quaternion error + CBF geofence module as a C99 drop-in.",
+      "missing_capability": "A C99 module (quaternion error, SO(3) Rodrigues, Lorentz-cone CBF geofence/velocity limiter) compiled into a PX4 or ArduPilot build as a runtime safety filter, with the IND-01 evidence pack and a SITL regression showing zero geofence violations; honest statement that the autopilot around it remains uncertified.",
+      "effort_weeks": 6.0,
+      "payoff": 3.0,
+      "confidence": 0.4,
+      "external_pull": "standard: DO-178C/DO-333; community: PX4/ArduPilot; customer-shaped: DO-178C UAV certification programs",
+      "cross_domain_edge": {
+        "from": "nonlinear_safety",
+        "to": "certification",
+        "weight": 0.5,
+        "why": "A small proved safety filter is the only part of an open autopilot that can realistically carry formal credit."
+      },
+      "status": "candidate",
+      "source_report": "IND.md"
+    },
+    {
+      "id": "IND-06",
+      "title": "DO-330-style trusted-base and tool-qualification narrative for the Lean-to-C pipeline",
+      "kind": "industrialize",
+      "domains": [
+        "codegen_certification",
+        "lean_tooling"
+      ],
+      "builds_on": [
+        "CTRL-01"
+      ],
+      "unlocks": [
+        "IND-01",
+        "IND-03"
+      ],
+      "why_now": "DO-330 tool-qualification templates were refreshed in Feb 2026, CompCert's 2026 qualification shows a proof-based tool can be qualified, and the NASA/Rockwell/U-Iowa 'qualify the proof-certificate checker instead of the prover' approach has never been written up for Lean (kernel + external checker + axiom audit).",
+      "evidence": [
+        "https://iro.uiowa.edu/esploro/outputs/report/Formal-Methods-Tool-Qualification/9984410859402771",
+        "https://shemesh.larc.nasa.gov/fm/FMinCert/DO-330-case-studies-RC.html",
+        "https://airworthinesscert.com/wp-content/uploads/2026/02/DO-330-Tool-Qual-Package.r1.pdf",
+        "https://www.adacore.com/uploads_gems/do-330-ed-215-tool-qualification-document.pdf",
+        "https://www.cl.cam.ac.uk:443/~pes20/pip2014-slides/PIP2014-Leroy.pdf",
+        "https://compcert.org/"
+      ],
+      "prior_art": "NASA CR on formal-methods tool qualification via proof certificates (Rockwell Collins / U. Iowa); AdaCore DO-330 qualification docs for GNAT/SPARK; AbsInt CompCert/aiT qualification. Nothing for Lean 4.",
+      "missing_capability": "A reproducible TQL-5 (Criteria 3) argument: Lean kernel as the checker, independent re-check of all 445 headline theorems, axiom audit as the validation suite, the codegen classified as a verification-support tool with a parity validation suite, and an explicit list of unqualified components (Mathlib trust, clang). Delivered as a document plus CI job.",
+      "effort_weeks": 3.0,
+      "payoff": 2.0,
+      "confidence": 0.4,
+      "external_pull": "standard: DO-330 / ISO 26262-8 tool confidence; community: HCSS / NASA formal-methods-in-certification groups",
+      "cross_domain_edge": {
+        "from": "lean_tooling",
+        "to": "certification",
+        "weight": 0.5,
+        "why": "The existing axiom auditor is already the shape of a DO-330 validation suite."
+      },
+      "status": "candidate",
+      "source_report": "IND.md"
+    },
+    {
+      "id": "IND-07",
+      "title": "WCET and schedulability evidence for zero-heap kernels via RTA proofs plus aiT-ready annotations",
+      "kind": "productionize",
+      "domains": [
+        "realtime_systems",
+        "codegen_certification"
+      ],
+      "builds_on": [
+        "ROBO-04"
+      ],
+      "unlocks": [
+        "IND-01",
+        "IND-03"
+      ],
+      "why_now": "aiT Release 25.04i (Apr 2025) is the qualified WCET tool for ISO 26262/DO-178C and consumes exactly the branch-light, loop-bounded C99 that ctrl emits; no verified control library found ships timing evidence alongside its proofs.",
+      "evidence": [
+        "https://www.absint.com/factsheets/factsheet_ait_arm_web.pdf",
+        "https://link.springer.com/chapter/10.1007/978-3-030-47487-4_2",
+        "https://arxiv.org/pdf/0710.4753"
+      ],
+      "prior_art": "AbsInt aiT and its qualification kits; RoboLean RealTime/CriticalInstant RTA proofs already in ctrl. No link between the two.",
+      "missing_capability": "Emit per-kernel loop-bound and no-recursion annotations in the C99 output, measure cycle counts on one Cortex-M/ARM target, and feed the measured/analysed WCETs into the Lean RTA fixpoint theorem to produce a machine-checked schedulability certificate for a sample task set.",
+      "effort_weeks": 3.0,
+      "payoff": 2.0,
+      "confidence": 0.4,
+      "external_pull": "standard: DO-178C timing objectives, ISO 26262 Part 6 resource usage; tool: AbsInt aiT users",
+      "cross_domain_edge": {
+        "from": "realtime_systems",
+        "to": "certification",
+        "weight": 0.5,
+        "why": "Turns ROBO-04's RTA theorems from a formalization exercise into certification evidence consumed with the kernels."
+      },
+      "status": "candidate",
+      "source_report": "IND.md"
+    },
+    {
+      "id": "IND-08",
+      "title": "Grant vehicle: FMitF Feb-2027 / AI-for-Math 2027 proposal for a verified-kernel-to-PLC pipeline",
+      "kind": "industrialize",
+      "domains": [
+        "codegen_certification",
+        "lean_tooling",
+        "prizes"
+      ],
+      "builds_on": [
+        "CTRL-01",
+        "EST-01",
+        "ROBO-04"
+      ],
+      "unlocks": [
+        "IND-02",
+        "IND-03"
+      ],
+      "why_now": "Every 2026 call relevant to this lane has closed (DARPA CLARA Apr 2026, NSF FMitF 17 Feb 2026, AI for Math Fund 30 Mar 2026, Horizon CL3 ECCC 15 Sep 2026); the next windows are plausibly FMitF Feb 2027 (third Tuesday pattern, unconfirmed) and AI for Math spring 2027 (fund topped up by $13M from XTX), and PROVERS is near its 42-month end, so DARPA follow-ons on 'software certification' are expected.",
+      "evidence": [
+        "https://www.nsf.gov/funding/opportunities/fmitf-formal-methods-field/nsf24-509/solicitation",
+        "https://www.renaissancephilanthropy.org/ai-for-math-fund",
+        "https://www.renaissancephilanthropy.org/ai-for-math-fund-2026-projects",
+        "https://renaissancephilanthropy.org/insights/renaissance-philanthropy-and-xtx-markets-additional-13-million",
+        "https://www.darpa.mil/sites/default/files/attachment/2026-04/clara-program-darpa-faqs.pdf",
+        "https://www.darpa.mil/sites/default/files/attachment/2025-04/darpa-portfolio-revolutionizing-cyber-resiliency-military-systems.pdf",
+        "https://www.darpa.mil/research/programs/pipelined-reasoning-of-verifiers-enabling-robust-systems",
+        "https://cybersecurity-centre.europa.eu/funding-opportunities/calls-proposals/cybersecurity-horizon-cl3-2026-02-cs-eccc_hr"
+      ],
+      "prior_art": "2026 AI for Math awards went largely to Lean projects (classification of finite simple groups, LeanExplore); FMitF funds formal-methods + domain pairings; CLARA mandated Apache-2.0 open source.",
+      "missing_capability": "A 2-page concept and a demo repo state (IND-02 or IND-03 partially done) ready for abstracts; requires an academic PI partner for FMitF (NSF eligibility), which ctrl does not currently have.",
+      "effort_weeks": 3.0,
+      "payoff": 4.0,
+      "confidence": 0.35,
+      "external_pull": "funding: NSF FMitF, Renaissance Philanthropy AI for Math Fund, DARPA follow-ons",
+      "cross_domain_edge": {
+        "from": "prizes",
+        "to": "certification",
+        "weight": 0.4,
+        "why": "Grant money is the only realistic way to fund the 8-week float-bound work that certification bodies will demand."
+      },
+      "status": "candidate",
+      "source_report": "IND.md"
+    },
+    {
+      "id": "IND-09",
+      "title": "Verified infusion-rate safety kernel against the FDA Generic PCA pump reference model",
+      "kind": "explore",
+      "domains": [
+        "codegen_certification",
+        "estimation",
+        "controls"
+      ],
+      "builds_on": [
+        "EST-01",
+        "CTRL-03"
+      ],
+      "unlocks": [],
+      "why_now": "The FDA-backed Generic PCA pump remains the open regulatory benchmark (UPPAAL/PVS verifications exist, 54 software-related Class-1 pump recalls since 2001), and a 2025 arXiv record shows continued interest in SPARK-style verification of syringe drivers; no 2025 FDA formal-methods guidance was found, so pull is academic/regulatory-sandbox rather than commercial.",
+      "evidence": [
+        "https://rtg.cis.upenn.edu/medical/gpca/gpca.html",
+        "https://repository.upenn.edu/cis_papers/358",
+        "https://repository.upenn.edu/cis_papers/758/",
+        "https://web3.arxiv.org/abs/2509.16681"
+      ],
+      "prior_art": "UPenn GPCA reference model, UPPAAL timed-automata translation, PVS UI verification, SPARK syringe driver dissertation (2022/2025).",
+      "missing_capability": "A Lean-verified scalar-Kalman flow estimator plus ISS-bounded rate limiter matching GPCA safety requirements, emitted as C99 with a parity test, and mapped to IEC 62304 class C verification items.",
+      "effort_weeks": 6.0,
+      "payoff": 2.0,
+      "confidence": 0.3,
+      "external_pull": "standard: IEC 62304 / FDA GPCA benchmark; community: medical CPS research groups",
+      "cross_domain_edge": {
+        "from": "estimation",
+        "to": "certification",
+        "weight": 0.3,
+        "why": "Scalar Kalman proofs already in ctrl map directly onto a regulated single-channel device."
+      },
+      "status": "candidate",
+      "source_report": "IND.md"
+    },
+    {
+      "id": "ROB-01",
+      "title": "Geometric SO(3)/SE(3) tracking certificate (Lee-Leok-McClamroch)",
+      "kind": "explore",
+      "domains": [
+        "robotics",
+        "nonlinear_safety",
+        "controls"
+      ],
+      "builds_on": [
+        "ROBO-03",
+        "NL-03",
+        "EST-02",
+        "NL-01"
+      ],
+      "unlocks": [
+        "ROB-13",
+        "ROB-04",
+        "ROBO-02"
+      ],
+      "why_now": "ISO 25785-1 (actively balanced robots) and drone RTA standards now ask for stability evidence; the July-2026 Lean control paper (arXiv 2607.19727) covers Lyapunov/small-gain but nothing on Lie groups, so SE(3) geometric control is the open Lean niche.",
+      "evidence": [
+        "https://arxiv.org/pdf/1003.2005",
+        "https://mathweb.ucsd.edu/~mleok/pdf/LeLeMc2013_complex.pdf",
+        "https://arxiv.org/pdf/1411.2986",
+        "https://pdf.arxiv.org/pdf/1304.6765",
+        "https://arxiv.org/pdf/2607.19727",
+        "https://rocq-prover.org/p/coq-robot"
+      ],
+      "prior_art": "Paper proofs only (Lee-Leok-McClamroch 2010/2013, Goodarzi-Lee-Lee PID/adaptive). coq-robot has static SO(3)/SE(3)/screws but no dynamics or Lyapunov; Isabelle AFP Lie groups are abstract; Mathlib LieGroup is abstract. No mechanized geometric tracking controller found.",
+      "missing_capability": "Lean theorems: attitude error function Psi(R,Rd)=1/2 tr(I - Rd^T R), error vector e_R, bounds 1/2|e_R|^2 <= Psi <= |e_R|^2/(2-Psi), dPsi/dt = e_R . e_Omega, and exponential convergence of the attitude/position tracking errors on the sublevel set {Psi < 2} for the rigid-body Euler equations; then the C99 kernel ctrl_geometric_so3_pd bound via @lean_theorem. Blueprint (rank 2): eigenvector-free route via adj X = X² − tr X·X + tr(adj X)·I and adj R = Rᵀ ⇒ R² = tR − tI + Rᵀ, giving ‖e_R‖² = Ψ(2−Ψ); ~850 LOC, 8–11 days; also discharges the hequiv hypothesis of SE3Kinematics.adjoint6_mul.",
+      "effort_weeks": 2.0,
+      "payoff": 4.0,
+      "confidence": 0.75,
+      "external_pull": "Drone/quadrotor industry and ASTM F3269 RTA; humanoid balance (ISO/CD 25785-1 working group led by Agility/Boston Dynamics)",
+      "cross_domain_edge": {
+        "from": "robotics",
+        "to": "nonlinear_safety",
+        "weight": 0.7,
+        "why": "The SO(3) error function is the Lyapunov function needed to certify any Lie-group CBF or geometric MPC terminal set."
+      },
+      "status": "candidate",
+      "source_report": "ROB.md"
+    },
+    {
+      "id": "ROB-02",
+      "title": "Invariant EKF: group-affine dynamics imply log-linear error on SE(3)/SE_2(3)",
+      "kind": "explore",
+      "domains": [
+        "estimation",
+        "robotics",
+        "math"
+      ],
+      "builds_on": [
+        "ROBO-03",
+        "EST-01",
+        "EST-02"
+      ],
+      "unlocks": [
+        "ROB-03",
+        "VIS-01"
+      ],
+      "why_now": "2025 work (arXiv 2506.01514) settled left/right-invariant equivalence under covariance reset, and contact-aided invariant EKFs are the de facto legged-robot estimator; no proof assistant has the core Barrau-Bonnabel theorem.",
+      "evidence": [
+        "https://arxiv.org/pdf/1410.1465",
+        "https://arxiv.org/pdf/2506.01514",
+        "https://arxiv.org/pdf/1903.05384",
+        "https://arxiv.org/pdf/1702.06680",
+        "https://arxiv.org/abs/2407.19211v1"
+      ],
+      "prior_art": "Barrau-Bonnabel (TAC) paper proofs; Isabelle AFP Lie Groups (abstract, no filtering); ctrl EST-01 is Euclidean Kalman. No mechanization found.",
+      "missing_capability": "Lean: definition of group-affine vector fields on matrix Lie groups (concrete SE(3) and SE_2(3) as 4x4/5x5 matrices), theorem that the invariant error eta = Xhat X^-1 obeys an autonomous ODE independent of the trajectory, the linearized error equation in the Lie algebra via adjoint6, and the resulting trajectory-independent Riccati equation; a Python/C99 IEKF kernel bound to these theorems.",
+      "effort_weeks": 5.0,
+      "payoff": 4.0,
+      "confidence": 0.75,
+      "external_pull": "Legged/humanoid state estimation (contact-aided InEKF), VIO/SLAM consistency community (OpenVINS)",
+      "cross_domain_edge": {
+        "from": "robotics",
+        "to": "estimation",
+        "weight": 0.8,
+        "why": "SE3Kinematics adjoint functoriality is exactly the algebra that makes the IEKF error dynamics linear."
+      },
+      "status": "candidate",
+      "source_report": "ROB.md"
+    },
+    {
+      "id": "ROB-03",
+      "title": "VIO observability: 4-dim unobservable subspace and FEJ consistency theorem",
+      "kind": "explore",
+      "domains": [
+        "estimation",
+        "vision",
+        "controls"
+      ],
+      "builds_on": [
+        "CTRL-05",
+        "EST-01",
+        "ROBO-03"
+      ],
+      "unlocks": [
+        "ROB-02",
+        "VIS-01"
+      ],
+      "why_now": "FEJ/OC-EKF are standard in every production VIO (OpenVINS, MSCKF) but the nullspace-preservation argument exists only as paper linear algebra; ctrl's dual-annihilator Observability.lean is the exact tool to state it coordinate-free.",
+      "evidence": [
+        "https://www-users.cse.umn.edu/~stergios/papers/ISER-2012-OC-VINS-MSCKF.pdf",
+        "https://intra.ece.ucr.edu/~mourikis/papers/Li2013IJRR.pdf",
+        "https://docs.ros.org/en/api/ov_core/html/fej.html",
+        "https://arxiv.org/pdf/2207.08214"
+      ],
+      "prior_art": "Kottas et al. ISER 2012, Li-Mourikis IJRR 2013, OpenVINS FEJ documentation; no proof-assistant formalization.",
+      "missing_capability": "Lean theorems: for the linearized IMU-camera error model, the explicit 4-column nullspace (global position, rotation about gravity) lies in the kernel of the observability matrix; evaluating Jacobians at first estimates preserves this kernel (FEJ), and naive re-linearization strictly shrinks it (the inconsistency counterexample as a theorem).",
+      "effort_weeks": 5.0,
+      "payoff": 4.0,
+      "confidence": 0.7,
+      "external_pull": "OpenVINS/MSCKF community; AR/VR and drone VIO vendors who need consistency arguments",
+      "cross_domain_edge": {
+        "from": "controls",
+        "to": "vision",
+        "weight": 0.7,
+        "why": "Coordinate-free observability from CTRL-05 turns a VIO folklore result into a theorem."
+      },
+      "status": "candidate",
+      "source_report": "ROB.md"
+    },
+    {
+      "id": "ROB-04",
+      "title": "Capturability / DCM push-recovery certificate composed with the ZMP allocator",
+      "kind": "explore",
+      "domains": [
+        "robotics",
+        "nonlinear_safety",
+        "codegen_certification"
+      ],
+      "builds_on": [
+        "NL-02",
+        "CTRL-04",
+        "ROBO-04"
+      ],
+      "unlocks": [
+        "ROB-12",
+        "ROB-11"
+      ],
+      "why_now": "ISO/CD 25785-1 targets loss-of-balance of actively stabilized robots (draft mid-2025, 3-year clock); Agility says the safety case was the hard part. ctrl already proves the friction-cone/ZMP deceleration bound; capture-point theory is the missing stepping half.",
+      "evidence": [
+        "https://www.iso.org/standard/91469.html",
+        "https://www.techbriefs.com/component/content/article/53111-safety-in-motion-setting-the-standard-for-humanoid-robots",
+        "https://www.designworldonline.com/?p=628358",
+        "https://arxiv.org/pdf/1901.08505.pdf",
+        "https://awesomepapers.io/robotics/papers/1903.08327"
+      ],
+      "prior_art": "Koolen/Pratt capturability and Englsberger DCM are paper theory (URLs not seen this session: search budget exhausted); IS-MPC proves CoM/ZMP stability from recursive feasibility; SOS on HZD (Walking with Confidence). No mechanization.",
+      "missing_capability": "Lean: LIPM divergent component xi' = omega (xi - p_zmp), closed-form 0-step and 1-step capture regions as explicit sets, theorem that a step inside the region with ZMP inside the (Lean-verified) 4-contact support polygon yields bounded xi; composition with NL-02 gives an end-to-end 'no tip-over under push of magnitude F' certificate and a C99 kernel for MuJoCo quadruped/humanoid push tests.",
+      "effort_weeks": 4.0,
+      "payoff": 5.0,
+      "confidence": 0.65,
+      "external_pull": "ISO TC299/WG12 humanoid safety standard; Agility, Boston Dynamics, Figure, Unitree safety cases",
+      "cross_domain_edge": {
+        "from": "certification",
+        "to": "robotics",
+        "weight": 0.6,
+        "why": "A quantitative tip-over bound is the artefact the draft standard's risk categories are asking for."
+      },
+      "status": "candidate",
+      "source_report": "ROB.md"
+    },
+    {
+      "id": "ROB-05",
+      "title": "Hybrid systems in Lean: Poincare-map orbit stability and non-Zeno conditions (HZD skeleton)",
+      "kind": "explore",
+      "domains": [
+        "controls",
+        "robotics",
+        "math"
+      ],
+      "builds_on": [
+        "CTRL-03",
+        "CTRL-05",
+        "EST-02"
+      ],
+      "unlocks": [
+        "ROB-04",
+        "ROB-11"
+      ],
+      "why_now": "Hybrid-system formalization lives only in Isabelle (dL AFP, Foster/Munive) and KeYmaera X; the July-2026 Lean control paper claims hybrid coverage only at the statement level. Legged-robot HZD results (arXiv 2509.00294, Sept 2025) are proved by hand.",
+      "evidence": [
+        "https://devel.isa-afp.org/entries/Differential_Dynamic_Logic.html",
+        "https://repositum.tuwien.at/handle/20.500.12708/136157",
+        "https://logic.kastel.kit.edu/ap/pub/VeriPhy.pdf",
+        "https://arxiv.org/abs/2509.00294v1",
+        "https://grizzle.robotics.umich.edu/files/Robotic_Walking_HSCC_2015.pdf",
+        "https://arxiv.org/pdf/2607.19727"
+      ],
+      "prior_art": "Isabelle/HOL dL (Bohrer CPP 2017), Foster-Munive hybrid verification, KeYmaera X/VeriPhy; nothing in Lean; no mechanized HZD or Zeno results anywhere.",
+      "missing_capability": "Lean: hybrid system with flow + guard + reset, executions, a sufficient non-Zeno condition (dwell time), and the theorem that an exponentially stable fixed point of the Poincare map (via existing discrete Lyapunov/Jury results) gives a stable hybrid periodic orbit; then HZD: invariance of the zero-dynamics surface under reset.",
+      "effort_weeks": 8.0,
+      "payoff": 3.0,
+      "confidence": 0.55,
+      "external_pull": "Legged locomotion community (Ames/Grizzle lineage); hybrid-systems verification community",
+      "cross_domain_edge": {
+        "from": "controls",
+        "to": "robotics",
+        "weight": 0.5,
+        "why": "Discrete-time Lyapunov machinery already in ctrl becomes the stability engine for gaits via the Poincare map."
+      },
+      "status": "candidate",
+      "source_report": "ROB.md"
+    },
+    {
+      "id": "ROB-06",
+      "title": "Neural CBF soundness bridge: TorchLean bounds to a Lean forward-invariance theorem",
+      "kind": "explore",
+      "domains": [
+        "nonlinear_safety",
+        "lean_tooling",
+        "robotics"
+      ],
+      "builds_on": [
+        "NL-02",
+        "CTRL-03",
+        "NL-01"
+      ],
+      "unlocks": [
+        "ROB-13",
+        "ROB-12"
+      ],
+      "why_now": "TorchLean (Feb 2026, ICML 2026) gives Lean-checkable IBP/CROWN certificates for networks, and 2025-2026 neural-CBF verifiers (symbolic derivative bounds, linear bound propagation, LightCROWN) are all external numeric tools; nobody has closed the loop to a machine-checked safety theorem.",
+      "evidence": [
+        "https://arxiv.org/abs/2602.22631",
+        "https://reservoir.lean-lang.org/@lean-dojo/TorchLean",
+        "https://proceedings.mlr.press/v270/hu25a.html",
+        "https://proceedings.mlr.press/v331/vertovec26a.html",
+        "https://arxiv.org/pdf/2310.09360",
+        "https://arxiv.org/html/2410.02038v1"
+      ],
+      "prior_art": "TorchLean (network semantics + bound checking, no CBF); Zhang et al. exact ReLU NCBF verification, Hu 2025, Vertovec 2026 (numeric); shielding papers (AAAI 2025, realizable shields) without provers.",
+      "missing_capability": "Lean theorem: if a cover of the safe-set boundary band by boxes is given, h is L-Lipschitz on each box and the sampled CBF condition holds with margin L*diam, then the CBF inequality holds everywhere; combined with ctrl's discrete-time CBF forward-invariance theorem this yields closed-loop safety from a TorchLean-checked certificate. Deliverable: a certificate format + checker and one MuJoCo example.",
+      "effort_weeks": 4.0,
+      "payoff": 4.0,
+      "confidence": 0.75,
+      "external_pull": "Safe-RL / learning-based control community; TorchLean maintainers; any robot vendor shipping learned safety filters",
+      "cross_domain_edge": {
+        "from": "nonlinear_safety",
+        "to": "lean_tooling",
+        "weight": 0.7,
+        "why": "Turns ctrl's CBF theorems into the consumer of TorchLean's bound certificates."
+      },
+      "status": "candidate",
+      "source_report": "ROB.md"
+    },
+    {
+      "id": "ROB-07",
+      "title": "Machine-checked optimality certificates for Wahba/Kabsch and pose-graph SDP duals",
+      "kind": "explore",
+      "domains": [
+        "vision",
+        "math",
+        "robotics"
+      ],
+      "builds_on": [
+        "VIS-01",
+        "MATH-01",
+        "ROBO-03"
+      ],
+      "unlocks": [
+        "ROB-08",
+        "ROB-02"
+      ],
+      "why_now": "Certifiable perception (SE-Sync, TEASER++, Burer-Monteiro overview 2024, certified SLAM talks Nov 2025, 2026 correct-by-construction pose estimation) all rely on post-hoc dual certificates checked in floating point; ctrl already has exact rational LDL^T positive-definiteness certificates from the Byers-Nash work.",
+      "evidence": [
+        "https://arxiv.org/pdf/1611.00128",
+        "https://arxiv.org/pdf/1505.03437",
+        "https://arxiv.org/abs/2001.07715",
+        "https://arxiv.org/pdf/2410.00117",
+        "https://ar5iv.labs.arxiv.org/html/2206.12961",
+        "https://square.itu.dk/11-11-2025-square-talk-certified-slam-an-overview-by-ola-ronning/",
+        "https://arxiv.org/pdf/2601.17556"
+      ],
+      "prior_art": "SE-Sync, Carlone-Rosen duality-gap theorems, TEASER++ (Douglas-Rachford certification), landmark-SLAM certificates; none in a proof assistant.",
+      "missing_capability": "Lean: weak-duality theorem for the quadratic rotation (Wahba) problem over the orthogonal/SO(3) constraint set, theorem that a rational dual matrix Z with (Q - Z) PSD (checked by exact LDL^T) and complementary slackness certifies global optimality of a candidate R; same for the SE-Sync-style pose-graph Lagrangian; a kernel that emits and checks such certificates for ICP/registration outputs.",
+      "effort_weeks": 5.0,
+      "payoff": 5.0,
+      "confidence": 0.75,
+      "external_pull": "MIT-SPARK / certifiable-perception community; citable first machine-checked perception certificate",
+      "cross_domain_edge": {
+        "from": "math",
+        "to": "vision",
+        "weight": 0.8,
+        "why": "Exact rational PSD certificates developed for an open matrix inequality become proof-carrying perception outputs."
+      },
+      "status": "candidate",
+      "source_report": "ROB.md"
+    },
+    {
+      "id": "ROB-08",
+      "title": "Minimal-solver degeneracies and RANSAC bounds as theorems",
+      "kind": "explore",
+      "domains": [
+        "vision",
+        "math"
+      ],
+      "builds_on": [
+        "VIS-01",
+        "MATH-04"
+      ],
+      "unlocks": [
+        "ROB-07",
+        "ROB-09"
+      ],
+      "why_now": "2025 Galois-group computations for minimal problems and the CVPR-2022 instability theory show solver degeneracies are an active topic; OpenCV P3P instability bug reports (2025) show industrial pain; ctrl already has rank-8 uniqueness and cheirality, so the degenerate complement is one step away.",
+      "evidence": [
+        "https://arxiv.org/pdf/2507.10407",
+        "https://openaccess.thecvf.com/content/CVPR2022/papers/Fan_On_the_Instability_of_Relative_Pose_Estimation_and_RANSACs_Role_CVPR_2022_paper.pdf",
+        "https://hub.harborframework.com/tasks/abundant/opencv__opencv-27736",
+        "https://arxiv.org/pdf/1007.1432",
+        "https://arxiv.org/pdf/2309.08690"
+      ],
+      "prior_art": "Classical results (Hartley-Zisserman, Grunert P3P, Maybank critical surfaces) and recent algebraic-geometry papers; no mechanization.",
+      "missing_capability": "Lean: (a) coplanar scene points force a rank drop of the 8-point constraint matrix so the essential matrix is not unique (complement of eq_smul_of_rank_eq_eight) and the homography path is the correct fallback; (b) P3P has at most 4 physical solutions and the danger-cylinder configuration is singular; (c) RANSAC iteration bound N >= log(1-p)/log(1-w^s) via Mathlib probability; (d) chirality selects a unique pose among the 4 essential-matrix decompositions.",
+      "effort_weeks": 3.0,
+      "payoff": 3.0,
+      "confidence": 0.7,
+      "external_pull": "OpenCV/COLMAP maintainers; SfM vendors; teaching",
+      "cross_domain_edge": {
+        "from": "math",
+        "to": "vision",
+        "weight": 0.5,
+        "why": "Rank/Galois-theoretic facts about minimal problems become executable preconditions for solvers."
+      },
+      "status": "candidate",
+      "source_report": "ROB.md"
+    },
+    {
+      "id": "ROB-09",
+      "title": "Zhang camera calibration from planar homographies (image of the absolute conic)",
+      "kind": "explore",
+      "domains": [
+        "vision",
+        "math"
+      ],
+      "builds_on": [
+        "VIS-01"
+      ],
+      "unlocks": [
+        "ROB-08",
+        "ROBO-02"
+      ],
+      "why_now": "Every HBVS/visual-servoing and SfM deployment assumes a calibrated K; ctrl's homography and 4-point rigidity theorems make the two linear constraints per view a short derivation, and no proof assistant has any calibration theory.",
+      "evidence": [
+        "https://users.ece.northwestern.edu/~yingwu/teaching/EECS432/Reading/Zhang_TR98.pdf",
+        "https://arxiv.org/pdf/1707.09332",
+        "https://www.ce.unipr.it/people/medici/geometry_en/node163.html"
+      ],
+      "prior_art": "Zhang TR98 / Sturm-Maybank; textbook treatments; nothing mechanized.",
+      "missing_capability": "Lean: H = K [r1 r2 t] implies h1^T omega h2 = 0 and h1^T omega h1 = h2^T omega h2 with omega = K^-T K^-1; three views in general position determine omega up to scale; recovery of K by Cholesky; plus the rational-arithmetic checker in the Python runtime.",
+      "effort_weeks": 3.0,
+      "payoff": 3.0,
+      "confidence": 0.8,
+      "external_pull": "Camera/vision pipelines; completes the 'verified visual servoing' story for ROBO-02",
+      "cross_domain_edge": {
+        "from": "vision",
+        "to": "robotics",
+        "weight": 0.4,
+        "why": "A verified K closes the gap between the HBVS theorems and real cameras."
+      },
+      "status": "candidate",
+      "source_report": "ROB.md"
+    },
+    {
+      "id": "ROB-10",
+      "title": "Laplacian consensus and displacement-based formation control",
+      "kind": "explore",
+      "domains": [
+        "controls",
+        "robotics",
+        "math"
+      ],
+      "builds_on": [
+        "CTRL-03",
+        "CTRL-05",
+        "ROBO-04"
+      ],
+      "unlocks": [
+        "EST-03",
+        "ROB-12"
+      ],
+      "why_now": "2026 surveys and preprints (SoK on consensus verification; sheaf-theoretic planning) explicitly list Lyapunov consensus stability as unverified future work; Mathlib now has SimpleGraph.lapMatrix with kernel = connected components, so convergence is one Lyapunov step away.",
+      "evidence": [
+        "https://arxiv.org/pdf/2608.21935",
+        "https://arxiv.org/pdf/2605.01879",
+        "https://arxiv.org/pdf/0902.4098",
+        "https://hal-univ-tlse3.archives-ouvertes.fr/INRIA/inria-00539899"
+      ],
+      "prior_art": "Isabelle verification of fault-tolerant discrete consensus (Charron-Bost/Merz), Veil in Lean (protocols); no mechanized Laplacian/dynamical consensus or formation control.",
+      "missing_capability": "Lean: for a connected undirected graph, x' = -L x converges to the average (continuous) and x+ = (I - eps L) x converges for eps < 2/lambda_max (discrete, via DiscreteLyapunov); displacement-based formation as consensus on offsets; link to FleetDeadlock for warehouse fleets; C99 kernel.",
+      "effort_weeks": 3.0,
+      "payoff": 3.0,
+      "confidence": 0.8,
+      "external_pull": "Warehouse fleet vendors (Geek+, Locus-type) and swarm-drone research; cited gap in 2026 preprints",
+      "cross_domain_edge": {
+        "from": "math",
+        "to": "robotics",
+        "weight": 0.6,
+        "why": "Mathlib spectral graph theory becomes a multi-robot convergence certificate."
+      },
+      "status": "candidate",
+      "source_report": "ROB.md"
+    },
+    {
+      "id": "ROB-11",
+      "title": "Whole-body task-priority projection and N-contact closed-form wrench feasibility",
+      "kind": "explore",
+      "domains": [
+        "robotics",
+        "nonlinear_safety"
+      ],
+      "builds_on": [
+        "NL-02",
+        "ROBO-03",
+        "NL-03"
+      ],
+      "unlocks": [
+        "ROB-04",
+        "ROB-12"
+      ],
+      "why_now": "Humanoid loco-manipulation stacks (multi-contact MPC 2022-2025, contact-implicit MPC 2024-2025) have no feasibility guarantees; ctrl's 4-contact bilinear allocator with zero torque drift is the only closed-form verified piece and generalizing it to N contacts plus a verified priority projection is the natural next kernel.",
+      "evidence": [
+        "https://arxiv.org/pdf/1901.08505.pdf",
+        "https://arxiv.org/pdf/2408.07855",
+        "https://arxiv.org/pdf/2510.19974",
+        "https://deepai.org/publication/multi-contact-mpc-for-dynamic-loco-manipulation-on-humanoid-robots"
+      ],
+      "prior_art": "IS-MPC recursive feasibility (paper); hierarchical QP / null-space projection literature (URLs not seen this session); no mechanization.",
+      "missing_capability": "Lean: strict task-priority null-space projection P = I - J^+ J leaves higher-priority task residuals unchanged (Moore-Penrose algebra, extending the Pythagorean nullspace IK); N-contact generalization of the bilinear ZMP + proportional shear allocator with explicit Lorentz-cone feasibility conditions and zero net torque; C99 kernel + MuJoCo humanoid benchmark.",
+      "effort_weeks": 4.0,
+      "payoff": 4.0,
+      "confidence": 0.65,
+      "external_pull": "Humanoid companies replacing 1 kHz QPs with certified closed forms; ISO 25785-1 evidence",
+      "cross_domain_edge": {
+        "from": "robotics",
+        "to": "realtime_systems",
+        "weight": 0.5,
+        "why": "Closed-form allocation removes solver non-convergence from the WCET analysis in ROBO-04."
+      },
+      "status": "candidate",
+      "source_report": "ROB.md"
+    },
+    {
+      "id": "ROB-12",
+      "title": "ISO 25785-1 / ISO 3691-4 verified safety-function evidence pack",
+      "kind": "industrialize",
+      "domains": [
+        "codegen_certification",
+        "robotics",
+        "realtime_systems"
+      ],
+      "builds_on": [
+        "NL-02",
+        "ROBO-03",
+        "ROBO-04",
+        "CTRL-03"
+      ],
+      "unlocks": [
+        "ROB-04",
+        "ROB-11"
+      ],
+      "why_now": "ISO/CD 25785-1 is in committee draft (started July 2025, 3-year timeline) with Agility and Boston Dynamics leading; ISO 3691-4:2023 requires every AMR safety function to be verified; vendors cannot certify against a draft but can design against it now and want reusable evidence.",
+      "evidence": [
+        "https://www.iso.org/standard/91469.html",
+        "https://www.i-scoop.eu/iso-25785-1-explained-and-what-it-means-for-humanoid-robot-safety/",
+        "https://novanta.com/?p=980",
+        "https://www.technologyreview.com/2025/06/11/1118519/humanoids-safety-rules/amp/",
+        "https://www.fabrico.io/blog/iso-3691-4-driverless-industrial-trucks/",
+        "https://www.geekplus.com/resources/knowledge-base/amr-safety-standards-and-compliance-the-enterprise-guide-to-risk-mitigation-and-operational-excellence"
+      ],
+      "prior_art": "No formal-methods artefacts referenced by either standard; vendor guides give worked stopping-distance examples only.",
+      "missing_capability": "A documented package: (1) AMR protective-field/stopping-distance kernel from Unicycle arc odometry + CBF braking with a Lean-proved bound, (2) tip-over/friction-cone deceleration bound from NL-02 (+ ROB-04 when available), (3) RTA/Simplex switching from ROBO-04, each with C99/IEC 61131-3 ST output, axiom audit report and traceability matrix mapped to the draft clauses.",
+      "effort_weeks": 4.0,
+      "payoff": 4.0,
+      "confidence": 0.6,
+      "external_pull": "ISO TC299/WG12 participants (Agility, Boston Dynamics, A3), AMR vendors under ISO 3691-4; TUV/UL assessors",
+      "cross_domain_edge": {
+        "from": "certification",
+        "to": "codegen",
+        "weight": 0.6,
+        "why": "Standards want testable artefacts; the C99/ST kernels plus Lean audit are the artefact."
+      },
+      "status": "candidate",
+      "source_report": "ROB.md"
+    },
+    {
+      "id": "ROB-13",
+      "title": "ASTM F3269 run-time-assurance geofence kernel for drones",
+      "kind": "industrialize",
+      "domains": [
+        "codegen_certification",
+        "robotics",
+        "nonlinear_safety",
+        "realtime_systems"
+      ],
+      "builds_on": [
+        "ROBO-04",
+        "NL-02",
+        "CTRL-03"
+      ],
+      "unlocks": [
+        "ROB-01",
+        "ROB-06"
+      ],
+      "why_now": "ASTM F3269 RTA is the accepted route to bound uncertified autopilots (GE M100 program), NASA proved geofence constraints in PVS, and the 2025-2026 shielding literature is converging on the same enforcer pattern; a Lean-verified enforcer with a C99 kernel is directly reusable.",
+      "evidence": [
+        "https://par.nsf.gov/servlets/purl/10215462",
+        "https://ntrs.nasa.gov/api/citations/20190000716/downloads/20190000716.pdf",
+        "https://elib.dlr.de/118317",
+        "https://uh-ir.tdl.org/items/b7c29e04-4c39-4f0b-a530-3063b1e39974/full",
+        "https://arxiv.org/html/2410.02038v1"
+      ],
+      "prior_art": "NASA PVS geofence proofs; GE F3269 implementation; DLR Lola monitors; VeriPhy monitors. None in Lean, none with an SE(3) stability certificate behind the recovery controller.",
+      "missing_capability": "Lean: enforcer soundness (if the monitored command would exit the keep-in polytope within the reaction horizon then the verified recovery controller is engaged and keeps the state inside, using the CBF/ISS bounds), Simplex switching from RoboLean, exported as C99 and tested in a MuJoCo quadrotor benchmark; later backed by ROB-01's SE(3) certificate.",
+      "effort_weeks": 4.0,
+      "payoff": 4.0,
+      "confidence": 0.6,
+      "external_pull": "UAS integrators seeking FAA/EASA waivers via ASTM F3269; drone OEMs",
+      "cross_domain_edge": {
+        "from": "realtime_systems",
+        "to": "certification",
+        "weight": 0.5,
+        "why": "RTA is where verified WCET switching and verified control bounds meet a published aviation standard."
+      },
+      "status": "candidate",
+      "source_report": "ROB.md"
+    },
+    {
+      "id": "EST-04",
+      "title": "Willems' Fundamental Lemma and DeePC certificate in Lean",
+      "kind": "explore",
+      "domains": [
+        "controls",
+        "estimation",
+        "math"
+      ],
+      "builds_on": [
+        "CTRL-04",
+        "CTRL-05",
+        "EST-01"
+      ],
+      "unlocks": [
+        "EST-09",
+        "EST-12",
+        "EST-10"
+      ],
+      "why_now": "Dec 2025 KTH preprint shows the stochastic DeePC decision subspace is the null space of the Kalman-predictor innovation Hankel, tying data-driven control to ctrl's Kalman predictor; Jan 2026 results classify all DeePC reformulations; no proof assistant has the lemma.",
+      "evidence": [
+        "https://arxiv.org/abs/2512.14520v1",
+        "https://arxiv.org/pdf/2209.06414",
+        "https://arxiv.org/pdf/2102.02953",
+        "https://ar5iv.org/html/1903.06842",
+        "https://ar5iv.labs.arxiv.org/html/2303.08707",
+        "https://www.imperial.ac.uk/events/146099/data-driven-control-of-general-linear-systems-extensions-of-the-fundamental-lemma-for-stochastic-and-descriptor-settings"
+      ],
+      "prior_art": "Paper proofs only: Willems et al. 2005, De Persis-Tesi 2019 (arXiv 1903.06842), van Waarde et al. controllability relaxations (arXiv 2102.02953). No Lean/Coq/Isabelle mechanization found in standard or extended search.",
+      "missing_capability": "Lean definitions of persistency of excitation and Hankel trajectory matrix; theorem that every length-L trajectory of a controllable LTI lies in the Hankel column span (and converse); corollary data-driven LQR/MPC predictor with recursive feasibility via MPCFeasibility.lean. Blueprint (rank 3): state-space Willems lemma via ctrl's reach_eq_reach_finrank monic Krylov relation and one downward induction; ~700 LOC, 7–10 days; main risk is shift-lemma indexing.",
+      "effort_weeks": 2.0,
+      "payoff": 4.0,
+      "confidence": 0.75,
+      "external_pull": "Data-driven control community (Dörfler/Coulson DeePC, De Persis-Tesi); citable first formalization; CDC/L4DC venue",
+      "cross_domain_edge": {
+        "from": "estimation",
+        "to": "controls",
+        "weight": 0.8,
+        "why": "Kalman innovation null space (EST-01) is exactly the stochastic DeePC constraint subspace."
+      },
+      "status": "candidate",
+      "source_report": "EST.md"
+    },
+    {
+      "id": "EST-05",
+      "title": "H-infinity (minimax) filter via dual Bounded Real Lemma",
+      "kind": "explore",
+      "domains": [
+        "estimation",
+        "controls"
+      ],
+      "builds_on": [
+        "CTRL-02",
+        "EST-01",
+        "CTRL-01"
+      ],
+      "unlocks": [
+        "EST-14",
+        "EST-15",
+        "EST-06"
+      ],
+      "why_now": "BoundedRealHInf.lean already proves the completion-of-squares and worst-case-disturbance tightness; the filter-side dual is a few hundred lines away and no ITP has an H-inf filter.",
+      "evidence": [
+        "https://folk.ntnu.no/skoge/prost/proceedings/ifac2002/data/content/00060/60.pdf",
+        "https://arxiv.org/pdf/1812.08307"
+      ],
+      "prior_art": "Shaked-Theodor 1992 (BRL-derived a priori/a posteriori H-inf filter gains), Park-Kailath 1997 LMI form, Zhou-Doyle Riccati form; none mechanized.",
+      "missing_capability": "Indefinite estimation Riccati with feasibility condition P^-1 + C^T C - gamma^-2 I > 0, l2-gain bound from (process,measurement) noise to estimation error, worst-case tightness, and comparison with the Joseph/Kalman gain. Blueprint (docs/research/2026-10-wave2/BLUEPRINTS.md, rank 1): time-varying a posteriori H∞ filter ℓ²-gain bound by two completions of the square (no Schur/Woodbury), ~450 LOC, 5–7 days. Must be the a posteriori filter; the same storage function fails for the a priori output.",
+      "effort_weeks": 1.2,
+      "payoff": 3.0,
+      "confidence": 0.8,
+      "external_pull": "Robust estimation users in aerospace/automotive where noise statistics are unknown; direct reuse in EST-14/EST-15",
+      "cross_domain_edge": {
+        "from": "controls",
+        "to": "estimation",
+        "weight": 0.9,
+        "why": "The existing H-inf Bounded Real Lemma dualizes almost verbatim to the minimax filter."
+      },
+      "status": "candidate",
+      "source_report": "EST.md"
+    },
+    {
+      "id": "EST-06",
+      "title": "Invariant EKF on SO(3)/SE(3): log-linear autonomous error dynamics",
+      "kind": "explore",
+      "domains": [
+        "estimation",
+        "robotics",
+        "math"
+      ],
+      "builds_on": [
+        "ROBO-03",
+        "EST-01",
+        "EST-02",
+        "CTRL-03"
+      ],
+      "unlocks": [
+        "EST-15",
+        "VIS-01",
+        "ROBO-02"
+      ],
+      "why_now": "IEKF is now the default estimator for legged robots and IMU dead reckoning (2024-2026 InEKF/DRIFT work, iterated IEKF 2024) with zero machine-checked guarantees; ctrl's SE(3) adjoint functoriality module supplies the needed Lie machinery.",
+      "evidence": [
+        "https://arxiv.org/pdf/1410.1465",
+        "https://arxiv.org/pdf/1310.2539",
+        "https://arxiv.org/abs/2404.10665v2",
+        "https://arxiv.org/html/2403.16252v1",
+        "https://par.nsf.gov/biblio/10632263",
+        "https://m.roboticsproceedings.org/rss14/p50.html"
+      ],
+      "prior_art": "Barrau-Bonnabel 2015/2017 (paper proofs of autonomy of invariant error and local stability), Hartley et al. RSS 2018 contact-aided InEKF; no formalization found.",
+      "missing_capability": "Lean theorem: group-affine dynamics implies invariant error obeys a state-independent linear ODE in log coordinates (log-linear property); discrete-time IEKF covariance Riccati on the Lie algebra; SE_2(3) IMU model and ISS envelope for the linearization remainder.",
+      "effort_weeks": 5.0,
+      "payoff": 4.0,
+      "confidence": 0.7,
+      "external_pull": "Legged-robot and GNSS/INS industry adoption of InEKF; citable first formalization of invariant filtering",
+      "cross_domain_edge": {
+        "from": "robotics",
+        "to": "estimation",
+        "weight": 0.85,
+        "why": "SE(3) adjoint functoriality (ROBO-03) is the exact algebra that makes IEKF error dynamics autonomous."
+      },
+      "status": "candidate",
+      "source_report": "EST.md"
+    },
+    {
+      "id": "EST-07",
+      "title": "Unscented transform sigma-point moment-matching exactness",
+      "kind": "explore",
+      "domains": [
+        "estimation",
+        "math"
+      ],
+      "builds_on": [
+        "EST-01"
+      ],
+      "unlocks": [
+        "EST-14",
+        "EST-06"
+      ],
+      "why_now": "2026 polynomial-UKF and higher-order UT papers restate the moment-matching claims; a small finite-sum Lean proof settles exactly which moments the symmetric 2n+1 set matches and for which kappa.",
+      "evidence": [
+        "https://arxiv.org/pdf/2603.20259",
+        "https://arxiv.org/pdf/2006.13429"
+      ],
+      "prior_art": "Julier-Uhlmann classical UT; HOUT (arXiv 2006.13429) has an appendix moment-matching proof; no mechanization found.",
+      "missing_capability": "Lean lemmas: symmetric sigma set reproduces mean and covariance exactly given any S with S S^T = P, all odd central moments vanish, fourth-moment condition on kappa; statement of third-order Gaussian exactness.",
+      "effort_weeks": 2.0,
+      "payoff": 2.0,
+      "confidence": 0.8,
+      "external_pull": "UKF is ubiquitous in BMS SoC and navigation stacks; feeds EST-14",
+      "cross_domain_edge": {
+        "from": "math",
+        "to": "estimation",
+        "weight": 0.4,
+        "why": "Pure polynomial-identity proof style already used in ctrl applies directly."
+      },
+      "status": "candidate",
+      "source_report": "EST.md"
+    },
+    {
+      "id": "EST-08",
+      "title": "Rauch-Tung-Striebel fixed-interval smoother and two-filter equivalence",
+      "kind": "explore",
+      "domains": [
+        "estimation"
+      ],
+      "builds_on": [
+        "EST-01"
+      ],
+      "unlocks": [
+        "EST-12",
+        "VIS-01"
+      ],
+      "why_now": "Batch/factor-graph estimation (GTSAM-style) is smoothing; ctrl has forward Joseph and Woodbury but no backward pass, which is the missing half of offline calibration and SLAM back-ends.",
+      "evidence": [
+        "https://arxiv.org/pdf/2111.04979"
+      ],
+      "prior_art": "Textbook RTS 1965 and two-filter smoothers; no ITP formalization found (search budget exhausted before fetching a canonical source; standard result).",
+      "missing_capability": "Backward gain recursion, smoothed covariance recursion, proof that the smoothed estimate is MMSE given all data, and equivalence with information-form backward pass via InformationFilter.lean.",
+      "effort_weeks": 3.0,
+      "payoff": 3.0,
+      "confidence": 0.7,
+      "external_pull": "SLAM/visual-inertial back-ends (GTSAM) and offline sensor calibration",
+      "cross_domain_edge": {
+        "from": "estimation",
+        "to": "vision",
+        "weight": 0.5,
+        "why": "Smoothing is the estimator behind bundle-adjustment-style pose graphs that VIS-01 feeds."
+      },
+      "status": "candidate",
+      "source_report": "EST.md"
+    },
+    {
+      "id": "EST-09",
+      "title": "Moving-horizon estimation robust stability via i-IOSS and MPC duality",
+      "kind": "explore",
+      "domains": [
+        "estimation",
+        "controls",
+        "nonlinear_safety"
+      ],
+      "builds_on": [
+        "CTRL-04",
+        "CTRL-03",
+        "EST-01"
+      ],
+      "unlocks": [
+        "EST-10",
+        "EST-14"
+      ],
+      "why_now": "Knufer-Muller/Allan-Rawlings settled nonlinear MHE RGAS via i-IOSS in 2021-2023 and the data-based MHE dual of DeePC appeared; MPCFeasibility.lean's shifted-tail proof is the exact dual argument.",
+      "evidence": [
+        "https://arxiv.org/pdf/2105.02764",
+        "https://ar5iv.arxiv.org/html/2305.06614",
+        "https://arxiv.org/pdf/2203.16090",
+        "https://arxiv.org/pdf/2111.04979"
+      ],
+      "prior_art": "Knufer-Muller 2021 (time-discounted FIE/MHE RGAS iff i-IOSS), Schiller-Muller Lyapunov function for MHE, Allan-Rawlings FIE; no mechanization.",
+      "missing_capability": "Lean definition of (time-discounted) i-IOSS; full-information estimator cost compatibility; theorem that MHE with sufficiently long horizon is robustly globally exponentially stable.",
+      "effort_weeks": 5.0,
+      "payoff": 3.0,
+      "confidence": 0.65,
+      "external_pull": "Process-control and automotive MHE users (constrained estimation); academic citation",
+      "cross_domain_edge": {
+        "from": "controls",
+        "to": "estimation",
+        "weight": 0.7,
+        "why": "MPC recursive-feasibility machinery dualizes to MHE horizon arguments."
+      },
+      "status": "candidate",
+      "source_report": "EST.md"
+    },
+    {
+      "id": "EST-10",
+      "title": "Chance-constrained / CVaR stochastic MPC recursive feasibility",
+      "kind": "explore",
+      "domains": [
+        "controls",
+        "estimation",
+        "nonlinear_safety"
+      ],
+      "builds_on": [
+        "CTRL-04",
+        "EST-01",
+        "CTRL-03"
+      ],
+      "unlocks": [
+        "NL-02",
+        "EST-11"
+      ],
+      "why_now": "2025-2026 wave: SMPC recursive feasibility under unbounded disturbances (arXiv 2504.17718), CVaR-in-cost-and-constraints with exponential stability, DR-MPC with disturbance-affine feedback (Apr 2026); none mechanized and Mathlib now has the kernel/Ionescu-Tulcea infrastructure.",
+      "evidence": [
+        "https://arxiv.org/pdf/2504.17718",
+        "https://par.nsf.gov/servlets/purl/10617656",
+        "https://www.emergentmind.com/papers/2604.12555",
+        "https://arxiv.org/abs/2109.09558",
+        "https://arxiv.org/abs/2602.19867"
+      ],
+      "prior_art": "Hewing-Zeilinger PRS, Lorenzen first-step constraint, Mark-Liu DR tube MPC; Bøving-Matheja ITP 2026 Lean MDP/HeyVL is the closest formal infrastructure.",
+      "missing_capability": "Lean CVaR definition and convexity, tube/PRS constraint tightening lemma, and recursive feasibility + mean-square stability theorem for a linear SMPC with Kalman state estimate.",
+      "effort_weeks": 6.0,
+      "payoff": 3.0,
+      "confidence": 0.55,
+      "external_pull": "Stochastic MPC adoption in energy and automotive; risk-sensitive control literature",
+      "cross_domain_edge": {
+        "from": "estimation",
+        "to": "nonlinear_safety",
+        "weight": 0.6,
+        "why": "Kalman covariance feeds the probabilistic reachable set used to tighten CBF/MPC constraints."
+      },
+      "status": "candidate",
+      "source_report": "EST.md"
+    },
+    {
+      "id": "EST-11",
+      "title": "Conformal prediction coverage theorem and CP-based safe control",
+      "kind": "explore",
+      "domains": [
+        "estimation",
+        "controls",
+        "math"
+      ],
+      "builds_on": [
+        "EST-01",
+        "CTRL-04"
+      ],
+      "unlocks": [
+        "EST-10",
+        "NL-02"
+      ],
+      "why_now": "Lindemann-Pappas et al. survey (revised Apr/Aug 2025) made CP the standard distribution-free safety tool for learned predictors in control; the exchangeability coverage theorem is unformalized in any prover and Mathlib now has the probability base to do it.",
+      "evidence": [
+        "https://arxiv.org/abs/2409.00536v3",
+        "https://arxiv.org/pdf/2411.11824",
+        "https://arxiv.org/pdf/2107.07511",
+        "https://ar5iv.labs.arxiv.org/html/2202.13415"
+      ],
+      "prior_art": "Paper proofs (Vovk; Angelopoulos-Bates; Theoretical Foundations of CP 2024); no Lean/Isabelle artifact found.",
+      "missing_capability": "Mathlib-level exchangeable finite sequences and rank/quantile lemma; split-conformal 1-alpha coverage theorem; corollary CP-tube constraint tightening for MPC.",
+      "effort_weeks": 4.0,
+      "payoff": 4.0,
+      "confidence": 0.7,
+      "external_pull": "Learning-enabled CPS verification community (CPS-VO tutorials 2025); strong citation potential",
+      "cross_domain_edge": {
+        "from": "math",
+        "to": "controls",
+        "weight": 0.7,
+        "why": "A one-page probabilistic theorem unlocks distribution-free safety for learned predictors inside verified MPC."
+      },
+      "status": "candidate",
+      "source_report": "EST.md"
+    },
+    {
+      "id": "EST-12",
+      "title": "Ho-Kalman realization correctness and finite-sample system identification",
+      "kind": "explore",
+      "domains": [
+        "estimation",
+        "controls",
+        "math"
+      ],
+      "builds_on": [
+        "CTRL-05",
+        "EST-01"
+      ],
+      "unlocks": [
+        "EST-04",
+        "EST-08"
+      ],
+      "why_now": "Finite-sample Ho-Kalman theory matured 2021-2025 (Oymak-Ozay TAC 2021, Tsiamis-Pappas, Sun-Wang 2025 pole bounds) and is the bridge between ctrl's Gramian modules and learning-based control; deterministic core is pure linear algebra already present.",
+      "evidence": [
+        "https://par.nsf.gov/servlets/purl/10312038",
+        "https://arxiv.org/pdf/1903.09122",
+        "https://arxiv.org/html/2503.16331v5",
+        "https://ar5iv.labs.arxiv.org/html/1912.12309"
+      ],
+      "prior_art": "Ho-Kalman 1966, Kung; Oymak-Ozay/Tsiamis-Pappas sample complexity; no mechanization found.",
+      "missing_capability": "Lean theorem that the Hankel matrix of Markov parameters factors as observability x controllability with rank n, and that the balanced realization recovers (A,B,C) up to similarity; optional concentration-bound layer.",
+      "effort_weeks": 3.0,
+      "payoff": 3.0,
+      "confidence": 0.75,
+      "external_pull": "System identification and learning-based control community; sets up EST-04",
+      "cross_domain_edge": {
+        "from": "controls",
+        "to": "estimation",
+        "weight": 0.6,
+        "why": "Gramian/observability modules give both Hankel factors for free."
+      },
+      "status": "candidate",
+      "source_report": "EST.md"
+    },
+    {
+      "id": "EST-13",
+      "title": "Point-based POMDP value iteration error bounds (PBVI/SARSOP) on Smallwood-Sondik",
+      "kind": "explore",
+      "domains": [
+        "estimation",
+        "robotics",
+        "math"
+      ],
+      "builds_on": [
+        "EST-03",
+        "ROBO-04"
+      ],
+      "unlocks": [
+        "ROBO-04"
+      ],
+      "why_now": "No POMDP mechanization exists (TUM lists it as an open thesis topic; Isabelle/Coq/Lean MDP libraries stop at full observability); 2025 tighter POMDP value-bound work renews interest; ctrl already has the PWLC backup.",
+      "evidence": [
+        "https://wwwnipkow.cs.tum.edu/students/verified_planning_under_uncertainty/index.html",
+        "https://arxiv.org/pdf/1110.0027.pdf",
+        "https://arxiv.org/pdf/2502.06523",
+        "https://www.ri.cmu.edu/?p=9237",
+        "https://ojs.aaai.org/index.php/AAAI/article/view/26759/26531",
+        "https://reservoir.lean-lang.org/@formalproofs/mdplib"
+      ],
+      "prior_art": "Isabelle MDP (Schaffeler-Abdulaziz AFP 2021/AAAI 2023), Coq CertRL, Lean mdplib (finite-horizon DP, VaR MDPs), AFP Hidden Markov Models (forward/Viterbi); none handle belief-space value bounds.",
+      "missing_capability": "Lean proof that the alpha-vector backup is a gamma-contraction in sup norm over the simplex, the Pineau-Gordon-Thrun point-based error bound in terms of belief-set density, and the sawtooth upper bound used by SARSOP.",
+      "effort_weeks": 3.0,
+      "payoff": 3.0,
+      "confidence": 0.8,
+      "external_pull": "Verified planning under uncertainty (TUM/Nipkow group interest), robotics POMDP planners",
+      "cross_domain_edge": {
+        "from": "estimation",
+        "to": "robotics",
+        "weight": 0.5,
+        "why": "Certified epsilon-optimal belief planning plugs into fleet scheduling under uncertainty (ROBO-04)."
+      },
+      "status": "candidate",
+      "source_report": "EST.md"
+    },
+    {
+      "id": "EST-14",
+      "title": "Verified Joseph/EKF battery state-of-charge kernel for ISO 26262 / EU battery passport",
+      "kind": "industrialize",
+      "domains": [
+        "estimation",
+        "codegen_certification",
+        "realtime_systems"
+      ],
+      "builds_on": [
+        "EST-01",
+        "SED",
+        "ROBO-04",
+        "CTRL-03"
+      ],
+      "unlocks": [
+        "EST-07",
+        "EST-05"
+      ],
+      "why_now": "EU Battery Regulation 2023/1542 makes the battery passport (SoH/SoC data from the BMS) mandatory from 18 Feb 2027; ISO/PAS 8800 + ISO 26262 assessments of SoC estimators appeared in 2025; no public ISO 26262 safety case for an EKF SoC estimator exists.",
+      "evidence": [
+        "https://codibly.com/blog/articles/eu-battery-regulation-passport-bess-operators",
+        "https://www.eurobat.org/wp-content/uploads/2025/12/EUROBAT-position-on-provisions-of-data-resulting-from-battery-uses-_.pdf",
+        "https://www.tuvsud.com/en-us/knowledge-hub/articles/understanding-the-new-eu-battery-regulation",
+        "https://arxiv.org/abs/2509.03270v1",
+        "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC12049525/",
+        "https://www.prismmodelchecker.org/bibitem.php?key=EP21"
+      ],
+      "prior_art": "Many EKF SoC implementations (HIL/MCU studies); PRISM model checking of KF numerical divergence (Evangelidis-Parker); ASIL-rated sensing hardware (LEM); no verified estimator software.",
+      "missing_capability": "Thevenin equivalent-circuit model + EKF Jacobian spec in Lean, Joseph-form update theorem bound to a @lean_theorem C99 kernel with IEEE-754 parity test, ISS envelope for linearization error, and a traceability package mapping theorems to ISO 26262 Part 6 work products.",
+      "effort_weeks": 6.0,
+      "payoff": 4.0,
+      "confidence": 0.5,
+      "external_pull": "EU battery passport deadline Feb 2027; BMS suppliers (ISO 26262 ASIL B-D); ISO/PAS 8800 assessors",
+      "cross_domain_edge": {
+        "from": "estimation",
+        "to": "certification",
+        "weight": 0.8,
+        "why": "A machine-checked covariance update is the kind of evidence ISO 26262 tool-qualification arguments lack for BMS software."
+      },
+      "status": "candidate",
+      "source_report": "EST.md"
+    },
+    {
+      "id": "EST-15",
+      "title": "Kalman-filter integrity monitor and protection levels for GNSS/INS",
+      "kind": "industrialize",
+      "domains": [
+        "estimation",
+        "codegen_certification",
+        "robotics"
+      ],
+      "builds_on": [
+        "EST-01",
+        "EST-05",
+        "EST-06"
+      ],
+      "unlocks": [
+        "ROBO-04"
+      ],
+      "why_now": "ARAIM is moving beyond aviation (EC-funded ARAIMTOO; Racelis-Joerger 2026 modified HPL) and KF-based RAIM is being patented for autonomous takeoff/landing; filter-based integrity (recursive VPL) has no machine-checked treatment.",
+      "evidence": [
+        "https://image-ppubs.uspto.gov/dirsearch-public/print/downloadPdf/12153147",
+        "https://koasas.kaist.ac.kr/handle/10203/265428",
+        "https://www.gmv.com/de-de/kommunikation/veranstaltungen/araim-fuer-anwendungen-jenseits-der-luftfahrt",
+        "https://navi.ion.org/index.php/admin/highwire/citation/153335/medlars_journal",
+        "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC9786326/",
+        "https://arxiv.org/pdf/2104.13908"
+      ],
+      "prior_art": "DO-229 snapshot RAIM, ARAIM (Stanford/Blanch), KAIST KF integrity architecture, Honeywell filter-augmented RAIM patents; power-grid WLS bad-data chi-square test (arXiv 2104.13908) is the same residual algebra; none mechanized.",
+      "missing_capability": "Lean theorems for innovation covariance S = C P C^T + R, normalized-innovation chi-square monitor correctness, worst-case-slope protection-level bound (least-squares and Joseph-recursive forms), bound to a C99 kernel.",
+      "effort_weeks": 5.0,
+      "payoff": 3.0,
+      "confidence": 0.5,
+      "external_pull": "GNSS receiver and automotive localization vendors; ISO 21448 SOTIF arguments; power-grid state estimation reuse",
+      "cross_domain_edge": {
+        "from": "estimation",
+        "to": "certification",
+        "weight": 0.6,
+        "why": "Residual-test correctness is shared by aviation integrity, automotive localization and grid bad-data detection."
+      },
+      "status": "candidate",
+      "source_report": "EST.md"
+    },
+    {
+      "id": "MATH-05",
+      "title": "Byers–Nash n=6: replace the false cross-term route with a local-lemma + rational-SDP-cover proof",
+      "kind": "explore",
+      "domains": [
+        "math",
+        "controls",
+        "prizes"
+      ],
+      "builds_on": [
+        "MATH-01",
+        "EST-02",
+        "CTRL-01"
+      ],
+      "unlocks": [
+        "MATH-06"
+      ],
+      "why_now": "arXiv:2608.20875 (Aug 2026) reportedly refutes the symmetric-maximizer conjecture for every n >= 7 while Chen–Tian settled n <= 5, leaving n = 6 as the only open order; ctrl already holds the rank <= 4 exclusion and 10/10 rational LDL^T certificates for that case.",
+      "evidence": [
+        "https://epubs.siam.org/doi/10.1137/140974031",
+        "https://arxiv.org/pdf/2608.20875",
+        "https://scholar.hit.edu.cn/en/publications/note-on-on-the-singular-vectors-of-the-lyapunov-operator-by-r-bye/"
+      ],
+      "prior_art": "Byers–Nash 1987 (flawed Thm 9); Chen–Tian 2015 proof for n<=5; 2026 counterexample preprint for n>=7; no Lean work besides ctrl lean/Research/ByersNash*.lean",
+      "missing_capability": "Wave-2 numerics (docs/research/2026-10-wave2/BYERS_NASH_N6.md) found no n=6 violation in 144 SDP-dual ascents, but showed the 'single remaining cross-term inequality' is FALSE with margin: every comparator family the Lean modules build is block-diagonal in K's Darboux frame, and exact rational certificates show k > s_BD (ratios down to 0.970). A proof must use that K is the top skew singular vector and symmetric partners outside block-diagonal ∪ rank-one families. Most viable route: the static form N(−YK) ≤ 1 (13 parameters after symmetry), a second-order local lemma at the rank-4 atoms, and a finite cover of exact rational SDP decompositions (exact.py is the verifier). The docs' '90% / one cross-term left' claim should be withdrawn.",
+      "effort_weeks": 12.0,
+      "payoff": 4.0,
+      "confidence": 0.3,
+      "external_pull": "citable resolution of the last open case of a named SIAM conjecture; Palomar registry entry; Lyapunov-conditioning guarantee for CARE/Kalman–Bucy solvers",
+      "cross_domain_edge": {
+        "from": "math",
+        "to": "estimation",
+        "weight": 0.6,
+        "why": "k(A) <= s(A) at n=6 certifies symmetric-cone conditioning checks for 6-state Riccati/Lyapunov solvers used in EST-02."
+      },
+      "status": "candidate",
+      "source_report": "MATH.md"
+    },
+    {
+      "id": "MATH-06",
+      "title": "Priority rescue: link Erdős 834 (and the 1148/367 variants) in Formal Conjectures, correct the claimed counts",
+      "kind": "industrialize",
+      "domains": [
+        "prizes",
+        "lean_tooling",
+        "math"
+      ],
+      "builds_on": [
+        "MATH-04"
+      ],
+      "unlocks": [
+        "MATH-09"
+      ],
+      "why_now": "Since 2026-10-17 plby/lean-proofs added ctrl problems 291 and 367 and Erdős 261 was registered on Palomar by a third party; 363 of 424 solved FC statements already carry formal_proof links, and ctrl has no PR in TheJustinSunPrize/awards.",
+      "evidence": [
+        "https://raw.githubusercontent.com/plby/lean-proofs/main/data/sources.yaml",
+        "https://github.com/google-deepmind/formal-conjectures/blob/main/CONTRIBUTING.md",
+        "https://raw.githubusercontent.com/TheJustinSunPrize/awards/main/docs/award-process.md",
+        "https://github.com/TheJustinSunPrize/awards/tree/main/awards"
+      ],
+      "prior_art": "plby/lean-proofs (563 problems), Jayyhk/williamjblair/anatoliiohorodnyk/linrock/Woett repos; 9 JSP awards so far (4 Lean, all to W. van Doorn)",
+      "missing_capability": "Per the 2026-10-24 audit: FC formal_proof link for erdos_834.parts.ii (proof on main at erdos/ErdosLab/Erdos834.lean), short inline FC proofs or links for erdos_1148.variants.weaker and erdos_367.variants.k_le_two, optional Palomar entry for 834, a type_of% check binding each proof to the FC theorem, and removal of the 17 unsupported numbers from README/STATUS/portfolio docs. No JSP filing: every exact main-statement proof is already covered by others.",
+      "effort_weeks": 1.0,
+      "payoff": 2.0,
+      "confidence": 0.85,
+      "external_pull": "Formal Conjectures solved-status credit, Palomar citation; credibility of the repo's public claims",
+      "cross_domain_edge": {
+        "from": "prizes",
+        "to": "lean_tooling",
+        "weight": 0.5,
+        "why": "A reusable statement-faithfulness + lean-verify + Palomar packaging script serves every future claim."
+      },
+      "status": "candidate",
+      "source_report": "MATH.md"
+    },
+    {
+      "id": "MATH-07",
+      "title": "Discrete KYP, easy direction (LMI ⇒ FDI) and 'H∞ Riccati certificate is a KYP certificate'",
+      "kind": "explore",
+      "domains": [
+        "controls",
+        "math",
+        "lean_tooling"
+      ],
+      "builds_on": [
+        "CTRL-02",
+        "CTRL-03",
+        "CTRL-05"
+      ],
+      "unlocks": [
+        "MATH-08",
+        "NL-01"
+      ],
+      "why_now": "No KYP formalization exists in Lean, Isabelle or Coq (only an unverified 2026 Lur'e-systems repo), while Formal Conjectures now routes research-grade formal proofs to Palomar and ctrl already has the Bounded Real Lemma and controllability machinery the proof needs.",
+      "evidence": [
+        "https://github.com/AEjonanonymous/Improving-on-Popov",
+        "https://en.wikipedia.org/wiki/Kalman%E2%80%93Yakubovich%E2%80%93Popov_lemma",
+        "https://github.com/leanprover-community/mathlib4/blob/master/Mathlib/Analysis/Matrix/Spectrum.lean"
+      ],
+      "prior_art": "Classical proofs (Willems optimal-control route, spectral factorization); ctrl BoundedRealHInf.lean, Gramian.lean, Reachability.lean; Mathlib lacks numerical range and Lyapunov equations",
+      "missing_capability": "Blueprint: the LMI ⇒ frequency-domain direction plus the bridge from BoundedRealHInf certificates is ~350 LOC, 3–4 days. The converse (Rantzer duality) needs a spectral theorem for normal/unitary matrices that Mathlib lacks, ~20–30 days; defer it. No prior KYP formalization exists (the one Lean repo mentioning KYP assumes its key step and has six sorries).",
+      "effort_weeks": 0.8,
+      "payoff": 3.0,
+      "confidence": 0.85,
+      "external_pull": "Mathlib/Palomar credibility; absolute-stability certificates demanded by safety-critical controls (IEC 61508 style evidence)",
+      "cross_domain_edge": {
+        "from": "controls",
+        "to": "nonlinear_safety",
+        "weight": 0.7,
+        "why": "KYP turns ctrl's linear H-infinity/ISS certificates into Lur'e absolute-stability guarantees for sector-bounded nonlinearities."
+      },
+      "status": "candidate",
+      "source_report": "MATH.md"
+    },
+    {
+      "id": "MATH-08",
+      "title": "Kharitonov theorem and interval-Hurwitz stability certificates",
+      "kind": "productionize",
+      "domains": [
+        "controls",
+        "math",
+        "codegen_certification"
+      ],
+      "builds_on": [
+        "CTRL-05"
+      ],
+      "unlocks": [
+        "MATH-07",
+        "ROBO-04"
+      ],
+      "why_now": "A 2026 preprint claims a Lean 4 formalization of an SPR-synthesis theorem for sixth-order interval polynomial families, signalling demand, but Kharitonov itself is still unformalized and ctrl already has Routh–Hurwitz for degrees 2 and 3.",
+      "evidence": [
+        "https://arxiv.org/html/2609.26541",
+        "https://people.engr.tamu.edu/spb/books/robustcontrol/chapter05.pdf",
+        "https://www.tandfonline.com/doi/full/10.1080/21642583.2026.2646370"
+      ],
+      "prior_art": "Kharitonov 1978; Bhattacharyya–Chapellat–Keel textbook; ctrl Hurwitz2/Hurwitz3.lean; no Mathlib Hermite–Biehler theorem",
+      "missing_capability": "Lean proof of the four-vertex-polynomial criterion for degrees <= 4 (via explicit Routh tables) and a C99 kernel emitting the interval-stability check for PLC/robot controllers",
+      "effort_weeks": 3.0,
+      "payoff": 2.0,
+      "confidence": 0.75,
+      "external_pull": "robust-stability evidence for certification packages; Mathlib contribution",
+      "cross_domain_edge": {
+        "from": "controls",
+        "to": "certification",
+        "weight": 0.5,
+        "why": "Interval-coefficient stability is the form in which plant uncertainty is specified in safety cases."
+      },
+      "status": "candidate",
+      "source_report": "MATH.md"
+    },
+    {
+      "id": "MATH-09",
+      "title": "Formalize the few remaining unlinked solved Erdős problems with 2026 papers (1033, 348, 1133, 633)",
+      "kind": "explore",
+      "domains": [
+        "math",
+        "prizes"
+      ],
+      "builds_on": [
+        "MATH-04"
+      ],
+      "unlocks": [],
+      "why_now": "Only 15 solved FC main statements lack any external Lean proof as of 2026-10-21; four of them (Fan 1988 degree-sum, Geneson 2609.25107, Yang 2609.14769, Beeson–Laczkovich–Zhang 2604.03609) have self-contained modern papers and no merged JSP record.",
+      "evidence": [
+        "https://github.com/google-deepmind/formal-conjectures/commits/main",
+        "https://github.com/google-deepmind/formal-conjectures/pull/6787",
+        "https://raw.githubusercontent.com/TheJustinSunPrize/awards/main/problems/README.md"
+      ],
+      "prior_art": "FC files 1033/348/1133/633.lean (statements only); open JSP PRs exist for 1033 and 1133; plby has none of the four",
+      "missing_capability": "Complete sorry-free proofs of the FC main statements (not variants) in a public ctrl repo with pinned SHAs",
+      "effort_weeks": 6.0,
+      "payoff": 2.0,
+      "confidence": 0.35,
+      "external_pull": "JSP formalizer share (legacy process), Formal Conjectures link, Palomar entry",
+      "cross_domain_edge": {
+        "from": "math",
+        "to": "lean_tooling",
+        "weight": 0.3,
+        "why": "Extremal-graph and interpolation proofs stress finite-combinatorics automation reusable elsewhere."
+      },
+      "status": "candidate",
+      "source_report": "MATH.md"
+    },
+    {
+      "id": "MATH-10",
+      "title": "SAIR Lean Kernel Challenge entries for the permanent and polynomial-discriminant problems",
+      "kind": "industrialize",
+      "domains": [
+        "lean_tooling",
+        "math",
+        "prizes"
+      ],
+      "builds_on": [
+        "CTRL-05",
+        "MATH-04"
+      ],
+      "unlocks": [],
+      "why_now": "Stage 1 (deadline 2026-11-20 AoE) scores kernel-reducible verified algorithms by instruction count; two of the eight tasks (0/1 permanent, exact discriminant of a degree-24 monic polynomial) are matrix/polynomial computations close to ctrl's companion-matrix and determinant proofs.",
+      "evidence": [
+        "https://github.com/SAIRcompetition/lean-kernel-challenge",
+        "https://github.com/SAIRcompetition",
+        "https://terrytao.wordpress.com/2026/09/16/sair-competition-lean-kernel-challenge/"
+      ],
+      "prior_art": "Starter repo with Spec.lean per problem; unofficial community harnesses (Amey-Thakur/SAIR-LEAN-KERNEL-CHALLENGE)",
+      "missing_capability": "Kernel-efficient verified Ryser/Gray-code permanent and resultant-based discriminant implementations with proofs against the fixed Spec.lean",
+      "effort_weeks": 3.0,
+      "payoff": 2.0,
+      "confidence": 0.6,
+      "external_pull": "XTX-funded SAIR competition, recognition only (Tao, de Moura, Morrison, Breitner organizers)",
+      "cross_domain_edge": {
+        "from": "lean_tooling",
+        "to": "codegen",
+        "weight": 0.4,
+        "why": "Instruction-count-optimized kernel algorithms transfer to verified numeric kernels in the C99 codegen path."
+      },
+      "status": "candidate",
+      "source_report": "MATH.md"
+    },
+    {
+      "id": "MATH-11",
+      "title": "Absolute-stability package: Lean-checked Kalman/Aizerman counterexamples and the n<=3 positive case",
+      "kind": "explore",
+      "domains": [
+        "controls",
+        "nonlinear_safety",
+        "math"
+      ],
+      "builds_on": [
+        "CTRL-02",
+        "NL-01"
+      ],
+      "unlocks": [
+        "MATH-07"
+      ],
+      "why_now": "With KYP (MATH-07) in place, machine-checked Fitts/Leonov–Kuznetsov counterexamples plus the low-dimensional positive results would be the first formal account of a classical control conjecture; a 2026 Lean Lur'e project shows community interest but no verified status.",
+      "evidence": [
+        "https://github.com/AEjonanonymous/Improving-on-Popov"
+      ],
+      "prior_art": "Kalman 1957, Aizerman 1949, Fitts 1966, Leonov–Kuznetsov hidden-oscillation analyses (background, not re-verified this session)",
+      "missing_capability": "Exact-arithmetic certificate of a periodic orbit for a 4th-order Lur'e counterexample and Lean proofs of the n<=3 Kalman-conjecture cases",
+      "effort_weeks": 5.0,
+      "payoff": 2.0,
+      "confidence": 0.4,
+      "external_pull": "citation value in control theory; Palomar if judged research-grade",
+      "cross_domain_edge": {
+        "from": "nonlinear_safety",
+        "to": "controls",
+        "weight": 0.4,
+        "why": "Hidden-oscillation counterexamples are the canonical warning for sector-based safety filters."
+      },
+      "status": "candidate",
+      "source_report": "MATH.md"
+    },
+    {
+      "id": "TOOL-01",
+      "title": "ctrl MCP server exposing scratch, check, search, audit and the idea index",
+      "kind": "productionize",
+      "domains": [
+        "lean_tooling"
+      ],
+      "builds_on": [
+        "CTRL-01",
+        "MATH-01",
+        "SED"
+      ],
+      "unlocks": [
+        "TOOL-02",
+        "TOOL-08",
+        "TOOL-11"
+      ],
+      "why_now": "lean-lsp-mcp (534 stars) and cameronfreer/lean4-skills (468 stars) made MCP the de facto agent interface to Lean in 2026; MCP 2025-11-25 resources with audience/priority annotations fit the idea index exactly; Claude Code/Codex/Cursor all speak it.",
+      "evidence": [
+        "https://github.com/oOo0oOo/lean-lsp-mcp",
+        "https://github.com/oOo0oOo/lean-lsp-mcp/blob/main/docs/tools.md",
+        "https://github.com/cameronfreer/lean4-skills",
+        "https://modelcontextprotocol.io/specification/2025-11-25/server/resources"
+      ],
+      "prior_art": "lean-lsp-mcp (generic LSP/search tools), gleachkr/aristotle-mcp, PyPantograph; none expose project-specific tactic cheat sheets, axiom audits as a Lake target, bounty triage, or a curated idea index as resources.",
+      "missing_capability": "A `ctrl mcp` subcommand (Python, stdio) wrapping scratch_check.sh, check.sh --fast, loogle.sh, Audit.lean and triage, plus resources ctrl://ideas/{id}, ctrl://theorems/{name}, ctrl://playbook, so any agent host can drive ctrl without the Ollama loop; ship a SKILL.md for the host.",
+      "effort_weeks": 2.0,
+      "payoff": 3.0,
+      "confidence": 0.8,
+      "external_pull": "community demand: lean4-skills + lean-lsp-mcp user base; Claude Code plugin marketplace",
+      "cross_domain_edge": {
+        "from": "lean_tooling",
+        "to": "math",
+        "weight": 0.6,
+        "why": "Gives frontier agents (Aristotle, Claude Code) direct access to the Research-branch sorries and idea index."
+      },
+      "status": "candidate",
+      "source_report": "TOOL.md"
+    },
+    {
+      "id": "TOOL-02",
+      "title": "Prover-tuned inner loop: Goedel-Prover-V2-8B plus kimina-lean-server batch verification and LSP goal feedback",
+      "kind": "productionize",
+      "domains": [
+        "lean_tooling"
+      ],
+      "builds_on": [
+        "SED"
+      ],
+      "unlocks": [
+        "TOOL-09"
+      ],
+      "why_now": "Goedel-Prover-V2-8B (Apache-2.0, 84.6% miniF2F pass@32) matches 671B DeepSeek-Prover-V2 and runs on one consumer GPU; kimina-lean-server ships Docker images with configurable Lean versions; ctrl loop still uses a generic 7B coder with no goal-state feedback.",
+      "evidence": [
+        "https://github.com/Goedel-LM/Goedel-Prover-V2",
+        "https://iclr.cc/virtual/2026/poster/10007912",
+        "https://github.com/project-numina/kimina-lean-server",
+        "https://github.com/lean-dojo/LeanCopilot"
+      ],
+      "prior_art": "Goedel-V2 verifier is pinned to Lean 4.9 + Mathlib 2f65ba7; Lean Copilot tracks v4.35/v4.36.0-rc1; LeanTool wires Pantograph into Aider/Cline. Nobody has measured prover-model gain on Mathlib-heavy control lemmas.",
+      "missing_capability": "Replace the single-shot Ollama call in loop.py with (a) a prover model served via Ollama/vLLM, (b) N-sample batch verification through kimina-lean-server against ctrl's own Mathlib v4.36 build, (c) lean_goal/lean_multi_attempt feedback between rounds; report solve-rate on a held-out set of ctrl lemmas.",
+      "effort_weeks": 3.0,
+      "payoff": 3.0,
+      "confidence": 0.6,
+      "external_pull": "community: prover-model authors seek out-of-distribution benchmarks; no customer",
+      "cross_domain_edge": {
+        "from": "lean_tooling",
+        "to": "controls",
+        "weight": 0.4,
+        "why": "Faster lemma closure directly accelerates CTRL/EST/NL theorem throughput."
+      },
+      "status": "candidate",
+      "source_report": "TOOL.md"
+    },
+    {
+      "id": "TOOL-03",
+      "title": "Upstream four named Mathlib gaps: exp(tA) derivative and x'=Ax, det exp = exp trace, Loewner inverse antitone, PSD Schur complement",
+      "kind": "explore",
+      "domains": [
+        "math",
+        "controls",
+        "lean_tooling"
+      ],
+      "builds_on": [
+        "CTRL-01",
+        "CTRL-02",
+        "EST-02"
+      ],
+      "unlocks": [
+        "TOOL-10"
+      ],
+      "why_now": "Verified against Mathlib master today: MatrixExponential.lean has no derivative/ODE lemma and carries a TODO for det-exp-trace; Order.lean has the Loewner order but no inverse antitonicity; PosDef.fromBlocks₁₁ needs PosDef+Invertible; SVD matrix PRs were closed unmerged in Nov 2025/Apr 2026 and Jordan form is absent, so small targeted PRs are welcome.",
+      "evidence": [
+        "https://github.com/leanprover-community/mathlib4/blob/master/Mathlib/Analysis/Normed/Algebra/MatrixExponential.lean",
+        "https://github.com/leanprover-community/mathlib4/blob/master/Mathlib/Analysis/Matrix/Order.lean",
+        "https://github.com/leanprover-community/mathlib4/blob/master/Mathlib/LinearAlgebra/Matrix/PosDef.lean",
+        "https://github.com/leanprover-community/mathlib4/pulls?q=is%3Apr+singular+value+decomposition",
+        "https://icml.cc/virtual/2026/82531"
+      ],
+      "prior_art": "Mathlib Jordan-Chevalley, NormedSpace.exp, Loewner order (Order.lean), Schur determinant lemmas; arXiv 2607.19727 and LeanForControl formalize control on top of Mathlib without upstreaming; MathlibPR shows review is the bottleneck.",
+      "missing_capability": "Mathlib-style PRs (<300 lines each) for HasDerivAt (t ↦ exp (t•A)), uniqueness of x'=Ax, det_exp, PosSemidef inverse antitone and congruence monotone under the MatrixOrder scope, and fromBlocks PSD criterion with PosSemidef A via a pseudo-inverse or kernel condition; ctrl then depends on them.",
+      "effort_weeks": 6.0,
+      "payoff": 3.0,
+      "confidence": 0.6,
+      "external_pull": "community: Mathlib maintainers; explicit TODO in MatrixExponential.lean",
+      "cross_domain_edge": {
+        "from": "math",
+        "to": "controls",
+        "weight": 0.7,
+        "why": "Continuous-time CARE/Kalman-Bucy/Lyapunov integrals all need the exp(tA) ODE lemma."
+      },
+      "status": "candidate",
+      "source_report": "TOOL.md"
+    },
+    {
+      "id": "TOOL-04",
+      "title": "Finish going public: Reservoir listing, stable toolchain pin, record the public-since date",
+      "kind": "industrialize",
+      "domains": [
+        "lean_tooling",
+        "prizes"
+      ],
+      "builds_on": [
+        "SED"
+      ],
+      "unlocks": [
+        "TOOL-03",
+        "TOOL-06",
+        "TOOL-09",
+        "TOOL-11",
+        "MATH-01",
+        "MATH-02"
+      ],
+      "why_now": "The repo is public as of 2026-10-24 (GitHub API), so the remaining work is the Reservoir listing, replacing the v4.36.0-rc1 pin with a stable toolchain, and documenting the public-since date that JSP/Palomar priority depends on.",
+      "evidence": [
+        "https://raw.githubusercontent.com/RileyBetts/lean-tee/main/docs/GETTING_STARTED.md",
+        "https://github.com/leanprover/reservoir",
+        "https://github.com/leanprover/reservoir-index",
+        "https://github.com/TheJustinSunPrize/awards",
+        "https://theplatformengineering.substack.com/p/github-actions-2026-pricing-changes"
+      ],
+      "prior_art": "Reservoir already lists LeanCopilot, Pantograph, NormalForms, leanr; BOUNTIES.md already documents the JSP public-repo rule.",
+      "missing_capability": "Flip visibility, add GitHub topics (lean4, control-theory, mathlib), bump lakefile keywords, move from v4.36.0-rc1 to the matching stable tag when released, verify Reservoir pickup or add a manual reservoir-index entry.",
+      "effort_weeks": 1.0,
+      "payoff": 3.0,
+      "confidence": 0.9,
+      "external_pull": "Justin Sun Prize public-repo rule; Reservoir inclusion criteria",
+      "cross_domain_edge": {
+        "from": "lean_tooling",
+        "to": "prizes",
+        "weight": 0.8,
+        "why": "Prize eligibility and formalizer attribution both require an earliest public commit."
+      },
+      "status": "candidate",
+      "source_report": "TOOL.md"
+    },
+    {
+      "id": "TOOL-05",
+      "title": "Cedar-style compiled-Lean oracle with differential random testing against the C99/ST kernels",
+      "kind": "productionize",
+      "domains": [
+        "codegen_certification",
+        "realtime_systems"
+      ],
+      "builds_on": [
+        "ROBO-01",
+        "ROBO-02",
+        "EST-01",
+        "CTRL-01"
+      ],
+      "unlocks": [
+        "TOOL-06",
+        "TOOL-10"
+      ],
+      "why_now": "Lean 4.30.0 (May 2026) completed the LCNF C emission path; AWS runs Cedar (Lean model + Rust, millions of DRT inputs, release-gated) and SampCert (Lean via C FFI, in AWS Clean Rooms) in production, so the pattern is industrially accepted; ctrl's parity test today is 8.88e-16 Python-vs-C on hand-emitted code with no executable Lean in the loop.",
+      "evidence": [
+        "https://www.amazon.science/blog/how-we-built-cedar-with-automated-reasoning-and-differential-testing",
+        "https://github.com/cedar-policy/cedar-spec/tree/main/cedar-lean-ffi",
+        "https://github.com/leanprover/SampCert/blob/main/REPRODUCING.md",
+        "https://github.com/leanprover/lean4/blob/master/src/Lean/Compiler/IR/EmitC.lean",
+        "https://lean-lang.org/doc/reference/latest/releases/v4.30.0/"
+      ],
+      "prior_art": "Cedar verification-guided development; SampCert FFI + extractor; VeriPhy (verified executables via HOL4/CakeML); Galois Lean robotics demo. None covers control kernels with rational certificates.",
+      "missing_capability": "For each @lean_theorem kernel, a computable Lean definition (over ℚ or Float) compiled with `lake build` and linked through FFI/CLI, a property-based harness feeding identical inputs to Lean, Python, C99 and ST interpreters, and a release gate like Cedar's (no kernel ships unless model, proofs and DRT are current).",
+      "effort_weeks": 4.0,
+      "payoff": 4.0,
+      "confidence": 0.6,
+      "external_pull": "customer-recognized pattern (AWS Cedar/SampCert); SEooC buyers expect executable evidence",
+      "cross_domain_edge": {
+        "from": "codegen",
+        "to": "certification",
+        "weight": 0.8,
+        "why": "Differential testing is the artifact assessors accept as the bridge from proof to shipped C."
+      },
+      "status": "candidate",
+      "source_report": "TOOL.md"
+    },
+    {
+      "id": "TOOL-06",
+      "title": "Kernel certificate bundle: JSON-LD per kernel with axiom audit, toolchain SHAs, code hashes, parity results and external re-check",
+      "kind": "industrialize",
+      "domains": [
+        "codegen_certification",
+        "lean_tooling"
+      ],
+      "builds_on": [
+        "ROBO-01",
+        "ROBO-02",
+        "ROBO-03",
+        "VIS-01"
+      ],
+      "unlocks": [
+        "TOOL-10"
+      ],
+      "why_now": "2026 Lean papers already ship proof-carrying certificates checked under pinned toolchains; Lean4Lean gives an independent typechecker; lean-lsp-mcp's lean_verify shows agents want machine-readable axiom evidence; ctrl's Audit.lean output is currently a CI log line.",
+      "evidence": [
+        "https://arxiv.org/pdf/2606.09600",
+        "https://arxiv.org/abs/2403.14064",
+        "https://github.com/oOo0oOo/lean-lsp-mcp/blob/main/docs/tools.md",
+        "https://github.com/mlcommons/croissant"
+      ],
+      "prior_art": "Apex.AI ASIL-D SEooC artifact packs; Certora enterprise retainers with written rules; Lean covering-code certificates; AGENT_IDEA_INDEX.json schema 1.0.0.",
+      "missing_capability": "A `ctrl certify <kernel>` command emitting certificate.jsonld with schema.org context: theorem names, `#print axioms` result, Lean/Mathlib revs, SHA-256 of emitted C99/ST, parity-test stats, optional lean4export + Lean4Lean re-check status; served as MCP resources and committed under site/.",
+      "effort_weeks": 2.0,
+      "payoff": 4.0,
+      "confidence": 0.6,
+      "external_pull": "assessors (TÜV-style SEooC), procurement due diligence; no named customer yet",
+      "cross_domain_edge": {
+        "from": "lean_tooling",
+        "to": "certification",
+        "weight": 0.7,
+        "why": "Turns the axiom audit into a sellable, re-checkable artifact."
+      },
+      "status": "candidate",
+      "source_report": "TOOL.md"
+    },
+    {
+      "id": "TOOL-07",
+      "title": "Rust kernels translated to Lean with Aeneas/hax and proved equal to the ControlsLean spec",
+      "kind": "explore",
+      "domains": [
+        "rust_systems",
+        "codegen_certification",
+        "lean_tooling"
+      ],
+      "builds_on": [
+        "ROBO-02",
+        "ROBO-04"
+      ],
+      "unlocks": [
+        "TOOL-10"
+      ],
+      "why_now": "Aeneas calls Lean its most mature backend; hax added `cargo hax into lean` (Charon+Aeneas, 'Recommended for Lean') with Cryspen announcing Aeneas integration in mid-2026; ROS 2/Apex.AI ecosystems are moving to Rust-adjacent safety stacks.",
+      "evidence": [
+        "https://github.com/AeneasVerif/aeneas",
+        "https://github.com/cryspen/hax",
+        "https://talks.cam.ac.uk/talk/index/232588/",
+        "https://hax.cryspen.com/blog/archive/2026/"
+      ],
+      "prior_art": "Aeneas used for low-level crypto (HACL* in Rust); hax backends F*, Rocq, Lean, ProVerif; no verified robotics kernels in Rust via Lean found.",
+      "missing_capability": "Pick integer/fixed-point kernels (ZMP allocation, Jury/Hurwitz tests with rational certificates) where Aeneas's safe-Rust subset applies, translate, and prove the translated functions agree with ControlsLean definitions; document that float kernels are out of scope for now.",
+      "effort_weeks": 6.0,
+      "payoff": 3.0,
+      "confidence": 0.35,
+      "external_pull": "community: Aeneas/hax maintainers seek non-crypto case studies",
+      "cross_domain_edge": {
+        "from": "rust_systems",
+        "to": "robotics",
+        "weight": 0.4,
+        "why": "A verified Rust kernel is the artifact ROS 2 safety vendors could consume."
+      },
+      "status": "candidate",
+      "source_report": "TOOL.md"
+    },
+    {
+      "id": "TOOL-08",
+      "title": "Harmonic Aristotle as an outer loop for Research-branch sorries (Byers-Nash, Erdos)",
+      "kind": "explore",
+      "domains": [
+        "math",
+        "lean_tooling",
+        "prizes"
+      ],
+      "builds_on": [
+        "MATH-01",
+        "MATH-02",
+        "MATH-03"
+      ],
+      "unlocks": [
+        "MATH-01"
+      ],
+      "why_now": "Aristotle's API accepts Lean 4 files with sorry placeholders and runs up to 24h returning only Lean-checked results; a community MCP wrapper exists; Math Inc's Gauss closed 160K lines of sorry in 3 weeks on sphere packing, showing frontier systems excel at exactly 'statement fixed, proof missing' tasks.",
+      "evidence": [
+        "https://apis.io/providers/harmonic/",
+        "https://github.com/gleachkr/aristotle-mcp",
+        "https://arxiv.org/pdf/2603.15929",
+        "https://harmonic.fun/news/minif2f/"
+      ],
+      "prior_art": "UW Math AI Lab uses Aristotle to contribute to mathlib4; conjectures.io requires chat logs; JSP pays formalizers separately.",
+      "missing_capability": "A `ctrl outer --aristotle` path that packages a scratch file + imports, submits, polls, and runs the strict axiom audit on returned proofs; log provenance for prize submissions. Pricing and quota are unverified and could kill it.",
+      "effort_weeks": 1.0,
+      "payoff": 3.0,
+      "confidence": 0.45,
+      "external_pull": "Justin Sun Prize / conjectures.io bounties",
+      "cross_domain_edge": {
+        "from": "lean_tooling",
+        "to": "prizes",
+        "weight": 0.5,
+        "why": "Frontier provers raise the odds on 90%-done research formalizations."
+      },
+      "status": "candidate",
+      "source_report": "TOOL.md"
+    },
+    {
+      "id": "TOOL-09",
+      "title": "ControlBench: a Croissant-tagged benchmark of ctrl theorem statements with proofs stripped",
+      "kind": "explore",
+      "domains": [
+        "lean_tooling",
+        "controls",
+        "estimation"
+      ],
+      "builds_on": [
+        "CTRL-01",
+        "CTRL-03",
+        "EST-01",
+        "NL-01",
+        "ROBO-01"
+      ],
+      "unlocks": [
+        "TOOL-02"
+      ],
+      "why_now": "miniF2F is saturated (88-90% for open 32B models); AutoformBench (Oct 13 2026) and MathlibPR (ICML 2026) show appetite for new Lean benchmarks; NeurIPS dataset tracks require Croissant metadata; ctrl has 445 audited headline theorems in a domain absent from every existing benchmark.",
+      "evidence": [
+        "https://ai.meta.com/research/publications/autoformbench-a-lean-formalization-benchmark-for-advanced-mathematics",
+        "https://icml.cc/virtual/2026/82531",
+        "https://github.com/Goedel-LM/Goedel-Prover-V2",
+        "https://github.com/mlcommons/croissant",
+        "https://arxiv.org/pdf/2605.15079"
+      ],
+      "prior_art": "miniF2F, PutnamBench, MathOlympiadBench, Lean-workbook, AutoformBench; none is applied-math/control.",
+      "missing_capability": "Split statements/proofs for 445 theorems (plus 48 kernel specs), pin Mathlib rev, provide a kimina-lean-server evaluation harness, Croissant JSON-LD, baseline numbers for Goedel-V2-8B/32B and a generic coder, and a short paper.",
+      "effort_weeks": 3.0,
+      "payoff": 4.0,
+      "confidence": 0.6,
+      "external_pull": "community: prover-model groups and NeurIPS/ICLR dataset tracks",
+      "cross_domain_edge": {
+        "from": "controls",
+        "to": "lean_tooling",
+        "weight": 0.6,
+        "why": "ctrl's corpus is the out-of-distribution test the prover community lacks."
+      },
+      "status": "candidate",
+      "source_report": "TOOL.md"
+    },
+    {
+      "id": "TOOL-10",
+      "title": "SEooC-style verified kernel pack offer: certificates plus parity harness plus retainer",
+      "kind": "industrialize",
+      "domains": [
+        "codegen_certification",
+        "robotics",
+        "realtime_systems"
+      ],
+      "builds_on": [
+        "ROBO-01",
+        "ROBO-02",
+        "ROBO-03",
+        "CTRL-01",
+        "EST-01"
+      ],
+      "unlocks": [],
+      "why_now": "Every FV vendor found sells tool tier + services with quote-only pricing (Certora is the only free tier); Apex.AI proves robotics buyers pay for ASIL-D SEooC artifacts; DARPA SAFRON (2026) asked for formal verification and runtime monitors for foundation-model robots; AWS normalized Lean in production.",
+      "evidence": [
+        "https://www.certora.com/pricing",
+        "https://www.apex.ai/apexgrace",
+        "https://discourse.openrobotics.org/t/ros-2-iso-26262-certification-and-thank-you/19249",
+        "https://grantedai.com/grants/darpa-safron-safe-assured-foundation-robots-open-environments-foundation-model-safety-darpa-f1a3b5c7",
+        "https://www.trust-in-soft.com/resources/blogs/2024-08-20-announcing-trustinsoft-formal-verification-services"
+      ],
+      "prior_art": "Apex.Grace (ASIL D), AdaCore SPARK assurance levels, TrustInSoft FVS, Imandra ROS/AV notebooks, VeriPhy; no vendor sells verified controller-math kernels with Lean certificates.",
+      "missing_capability": "A whitepaper and offer sheet: per-kernel pack (Lean source, certificate JSON-LD, C99/ST, DRT harness, MuJoCo evidence), commercial license tiers mirroring Certora (free public tier, premium pack, enterprise retainer), and one pilot conversation with a ROS 2 safety vendor or SAFRON performer.",
+      "effort_weeks": 4.0,
+      "payoff": 4.0,
+      "confidence": 0.3,
+      "external_pull": "DARPA SAFRON performers; ROS 2 safety vendors (Apex.AI-class); unverified Lean FRO industrial program",
+      "cross_domain_edge": {
+        "from": "certification",
+        "to": "robotics",
+        "weight": 0.5,
+        "why": "Packaging proofs as SEooC artifacts is what makes robotics integrators able to buy them."
+      },
+      "status": "candidate",
+      "source_report": "TOOL.md"
+    },
+    {
+      "id": "TOOL-11",
+      "title": "Agent-facing index upgrade: JSON-LD context on AGENT_IDEA_INDEX, llms.txt and Markdown twins on the Pages site",
+      "kind": "industrialize",
+      "domains": [
+        "lean_tooling",
+        "rust_systems"
+      ],
+      "builds_on": [
+        "SED"
+      ],
+      "unlocks": [
+        "TOOL-01"
+      ],
+      "why_now": "llms.txt grew 8.8x to 36K sites by May 2026 but 97% get zero AI requests (Ahrefs), while OpenAI's Agents SDK and Lighthouse 13.3 support it; MCP resources are what agents actually read; Croissant/schema.org JSON-LD is now standard for dataset discovery. Cheap insurance, low measured payoff.",
+      "evidence": [
+        "https://github.com/AnswerDotAI/llms-txt",
+        "https://ppc.land/llms-txt-adoption-rises-8-8x-but-97-of-files-get-zero-ai-requests/",
+        "https://www.rankability.com/llms-report/",
+        "https://github.com/mlcommons/croissant"
+      ],
+      "prior_art": "docs/AGENT_IDEA_INDEX.json and site/index.html already exist; llms.txt spec; Croissant 1.1.",
+      "missing_capability": "Add @context (schema.org SoftwareSourceCode/CreativeWork + Dataset), generate site/llms.txt and per-doc .md twins with rel=describedby links in CI, and reuse the same JSON as MCP resources in TOOL-01.",
+      "effort_weeks": 1.0,
+      "payoff": 2.0,
+      "confidence": 0.7,
+      "external_pull": "community: agent crawlers; Lighthouse agentic audits",
+      "cross_domain_edge": {
+        "from": "archive_formats",
+        "to": "lean_tooling",
+        "weight": 0.3,
+        "why": "One structured index feeds both web crawlers and MCP clients."
+      },
+      "status": "candidate",
+      "source_report": "TOOL.md"
+    },
+    {
+      "id": "TOOL-12",
+      "title": "CI hygiene: split GitHub cache from Mathlib cache, add lake test/lint and audit targets, schedule Mathlib bumps",
+      "kind": "productionize",
+      "domains": [
+        "lean_tooling"
+      ],
+      "builds_on": [
+        "SED"
+      ],
+      "unlocks": [
+        "TOOL-04",
+        "TOOL-05"
+      ],
+      "why_now": "lean-action defaults to use-github-cache: true, which stores ~2.15 GiB of Mathlib oleans per entry and can exhaust the 10 GiB repo cache quota (practitioner reports, 2025-2026); ctrl's workflow uses the defaults, runs no tests, and has the mathlib-update-action schedule commented out while pinned to an RC toolchain.",
+      "evidence": [
+        "https://github.com/leanprover/lean-action",
+        "https://dev.to/iroha1203/taming-a-40-minute-lean-ci-three-rounds-three-wrong-suspects-7ke",
+        "https://raw.githubusercontent.com/agenticsnz/unsorry/main/docs/adrs/ADR-045-Gate-A-Library-Build-Cache.md",
+        "https://mintlify.wiki/leanprover-community/mathlib4/contributing/building-testing"
+      ],
+      "prior_art": "lean-action, mathlib-update-action, docgen-action already wired; unsorry ADRs document the cache split.",
+      "missing_capability": "Set use-github-cache: false and cache only .lake/build keyed on lean-toolchain + lake-manifest.json; add [[lean_exe]] audit (scripts/Audit.lean) and a `lake test` driver so `lean-action` test/lint run; enable the daily update schedule; publish docgen output as the Pages site next to llms.txt.",
+      "effort_weeks": 1.0,
+      "payoff": 2.0,
+      "confidence": 0.9,
+      "external_pull": "none beyond internal reliability; prerequisite for Reservoir build badges",
+      "cross_domain_edge": {
+        "from": "lean_tooling",
+        "to": "codegen",
+        "weight": 0.3,
+        "why": "A real test target is where the C99/ST parity harness and DRT would run in CI."
+      },
+      "status": "candidate",
+      "source_report": "TOOL.md"
+    },
+    {
+      "id": "SED-01",
+      "title": "Lean-checked archive path sanitizer (hax/Aeneas) with Kani harness",
+      "kind": "explore",
+      "domains": [
+        "rust_systems",
+        "lean_tooling"
+      ],
+      "builds_on": [
+        "SED"
+      ],
+      "unlocks": [
+        "SED-02",
+        "SED-08",
+        "SED-11"
+      ],
+      "why_now": "2025-2026 produced fresh zip-slip variants in the Rust ecosystem itself (zip CVE-2025-29787 symlink-then-file; tar-rs CVE-2026-33056 chmod via symlink; PAX desync advisories in Mar/May 2026), and hax 0.4 now drives Lean through Charon+Aeneas with on-demand installs, so a Lean theorem about a small pure Rust sanitizer is finally a weeks-scale job rather than a toolchain project.",
+      "evidence": [
+        "https://github.com/advisories/GHSA-94vh-gphv-8pm8",
+        "https://github.com/rustsec/advisory-db/blob/main/crates/tar/RUSTSEC-2026-0067.md",
+        "https://github.com/alexcrichton/tar-rs/security/advisories",
+        "https://github.com/AeneasVerif/aeneas",
+        "https://github.com/cryspen/hax",
+        "https://github.com/model-checking/kani",
+        "https://github.com/model-checking/verify-rust-std"
+      ],
+      "prior_art": "verify-rust-std (AWS) has 29 std challenges, none on std::path; Aeneas has verified crypto (libcrux-class) and a jxl-rs sample; Python PEP 706 'data' filter is the policy benchmark; no Lean-checked archive sanitizer found. sediment's safe_path already exists but uses std::path::Components/PathBuf, which Aeneas/hax do not translate.",
+      "missing_capability": "A pure byte-level sanitize(&[u8]) -> Result<Vec<component>> in sediment, translated to Lean via cargo hax into lean, with theorem: every accepted output is a non-empty list of non-empty, separator-free, non-'..' components (so dest.join(out) stays under dest on a link-free tree); plus a Kani harness over bounded-length names and a proptest differential test against the std-based safe_path.",
+      "effort_weeks": 3.0,
+      "payoff": 3.0,
+      "confidence": 0.6,
+      "external_pull": "Community: zip2/tar-rs maintainers are actively shipping path-safety advisories (GHSA-747h-hw98-c42x informational); a citable verified sanitizer is referenceable by both and by the verify-rust-std effort",
+      "cross_domain_edge": {
+        "from": "lean_tooling",
+        "to": "rust_systems",
+        "weight": 0.6,
+        "why": "ctrl's Audit.lean axiom-audit and escape-hatch ban transfer unchanged to a sediment Lean artifact."
+      },
+      "status": "candidate",
+      "source_report": "SED.md"
+    },
+    {
+      "id": "SED-02",
+      "title": "Archive-hardening regression corpus and named extraction policy",
+      "kind": "productionize",
+      "domains": [
+        "rust_systems"
+      ],
+      "builds_on": [
+        "SED"
+      ],
+      "unlocks": [
+        "SED-01",
+        "SED-06",
+        "SED-10"
+      ],
+      "why_now": "Between Mar 2025 and Jun 2026 at least six extractor advisories landed across zip (Rust), tar-rs, mholt/archiver (Go), par2cmdline and libarchive; sediment avoids all of them by construction but has no published, machine-checkable statement of what it rejects, and Python 3.14 just made PEP 706's 'data' filter the default, giving a vocabulary to align with.",
+      "evidence": [
+        "https://github.com/advisories/GHSA-94vh-gphv-8pm8",
+        "https://github.com/rustsec/advisory-db/blob/main/crates/tar/RUSTSEC-2026-0068.md",
+        "https://github.com/alexcrichton/tar-rs/security/advisories",
+        "https://github.com/Parchive/par2cmdline/security/advisories/GHSA-j5pc-g362-c5xp",
+        "https://www.sentinelone.com/vulnerability-database/cve-2025-3445/",
+        "https://github.com/python/peps/blob/main/peps/pep-0706.rst"
+      ],
+      "prior_art": "PEP 706 filters (fully_trusted/tar/data); tar-rs and zip2 advisory test cases; sediment's own unit tests (rejects_traversal_without_publishing, rejects_tar_symlinks, rejects_tar_duplicate_paths, safety_limit_boundaries).",
+      "missing_capability": "A fixtures crate/corpus reproducing each 2025-2026 CVE class (symlink-then-file, symlink-then-dir chmod, PAX size disagreement, PAX desync, dangling-symlink destination, zip64 metadata bomb, overlapping-entry bomb) with cargo-fuzz targets for the PAX reader and EOCD preflight, and a documented 'sediment data filter' policy table comparable to PEP 706.",
+      "effort_weeks": 2.0,
+      "payoff": 3.0,
+      "confidence": 0.8,
+      "external_pull": "Community: contributable as regression fixtures to zip-rs/zip2 and alexcrichton/tar-rs; cited by security reviewers evaluating archive tooling",
+      "cross_domain_edge": null,
+      "status": "candidate",
+      "source_report": "SED.md"
+    },
+    {
+      "id": "SED-03",
+      "title": "Verified GF(2^16) PAR2 recovery-record kernel bridging ctrl Reed-Solomon and ArkLib",
+      "kind": "explore",
+      "domains": [
+        "rust_systems",
+        "math",
+        "lean_tooling",
+        "codegen_certification"
+      ],
+      "builds_on": [
+        "SED",
+        "ROBO-04"
+      ],
+      "unlocks": [
+        "SED-11"
+      ],
+      "why_now": "par2cmdline shipped two repair-path advisories on 2026-06-10 (dangling-symlink write-outside-base and a heap OOB write from block-count wrap), PAR3 is still unreleased after a 'near-final' 2022 spec, the only pure-Rust crate (rust-par2, created 2026-03) cannot create recovery sets, and ArkLib (Lean) now has RS codes, MDS/distance theorems and a Berlekamp-Welch decoder with correctness theorems to import rather than re-prove.",
+      "evidence": [
+        "https://github.com/Parchive/par2cmdline/security/advisories/GHSA-j5pc-g362-c5xp",
+        "https://github.com/Parchive/par2cmdline/releases",
+        "https://github.com/Parchive/par3cmdline",
+        "https://github.com/AusAgentSmith-org/rust-par2",
+        "https://crates.io/api/v1/crates/rust-par2",
+        "https://github.com/animetosho/par2cmdline-turbo",
+        "https://github.com/Verified-zkEVM/ArkLib/blob/main/ArkLib/Data/CodingTheory/ReedSolomon.lean",
+        "https://github.com/Verified-zkEVM/ArkLib/blob/main/ArkLib/Data/CodingTheory/BerlekampWelch/BerlekampWelch.lean",
+        "https://github.com/verified-network-toolchain/Verified-FEC"
+      ],
+      "prior_art": "Verified-FEC (Coq/VST/MathComp, CAV 2022) proved an RS *erasure* decoder for C; ArkLib (Lean, Apache-2.0) has ReedSolomon.lean (Vandermonde generator, MDS, unique decoding radius, Lagrange interpolation, no sorry seen) and a noncomputable Berlekamp-Welch decoder with decoder_eq_some/not_exists_of_decoder_eq_none; rust-par2 implements GF(2^16) poly 0x1100B with PSHUFB nibble tables (~15 GB/s AVX2) for verify/repair only; par2cmdline-turbo uses ParPar GF16. ctrl's ROBO-04 Barcode decoder (on origin/backup/20261020/dev-ctrl/snapshot, lean/RoboLean/Barcode/) is error-decoding, likely GF(2^8), so only field/polynomial lemmas transfer.",
+      "missing_capability": "(1) A Lean instance of GF(2^16) with PAR2's primitive polynomial and a proof that the PAR2 Vandermonde recovery matrix restricted to any set of surviving blocks is invertible (erasure-decoding correctness), importing ArkLib's RS statements; (2) a pure-Rust PAR2 *create* + repair kernel whose table arithmetic is refined to the Lean field (Kani for the table layer, Aeneas/hax for the polynomial layer) and whose repair path is dangling-symlink-safe by reusing sediment's create_new staging; (3) `sediment create --recovery N%` and `sediment repair`. Reuse ctrl's theorem-to-C99 codegen pattern for the kernel.",
+      "effort_weeks": 8.0,
+      "payoff": 4.0,
+      "confidence": 0.55,
+      "external_pull": "Community: Parchive org and Usenet/long-term-archiving users (par2cmdline 1.4.0 Sep 2026 still active); 'verified recovery records' is a citable artifact for the Renaissance/XTX AI-for-Math tools track named in ctrl/BOUNTIES.md",
+      "cross_domain_edge": {
+        "from": "robotics",
+        "to": "archive_formats",
+        "weight": 0.7,
+        "why": "ctrl's verified Reed-Solomon field lemmas and theorem-to-C99 codegen pipeline become the proof core of a PAR2 recovery feature; the erasure-decoder correctness is the new part."
+      },
+      "status": "candidate",
+      "source_report": "SED.md"
+    },
+    {
+      "id": "SED-04",
+      "title": "Reproducible ZIP/TAR creation mode (SOURCE_DATE_EPOCH, sorted, normalized)",
+      "kind": "productionize",
+      "domains": [
+        "rust_systems"
+      ],
+      "builds_on": [
+        "SED"
+      ],
+      "unlocks": [
+        "SED-05",
+        "SED-11"
+      ],
+      "why_now": "Reproducible-builds practice (SOURCE_DATE_EPOCH, strip-nondeterminism, repro-zipfile/repro-tarfile, Helm 4 reproducible charts) is now expected of release tooling, and sediment's create path still uses wall-clock mtimes and directory-walk order (SimpleFileOptions::default()).",
+      "evidence": [
+        "https://cwiki.apache.org/confluence/spaces/SECURITY/pages/287607354/Reproducible+Builds",
+        "https://github.com/drivendataorg/repro-tarfile",
+        "https://pypi.org/project/python-stripzip/0.2.4",
+        "https://github.com/zip-rs/zip2"
+      ],
+      "prior_art": "repro-zipfile/repro-tarfile (Python), python-stripzip, strip-nondeterminism (Debian), Cargo's own deterministic .crate packaging (no URL); zip2 supports fixed last-modified times and feature-gated compressors.",
+      "missing_capability": "A `--reproducible` flag (and GUI toggle) that sorts entries bytewise, sets mtime from SOURCE_DATE_EPOCH or 1980-01-01, fixes modes to 0644/0755, drops extra fields, forces the UTF-8 flag, uses a fixed deflate level, and a CI test asserting byte-identical output across two hosts; documented as part of the auditability story.",
+      "effort_weeks": 2.0,
+      "payoff": 3.0,
+      "confidence": 0.85,
+      "external_pull": "Standard: reproducible-builds.org SOURCE_DATE_EPOCH convention; release engineers using cargo-dist/GitHub Actions",
+      "cross_domain_edge": null,
+      "status": "candidate",
+      "source_report": "SED.md"
+    },
+    {
+      "id": "SED-05",
+      "title": "Notarized Homebrew cask and cargo-dist pipeline with sigstore bundles",
+      "kind": "industrialize",
+      "domains": [
+        "rust_systems",
+        "codegen_certification"
+      ],
+      "builds_on": [
+        "SED"
+      ],
+      "unlocks": [
+        "SED-10"
+      ],
+      "why_now": "Homebrew 5.0.0 deprecated non-notarized casks with removal from the main tap by Sep 2026, so the only free Mac distribution channel that matters now requires exactly the Developer ID + notarization gate that sediment's 0.1.3 release notes list as still open; cosign sign-blob --bundle has become the one-file way to sign tarballs.",
+      "evidence": [
+        "https://workbrew.com/blog/homebrew-5-0-0",
+        "https://flaviocopes.com/macos-open-anyway.md",
+        "https://github.com/Homebrew/brew/blob/main/docs/Acceptable-Casks.md",
+        "https://github.com/sigstore/docs/blob/main/content/en/cosign/signing/signing_with_blobs.md"
+      ],
+      "prior_art": "Homebrew Acceptable-Casks policy (Gatekeeper must pass; notability required; OSS without compiled distribution rejected); Foundry's release workflow (sha256 + SBOM + cosign + actions/attest) as a reference; sediment's scripts/package-macos.sh and docs/RELEASE_CHECKLIST.md.",
+      "missing_capability": "A hosted CI job producing Developer-ID-signed, notarized, stapled app and CLI artifacts, cosign bundles and sha256, a homebrew tap (own tap first, since main-tap notability is not yet met), and completion of the native acceptance table in USER_JOURNEYS.md.",
+      "effort_weeks": 2.0,
+      "payoff": 3.0,
+      "confidence": 0.7,
+      "external_pull": "Standard/market: Homebrew cask policy and Apple notarization; blocked on a paid Apple Developer account and a real Mac for native acceptance",
+      "cross_domain_edge": null,
+      "status": "candidate",
+      "source_report": "SED.md"
+    },
+    {
+      "id": "SED-06",
+      "title": "Read-only zstd, xz, 7z and ZIP-AES support under sediment's limit wrappers",
+      "kind": "productionize",
+      "domains": [
+        "rust_systems"
+      ],
+      "builds_on": [
+        "SED"
+      ],
+      "unlocks": [
+        "SED-10"
+      ],
+      "why_now": "sevenz-rust2 (pure Rust, Apache-2.0, AES read/write) replaced the unmaintained sevenz-rust, zip2 ships zstd/xz/lzma/aes-crypto feature flags, and 7-Zip 26.02's XZ heap overflow (CVE-2026-14266) shows users want a memory-safe reader for exactly these containers.",
+      "evidence": [
+        "https://github.com/hasenbanck/sevenz-rust2",
+        "https://github.com/zip-rs/zip2",
+        "https://github.com/gendx/lzma-rs",
+        "https://7-zip.org/history.txt",
+        "https://fedoraproject.org/wiki/Licensing:Unrar"
+      ],
+      "prior_art": "Keka/The Unarchiver/PeaZip/NanaZip cover these formats via p7zip/7-Zip C++ code; Rust: sevenz-rust2, zesven (2026, docs.rs only), lzma-rs (incomplete .xz), zip2 feature flags. RAR stays excluded by CLEAN_ROOM.md and the unRAR license.",
+      "missing_capability": "Format detection and inspect/verify/extract for tar.zst, tar.xz, 7z (read-only) and AES ZIP entries, each routed through SafeZipReader-style byte budgets, MAX_EXPANDED/MAX_RATIO accounting and the same no-links/no-special policy; plus the dependency notices update.",
+      "effort_weeks": 3.0,
+      "payoff": 3.0,
+      "confidence": 0.7,
+      "external_pull": "Community demand: every 2026 Mac archiver roundup lists 7z/multipart as Archive Utility's gap; Keka has 263 open issues largely on format edge cases",
+      "cross_domain_edge": null,
+      "status": "candidate",
+      "source_report": "SED.md"
+    },
+    {
+      "id": "SED-07",
+      "title": "OpenTelemetry CLI semantic-convention alignment of the JSON trace",
+      "kind": "productionize",
+      "domains": [
+        "rust_systems"
+      ],
+      "builds_on": [
+        "SED"
+      ],
+      "unlocks": [
+        "SED-01",
+        "SED-08"
+      ],
+      "why_now": "OpenTelemetry now has dedicated 'Semantic conventions for CLI programs' (Release Candidate attributes process.executable.name/process.exit.code/process.pid, Stable error.type) whose privacy posture (do not collect command args by default) matches sediment's no-paths trace, so alignment costs field renames, not architecture.",
+      "evidence": [
+        "https://github.com/open-telemetry/semantic-conventions/blob/main/docs/cli/cli-spans.md",
+        "https://github.com/packethost/otel-cli",
+        "https://deploy.equinix.com/labs/otel-cli"
+      ],
+      "prior_art": "OTel CLI span conventions; Equinix otel-cli v0.4.5 bridges shell output to OTLP; sediment's tracing-subscriber JSON layer with archive_operation span.",
+      "missing_capability": "Emit process.executable.name, process.exit.code, process.pid and a closed-enum error.type (unsafe_path, limit_exceeded, cancelled, destination_exists, format_unsupported, io, changed_during_operation) on the root span; document the NDJSON schema with a version field; keep no exporter in-tree and show the otel-cli pipe recipe.",
+      "effort_weeks": 1.0,
+      "payoff": 2.0,
+      "confidence": 0.85,
+      "external_pull": "Standard: OpenTelemetry semantic conventions (Development status, so early alignment can feed back issues)",
+      "cross_domain_edge": null,
+      "status": "candidate",
+      "source_report": "SED.md"
+    },
+    {
+      "id": "SED-08",
+      "title": "Kani-proved resource accounting for decompression-bomb limits",
+      "kind": "explore",
+      "domains": [
+        "rust_systems"
+      ],
+      "builds_on": [
+        "SED"
+      ],
+      "unlocks": [
+        "SED-06"
+      ],
+      "why_now": "Kani is now the workhorse of the AWS verify-rust-std program (10/29 challenges resolved, ASE'26 paper) and sediment's budget logic (check_limits, zip_metadata_preflight incl. zip64, SafeZipReader byte budget, drain_padding, MAX_TAR_EXTENSION) is small, integer-only and loop-bounded, which is exactly Kani's sweet spot.",
+      "evidence": [
+        "https://github.com/model-checking/kani",
+        "https://github.com/model-checking/verify-rust-std",
+        "https://github.com/rustsec/advisory-db/blob/main/crates/tar/RUSTSEC-2026-0068.md"
+      ],
+      "prior_art": "verify-rust-std harnesses for numeric primitives/Duration/NonZero; sediment's safety_limit_boundaries unit test; no formal proof of archive budget invariants found.",
+      "missing_capability": "Proof harnesses showing: no arithmetic overflow in check_limits/preflight for all u64 inputs; bytes written by copy_controlled never exceed the announced entry size; cumulative entries/bytes/metadata never exceed MAX_* before an Err; PAX size override is applied consistently (the CVE-2026-33055 class) in sediment's own TAR reader. Run in CI behind a feature.",
+      "effort_weeks": 2.0,
+      "payoff": 3.0,
+      "confidence": 0.65,
+      "external_pull": "Community: verify-rust-std style harnesses are a recognised evidence format; useful collateral for SED-05's security claims",
+      "cross_domain_edge": null,
+      "status": "candidate",
+      "source_report": "SED.md"
+    },
+    {
+      "id": "SED-09",
+      "title": "Cancellation-latency bound as measured evidence (RTA cross-link, assessed as a stretch)",
+      "kind": "explore",
+      "domains": [
+        "realtime_systems",
+        "rust_systems"
+      ],
+      "builds_on": [
+        "SED",
+        "ROBO-04"
+      ],
+      "unlocks": [],
+      "why_now": "sediment already records cancellation phases and durations (scripts/trace-smoke.py, docs/evidence/trace-cancellation-0.1.2.json), so a stated bound (time-to-ack <= one 64 KiB read + one fs call + staging cleanup) can be checked against evidence now; but ctrl's ROBO-04 fixed-priority response-time analysis models periodic task sets, which a single cooperative worker is not.",
+      "evidence": [
+        "https://github.com/open-telemetry/semantic-conventions/blob/main/docs/cli/cli-spans.md"
+      ],
+      "prior_art": "ctrl ROBO-04 RTA (Liu-Layland critical instant, per docs/IDEA_PORTFOLIO_AND_SYNERGIES.md); sediment OperationControl + copy_controlled check-per-buffer design.",
+      "missing_capability": "A one-page doc stating the cancellation latency model and a test asserting the measured p99 against it. No theorem is warranted; information-theoretic bomb detection likewise reduces to the existing ratio policy.",
+      "effort_weeks": 1.0,
+      "payoff": 1.0,
+      "confidence": 0.3,
+      "external_pull": "None identified",
+      "cross_domain_edge": {
+        "from": "realtime_systems",
+        "to": "rust_systems",
+        "weight": 0.15,
+        "why": "Only the vocabulary (deadline, worst-case response) transfers; the scheduling theorems do not apply to a single cooperative worker."
+      },
+      "status": "candidate",
+      "source_report": "SED.md"
+    },
+    {
+      "id": "SED-10",
+      "title": "Linux/Windows CLI-first ports with egui GUI as beta",
+      "kind": "industrialize",
+      "domains": [
+        "rust_systems"
+      ],
+      "builds_on": [
+        "SED"
+      ],
+      "unlocks": [],
+      "why_now": "eframe officially supports Web/Linux/Mac/Windows/Android with AccessKit on Windows and macOS, but egui states native look is a non-goal and APIs are still breaking; meanwhile Windows is saturated by free 7-Zip 26.x and NanaZip 6 with hardened MSIX builds, so the credible wedge on other platforms is the JSON/trace CLI, not the GUI.",
+      "evidence": [
+        "https://github.com/emilk/egui",
+        "https://github.com/M2Team/NanaZip",
+        "https://7-zip.org/history.txt",
+        "https://github.com/peazip/PeaZip/releases"
+      ],
+      "prior_art": "NanaZip (CFG/CET/MSIX, zstd/brotli/lz4), PeaZip 11.4 (Apple Silicon DMG, 7z backend), 7-Zip 26.x; sediment's GUI-free feature set already builds without eframe.",
+      "missing_capability": "Static musl Linux and Windows CLI builds via cargo-dist, Windows-specific path rules (reserved names, ADS already rejected), set_permissions no-op audit on Windows, and a clearly labelled beta GUI; distribution through cargo install and winget/apt later.",
+      "effort_weeks": 3.0,
+      "payoff": 2.0,
+      "confidence": 0.5,
+      "external_pull": "Market: CI/agent users on Linux who want structured archive results; weak against free incumbents on Windows",
+      "cross_domain_edge": null,
+      "status": "candidate",
+      "source_report": "SED.md"
+    },
+    {
+      "id": "SED-11",
+      "title": "Signed archive manifest and verify-against-manifest for auditable extraction",
+      "kind": "productionize",
+      "domains": [
+        "rust_systems",
+        "codegen_certification"
+      ],
+      "builds_on": [
+        "SED"
+      ],
+      "unlocks": [],
+      "why_now": "Supply-chain practice in 2025-2026 moved to sigstore bundles plus attestations next to release archives (Foundry-style sha256 + SBOM + cosign + actions/attest), yet archive tools themselves still verify only internal CRCs; a manifest of entry names/sizes/hashes that a consumer can pin turns sediment's never-overwrite extraction into an auditable step.",
+      "evidence": [
+        "https://github.com/sigstore/docs/blob/main/content/en/cosign/signing/signing_with_blobs.md",
+        "https://upd.dev/foundry-rs/foundry/src/branch/master/SECURITY.md",
+        "https://github.com/zip-rs/zip2"
+      ],
+      "prior_art": "cosign sign-blob/verify-blob bundles, SLSA provenance via slsa-verifier (search results only), in-toto attestations (no URL); content-addressed stores (Nix NAR, casync; no URL).",
+      "missing_capability": "`sediment manifest archive.zip` emitting canonical JSON (sorted entries, sizes, BLAKE3/SHA-256 per entry, archive hash) and `sediment extract --manifest m.json` refusing on mismatch; signing left to cosign externally to keep the dependency tree small; pairs with SED-04 so manifests are reproducible.",
+      "effort_weeks": 2.0,
+      "payoff": 2.0,
+      "confidence": 0.6,
+      "external_pull": "Standard: sigstore/SLSA ecosystems; release-engineering users",
+      "cross_domain_edge": null,
+      "status": "candidate",
+      "source_report": "SED.md"
+    },
+    {
+      "id": "XD-01",
+      "title": "Pinwheel scheduling as Erdős covering systems in Lean",
+      "kind": "explore",
+      "domains": [
+        "math",
+        "realtime_systems"
+      ],
+      "builds_on": [
+        "MATH-03",
+        "ROBO-04"
+      ],
+      "unlocks": [
+        "MATH-04",
+        "XD-10"
+      ],
+      "why_now": "Kawamura settled the 5/6 pinwheel density conjecture (STOC'24) and 2025-2026 papers (ISAAC 2025, Finite Pinwheel Covering, Dense Pinwheel Packing strongly NP-complete, Kleinberg-Mishra FOCS 2026) explicitly identify exact pinwheel covering with Erdős covering systems; none is mechanised.",
+      "evidence": [
+        "https://drops.dagstuhl.de/storage/00lipics/lipics-vol359-isaac2025/html/LIPIcs.ISAAC.2025.47/LIPIcs.ISAAC.2025.47.html",
+        "https://arxiv.org/pdf/2607.28574",
+        "https://arxiv.org/pdf/2609.20075",
+        "https://www.kurims.kyoto-u.ac.jp/~kawamura/pinwheel",
+        "https://arxiv.org/pdf/2508.18422"
+      ],
+      "prior_art": "Kawamura STOC'24 proof (computer search, fractional periods); Mishra-Rho-Kleinberg 0.84 bound for m=4; a standalone Lean 4 formalisation of the odd covering conjecture argument with 3 axioms exists on erdosproblems.com forum; Prosa/Rocq covers RTA, not pinwheel. No proof-assistant statement of 'exact pinwheel covering <-> covering system'.",
+      "missing_capability": "Lean definitions of pinwheel instance/schedule, theorem that an exact pinwheel cover of periods a_1..a_n is a covering system {r_i mod a_i} and conversely, reuse of CoveringCRT density product to certify (un)schedulability of concrete instances, and the density<=1 necessary condition as a corollary of covering mass.",
+      "effort_weeks": 4.0,
+      "payoff": 4.0,
+      "confidence": 0.75,
+      "external_pull": "community: erdosproblems.com #273 thread and the active 2025-2026 pinwheel complexity literature; real-time scheduling community (ECRTS/RTSS) for mechanised periodic-task results",
+      "cross_domain_edge": {
+        "from": "math",
+        "to": "realtime_systems",
+        "weight": 0.7,
+        "why": "The CRT density engine built for Erdős #273 is literally an exact-pinwheel feasibility engine."
+      },
+      "status": "candidate",
+      "source_report": "XD.md"
+    },
+    {
+      "id": "XD-02",
+      "title": "Verified PAR2-style recovery records for sediment",
+      "kind": "productionize",
+      "domains": [
+        "rust_systems",
+        "math",
+        "codegen_certification"
+      ],
+      "builds_on": [
+        "ROBO-04",
+        "SED"
+      ],
+      "unlocks": [
+        "XD-10"
+      ],
+      "why_now": "sediment 0.1.3 lists recovery records as unsupported; pure-Rust PAR2 crates (rust-par2, par2-rs) now exist for interop testing; ArkLib (2026) shows Lean RS verification is tractable, and the lean-zip OOM bug (2025) showed verified codecs with unverified archive layers still fail.",
+      "evidence": [
+        "https://parchive.sourceforge.net/docs/specifications/parity-volume-spec/article-spec.html",
+        "https://docs.rs/crate/rust-par2/latest",
+        "https://docs.rs/par2-rs",
+        "https://www.cs.princeton.edu/~jmc16/docs/FECVerification.pdf",
+        "https://staff.aist.go.jp/reynald.affeldt/documents/ecc.pdf",
+        "https://eprint.iacr.org/2026/2056",
+        "https://kirancodes.me/posts/log-who-watches-the-watchers.html"
+      ],
+      "prior_art": "Cohen-Wang-Appel (Coq/VST+MathComp) verified a different RS FEC C implementation; Affeldt-Garrigue-Saikawa Coq ECC library; ArkLib Lean RS list decoding for ZK; rust-par2 and par2-rs (unverified). PAR2 spec itself notes Plank's sequential-constant construction is wrong.",
+      "missing_capability": "Lean theorem over GF(2^16) that the PAR2 constant choice (powers of 2 of multiplicative order 65535, recovery exponents) yields an invertible recovery matrix for any erasure pattern with #missing <= #recovery, plus an erasure-decoding kernel extracted via the existing C99 codegen (or Rust port with Kani harness) and wired into sediment's `test`/`extract` with its JSON trace model.",
+      "effort_weeks": 5.0,
+      "payoff": 3.0,
+      "confidence": 0.7,
+      "external_pull": "product gap: sediment README/CLEAN_ROOM.md list recovery records as unsupported; archive-utility users expect PAR2 parity",
+      "cross_domain_edge": {
+        "from": "math",
+        "to": "rust_systems",
+        "weight": 0.5,
+        "why": "A crisp finite-field invertibility theorem is the missing certificate behind every PAR2 repair."
+      },
+      "status": "candidate",
+      "source_report": "XD.md"
+    },
+    {
+      "id": "XD-03",
+      "title": "Byers-Nash sep bound to certified Riccati/Kalman condition numbers",
+      "kind": "explore",
+      "domains": [
+        "math",
+        "estimation",
+        "controls"
+      ],
+      "builds_on": [
+        "MATH-01",
+        "EST-02",
+        "CTRL-01",
+        "EST-01"
+      ],
+      "unlocks": [
+        "EST-01",
+        "CTRL-01"
+      ],
+      "why_now": "MATH-01 is at 90% with lyapunov_singular_value_robustness_bound already proved; 2025-2026 work on structured Riccati condition numbers and Sylvester conditioning (arXiv 2609.04050) keeps sep-based bounds current; no proof assistant has a Riccati condition-number theorem.",
+      "evidence": [
+        "https://arxiv.org/pdf/1601.03787",
+        "https://arxiv.org/pdf/1803.04046",
+        "https://arxiv.org/pdf/2609.04050",
+        "https://www3.math.tu-berlin.de/Vorlesungen/SoSe11/Kontrolltheorie/uebung4.pdf",
+        "https://fox.cs.vt.edu/VAD1/DOWN/BIB/R/HPKINMSD"
+      ],
+      "prior_art": "Kenney-Hewer SIAM JCO 1990 (Riccati sensitivity), Gahinet-Laub-Kenney-Hewer (discrete Lyapunov), Sun (Rice condition numbers for CARE/DARE), Diao-Qiao structured condition numbers, SLICOT SB02RD condition estimates; Byers-Nash 1985 report on symmetric minimisers of sep.",
+      "missing_capability": "Lean theorem: first-order DARE/CARE perturbation bound ||dP||_F <= kappa * ||dA||_F with kappa expressed through sep of the closed-loop Lyapunov operator, and a corollary that under Byers-Nash the symmetric-cone sep suffices; plus a runtime `riccati_condition_estimate` kernel in estimation_lqr.py bound via @lean_theorem.",
+      "effort_weeks": 4.0,
+      "payoff": 3.0,
+      "confidence": 0.6,
+      "external_pull": "community: numerical linear algebra / SLICOT users; certification bodies want numerical-robustness evidence for filters",
+      "cross_domain_edge": {
+        "from": "math",
+        "to": "estimation",
+        "weight": 0.6,
+        "why": "sep(A) on the symmetric cone is the quantity that bounds Kalman DARE sensitivity."
+      },
+      "status": "candidate",
+      "source_report": "XD.md"
+    },
+    {
+      "id": "XD-04",
+      "title": "Occlusion-aware log-depth visual servoing via POMDP belief",
+      "kind": "explore",
+      "domains": [
+        "estimation",
+        "vision",
+        "robotics"
+      ],
+      "builds_on": [
+        "EST-03",
+        "ROBO-02",
+        "VIS-01"
+      ],
+      "unlocks": [
+        "ROBO-02"
+      ],
+      "why_now": "Perception-based POMDP beliefs from camera observations (2026) and active target tracking under occlusion (Kim-Sentis) are active, but no work combines belief-space planning with a provably retreat-free servoing law; both halves are READY in the repo.",
+      "evidence": [
+        "https://arxiv.org/pdf/1912.06754v1",
+        "https://arxiv.org/html/2602.05679v1",
+        "https://ifaamas.org/Proceedings/aamas2026/pdfs/XUFR9329.pdf"
+      ],
+      "prior_art": "Kim-Sentis DBN/particle-filter active tracking with POMDP formulation; Shi et al. 2018 adaptive IBVS with temporary signal loss; Radmard et al. 2018 occlusion resolution; Schaefers et al. 2026 perception-based beliefs. None has formal guarantees.",
+      "missing_capability": "Lean model: finite-state occlusion POMDP whose actions are servo-rate choices; theorem that under the PWLC value backup the expected log-depth error is non-increasing and the lower bound d(t) >= d* + (d0-d*)e^{-lambda t} persists in expectation across occlusion episodes; MuJoCo SE(3) benchmark with intermittent target loss.",
+      "effort_weeks": 6.0,
+      "payoff": 3.0,
+      "confidence": 0.5,
+      "external_pull": "community demand in active perception / manipulation under occlusion; no bounty",
+      "cross_domain_edge": {
+        "from": "estimation",
+        "to": "vision",
+        "weight": 0.7,
+        "why": "POMDP belief planning is the standard formalism for deciding what to look at when the target is occluded."
+      },
+      "status": "candidate",
+      "source_report": "XD.md"
+    },
+    {
+      "id": "XD-05",
+      "title": "Basis-function ILC over the septic trajectory family",
+      "kind": "productionize",
+      "domains": [
+        "controls",
+        "robotics",
+        "codegen_certification"
+      ],
+      "builds_on": [
+        "CTRL-04",
+        "ROBO-01",
+        "NL-03"
+      ],
+      "unlocks": [
+        "ROBO-01"
+      ],
+      "why_now": "Oomen-group basis-function ILC (2023-2025: rational bases, sparse basis selection, combined time-domain criterion) is the state of the art for task-flexible ILC; the septic family with eta as a parameter is a natural one-parameter basis nobody has used.",
+      "evidence": [
+        "https://research.tue.nl/en/publications/combined-time-domain-optimization-design-for-task-flexible-and-hi/",
+        "https://export.arxiv.org/pdf/2505.05835",
+        "https://research.tue.nl/en/studentTheses/iterative-learning-control-with-a-rational-feedforward-basis/",
+        "https://arxiv.org/pdf/2102.07459"
+      ],
+      "prior_art": "Norm-optimal and basis-function ILC (van Zundert, Oomen); minimum-jerk / minimum-time-jerk planners (Gasparetto-Zanotto); the repo's IterativeLearning.lean contraction ||I-GL||<1.",
+      "missing_capability": "Lean theorem that Arimoto contraction is preserved when the learned feedforward is restricted to the span of septic basis functions (projection does not increase the contraction constant), a `ctrl_ilc_septic_update` C99 kernel, and a MuJoCo repetitive pick-and-place benchmark reporting iteration-to-iteration error and Joule loss.",
+      "effort_weeks": 3.0,
+      "payoff": 3.0,
+      "confidence": 0.7,
+      "external_pull": "industrial motion-control community (printers, wafer stages) that uses basis-function ILC",
+      "cross_domain_edge": {
+        "from": "controls",
+        "to": "robotics",
+        "weight": 0.7,
+        "why": "ILC turns the one-shot septic reference into a learned, repetition-robust feedforward."
+      },
+      "status": "candidate",
+      "source_report": "XD.md"
+    },
+    {
+      "id": "XD-06",
+      "title": "Lorentz-cone CBF safe set as MPC terminal set with proven recursive feasibility",
+      "kind": "explore",
+      "domains": [
+        "nonlinear_safety",
+        "controls"
+      ],
+      "builds_on": [
+        "NL-02",
+        "CTRL-04",
+        "CTRL-03"
+      ],
+      "unlocks": [
+        "CTRL-04",
+        "NL-02",
+        "XD-12"
+      ],
+      "why_now": "2025-2026 papers (Maximal Controlled Invariant-MPC, receding-constraint MPC, safety-value-constrained MPC) push CBF terminal constraints for less conservatism; none has a machine-checked recursive-feasibility proof, and the repo already has both the closed-form CBF invariance and the shifted-tail argument.",
+      "evidence": [
+        "https://arxiv.org/pdf/2605.05575",
+        "https://arxiv.org/html/2309.11124v2",
+        "https://arxiv.org/pdf/2604.23863",
+        "https://arxiv.org/pdf/2212.02111",
+        "https://heemels.tue.nl/content/papers/KatSha_CDC23a.pdf"
+      ],
+      "prior_art": "Katriniok-Shakhesi-Heemels DTCBF terminal ingredients; Wabersich-Zeilinger predictive safety filters; system-level-synthesis predictive safety filter; repo MPCFeasibility.lean.",
+      "missing_capability": "Lean theorem: if the terminal set is the forward-invariant sublevel set of the Lorentz-cone CBF (stopping-distance bound a_max=min(mu,W/h_G)g), then the receding-horizon problem is recursively feasible and the safety filter never needs the QP fallback; export `ctrl_mpc_cbf_terminal_check` to C99.",
+      "effort_weeks": 4.0,
+      "payoff": 4.0,
+      "confidence": 0.7,
+      "external_pull": "safety-critical legged/mobile robotics community; publishable at CDC/L-CSS",
+      "cross_domain_edge": {
+        "from": "nonlinear_safety",
+        "to": "controls",
+        "weight": 0.6,
+        "why": "The barrier's invariant set is a larger, closed-form terminal set than the classic LQR ellipsoid."
+      },
+      "status": "candidate",
+      "source_report": "XD.md"
+    },
+    {
+      "id": "XD-07",
+      "title": "Small-gain string stability for robot fleets",
+      "kind": "explore",
+      "domains": [
+        "controls",
+        "realtime_systems",
+        "robotics"
+      ],
+      "builds_on": [
+        "CTRL-03",
+        "ROBO-04"
+      ],
+      "unlocks": [
+        "ROBO-04",
+        "XD-08"
+      ],
+      "why_now": "Besselink-Johansson's ISS+gain<1 string-stability test and 2024-2025 stochastic/packet-loss platoon results are directly reusable; FleetThroughput.lean has the graph side and SmallGain.lean the gain side but they are not connected.",
+      "evidence": [
+        "https://arxiv.org/pdf/1702.01031",
+        "https://arxiv.org/pdf/2403.11043",
+        "https://arxiv.org/pdf/2511.08027",
+        "https://dept.aem.umn.edu/~SeilerControl/Papers/2004/SeilerEtAl_04TAC_DisturbancePropagationInStrings.pdf",
+        "https://arxiv.org/pdf/2312.06472"
+      ],
+      "prior_art": "Swaroop-Hedrick 1996, Seiler et al. 2004, Ploeg et al. 2014 Lp string stability, Besselink-Johansson 2017, Dashkovskiy-Rueffer-Wirth network small-gain; no Lean/Coq formalisation found.",
+      "missing_capability": "Lean theorem: for a chain (or DAG) of ISS subsystems built from the Peter-Paul ISS envelope, predecessor-to-follower gain < 1 implies a uniform-in-N disturbance bound (disturbance string stability), composed with the deadlock-free routing graph of FleetDeadlock.lean; Python fleet simulation benchmark.",
+      "effort_weeks": 3.0,
+      "payoff": 3.0,
+      "confidence": 0.65,
+      "external_pull": "warehouse/AMR fleet vendors and platooning standards (ISO 22737 context)",
+      "cross_domain_edge": {
+        "from": "controls",
+        "to": "realtime_systems",
+        "weight": 0.5,
+        "why": "The ISS gain envelope is what makes fleet-level throughput guarantees robust to per-robot disturbances."
+      },
+      "status": "candidate",
+      "source_report": "XD.md"
+    },
+    {
+      "id": "XD-08",
+      "title": "Verified information-consensus filter for fleets",
+      "kind": "productionize",
+      "domains": [
+        "estimation",
+        "realtime_systems",
+        "robotics"
+      ],
+      "builds_on": [
+        "EST-01",
+        "ROBO-04",
+        "EST-03"
+      ],
+      "unlocks": [
+        "EST-03",
+        "XD-07"
+      ],
+      "why_now": "InformationFilter.lean already proves the SMW precision equivalence; 2024-2026 distributed invariant KF and adaptive Kalman-consensus work shows ongoing demand, and nobody has a mechanised proof that information-form fusion of independent measurements is additive and consistent.",
+      "evidence": [
+        "https://skoge.folk.ntnu.no/prost/proceedings/acc09/data/papers/1107.pdf",
+        "https://strathprints.strath.ac.uk/47249/",
+        "https://doaj.org/article/0d550e1e5be04ef9bf459e8b867af6b7",
+        "https://arxiv.org/pdf/2603.11328",
+        "https://arxiv.org/abs/2405.04000v1"
+      ],
+      "prior_art": "Casbeer-Beard information consensus filter; Li-Huang-Hu ICF vs KCF comparison; Zhu-Ren fully distributed localisation; UCLA LEMUR covariance intersection. No proof-assistant versions.",
+      "missing_capability": "Lean theorems: additivity of information contributions across agents, equivalence to the centralised Joseph update, and a conservative (covariance-intersection) bound under unknown correlation; `ctrl_info_fusion` C99 kernel and a multi-robot localisation benchmark.",
+      "effort_weeks": 3.0,
+      "payoff": 3.0,
+      "confidence": 0.7,
+      "external_pull": "multi-robot localisation community; AMR vendors",
+      "cross_domain_edge": {
+        "from": "estimation",
+        "to": "realtime_systems",
+        "weight": 0.4,
+        "why": "Information form is the only filter form whose fusion is a sum, which is what communication-limited fleets need."
+      },
+      "status": "candidate",
+      "source_report": "XD.md"
+    },
+    {
+      "id": "XD-09",
+      "title": "Homography ground plane to tilted ZMP/CBF deceleration bound",
+      "kind": "explore",
+      "domains": [
+        "vision",
+        "nonlinear_safety",
+        "robotics"
+      ],
+      "builds_on": [
+        "VIS-01",
+        "NL-02",
+        "ROBO-03"
+      ],
+      "unlocks": [
+        "NL-02"
+      ],
+      "why_now": "Perceptive legged locomotion (2025-2026 MIQP on depth-derived steppable regions) now estimates terrain planes online, but the safety bound is always re-solved numerically; the repo's closed-form bound assumes a flat ground and the 4-point homography uniqueness gives the plane normal for free.",
+      "evidence": [
+        "https://www.doc.ic.ac.uk/~ajd/Robotics/RoboticsResources/lecture7.pdf",
+        "https://openaccess.thecvf.com/content_cvpr_2014/papers/Dragon_Ground_Plane_Estimation_2014_CVPR_paper.pdf",
+        "https://groups.csail.mit.edu/robotics-center/public_papers/Fallon15.pdf",
+        "https://arxiv.org/pdf/2603.07400",
+        "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4431242/"
+      ],
+      "prior_art": "Ground-plane homography (Hartley-Zisserman style), Dragon-Van Gool CVPR14, Fallon et al. Atlas 2015 planar segmentation, 2026 perceptive MIQP footstep planning; none derives a closed-form inclined-plane deceleration/ZMP bound from a homography.",
+      "missing_capability": "Lean theorem: given the plane normal n from homography decomposition (HomographyDecomposition.lean), the safe deceleration bound becomes a_max(theta)=min(mu cos theta - sin theta, (W/h_G)cos theta - ...)g on a slope, with forward invariance of the corresponding Lorentz-cone CBF; MuJoCo quadruped-on-ramp benchmark with a camera.",
+      "effort_weeks": 4.0,
+      "payoff": 3.0,
+      "confidence": 0.55,
+      "external_pull": "legged-robot vendors (perceptive locomotion); no bounty",
+      "cross_domain_edge": {
+        "from": "vision",
+        "to": "nonlinear_safety",
+        "weight": 0.5,
+        "why": "The homography's plane normal is the one scalar the closed-form ZMP bound is missing on non-flat ground."
+      },
+      "status": "candidate",
+      "source_report": "XD.md"
+    },
+    {
+      "id": "XD-10",
+      "title": "Syntactic WCET bound of generated C99 kernels fed into RTA",
+      "kind": "industrialize",
+      "domains": [
+        "codegen_certification",
+        "realtime_systems"
+      ],
+      "builds_on": [
+        "ROBO-04",
+        "NL-02",
+        "ROBO-01"
+      ],
+      "unlocks": [
+        "ROBO-04",
+        "XD-01",
+        "XD-02"
+      ],
+      "why_now": "rocq-prosa v0.6 (Oct 2025) makes verified RTA mainstream but takes WCET as an oracle; DO-178C 6.3.4f WCET objectives and tool-qualification pressure (Rapita, AbsInt) make a machine-checked 'kernel -> C_i -> schedulable' chain a differentiator; the repo's kernels are straight-line and zero-heap, the easy case.",
+      "evidence": [
+        "https://rocq-prover.org/p/rocq-prosa",
+        "https://drops.dagstuhl.de/entities/document/10.4230/LIPIcs.ECRTS.2020.22",
+        "https://cs.yale.edu/flint/certikos/publications/cav19.pdf",
+        "https://www.rapitasystems.com/files/MC-WP-004%20Automating%20WCET%20analysis%20for%20DO-178C_3.pdf",
+        "https://www.absint.com/tum_absint.pdf",
+        "https://compcert.org/research.html"
+      ],
+      "prior_art": "Prosa abstract RTA (Bozhko-Brandenburg), RT-CertiKOS+Prosa (CAV19), Velus/CompCert verified Lustre-to-C, AbsInt aiT and Rapita RapiTime (qualified tools). None links a theorem-prover codegen's output structure to the C_i used by a verified RTA.",
+      "missing_capability": "A Lean-side cost model over the codegen AST (op count, no loops/heap) yielding a per-kernel instruction-count bound, a theorem that the bound is monotone under the kernel composition used in the quadruped shield, and a response_time_analysis instance consuming those bounds; produce a DO-178C-style evidence bundle (bound, measurement on target, qualification narrative).",
+      "effort_weeks": 5.0,
+      "payoff": 4.0,
+      "confidence": 0.6,
+      "external_pull": "certification bodies (DO-178C, IEC 61508/61131-3 PLC users); potential paying customers in PLC/robotics safety",
+      "cross_domain_edge": {
+        "from": "codegen",
+        "to": "realtime_systems",
+        "weight": 0.7,
+        "why": "RTA has no input without C_i, and zero-heap straight-line codegen is the one case where C_i can be proved rather than measured."
+      },
+      "status": "candidate",
+      "source_report": "XD.md"
+    },
+    {
+      "id": "XD-11",
+      "title": "Cross-ratio fiducial detection with Reed-Solomon coded identity",
+      "kind": "explore",
+      "domains": [
+        "vision",
+        "realtime_systems",
+        "robotics"
+      ],
+      "builds_on": [
+        "VIS-01",
+        "ROBO-04"
+      ],
+      "unlocks": [
+        "ROBO-04"
+      ],
+      "why_now": "Learned tag families (E2ETag) and projective-invariant tags (Pi-Tag, X-tag) coexist with AprilTag's Hamming-table decoding; a verified pipeline that uses the cross-ratio for detection and an RS code for ID has no formal counterpart and reuses two READY modules.",
+      "evidence": [
+        "https://www.dsi.unive.it/~atorsell/papers/Conferences/3dimpvt2011-tag.pdf",
+        "https://campar.in.tum.de/pub/tbirdal20163dv/tbirdal20163dv.pdf",
+        "https://april.eecs.umich.edu/pdfs/wang2016iros.pdf",
+        "https://arxiv.org/pdf/2105.14184"
+      ],
+      "prior_art": "Pi-Tag (Bergamasco et al. 2011, cross-ratio detection), X-tag (Birdal 2016), AprilTag 2 (code tables), RUNE-tag; cross-ratio known to be noise-sensitive so only a few configurations are distinguishable.",
+      "missing_capability": "Lean theorem that cross-ratio invariance (CrossRatio.lean) plus an RS(n,k) code on the bit pattern gives a decoding with provable false-positive bound given the known cross-ratio noise sensitivity; Python/C99 decoder; honest benchmark against AprilTag on synthetic perspective views.",
+      "effort_weeks": 4.0,
+      "payoff": 2.0,
+      "confidence": 0.5,
+      "external_pull": "weak: AprilTag dominates; niche interest in projective-invariant markers",
+      "cross_domain_edge": {
+        "from": "vision",
+        "to": "realtime_systems",
+        "weight": 0.4,
+        "why": "Projective invariants supply the geometry, RS codes the identity; the pair is the fiducial."
+      },
+      "status": "candidate",
+      "source_report": "XD.md"
+    },
+    {
+      "id": "XD-12",
+      "title": "Barrier-derived Simplex switching for learned controllers",
+      "kind": "productionize",
+      "domains": [
+        "nonlinear_safety",
+        "realtime_systems",
+        "codegen_certification"
+      ],
+      "builds_on": [
+        "NL-02",
+        "ROBO-04",
+        "CTRL-03"
+      ],
+      "unlocks": [
+        "ROBO-04",
+        "NL-02"
+      ],
+      "why_now": "Neural Simplex (reverse switching, online retraining), Black-Box Simplex and Bb-Simplex (barrier-certificate switching, 2025-2026) are the current runtime-assurance pattern for RL controllers; the repo has a Lean-verified barrier and a Simplex theorem but no switching condition derived from the barrier.",
+      "evidence": [
+        "https://arxiv.org/pdf/1908.00528",
+        "https://par.nsf.gov/biblio/10686450",
+        "https://par.nsf.gov/biblio/10483769",
+        "https://www3.cs.stonybrook.edu/%7Estoller/papers/nfm2020.pdf"
+      ],
+      "prior_art": "Sha's Simplex; Phan et al. NSA; Black-Box Simplex (F-16 collision case studies); Bb-Simplex (Taylor-expanded barrier switching for microgrids). No Lean-verified barrier used as the Simplex certificate.",
+      "missing_capability": "Lean theorem: the Lorentz-cone CBF sublevel set is a Simplex recoverable region, the switching condition derived from one-step barrier decrease keeps the learned controller active whenever safe, and reverse switching is sound; `ctrl_simplex_barrier_switch` C99 kernel and MuJoCo quadruped benchmark with an RL policy as the advanced controller.",
+      "effort_weeks": 3.0,
+      "payoff": 3.0,
+      "confidence": 0.7,
+      "external_pull": "runtime assurance for learning-enabled systems (DARPA Assured Autonomy lineage, UL 4600 context)",
+      "cross_domain_edge": {
+        "from": "nonlinear_safety",
+        "to": "realtime_systems",
+        "weight": 0.6,
+        "why": "A closed-form barrier is exactly the certificate that makes Simplex switching cheap and provable."
+      },
+      "status": "candidate",
+      "source_report": "XD.md"
+    },
+    {
+      "id": "TOOL-13",
+      "title": "Unblock Lean in cloud sessions: allowlist cache.mathlib.org + committed setup script",
+      "kind": "productionize",
+      "domains": [
+        "lean_tooling"
+      ],
+      "builds_on": [],
+      "unlocks": [
+        "EST-05",
+        "ROB-01",
+        "EST-04",
+        "MATH-07",
+        "MATH-05",
+        "MATH-06"
+      ],
+      "why_now": "Wave 2 showed the exact pinned toolchain (v4.36.0-rc1) and all Lake dependencies install in a cloud session in ~46 s from GitHub release assets; only the Mathlib .olean cache host is blocked, so no Lean proof can be checked in cloud sessions today.",
+      "evidence": [
+        "https://code.claude.com/docs/en/cloud-environments#network-access"
+      ],
+      "prior_art": "Self-hosted ARM64 CI runner with a warm .lake; scripts/ensure_cache.sh for local clones.",
+      "missing_capability": "User adds cache.mathlib.org under the environment's allowed domains and pastes scripts/setup-lean-cloud.sh as the setup script (cache mode). Fallback without allowlisting: publish the .lake build as split release-asset tarballs and use the script's tarball mode.",
+      "effort_weeks": 0.2,
+      "payoff": 4,
+      "confidence": 0.85,
+      "external_pull": "Gates every Lean candidate in this index",
+      "status": "candidate",
+      "source_report": "LEAN_IN_CLOUD.md"
+    },
+    {
+      "id": "TOOL-14",
+      "title": "Ship and upgrade the math retrieval index (tools/mathdb): release asset, GPU-embedded Mathlib vectors, MCP server",
+      "kind": "productionize",
+      "domains": [
+        "lean_tooling",
+        "math"
+      ],
+      "builds_on": [
+        "MATH-04"
+      ],
+      "unlocks": [
+        "MATH-06",
+        "EST-05",
+        "ROB-01",
+        "EST-04",
+        "MATH-07"
+      ],
+      "why_now": "All prebuilt Mathlib indices (LeanSearch v2, Lean Finder, LeanExplore) sit on Hugging Face or R2, which are blocked; but the Qwen3-Embedding models they use are reachable from Docker Hub's ai/ namespace, and MathlibQR gives a public benchmark.",
+      "evidence": [
+        "https://github.com/frenzymath/LeanSearch-v2",
+        "https://github.com/justincasher/lean-explore",
+        "https://github.com/oOo0oOo/lean-lsp-mcp"
+      ],
+      "prior_art": "LeanSearch v2 (nDCG@10 0.623 on MathlibQR per paper summaries), Lean Finder, LeanExplore, Loogle, lean-lsp-mcp.",
+      "missing_capability": "v1 is built (tools/mathdb, 302,429 records: Mathlib 275,738, ctrl 3,186, formal-conjectures 11,875, Erdős 1,221, JSP 1,072, openai/math 9,337). Measured: own 112-query set R@10 0.67 keyword hybrid, 0.69 with a Qwen3-0.6B channel over ctrl+Erdős; LeanSearch-v2 MathlibQR nDCG@10 0.31 (BM25) vs 0.62 published for LeanSearch v2. Next: publish the 154 MB keyword bundle as a GitHub release asset, embed all of Mathlib with Qwen3 on a GPU (~1 h) and drop in the vectors, LLM-generated descriptions for the 72% of declarations without docstrings, and an MCP server.",
+      "effort_weeks": 1.0,
+      "payoff": 3,
+      "confidence": 0.8,
+      "external_pull": "Speeds every proof session and agent; community demand for local Lean search",
+      "status": "candidate",
+      "source_report": "MATHDB_SCOUT.md"
+    }
+  ],
+  "scoring_proposals": [
+    {
+      "source": "XD.md",
+      "formula": "score = conf * (0.20*N + 0.10*A + 0.15*R + 0.25*U + 0.15*P + 0.15*(1-E)); N=novelty tier/3; A=applicability tier/3; R=mean readiness of builds_on (ready 1, promising 0.6, in_work 0.3, SED 0.8); U=min(1, sum over READY builds_on r of w_domain(domain(r)->domain(c)) / 2); P=external pull (bounty/customer 1, standard/cert 0.7, community 0.4, none 0); E=min(1, effort_weeks/12); conf in [0,1]",
+      "coefficients": {
+        "novelty": 0.2,
+        "applicability": 0.1,
+        "readiness": 0.15,
+        "unlock_in_degree": 0.25,
+        "external_pull": 0.15,
+        "effort_inverse": 0.15,
+        "unlock_saturation_divisor": 2,
+        "effort_cap_weeks": 12
+      },
+      "rationale": "Unlock in-degree from READY nodes carries the most weight because the purpose of the graph is to compound ready assets; saturation at two strong unlockers prevents gaming via long builds_on lists. Novelty outweighs applicability because zero-sorry theorems are the repo's differentiator. Readiness and effort are symmetric so a 2-week productionization of a ready result ties with an 8-week N3 exploration. Confidence multiplies so speculative edges are discounted everywhere."
+    }
+  ]
+}

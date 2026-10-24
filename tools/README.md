@@ -97,3 +97,30 @@ Displays repository health, registered headline theorems (40 verified), toolchai
 ```bash
 ./ctrl status
 ```
+
+---
+
+### 8. `ctrl synergy` — cross-domain unlock lens
+Weighted graph over the idea catalog (`docs/AGENT_IDEA_INDEX.json`) and research candidates (`docs/SYNERGY_WEIGHTS.json`). Answers "what does X unlock", "what should an agent pick up next", and "which strong domain pairs have no concrete project yet". Every subcommand takes `--json` for agent consumption.
+```bash
+./ctrl synergy matrix                      # domain x domain unlock weights
+./ctrl synergy unlock CTRL-01              # out-edges, in-edges, two-hop reach
+./ctrl synergy rank -c -k industrialize    # rank research candidates of one kind
+./ctrl synergy rank -g "legged robot safety kernel" -d codegen_certification -n 10
+./ctrl synergy next -b 12                  # greedy plan within 12 engineer-weeks
+./ctrl synergy gaps                        # strong domain edges with 0 idea edges
+./ctrl synergy path ROBO-01 EST-01         # best weighted chain between ideas
+./ctrl synergy validate                    # schema + referential integrity
+python3 -m unittest discover -s tools/tests
+```
+Scoring recipe and coefficients live in `docs/SYNERGY_WEIGHTS.json` under `scoring`; edit the JSON, not the code, to retune. Research candidates follow the schema documented in `docs/RESEARCH_FRONTIER_2026-10.md`.
+
+---
+
+### 9. `tools/mathdb` — offline math retrieval index
+Search Mathlib, ctrl's theorems, formal-conjectures, Erdős/JSP metadata and openai/math from the shell, no network or Lean toolchain needed. See `tools/mathdb/README.md` for the rebuild commands and pins.
+```bash
+python3 tools/mathdb/query.py "discrete algebraic Riccati equation uniqueness under detectability" -k 10
+python3 tools/mathdb/query.py "infinitely many primes" --source mathlib --json
+```
+The index lives outside git (default `~/.cache/ctrl-mathdb/index`, override with `MATHDB_INDEX`).

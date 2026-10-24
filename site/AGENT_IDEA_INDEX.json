@@ -161,6 +161,38 @@
       ]
     },
     {
+      "id": "CTRL-05",
+      "title": "Coordinate-Free Reachability, Observability & General-n Ackermann Pole Placement",
+      "domain": "Linear Systems Structure",
+      "status": "ready_to_use",
+      "novelty": "N2",
+      "applicability": "A2",
+      "approach": "Subspace stabilization at k = dim V without Cayley-Hamilton, dual annihilator observability and output-injection invariance, companion-matrix rank-1 characteristic polynomial shift, controller-canonical Ackermann placement, Routh-Hurwitz 2/3 and Jury 2 stability tests.",
+      "lean_modules": [
+        "ControlsLean/Controls/Reachability.lean",
+        "ControlsLean/Controls/Observability.lean",
+        "ControlsLean/Controls/Companion.lean",
+        "ControlsLean/Controls/PolePlacement.lean",
+        "ControlsLean/Controls/PolePlacementGeneral.lean",
+        "ControlsLean/Controls/Hurwitz2.lean",
+        "ControlsLean/Controls/Hurwitz3.lean",
+        "ControlsLean/Controls/Jury2.lean"
+      ],
+      "key_theorems": [
+        "unobs_eq_dualCoannihilator_reach",
+        "exists_feedback_charpoly_eq",
+        "deadbeat_trajectory_zero",
+        "isHurwitz2_iff",
+        "isSchur2_iff_jury"
+      ],
+      "python_entrypoints": [],
+      "combines_with": [
+        "CTRL-02",
+        "CTRL-01",
+        "EST-01"
+      ]
+    },
+    {
       "id": "NL-01",
       "title": "Strict-Feedback Integrator Backstepping & Sontag's Universal CLF Formula",
       "domain": "Nonlinear Control",
@@ -397,6 +429,99 @@
       ]
     },
     {
+      "id": "ROBO-03",
+      "title": "Lie-Group SO(3)/SE(3) Rodrigues, Unit Quaternions, Planar Arm IK & Unicycle Odometry",
+      "domain": "Robot Kinematics & Lie Groups",
+      "status": "ready_to_use",
+      "novelty": "N2",
+      "applicability": "A3",
+      "approach": "so(3) cubic identity and closed-form Rodrigues rotation, 6x6 SE(3) twist adjoint functoriality and rigid kinematic ODE, unit-quaternion double cover and 1/2 q*omega ODE, 2-link planar arm Jacobian and annulus IK, differential-drive bijection, exact arc odometry and Kanayama CLF.",
+      "lean_modules": [
+        "ControlsLean/Robotics/SO3Rodrigues.lean",
+        "ControlsLean/Robotics/SE3Kinematics.lean",
+        "ControlsLean/Robotics/QuaternionRotation.lean",
+        "ControlsLean/Robotics/PlanarArm.lean",
+        "ControlsLean/Robotics/Unicycle.lean"
+      ],
+      "key_theorems": [
+        "skew_cube",
+        "rodrigues_mul_transpose_self",
+        "adjoint6_mul",
+        "norm_rotate",
+        "det_jacobian_eq_zero_iff",
+        "diffDrive_bijective"
+      ],
+      "python_entrypoints": [
+        "ctrl.robotics.kinematics_ik"
+      ],
+      "combines_with": [
+        "NL-02",
+        "NL-03",
+        "ROBO-02",
+        "EST-02"
+      ]
+    },
+    {
+      "id": "ROBO-04",
+      "title": "Real-Time Response-Time Analysis, Simplex Safety Switching, Fleet Deadlock & Reed-Solomon Barcode Decoding",
+      "domain": "Real-Time & Multi-Robot Systems",
+      "status": "ready_to_use",
+      "novelty": "N2",
+      "applicability": "A2",
+      "approach": "Fixed-priority Liu-Layland critical-instant response-time fixpoint soundness and completeness, Simplex architecture safe switching to a verified backup controller, directed-cycle multi-robot fleet deadlock characterization and throughput bounds, Reed-Solomon syndrome decoding for barcodes.",
+      "lean_modules": [
+        "RoboLean/RealTime.lean",
+        "RoboLean/CriticalInstant.lean",
+        "RoboLean/Reliability.lean",
+        "RoboLean/FleetDeadlock.lean",
+        "RoboLean/FleetThroughput.lean",
+        "RoboLean/Barcode/ReedSolomon.lean"
+      ],
+      "key_theorems": [],
+      "python_entrypoints": [],
+      "combines_with": [
+        "NL-02",
+        "EST-03"
+      ],
+      "branch": "crossover-research-2026-10-19",
+      "note": "Modules live on the crossover-research-2026-10-19 branch; theorem names not audited on main."
+    },
+    {
+      "id": "VIS-01",
+      "title": "Projective Multi-View Geometry: Essential Matrix, 8-Point, Homography Rigidity, Cross-Ratio, Triangulation & ICP",
+      "domain": "Computer Vision & Multi-View Geometry",
+      "status": "ready_to_use",
+      "novelty": "N2",
+      "applicability": "A2",
+      "approach": "Longuet-Higgins epipolar constraint E = [t]_x R, Demazure cubic essential constraint, Kronecker rank-8 eight-point uniqueness up to scale, PGL(3,K) four-point homography rigidity, cross-ratio Moebius invariance, Lagrange closed-form stereo triangulation with cheirality, Kabsch/ICP centroid and trace reduction.",
+      "lean_modules": [
+        "ControlsLean/Vision/Epipolar.lean",
+        "ControlsLean/Vision/EssentialConstraints.lean",
+        "ControlsLean/Vision/EightPoint.lean",
+        "ControlsLean/Vision/Homography.lean",
+        "ControlsLean/Vision/HomographyUniqueness.lean",
+        "ControlsLean/Vision/CrossRatio.lean",
+        "ControlsLean/Vision/Triangulation.lean",
+        "ControlsLean/Vision/Registration.lean"
+      ],
+      "key_theorems": [
+        "essential_mul_transpose",
+        "eq_smul_of_rank_eq_eight",
+        "homography_unique_four_points",
+        "crossRatio_mulVec",
+        "depths_unique",
+        "registrationCost_eq_optimal_iff"
+      ],
+      "python_entrypoints": [
+        "ctrl.robotics.vision_se3"
+      ],
+      "combines_with": [
+        "ROBO-02",
+        "EST-01",
+        "ROBO-03"
+      ]
+    },
+    {
       "id": "MATH-01",
       "title": "Byers-Nash n=6 Skew-Hamiltonian Conjecture (MF-13) & 15D Skew Parseval Decomposition",
       "domain": "Matrix Analysis & Lyapunov Conditioning",
@@ -479,6 +604,28 @@
       "remaining_work": "Extend local branch-and-bound obstruction certificates beyond 23-smooth prime-shifted moduli.",
       "combines_with": [
         "MATH-04"
+      ]
+    },
+    {
+      "id": "MATH-04",
+      "title": "25+ Machine-Checked Erdős Problem Solutions & Extremal Bounties",
+      "domain": "Combinatorial & Number-Theoretic Bounties",
+      "status": "ready_to_use",
+      "novelty": "N3",
+      "applicability": "A2",
+      "approach": "Complete zero-sorry formalizations of solved Erdős problems (#36, #96, #143, #242, #261, #275, #311, #341, #367, #370, #389, #455, #493, #533, #645, #834, #873, #931, #951, #995, #1055, #1059, #1073, #1102, #1113, #1125, #1148, #1179, #1187) ready for Justin Sun Prize, Palomar and Formal Conjectures submission.",
+      "lean_modules": [
+        "ControlsLean/Bounty/ErdosBounties.lean",
+        "ControlsLean/Bounty/ErdosNewInsights.lean",
+        "ControlsLean/Bounty/ErdosWave2.lean"
+      ],
+      "key_theorems": [],
+      "python_entrypoints": [
+        "tools/ctrl_cli/triage.py"
+      ],
+      "combines_with": [
+        "MATH-02",
+        "MATH-03"
       ]
     }
   ],
