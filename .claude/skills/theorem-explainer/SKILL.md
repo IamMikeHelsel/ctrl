@@ -181,6 +181,10 @@ Humble, clear, technical. The reader is a capable engineer who has not seen this
 
 ## Lessons from the pilot
 
+- `‖x‖` on `n → ℝ` in Mathlib is the **sup norm**, not Euclidean. Constants the proof
+  produces (rates, bounds) differ from the textbook Euclidean ones. Say which norm, and do
+  not quote a Euclidean constant as "the proof's".
+
 - A docstring said "converges geometrically"; the theorem states convergence only. The page
   says the rate is a separate theorem and is existence-only.
 - "The plain error can grow" is false for gradient descent on a symmetric quadratic

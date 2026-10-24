@@ -57,6 +57,16 @@ def level_set(v: float, n: int = 240) -> np.ndarray:
     return (np.sqrt(v) * np.linalg.solve(L.T, u)).T
 
 
+def lean_proof_rate() -> tuple[float, float]:
+    """The rate the Lean proof builds: rho = 1 - c_Q / C_P, with c_Q and C_P taken over the
+    sup-norm unit sphere (Mathlib's default norm on n -> R). Here Q = I, so c_Q = 1 at a
+    coordinate vector, and C_P = max of x^T P x over the square's corners (P is PD here)."""
+    corners = [np.array([a, b]) for a in (1.0, -1.0) for b in (1.0, -1.0)]
+    c_q = 1.0
+    c_p = max(float(x @ P @ x) for x in corners)
+    return c_p, 1 - c_q / c_p
+
+
 RHO = contraction_factor()
 SPECTRAL_RADIUS = float(max(abs(np.linalg.eigvals(A))))
 OP_NORM = float(np.linalg.norm(A, 2))
@@ -66,5 +76,7 @@ if __name__ == "__main__":
     print("P =\n", P)
     print("P - A^T P A =\n", P - A.T @ P @ A)
     print(f"spectral radius {SPECTRAL_RADIUS:.4f}, ||A||_2 {OP_NORM:.4f}, rho {RHO:.4f}")
+    c_p, rho_lean = lean_proof_rate()
+    print(f"Lean proof (sup norm): C_P {c_p:.2f}, rho {rho_lean:.4f}")
     for k, x in enumerate(trajectory()):
         print(k, np.round(x, 3), f"|x|={np.linalg.norm(x):.3f}", f"V={V(x):.3f}")

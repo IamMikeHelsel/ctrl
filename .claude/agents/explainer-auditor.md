@@ -23,17 +23,19 @@ grep -n "theorem <name>" -A12 <lean file>
    hypothesis dropped, none added, quantifiers in the same order.
 2. **No docstring drift.** Nothing claimed (rate, uniqueness, bound, symmetry) that only a
    docstring says. Rates or constants must come from a stated theorem.
-3. **Proof steps.** Each step in `why` names a lemma that exists and says what that lemma
+3. **Norm and constants.** Mathlib's norm on `n → ℝ` is the sup norm. Any constant the page
+   attributes to the proof must be computed in the norm the proof uses.
+4. **Proof steps.** Each step in `why` names a lemma that exists and says what that lemma
    states.
-4. **Numbers.** Every number on the page appears in `example.py`'s output (allowing
+5. **Numbers.** Every number on the page appears in `example.py`'s output (allowing
    rounding). Every "goes up / goes down / stays under" claim is checked numerically.
-5. **Examples.** The failing-hypothesis case says honestly whether the conclusion fails.
-6. **Applications.** Each card's setting really maps onto the hypotheses. Named repo theorems
+6. **Examples.** The failing-hypothesis case says honestly whether the conclusion fails.
+7. **Applications.** Each card's setting really maps onto the hypotheses. Named repo theorems
    exist and do what the card says (`grep`). No unmeasured benefit claimed. Watch for claims
    that only hold for non-symmetric or non-normal cases.
-7. **Limits.** Model scope, what is not computed, floating point, and hypothesis failure are
+8. **Limits.** Model scope, what is not computed, floating point, and hypothesis failure are
    all covered.
-8. **Tone.** No hype, no talking down, no em dashes. Symbols defined at first use.
-9. **Videos.** Scene captions and badges match the page and the Lean names.
+9. **Tone.** No hype, no talking down, no em dashes. Symbols defined at first use.
+10. **Videos.** Scene captions and badges match the page and the Lean names.
 
 Return the findings, most serious first, with the exact sentence and a suggested fix.
