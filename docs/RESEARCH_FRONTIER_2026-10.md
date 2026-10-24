@@ -40,16 +40,16 @@ Every candidate below is a node in `docs/SYNERGY_WEIGHTS.json` and is scored by 
 | 6 | `ROB-10` | explore | 0.444 | 3 | 0.80 | 3 | 0.4 | Laplacian consensus and displacement-based formation control |
 | 7 | `ROB-06` | explore | 0.439 | 4 | 0.75 | 4 | 0.4 | Neural CBF soundness bridge: TorchLean bounds to a Lean forward-invariance theorem |
 | 8 | `ROB-02` | explore | 0.431 | 5 | 0.75 | 4 | 0.4 | Invariant EKF: group-affine dynamics imply log-linear error on SE(3)/SE_2(3) |
-| 9 | `TOOL-01` | productionize | 0.423 | 2 | 0.80 | 3 | 1.0 | ctrl MCP server exposing scratch, check, search, audit and the idea index |
-| 10 | `ROB-04` | explore | 0.423 | 4 | 0.65 | 5 | 0.7 | Capturability / DCM push-recovery certificate composed with the ZMP allocator |
-| 11 | `TOOL-04` | industrialize | 0.422 | 1 | 0.90 | 3 | 1.0 | Finish going public: Reservoir listing, stable toolchain pin, record the public-since date |
-| 12 | `EST-06` | explore | 0.418 | 5 | 0.70 | 4 | 0.4 | Invariant EKF on SO(3)/SE(3): log-linear autonomous error dynamics |
-| 13 | `XD-06` | explore | 0.417 | 4 | 0.70 | 4 | 0.4 | Lorentz-cone CBF safe set as MPC terminal set with proven recursive feasibility |
-| 14 | `ROB-03` | explore | 0.397 | 5 | 0.70 | 4 | 0.4 | VIO observability: 4-dim unobservable subspace and FEJ consistency theorem |
-| 15 | `EST-13` | explore | 0.396 | 3 | 0.80 | 3 | 0.4 | Point-based POMDP value iteration error bounds (PBVI/SARSOP) on Smallwood-Sondik |
-| 16 | `ROB-11` | explore | 0.391 | 4 | 0.65 | 4 | 0.7 | Whole-body task-priority projection and N-contact closed-form wrench feasibility |
-| 17 | `EST-12` | explore | 0.389 | 3 | 0.75 | 3 | 0.4 | Ho-Kalman realization correctness and finite-sample system identification |
-| 18 | `TOOL-14` | productionize | 0.388 | 2 | 0.75 | 3 | 0.4 | Local math retrieval index (Mathlib + ctrl + formal-conjectures + Erdős metadata) with MCP/CLI access |
+| 9 | `TOOL-14` | productionize | 0.427 | 1 | 0.80 | 3 | 0.4 | Ship and upgrade the math retrieval index (tools/mathdb): release asset, GPU-embedded Mathlib vectors, MCP server |
+| 10 | `TOOL-01` | productionize | 0.423 | 2 | 0.80 | 3 | 1.0 | ctrl MCP server exposing scratch, check, search, audit and the idea index |
+| 11 | `ROB-04` | explore | 0.423 | 4 | 0.65 | 5 | 0.7 | Capturability / DCM push-recovery certificate composed with the ZMP allocator |
+| 12 | `TOOL-04` | industrialize | 0.422 | 1 | 0.90 | 3 | 1.0 | Finish going public: Reservoir listing, stable toolchain pin, record the public-since date |
+| 13 | `EST-06` | explore | 0.418 | 5 | 0.70 | 4 | 0.4 | Invariant EKF on SO(3)/SE(3): log-linear autonomous error dynamics |
+| 14 | `XD-06` | explore | 0.417 | 4 | 0.70 | 4 | 0.4 | Lorentz-cone CBF safe set as MPC terminal set with proven recursive feasibility |
+| 15 | `ROB-03` | explore | 0.397 | 5 | 0.70 | 4 | 0.4 | VIO observability: 4-dim unobservable subspace and FEJ consistency theorem |
+| 16 | `EST-13` | explore | 0.396 | 3 | 0.80 | 3 | 0.4 | Point-based POMDP value iteration error bounds (PBVI/SARSOP) on Smallwood-Sondik |
+| 17 | `ROB-11` | explore | 0.391 | 4 | 0.65 | 4 | 0.7 | Whole-body task-priority projection and N-contact closed-form wrench feasibility |
+| 18 | `EST-12` | explore | 0.389 | 3 | 0.75 | 3 | 0.4 | Ho-Kalman realization correctness and finite-sample system identification |
 | 19 | `TOOL-06` | industrialize | 0.387 | 2 | 0.60 | 4 | 1.0 | Kernel certificate bundle: JSON-LD per kernel with axiom audit, toolchain SHAs, code hashes, parity results and external re-check |
 | 20 | `EST-11` | explore | 0.384 | 4 | 0.70 | 4 | 0.4 | Conformal prediction coverage theorem and CP-based safe control |
 | 21 | `TOOL-05` | productionize | 0.381 | 4 | 0.60 | 4 | 1.0 | Cedar-style compiled-Lean oracle with differential random testing against the C99/ST kernels |
@@ -115,12 +115,12 @@ Every candidate below is a node in `docs/SYNERGY_WEIGHTS.json` and is scored by 
 
 - `TOOL-13` (0 wk, score 0.358) Unblock Lean in cloud sessions: allowlist cache.mathlib.org + committed setup script
 - `MATH-07` (1 wk, score 0.537) Discrete KYP, easy direction (LMI ⇒ FDI) and 'H∞ Riccati certificate is a KYP certificate'
+- `TOOL-14` (1 wk, score 0.427) Ship and upgrade the math retrieval index (tools/mathdb): release asset, GPU-embedded Mathlib vectors, MCP server
 - `TOOL-04` (1 wk, score 0.422) Finish going public: Reservoir listing, stable toolchain pin, record the public-since date
 - `EST-05` (1 wk, score 0.484) H-infinity (minimax) filter via dual Bounded Real Lemma
 - `MATH-06` (1 wk, score 0.364) Priority rescue: link Erdős 834 (and the 1148/367 variants) in Formal Conjectures, correct the claimed counts
 - `SED-07` (1 wk, score 0.310) OpenTelemetry CLI semantic-convention alignment of the JSON trace
 - `TOOL-12` (1 wk, score 0.305) CI hygiene: split GitHub cache from Mathlib cache, add lake test/lint and audit targets, schedule Mathlib bumps
-- `TOOL-14` (2 wk, score 0.388) Local math retrieval index (Mathlib + ctrl + formal-conjectures + Erdős metadata) with MCP/CLI access
 - `ROB-01` (2 wk, score 0.508) Geometric SO(3)/SE(3) tracking certificate (Lee-Leok-McClamroch)
 - `EST-04` (2 wk, score 0.475) Willems' Fundamental Lemma and DeePC certificate in Lean
 
@@ -128,12 +128,12 @@ Every candidate below is a node in `docs/SYNERGY_WEIGHTS.json` and is scored by 
 
 - `TOOL-13` (0 wk, score 0.358) Unblock Lean in cloud sessions: allowlist cache.mathlib.org + committed setup script
 - `MATH-07` (1 wk, score 0.537) Discrete KYP, easy direction (LMI ⇒ FDI) and 'H∞ Riccati certificate is a KYP certificate'
+- `TOOL-14` (1 wk, score 0.427) Ship and upgrade the math retrieval index (tools/mathdb): release asset, GPU-embedded Mathlib vectors, MCP server
 - `TOOL-04` (1 wk, score 0.422) Finish going public: Reservoir listing, stable toolchain pin, record the public-since date
 - `EST-05` (1 wk, score 0.484) H-infinity (minimax) filter via dual Bounded Real Lemma
 - `MATH-06` (1 wk, score 0.364) Priority rescue: link Erdős 834 (and the 1148/367 variants) in Formal Conjectures, correct the claimed counts
 - `SED-07` (1 wk, score 0.310) OpenTelemetry CLI semantic-convention alignment of the JSON trace
 - `TOOL-12` (1 wk, score 0.305) CI hygiene: split GitHub cache from Mathlib cache, add lake test/lint and audit targets, schedule Mathlib bumps
-- `TOOL-14` (2 wk, score 0.388) Local math retrieval index (Mathlib + ctrl + formal-conjectures + Erdős metadata) with MCP/CLI access
 - `ROB-01` (2 wk, score 0.508) Geometric SO(3)/SE(3) tracking certificate (Lee-Leok-McClamroch)
 - `EST-04` (2 wk, score 0.475) Willems' Fundamental Lemma and DeePC certificate in Lean
 - `TOOL-11` (1 wk, score 0.212) Agent-facing index upgrade: JSON-LD context on AGENT_IDEA_INDEX, llms.txt and Markdown twins on the Pages site
@@ -704,6 +704,18 @@ Builds on: `MATH-04`.
 
 ## Lane TOOL: Lean ecosystem tooling and productization
 
+### `TOOL-14` Ship and upgrade the math retrieval index (tools/mathdb): release asset, GPU-embedded Mathlib vectors, MCP server
+
+**productionize** · score 0.427 · 1 wk · confidence 0.80 · payoff 3/5 · domains: lean_tooling, math  
+Builds on: `MATH-04`.  
+Unlocks: `MATH-06`, `EST-05`, `ROB-01`, `EST-04`, `MATH-07`.  
+
+- **Why now.** All prebuilt Mathlib indices (LeanSearch v2, Lean Finder, LeanExplore) sit on Hugging Face or R2, which are blocked; but the Qwen3-Embedding models they use are reachable from Docker Hub's ai/ namespace, and MathlibQR gives a public benchmark.
+- **Prior art.** LeanSearch v2 (nDCG@10 0.623 on MathlibQR per paper summaries), Lean Finder, LeanExplore, Loogle, lean-lsp-mcp.
+- **What we would build.** v1 is built (tools/mathdb, 302,429 records: Mathlib 275,738, ctrl 3,186, formal-conjectures 11,875, Erdős 1,221, JSP 1,072, openai/math 9,337). Measured: own 112-query set R@10 0.67 keyword hybrid, 0.69 with a Qwen3-0.6B channel over ctrl+Erdős; LeanSearch-v2 MathlibQR nDCG@10 0.31 (BM25) vs 0.62 published for LeanSearch v2. Next: publish the 154 MB keyword bundle as a GitHub release asset, embed all of Mathlib with Qwen3 on a GPU (~1 h) and drop in the vectors, LLM-generated descriptions for the 72% of declarations without docstrings, and an MCP server.
+- **External pull.** Speeds every proof session and agent; community demand for local Lean search
+- **Evidence.** <https://github.com/frenzymath/LeanSearch-v2> · <https://github.com/justincasher/lean-explore> · <https://github.com/oOo0oOo/lean-lsp-mcp>
+
 ### `TOOL-01` ctrl MCP server exposing scratch, check, search, audit and the idea index
 
 **productionize** · score 0.423 · 2 wk · confidence 0.80 · payoff 3/5 · domains: lean_tooling  
@@ -729,18 +741,6 @@ Unlocks: `TOOL-03`, `TOOL-06`, `TOOL-09`, `TOOL-11`, `MATH-01`, `MATH-02`.
 - **External pull.** Justin Sun Prize public-repo rule; Reservoir inclusion criteria
 - **Edge.** lean_tooling → prizes (0.8): Prize eligibility and formalizer attribution both require an earliest public commit.
 - **Evidence.** <https://raw.githubusercontent.com/RileyBetts/lean-tee/main/docs/GETTING_STARTED.md> · <https://github.com/leanprover/reservoir> · <https://github.com/leanprover/reservoir-index> · <https://github.com/TheJustinSunPrize/awards> · <https://theplatformengineering.substack.com/p/github-actions-2026-pricing-changes>
-
-### `TOOL-14` Local math retrieval index (Mathlib + ctrl + formal-conjectures + Erdős metadata) with MCP/CLI access
-
-**productionize** · score 0.388 · 2 wk · confidence 0.75 · payoff 3/5 · domains: lean_tooling, math  
-Builds on: `MATH-04`.  
-Unlocks: `MATH-06`, `EST-05`, `ROB-01`, `EST-04`, `MATH-07`.  
-
-- **Why now.** All prebuilt Mathlib indices (LeanSearch v2, Lean Finder, LeanExplore) sit on Hugging Face or R2, which are blocked; but the Qwen3-Embedding models they use are reachable from Docker Hub's ai/ namespace, and MathlibQR gives a public benchmark.
-- **Prior art.** LeanSearch v2 (nDCG@10 0.623 on MathlibQR per paper summaries), Lean Finder, LeanExplore, Loogle, lean-lsp-mcp.
-- **What we would build.** v1 in tools/mathdb: BM25/hybrid over Mathlib declarations, optional Qwen3-0.6B dense channel for small corpora, eval on MathlibQR; v2: GPU-embedded Mathlib vectors shipped as a release asset or LeanSearch v2 vectors if huggingface.co is allowlisted; expose as an MCP server.
-- **External pull.** Speeds every proof session and agent; community demand for local Lean search
-- **Evidence.** <https://github.com/frenzymath/LeanSearch-v2> · <https://github.com/justincasher/lean-explore> · <https://github.com/oOo0oOo/lean-lsp-mcp>
 
 ### `TOOL-06` Kernel certificate bundle: JSON-LD per kernel with axiom audit, toolchain SHAs, code hashes, parity results and external re-check
 
