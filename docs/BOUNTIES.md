@@ -1,0 +1,113 @@
+# Bounty and prize sources for Lean solves
+
+Verified from primary sources on 2026-10-17 unless marked otherwise. Amounts and rules change
+often, so re-check the organiser's own page before investing effort.
+
+## Lanes that pay money
+
+### 1. Justin Sun Prize (JSP), the best fit for formalization work
+* Rules: <https://www.hejustinsun.com/prize/rules>
+* Records and process: <https://github.com/TheJustinSunPrize/awards> (`docs/award-process.md`,
+  `docs/verification.md`, `problems/`)
+* Pays the **Lean formalizer separately from the mathematical solver** (legacy process:
+  70% solver / 30% formalizer). A formalizer can claim a problem someone else already solved,
+  provided a complete published solution exists and passes review. This is the lane where
+  "formalize a known proof" earns money.
+* Only Lean counts. The proof must be complete, with no `sorry` and standard axioms only.
+  Submissions that state literature results as axioms are closed.
+* **Priority goes to the earliest public commit of a complete proof**, not the PR date. The proof
+  must live in our own *public* repo, pinned by a 40-character SHA.
+* Paid in USDT/USDC with mandatory KYC. An AI cannot be the payee; a person or company can.
+* Reality check: about 1,870 open issues and PRs, a long review backlog, and few confirmed
+  awards so far. Treat payouts as slow and uncertain.
+* The repo ships a `skills/lean-verify` self-check. Run it before submitting.
+
+### 2. conjectures.io
+* <https://conjectures.io>, <https://conjectures.io/how-it-works>
+* Exact Lean statements of **open** problems, taken from DeepMind's Formal Conjectures. Prove
+  or refute; the first accepted proof wins. Per-problem bounties were about $1.8k–4.6k in Oct 2026.
+* Costs 0.25 τ per verification attempt. Paid in Bittensor alpha (crypto). Chat logs are required.
+* These are genuinely open research problems. Only attempt one with a real mathematical idea.
+
+### 3. Grants (fund the program rather than pay per solve)
+* Renaissance Philanthropy / XTX **AI for Math Fund**: <https://www.renaissancephilanthropy.org/ai-for-math-fund>.
+  Grants of $100k–1M, plus seed grants up to $100k for tools, datasets, and prototypes. A
+  "verified controls and vision library" fits the tools/datasets category.
+
+## Lanes that build credibility (no money)
+
+* **Palomar registry** (Lean FRO + ICARM, launched 2026-08-18): <https://palomar-registry.org/about>.
+  A citable, machine-checked record. AI work is allowed with disclosure in `formalization.yaml`.
+  There is a research-interest floor, so textbook results won't pass. It requires the Lean
+  `module` system and a `Challenge.lean`/`Solution.lean` split.
+* **Formal Conjectures** (DeepMind): <https://github.com/google-deepmind/formal-conjectures>.
+  Contributions are new statements, fixes for misformalizations, and solved-status updates.
+  Requires a Google CLA and follows Mathlib's AI policy.
+* **Mathlib**: <https://leanprover-community.github.io/contribute/index.html>. Disclose LLM use
+  and add the `LLM-generated` label. Discuss on Zulip first.
+* **SAIR competitions** (XTX-funded, recognition only, full legal name required):
+  Lean Kernel Challenge (deadline 2026-11-20,
+  <https://github.com/SAIRcompetition/lean-kernel-challenge>) and Andrews–Curtis
+  Challenge (deadline 2026-11-30).
+
+## Closed or not paying (don't chase)
+
+* AIMO Progress Prizes: XTX closed the series on 2026-09-16.
+* FrontierMath Erdős (Epoch AI): a benchmark, not a bounty.
+* Self-declared GitHub "bounties" with no funder or escrow.
+* asiprize.com "LeanCoin": lists dollar figures, but the stated payout is one LeanCoin token. Unverified.
+
+## Secondary sources
+
+* <https://github.com/munimv2/formal-math-bounties> is a maintained survey (itself AI-written).
+  Use it to discover programs, then verify against primary pages.
+* Terence Tao's blog and the Lean Zulip `#Palomar` and `#Erdős problems` channels.
+
+## Our pipeline for bounty targets
+
+The formal-conjectures snapshot (2026-10-17) has about 1,140 Erdős problems. About 680 are tagged
+`research solved` with the proof still `sorry`, but **447 of those already link an external
+Lean proof** via `formal_proof using lean4 at ...`, which leaves **about 235 with no known
+formalization**. Those 235 are the realistic money lane: JSP formalizer share, plus a Palomar entry and an
+upstream Formal Conjectures update.
+
+1. `scripts/bounty_triage.sh` lists those 235, shortest statement first. Short statements
+   with elementary solutions are the best first targets.
+2. For a candidate, find the published solution (erdosproblems.com page, then the paper)
+   and confirm the JSP problem bank lists it (`problems/` in the JSP repo).
+3. Check JSP PRs and issues (and the erdosproblems.com page) for formalizations not yet linked upstream of that problem ID. Skip any that
+   are already recorded.
+4. Formalize the problem in `ControlsLean/Bounty/ErdosNNN.lean` against the *exact* upstream
+   statement (copy it verbatim and pin the formal-conjectures commit). Full `check.sh`.
+5. Push to a **public** repo immediately (`ctrl` is private for now, per Mike; decide on a public home before submitting anything) to fix priority. Then run JSP `lean-verify`, open the
+   PR, and add a Palomar submission if the result clears the research-interest floor.
+
+## Watching for new targets (`scripts/bounty_watch.sh`)
+
+Every current entry has been screened, so the job now is to catch entries the moment they
+become claimable. `scripts/bounty_watch.sh` fetches three sources with `curl` (no git), diffs
+them against JSON snapshots in `data/snapshots/`, prints what changed, and updates the snapshots.
+
+| Source | Fetched from | Reports |
+| --- | --- | --- |
+| JSP catalog | `TheJustinSunPrize/awards` `problems/catalog-*.md` + `mathdb-pilot.json` | new or removed entries, newly Solved, newly Eligible, eligibility changes, Lean proof added or removed, Lean links removed, newly unclaimed (Solved with Lean proof "No") |
+| erdosproblems.com | `teorth/erdosproblems` `data/problems.yaml` | newly proved, disproved, or solved; status, formal-status, and prize changes; Lean removed; newly unclaimed (resolved, not `Lean`) |
+| formal-conjectures | `google-deepmind/formal-conjectures` main tarball, `ErdosProblems/*.lean` | per declaration: newly `research solved`, new statements, `formal_proof` links added or removed, newly unclaimed (solved, `sorry`, no `formal_proof`) |
+
+```bash
+scripts/bounty_watch.sh                 # full report
+scripts/bounty_watch.sh -q              # silent unless something changed or failed (cron)
+scripts/bounty_watch.sh --jsp-from F    # diff a local concatenated JSP catalog instead of fetching
+SNAPSHOT_DIR=/tmp/x scripts/bounty_watch.sh   # use a scratch snapshot directory
+```
+
+* The first run for each source records a baseline and reports nothing for it.
+* Each change is also appended to `data/snapshots/changes.log`.
+* Exit status is 0 on success, whether or not anything changed, and 2 if any source failed.
+  A failed source keeps its old snapshot. So does a fetch that returns under half of the
+  snapshot's entry count, so a truncated download can't look like mass removals.
+* A lock directory stops overlapping runs, and snapshots are written atomically. Cron example
+  (cron mails any output):
+  `17 * * * * $HOME/lean-work/ctrl-claude/scripts/bounty_watch.sh -q`
+* "Newly unclaimed" in formal-conjectures is counted per declaration. `bounty_triage.sh` works
+  per file, so the watcher's set is wider.

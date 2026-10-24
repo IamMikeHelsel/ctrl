@@ -1,11 +1,22 @@
 name: Lean Action CI
 
+# Persistent local hosts execute only trusted pushes or an explicitly reviewed commit.
+# Fork PRs are reviewed/promoted by a maintainer; never approve their Actions runs.
+# See docs/SELF_HOSTED_VERIFICATION.md for the required repository-level public gate.
 on:
   push:
-  pull_request:
+    branches: [main, 'ci/trusted/**']
   workflow_dispatch:
+    inputs:
+      reviewed_sha:
+        description: 'Full 40-character commit SHA reviewed for execution on persistent local hosts'
+        required: true
+        type: string
+      trust_acknowledgement:
+        description: 'Type TRUSTED_LOCAL_EXECUTION after reviewing the entire commit and build inputs'
+        required: true
+        type: string
 
-# Check-only: no Pages deploy or other writes. The site deploys from the `site` branch.
 permissions:
   contents: read
 
@@ -16,8 +27,30 @@ concurrency:
 
 jobs:
   build:
-    runs-on: ${{ fromJSON(vars.RUNNER || '["self-hosted","ARM64","ctrl-local"]') }}
+    if: >-
+      github.repository == 'IamMikeHelsel/ctrl' &&
+      (github.event_name == 'push' ||
+       (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' &&
+        inputs.trust_acknowledgement == 'TRUSTED_LOCAL_EXECUTION'))
+    runs-on: [self-hosted, ARM64, ctrl-local]
 
+    timeout-minutes: 90
     steps:
+      - name: Validate reviewed commit
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          REVIEWED_SHA: ${{ inputs.reviewed_sha }}
+        shell: bash
+        run: |
+          if [[ ! "$REVIEWED_SHA" =~ ^[0-9a-f]{40}$ ]]; then
+            echo 'reviewed_sha must be a full lowercase 40-character commit SHA' >&2
+            exit 1
+          fi
       - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.reviewed_sha || github.sha }}
+          persist-credentials: false
       - uses: leanprover/lean-action@v1
+      - uses: astral-sh/setup-uv@v6
+      - name: Source escape-hatch and headline axiom audit
+        run: scripts/check.sh

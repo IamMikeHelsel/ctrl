@@ -1,0 +1,38 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "erdos-lab"
+version = "0.1.0"
+description = "Machine-checked Lean proofs of Erdős problems, and the evidence that they prove the right statement."
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.11"
+dependencies = [
+  "rich>=13.7,<16",
+  "typer>=0.15,<1",
+]
+
+[dependency-groups]
+dev = ["pytest>=8.3,<10", "ruff>=0.11,<1"]
+
+[project.scripts]
+erdos = "erdos_lab.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/erdos_lab"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-m 'not integration'"
+markers = ["integration: touches real Lean or SSH (run with -m integration)"]
+
+[tool.ruff]
+# The image has no .git, so .gitignore can't keep ruff out of Lake package checkouts.
+line-length = 100
+extend-exclude = [".lake", "**/.lake", "tools", "**/*.md"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]
+ignore = ["E501", "B008", "E741"]

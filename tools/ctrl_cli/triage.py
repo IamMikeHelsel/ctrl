@@ -35,7 +35,9 @@ def _find_formal_conjectures_root(repo_root: Path) -> Path:
     return candidates[0]
 
 
-def _scan_formal_conjectures(fc_root: Path, include_erdos: bool, include_non_erdos: bool, category_filter=None):
+def _scan_formal_conjectures(
+    fc_root: Path, include_erdos: bool, include_non_erdos: bool, category_filter=None
+):
     items = []
     if not fc_root.exists():
         return items
@@ -237,7 +239,9 @@ def run_bounty_filter(args, repo_root, data_dir):
                         f"{len(pinfo['open'])} open awards PR(s) on {rjid} ({', '.join(f'#{n}' for n in pinfo['open'][:3])})"
                     )
                 if pinfo["merged"]:
-                    reasons.append(f"{len(pinfo['merged'])} merged awards PR(s) on {rjid}")
+                    reasons.append(
+                        f"{len(pinfo['merged'])} merged awards PR(s) on {rjid}"
+                    )
                 if (
                     args.strict
                     and pinfo["closed"]
@@ -287,8 +291,13 @@ def run_bounty_filter(args, repo_root, data_dir):
         print(json.dumps(out, indent=2))
         return
 
-    print("\n\033[1m\033[36m=== Bounty & FormalConjectures Fast-Filter Results ===\033[0m")
-    print(f"Source catalog:       \033[1m{source}\033[0m" + (f" (category={category_filter})" if category_filter else ""))
+    print(
+        "\n\033[1m\033[36m=== Bounty & FormalConjectures Fast-Filter Results ===\033[0m"
+    )
+    print(
+        f"Source catalog:       \033[1m{source}\033[0m"
+        + (f" (category={category_filter})" if category_filter else "")
+    )
     print(f"Scanned candidates:   \033[1m{len(candidates)}\033[0m")
     print(f"Rejected (contested): \033[31m{len(rejected)}\033[0m")
     print(f"Surviving shortlist:  \033[32m\033[1m{len(survivors)}\033[0m\n")

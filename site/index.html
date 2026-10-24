@@ -3,49 +3,70 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>ctrl — Lean 4 Proofs &amp; Solver-Free C99/PLC Kernels for Robotics &amp; Control</title>
-  <meta name="description" content="Practical bridge between Lean 4 control theorems, dual-mode (exact rational + float64) Python reference kernels, zero-heap C99/IEC 61131-3 ST code generation, and MuJoCo physics benchmarks." />
+  <title>ctrl — Applied Math for Controls, Robotics, Simulation, Perception</title>
+  <meta name="description" content="Applied mathematics for controls, robotics, simulation, and perception: machine-checked Lean 4 theorems, dual-mode Python references, fixed-loop C99/PLC kernels, and MuJoCo physics benchmarks." />
   <style>
     :root {
-      --bg: #fafafa;
+      --bg: #f8fafc;
       --surface: #ffffff;
-      --surface-alt: #f4f4f5;
-      --text: #111827;
-      --muted: #4b5563;
-      --border: #e5e7eb;
+      --surface-alt: #f1f5f9;
+      --code-bg: #0f172a;
+      --code-fg: #e2e8f0;
+      --text: #0f172a;
+      --muted: #475569;
+      --border: #e2e8f0;
+      --border-strong: #cbd5e1;
       --accent: #0f766e;
+      --accent-hover: #115e59;
+      --accent-ink: #ffffff;
       --accent-soft: #ccfbf1;
+      --accent-border: #99f6e4;
       --ready-bg: #dcfce7;
       --ready-fg: #166534;
       --promising-bg: #fef3c7;
       --promising-fg: #92400e;
       --work-bg: #e0e7ff;
       --work-fg: #1e40af;
+      --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.05);
+      --shadow-md: 0 4px 12px rgba(15, 23, 42, 0.06);
       --mono: "JetBrains Mono", "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
       --sans: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     }
 
     @media (prefers-color-scheme: dark) {
       :root {
-        --bg: #0b0f17;
+        --bg: #090d16;
         --surface: #111827;
-        --surface-alt: #1f2937;
-        --text: #f3f4f6;
-        --muted: #9ca3af;
-        --border: #263244;
+        --surface-alt: #1e293b;
+        --code-bg: #060911;
+        --code-fg: #e2e8f0;
+        --text: #f1f5f9;
+        --muted: #94a3b8;
+        --border: #1e293b;
+        --border-strong: #334155;
         --accent: #2dd4bf;
-        --accent-soft: #115e59;
+        --accent-hover: #5eead4;
+        --accent-ink: #042f2e;
+        --accent-soft: #134e4a;
+        --accent-border: #0f766e;
         --ready-bg: #064e3b;
         --ready-fg: #a7f3d0;
         --promising-bg: #78350f;
         --promising-fg: #fde68a;
         --work-bg: #1e3a8a;
         --work-fg: #bfdbfe;
+        --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.35);
+        --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.4);
       }
     }
 
     * {
       box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: 4.25rem;
     }
 
     body {
@@ -54,7 +75,7 @@
       background: var(--bg);
       color: var(--text);
       font-family: var(--sans);
-      line-height: 1.58;
+      line-height: 1.6;
       -webkit-font-smoothing: antialiased;
     }
 
@@ -67,64 +88,307 @@
       text-decoration: underline;
     }
 
-    .page {
-      max-width: 1120px;
-      margin: 0 auto;
-      padding: 2.5rem 1.5rem 5rem;
+    /* Sticky Glass Topbar */
+    .topnav {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      background: color-mix(in srgb, var(--bg) 90%, transparent);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
     }
 
-    header {
+    .topnav-inner {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 0.65rem 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      overflow-x: auto;
+      font-family: var(--mono);
+      font-size: 0.79rem;
+      white-space: nowrap;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 700;
+      font-size: 0.92rem;
+      color: var(--text);
+    }
+
+    .brand:hover {
+      text-decoration: none;
+    }
+
+    .brand-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent);
+      display: inline-block;
+    }
+
+    .topnav-links, .topnav-tools {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+    }
+
+    .topnav-links a {
+      color: var(--muted);
+    }
+
+    .topnav-links a:hover {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    .pill-link {
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.24rem 0.6rem;
+      border-radius: 999px;
+      font-size: 0.74rem;
+      font-weight: 600;
+    }
+
+    .pill-link:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    .page {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 2.25rem 1.25rem 5rem;
+    }
+
+    @media (min-width: 768px) {
+      .page {
+        padding: 2.75rem 1.75rem 5.5rem;
+      }
+    }
+
+    /* Hero Header */
+    header.hero {
       border-bottom: 1px solid var(--border);
-      padding-bottom: 1.75rem;
-      margin-bottom: 2rem;
+      padding-bottom: 2.25rem;
+      margin-bottom: 2.5rem;
     }
 
     .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
       font-family: var(--mono);
-      font-size: 0.78rem;
+      font-size: 0.76rem;
+      font-weight: 600;
       letter-spacing: 0.05em;
       text-transform: uppercase;
       color: var(--accent);
-      margin-bottom: 0.5rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 0.28rem 0.7rem;
+      border-radius: 999px;
+      margin-bottom: 0.9rem;
     }
 
     h1 {
-      font-size: clamp(1.65rem, 2.8vw, 2.2rem);
-      font-weight: 700;
-      letter-spacing: -0.02em;
-      margin: 0 0 0.75rem;
+      font-size: clamp(1.85rem, 3.5vw, 2.75rem);
+      font-weight: 800;
+      letter-spacing: -0.028em;
+      line-height: 1.15;
+      margin: 0 0 0.6rem;
+    }
+
+    .hero-subtitle {
+      font-size: clamp(1.1rem, 2vw, 1.35rem);
+      font-weight: 600;
+      color: var(--accent);
+      margin: 0 0 0.95rem;
+      letter-spacing: -0.01em;
     }
 
     .subtitle {
       font-size: 1.02rem;
       color: var(--muted);
       max-width: 82ch;
-      margin: 0 0 1.25rem;
+      margin: 0 0 1.4rem;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.65rem;
+      margin-bottom: 2rem;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-family: var(--mono);
+      font-size: 0.82rem;
+      font-weight: 600;
+      padding: 0.58rem 1rem;
+      border-radius: 7px;
+      border: 1px solid var(--border-strong);
+      background: var(--surface);
+      color: var(--text);
+      box-shadow: var(--shadow-sm);
+      transition: border-color 0.15s ease, transform 0.1s ease;
+    }
+
+    .btn:hover {
+      border-color: var(--accent);
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: var(--accent-ink);
+      border-color: var(--accent);
+    }
+
+    .btn-primary:hover {
+      background: var(--accent-hover);
+      color: var(--accent-ink);
+    }
+
+    /* 4-Domain Matrix in Hero */
+    .domain-matrix {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 0.9rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .domain-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-top: 3px solid var(--accent);
+      border-radius: 8px;
+      padding: 1rem 1.1rem;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .domain-box-kicker {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    .domain-box h3 {
+      font-size: 1rem;
+      margin: 0;
+    }
+
+    .domain-box p {
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin: 0;
+    }
+
+    .domain-box-foot {
+      margin-top: auto;
+      padding-top: 0.5rem;
+      font-family: var(--mono);
+      font-size: 0.74rem;
+      color: var(--text);
+    }
+
+    /* 4-Stage Pipeline Strip */
+    .pipeline-strip {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 0.75rem;
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.9rem;
+    }
+
+    .stage-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      padding: 0.8rem 0.95rem;
+    }
+
+    .stage-num {
+      font-family: var(--mono);
+      font-size: 0.71rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--accent);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.25rem;
+    }
+
+    .stage-card h4 {
+      font-size: 0.92rem;
+      margin: 0 0 0.25rem;
+    }
+
+    .stage-card p {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin: 0;
     }
 
     .nav-links {
       display: flex;
       flex-wrap: wrap;
-      gap: 0.65rem 1.25rem;
+      gap: 0.5rem 1.1rem;
       font-family: var(--mono);
-      font-size: 0.82rem;
+      font-size: 0.79rem;
+      margin-top: 1.25rem;
     }
 
     section {
-      margin-bottom: 3rem;
+      margin-bottom: 3.5rem;
+    }
+
+    /* Deferred rendering for below-the-fold heavy sections per modern-web-guidance: defer-rendering-heavy-content */
+    .deferred-section {
+      content-visibility: auto;
+      contain-intrinsic-size: auto none auto 520px;
     }
 
     h2 {
-      font-size: 1.28rem;
-      font-weight: 650;
-      letter-spacing: -0.01em;
+      font-size: clamp(1.3rem, 2.2vw, 1.55rem);
+      font-weight: 750;
+      letter-spacing: -0.015em;
       border-bottom: 1px solid var(--border);
-      padding-bottom: 0.5rem;
-      margin: 0 0 1rem;
+      padding-bottom: 0.55rem;
+      margin: 0 0 0.85rem;
+    }
+
+    .section-lede {
+      color: var(--muted);
+      max-width: 82ch;
+      margin: 0 0 1.4rem;
+      font-size: 0.96rem;
     }
 
     h3 {
-      font-size: 1.05rem;
+      font-size: 1.12rem;
       margin: 0 0 0.45rem;
     }
 
@@ -134,25 +398,205 @@
 
     code, pre {
       font-family: var(--mono);
-      font-size: 0.82rem;
+      font-size: 0.81rem;
     }
 
     code {
       background: var(--surface-alt);
       padding: 0.12rem 0.35rem;
       border-radius: 4px;
+      overflow-wrap: anywhere;
     }
 
     pre {
+      background: var(--code-bg);
+      color: var(--code-fg);
+      border: 1px solid var(--border-strong);
+      border-radius: 7px;
+      padding: 0.95rem 1.05rem;
+      overflow-x: auto;
+      margin: 0 0 0.85rem;
+      line-height: 1.48;
+      position: relative;
+    }
+
+    pre code {
+      background: none;
+      color: inherit;
+      padding: 0;
+      overflow-wrap: normal;
+    }
+
+    pre.out {
+      border-left: 3px solid var(--accent);
+      background: var(--surface-alt);
+      color: var(--text);
+    }
+
+    pre.out::before {
+      content: "Verified Output";
+      display: block;
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--accent);
+      margin-bottom: 0.3rem;
+    }
+
+    .copy-btn {
+      position: absolute;
+      top: 0.45rem;
+      right: 0.45rem;
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      background: rgba(255, 255, 255, 0.1);
+      color: #cbd5e1;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 4px;
+      padding: 0.18rem 0.5rem;
+      cursor: pointer;
+    }
+
+    .copy-btn:hover {
+      border-color: var(--accent);
+      color: #ffffff;
+    }
+
+    /* Pillar Showcase Cards */
+    .pillar-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1.75rem;
+    }
+
+    .pillar-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.4rem;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .pillar-top {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.35rem;
+      align-items: start;
+    }
+
+    @media (min-width: 900px) {
+      .pillar-top {
+        grid-template-columns: 1.05fr 1.15fr;
+      }
+    }
+
+    .pillar-tag {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      color: var(--accent);
+      font-weight: 700;
+      margin-bottom: 0.35rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      align-items: center;
+    }
+
+    .metric-strip {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(135px, 1fr));
+      gap: 0.55rem;
+      margin: 0.85rem 0;
+    }
+
+    .metric-pill {
       background: var(--surface-alt);
       border: 1px solid var(--border);
       border-radius: 6px;
-      padding: 0.9rem 1rem;
-      overflow-x: auto;
-      margin: 0 0 0.85rem;
-      line-height: 1.45;
+      padding: 0.5rem 0.7rem;
     }
 
+    .metric-pill b {
+      display: block;
+      font-family: var(--mono);
+      font-size: 0.98rem;
+      color: var(--text);
+    }
+
+    .metric-pill span {
+      font-size: 0.74rem;
+      color: var(--muted);
+    }
+
+    .pillar-figure {
+      margin: 0;
+      background: #0b0f17;
+      border: 1px solid var(--border-strong);
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: var(--shadow-md);
+    }
+
+    .pillar-figure img {
+      display: block;
+      width: 100%;
+      height: auto;
+      aspect-ratio: 800 / 360;
+      object-fit: cover;
+    }
+
+    .pillar-caption {
+      font-family: var(--mono);
+      font-size: 0.74rem;
+      color: var(--muted);
+      padding: 0.55rem 0.8rem;
+      background: var(--surface-alt);
+      border-top: 1px solid var(--border);
+    }
+
+    /* Interactive Tabs inside Pillar / Recipe drawers */
+    .recipe-drawer {
+      margin-top: 1rem;
+      padding-top: 0.9rem;
+      border-top: 1px dashed var(--border);
+    }
+
+    .tabs [role="tablist"] {
+      display: flex;
+      gap: 0.35rem;
+      flex-wrap: wrap;
+      margin-bottom: -1px;
+    }
+
+    .tabs [role="tab"] {
+      font-family: var(--mono);
+      font-size: 0.76rem;
+      background: var(--surface-alt);
+      color: var(--muted);
+      border: 1px solid var(--border);
+      border-bottom: none;
+      border-radius: 6px 6px 0 0;
+      padding: 0.38rem 0.8rem;
+      cursor: pointer;
+    }
+
+    .tabs [role="tab"][aria-selected="true"] {
+      background: var(--code-bg);
+      color: #ffffff;
+      border-color: var(--border-strong);
+      font-weight: 700;
+    }
+
+    .tabs [role="tabpanel"] > pre:first-child {
+      border-top-left-radius: 0;
+    }
+
+    .tabs [role="tabpanel"][hidden] {
+      display: none;
+    }
+
+    /* Walkthrough & Panels */
     .walkthrough-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
@@ -163,8 +607,9 @@
     .panel {
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 1.1rem;
+      border-radius: 8px;
+      padding: 1.15rem;
+      box-shadow: var(--shadow-sm);
     }
 
     .panel-label {
@@ -173,7 +618,7 @@
       text-transform: uppercase;
       color: var(--accent);
       margin-bottom: 0.35rem;
-      font-weight: 600;
+      font-weight: 700;
     }
 
     .callout-note {
@@ -186,68 +631,20 @@
       margin-top: 1rem;
     }
 
-    /* Pillar Showcase Cards with Embedded Scientific GIFs */
-    .pillar-list {
-      display: flex;
-      flex-direction: column;
-      gap: 1.5rem;
-    }
-
-    .pillar-card {
-      background: var(--surface);
+    /* Tables */
+    .table-wrap {
+      overflow-x: auto;
       border: 1px solid var(--border);
       border-radius: 8px;
-      padding: 1.35rem;
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 1.25rem;
-      align-items: start;
-    }
-
-    @media (min-width: 860px) {
-      .pillar-card {
-        grid-template-columns: 1.05fr 1.15fr;
-      }
-    }
-
-    .pillar-tag {
-      font-family: var(--mono);
-      font-size: 0.76rem;
-      color: var(--accent);
-      font-weight: 600;
-      margin-bottom: 0.35rem;
-    }
-
-    .pillar-figure {
-      margin: 0;
-      background: #0b0f17;
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      overflow: hidden;
-    }
-
-    .pillar-figure img {
-      display: block;
-      width: 100%;
-      height: auto;
-    }
-
-    .pillar-caption {
-      font-family: var(--mono);
-      font-size: 0.74rem;
-      color: var(--muted);
-      padding: 0.5rem 0.75rem;
-      background: var(--surface-alt);
-      border-top: 1px solid var(--border);
+      margin-bottom: 1rem;
+      background: var(--surface);
     }
 
     table {
       width: 100%;
       border-collapse: collapse;
-      font-size: 0.86rem;
+      font-size: 0.85rem;
       background: var(--surface);
-      border: 1px solid var(--border);
-      margin-bottom: 1rem;
     }
 
     th, td {
@@ -257,45 +654,94 @@
       vertical-align: top;
     }
 
+    tr:last-child td {
+      border-bottom: none;
+    }
+
     th {
       font-family: var(--mono);
-      font-size: 0.75rem;
+      font-size: 0.73rem;
       text-transform: uppercase;
       color: var(--muted);
       background: var(--surface-alt);
     }
 
+    /* Status chips */
+    .chip-s {
+      display: inline-block;
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      font-weight: 700;
+      padding: 0.1rem 0.42rem;
+      border-radius: 4px;
+      white-space: nowrap;
+    }
+
+    .s-c { background: var(--ready-bg); color: var(--ready-fg); }
+    .s-py { background: var(--work-bg); color: var(--work-fg); }
+    .s-lean { background: var(--promising-bg); color: var(--promising-fg); }
+
+    /* Combinations / Blueprints */
     .synergy-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-      gap: 1rem;
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+      gap: 1.1rem;
     }
 
     .synergy-card {
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 1.15rem;
+      border-radius: 8px;
+      padding: 1.2rem;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
     }
 
     .synergy-chain {
       font-family: var(--mono);
-      font-size: 0.76rem;
+      font-size: 0.75rem;
+      font-weight: 700;
       color: var(--accent);
-      margin-bottom: 0.4rem;
     }
 
-    /* Filter Toolbar */
+    ol.tick-list {
+      list-style: none;
+      padding: 0;
+      margin: 0.35rem 0;
+      counter-reset: tick;
+    }
+
+    ol.tick-list li {
+      counter-increment: tick;
+      display: grid;
+      grid-template-columns: 1.4rem 1fr;
+      gap: 0.15rem 0.45rem;
+      padding: 0.4rem 0;
+      border-top: 1px solid var(--border);
+      font-size: 0.83rem;
+    }
+
+    ol.tick-list li::before {
+      content: counter(tick) ".";
+      font-family: var(--mono);
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    /* Filter & Search Toolbar */
     .filter-bar {
       display: flex;
       flex-wrap: wrap;
-      gap: 0.65rem;
+      gap: 0.75rem;
       align-items: center;
+      justify-content: space-between;
       margin-bottom: 1.25rem;
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      padding: 0.85rem 1rem;
     }
 
     .filter-group {
@@ -312,27 +758,39 @@
       margin-right: 0.25rem;
     }
 
+    .search-input {
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      padding: 0.35rem 0.65rem;
+      border-radius: 5px;
+      border: 1px solid var(--border-strong);
+      background: var(--surface-alt);
+      color: var(--text);
+      min-width: 210px;
+    }
+
     button.chip {
       font-family: var(--mono);
       font-size: 0.75rem;
       background: var(--surface-alt);
       color: var(--text);
       border: 1px solid var(--border);
-      border-radius: 4px;
-      padding: 0.28rem 0.6rem;
+      border-radius: 5px;
+      padding: 0.3rem 0.65rem;
       cursor: pointer;
     }
 
     button.chip[aria-pressed="true"] {
       background: var(--accent);
-      color: #ffffff;
+      color: var(--accent-ink);
       border-color: var(--accent);
+      font-weight: 600;
     }
 
     /* Size-aware container query setup per modern-web-guidance: size-aware-styling */
     .idea-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr));
       gap: 1rem;
     }
 
@@ -343,12 +801,13 @@
     .idea-card {
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 1.1rem;
+      border-radius: 8px;
+      padding: 1.15rem;
       display: flex;
       flex-direction: column;
       gap: 0.6rem;
       height: 100%;
+      box-shadow: var(--shadow-sm);
     }
 
     /* Content-based styling per modern-web-guidance: content-based-styling */
@@ -414,15 +873,9 @@
       color: var(--promising-fg);
     }
 
-    .badge-tier {
-      background: var(--surface-alt);
-      color: var(--muted);
-      border: 1px solid var(--border);
-    }
-
     .impact-callout {
       background: var(--surface-alt);
-      border-radius: 4px;
+      border-radius: 5px;
       padding: 0.55rem 0.7rem;
       font-size: 0.82rem;
     }
@@ -441,16 +894,20 @@
     details {
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 6px;
+      border-radius: 7px;
       padding: 0.85rem 1.1rem;
-      margin-top: 1rem;
+      margin-top: 0.85rem;
     }
 
     summary {
       font-family: var(--mono);
-      font-size: 0.85rem;
+      font-size: 0.83rem;
       font-weight: 600;
       cursor: pointer;
+    }
+
+    details[open] summary {
+      margin-bottom: 0.75rem;
     }
 
     footer {
@@ -467,133 +924,418 @@
   </style>
 </head>
 <body>
-  <div class="page">
-    <header>
-      <div class="eyebrow">Lean 4 + Dual-Mode Python (Exact &#8474; &amp; Float64) + C99 / IEC 61131-3 ST + MuJoCo</div>
-      <h1>ctrl &mdash; Closed-Form Control &amp; Robotics Kernels Backed by Lean 4 Proofs</h1>
+  <!-- Sticky Topbar -->
+  <nav class="topnav" aria-label="Site navigation">
+    <div class="topnav-inner">
+      <a class="brand" href="#top"><span class="brand-dot"></span>ctrl</a>
+      <div class="topnav-links">
+        <a href="#pillars">1. Pillars &amp; Rollouts</a>
+        <a href="#walkthrough">2. Codegen &amp; Kernels</a>
+        <a href="#verification-boundary">3. Proved vs. Tested</a>
+        <a href="#combinations">4. System Blueprints</a>
+        <a href="#catalog">5. Catalog</a>
+        <a href="#community">6. Frontiers</a>
+      </div>
+      <div class="topnav-tools">
+        <a class="pill-link" href="adopt.html">Adoption Guide</a>
+        <a class="pill-link" href="consumers.html">Library Map</a>
+        <a class="pill-link" href="pipeline.html">60-Review Pipeline</a>
+        <a class="pill-link" href="novelty.html">What's New?</a>
+        <a class="pill-link" href="synergy.html">Synergy Lens</a>
+        <a class="pill-link" href="https://github.com/IamMikeHelsel/ctrl">GitHub</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="page" id="top">
+    <header class="hero">
+      <div class="eyebrow">Lean 4 Theorems &middot; Dual-Mode Python &middot; Fixed-Loop C99 / PLC ST &middot; MuJoCo 3.16</div>
+      <h1>ctrl</h1>
+      <p class="hero-subtitle">Applied mathematics for controls, robotics, simulation, and perception</p>
       <p class="subtitle">
-        <code>ctrl</code> pairs machine-checked Lean 4 theorems about control, state estimation, and multi-contact robotics with runnable Python reference implementations, solver-free C99 / PLC Structured Text kernels, and MuJoCo physics simulations. Where possible, we replace online iterative QP/SOCP solvers inside 1&ndash;10 kHz control loops with proved closed-form algebraic laws that run in deterministic time with zero heap allocation.
+        <code>ctrl</code> pairs machine-checked control, estimation, kinematics, and projective vision theorems in Lean 4 with dual-mode Python reference implementations (<code>float</code> + exact <code>Fraction</code>), zero-heap C99 and IEC 61131-3 Structured Text code generation, and closed-loop MuJoCo physics benchmarks. Where a problem admits an exact completion of squares or conic projection, we replace iterative online solvers inside 1&ndash;4 kHz loops with closed-form laws and state the exact hypotheses and verification boundary up front.
       </p>
+
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="#pillars">Explore the 4 Application Pillars</a>
+        <a class="btn" href="#walkthrough">Quickstart &amp; C99/PLC Kernels</a>
+        <a class="btn" href="consumers.html">Find Your Library (ROS 2, MoveIt, OpenCV, MuJoCo)</a>
+        <a class="btn" href="adopt.html">Adoption &amp; Evidence Guide</a>
+      </div>
+
+      <!-- 4-Domain Matrix matching the subtitle -->
+      <div class="domain-matrix" id="domains" aria-label="Core applied math domains">
+        <div class="domain-box">
+          <div class="domain-box-kicker">Domain I &middot; Controls</div>
+          <h3>Lyapunov, LQR/DARE, H<sub>&infin;</sub> &amp; ISS</h3>
+          <p>Detectable DARE/CARE, Sontag universal CLF, strict-feedback backstepping, Peter&ndash;Paul ISS envelopes, and saddle-point H<sub>&infin;</sub> disturbance bounds.</p>
+          <div class="domain-box-foot">27 Lean modules &middot; <a href="#p-clf">See Pillar III &rarr;</a></div>
+        </div>
+        <div class="domain-box">
+          <div class="domain-box-kicker">Domain II &middot; Robotics</div>
+          <h3>Contact Safety &amp; Motion Energy</h3>
+          <p>Closed-form 4-contact Lorentz-cone braking shields, bilinear ZMP wrench allocation, Slotine&ndash;Li passivity, and 7th-order septic energy-shaping profiles.</p>
+          <div class="domain-box-foot">6 Core + Research modules &middot; <a href="#p-brake">See Pillars I &amp; II &rarr;</a></div>
+        </div>
+        <div class="domain-box">
+          <div class="domain-box-kicker">Domain III &middot; Simulation</div>
+          <h3>MuJoCo Rollouts &amp; Exact/Float Parity</h3>
+          <p>Closed-loop MuJoCo 3.16.0 RK4 benchmarks against tuned high-gain baselines, paired with exact <code>Fraction</code> checks and <code>clang -Werror</code> differential tests.</p>
+          <div class="domain-box-foot">4 reproducible rollouts &middot; <a href="#verification-boundary">See Evidence Ledger &rarr;</a></div>
+        </div>
+        <div class="domain-box">
+          <div class="domain-box-kicker">Domain IV &middot; Perception</div>
+          <h3>Projective Geometry &amp; State Estimation</h3>
+          <p>4-point homography uniqueness, Faugeras chirality filtering, 8-point epipolar geometry, Kabsch/ICP registration, Joseph Kalman updates, and log-depth visual servoing.</p>
+          <div class="domain-box-foot">18 Vision &amp; Estimation modules &middot; <a href="#p-servo">See Pillar IV &rarr;</a></div>
+        </div>
+      </div>
+
+      <!-- 4-Stage Pipeline Strip -->
+      <div class="pipeline-strip" aria-label="Four-layer evidence architecture">
+        <div class="stage-card">
+          <div class="stage-num"><span>Layer 1 &middot; Symbolic</span> <span class="chip-s s-lean">Public on main</span></div>
+          <h4>Lean 4 Proofs over &#8477; / &#8474;</h4>
+          <p>Closed-form identities, Lie derivative dissipation, and conic feasibility checked by <code>scripts/check.sh</code> (<code>0 sorry</code>, standard axioms only).</p>
+        </div>
+        <div class="stage-card">
+          <div class="stage-num"><span>Layer 2 &middot; Reference</span> <span class="chip-s s-py">Runtime checkout</span></div>
+          <h4>Dual-Mode Python Kernels</h4>
+          <p>48 registered functions (42 domain + 4 benchmarks + 2 codegen helpers) executing on both IEEE-754 <code>float</code> and exact <code>fractions.Fraction</code>.</p>
+        </div>
+        <div class="stage-card">
+          <div class="stage-num"><span>Layer 3 &middot; Embedded</span> <span class="chip-s s-c">12 C99 / 4 ST</span></div>
+          <h4>Fixed-Loop C99 &amp; PLC ST</h4>
+          <p>Zero-heap C99 and IEC 61131-3 Structured Text templates differential-tested against Python to <code>8.88e-16</code> on randomized test suites.</p>
+        </div>
+        <div class="stage-card">
+          <div class="stage-num"><span>Layer 4 &middot; Physics</span> <span class="chip-s s-py">MuJoCo 3.16.0</span></div>
+          <h4>Closed-Loop Benchmarks</h4>
+          <p>Multi-body rigid-dynamics rollouts comparing candidate laws against tuned high-gain baselines under contact, gravity, and torque impulses.</p>
+        </div>
+      </div>
+
       <nav class="nav-links" aria-label="Primary navigation">
         <a href="#pillars">1. Four Core Application Pillars (with MuJoCo Animations)</a>
-        <a href="#walkthrough">2. End-to-End Code Walkthrough</a>
+        <a href="#walkthrough">2. End-to-End Code Walkthrough &amp; Kernels</a>
         <a href="#verification-boundary">3. What's Proved vs. Tested</a>
         <a href="#combinations">4. Multi-Module Application Blueprints</a>
         <a href="#catalog">5. Domain Catalog</a>
         <a href="#community">6. Ongoing Work &amp; Community Formalizations</a>
         <a href="synergy.html">Synergy Lens</a>
         <a href="AGENT_IDEA_INDEX.json">AGENT_IDEA_INDEX.json</a>
+        <a href="adopt.html">Adoption guide</a>
+        <a href="consumers.html">Library opportunities</a>
+        <a href="pipeline.html">Research pipeline</a>
+        <a href="novelty.html">What is new?</a>
+        <a href="synergy.html">Synergy Lens</a>
+        <a href="https://github.com/IamMikeHelsel/ctrl/blob/main/CONTRIBUTING.md">Contribute</a>
         <a href="https://github.com/IamMikeHelsel/ctrl">GitHub</a>
       </nav>
     </header>
 
-    <!-- 1. FOUR CORE APPLICATION PILLARS WITH SCIENTIFIC ANIMATIONS -->
+    <!-- 1. FOUR CORE APPLICATION PILLARS WITH SCIENTIFIC ANIMATIONS & INTERACTIVE RECIPES -->
     <section id="pillars">
-      <h2>1. Most Promising Application Pillars &amp; Closed-Loop MuJoCo Animations</h2>
-      <p>
-        Each animation below is generated directly from live closed-loop MuJoCo 3.16.0 RK4 rollouts (<code>tools/generate_site_gifs.py</code>) comparing our Lean-backed closed-form kernels against standard and tuned engineering baselines.
+      <h2>1. Four Core Application Pillars &amp; MuJoCo Physics Rollouts</h2>
+      <p class="section-lede">
+        Each pillar pairs a concrete engineering bottleneck in controls, robotics, simulation, or perception with an algebraic theorem in Lean 4, a runnable Python/C99/PLC recipe, and a recorded MuJoCo 3.16.0 rollout against a tuned baseline. Public Lean proofs live on <code>main</code>; the Python/C99/MuJoCo runtime lives on the <code>crossover-research-2026-10-19</code> research branch. Expand any card's interactive recipe drawer to copy the exact Python, C99, or IEC 61131-3 Structured Text code.
       </p>
 
       <div class="pillar-list">
         <!-- Pillar 1 -->
-        <article class="pillar-card">
-          <div>
-            <div class="pillar-tag">Pillar I &middot; Legged &amp; Mobile Safety Control (<code>LorentzConeCBF.lean</code> + <code>CentroidalDecelerationLimit.lean</code>)</div>
-            <h3>Solver-Free 3D Lorentz-Cone CBF &amp; 4-Foot Bilinear ZMP Braking</h3>
-            <p>
-              <strong>Domain problem:</strong> When a quadruped or wheeled mobile robot brakes hard before an obstacle, it risks either sliding its feet outside the friction cone (&mu;) or pitching over its front support edge when the Zero-Moment Point (ZMP) leaves the footprint of half-width <em>W</em> at center-of-mass height <em>h<sub>G</sub></em>. Standard implementations solve a 12-variable Second-Order Cone Program (SOCP) or QP-CBF at every 1 kHz tick, which takes 50&ndash;250 &mu;s and can fail to converge near singular contact configurations.
-            </p>
-            <p>
-              <strong>Our approach &amp; practical impact:</strong> We proved in Lean 4 that the exact maximum safe deceleration is <code>a_max = min(&mu;, W/h_G) * g</code> (biconditional theorem <code>deceleration_safe_iff</code>), and that a closed-form bilinear normal force + proportional shear allocator realizes any acceleration inside that bound across 4 contacts with <strong>identically zero net 3D Euler torque</strong> (<code>quad_contact_zero_angular_momentum</code>). Paired with a directional stopping-distance barrier <code>h(r, v)</code>, this gives the same physical stopping safety as an exact SOCP solver while running in <strong>&lt;100 ns in C99 or PLC Structured Text</strong> with zero heap allocation.
-            </p>
+        <article class="pillar-card" id="p-brake">
+          <div class="pillar-top">
+            <div>
+              <div class="pillar-tag">
+                <span>Pillar I &middot; Legged &amp; Mobile Safety Control (<code>LorentzConeCBF.lean</code> + <code>CentroidalDecelerationLimit.lean</code>)</span>
+                <span class="chip-s s-c">C99</span><span class="chip-s s-c">PLC ST</span><span class="chip-s s-py">Python</span>
+              </div>
+              <h3>Check Braking Limits &amp; Allocate 4-Foot Wrenches Without an Online Optimizer</h3>
+              <p>
+                <strong>The engineering bottleneck:</strong> Emergency braking on a quadruped or wheeled-legged base can trigger foot slip or forward pitch-over if deceleration exceeds what friction and support geometry allow. Solving a 12-variable second-order cone program (SOCP) every 1 kHz tick works for general terrain, but introduces iterative solver latency and potential non-convergence near active contact limits.
+              </p>
+              <p>
+                <strong>What we proved &amp; tested:</strong> Under the theorem's level-ground four-contact model, <code>a_max = min(&mu;, W/h_G) * g</code> is proved necessary and sufficient for existence of friction-cone-admissible, non-tipping contact forces, and a closed-form bilinear ZMP + proportional shear allocator realizes any safe acceleration with identically zero net Euler torque (<code>netEulerTorque = 0</code>). <strong>Integration obligations:</strong> supply conservative friction and stance geometry, an admissible backup command, measured delay and actuator limits, and validate contact behavior on your target.
+              </p>
+              <div class="metric-strip">
+                <div class="metric-pill"><b>1.192 m &lt; 1.20 m</b><span>Wall stop from 3.0 m/s</span></div>
+                <div class="metric-pill"><b>22.14 N &gt; 0</b><span>Min foot normal force</span></div>
+                <div class="metric-pill"><b>1.64e-15 rad/s</b><span>Modeled pitch/roll rate</span></div>
+              </div>
+            </div>
+            <figure class="pillar-figure">
+              <!-- LCP candidate image: fetchpriority="high" per modern-web-guidance: optimize-image-priority -->
+              <img src="assets/pillar1_lorentz_cbf.gif"
+                   alt="Animated MuJoCo simulation of 3D quadruped emergency braking before a wall at 1.20m showing stopping-distance barrier h(r,v) and minimum foot normal force"
+                   fetchpriority="high"
+                   width="800" height="360" />
+              <figcaption class="pillar-caption">
+                MuJoCo 3.16.0 rollout (<code>run_quadruped_zmp_cbf_benchmark</code>): 40 kg trunk at 3.0 m/s stops at <code>1.192 m &lt; 1.20 m</code> wall, <code>f_z,min = 22.14 N &gt; 0</code>, pitch/roll rate <code>1.64e-15 rad/s</code>.
+              </figcaption>
+            </figure>
           </div>
-          <figure class="pillar-figure">
-            <!-- LCP candidate image: fetchpriority="high" per modern-web-guidance: optimize-image-priority -->
-            <img src="assets/pillar1_lorentz_cbf.gif"
-                 alt="Animated MuJoCo simulation of 3D quadruped emergency braking before a wall at 1.20m showing stopping-distance barrier h(r,v) and minimum foot normal force"
-                 fetchpriority="high"
-                 width="800" height="360" />
-            <figcaption class="pillar-caption">
-              MuJoCo 3.16.0 rollout (<code>run_quadruped_zmp_cbf_benchmark</code>): 40 kg trunk at 3.0 m/s stops safely at <code>1.192 m &lt; 1.20 m</code> wall, <code>f_z,min = 22.14 N &gt; 0</code>, pitch/roll rate <code>1.64e-15 rad/s</code>.
-            </figcaption>
-          </figure>
+
+          <details class="recipe-drawer" id="r-brake">
+            <summary>Interactive Recipe 1: Run the Braking Shield &amp; 4-Foot Wrench Allocator (Python / C99 / PLC ST)</summary>
+            <div class="tabs">
+              <div role="tablist" aria-label="Recipe 1 language">
+                <button role="tab" aria-selected="true">Python (float + exact Fraction)</button>
+                <button role="tab" aria-selected="false">Zero-Heap C99</button>
+                <button role="tab" aria-selected="false">PLC Structured Text (IEC 61131-3)</button>
+              </div>
+              <div role="tabpanel">
+<pre><code>from fractions import Fraction as F
+from ctrl.robotics import (CentroidalQuadParams, safe_decel_max, directional_cbf,
+    lorentz_cbf_safety_filter, quad_contact_forces, verify_quad_wrench_balance)
+
+p = CentroidalQuadParams(m=40.0, g=9.81, h_g=0.45, w_x=0.25, w_y=0.18, mu=0.60)
+a_max = safe_decel_max(p.g, p.mu, p.w_x, p.h_g)     # min(mu, W/h_G) * g
+a_brake = 0.92 * a_max
+
+r, v = (0.90, 0.0, p.h_g), (1.5, 0.0, 0.0)
+h = directional_cbf((1.20, 0.0, p.h_g), r, v, (1.0, 0.0, 0.0), a_brake)
+b_req = min(a_brake * (1 - 3.5 * h / max(v[0], 0.1)), a_brake)
+
+lam, u_safe = lorentz_cbf_safety_filter((-1.0, 0.0, 0.0), b_req, (1.2, 0.0, p.g), (-a_brake, 0.0, p.g))
+feet = quad_contact_forces(p, u_safe[0], u_safe[1])
+print(f"a_max={a_max:.3f}  h={h:.4f}  lambda={lam:.3f}  ax_safe={u_safe[0]:.3f}")
+
+# Exact rational verification: net Euler torque is identically 0/1
+q = CentroidalQuadParams(m=F(40), g=F(981, 100), h_g=F(9, 20), w_x=F(1, 4), w_y=F(9, 50), mu=F(3, 5))
+print("net_torque =", verify_quad_wrench_balance(q, F(-5), F(1, 2))["net_torque"])</code></pre>
+<pre class="out"><code>a_max=5.450  h=0.0756  lambda=0.858  ax_safe=-4.129
+net_torque = (Fraction(0, 1), Fraction(0, 1), Fraction(0, 1))</code></pre>
+              </div>
+              <div role="tabpanel" hidden>
+<pre><code>#include &lt;stdio.h&gt;
+#include "ctrl_robotics_kernels.h"
+
+int main(void) {
+    const double a_cbf[3] = {-1.0, 0.0, 0.0};
+    const double u_nom[3] = { 1.2, 0.0, 9.81};
+    const double pi_b[3]  = {-5.014, 0.0, 9.81};
+    double u_safe[3], f[3];
+
+    double lam = ctrl_lorentz_cbf_filter(a_cbf, 4.129, u_nom, pi_b, u_safe);
+    for (int ex = -1; ex &lt;= 1; ex += 2)
+        for (int ey = -1; ey &lt;= 1; ey += 2) {
+            ctrl_quad_contact_force(40.0, 9.81, 0.45, 0.25, 0.18,
+                                    u_safe[0], u_safe[1], ex, ey, f);
+            printf("(%+d,%+d) fx=%7.2f fz=%7.2f\n", ex, ey, f[0], f[2]);
+        }
+    return 0;
+}</code></pre>
+              </div>
+              <div role="tabpanel" hidden>
+<pre><code>VAR
+    fbShield : FB_CTRL_QUAD_WRENCH_CBF;
+    h, bReq  : LREAL;
+END_VAR
+
+h    := (X_LIMIT - xPos) - (vx * vx) / (2.0 * A_BRAKE);
+bReq := MIN(A_BRAKE * (1.0 - 3.5 * h / MAX(vx, 0.1)), A_BRAKE);
+fbShield(M := 40.0, G := 9.81, H_G := 0.45, W_X := 0.25, W_Y := 0.18,
+         AX_NOM := axPlanner, AY_NOM := ayPlanner, AX_BRAKE := -A_BRAKE, B_BARRIER := bReq);
+axCmd := fbShield.AX_SAFE;</code></pre>
+              </div>
+            </div>
+          </details>
         </article>
 
         <!-- Pillar 2 -->
-        <article class="pillar-card">
-          <div>
-            <div class="pillar-tag">Pillar II &middot; Industrial Manipulator Motion Planning (<code>RobotEnergySmoothness.lean</code>)</div>
-            <h3>7th-Order Septic Rest-to-Rest Trajectory Shaping (&eta; = &minus;11)</h3>
-            <p>
-              <strong>Domain problem:</strong> Industrial robot arms executing repetitive pick-and-place cycles are often thermally limited by motor winding Joule heating (&int; <em>I</em><sup>2</sup><em>R dt</em>) and joint viscous dissipation (&int; <em>B q&#775;</em><sup>2</sup> <em>dt</em>). Classical 5th-order minimum-jerk trajectories minimize &int; <em>j</em>(<em>t</em>)<sup>2</sup> <em>dt</em>, which leaves a free degree of freedom unused when boundary jerk is unconstrained.
-            </p>
-            <p>
-              <strong>Our approach &amp; realistic improvement range:</strong> By parameterizing a 7th-order septic family with free parameter &eta; and proving in Lean 4 that the cross-power integral &int;<sub>0</sub><sup><em>T</em></sup> <em>a</em>(<em>t</em>)<em>j</em>(<em>t</em>) <em>dt</em> vanishes identically on rest-to-rest motions (<code>rest_to_rest_cross_power_zero</code>), the electromechanical energy reduces to an exact rational quadratic form minimized at <code>&eta; = &minus;11</code>. In a 6-DOF MuJoCo manipulator rollout, this yields a modest, practical <strong><code>4.1%</code> reduction in total motor <em>I</em><sup>2</sup><em>R</em></strong> (when static gravity holding dominates), <strong><code>10.8%</code> reduction in viscous loss</strong> (matching the 1D theoretical <code>10.79%</code>), and <strong><code>18.3%&ndash;22.5%</code> reduction in dynamic motion Joule heat</strong> (where the 6-DOF arm slightly exceeds the <code>18.33%</code> 1D linear inertia prediction because lower mid-stroke velocity also reduces quadratic Coriolis/centripetal cross-torques).
-            </p>
+        <article class="pillar-card" id="p-septic">
+          <div class="pillar-top">
+            <div>
+              <div class="pillar-tag">
+                <span>Pillar II &middot; Industrial Manipulator Motion Planning (<code>RobotEnergySmoothness.lean</code>)</span>
+                <span class="chip-s s-c">C99</span><span class="chip-s s-c">PLC ST</span><span class="chip-s s-py">Python</span>
+              </div>
+              <h3>Compare Rest-to-Rest Motion Profiles by Modeled Winding &amp; Viscous Energy</h3>
+              <p>
+                <strong>The engineering bottleneck:</strong> Classical 5th-order minimum-jerk trajectories minimize integrated squared jerk, not electrical winding heat. On high-duty-cycle pick-and-place cells, peak acceleration and mid-stroke velocity drive motor <em>I</em><sup>2</sup><em>R</em> and viscous dissipation under identical move durations and zero-velocity/zero-acceleration endpoints.
+              </p>
+              <p>
+                <strong>What we proved &amp; tested:</strong> By factoring boundary conditions into <code>s^3(1-s)^3(2s-1)</code> and proving rest-to-rest cross-power orthogonality (<code>&int; a(t)j(t) dt = 0</code>), the trajectory-family loss reduces to an exact rational quadratic in &eta;. Setting <code>&eta; = &minus;11</code> lowers the 1D inertial acceleration-squared integral by <code>11/60 = 18.33%</code>. In our 6-DOF MuJoCo RNE rollout, this yields <strong>4.1% less total modeled motor <em>I</em><sup>2</sup><em>R</em> loss</strong> (where static gravity holding torque dominates), <strong>10.8% less modeled viscous loss</strong>, and <strong>22.5% less dynamic modeled Joule loss</strong> (where lower peak velocity also reduces Coriolis/centripetal torque). <strong>Integration obligations:</strong> match drive losses, gravity, regeneration, and voltage/current limits on your hardware before selecting &eta;.
+              </p>
+              <div class="metric-strip">
+                <div class="metric-pill"><b>&minus;22.5%</b><span>Dynamic Joule loss (773 &rarr; 599 J)</span></div>
+                <div class="metric-pill"><b>&minus;10.8%</b><span>Modeled viscous loss</span></div>
+                <div class="metric-pill"><b>&minus;4.1%</b><span>Total I<sup>2</sup>R incl. gravity</span></div>
+              </div>
+            </div>
+            <figure class="pillar-figure">
+              <!-- Below-the-fold image: loading="lazy" without fetchpriority="low" per modern-web-guidance: optimize-image-priority -->
+              <img src="assets/pillar2_septic_energy.gif"
+                   alt="Animated MuJoCo comparison of instantaneous dynamic motor power and cumulative Joule heat for 5th-order minimum-jerk vs seventh-degree motion profile"
+                   loading="lazy"
+                   width="800" height="360" />
+              <figcaption class="pillar-caption">
+                MuJoCo 3.16.0 6-DOF RNE rollout (<code>run_arm6dof_septic_energy_benchmark</code>): Septic (<code>&eta; = &minus;11</code>) trims peak dynamic power and cuts modeled dynamic Joule loss from <code>773.2 J</code> to <code>599.5 J</code>.
+              </figcaption>
+            </figure>
           </div>
-          <figure class="pillar-figure">
-            <!-- Below-the-fold image: loading="lazy" without fetchpriority="low" per modern-web-guidance: optimize-image-priority -->
-            <img src="assets/pillar2_septic_energy.gif"
-                 alt="Animated MuJoCo comparison of instantaneous dynamic motor power and cumulative Joule heat for 5th-order minimum-jerk vs 7th-order septic trajectory"
-                 loading="lazy"
-                 width="800" height="360" />
-            <figcaption class="pillar-caption">
-              MuJoCo 3.16.0 6-DOF RNE rollout (<code>run_arm6dof_septic_energy_benchmark</code>): Septic (<code>&eta; = &minus;11</code>) trims peak dynamic power and cuts dynamic motion winding heat from <code>773.2 J</code> to <code>599.5 J</code>.
-            </figcaption>
-          </figure>
+
+          <details class="recipe-drawer" id="r-septic">
+            <summary>Interactive Recipe 2: Sample the Septic Profile &amp; Exact Rational Energy Integrals (Python / C99 / PLC ST)</summary>
+            <div class="tabs">
+              <div role="tablist" aria-label="Recipe 2 language">
+                <button role="tab" aria-selected="true">Python (float + exact Fraction)</button>
+                <button role="tab" aria-selected="false">Zero-Heap C99</button>
+                <button role="tab" aria-selected="false">PLC Structured Text (IEC 61131-3)</button>
+              </div>
+              <div role="tabpanel">
+<pre><code>from fractions import Fraction as F
+import numpy as np
+from ctrl.robotics import optimal_septic_eta, septic_accel_integral, septic_q, septic_v, septic_a
+
+# Exact rational acceleration-squared integrals: 120/7 (min-jerk, eta=0) vs 14 (septic, eta=-11)
+print("I_a(0) =", septic_accel_integral(F(0)), " I_a(-11) =", septic_accel_integral(F(-11)))
+
+T, D = 0.6, 1.0
+s = np.linspace(0.0, 1.0, 601)
+q, qd, qdd = D * septic_q(-11.0, s), D / T * septic_v(-11.0, s), D / T**2 * septic_a(-11.0, s)
+print(f"q_end={q[-1]:.6f} rad  peak qd={qd.max():.3f} rad/s  peak |qdd|={abs(qdd).max():.2f} rad/s^2")</code></pre>
+<pre class="out"><code>I_a(0) = 120/7  I_a(-11) = 14
+q_end=1.000000 rad  peak qd=2.552 rad/s  peak |qdd|=17.21 rad/s^2</code></pre>
+              </div>
+              <div role="tabpanel" hidden>
+<pre><code>#include "ctrl_robotics_kernels.h"
+
+void septic_setpoint(double t, double T, double D, double *q, double *qd, double *qdd) {
+    double s = (t &lt; T) ? (t / T) : 1.0;
+    *q   = D           * ctrl_septic_q(-11.0, s);
+    *qd  = (D / T)     * ctrl_septic_v(-11.0, s);
+    *qdd = D / (T * T) * ctrl_septic_a(-11.0, s);
+}</code></pre>
+              </div>
+              <div role="tabpanel" hidden>
+<pre><code>s    := MIN(tMove / T_MOVE, 1.0);
+qRef := D_MOVE * CTRL_SEPTIC_Q(ETA := -11.0, S := s);</code></pre>
+              </div>
+            </div>
+          </details>
         </article>
 
         <!-- Pillar 3 -->
-        <article class="pillar-card">
-          <div>
-            <div class="pillar-tag">Pillar III &middot; Nonlinear Disturbance Rejection (<code>BacksteppingCLF.lean</code> + <code>BoundedRealHInf.lean</code> + <code>ISS.lean</code>)</div>
-            <h3>Sontag Universal CLF + <em>H</em><sub>&infin;</sub>/ISS Damping Under Torque Impulses</h3>
-            <p>
-              <strong>Domain problem:</strong> Contact-rich manipulation (deburring, insertion, payload handoff) subjects robot joints to sudden impulsive torque spikes on top of multi-frequency vibration. A fixed-gain linear Computed-Torque Controller (CTC) must trade off steady-state noise amplification against peak excursion during a transient impact.
-            </p>
-            <p>
-              <strong>Our approach &amp; comparison against a strong CTC baseline:</strong> We combine strict-feedback integrator backstepping and Sontag's analytic universal Control Lyapunov Function stabilizer (<code>sontag_universal_stabilizer</code>, guaranteeing <em>V&#775;</em> &le; &minus;&radic;(<em>a</em><sup>2</sup> + <em>b</em><sup>4</sup>)) with a discrete <em>H</em><sub>&infin;</sub> minimax disturbance gain (<code>hinf_l2_gain_bound</code>) and a square-root-free matrix Peter&ndash;Paul ISS tube (<code>iss_invariant_sublevel</code>). Tested in MuJoCo against a <strong>well-tuned high-gain Computed-Torque Controller with matched linear poles</strong> (<em>K<sub>p</sub></em> = 416, <em>K<sub>d</sub></em> = 42 + sliding damping), Sontag's nonlinear gain scaling reduces peak joint error during a mid-maneuver torque impulse by a realistic <strong><code>39.4%</code></strong> (<code>27.1 mrad &rarr; 16.4 mrad</code>) and RMS tracking error by <strong><code>39.6%</code></strong>.
-            </p>
+        <article class="pillar-card" id="p-clf">
+          <div class="pillar-top">
+            <div>
+              <div class="pillar-tag">
+                <span>Pillar III &middot; Nonlinear Disturbance Rejection (<code>BacksteppingCLF.lean</code> + <code>BoundedRealHInf.lean</code> + <code>ISS.lean</code>)</span>
+                <span class="chip-s s-c">C99</span><span class="chip-s s-c">PLC ST</span><span class="chip-s s-py">Python</span>
+              </div>
+              <h3>Attenuate Impulsive Torque Disturbances Against a Tuned Computed-Torque Baseline</h3>
+              <p>
+                <strong>The engineering bottleneck:</strong> Contact-rich manipulation (deburring, insertion, payload handoff) subjects robot joints to sudden impulsive torque spikes on top of multi-frequency vibration. A fixed-gain linear Computed-Torque Controller (CTC) must trade off steady-state sensor-noise amplification against peak excursion during a transient impact.
+              </p>
+              <p>
+                <strong>What we proved &amp; tested:</strong> Sontag's universal CLF stabilizer guarantees state-dependent Lie-derivative dissipation <code>V&#775; &le; &minus;&radic;(a<sup>2</sup> + b<sup>4</sup>)</code>, paired with strict-feedback backstepping and saddle-point <em>H</em><sub>&infin;</sub>/ISS error bounds. In the reported 6-DOF MuJoCo torque-impulse experiment, the combined law reduced peak joint error by <strong>39.4%</strong> (<code>27.1 mrad &rarr; 16.4 mrad</code>) and RMS error by <strong>39.6%</strong> against a <strong>matched-pole high-gain Computed-Torque Controller</strong> (<code>Kp = 416</code>, <code>Kd = 42</code>, plus sliding damping). <strong>Integration obligations:</strong> identify plant dynamics and disturbance bounds, preserve sampling assumptions, tune a matched baseline, and test with actuator saturation and sensor noise.
+              </p>
+              <div class="metric-strip">
+                <div class="metric-pill"><b>&minus;39.4%</b><span>Peak error vs. tuned CTC</span></div>
+                <div class="metric-pill"><b>&minus;39.6%</b><span>RMS error vs. tuned CTC</span></div>
+                <div class="metric-pill"><b>16.4 mrad</b><span>Peak excursion under impulse</span></div>
+              </div>
+            </div>
+            <figure class="pillar-figure">
+              <img src="assets/pillar3_sontag_hinf.gif"
+                   alt="Animated MuJoCo comparison of 6-DOF joint tracking error under sinusoidal and impulsive torque disturbances for tuned high-gain CTC vs Sontag CLF + H-infinity controller"
+                   loading="lazy"
+                   width="800" height="360" />
+              <figcaption class="pillar-caption">
+                MuJoCo 3.16.0 6-DOF rollout (<code>run_arm6dof_disturbance_iss_hinf_benchmark</code>): Sontag CLF + <em>H</em><sub>&infin;</sub> cuts impulse peak error by <code>39.4%</code> vs. matched-pole high-gain Computed-Torque Control.
+              </figcaption>
+            </figure>
           </div>
-          <figure class="pillar-figure">
-            <img src="assets/pillar3_sontag_hinf.gif"
-                 alt="Animated MuJoCo comparison of 6-DOF joint tracking error under sinusoidal and impulsive torque disturbances for tuned high-gain CTC vs Sontag CLF + H-infinity controller"
-                 loading="lazy"
-                 width="800" height="360" />
-            <figcaption class="pillar-caption">
-              MuJoCo 3.16.0 6-DOF rollout (<code>run_arm6dof_disturbance_iss_hinf_benchmark</code>): Sontag CLF + <em>H</em><sub>&infin;</sub> cuts impulse peak error by <code>39.4%</code> vs. matched-pole high-gain Computed-Torque Control.
-            </figcaption>
-          </figure>
+
+          <details class="recipe-drawer" id="r-clf">
+            <summary>Interactive Recipe 3: Sontag Universal CLF &amp; 2-State Strict-Feedback Backstepping (Python / C99 / PLC ST)</summary>
+            <div class="tabs">
+              <div role="tablist" aria-label="Recipe 3 language">
+                <button role="tab" aria-selected="true">Python</button>
+                <button role="tab" aria-selected="false">Zero-Heap C99</button>
+                <button role="tab" aria-selected="false">PLC Structured Text (IEC 61131-3)</button>
+              </div>
+              <div role="tabpanel">
+<pre><code>from ctrl.robotics import backstepping_and_sontag_clf
+
+out = backstepping_and_sontag_clf(c1=2.0, c2=3.0, f1=0.0, df1=0.0, f2=0.0,
+                                  x1=0.4, x2=-0.1, a_lie=0.3, b_lie=0.8)
+print({k: round(v, 4) if isinstance(v, float) else v for k, v in out.items()})</code></pre>
+<pre class="out"><code>{'u_backstepping': -2.3, 'z2_error': 0.7, 'backstepping_lie_deriv': -1.79,
+ 'backstepping_expected_lie_deriv': -1.79, 'backstepping_identity_error': 0.0,
+ 'u_sontag': -1.2585, 'sontag_lie_deriv': -0.7068, 'sontag_identity_error': 0.0,
+ 'sontag_strict_decrease': True}</code></pre>
+              </div>
+              <div role="tabpanel" hidden>
+<pre><code>double u_s  = ctrl_sontag_clf(a_lie, b_lie);                       /* -(a + sqrt(a^2 + b^4)) / b */
+double u_bs = ctrl_backstepping_control(c1, c2, f1, df1, f2, x1, x2);</code></pre>
+              </div>
+              <div role="tabpanel" hidden>
+<pre><code>uSontag := CTRL_SONTAG_CLF(A := aLie, B := bLie);
+uBack   := CTRL_BACKSTEPPING_CONTROL(C1 := 2.0, C2 := 3.0, F1 := f1, DF1 := df1, F2 := f2, X1 := x1, X2 := x2);</code></pre>
+              </div>
+            </div>
+          </details>
         </article>
 
         <!-- Pillar 4 -->
-        <article class="pillar-card">
-          <div>
-            <div class="pillar-tag">Pillar IV &middot; 6-DOF Pose &amp; Visual Servoing (<code>VisualServoingInvariant.lean</code> + <code>HomographyDecomposition.lean</code>)</div>
-            <h3>Chirality-Filtered Homography &amp; Log-Depth <em>SE</em>(3) Visual Servoing</h3>
-            <p>
-              <strong>Domain problem:</strong> In classical 2D Image-Based Visual Servoing (IBVS), commanding a large optical-axis camera roll (&Delta;&phi; &rarr; 180&deg;) causes image features to move along straight lines in pixel space, which forces the physical camera to retreat backwards along its optical axis by a factor of <code>sec(&Delta;&phi;/2)</code> (the Chaumette camera-retreat pathology) and risks hitting workspace limits.
-            </p>
-            <p>
-              <strong>Our approach &amp; practical impact:</strong> We formalized 4-point projective homography uniqueness (<code>homography_unique_four_points</code>), Faugeras rank-2 decomposition with chirality branch filtering (<code>n &middot; X &gt; 0</code>), and decoupled <em>SE</em>(3) log-depth feedback <code>d&#775; = &minus;&lambda; d ln(d/d*)</code> (<code>closed_loop_depth_formula</code>). Because optical-axis roll lies in the kernel of the depth Lie derivative, camera depth converges monotonically inside <code>[1.015 m, 2.200 m]</code> under a 160&deg; roll in MuJoCo, completely avoiding the 5.76&times; (<code>12.67 m</code>) backwards retreat of classical IBVS.
-            </p>
+        <article class="pillar-card" id="p-servo">
+          <div class="pillar-top">
+            <div>
+              <div class="pillar-tag">
+                <span>Pillar IV &middot; Perception &amp; 6-DOF Visual Servoing (<code>VisualServoingInvariant.lean</code> + <code>HomographyUniqueness.lean</code>)</span>
+                <span class="chip-s s-py">Python</span><span class="chip-s s-lean">Lean 4</span>
+              </div>
+              <h3>Eliminate Optical-Axis Camera Retreat During Large Wrist Rotations</h3>
+              <p>
+                <strong>The engineering bottleneck:</strong> Classical image-based visual servoing (IBVS) linearizes feature motion in image coordinates. Under a large optical-axis camera roll (Chaumette, 1998), the coupled interaction matrix commands the camera to retreat backward by <code>sec(&Delta;&phi;/2)</code>, pulling an eye-in-hand manipulator toward workspace singularities.
+              </p>
+              <p>
+                <strong>What we proved &amp; tested:</strong> Combining 4-point projective homography uniqueness and positive-depth cheirality filtering with decoupled log-depth feedback <code>d&#775; = &minus;&lambda; d ln(d/d*)</code> makes the rotational Lie derivative of plane depth identically zero. In the reported MuJoCo rollout under a large camera roll, depth stays strictly monotone inside <code>[1.015 m, 2.200 m]</code>, whereas the classical IBVS baseline retreats to <code>12.67 m</code> (<code>5.76&times;</code>). <strong>Integration obligations:</strong> calibrate camera intrinsics, reject correspondence outliers, handle degenerate planar views, and enforce field-of-view and joint-workspace limits.
+              </p>
+              <div class="metric-strip">
+                <div class="metric-pill"><b>[1.015, 2.200] m</b><span>Monotone HBVS depth range</span></div>
+                <div class="metric-pill"><b>12.67 m (5.76&times;)</b><span>IBVS retreat avoided</span></div>
+                <div class="metric-pill"><b>0 / 1</b><span>Exact rotational Lie derivative</span></div>
+              </div>
+            </div>
+            <figure class="pillar-figure">
+              <img src="assets/pillar4_se3_servoing.gif"
+                   alt="Animated MuJoCo comparison of camera depth trajectory under a large optical-axis roll showing IBVS retreat to 12.67m vs monotone HBVS convergence"
+                   loading="lazy"
+                   width="800" height="360" />
+              <figcaption class="pillar-caption">
+                MuJoCo 3.16.0 6-DOF camera rollout (<code>run_se3_visual_servoing_benchmark</code>): Log-depth HBVS stays strictly inside <code>[1.015 m, 2.20 m]</code> and above its proved convex lower bound.
+              </figcaption>
+            </figure>
           </div>
-          <figure class="pillar-figure">
-            <img src="assets/pillar4_se3_servoing.gif"
-                 alt="Animated MuJoCo comparison of camera depth trajectory under 160-degree optical-axis roll showing IBVS retreat to 12.67m vs monotone HBVS convergence"
-                 loading="lazy"
-                 width="800" height="360" />
-            <figcaption class="pillar-caption">
-              MuJoCo 3.16.0 6-DOF camera rollout (<code>run_se3_visual_servoing_benchmark</code>): Log-depth HBVS stays strictly inside <code>[1.015 m, 2.20 m]</code> and above its proved convex lower bound.
-            </figcaption>
-          </figure>
+
+          <details class="recipe-drawer" id="r-servo">
+            <summary>Interactive Recipe 4: Exact Rational SE(3) Depth Decoupling &amp; HBVS vs. IBVS Rollout (Python)</summary>
+<pre><code>from fractions import Fraction as F
+from ctrl.robotics import se3_depth_derivative, hbvs_vs_ibvs_depth_ratio
+import math
+
+n, X = (F(0), F(0), F(1)), (F(1, 10), F(-1, 5), F(11, 5))
+v, w = (F(0), F(0), F(3, 10)), (F(0), F(0), F(5))      # 5 rad/s about the optical axis
+d = se3_depth_derivative(X, n, v, w)
+print("rotational_lie_derivative =", d["rotational_lie_derivative"], " total =", d["total_depth_derivative"])
+print(hbvs_vs_ibvs_depth_ratio(d0=2.2, d_star=1.0, lam=1.5, t=0.5, delta_phi_rad=math.radians(160)))</code></pre>
+<pre class="out"><code>rotational_lie_derivative = 0  total = -3/10
+{'d_hbvs': 1.5668398632892178, 'ibvs_midpoint_depth': 5.758770483143631, 'hbvs_stays_bounded': True}</code></pre>
+          </details>
         </article>
       </div>
     </section>
 
-    <!-- 2. ONE CLEAR END-TO-END CODE WALKTHROUGH -->
-    <section id="walkthrough">
-      <h2>2. Code Walkthrough: How a Lean 4 Theorem Becomes a C99 Kernel</h2>
+    <!-- 2. WALKTHROUGH, QUICKSTART & KERNEL REFERENCE -->
+    <section id="walkthrough" class="deferred-section">
+      <h2>2. Walkthrough: From a Model Theorem to a Tested Kernel</h2>
+      <p class="section-lede">
+        Public Lean proofs live in <code>ControlsLean/</code> on <code>main</code> (verified via <code>bash scripts/check.sh</code>). The Python reference, C99/Structured Text emitter, and MuJoCo benchmarks live on the <code>crossover-research-2026-10-19</code> research checkout. Below is how a theorem connects to an emitted C99 function, followed by the full table of 12 C99 functions and 4 IEC 61131-3 Structured Text POUs.
+      </p>
+
       <div class="walkthrough-grid">
         <div class="panel">
           <div class="panel-label">Step 1 &middot; Lean 4 Proof Over &#8477; (<code>LorentzConeCBF.lean</code>)</div>
@@ -611,7 +1353,7 @@ theorem quad_contact_in_lorentz_cone (p : QuadParams) (ax ay : &#8477;)
         <div class="panel">
           <div class="panel-label">Step 2 &middot; Zero-Heap C99 / PLC Kernel (<code>codegen.py</code>)</div>
           <p>
-            Because the safe acceleration set and stopping-distance barrier <code>h(r, v) = n &middot; (r_lim &minus; r) &minus; v_n^2 / (2 a_brake)</code> have an exact convex-interpolation solution between the nominal command <code>u_nom</code> and backup braking <code>pi_b</code>, the deployed C99 filter has no loops, no heap allocation, and no solver failure states:
+            The corresponding runtime kernel interpolates between the nominal command and a verified backup brake in a fixed three-component loop with zero heap allocation or solver iterations:
           </p>
           <pre><code>void ctrl_lorentz_cbf_filter_3d(
     const double a[3], double b,
@@ -627,114 +1369,236 @@ theorem quad_contact_in_lorentz_cone (p : QuadParams) (ax ay : &#8477;)
       </div>
 
       <div class="callout-note">
-        <strong>Why the C99 kernel and the Lean theorem match (and where the boundary lies):</strong>
-        Each theorem-backed function in <code>src/ctrl/robotics/</code> runs in <strong>two modes</strong>: exact rational arithmetic (<code>fractions.Fraction</code>) on rational test grids to verify exact algebraic equivalence with the Lean polynomial/rational formulas over &#8474; &sub; &#8477;, and IEEE-754 <code>float64</code> for runtime execution. The C99 shared library is compiled with <code>clang -std=c99 -O3 -Werror</code> and checked via <code>ctypes</code> against the Python reference to <code>8.88 &times; 10<sup>&minus;16</sup></code> (1 ULP).
+        <strong>How the theorem and kernel connect:</strong>
+        Each Python reference function runs on exact <code>fractions.Fraction</code> inputs to verify rational identities without rounding, and on <code>float64</code> to compare against the compiled C99 shared library via <code>ctypes</code> (maximum discrepancy <code>8.88 &times; 10<sup>&minus;16</sup></code> across randomized test suites). Section 3 below summarizes what each layer proves vs. tests.
       </div>
+
+      <details id="start">
+        <summary>Quickstart Commands &amp; Emitted C99 / IEC 61131-3 Kernel Reference Table (12 C Functions, 4 ST POUs)</summary>
+        <div class="walkthrough-grid" style="margin-top: 0.75rem;">
+          <div class="panel">
+            <div class="panel-label">Verify Public Lean 4 Library (<code>main</code> branch)</div>
+<pre><code>git clone https://github.com/IamMikeHelsel/ctrl
+cd ctrl
+bash scripts/check.sh   # 55 modules, 445 audited headline theorems</code></pre>
+          </div>
+          <div class="panel">
+            <div class="panel-label">Emit C99 / ST &amp; Run MuJoCo Benchmarks (<code>crossover-research-2026-10-19</code>)</div>
+<pre><code>git clone -b crossover-research-2026-10-19 https://github.com/IamMikeHelsel/ctrl
+cd ctrl &amp;&amp; uv venv &amp;&amp; uv pip install -e . numpy mujoco
+python -c "from pathlib import Path; import ctrl.robotics as r; print(r.emit_c99_and_iec61131(Path('out'))); print(r.compile_and_verify_c99_kernels())"</code></pre>
+          </div>
+        </div>
+
+        <div class="table-wrap" id="kernels">
+          <table>
+            <thead>
+              <tr>
+                <th>Emitted C99 Symbol</th>
+                <th>IEC 61131-3 ST Unit</th>
+                <th>Python Reference</th>
+                <th>What It Computes</th>
+                <th>Associated Lean Declarations</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>ctrl_lorentz_cbf_filter</code></td>
+                <td><code>FB_CTRL_QUAD_WRENCH_CBF</code></td>
+                <td><code>lorentz_cbf_safety_filter</code></td>
+                <td>Smallest &lambda; &isin; [0, 1] blending <code>u_nom</code> toward backup <code>&pi;_b</code> so <code>a&middot;u &ge; b</code></td>
+                <td><code>LorentzConeCBF.lorentz_backup_controller_safe</code></td>
+              </tr>
+              <tr>
+                <td><code>ctrl_quad_contact_force</code></td>
+                <td>(inside <code>FB_CTRL_QUAD_WRENCH_CBF</code>)</td>
+                <td><code>quad_contact_forces</code></td>
+                <td>3D foot force at corner <code>(ex, ey)</code> via bilinear ZMP + proportional shear</td>
+                <td><code>quad_contact_net_force</code>, <code>quad_contact_zero_angular_momentum</code></td>
+              </tr>
+              <tr>
+                <td><code>ctrl_septic_q / _v / _a / _j</code></td>
+                <td><code>CTRL_SEPTIC_Q</code></td>
+                <td><code>septic_q / _v / _a / _j</code></td>
+                <td>Normalized 7th-order boundary-factored motion profile and derivatives on <code>s &isin; [0, 1]</code></td>
+                <td><code>RobotEnergySmoothness.qProfile</code> &hellip; <code>jProfile</code></td>
+              </tr>
+              <tr>
+                <td><code>ctrl_septic_ia / _iv</code></td>
+                <td>&mdash;</td>
+                <td><code>septic_accel_integral</code>, <code>septic_velocity_integral</code></td>
+                <td>Exact rational quadratic forms for &int;a<sup>2</sup> ds and &int;v<sup>2</sup> ds as functions of &eta;</td>
+                <td><code>exact_integral_quadratic_forms</code></td>
+              </tr>
+              <tr>
+                <td><code>ctrl_sontag_clf</code></td>
+                <td><code>CTRL_SONTAG_CLF</code></td>
+                <td><code>backstepping_and_sontag_clf</code></td>
+                <td>Sontag universal stabilizing control from Lie derivatives <code>(L_f V, L_g V)</code></td>
+                <td><code>BacksteppingCLF.sontag_universal_stabilizer</code></td>
+              </tr>
+              <tr>
+                <td><code>ctrl_backstepping_control</code></td>
+                <td><code>CTRL_BACKSTEPPING_CONTROL</code></td>
+                <td><code>backstepping_and_sontag_clf</code></td>
+                <td>2-state strict-feedback integrator backstepping law</td>
+                <td><code>backstepping_closedLoop_lie_deriv</code></td>
+              </tr>
+              <tr>
+                <td><code>ctrl_minimal_intervention_ik</code></td>
+                <td>&mdash;</td>
+                <td><code>minimal_intervention_ik</code></td>
+                <td>Rank-1 Pythagorean projection closest to <code>q_nom</code> satisfying <code>J&middot;q = v</code></td>
+                <td><code>WorldFrameTransport.minimal_intervention_pythagorean_optimality</code></td>
+              </tr>
+              <tr>
+                <td><code>ctrl_kalata_alpha_beta</code></td>
+                <td>&mdash;</td>
+                <td><code>kalata_alpha_beta_gains</code></td>
+                <td>Steady-state &alpha;&ndash;&beta; tracker gains from sample period and noise variances</td>
+                <td><code>AlphaBeta.kalataU_spec</code>, <code>exists_gains</code></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </details>
     </section>
 
     <!-- 3. HONEST VERIFICATION BOUNDARY TABLE -->
-    <section id="verification-boundary">
+    <section id="verification-boundary" class="deferred-section">
       <h2>3. What Is Formally Proved vs. What Is Empirically Tested</h2>
-      <p>
-        Formal verification in control theory has a well-known gap between continuous real-number proofs and floating-point physics execution. Here is the exact division of guarantees in <code>ctrl</code>:
+      <p class="section-lede">
+        Formal verification in control theory and robotics has a well-known boundary between continuous real-number proofs and floating-point physics execution. These four layers carry distinct evidence and adoption obligations:
       </p>
-      <table>
-        <thead>
-          <tr>
-            <th>Layer</th>
-            <th>Artifact &amp; Size</th>
-            <th>What Is Guaranteed</th>
-            <th>What Is <em>Not</em> Proved in Lean</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><strong>1. Lean 4 Theorem Library</strong></td>
-            <td><code>ControlsLean/</code> (<strong>53 modules</strong>, 424 audited theorems on <code>main</code>)<br><code>lean/</code> (<strong>98 modules</strong> total across the monorepo)</td>
-            <td>100% <code>sorry</code>-free proofs over exact real/rational/field arithmetic (&#8477;, &#8474;, <em>K</em>) using only Lean's standard axioms (<code>propext</code>, <code>Classical.choice</code>, <code>Quot.sound</code>).</td>
-            <td>Does not model IEEE-754 floating-point rounding, subnormals, or C compiler instruction selection (unlike CompCert/VCFloat).</td>
-          </tr>
-          <tr>
-            <td><strong>2. Spec-Manifest Audit</strong><br>(<code>registry.py</code>)</td>
-            <td><strong>48 Python functions</strong> decorated with <code>@lean_theorem</code> referencing <strong>223 named Lean declarations</strong> across 79 robotics/control Lean files</td>
-            <td>Automated AST/source check (<code>verify_lean_bindings()</code>) verifying every referenced theorem name exists in the target <code>.lean</code> file and that zero <code>sorry</code>, <code>admit</code>, or <code>native_decide</code> tokens exist.</td>
-            <td>The binding between a Python function and its Lean theorem is audited by exact rational (<code>Fraction</code>) unit tests, not formal extraction from Lean IR.</td>
-          </tr>
-          <tr>
-            <td><strong>3. C99 &amp; IEC 61131-3 ST Codegen</strong><br>(<code>codegen.py</code>)</td>
-            <td>10 core real-time kernels (septic trajectories, ZMP allocator, Lorentz CBF filter, Sontag CLF, backstepping)</td>
-            <td>Compiles cleanly under <code>clang -std=c99 -O3 -Wall -Wextra -Werror</code>; matches Python <code>float64</code> reference within <code>8.88 &times; 10<sup>&minus;16</sup></code> across randomized test suites; zero dynamic allocation.</td>
-            <td>Equivalence to Python is tested via <code>ctypes</code> differential testing, not proved via a formal C semantics.</td>
-          </tr>
-          <tr>
-            <td><strong>4. MuJoCo 3.16.0 Rollouts</strong><br>(<code>mujoco_benchmarks.py</code>)</td>
-            <td>4 closed-loop multi-body RK4 simulations (1&ndash;2 ms timestep)</td>
-            <td>Empirically validates that the continuous/discrete theorems hold up under full 6-DOF rigid-body dynamics, Coriolis coupling, and discrete sampling.</td>
-            <td>Physics simulator integration error and unmodeled actuator saturation are evaluated empirically.</td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Layer</th>
+              <th>Artifact &amp; Availability</th>
+              <th>What the Evidence Establishes</th>
+              <th>What Is <em>Not</em> Proved in Lean</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>1. Lean theorem library</strong></td>
+              <td>Public <code>ControlsLean/</code> (55 modules, 445 audited headline theorems) + <code>erdos/</code> Lake workspace on <code>main</code>.</td>
+              <td>Checked mathematical implications under their stated hypotheses. Run <code>scripts/check.sh</code> for the current build, escape-hatch and axiom audit.</td>
+              <td>Does not by itself establish sensor accuracy, floating-point behavior, compiler correctness or hardware conformance.</td>
+            </tr>
+            <tr>
+              <td><strong>2. Research Python references</strong></td>
+              <td>Separate research checkout: 48 registered functions = 42 domain functions + 4 benchmarks + 2 code-generation helpers. Not shipped on this public branch.</td>
+              <td>Declaration-name/source audits and finite exact (<code>Fraction</code>) or numerical (<code>float64</code>) tests provide traceability and regression evidence.</td>
+              <td>A decorator or matching theorem name is not a formal proof that Python implements the theorem.</td>
+            </tr>
+            <tr>
+              <td><strong>3. Research C99 / Structured Text generation</strong></td>
+              <td>Selected generated kernels (12 C functions, 4 ST POUs); availability and reproduction steps belong to the runtime release.</td>
+              <td>Reported compiled-C differential checks compare selected outputs with Python. The displayed kernels use fixed-size loops and no dynamic allocation.</td>
+              <td>No general C/Python equivalence, IEC compiler validation, worst-case execution time or PLC safety acceptance follows.</td>
+            </tr>
+            <tr>
+              <td><strong>4. Recorded MuJoCo examples</strong></td>
+              <td>Four saved research simulations and animations from MuJoCo 3.16.0 RK4 rollouts.</td>
+              <td>Observed outcomes for the configured multi-body model, integration settings, tasks and tuned baselines.</td>
+              <td>Simulator outcomes do not validate unmodeled hardware, thermal behavior, all disturbances or a complete safety case.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </section>
 
     <!-- 4. COMPOSITE APPLICATION BLUEPRINTS -->
-    <section id="combinations">
-      <h2>4. How Bodies of Work Combine in Applications</h2>
+    <section id="combinations" class="deferred-section">
+      <h2>4. Multi-Module System Blueprints: Composing Components per Control Tick</h2>
+      <p class="section-lede">
+        These blueprints illustrate how individual mathematical modules connect across a per-tick control loop. They are integration architectures, not proved end-to-end stacks: check shared plant, timing, uncertainty, and actuator assumptions before composing them, and measure whole-task performance against a matched baseline. See the <a href="adopt.html">adoption guide</a> and <a href="consumers.html">library map</a>.
+      </p>
       <div class="synergy-grid">
         <div class="synergy-card">
           <div class="synergy-chain">Combination A &middot; Industrial 6-DOF Manipulators</div>
-          <h3>Septic Trajectory Shaping + Slotine&ndash;Li Passivity + Sontag CLF / <em>H</em><sub>&infin;</sub></h3>
-          <p>
-            <strong>Modules:</strong> <code>RobotEnergySmoothness.lean</code> + <code>ManipulatorTracking.lean</code> + <code>BacksteppingCLF.lean</code> + <code>BoundedRealHInf.lean</code>.<br>
-            <strong>Why they fit together:</strong> Rest-to-rest 7th-order septic profiles (&eta; = &minus;11) smooth out peak acceleration at the endpoints to reduce motor winding heat, while Slotine&ndash;Li passivity tracks the reference using skew-symmetry of <em>M&#775; &minus; 2C</em> (avoiding noisy <em>M</em>(<em>q</em>)<sup>&minus;1</sup> inversions), and Sontag's universal CLF + <em>H</em><sub>&infin;</sub> damping add a closed-form nonlinear disturbance rejection term.
+          <h3>Lower Modeled Motion Losses While Tracking Under Disturbances</h3>
+          <ol class="tick-list">
+            <li><span><code>ctrl_septic_q / _v / _a</code> <span class="chip-s s-c">C99 / ST</span> &mdash; Sample boundary-factored reference at <code>&eta; = &minus;11</code>.</span></li>
+            <li><span><code>ctrl_backstepping_control</code> <span class="chip-s s-c">C99 / ST</span> &mdash; Compute tracking correction in error coordinates.</span></li>
+            <li><span><code>hinf_bounded_real_step</code>, <code>iss_peter_paul_envelope</code> <span class="chip-s s-py">Python</span> &mdash; Offline l<sub>2</sub>-gain and ISS tube check.</span></li>
+            <li><span><code>ManipulatorTracking.lean</code> <span class="chip-s s-lean">Lean only</span> &mdash; Slotine&ndash;Li passivity without inverting <em>M</em>(<em>q</em>).</span></li>
+          </ol>
+          <p class="meta-list">
+            <span><strong>Integration work:</strong> reconcile continuous/discrete assumptions, identify motor and rigid-body parameters, enforce actuator limits, and measure combined tracking and electrical loss. Less modeled Joule loss does not establish less vibration or lower winding temperature.</span>
           </p>
         </div>
 
         <div class="synergy-card">
           <div class="synergy-chain">Combination B &middot; Legged &amp; Wheeled Mobile Robots</div>
-          <h3>3D Lorentz-Cone CBF + Bilinear 4-Foot ZMP Allocator + Real-Time Simplex</h3>
-          <p>
-            <strong>Modules:</strong> <code>LorentzConeCBF.lean</code> + <code>CentroidalDecelerationLimit.lean</code> + <code>SE3Kinematics.lean</code> + <code>RoboLean/RealTime.lean</code> + <code>RoboLean/Reliability.lean</code>.<br>
-            <strong>Why they fit together:</strong> Combines worst-case response-time schedulability and Simplex architecture switching with an analytical 3D stopping-distance barrier and 4-foot wrench allocator. Gives legged/wheeled robots a deterministic reflex shield that runs on microcontrollers or PLCs where OSQP/ECOS cannot run reliably.
+          <h3>Make Braking Decisions Fit the Available Response Time</h3>
+          <ol class="tick-list">
+            <li><span><code>safe_decel_max(g, &mu;, W, h_G)</code> <span class="chip-s s-py">Python</span> &mdash; Startup deceleration bound <code>min(&mu;, W/h_G) * g</code>.</span></li>
+            <li><span><code>directional_cbf</code> + <code>ctrl_lorentz_cbf_filter</code> <span class="chip-s s-c">C99 / ST</span> &mdash; Blend nominal command toward backup brake.</span></li>
+            <li><span><code>ctrl_quad_contact_force &times; 4</code> <span class="chip-s s-c">C99 / ST</span> &mdash; Allocate 4 foot forces inside friction cones with zero net Euler torque.</span></li>
+            <li><span><code>response_time_analysis</code> <span class="chip-s s-py">Python</span> &mdash; Check fixed-priority deadline margin under higher-priority tasks.</span></li>
+          </ol>
+          <p class="meta-list">
+            <span><strong>Integration work:</strong> account for detection, computation, and actuation delay before stopping margin is consumed; validate contact compliance, backup authority, and scheduling bounds on the target.</span>
           </p>
         </div>
 
         <div class="synergy-card">
-          <div class="synergy-chain">Combination C &middot; Eye-in-Hand Visual Inspection &amp; Docking</div>
-          <h3>4-Point Homography Rigidity + Faugeras Chirality Filter + Log-Depth <em>SE</em>(3) Servoing</h3>
-          <p>
-            <strong>Modules:</strong> <code>HomographyUniqueness.lean</code> + <code>HomographyDecomposition.lean</code> + <code>VisualServoingInvariant.lean</code> + <code>KalmanOptimality.lean</code>.<br>
-            <strong>Why they fit together:</strong> Extracts planar pose from 4 feature correspondences, eliminates the unphysical Faugeras reflection branches via chirality (<em>n &middot; X &gt; 0</em>), filters pose noise with a Bucy&ndash;Joseph covariance update, and decouples optical-axis roll from depth control so large camera rotations never trigger backwards camera retreat.
+          <div class="synergy-chain">Combination C &middot; Perception &amp; Eye-in-Hand Visual Servoing</div>
+          <h3>Move the Camera Without Unwanted Optical-Axis Retreat</h3>
+          <ol class="tick-list">
+            <li><span><code>HomographyUniqueness.lean</code> + <code>verify_homography_singular_sandwich</code> <span class="chip-s s-py">Python</span> &mdash; Planar pose from 4 correspondences.</span></li>
+            <li><span><code>filter_faugeras_chirality_branches</code> <span class="chip-s s-py">Python</span> &mdash; Reject mirror branches that place the target behind the camera.</span></li>
+            <li><span><code>joseph_kalman_update</code> <span class="chip-s s-py">Python</span> &mdash; Filter pose measurements with a PSD-preserving Joseph covariance update.</span></li>
+            <li><span><code>se3_depth_derivative</code> <span class="chip-s s-py">Python</span> &mdash; Regulate log-depth along plane normal independently of optical-axis roll.</span></li>
+          </ol>
+          <p class="meta-list">
+            <span><strong>Integration work:</strong> handle calibration error, correspondence outliers, planar ambiguity, field-of-view limits, and robot joint limits.</span>
           </p>
         </div>
 
         <div class="synergy-card">
           <div class="synergy-chain">Combination D &middot; Minimal-Sensor Embedded Estimation &amp; Control</div>
-          <h3>Detectable DARE + Steady-State Kalman / Information Filter + Peter&ndash;Paul ISS</h3>
-          <p>
-            <strong>Modules:</strong> <code>DAREDetectable.lean</code> + <code>SteadyStateKalman.lean</code> + <code>InformationFilter.lean</code> + <code>ISS.lean</code>.<br>
-            <strong>Why they fit together:</strong> Certifies LQR and Kalman convergence when only a low-dimensional output <em>y = Cx</em> is measured (<em>Q = C<sup>&top;</sup>C &succeq; 0</em> positive semidefinite rather than positive definite), pairs it with the Sherman&ndash;Morrison&ndash;Woodbury information update for multi-sensor fusion, and computes an explicit Peter&ndash;Paul ISS invariant tube under bounded process noise.
+          <h3>Bound Estimation and Tracking Error With Limited Sensors</h3>
+          <ol class="tick-list">
+            <li><span><code>ctrl_kalata_alpha_beta</code> <span class="chip-s s-c">C99</span> &mdash; Steady-state &alpha;&ndash;&beta; tracker gains from Kalata tracking index.</span></li>
+            <li><span><code>joseph_kalman_update</code> / <code>InformationFilter.lean</code> <span class="chip-s s-py">Python</span> &mdash; Trace-optimal MMSE or Woodbury information update.</span></li>
+            <li><span><code>dare_detectable_return_difference_margin</code> <span class="chip-s s-py">Python</span> &mdash; Certify DARE/LQR under detectability (<code>Q = C^T C &ge; 0</code>).</span></li>
+            <li><span><code>iss_peter_paul_envelope</code> <span class="chip-s s-py">Python</span> &mdash; Explicit square-root-free Peter&ndash;Paul invariant error sublevel set.</span></li>
+          </ol>
+          <p class="meta-list">
+            <span><strong>Integration work:</strong> establish detectability, noise covariance bounds, units, and sampling; test missed measurements and model mismatch.</span>
           </p>
         </div>
       </div>
     </section>
 
     <!-- 5. INTERACTIVE DOMAIN CATALOG -->
-    <section id="catalog">
-      <h2>5. Domain-Organized Module Catalog (Ready to Use vs. Ongoing Work)</h2>
+    <section id="catalog" class="deferred-section">
+      <h2>5. Find a Mathematical Component (14 Research Families)</h2>
+      <p class="section-lede">
+        This catalog groups 14 research families across controls, estimation, robotics, perception, and applied matrix analysis. It does not count Python functions or certify deployment readiness. &ldquo;Documented results&rdquo; groups mathematical results described in the public and research libraries; source availability, runtime, and system integration vary by family. See the <a href="adopt.html">availability and adoption guide</a> and <a href="consumers.html">end-user library map</a>.
+      </p>
       <div class="filter-bar" role="region" aria-label="Filter modules">
         <div class="filter-group" id="status-filters">
           <span class="filter-label">Status:</span>
-          <button class="chip" data-status="all" aria-pressed="true">All (14)</button>
-          <button class="chip" data-status="ready_to_use" aria-pressed="false">Ready to Use (11)</button>
-          <button class="chip" data-status="in_work" aria-pressed="false">Ongoing / In Work (3)</button>
+          <button class="chip" data-status="all" aria-pressed="true">All (14 families)</button>
+          <button class="chip" data-status="ready_to_use" aria-pressed="false">Documented results (11 families)</button>
+          <button class="chip" data-status="in_work" aria-pressed="false">Integration / research open (3 families)</button>
         </div>
         <div class="filter-group" id="domain-filters">
           <span class="filter-label">Domain:</span>
           <button class="chip" data-domain="all" aria-pressed="true">All Domains</button>
-          <button class="chip" data-domain="Control" aria-pressed="false">Control &amp; Safety</button>
-          <button class="chip" data-domain="Estimation" aria-pressed="false">Estimation &amp; POMDP</button>
-          <button class="chip" data-domain="Robotics" aria-pressed="false">Robotics &amp; Vision</button>
+          <button class="chip" data-domain="Control" aria-pressed="false">Controls &amp; Safety</button>
+          <button class="chip" data-domain="Estimation" aria-pressed="false">Simulation &amp; Estimation</button>
+          <button class="chip" data-domain="Robotics" aria-pressed="false">Robotics &amp; Perception</button>
           <button class="chip" data-domain="Math" aria-pressed="false">Applied Math &amp; Conditioning</button>
+        </div>
+        <div class="filter-group">
+          <label for="catalog-search" class="filter-label">Search:</label>
+          <input id="catalog-search" class="search-input" type="search" placeholder="Filter by theorem, module, topic..." aria-label="Search mathematical catalog" />
         </div>
       </div>
 
@@ -742,21 +1606,21 @@ theorem quad_contact_in_lorentz_cone (p : QuadParams) (ax ay : &#8477;)
     </section>
 
     <!-- 6. ONGOING WORK & COMMUNITY FORMALIZATIONS -->
-    <section id="community">
+    <section id="community" class="deferred-section">
       <h2>6. What's Still In Work &amp; Community Mathlib / Formal-Conjectures Contributions</h2>
       <div class="synergy-grid">
         <div class="synergy-card">
           <div class="synergy-chain">In Work &middot; Robotics Runtime</div>
           <h3>1. C99 / MuJoCo Payload-Adaptation Binding for Slotine&ndash;Li &amp; POMDPs</h3>
           <p>
-            <code>ManipulatorTracking.lean</code> (Slotine&ndash;Li passivity and adaptive regressor cancellation) and <code>POMDPBelief.lean</code> (Smallwood&ndash;Sondik piecewise-linear convex Bellman backups) are proved in Lean 4 on <code>main</code>, and are currently being wired into <code>src/ctrl/robotics/</code> C99 codegen and a payload-uncertainty MuJoCo benchmark.
+            <code>ManipulatorTracking.lean</code> (Slotine&ndash;Li passivity and adaptive regressor cancellation) and <code>POMDPBelief.lean</code> (Smallwood&ndash;Sondik piecewise-linear convex Bellman backups) are proved in Lean 4 on <code>main</code>. Their runtime integration is research work; the Python/C99/MuJoCo implementation is not included in this public checkout. See the <a href="adopt.html">adoption guide</a> for release gaps.
           </p>
         </div>
         <div class="synergy-card">
           <div class="synergy-chain">In Work &middot; Lyapunov Conditioning (<code>MF-13</code>)</div>
           <h3>2. Symmetric vs. Skew Lyapunov Conditioning (Byers&ndash;Nash <em>n</em>=6)</h3>
           <p>
-            For the continuous Lyapunov operator &#8466;<sub><em>A</em></sub>(<em>X</em>) = <em>A</em><sup>&top;</sup><em>X</em> + <em>XA</em>, Byers and Nash asked whether the minimum singular value on skew matrices <em>k</em>(<em>A</em>) is always &le; the minimum singular value on symmetric matrices <em>s</em>(<em>A</em>). In control theory, this determines whether symmetric Lyapunov/Riccati SDP solvers can miss a near-singular skew mode. We formalized orthogonal decoupling on &#120138;<sub><em>n</em></sub> &oplus; &#120130;<sub><em>n</em></sub>, unconditional exclusion for rank &le; 4, and a 15D Parseval decomposition of &#120130;<sub>6</sub>, plus exact rational <em>LDL</em><sup>&top;</sup> &succ; 0 certificates on a 10-pair non-Common-<em>T</em> grid. Bounding the remaining 3D commuting off-diagonal cross-term analytically is in work.
+            For the continuous Lyapunov operator &#8466;<sub><em>A</em></sub>(<em>X</em>) = <em>A</em><sup>&top;</sup><em>X</em> + <em>XA</em>, Byers and Nash asked whether the minimum singular value on skew matrices <em>k</em>(<em>A</em>) is always &le; the minimum singular value on symmetric matrices <em>s</em>(<em>A</em>). Its control motivation concerns matrix-operator conditioning; no practical SDP solver improvement is established here. We formalized orthogonal decoupling on &#120138;<sub><em>n</em></sub> &oplus; &#120130;<sub><em>n</em></sub>, unconditional exclusion for rank &le; 4, and a 15D Parseval decomposition of &#120130;<sub>6</sub>, plus exact rational <em>LDL</em><sup>&top;</sup> &succ; 0 certificates on a 10-pair non-Common-<em>T</em> grid. Bounding the remaining 3D commuting off-diagonal cross-term analytically is in work.
           </p>
         </div>
       </div>
@@ -764,42 +1628,49 @@ theorem quad_contact_in_lorentz_cone (p : QuadParams) (ax ay : &#8477;)
       <details>
         <summary>Community Service: Formalizing Published Solutions for DeepMind's formal-conjectures</summary>
         <p style="margin-top: 0.75rem;">
-          Alongside the control and robotics library, we contribute Lean 4 formalizations of <strong>already-solved mathematical problems, published counterexamples, and elementary sub-cases</strong> from Google DeepMind's <a href="https://github.com/google-deepmind/formal-conjectures"><code>formal-conjectures</code></a> repository. These are community formalizations of theorems proved by other mathematicians in the literature (not claims of solving open Erd&#337;s problems):
+          Alongside the control, robotics, simulation, and perception library, we contribute Lean 4 formalizations of <strong>already-solved mathematical problems, published counterexamples, and elementary sub-cases</strong> from Google DeepMind's <a href="https://github.com/google-deepmind/formal-conjectures"><code>formal-conjectures</code></a> repository. These are community formalizations of theorems proved by other mathematicians in the literature (not claims of solving open Erd&#337;s problems):
         </p>
-        <table>
-          <thead>
-            <tr>
-              <th>Module</th>
-              <th>Problem IDs (<a href="https://www.erdosproblems.com">erdosproblems.com</a>)</th>
-              <th>Published Result Formalized in Lean 4</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><code>Bounty/ErdosBounties.lean</code><br>&amp; <code>ErdosLab/Erdos834.lean</code></td>
-              <td><a href="https://www.erdosproblems.com/261">#261</a>, <a href="https://www.erdosproblems.com/834">#834</a>, <a href="https://www.erdosproblems.com/931">#931</a>, <a href="https://www.erdosproblems.com/951">#951</a>, <a href="https://www.erdosproblems.com/143">#143</a></td>
-              <td>Lean 4 formalizations of Borwein &amp; Loring's (1990) identity for #261; Li's 3-uniform hypergraph coloring for #834; Tijdeman's symmetric <em>k</em><sub>1</sub>=<em>k</em><sub>2</sub>=3 counterexample for #931; and elementary special cases / sub-variants from the <code>formal-conjectures</code> backlog.</td>
-            </tr>
-            <tr>
-              <td><code>Bounty/ErdosNewInsights.lean</code></td>
-              <td><a href="https://www.erdosproblems.com/370">#370</a>, <a href="https://www.erdosproblems.com/645">#645</a>, <a href="https://www.erdosproblems.com/493">#493</a>, <a href="https://www.erdosproblems.com/275">#275</a></td>
-              <td>Lean 4 formalizations of Steiner's published elementary proof of #370 (<code>erdos_370</code>), the 2-coloring arithmetic progression bound <em>d</em> &le; 47 for #645 (<code>erdos_645</code>), the <em>k</em>=2 identity for #493, and the 2<sup><em>r</em></sup> congruential sharpness bound for #275.</td>
-            </tr>
-            <tr>
-              <td><code>Bounty/ErdosWave2.lean</code></td>
-              <td><a href="https://www.erdosproblems.com/1148">#1148</a>, <a href="https://www.erdosproblems.com/455">#455</a>, <a href="https://www.erdosproblems.com/367">#367</a>, <a href="https://www.erdosproblems.com/1179">#1179</a>, <a href="https://www.erdosproblems.com/1187">#1187</a>, <a href="https://www.erdosproblems.com/311">#311</a></td>
-              <td>Lean 4 formalizations of the <code>variants.weaker</code> reduction for #1148 (above explicit threshold <em>n</em> &gt; 6563), the discrete convexity quadratic lower bound for #455, the <em>k</em> &le; 2 sub-case of #367, and lower-bound sub-parts of #1179, #1187, and #311.</td>
-            </tr>
-          </tbody>
-        </table>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Module</th>
+                <th>Problem IDs (<a href="https://www.erdosproblems.com">erdosproblems.com</a>)</th>
+                <th>Published Result Formalized in Lean 4</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>Bounty/ErdosBounties.lean</code><br>&amp; <code>ErdosLab/Erdos834.lean</code></td>
+                <td><a href="https://www.erdosproblems.com/261">#261</a>, <a href="https://www.erdosproblems.com/834">#834</a>, <a href="https://www.erdosproblems.com/931">#931</a>, <a href="https://www.erdosproblems.com/951">#951</a>, <a href="https://www.erdosproblems.com/143">#143</a></td>
+                <td>Lean 4 formalizations of Borwein &amp; Loring's (1990) identity for #261; Li's 3-uniform hypergraph coloring for #834; Tijdeman's symmetric <em>k</em><sub>1</sub>=<em>k</em><sub>2</sub>=3 counterexample for #931; and elementary special cases / sub-variants from the <code>formal-conjectures</code> backlog.</td>
+              </tr>
+              <tr>
+                <td><code>Bounty/ErdosNewInsights.lean</code></td>
+                <td><a href="https://www.erdosproblems.com/370">#370</a>, <a href="https://www.erdosproblems.com/645">#645</a>, <a href="https://www.erdosproblems.com/493">#493</a>, <a href="https://www.erdosproblems.com/275">#275</a></td>
+                <td>Lean 4 formalizations of Steiner's published elementary proof of #370 (<code>erdos_370</code>), the 2-coloring arithmetic progression bound <em>d</em> &le; 47 for #645 (<code>erdos_645</code>), the <em>k</em>=2 identity for #493, and the 2<sup><em>r</em></sup> congruential sharpness bound for #275.</td>
+              </tr>
+              <tr>
+                <td><code>Bounty/ErdosWave2.lean</code></td>
+                <td><a href="https://www.erdosproblems.com/1148">#1148</a>, <a href="https://www.erdosproblems.com/455">#455</a>, <a href="https://www.erdosproblems.com/367">#367</a>, <a href="https://www.erdosproblems.com/1179">#1179</a>, <a href="https://www.erdosproblems.com/1187">#1187</a>, <a href="https://www.erdosproblems.com/311">#311</a></td>
+                <td>Lean 4 formalizations of the <code>variants.weaker</code> reduction for #1148 (above explicit threshold <em>n</em> &gt; 6563), the discrete convexity quadratic lower bound for #455, the <em>k</em> &le; 2 sub-case of #367, and lower-bound sub-parts of #1179, #1187, and #311.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </details>
     </section>
 
     <footer>
       <div>
-        <strong>ctrl</strong> &middot; Lean 4 Control, Estimation &amp; Robotics Library
+        <strong>ctrl</strong> &middot; Applied Math for Controls, Robotics, Simulation, Perception
       </div>
       <div>
+        <a href="adopt.html">Adoption Guide</a> &middot;
+        <a href="consumers.html">Library Map</a> &middot;
+        <a href="pipeline.html">Research Pipeline</a> &middot;
+        <a href="novelty.html">What's New</a> &middot;
+        <a href="synergy.html">Synergy Lens</a> &middot;
         <a href="AGENT_IDEA_INDEX.json">Agent JSON Index</a> &middot;
         <a href="synergy.html">Synergy Lens</a> &middot;
         <a href="https://github.com/IamMikeHelsel/ctrl">GitHub Repository</a>
@@ -811,7 +1682,7 @@ theorem quad_contact_in_lorentz_cone (p : QuadParams) (ax ay : &#8477;)
     const IDEAS = [
       {
         id: "CTRL-01",
-        title: "Detectable DARE, Infinite-Horizon LQR & Return-Difference Margins",
+        title: "Design a Stable LQR Controller Under Detectability",
         domain: "Linear & Optimal Control",
         domainGroup: "Control",
         status: "ready_to_use",
@@ -824,21 +1695,21 @@ theorem quad_contact_in_lorentz_cone (p : QuadParams) (ax ay : &#8477;)
       },
       {
         id: "CTRL-02",
-        title: "Output-Feedback LQG Separation & Discrete H-infinity Bounded Real Lemma",
+        title: "Bound Disturbance Gain in Output Feedback",
         domain: "Robust Control",
         domainGroup: "Control",
         status: "ready_to_use",
         novelty: "N2",
         applicability: "A3",
         approach: "Saddle-point completion of squares with disturbance Hessian M_gamma(P) = gamma^2 I - D^T D - B^T P B certifying finite- and infinite-horizon l2-gain attenuation <= gamma.",
-        impact: "Combined with Sontag CLF in MuJoCo: reduces peak & RMS tracking error by ~39.5% compared to a well-tuned high-gain Computed-Torque Controller under torque impulses.",
+        impact: "Reported MuJoCo torque-impulse comparison: peak error fell 39.4% and RMS error 39.6% against the documented matched-pole CTC baseline. New plants require a new comparison.",
         modules: ["Controls/BoundedRealHInf.lean", "Controls/LQG.lean", "Controls/Observer.lean"],
         theorems: ["lqg_closed_loop_stable_of_stabilizable_detectable", "hinf_stage_completion_of_squares", "hinf_l2_gain_bound"],
         combines: ["CTRL-03", "NL-01", "ROBO-01", "NL-03"]
       },
       {
         id: "CTRL-03",
-        title: "Matrix Peter–Paul Input-to-State Stability (ISS) Envelopes",
+        title: "Compute an Error Envelope for Bounded Disturbances",
         domain: "Robust Control",
         domainGroup: "Control",
         status: "ready_to_use",
@@ -851,7 +1722,7 @@ theorem quad_contact_in_lorentz_cone (p : QuadParams) (ax ay : &#8477;)
       },
       {
         id: "CTRL-04",
-        title: "Constrained Receding-Horizon MPC Feasibility & Iterative Learning Control",
+        title: "Verify Warm-Start MPC Feasibility and Repetitive Learning",
         domain: "Optimal & Repetitive Control",
         domainGroup: "Control",
         status: "ready_to_use",
@@ -864,35 +1735,35 @@ theorem quad_contact_in_lorentz_cone (p : QuadParams) (ax ay : &#8477;)
       },
       {
         id: "NL-01",
-        title: "Strict-Feedback Integrator Backstepping & Sontag's Universal CLF",
+        title: "Stabilize Cascaded Nonlinear Systems (Backstepping & Sontag CLF)",
         domain: "Nonlinear Control",
         domainGroup: "Control",
         status: "ready_to_use",
         novelty: "N2",
         applicability: "A3",
         approach: "Recursive virtual-control error coordinates z_i = x_i - alpha_{i-1} with tridiagonal skew cancellation, paired with Sontag's analytic formula guaranteeing dV/dt <= -sqrt(a^2 + b^4).",
-        impact: "Emitted to zero-heap C99 (ctrl_sontag_clf, ctrl_backstepping_control) & IEC 61131-3 ST with 8.88e-16 float64 parity.",
+        impact: "Research C99 and Structured Text implementations exist outside this public branch; reported float64 differential checks had max discrepancy 8.88e-16 on tested inputs.",
         modules: ["Controls/BacksteppingCLF.lean"],
         theorems: ["hasDerivAt_backstepping_closedLoop", "backstepping_chain_telescoping", "sontag_clf_strict_decrease"],
         combines: ["CTRL-02", "CTRL-03", "NL-03"]
       },
       {
         id: "NL-02",
-        title: "3D 4-Contact Bilinear ZMP Allocator & Closed-Form Lorentz-Cone CBF",
+        title: "Check 4-Contact Braking and Force-Allocation Limits",
         domain: "Legged & Mobile Safety Control",
         domainGroup: "Control",
         status: "ready_to_use",
         novelty: "N3",
         applicability: "A3",
         approach: "Proves the exact biconditional deceleration limit min(mu, W/h_G)*g, a 4-foot bilinear ZMP + proportional shear allocator with zero 3D Euler torque (dL/dt = 0), and a closed-form stopping-distance CBF.",
-        impact: "Matches exact SOCP stopping safety in MuJoCo (stops at 1.192 m < 1.20 m wall, f_z,min = 22.14 N) while running in <100 ns in C99 with zero solver failure modes.",
+        impact: "Reported MuJoCo four-contact braking run stopped at 1.192 m < 1.20 m wall with f_z,min = 22.14 N. Model-specific result; physical contact and target timing require separate validation.",
         modules: ["Research/LorentzConeCBF.lean", "Research/CentroidalDecelerationLimit.lean", "Controls/BarrierPassivity.lean"],
         theorems: ["deceleration_safe_iff", "quad_contact_zero_angular_momentum", "centroidal_cbf_forward_invariant"],
         combines: ["ROBO-03", "ROBO-04", "CTRL-04"]
       },
       {
         id: "NL-03",
-        title: "Slotine–Li Passivity & Adaptive Manipulator Trajectory Tracking",
+        title: "Track Manipulator Trajectories Without Inverting the Mass Matrix",
         domain: "Nonlinear Robotics Control",
         domainGroup: "Robotics",
         status: "in_work",
@@ -905,7 +1776,7 @@ theorem quad_contact_in_lorentz_cone (p : QuadParams) (ax ay : &#8477;)
       },
       {
         id: "EST-01",
-        title: "Multivariate Bucy–Joseph Kalman Filter, Information Filter & Recursive LS",
+        title: "Keep Kalman and Information Updates Well-Conditioned",
         domain: "State Estimation",
         domainGroup: "Estimation",
         status: "ready_to_use",
@@ -918,7 +1789,7 @@ theorem quad_contact_in_lorentz_cone (p : QuadParams) (ax ay : &#8477;)
       },
       {
         id: "EST-02",
-        title: "Continuous-Time CARE, HJB Calculus & Dual Kalman–Bucy Differential Filter",
+        title: "Analyze Continuous-Time Riccati and Kalman–Bucy Equations",
         domain: "Continuous Estimation & Control",
         domainGroup: "Estimation",
         status: "ready_to_use",
@@ -931,7 +1802,7 @@ theorem quad_contact_in_lorentz_cone (p : QuadParams) (ax ay : &#8477;)
       },
       {
         id: "EST-03",
-        title: "POMDP Bayesian Belief Simplex & Smallwood–Sondik PWLC Bellman Backup",
+        title: "Preserve POMDP Belief and Value-Function Structure",
         domain: "Planning Under Uncertainty",
         domainGroup: "Estimation",
         status: "in_work",
@@ -944,35 +1815,35 @@ theorem quad_contact_in_lorentz_cone (p : QuadParams) (ax ay : &#8477;)
       },
       {
         id: "ROBO-01",
-        title: "7th-Order Septic Rest-to-Rest Electromechanical Trajectory Shaping",
+        title: "Compare Rest-to-Rest Motion Profiles by Modeled Losses",
         domain: "Robotics Motion Planning",
         domainGroup: "Robotics",
         status: "ready_to_use",
         novelty: "N3",
         applicability: "A3",
         approach: "Uses cross-power orthogonality int_0^T a(t)j(t) dt = 0 on rest-to-rest trajectories to express motor winding + viscous losses as exact rational quadratic forms in eta.",
-        impact: "Modest, practical energy reduction over 5th-order minimum-jerk: 4.1% total I^2 R (gravity-dominated), 10.8% viscous loss, and 18.3%–22.5% dynamic motion Joule heat.",
+        impact: "Reported 6-DOF MuJoCo comparison: 4.1% less total modeled I^2 R loss, 10.8% less modeled viscous loss, and 22.5% less dynamic modeled Joule loss; 1D inertial model gives 18.33%.",
         modules: ["Research/RobotEnergySmoothness.lean"],
         theorems: ["rest_to_rest_cross_power_zero", "exact_integral_quadratic_forms", "inertial_joule_minimized_at_minus_eleven"],
         combines: ["NL-03", "CTRL-02", "NL-01"]
       },
       {
         id: "ROBO-02",
-        title: "6-DOF SE(3) Log-Depth Homography-Based Visual Servoing (HBVS)",
+        title: "Control Planar-Target Camera Depth During Large Roll",
         domain: "Visual Servoing & Multi-View Geometry",
         domainGroup: "Robotics",
         status: "ready_to_use",
         novelty: "N2",
         applicability: "A3",
         approach: "Combines 4-point projective homography rigidity and Faugeras chirality filtering with decoupled log-depth feedback dd/dt = -lambda d ln(d/d*) to avoid IBVS optical-axis roll retreat.",
-        impact: "Maintains monotone depth inside [1.015 m, 2.200 m] under 160-deg camera roll in MuJoCo.",
+        impact: "Reported MuJoCo camera-roll simulation kept depth inside [1.015 m, 2.200 m] vs. 12.67 m for its IBVS baseline.",
         modules: ["Research/VisualServoingInvariant.lean", "Research/HomographyDecomposition.lean", "Vision/HomographyUniqueness.lean"],
         theorems: ["closed_loop_depth_formula", "depth_convexity_lower_bound", "homography_unique_four_points"],
         combines: ["EST-01", "ROBO-03"]
       },
       {
         id: "ROBO-03",
-        title: "SO(3)/SE(3) Rodrigues, Unit Quaternions, Non-Inertial Transport & Real-Time RTA",
+        title: "Reason About Rigid-Body Kinematics, IK, and Task Response Time",
         domain: "Kinematics & Real-Time Execution",
         domainGroup: "Robotics",
         status: "ready_to_use",
@@ -985,14 +1856,14 @@ theorem quad_contact_in_lorentz_cone (p : QuadParams) (ax ay : &#8477;)
       },
       {
         id: "MATH-01",
-        title: "Symmetric vs. Skew Lyapunov Conditioning & Byers–Nash n=6 (MF-13)",
+        title: "Compare Symmetric and Skew Lyapunov Operator Conditioning (Byers–Nash n=6)",
         domain: "Applied Matrix Analysis",
         domainGroup: "Math",
         status: "in_work",
         novelty: "N3",
         applicability: "A2",
         approach: "Proves that L_A(X) = A^T X + X A decouples orthogonally on S_n (+) K_n, rules out rank <= 4 counterexamples, proves a 15D Parseval decomposition of K_6 via Klein & plane-swap involutions, and certifies 10/10 non-Common-T grid pairs over Q.",
-        impact: "Directly governs whether symmetric Lyapunov/Riccati SDP solvers can miss a near-singular skew mode; 1 off-diagonal cross-term inequality remains in work.",
+        impact: "Studies matrix-operator conditioning of A^T X + X A on symmetric vs. skew subspaces; one off-diagonal cross-term inequality remains open for n=6.",
         modules: ["Research/ByersNashOffDiagComplete.lean", "Research/ByersNashHaarIntertwiner.lean", "Research/ByersNashMultiTerm.lean"],
         theorems: ["lyap_symm_skew_orthogonal_decomp", "lyapunov_singular_value_robustness_bound", "skew6_fifteen_dim_parseval"],
         combines: ["EST-02", "CTRL-01"]
@@ -1001,58 +1872,75 @@ theorem quad_contact_in_lorentz_cone (p : QuadParams) (ax ay : &#8477;)
 
     let activeStatus = "all";
     let activeDomain = "all";
+    let searchQuery = "";
+
+    function updateStatusButtonLabels() {
+      const totalCount = IDEAS.length;
+      const readyCount = IDEAS.filter(i => i.status === "ready_to_use").length;
+      const workCount = IDEAS.filter(i => i.status === "in_work").length;
+      const statusMap = {
+        all: `All (${totalCount} families)`,
+        ready_to_use: `Documented results (${readyCount} families)`,
+        in_work: `Integration / research open (${workCount} families)`
+      };
+      document.querySelectorAll("#status-filters button").forEach(btn => {
+        const key = btn.getAttribute("data-status");
+        if (statusMap[key]) btn.textContent = statusMap[key];
+      });
+    }
 
     function renderIdeas() {
       const grid = document.getElementById("idea-grid");
       grid.innerHTML = "";
+      const q = searchQuery.trim().toLowerCase();
+
       const filtered = IDEAS.filter(item => {
         const statusOk = activeStatus === "all" || item.status === activeStatus;
         const domainOk = activeDomain === "all" || item.domainGroup === activeDomain;
-        return statusOk && domainOk;
+        if (!statusOk || !domainOk) return false;
+        if (!q) return true;
+        const hay = [
+          item.id, item.title, item.domain, item.approach,
+          item.impact || "", ...item.modules, ...item.theorems
+        ].join(" ").toLowerCase();
+        return hay.includes(q);
       });
 
       filtered.forEach(item => {
         const cell = document.createElement("div");
         cell.className = "idea-cell";
 
-        const badgeClass = item.status === "ready_to_use" ? "badge-ready" : "badge-promising";
-        const badgeLabel = item.status === "ready_to_use" ? "READY TO USE" : "IN WORK";
+        const card = document.createElement("article");
+        card.className = "idea-card" + (item.impact ? " has-impact" : "");
+
+        const statusBadge = item.status === "ready_to_use"
+          ? `<span class="badge badge-ready">Documented results</span>`
+          : `<span class="badge badge-promising">In work</span>`;
 
         const impactHtml = item.impact
           ? `<div class="impact-callout"><strong>Application note:</strong> ${item.impact}</div>`
           : "";
 
-        cell.innerHTML = `
-          <article class="idea-card">
-            <div class="card-header">
-              <span class="idea-id">${item.id} &middot; ${item.domain}</span>
-              <div class="badges">
-                <span class="badge ${badgeClass}">${badgeLabel}</span>
-                <span class="badge badge-tier">Novelty ${item.novelty}</span>
-                <span class="badge badge-tier">App ${item.applicability}</span>
-              </div>
+        card.innerHTML = `
+          <div class="card-header">
+            <span class="idea-id">${item.id} &middot; ${item.domain}</span>
+            <div class="badges">
+              ${statusBadge}
             </div>
-            <h3>${item.title}</h3>
-            <p>${item.approach}</p>
-            ${impactHtml}
-            <div class="meta-list">
-              <div><strong>Modules:</strong> <code>${item.modules.join("</code>, <code>")}</code></div>
-              <div><strong>Theorems:</strong> <code>${item.theorems.join("</code>, <code>")}</code></div>
-              <div><strong>Combines with:</strong> <code>${item.combines.join("</code> + <code>")}</code></div>
-            </div>
-          </article>
+          </div>
+          <h3>${item.title}</h3>
+          <p>${item.approach}</p>
+          ${impactHtml}
+          <div class="meta-list">
+            <div><strong>Lean Modules:</strong> <code>${item.modules.join("</code>, <code>")}</code></div>
+            <div><strong>Key Theorems:</strong> <code>${item.theorems.join("</code>, <code>")}</code></div>
+            <div><strong>Combines With:</strong> <code>${item.combines.join("</code> + <code>")}</code></div>
+          </div>
         `;
+
+        cell.appendChild(card);
         grid.appendChild(cell);
       });
-
-      /* Fallback for browsers without CSS :has() support per modern-web-guidance: content-based-styling */
-      if (!CSS.supports("selector(:has(*))")) {
-        document.querySelectorAll(".idea-card").forEach(card => {
-          if (card.querySelector(".impact-callout")) {
-            card.classList.add("has-impact");
-          }
-        });
-      }
     }
 
     document.querySelectorAll("#status-filters button").forEach(btn => {
@@ -1073,6 +1961,61 @@ theorem quad_contact_in_lorentz_cone (p : QuadParams) (ax ay : &#8477;)
       });
     });
 
+    const searchInput = document.getElementById("catalog-search");
+    if (searchInput) {
+      searchInput.addEventListener("input", e => {
+        searchQuery = e.target.value || "";
+        renderIdeas();
+      });
+    }
+
+    /* Accessible ARIA Tabs for Recipes */
+    document.querySelectorAll(".tabs").forEach((tabs, ti) => {
+      const tabBtns = tabs.querySelectorAll('[role="tab"]');
+      const panels = tabs.querySelectorAll('[role="tabpanel"]');
+      tabBtns.forEach((btn, i) => {
+        btn.id = `tab-${ti}-${i}`;
+        panels[i].id = `panel-${ti}-${i}`;
+        btn.setAttribute("aria-controls", panels[i].id);
+        panels[i].setAttribute("aria-labelledby", btn.id);
+        btn.tabIndex = i === 0 ? 0 : -1;
+        btn.addEventListener("click", () => selectTab(i));
+        btn.addEventListener("keydown", e => {
+          if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
+            const next = (i + (e.key === "ArrowRight" ? 1 : tabBtns.length - 1)) % tabBtns.length;
+            selectTab(next);
+            tabBtns[next].focus();
+          }
+        });
+      });
+      function selectTab(i) {
+        tabBtns.forEach((b, j) => {
+          b.setAttribute("aria-selected", String(j === i));
+          b.tabIndex = j === i ? 0 : -1;
+        });
+        panels.forEach((p, j) => {
+          p.hidden = j !== i;
+        });
+      }
+    });
+
+    /* One-click Copy buttons on code blocks */
+    document.querySelectorAll("pre:not(.out)").forEach(pre => {
+      const btn = document.createElement("button");
+      btn.className = "copy-btn";
+      btn.type = "button";
+      btn.textContent = "Copy";
+      btn.addEventListener("click", () => {
+        const text = (pre.querySelector("code") || pre).innerText;
+        navigator.clipboard.writeText(text).then(() => {
+          btn.textContent = "Copied";
+          setTimeout(() => { btn.textContent = "Copy"; }, 1200);
+        });
+      });
+      pre.appendChild(btn);
+    });
+
+    updateStatusButtonLabels();
     renderIdeas();
   </script>
 </body>
