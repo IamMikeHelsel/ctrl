@@ -8,13 +8,17 @@
 >   50% solution / 30% Lean / 20% exposition, results must be public after 2026-01-01).
 > * The solved-but-unformalized pool is about 15 hard statements, not 680: 363 of 424 solved
 >   Erdős statements in formal-conjectures already link an external `formal_proof`, and
->   plby/lean-proofs covers 563 problems. **Our own #261 (Palomar), #291 and #367 (plby) were
->   formalized by others since 10-17.** Priority rescue for the rest is candidate `MATH-06`.
+>   plby/lean-proofs covers 563 problems. Our #261 is registered on Palomar by a third party.
+>   (Corrected 2026-10-24: plby holds only partial results for 291 and 367, not ctrl's statements.)
 > * formal-conjectures now recommends a Palomar entry for every research-grade formal proof.
 > * conjectures.io sits at about $4.9k per settled problem (274 open). AI for Math Fund could not be
 >   re-verified this session.
-> * The README lists 29 solved Erdős numbers; only 17 appear in `ControlsLean/Bounty/*.lean` on
->   `main`. Verify against the formal-conjectures main statement before claiming any of them.
+> * **Audit of the 31 claimed numbers (2026-10-24):** rescue now = 834 (`erdos/ErdosLab/Erdos834.lean`,
+>   exact FC `erdos_834.parts.ii`, no FC link yet), 1148 (weaker variant), 367 (k ≤ 2 variant);
+>   already formalized by others = 261, 291, 370, 493, 645, 1179, 1187; variants only = 311, 382, 931,
+>   951; **no ctrl proof of any FC statement = 36, 96, 143, 242, 275, 341, 389, 455, 533, 873, 995,
+>   1055, 1059, 1073, 1102, 1113, 1125.** Nothing is JSP-eligible. Correct the README and STATUS
+>   counts before any external claim.
 > * Remaining realistic lanes: Byers–Nash n = 6 (now the only open order of the conjecture),
 >   control-theory formalizations nobody has (KYP, Kharitonov), SAIR Lean Kernel Challenge
 >   (deadline 2026-11-20, recognition only).

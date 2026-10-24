@@ -6,8 +6,8 @@
 
 ## Ten findings that should change what we do next
 
-1. **Priority on our own Erdős problems is leaking.** Erdős #261, #291 and #367 (all in `ControlsLean/Bounty/`) now carry other people's `formal_proof` links in DeepMind's Formal Conjectures or proofs in plby/lean-proofs. The pool of solved-but-unformalized Erdős statements is about 15 hard ones, not the 680 that `BOUNTIES.md` assumed; plby's AI pipeline added 9 in five days. The cheap money lane is closed. What remains is a two-week rescue (`MATH-06`): go public, pin SHAs, open Formal Conjectures `formal_proof` PRs and Palomar entries for the 14 still-unlinked formalizations, and file the JSP legacy PRs.
-2. **The repo is private, and that blocks every external lane.** Reservoir listing, Justin Sun Prize eligibility (public repo pinned by SHA), Palomar, Mathlib credibility and agent discovery all require a public repo. `TOOL-04` is one week and unblocks everything else in this document.
+1. **Most of the claimed Erdős list does not hold up, and the cheap money lane is closed.** A line-by-line audit (2026-10-24) of the 31 numbers the docs claim found: 3 worth rescuing now (`erdos_834.parts.ii` on `main` in `erdos/ErdosLab/`, plus the `erdos_1148` weaker variant and the `erdos_367` k ≤ 2 variant), 7 already formalized by others (261, 291, 370, 493, 645, 1179, 1187), 4 variants only, and **17 with no ctrl proof of any Formal Conjectures statement** (12 have no Lean anywhere in the repo's history). None is JSP-eligible: every exact main-statement proof ctrl has is already covered by someone else. The solved-but-unformalized pool is about 15 hard statements, not 680. `MATH-06` is now: link 834 (and the two variants) in Formal Conjectures, consider one Palomar entry, and correct the README/STATUS counts.
+2. **The repo is now public; finish the job.** GitHub reports `IamMikeHelsel/ctrl` as public (checked 2026-10-24; an earlier version of this report said private). The rest of `TOOL-04` still applies: list `ControlsLean` on Reservoir, pin a stable toolchain instead of `v4.36.0-rc1`, and record the date the repo went public, since JSP and Palomar priority run on independently checkable public history.
 3. **A direct Lean competitor exists and announced our next topic.** arXiv 2607.19727 (July 2026, "Foundations of Machine-Checked Control Theory in Lean") covers Lyapunov and small-gain on Mathlib and names passivity as its next work. No scout found any proof-assistant formalization of Kalman filtering, POMDP belief planning, SE(3) dynamics or multi-view geometry: `ctrl` appears to be first on all four. Publish the estimation and robotics results before that group expands.
 4. **Byers–Nash n = 6 is now the single open order of a named conjecture.** Chen–Tian settled n ≤ 5 and a 2026 preprint (arXiv 2608.20875, seen in search only) refutes the symmetric-maximizer conjecture for n ≥ 7. `MATH-01` already holds the rank ≤ 4 exclusion and exact rational certificates for n = 6. Closing it either way (`MATH-05`) is the flagship research item and a natural Palomar entry.
 5. **Nobody sells verified controller or estimator kernels.** The certified channels (Apex.Grace at ASIL D, CODESYS Safety SIL2/3) certify middleware and runtimes, not algorithms; every PLC verification tool in production is bounded model checking of discrete logic. The 2026 DO-178C qualification of CompCert for Airbus/ATR is the first public proof-based tool credit, which lowers the perceived risk of the Lean story. The slot is open.
@@ -41,7 +41,7 @@ Every candidate below is a node in `docs/SYNERGY_WEIGHTS.json` and is scored by 
 | 7 | `EST-05` | explore | 0.425 | 3 | 0.75 | 3 | 0.4 | H-infinity (minimax) filter via dual Bounded Real Lemma |
 | 8 | `TOOL-01` | productionize | 0.423 | 2 | 0.80 | 3 | 1.0 | ctrl MCP server exposing scratch, check, search, audit and the idea index |
 | 9 | `ROB-04` | explore | 0.423 | 4 | 0.65 | 5 | 0.7 | Capturability / DCM push-recovery certificate composed with the ZMP allocator |
-| 10 | `TOOL-04` | industrialize | 0.422 | 1 | 0.90 | 3 | 1.0 | Make ctrl public, list ControlsLean on Reservoir, pin a stable toolchain |
+| 10 | `TOOL-04` | industrialize | 0.422 | 1 | 0.90 | 3 | 1.0 | Finish going public: Reservoir listing, stable toolchain pin, record the public-since date |
 | 11 | `EST-06` | explore | 0.418 | 5 | 0.70 | 4 | 0.4 | Invariant EKF on SO(3)/SE(3): log-linear autonomous error dynamics |
 | 12 | `XD-06` | explore | 0.417 | 4 | 0.70 | 4 | 0.4 | Lorentz-cone CBF safe set as MPC terminal set with proven recursive feasibility |
 | 13 | `ROB-03` | explore | 0.397 | 5 | 0.70 | 4 | 0.4 | VIO observability: 4-dim unobservable subspace and FEJ consistency theorem |
@@ -56,32 +56,32 @@ Every candidate below is a node in `docs/SYNERGY_WEIGHTS.json` and is scored by 
 | 22 | `XD-12` | productionize | 0.380 | 3 | 0.70 | 3 | 0.4 | Barrier-derived Simplex switching for learned controllers |
 | 23 | `XD-10` | industrialize | 0.375 | 5 | 0.60 | 4 | 1.0 | Syntactic WCET bound of generated C99 kernels fed into RTA |
 | 24 | `ROB-09` | explore | 0.372 | 3 | 0.80 | 3 | 0.4 | Zhang camera calibration from planar homographies (image of the absolute conic) |
-| 25 | `ROB-12` | industrialize | 0.363 | 4 | 0.60 | 4 | 0.7 | ISO 25785-1 / ISO 3691-4 verified safety-function evidence pack |
-| 26 | `XD-05` | productionize | 0.360 | 3 | 0.70 | 3 | 0.4 | Basis-function ILC over the septic trajectory family |
-| 27 | `ROB-08` | explore | 0.359 | 3 | 0.70 | 3 | 0.4 | Minimal-solver degeneracies and RANSAC bounds as theorems |
-| 28 | `XD-01` | explore | 0.358 | 4 | 0.75 | 4 | 0.4 | Pinwheel scheduling as Erdős covering systems in Lean |
-| 29 | `XD-07` | explore | 0.348 | 3 | 0.65 | 3 | 0.7 | Small-gain string stability for robot fleets |
-| 30 | `EST-07` | explore | 0.345 | 2 | 0.80 | 2 | 0.4 | Unscented transform sigma-point moment-matching exactness |
-| 31 | `TOOL-09` | explore | 0.342 | 3 | 0.60 | 4 | 0.4 | ControlBench: a Croissant-tagged benchmark of ctrl theorem statements with proofs stripped |
-| 32 | `ROB-13` | industrialize | 0.337 | 4 | 0.60 | 4 | 0.4 | ASTM F3269 run-time-assurance geofence kernel for drones |
-| 33 | `SED-04` | productionize | 0.330 | 2 | 0.85 | 3 | 0.7 | Reproducible ZIP/TAR creation mode (SOURCE_DATE_EPOCH, sorted, normalized) |
-| 34 | `EST-09` | explore | 0.330 | 5 | 0.65 | 3 | 0.4 | Moving-horizon estimation robust stability via i-IOSS and MPC duality |
-| 35 | `MATH-08` | productionize | 0.330 | 3 | 0.75 | 2 | 0.7 | Kharitonov theorem and interval-Hurwitz stability certificates |
-| 36 | `XD-03` | explore | 0.319 | 4 | 0.60 | 3 | 0.7 | Byers-Nash sep bound to certified Riccati/Kalman condition numbers |
-| 37 | `EST-08` | explore | 0.317 | 3 | 0.70 | 3 | 0.4 | Rauch-Tung-Striebel fixed-interval smoother and two-filter equivalence |
-| 38 | `SED-07` | productionize | 0.310 | 1 | 0.85 | 2 | 0.7 | OpenTelemetry CLI semantic-convention alignment of the JSON trace |
-| 39 | `TOOL-12` | productionize | 0.305 | 1 | 0.90 | 2 | 0.4 | CI hygiene: split GitHub cache from Mathlib cache, add lake test/lint and audit targets, schedule Mathlib bumps |
-| 40 | `SED-02` | productionize | 0.298 | 2 | 0.80 | 3 | 0.4 | Archive-hardening regression corpus and named extraction policy |
-| 41 | `XD-09` | explore | 0.292 | 4 | 0.55 | 3 | 1.0 | Homography ground plane to tilted ZMP/CBF deceleration bound |
-| 42 | `IND-01` | industrialize | 0.282 | 4 | 0.50 | 3 | 1.0 | DO-333 evidence pack generator for a verified kernel |
-| 43 | `TOOL-03` | explore | 0.275 | 6 | 0.60 | 3 | 0.4 | Upstream four named Mathlib gaps: exp(tA) derivative and x'=Ax, det exp = exp trace, Loewner inverse antitone, PSD Schur complement |
-| 44 | `IND-02` | explore | 0.265 | 8 | 0.50 | 4 | 0.7 | Proved IEEE-754 error bounds for straight-line C99 kernels in Lean |
-| 45 | `MATH-10` | industrialize | 0.265 | 3 | 0.60 | 2 | 1.0 | SAIR Lean Kernel Challenge entries for the permanent and polynomial-discriminant problems |
-| 46 | `XD-02` | productionize | 0.265 | 5 | 0.70 | 3 | 0.4 | Verified PAR2-style recovery records for sediment |
-| 47 | `SED-05` | industrialize | 0.264 | 2 | 0.70 | 3 | 1.0 | Notarized Homebrew cask and cargo-dist pipeline with sigstore bundles |
-| 48 | `EST-14` | industrialize | 0.261 | 6 | 0.50 | 4 | 0.7 | Verified Joseph/EKF battery state-of-charge kernel for ISO 26262 / EU battery passport |
-| 49 | `EST-10` | explore | 0.260 | 6 | 0.55 | 3 | 0.4 | Chance-constrained / CVaR stochastic MPC recursive feasibility |
-| 50 | `MATH-06` | industrialize | 0.259 | 2 | 0.60 | 3 | 0.4 | Priority rescue: upstream ctrl's 14 unlinked Erdős formalizations to Formal Conjectures, Palomar and JSP |
+| 25 | `MATH-06` | industrialize | 0.364 | 1 | 0.85 | 2 | 0.4 | Priority rescue: link Erdős 834 (and the 1148/367 variants) in Formal Conjectures, correct the claimed counts |
+| 26 | `ROB-12` | industrialize | 0.363 | 4 | 0.60 | 4 | 0.7 | ISO 25785-1 / ISO 3691-4 verified safety-function evidence pack |
+| 27 | `XD-05` | productionize | 0.360 | 3 | 0.70 | 3 | 0.4 | Basis-function ILC over the septic trajectory family |
+| 28 | `ROB-08` | explore | 0.359 | 3 | 0.70 | 3 | 0.4 | Minimal-solver degeneracies and RANSAC bounds as theorems |
+| 29 | `XD-01` | explore | 0.358 | 4 | 0.75 | 4 | 0.4 | Pinwheel scheduling as Erdős covering systems in Lean |
+| 30 | `XD-07` | explore | 0.348 | 3 | 0.65 | 3 | 0.7 | Small-gain string stability for robot fleets |
+| 31 | `EST-07` | explore | 0.345 | 2 | 0.80 | 2 | 0.4 | Unscented transform sigma-point moment-matching exactness |
+| 32 | `TOOL-09` | explore | 0.342 | 3 | 0.60 | 4 | 0.4 | ControlBench: a Croissant-tagged benchmark of ctrl theorem statements with proofs stripped |
+| 33 | `ROB-13` | industrialize | 0.337 | 4 | 0.60 | 4 | 0.4 | ASTM F3269 run-time-assurance geofence kernel for drones |
+| 34 | `SED-04` | productionize | 0.330 | 2 | 0.85 | 3 | 0.7 | Reproducible ZIP/TAR creation mode (SOURCE_DATE_EPOCH, sorted, normalized) |
+| 35 | `EST-09` | explore | 0.330 | 5 | 0.65 | 3 | 0.4 | Moving-horizon estimation robust stability via i-IOSS and MPC duality |
+| 36 | `MATH-08` | productionize | 0.330 | 3 | 0.75 | 2 | 0.7 | Kharitonov theorem and interval-Hurwitz stability certificates |
+| 37 | `XD-03` | explore | 0.319 | 4 | 0.60 | 3 | 0.7 | Byers-Nash sep bound to certified Riccati/Kalman condition numbers |
+| 38 | `EST-08` | explore | 0.317 | 3 | 0.70 | 3 | 0.4 | Rauch-Tung-Striebel fixed-interval smoother and two-filter equivalence |
+| 39 | `SED-07` | productionize | 0.310 | 1 | 0.85 | 2 | 0.7 | OpenTelemetry CLI semantic-convention alignment of the JSON trace |
+| 40 | `TOOL-12` | productionize | 0.305 | 1 | 0.90 | 2 | 0.4 | CI hygiene: split GitHub cache from Mathlib cache, add lake test/lint and audit targets, schedule Mathlib bumps |
+| 41 | `SED-02` | productionize | 0.298 | 2 | 0.80 | 3 | 0.4 | Archive-hardening regression corpus and named extraction policy |
+| 42 | `XD-09` | explore | 0.292 | 4 | 0.55 | 3 | 1.0 | Homography ground plane to tilted ZMP/CBF deceleration bound |
+| 43 | `IND-01` | industrialize | 0.282 | 4 | 0.50 | 3 | 1.0 | DO-333 evidence pack generator for a verified kernel |
+| 44 | `TOOL-03` | explore | 0.275 | 6 | 0.60 | 3 | 0.4 | Upstream four named Mathlib gaps: exp(tA) derivative and x'=Ax, det exp = exp trace, Loewner inverse antitone, PSD Schur complement |
+| 45 | `IND-02` | explore | 0.265 | 8 | 0.50 | 4 | 0.7 | Proved IEEE-754 error bounds for straight-line C99 kernels in Lean |
+| 46 | `MATH-10` | industrialize | 0.265 | 3 | 0.60 | 2 | 1.0 | SAIR Lean Kernel Challenge entries for the permanent and polynomial-discriminant problems |
+| 47 | `XD-02` | productionize | 0.265 | 5 | 0.70 | 3 | 0.4 | Verified PAR2-style recovery records for sediment |
+| 48 | `SED-05` | industrialize | 0.264 | 2 | 0.70 | 3 | 1.0 | Notarized Homebrew cask and cargo-dist pipeline with sigstore bundles |
+| 49 | `EST-14` | industrialize | 0.261 | 6 | 0.50 | 4 | 0.7 | Verified Joseph/EKF battery state-of-charge kernel for ISO 26262 / EU battery passport |
+| 50 | `EST-10` | explore | 0.260 | 6 | 0.55 | 3 | 0.4 | Chance-constrained / CVaR stochastic MPC recursive feasibility |
 | 51 | `IND-03` | industrialize | 0.258 | 5 | 0.50 | 3 | 1.0 | Verified numeric function-block library for IEC 61131-3 ST with PLCverif cross-check |
 | 52 | `ROB-05` | explore | 0.248 | 8 | 0.55 | 3 | 0.4 | Hybrid systems in Lean: Poincare-map orbit stability and non-Zeno conditions (HZD skeleton) |
 | 53 | `XD-04` | explore | 0.244 | 6 | 0.50 | 3 | 1.0 | Occlusion-aware log-depth visual servoing via POMDP belief |
@@ -111,18 +111,19 @@ Every candidate below is a node in `docs/SYNERGY_WEIGHTS.json` and is scored by 
 
 ## Greedy plan within 12 engineer-weeks
 
-- `TOOL-04` (1 wk, score 0.422) Make ctrl public, list ControlsLean on Reservoir, pin a stable toolchain
+- `TOOL-04` (1 wk, score 0.422) Finish going public: Reservoir listing, stable toolchain pin, record the public-since date
+- `MATH-06` (1 wk, score 0.364) Priority rescue: link Erdős 834 (and the 1148/367 variants) in Formal Conjectures, correct the claimed counts
 - `SED-07` (1 wk, score 0.310) OpenTelemetry CLI semantic-convention alignment of the JSON trace
 - `TOOL-12` (1 wk, score 0.305) CI hygiene: split GitHub cache from Mathlib cache, add lake test/lint and audit targets, schedule Mathlib bumps
 - `TOOL-11` (1 wk, score 0.212) Agent-facing index upgrade: JSON-LD context on AGENT_IDEA_INDEX, llms.txt and Markdown twins on the Pages site
 - `TOOL-01` (2 wk, score 0.423) ctrl MCP server exposing scratch, check, search, audit and the idea index
 - `TOOL-06` (2 wk, score 0.387) Kernel certificate bundle: JSON-LD per kernel with axiom audit, toolchain SHAs, code hashes, parity results and external re-check
 - `EST-07` (2 wk, score 0.345) Unscented transform sigma-point moment-matching exactness
-- `SED-04` (2 wk, score 0.330) Reproducible ZIP/TAR creation mode (SOURCE_DATE_EPOCH, sorted, normalized)
 
 ## Greedy plan within 26 engineer-weeks
 
-- `TOOL-04` (1 wk, score 0.422) Make ctrl public, list ControlsLean on Reservoir, pin a stable toolchain
+- `TOOL-04` (1 wk, score 0.422) Finish going public: Reservoir listing, stable toolchain pin, record the public-since date
+- `MATH-06` (1 wk, score 0.364) Priority rescue: link Erdős 834 (and the 1148/367 variants) in Formal Conjectures, correct the claimed counts
 - `SED-07` (1 wk, score 0.310) OpenTelemetry CLI semantic-convention alignment of the JSON trace
 - `TOOL-12` (1 wk, score 0.305) CI hygiene: split GitHub cache from Mathlib cache, add lake test/lint and audit targets, schedule Mathlib bumps
 - `TOOL-11` (1 wk, score 0.212) Agent-facing index upgrade: JSON-LD context on AGENT_IDEA_INDEX, llms.txt and Markdown twins on the Pages site
@@ -618,6 +619,19 @@ Unlocks: `MATH-08`, `NL-01`.
 - **Edge.** controls → nonlinear_safety (0.7): KYP turns ctrl's linear H-infinity/ISS certificates into Lur'e absolute-stability guarantees for sector-bounded nonlinearities.
 - **Evidence.** <https://github.com/AEjonanonymous/Improving-on-Popov> · <https://en.wikipedia.org/wiki/Kalman%E2%80%93Yakubovich%E2%80%93Popov_lemma> · <https://github.com/leanprover-community/mathlib4/blob/master/Mathlib/Analysis/Matrix/Spectrum.lean>
 
+### `MATH-06` Priority rescue: link Erdős 834 (and the 1148/367 variants) in Formal Conjectures, correct the claimed counts
+
+**industrialize** · score 0.364 · 1 wk · confidence 0.85 · payoff 2/5 · domains: prizes, lean_tooling, math  
+Builds on: `MATH-04`.  
+Unlocks: `MATH-09`.  
+
+- **Why now.** Since 2026-10-17 plby/lean-proofs added ctrl problems 291 and 367 and Erdős 261 was registered on Palomar by a third party; 363 of 424 solved FC statements already carry formal_proof links, and ctrl has no PR in TheJustinSunPrize/awards.
+- **Prior art.** plby/lean-proofs (563 problems), Jayyhk/williamjblair/anatoliiohorodnyk/linrock/Woett repos; 9 JSP awards so far (4 Lean, all to W. van Doorn)
+- **What we would build.** Per the 2026-10-24 audit: FC formal_proof link for erdos_834.parts.ii (proof on main at erdos/ErdosLab/Erdos834.lean), short inline FC proofs or links for erdos_1148.variants.weaker and erdos_367.variants.k_le_two, optional Palomar entry for 834, a type_of% check binding each proof to the FC theorem, and removal of the 17 unsupported numbers from README/STATUS/portfolio docs. No JSP filing: every exact main-statement proof is already covered by others.
+- **External pull.** Formal Conjectures solved-status credit, Palomar citation; credibility of the repo's public claims
+- **Edge.** prizes → lean_tooling (0.5): A reusable statement-faithfulness + lean-verify + Palomar packaging script serves every future claim.
+- **Evidence.** <https://raw.githubusercontent.com/plby/lean-proofs/main/data/sources.yaml> · <https://github.com/google-deepmind/formal-conjectures/blob/main/CONTRIBUTING.md> · <https://raw.githubusercontent.com/TheJustinSunPrize/awards/main/docs/award-process.md> · <https://github.com/TheJustinSunPrize/awards/tree/main/awards>
+
 ### `MATH-08` Kharitonov theorem and interval-Hurwitz stability certificates
 
 **productionize** · score 0.330 · 3 wk · confidence 0.75 · payoff 2/5 · domains: controls, math, codegen_certification  
@@ -642,19 +656,6 @@ Builds on: `CTRL-05`, `MATH-04`.
 - **External pull.** XTX-funded SAIR competition, recognition only (Tao, de Moura, Morrison, Breitner organizers)
 - **Edge.** lean_tooling → codegen (0.4): Instruction-count-optimized kernel algorithms transfer to verified numeric kernels in the C99 codegen path.
 - **Evidence.** <https://github.com/SAIRcompetition/lean-kernel-challenge> · <https://github.com/SAIRcompetition> · <https://terrytao.wordpress.com/2026/09/16/sair-competition-lean-kernel-challenge/>
-
-### `MATH-06` Priority rescue: upstream ctrl's 14 unlinked Erdős formalizations to Formal Conjectures, Palomar and JSP
-
-**industrialize** · score 0.259 · 2 wk · confidence 0.60 · payoff 3/5 · domains: prizes, lean_tooling, math  
-Builds on: `MATH-04`.  
-Unlocks: `MATH-09`.  
-
-- **Why now.** Since 2026-10-17 plby/lean-proofs added ctrl problems 291 and 367 and Erdős 261 was registered on Palomar by a third party; 363 of 424 solved FC statements already carry formal_proof links, and ctrl has no PR in TheJustinSunPrize/awards.
-- **Prior art.** plby/lean-proofs (563 problems), Jayyhk/williamjblair/anatoliiohorodnyk/linrock/Woett repos; 9 JSP awards so far (4 Lean, all to W. van Doorn)
-- **What we would build.** Pinned public SHAs, FC formal_proof PRs, Palomar formalization.yaml entries and JSP legacy PRs for 36, 96, 143, 242, 311, 382, 389, 455, 931, 951, 995, 1055, 1059, 1073 (after verifying each matches the FC main statement, since only 19 of the README's 29 numbers appear in ControlsLean/Bounty)
-- **External pull.** JSP formalizer share (earliest-public-commit priority), Formal Conjectures solved-status credit, Palomar citations
-- **Edge.** prizes → lean_tooling (0.5): A reusable statement-faithfulness + lean-verify + Palomar packaging script serves every future claim.
-- **Evidence.** <https://raw.githubusercontent.com/plby/lean-proofs/main/data/sources.yaml> · <https://github.com/google-deepmind/formal-conjectures/blob/main/CONTRIBUTING.md> · <https://raw.githubusercontent.com/TheJustinSunPrize/awards/main/docs/award-process.md> · <https://github.com/TheJustinSunPrize/awards/tree/main/awards>
 
 ### `MATH-05` Close the Byers–Nash n=6 symmetric-maximizer case with a kernel-checked certificate
 
@@ -709,13 +710,13 @@ Unlocks: `TOOL-02`, `TOOL-08`, `TOOL-11`.
 - **Edge.** lean_tooling → math (0.6): Gives frontier agents (Aristotle, Claude Code) direct access to the Research-branch sorries and idea index.
 - **Evidence.** <https://github.com/oOo0oOo/lean-lsp-mcp> · <https://github.com/oOo0oOo/lean-lsp-mcp/blob/main/docs/tools.md> · <https://github.com/cameronfreer/lean4-skills> · <https://modelcontextprotocol.io/specification/2025-11-25/server/resources>
 
-### `TOOL-04` Make ctrl public, list ControlsLean on Reservoir, pin a stable toolchain
+### `TOOL-04` Finish going public: Reservoir listing, stable toolchain pin, record the public-since date
 
 **industrialize** · score 0.422 · 1 wk · confidence 0.90 · payoff 3/5 · domains: lean_tooling, prizes  
 Builds on: `SED`.  
 Unlocks: `TOOL-03`, `TOOL-06`, `TOOL-09`, `TOOL-11`, `MATH-01`, `MATH-02`.  
 
-- **Why now.** GitHub REST shows the repo is private with 1 star and no topics; Reservoir auto-indexing (per a third-party guide) needs a public repo, committed lake-manifest.json, OSI license and 2 stars; Justin Sun Prize requires a public repo pinned by SHA; public-repo Actions minutes are free after the 2026 pricing change.
+- **Why now.** The repo is public as of 2026-10-24 (GitHub API), so the remaining work is the Reservoir listing, replacing the v4.36.0-rc1 pin with a stable toolchain, and documenting the public-since date that JSP/Palomar priority depends on.
 - **Prior art.** Reservoir already lists LeanCopilot, Pantograph, NormalForms, leanr; BOUNTIES.md already documents the JSP public-repo rule.
 - **What we would build.** Flip visibility, add GitHub topics (lean4, control-theory, mathlib), bump lakefile keywords, move from v4.36.0-rc1 to the matching stable tag when released, verify Reservoir pickup or add a manual reservoir-index entry.
 - **External pull.** Justin Sun Prize public-repo rule; Reservoir inclusion criteria
