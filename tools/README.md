@@ -97,3 +97,20 @@ Displays repository health, registered headline theorems (40 verified), toolchai
 ```bash
 ./ctrl status
 ```
+
+---
+
+## Theorem explainers (`tools/explainer/`)
+
+Plain-language pages for proved theorems, with build-time MathML, an SVG diagram and two
+manim animations. Workflow and writing rules: `.claude/skills/theorem-explainer/SKILL.md`.
+Pages live in `site/explainers/<slug>/`.
+
+```bash
+# animations (LaTeX with sansmath + dvisvgm, ffmpeg, Inter font)
+uv run --no-project --python 3.12 --with manim==0.22.0 --with numpy \
+  tools/explainer/render.py discrete-lyapunov
+# page, index and content checks (node for KaTeX)
+uv run --no-project --with markdown-it-py --with pyyaml tools/explainer/build.py --all
+uv run --no-project --with markdown-it-py --with pyyaml tools/explainer/build.py --all --check
+```
