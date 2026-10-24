@@ -9,7 +9,7 @@
 1. **Most of the claimed Erdős list does not hold up, and the cheap money lane is closed.** A line-by-line audit (2026-10-24) of the 31 numbers the docs claim found: 3 worth rescuing now (`erdos_834.parts.ii` on `main` in `erdos/ErdosLab/`, plus the `erdos_1148` weaker variant and the `erdos_367` k ≤ 2 variant), 7 already formalized by others (261, 291, 370, 493, 645, 1179, 1187), 4 variants only, and **17 with no ctrl proof of any Formal Conjectures statement** (12 have no Lean anywhere in the repo's history). None is JSP-eligible: every exact main-statement proof ctrl has is already covered by someone else. The solved-but-unformalized pool is about 15 hard statements, not 680. `MATH-06` is now: link 834 (and the two variants) in Formal Conjectures, consider one Palomar entry, and correct the README/STATUS counts.
 2. **The repo is now public; finish the job.** GitHub reports `IamMikeHelsel/ctrl` as public (checked 2026-10-24; an earlier version of this report said private). The rest of `TOOL-04` still applies: list `ControlsLean` on Reservoir, pin a stable toolchain instead of `v4.36.0-rc1`, and record the date the repo went public, since JSP and Palomar priority run on independently checkable public history.
 3. **A direct Lean competitor exists and announced our next topic.** arXiv 2607.19727 (July 2026, "Foundations of Machine-Checked Control Theory in Lean") covers Lyapunov and small-gain on Mathlib and names passivity as its next work. No scout found any proof-assistant formalization of Kalman filtering, POMDP belief planning, SE(3) dynamics or multi-view geometry: `ctrl` appears to be first on all four. Publish the estimation and robotics results before that group expands.
-4. **Byers–Nash n = 6 is now the single open order of a named conjecture.** Chen–Tian settled n ≤ 5 and a 2026 preprint (arXiv 2608.20875, seen in search only) refutes the symmetric-maximizer conjecture for n ≥ 7. `MATH-01` already holds the rank ≤ 4 exclusion and exact rational certificates for n = 6. Closing it either way (`MATH-05`) is the flagship research item and a natural Palomar entry.
+4. **Byers–Nash n = 6 is the single open order, but it is not 90% done.** Kressner–Vandereycken (arXiv 2608.20875, read from the local copy in the dev-ctrl snapshot) prove the conjecture for n ≤ 5 and refute it for every n ≥ 7; their n = 7 counterexample re-verifies in exact arithmetic. Wave 2 (2026-10-24) found no n = 6 violation in 144 SDP-dual ascents, but showed the 'single remaining cross-term inequality' is false with margin: every comparator the Lean modules build is block-diagonal in the top skew vector's frame, and exact rational certificates show such arguments cannot reach k ≤ s. `MATH-05` is now a ~12-week local-lemma plus rational-SDP-cover project, not a cleanup. Details: `docs/research/2026-10-wave2/BYERS_NASH_N6.md`.
 5. **Nobody sells verified controller or estimator kernels.** The certified channels (Apex.Grace at ASIL D, CODESYS Safety SIL2/3) certify middleware and runtimes, not algorithms; every PLC verification tool in production is bounded model checking of discrete logic. The 2026 DO-178C qualification of CompCert for Airbus/ATR is the first public proof-based tool credit, which lowers the perceived risk of the Lean story. The slot is open.
 6. **The first assessor question is the real-to-double gap.** Every proof in `ctrl` is over ℝ; the C99 kernels run on IEEE-754 doubles with a parity test. Lean's rigorous-numerics pieces (girving/interval, LeanCert, the DSLean gappa tactic, FloatSpec) are now just sufficient for straight-line kernels. `IND-02` (8 weeks) is the single most important industrialization enabler, and it must pin the emitter's evaluation order.
 7. **ISO/CD 25785-1 is the clearest industrial pull.** The humanoid stability standard (Agility and Boston Dynamics lead the working group; Agility says the safety case was the hard part) wants exactly a machine-checked tip-over or loss-of-balance bound, which `NL-02` plus a capturability certificate (`ROB-04`, `ROB-12`) can supply. ISO 3691-4 for AMRs wants a verified stopping-distance kernel.
@@ -32,100 +32,110 @@ Every candidate below is a node in `docs/SYNERGY_WEIGHTS.json` and is scored by 
 
 | rank | id | kind | score | wk | conf | payoff | pull | title |
 | ---: | --- | --- | ---: | ---: | ---: | ---: | ---: | --- |
-| 1 | `ROB-01` | explore | 0.522 | 4 | 0.80 | 4 | 0.7 | Geometric SO(3)/SE(3) tracking certificate (Lee-Leok-McClamroch) |
-| 2 | `EST-04` | explore | 0.487 | 4 | 0.80 | 4 | 0.4 | Willems' Fundamental Lemma and DeePC certificate in Lean |
-| 3 | `ROB-07` | explore | 0.457 | 5 | 0.75 | 5 | 0.7 | Machine-checked optimality certificates for Wahba/Kabsch and pose-graph SDP duals |
-| 4 | `ROB-10` | explore | 0.444 | 3 | 0.80 | 3 | 0.4 | Laplacian consensus and displacement-based formation control |
-| 5 | `ROB-06` | explore | 0.439 | 4 | 0.75 | 4 | 0.4 | Neural CBF soundness bridge: TorchLean bounds to a Lean forward-invariance theorem |
-| 6 | `ROB-02` | explore | 0.431 | 5 | 0.75 | 4 | 0.4 | Invariant EKF: group-affine dynamics imply log-linear error on SE(3)/SE_2(3) |
-| 7 | `EST-05` | explore | 0.425 | 3 | 0.75 | 3 | 0.4 | H-infinity (minimax) filter via dual Bounded Real Lemma |
-| 8 | `TOOL-01` | productionize | 0.423 | 2 | 0.80 | 3 | 1.0 | ctrl MCP server exposing scratch, check, search, audit and the idea index |
-| 9 | `ROB-04` | explore | 0.423 | 4 | 0.65 | 5 | 0.7 | Capturability / DCM push-recovery certificate composed with the ZMP allocator |
-| 10 | `TOOL-04` | industrialize | 0.422 | 1 | 0.90 | 3 | 1.0 | Finish going public: Reservoir listing, stable toolchain pin, record the public-since date |
-| 11 | `EST-06` | explore | 0.418 | 5 | 0.70 | 4 | 0.4 | Invariant EKF on SO(3)/SE(3): log-linear autonomous error dynamics |
-| 12 | `XD-06` | explore | 0.417 | 4 | 0.70 | 4 | 0.4 | Lorentz-cone CBF safe set as MPC terminal set with proven recursive feasibility |
-| 13 | `ROB-03` | explore | 0.397 | 5 | 0.70 | 4 | 0.4 | VIO observability: 4-dim unobservable subspace and FEJ consistency theorem |
-| 14 | `EST-13` | explore | 0.396 | 3 | 0.80 | 3 | 0.4 | Point-based POMDP value iteration error bounds (PBVI/SARSOP) on Smallwood-Sondik |
-| 15 | `MATH-07` | explore | 0.391 | 4 | 0.70 | 3 | 0.7 | Discrete-time Kalman–Yakubovich–Popov lemma (LMI <=> frequency-domain inequality) in Lean |
+| 1 | `MATH-07` | explore | 0.537 | 1 | 0.85 | 3 | 0.7 | Discrete KYP, easy direction (LMI ⇒ FDI) and 'H∞ Riccati certificate is a KYP certificate' |
+| 2 | `ROB-01` | explore | 0.508 | 2 | 0.75 | 4 | 0.7 | Geometric SO(3)/SE(3) tracking certificate (Lee-Leok-McClamroch) |
+| 3 | `EST-05` | explore | 0.484 | 1 | 0.80 | 3 | 0.4 | H-infinity (minimax) filter via dual Bounded Real Lemma |
+| 4 | `EST-04` | explore | 0.475 | 2 | 0.75 | 4 | 0.4 | Willems' Fundamental Lemma and DeePC certificate in Lean |
+| 5 | `ROB-07` | explore | 0.457 | 5 | 0.75 | 5 | 0.7 | Machine-checked optimality certificates for Wahba/Kabsch and pose-graph SDP duals |
+| 6 | `ROB-10` | explore | 0.444 | 3 | 0.80 | 3 | 0.4 | Laplacian consensus and displacement-based formation control |
+| 7 | `ROB-06` | explore | 0.439 | 4 | 0.75 | 4 | 0.4 | Neural CBF soundness bridge: TorchLean bounds to a Lean forward-invariance theorem |
+| 8 | `ROB-02` | explore | 0.431 | 5 | 0.75 | 4 | 0.4 | Invariant EKF: group-affine dynamics imply log-linear error on SE(3)/SE_2(3) |
+| 9 | `TOOL-01` | productionize | 0.423 | 2 | 0.80 | 3 | 1.0 | ctrl MCP server exposing scratch, check, search, audit and the idea index |
+| 10 | `ROB-04` | explore | 0.423 | 4 | 0.65 | 5 | 0.7 | Capturability / DCM push-recovery certificate composed with the ZMP allocator |
+| 11 | `TOOL-04` | industrialize | 0.422 | 1 | 0.90 | 3 | 1.0 | Finish going public: Reservoir listing, stable toolchain pin, record the public-since date |
+| 12 | `EST-06` | explore | 0.418 | 5 | 0.70 | 4 | 0.4 | Invariant EKF on SO(3)/SE(3): log-linear autonomous error dynamics |
+| 13 | `XD-06` | explore | 0.417 | 4 | 0.70 | 4 | 0.4 | Lorentz-cone CBF safe set as MPC terminal set with proven recursive feasibility |
+| 14 | `ROB-03` | explore | 0.397 | 5 | 0.70 | 4 | 0.4 | VIO observability: 4-dim unobservable subspace and FEJ consistency theorem |
+| 15 | `EST-13` | explore | 0.396 | 3 | 0.80 | 3 | 0.4 | Point-based POMDP value iteration error bounds (PBVI/SARSOP) on Smallwood-Sondik |
 | 16 | `ROB-11` | explore | 0.391 | 4 | 0.65 | 4 | 0.7 | Whole-body task-priority projection and N-contact closed-form wrench feasibility |
 | 17 | `EST-12` | explore | 0.389 | 3 | 0.75 | 3 | 0.4 | Ho-Kalman realization correctness and finite-sample system identification |
-| 18 | `TOOL-06` | industrialize | 0.387 | 2 | 0.60 | 4 | 1.0 | Kernel certificate bundle: JSON-LD per kernel with axiom audit, toolchain SHAs, code hashes, parity results and external re-check |
-| 19 | `EST-11` | explore | 0.384 | 4 | 0.70 | 4 | 0.4 | Conformal prediction coverage theorem and CP-based safe control |
-| 20 | `TOOL-05` | productionize | 0.381 | 4 | 0.60 | 4 | 1.0 | Cedar-style compiled-Lean oracle with differential random testing against the C99/ST kernels |
-| 21 | `XD-08` | productionize | 0.380 | 3 | 0.70 | 3 | 0.4 | Verified information-consensus filter for fleets |
-| 22 | `XD-12` | productionize | 0.380 | 3 | 0.70 | 3 | 0.4 | Barrier-derived Simplex switching for learned controllers |
-| 23 | `XD-10` | industrialize | 0.375 | 5 | 0.60 | 4 | 1.0 | Syntactic WCET bound of generated C99 kernels fed into RTA |
-| 24 | `ROB-09` | explore | 0.372 | 3 | 0.80 | 3 | 0.4 | Zhang camera calibration from planar homographies (image of the absolute conic) |
-| 25 | `MATH-06` | industrialize | 0.364 | 1 | 0.85 | 2 | 0.4 | Priority rescue: link Erdős 834 (and the 1148/367 variants) in Formal Conjectures, correct the claimed counts |
-| 26 | `ROB-12` | industrialize | 0.363 | 4 | 0.60 | 4 | 0.7 | ISO 25785-1 / ISO 3691-4 verified safety-function evidence pack |
-| 27 | `XD-05` | productionize | 0.360 | 3 | 0.70 | 3 | 0.4 | Basis-function ILC over the septic trajectory family |
-| 28 | `ROB-08` | explore | 0.359 | 3 | 0.70 | 3 | 0.4 | Minimal-solver degeneracies and RANSAC bounds as theorems |
-| 29 | `XD-01` | explore | 0.358 | 4 | 0.75 | 4 | 0.4 | Pinwheel scheduling as Erdős covering systems in Lean |
-| 30 | `XD-07` | explore | 0.348 | 3 | 0.65 | 3 | 0.7 | Small-gain string stability for robot fleets |
-| 31 | `EST-07` | explore | 0.345 | 2 | 0.80 | 2 | 0.4 | Unscented transform sigma-point moment-matching exactness |
-| 32 | `TOOL-09` | explore | 0.342 | 3 | 0.60 | 4 | 0.4 | ControlBench: a Croissant-tagged benchmark of ctrl theorem statements with proofs stripped |
-| 33 | `ROB-13` | industrialize | 0.337 | 4 | 0.60 | 4 | 0.4 | ASTM F3269 run-time-assurance geofence kernel for drones |
-| 34 | `SED-04` | productionize | 0.330 | 2 | 0.85 | 3 | 0.7 | Reproducible ZIP/TAR creation mode (SOURCE_DATE_EPOCH, sorted, normalized) |
-| 35 | `EST-09` | explore | 0.330 | 5 | 0.65 | 3 | 0.4 | Moving-horizon estimation robust stability via i-IOSS and MPC duality |
-| 36 | `MATH-08` | productionize | 0.330 | 3 | 0.75 | 2 | 0.7 | Kharitonov theorem and interval-Hurwitz stability certificates |
-| 37 | `XD-03` | explore | 0.319 | 4 | 0.60 | 3 | 0.7 | Byers-Nash sep bound to certified Riccati/Kalman condition numbers |
-| 38 | `EST-08` | explore | 0.317 | 3 | 0.70 | 3 | 0.4 | Rauch-Tung-Striebel fixed-interval smoother and two-filter equivalence |
-| 39 | `SED-07` | productionize | 0.310 | 1 | 0.85 | 2 | 0.7 | OpenTelemetry CLI semantic-convention alignment of the JSON trace |
-| 40 | `TOOL-12` | productionize | 0.305 | 1 | 0.90 | 2 | 0.4 | CI hygiene: split GitHub cache from Mathlib cache, add lake test/lint and audit targets, schedule Mathlib bumps |
-| 41 | `SED-02` | productionize | 0.298 | 2 | 0.80 | 3 | 0.4 | Archive-hardening regression corpus and named extraction policy |
-| 42 | `XD-09` | explore | 0.292 | 4 | 0.55 | 3 | 1.0 | Homography ground plane to tilted ZMP/CBF deceleration bound |
-| 43 | `IND-01` | industrialize | 0.282 | 4 | 0.50 | 3 | 1.0 | DO-333 evidence pack generator for a verified kernel |
-| 44 | `TOOL-03` | explore | 0.275 | 6 | 0.60 | 3 | 0.4 | Upstream four named Mathlib gaps: exp(tA) derivative and x'=Ax, det exp = exp trace, Loewner inverse antitone, PSD Schur complement |
-| 45 | `IND-02` | explore | 0.265 | 8 | 0.50 | 4 | 0.7 | Proved IEEE-754 error bounds for straight-line C99 kernels in Lean |
-| 46 | `MATH-10` | industrialize | 0.265 | 3 | 0.60 | 2 | 1.0 | SAIR Lean Kernel Challenge entries for the permanent and polynomial-discriminant problems |
-| 47 | `XD-02` | productionize | 0.265 | 5 | 0.70 | 3 | 0.4 | Verified PAR2-style recovery records for sediment |
-| 48 | `SED-05` | industrialize | 0.264 | 2 | 0.70 | 3 | 1.0 | Notarized Homebrew cask and cargo-dist pipeline with sigstore bundles |
-| 49 | `EST-14` | industrialize | 0.261 | 6 | 0.50 | 4 | 0.7 | Verified Joseph/EKF battery state-of-charge kernel for ISO 26262 / EU battery passport |
-| 50 | `EST-10` | explore | 0.260 | 6 | 0.55 | 3 | 0.4 | Chance-constrained / CVaR stochastic MPC recursive feasibility |
-| 51 | `IND-03` | industrialize | 0.258 | 5 | 0.50 | 3 | 1.0 | Verified numeric function-block library for IEC 61131-3 ST with PLCverif cross-check |
-| 52 | `ROB-05` | explore | 0.248 | 8 | 0.55 | 3 | 0.4 | Hybrid systems in Lean: Poincare-map orbit stability and non-Zeno conditions (HZD skeleton) |
-| 53 | `XD-04` | explore | 0.244 | 6 | 0.50 | 3 | 1.0 | Occlusion-aware log-depth visual servoing via POMDP belief |
-| 54 | `MATH-05` | explore | 0.217 | 6 | 0.50 | 4 | 0.4 | Close the Byers–Nash n=6 symmetric-maximizer case with a kernel-checked certificate |
-| 55 | `SED-06` | productionize | 0.212 | 3 | 0.70 | 3 | 0.4 | Read-only zstd, xz, 7z and ZIP-AES support under sediment's limit wrappers |
-| 56 | `TOOL-11` | industrialize | 0.212 | 1 | 0.70 | 2 | 0.4 | Agent-facing index upgrade: JSON-LD context on AGENT_IDEA_INDEX, llms.txt and Markdown twins on the Pages site |
-| 57 | `IND-04` | productionize | 0.210 | 4 | 0.45 | 2 | 1.0 | ros2_control / Nav2 plugin wrapping zero-heap verified kernels |
-| 58 | `TOOL-02` | productionize | 0.206 | 3 | 0.60 | 3 | 1.0 | Prover-tuned inner loop: Goedel-Prover-V2-8B plus kimina-lean-server batch verification and LSP goal feedback |
-| 59 | `SED-08` | explore | 0.206 | 2 | 0.65 | 3 | 0.4 | Kani-proved resource accounting for decompression-bomb limits |
-| 60 | `SED-03` | explore | 0.198 | 8 | 0.55 | 4 | 0.4 | Verified GF(2^16) PAR2 recovery-record kernel bridging ctrl Reed-Solomon and ArkLib |
-| 61 | `SED-01` | explore | 0.198 | 3 | 0.60 | 3 | 0.4 | Lean-checked archive path sanitizer (hax/Aeneas) with Kani harness |
-| 62 | `IND-08` | industrialize | 0.197 | 3 | 0.35 | 4 | 1.0 | Grant vehicle: FMitF Feb-2027 / AI-for-Math 2027 proposal for a verified-kernel-to-PLC pipeline |
-| 63 | `XD-11` | explore | 0.189 | 4 | 0.50 | 2 | 0.4 | Cross-ratio fiducial detection with Reed-Solomon coded identity |
-| 64 | `IND-05` | industrialize | 0.177 | 6 | 0.40 | 3 | 1.0 | Verified attitude/geofence safety module for PX4/ArduPilot with DO-178C-style trace |
-| 65 | `TOOL-08` | explore | 0.175 | 1 | 0.45 | 3 | 1.0 | Harmonic Aristotle as an outer loop for Research-branch sorries (Byers-Nash, Erdos) |
-| 66 | `EST-15` | industrialize | 0.162 | 5 | 0.50 | 3 | 0.7 | Kalman-filter integrity monitor and protection levels for GNSS/INS |
-| 67 | `SED-11` | productionize | 0.154 | 2 | 0.60 | 2 | 0.7 | Signed archive manifest and verify-against-manifest for auditable extraction |
-| 68 | `IND-06` | industrialize | 0.146 | 3 | 0.40 | 2 | 0.7 | DO-330-style trusted-base and tool-qualification narrative for the Lean-to-C pipeline |
-| 69 | `IND-07` | productionize | 0.146 | 3 | 0.40 | 2 | 0.7 | WCET and schedulability evidence for zero-heap kernels via RTA proofs plus aiT-ready annotations |
-| 70 | `MATH-11` | explore | 0.128 | 5 | 0.40 | 2 | 0.4 | Absolute-stability package: Lean-checked Kalman/Aizerman counterexamples and the n<=3 positive case |
-| 71 | `SED-10` | industrialize | 0.121 | 3 | 0.50 | 2 | 1.0 | Linux/Windows CLI-first ports with egui GUI as beta |
-| 72 | `TOOL-10` | industrialize | 0.118 | 4 | 0.30 | 4 | 0.4 | SEooC-style verified kernel pack offer: certificates plus parity harness plus retainer |
-| 73 | `TOOL-07` | explore | 0.113 | 6 | 0.35 | 3 | 0.4 | Rust kernels translated to Lean with Aeneas/hax and proved equal to the ControlsLean spec |
-| 74 | `SED-09` | explore | 0.077 | 1 | 0.30 | 1 | 0.4 | Cancellation-latency bound as measured evidence (RTA cross-link, assessed as a stretch) |
-| 75 | `IND-09` | explore | 0.066 | 6 | 0.30 | 2 | 0.7 | Verified infusion-rate safety kernel against the FDA Generic PCA pump reference model |
-| 76 | `MATH-09` | explore | 0.061 | 6 | 0.35 | 2 | 0.4 | Formalize the few remaining unlinked solved Erdős problems with 2026 papers (1033, 348, 1133, 633) |
+| 18 | `TOOL-14` | productionize | 0.388 | 2 | 0.75 | 3 | 0.4 | Local math retrieval index (Mathlib + ctrl + formal-conjectures + Erdős metadata) with MCP/CLI access |
+| 19 | `TOOL-06` | industrialize | 0.387 | 2 | 0.60 | 4 | 1.0 | Kernel certificate bundle: JSON-LD per kernel with axiom audit, toolchain SHAs, code hashes, parity results and external re-check |
+| 20 | `EST-11` | explore | 0.384 | 4 | 0.70 | 4 | 0.4 | Conformal prediction coverage theorem and CP-based safe control |
+| 21 | `TOOL-05` | productionize | 0.381 | 4 | 0.60 | 4 | 1.0 | Cedar-style compiled-Lean oracle with differential random testing against the C99/ST kernels |
+| 22 | `XD-08` | productionize | 0.380 | 3 | 0.70 | 3 | 0.4 | Verified information-consensus filter for fleets |
+| 23 | `XD-12` | productionize | 0.380 | 3 | 0.70 | 3 | 0.4 | Barrier-derived Simplex switching for learned controllers |
+| 24 | `XD-10` | industrialize | 0.375 | 5 | 0.60 | 4 | 1.0 | Syntactic WCET bound of generated C99 kernels fed into RTA |
+| 25 | `ROB-09` | explore | 0.372 | 3 | 0.80 | 3 | 0.4 | Zhang camera calibration from planar homographies (image of the absolute conic) |
+| 26 | `MATH-06` | industrialize | 0.364 | 1 | 0.85 | 2 | 0.4 | Priority rescue: link Erdős 834 (and the 1148/367 variants) in Formal Conjectures, correct the claimed counts |
+| 27 | `ROB-12` | industrialize | 0.363 | 4 | 0.60 | 4 | 0.7 | ISO 25785-1 / ISO 3691-4 verified safety-function evidence pack |
+| 28 | `XD-05` | productionize | 0.360 | 3 | 0.70 | 3 | 0.4 | Basis-function ILC over the septic trajectory family |
+| 29 | `ROB-08` | explore | 0.359 | 3 | 0.70 | 3 | 0.4 | Minimal-solver degeneracies and RANSAC bounds as theorems |
+| 30 | `XD-01` | explore | 0.358 | 4 | 0.75 | 4 | 0.4 | Pinwheel scheduling as Erdős covering systems in Lean |
+| 31 | `TOOL-13` | productionize | 0.358 | 0 | 0.85 | 4 | 0.4 | Unblock Lean in cloud sessions: allowlist cache.mathlib.org + committed setup script |
+| 32 | `XD-07` | explore | 0.348 | 3 | 0.65 | 3 | 0.7 | Small-gain string stability for robot fleets |
+| 33 | `EST-07` | explore | 0.345 | 2 | 0.80 | 2 | 0.4 | Unscented transform sigma-point moment-matching exactness |
+| 34 | `TOOL-09` | explore | 0.342 | 3 | 0.60 | 4 | 0.4 | ControlBench: a Croissant-tagged benchmark of ctrl theorem statements with proofs stripped |
+| 35 | `ROB-13` | industrialize | 0.337 | 4 | 0.60 | 4 | 0.4 | ASTM F3269 run-time-assurance geofence kernel for drones |
+| 36 | `SED-04` | productionize | 0.330 | 2 | 0.85 | 3 | 0.7 | Reproducible ZIP/TAR creation mode (SOURCE_DATE_EPOCH, sorted, normalized) |
+| 37 | `EST-09` | explore | 0.330 | 5 | 0.65 | 3 | 0.4 | Moving-horizon estimation robust stability via i-IOSS and MPC duality |
+| 38 | `MATH-08` | productionize | 0.330 | 3 | 0.75 | 2 | 0.7 | Kharitonov theorem and interval-Hurwitz stability certificates |
+| 39 | `XD-03` | explore | 0.319 | 4 | 0.60 | 3 | 0.7 | Byers-Nash sep bound to certified Riccati/Kalman condition numbers |
+| 40 | `EST-08` | explore | 0.317 | 3 | 0.70 | 3 | 0.4 | Rauch-Tung-Striebel fixed-interval smoother and two-filter equivalence |
+| 41 | `SED-07` | productionize | 0.310 | 1 | 0.85 | 2 | 0.7 | OpenTelemetry CLI semantic-convention alignment of the JSON trace |
+| 42 | `TOOL-12` | productionize | 0.305 | 1 | 0.90 | 2 | 0.4 | CI hygiene: split GitHub cache from Mathlib cache, add lake test/lint and audit targets, schedule Mathlib bumps |
+| 43 | `SED-02` | productionize | 0.298 | 2 | 0.80 | 3 | 0.4 | Archive-hardening regression corpus and named extraction policy |
+| 44 | `XD-09` | explore | 0.292 | 4 | 0.55 | 3 | 1.0 | Homography ground plane to tilted ZMP/CBF deceleration bound |
+| 45 | `IND-01` | industrialize | 0.282 | 4 | 0.50 | 3 | 1.0 | DO-333 evidence pack generator for a verified kernel |
+| 46 | `TOOL-03` | explore | 0.275 | 6 | 0.60 | 3 | 0.4 | Upstream four named Mathlib gaps: exp(tA) derivative and x'=Ax, det exp = exp trace, Loewner inverse antitone, PSD Schur complement |
+| 47 | `IND-02` | explore | 0.265 | 8 | 0.50 | 4 | 0.7 | Proved IEEE-754 error bounds for straight-line C99 kernels in Lean |
+| 48 | `MATH-10` | industrialize | 0.265 | 3 | 0.60 | 2 | 1.0 | SAIR Lean Kernel Challenge entries for the permanent and polynomial-discriminant problems |
+| 49 | `XD-02` | productionize | 0.265 | 5 | 0.70 | 3 | 0.4 | Verified PAR2-style recovery records for sediment |
+| 50 | `SED-05` | industrialize | 0.264 | 2 | 0.70 | 3 | 1.0 | Notarized Homebrew cask and cargo-dist pipeline with sigstore bundles |
+| 51 | `EST-14` | industrialize | 0.261 | 6 | 0.50 | 4 | 0.7 | Verified Joseph/EKF battery state-of-charge kernel for ISO 26262 / EU battery passport |
+| 52 | `EST-10` | explore | 0.260 | 6 | 0.55 | 3 | 0.4 | Chance-constrained / CVaR stochastic MPC recursive feasibility |
+| 53 | `IND-03` | industrialize | 0.258 | 5 | 0.50 | 3 | 1.0 | Verified numeric function-block library for IEC 61131-3 ST with PLCverif cross-check |
+| 54 | `ROB-05` | explore | 0.248 | 8 | 0.55 | 3 | 0.4 | Hybrid systems in Lean: Poincare-map orbit stability and non-Zeno conditions (HZD skeleton) |
+| 55 | `XD-04` | explore | 0.244 | 6 | 0.50 | 3 | 1.0 | Occlusion-aware log-depth visual servoing via POMDP belief |
+| 56 | `SED-06` | productionize | 0.212 | 3 | 0.70 | 3 | 0.4 | Read-only zstd, xz, 7z and ZIP-AES support under sediment's limit wrappers |
+| 57 | `TOOL-11` | industrialize | 0.212 | 1 | 0.70 | 2 | 0.4 | Agent-facing index upgrade: JSON-LD context on AGENT_IDEA_INDEX, llms.txt and Markdown twins on the Pages site |
+| 58 | `IND-04` | productionize | 0.210 | 4 | 0.45 | 2 | 1.0 | ros2_control / Nav2 plugin wrapping zero-heap verified kernels |
+| 59 | `TOOL-02` | productionize | 0.206 | 3 | 0.60 | 3 | 1.0 | Prover-tuned inner loop: Goedel-Prover-V2-8B plus kimina-lean-server batch verification and LSP goal feedback |
+| 60 | `SED-08` | explore | 0.206 | 2 | 0.65 | 3 | 0.4 | Kani-proved resource accounting for decompression-bomb limits |
+| 61 | `SED-03` | explore | 0.198 | 8 | 0.55 | 4 | 0.4 | Verified GF(2^16) PAR2 recovery-record kernel bridging ctrl Reed-Solomon and ArkLib |
+| 62 | `SED-01` | explore | 0.198 | 3 | 0.60 | 3 | 0.4 | Lean-checked archive path sanitizer (hax/Aeneas) with Kani harness |
+| 63 | `IND-08` | industrialize | 0.197 | 3 | 0.35 | 4 | 1.0 | Grant vehicle: FMitF Feb-2027 / AI-for-Math 2027 proposal for a verified-kernel-to-PLC pipeline |
+| 64 | `XD-11` | explore | 0.189 | 4 | 0.50 | 2 | 0.4 | Cross-ratio fiducial detection with Reed-Solomon coded identity |
+| 65 | `IND-05` | industrialize | 0.177 | 6 | 0.40 | 3 | 1.0 | Verified attitude/geofence safety module for PX4/ArduPilot with DO-178C-style trace |
+| 66 | `TOOL-08` | explore | 0.175 | 1 | 0.45 | 3 | 1.0 | Harmonic Aristotle as an outer loop for Research-branch sorries (Byers-Nash, Erdos) |
+| 67 | `EST-15` | industrialize | 0.162 | 5 | 0.50 | 3 | 0.7 | Kalman-filter integrity monitor and protection levels for GNSS/INS |
+| 68 | `SED-11` | productionize | 0.154 | 2 | 0.60 | 2 | 0.7 | Signed archive manifest and verify-against-manifest for auditable extraction |
+| 69 | `IND-06` | industrialize | 0.146 | 3 | 0.40 | 2 | 0.7 | DO-330-style trusted-base and tool-qualification narrative for the Lean-to-C pipeline |
+| 70 | `IND-07` | productionize | 0.146 | 3 | 0.40 | 2 | 0.7 | WCET and schedulability evidence for zero-heap kernels via RTA proofs plus aiT-ready annotations |
+| 71 | `MATH-11` | explore | 0.128 | 5 | 0.40 | 2 | 0.4 | Absolute-stability package: Lean-checked Kalman/Aizerman counterexamples and the n<=3 positive case |
+| 72 | `SED-10` | industrialize | 0.121 | 3 | 0.50 | 2 | 1.0 | Linux/Windows CLI-first ports with egui GUI as beta |
+| 73 | `TOOL-10` | industrialize | 0.118 | 4 | 0.30 | 4 | 0.4 | SEooC-style verified kernel pack offer: certificates plus parity harness plus retainer |
+| 74 | `TOOL-07` | explore | 0.113 | 6 | 0.35 | 3 | 0.4 | Rust kernels translated to Lean with Aeneas/hax and proved equal to the ControlsLean spec |
+| 75 | `SED-09` | explore | 0.077 | 1 | 0.30 | 1 | 0.4 | Cancellation-latency bound as measured evidence (RTA cross-link, assessed as a stretch) |
+| 76 | `MATH-05` | explore | 0.067 | 12 | 0.30 | 4 | 0.4 | Byers–Nash n=6: replace the false cross-term route with a local-lemma + rational-SDP-cover proof |
+| 77 | `IND-09` | explore | 0.066 | 6 | 0.30 | 2 | 0.7 | Verified infusion-rate safety kernel against the FDA Generic PCA pump reference model |
+| 78 | `MATH-09` | explore | 0.061 | 6 | 0.35 | 2 | 0.4 | Formalize the few remaining unlinked solved Erdős problems with 2026 papers (1033, 348, 1133, 633) |
 
 ## Greedy plan within 12 engineer-weeks
 
+- `TOOL-13` (0 wk, score 0.358) Unblock Lean in cloud sessions: allowlist cache.mathlib.org + committed setup script
+- `MATH-07` (1 wk, score 0.537) Discrete KYP, easy direction (LMI ⇒ FDI) and 'H∞ Riccati certificate is a KYP certificate'
 - `TOOL-04` (1 wk, score 0.422) Finish going public: Reservoir listing, stable toolchain pin, record the public-since date
+- `EST-05` (1 wk, score 0.484) H-infinity (minimax) filter via dual Bounded Real Lemma
 - `MATH-06` (1 wk, score 0.364) Priority rescue: link Erdős 834 (and the 1148/367 variants) in Formal Conjectures, correct the claimed counts
 - `SED-07` (1 wk, score 0.310) OpenTelemetry CLI semantic-convention alignment of the JSON trace
 - `TOOL-12` (1 wk, score 0.305) CI hygiene: split GitHub cache from Mathlib cache, add lake test/lint and audit targets, schedule Mathlib bumps
-- `TOOL-11` (1 wk, score 0.212) Agent-facing index upgrade: JSON-LD context on AGENT_IDEA_INDEX, llms.txt and Markdown twins on the Pages site
-- `TOOL-01` (2 wk, score 0.423) ctrl MCP server exposing scratch, check, search, audit and the idea index
-- `TOOL-06` (2 wk, score 0.387) Kernel certificate bundle: JSON-LD per kernel with axiom audit, toolchain SHAs, code hashes, parity results and external re-check
-- `EST-07` (2 wk, score 0.345) Unscented transform sigma-point moment-matching exactness
+- `TOOL-14` (2 wk, score 0.388) Local math retrieval index (Mathlib + ctrl + formal-conjectures + Erdős metadata) with MCP/CLI access
+- `ROB-01` (2 wk, score 0.508) Geometric SO(3)/SE(3) tracking certificate (Lee-Leok-McClamroch)
+- `EST-04` (2 wk, score 0.475) Willems' Fundamental Lemma and DeePC certificate in Lean
 
 ## Greedy plan within 26 engineer-weeks
 
+- `TOOL-13` (0 wk, score 0.358) Unblock Lean in cloud sessions: allowlist cache.mathlib.org + committed setup script
+- `MATH-07` (1 wk, score 0.537) Discrete KYP, easy direction (LMI ⇒ FDI) and 'H∞ Riccati certificate is a KYP certificate'
 - `TOOL-04` (1 wk, score 0.422) Finish going public: Reservoir listing, stable toolchain pin, record the public-since date
+- `EST-05` (1 wk, score 0.484) H-infinity (minimax) filter via dual Bounded Real Lemma
 - `MATH-06` (1 wk, score 0.364) Priority rescue: link Erdős 834 (and the 1148/367 variants) in Formal Conjectures, correct the claimed counts
 - `SED-07` (1 wk, score 0.310) OpenTelemetry CLI semantic-convention alignment of the JSON trace
 - `TOOL-12` (1 wk, score 0.305) CI hygiene: split GitHub cache from Mathlib cache, add lake test/lint and audit targets, schedule Mathlib bumps
+- `TOOL-14` (2 wk, score 0.388) Local math retrieval index (Mathlib + ctrl + formal-conjectures + Erdős metadata) with MCP/CLI access
+- `ROB-01` (2 wk, score 0.508) Geometric SO(3)/SE(3) tracking certificate (Lee-Leok-McClamroch)
+- `EST-04` (2 wk, score 0.475) Willems' Fundamental Lemma and DeePC certificate in Lean
 - `TOOL-11` (1 wk, score 0.212) Agent-facing index upgrade: JSON-LD context on AGENT_IDEA_INDEX, llms.txt and Markdown twins on the Pages site
 - `TOOL-01` (2 wk, score 0.423) ctrl MCP server exposing scratch, check, search, audit and the idea index
 - `TOOL-06` (2 wk, score 0.387) Kernel certificate bundle: JSON-LD per kernel with axiom audit, toolchain SHAs, code hashes, parity results and external re-check
@@ -133,9 +143,6 @@ Every candidate below is a node in `docs/SYNERGY_WEIGHTS.json` and is scored by 
 - `SED-04` (2 wk, score 0.330) Reproducible ZIP/TAR creation mode (SOURCE_DATE_EPOCH, sorted, normalized)
 - `SED-02` (2 wk, score 0.298) Archive-hardening regression corpus and named extraction policy
 - `ROB-10` (3 wk, score 0.444) Laplacian consensus and displacement-based formation control
-- `EST-05` (3 wk, score 0.425) H-infinity (minimax) filter via dual Bounded Real Lemma
-- `SED-05` (2 wk, score 0.264) Notarized Homebrew cask and cargo-dist pipeline with sigstore bundles
-- `EST-13` (3 wk, score 0.396) Point-based POMDP value iteration error bounds (PBVI/SARSOP) on Smallwood-Sondik
 
 ## Strong domain edges with the fewest concrete projects
 
@@ -143,10 +150,9 @@ Every candidate below is a node in `docs/SYNERGY_WEIGHTS.json` and is scored by 
 | --- | --- | ---: | ---: | --- |
 | codegen_certification | prizes | 0.5 | 0 | A verified kernel pipeline is grant-shaped (AI for Math Fund tools track, DARPA formal methods programs). |
 | vision | nonlinear_safety | 0.5 | 2 | A camera-estimated terrain plane changes the support polygon and ZMP constraint; literature couples vision to steppable regions under ZMP/DCM constraints but not to the closed-form deceleration bound. |
-| lean_tooling | prizes | 0.7 | 3 | Prize eligibility and formalizer attribution both require an earliest public commit. |
 | realtime_systems | rust_systems | 0.5 | 5 | Reed-Solomon decoding and deadline-bounded cancellation transfer to archive recovery records and cooperative cancellation. |
+| lean_tooling | prizes | 0.7 | 6 | Prize eligibility and formalizer attribution both require an earliest public commit. |
 | vision | estimation | 0.6 | 6 | Multi-view measurement models for filters. |
-| lean_tooling | math | 0.7 | 7 | Triage and proof automation are what make the Erdős bounty pipeline cheap. |
 | math | realtime_systems | 0.7 | 8 | CoveringCRT exact density products and prime sieves compute exactly what decides exact pinwheel covering/packing feasibility. |
 | realtime_systems | controls | 0.5 | 8 | RTA guarantees the sampling-period assumption of every discrete-time theorem. |
 | realtime_systems | math | 0.7 | 9 | Exact pinwheel covering is an Erdos covering system; Kawamura's 5/6 density theorem is a covering-density schedulability statement, giving MATH-03 an applied audience and new finite instances. |
@@ -154,8 +160,9 @@ Every candidate below is a node in `docs/SYNERGY_WEIGHTS.json` and is scored by 
 | realtime_systems | nonlinear_safety | 0.5 | 9 | Simplex is a real-time architecture (in repo). |
 | estimation | vision | 0.7 | 11 | Kalman pose filtering of homography measurements and POMDP observation models for occluded targets. |
 | math | vision | 0.6 | 11 | Exact rational PSD certificates developed for an open matrix inequality become proof-carrying perception outputs. |
-| math | prizes | 0.9 | 12 | Solved-but-unformalized Erdős problems are the direct money lane. |
-| lean_tooling | controls | 0.6 | 12 | Tactics, Loogle search and the inner loop lower the cost of every new module. |
+| math | prizes | 0.9 | 13 | Solved-but-unformalized Erdős problems are the direct money lane. |
+| lean_tooling | math | 0.7 | 14 | Triage and proof automation are what make the Erdős bounty pipeline cheap. |
+| vision | robotics | 0.8 | 15 | Ground-plane homography is the standard single-matrix camera-to-ground model and planar-region extraction feeds footstep planners. |
 
 ## Lane IND: Industrialization of verified control kernels
 
@@ -279,13 +286,13 @@ Builds on: `EST-01`, `CTRL-03`.
 
 ### `ROB-01` Geometric SO(3)/SE(3) tracking certificate (Lee-Leok-McClamroch)
 
-**explore** · score 0.522 · 4 wk · confidence 0.80 · payoff 4/5 · domains: robotics, nonlinear_safety, controls  
+**explore** · score 0.508 · 2 wk · confidence 0.75 · payoff 4/5 · domains: robotics, nonlinear_safety, controls  
 Builds on: `ROBO-03`, `NL-03`, `EST-02`, `NL-01`.  
 Unlocks: `ROB-13`, `ROB-04`, `ROBO-02`.  
 
 - **Why now.** ISO 25785-1 (actively balanced robots) and drone RTA standards now ask for stability evidence; the July-2026 Lean control paper (arXiv 2607.19727) covers Lyapunov/small-gain but nothing on Lie groups, so SE(3) geometric control is the open Lean niche.
 - **Prior art.** Paper proofs only (Lee-Leok-McClamroch 2010/2013, Goodarzi-Lee-Lee PID/adaptive). coq-robot has static SO(3)/SE(3)/screws but no dynamics or Lyapunov; Isabelle AFP Lie groups are abstract; Mathlib LieGroup is abstract. No mechanized geometric tracking controller found.
-- **What we would build.** Lean theorems: attitude error function Psi(R,Rd)=1/2 tr(I - Rd^T R), error vector e_R, bounds 1/2\|e_R\|^2 <= Psi <= \|e_R\|^2/(2-Psi), dPsi/dt = e_R . e_Omega, and exponential convergence of the attitude/position tracking errors on the sublevel set {Psi < 2} for the rigid-body Euler equations; then the C99 kernel ctrl_geometric_so3_pd bound via @lean_theorem.
+- **What we would build.** Lean theorems: attitude error function Psi(R,Rd)=1/2 tr(I - Rd^T R), error vector e_R, bounds 1/2\|e_R\|^2 <= Psi <= \|e_R\|^2/(2-Psi), dPsi/dt = e_R . e_Omega, and exponential convergence of the attitude/position tracking errors on the sublevel set {Psi < 2} for the rigid-body Euler equations; then the C99 kernel ctrl_geometric_so3_pd bound via @lean_theorem. Blueprint (rank 2): eigenvector-free route via adj X = X² − tr X·X + tr(adj X)·I and adj R = Rᵀ ⇒ R² = tR − tI + Rᵀ, giving ‖e_R‖² = Ψ(2−Ψ); ~850 LOC, 8–11 days; also discharges the hequiv hypothesis of SE3Kinematics.adjoint6_mul.
 - **External pull.** Drone/quadrotor industry and ASTM F3269 RTA; humanoid balance (ISO/CD 25785-1 working group led by Agility/Boston Dynamics)
 - **Edge.** robotics → nonlinear_safety (0.7): The SO(3) error function is the Lyapunov function needed to certify any Lie-group CBF or geometric MPC terminal set.
 - **Evidence.** <https://arxiv.org/pdf/1003.2005> · <https://mathweb.ucsd.edu/~mleok/pdf/LeLeMc2013_complex.pdf> · <https://arxiv.org/pdf/1411.2986> · <https://pdf.arxiv.org/pdf/1304.6765> · <https://arxiv.org/pdf/2607.19727> · <https://rocq-prover.org/p/coq-robot>
@@ -448,31 +455,31 @@ Unlocks: `ROB-04`, `ROB-11`.
 
 ## Lane EST: Estimation, probabilistic and learning-based control
 
-### `EST-04` Willems' Fundamental Lemma and DeePC certificate in Lean
-
-**explore** · score 0.487 · 4 wk · confidence 0.80 · payoff 4/5 · domains: controls, estimation, math  
-Builds on: `CTRL-04`, `CTRL-05`, `EST-01`.  
-Unlocks: `EST-09`, `EST-12`, `EST-10`.  
-
-- **Why now.** Dec 2025 KTH preprint shows the stochastic DeePC decision subspace is the null space of the Kalman-predictor innovation Hankel, tying data-driven control to ctrl's Kalman predictor; Jan 2026 results classify all DeePC reformulations; no proof assistant has the lemma.
-- **Prior art.** Paper proofs only: Willems et al. 2005, De Persis-Tesi 2019 (arXiv 1903.06842), van Waarde et al. controllability relaxations (arXiv 2102.02953). No Lean/Coq/Isabelle mechanization found in standard or extended search.
-- **What we would build.** Lean definitions of persistency of excitation and Hankel trajectory matrix; theorem that every length-L trajectory of a controllable LTI lies in the Hankel column span (and converse); corollary data-driven LQR/MPC predictor with recursive feasibility via MPCFeasibility.lean.
-- **External pull.** Data-driven control community (Dörfler/Coulson DeePC, De Persis-Tesi); citable first formalization; CDC/L4DC venue
-- **Edge.** estimation → controls (0.8): Kalman innovation null space (EST-01) is exactly the stochastic DeePC constraint subspace.
-- **Evidence.** <https://arxiv.org/abs/2512.14520v1> · <https://arxiv.org/pdf/2209.06414> · <https://arxiv.org/pdf/2102.02953> · <https://ar5iv.org/html/1903.06842> · <https://ar5iv.labs.arxiv.org/html/2303.08707> · <https://www.imperial.ac.uk/events/146099/data-driven-control-of-general-linear-systems-extensions-of-the-fundamental-lemma-for-stochastic-and-descriptor-settings>
-
 ### `EST-05` H-infinity (minimax) filter via dual Bounded Real Lemma
 
-**explore** · score 0.425 · 3 wk · confidence 0.75 · payoff 3/5 · domains: estimation, controls  
+**explore** · score 0.484 · 1 wk · confidence 0.80 · payoff 3/5 · domains: estimation, controls  
 Builds on: `CTRL-02`, `EST-01`, `CTRL-01`.  
 Unlocks: `EST-14`, `EST-15`, `EST-06`.  
 
 - **Why now.** BoundedRealHInf.lean already proves the completion-of-squares and worst-case-disturbance tightness; the filter-side dual is a few hundred lines away and no ITP has an H-inf filter.
 - **Prior art.** Shaked-Theodor 1992 (BRL-derived a priori/a posteriori H-inf filter gains), Park-Kailath 1997 LMI form, Zhou-Doyle Riccati form; none mechanized.
-- **What we would build.** Indefinite estimation Riccati with feasibility condition P^-1 + C^T C - gamma^-2 I > 0, l2-gain bound from (process,measurement) noise to estimation error, worst-case tightness, and comparison with the Joseph/Kalman gain.
+- **What we would build.** Indefinite estimation Riccati with feasibility condition P^-1 + C^T C - gamma^-2 I > 0, l2-gain bound from (process,measurement) noise to estimation error, worst-case tightness, and comparison with the Joseph/Kalman gain. Blueprint (docs/research/2026-10-wave2/BLUEPRINTS.md, rank 1): time-varying a posteriori H∞ filter ℓ²-gain bound by two completions of the square (no Schur/Woodbury), ~450 LOC, 5–7 days. Must be the a posteriori filter; the same storage function fails for the a priori output.
 - **External pull.** Robust estimation users in aerospace/automotive where noise statistics are unknown; direct reuse in EST-14/EST-15
 - **Edge.** controls → estimation (0.9): The existing H-inf Bounded Real Lemma dualizes almost verbatim to the minimax filter.
 - **Evidence.** <https://folk.ntnu.no/skoge/prost/proceedings/ifac2002/data/content/00060/60.pdf> · <https://arxiv.org/pdf/1812.08307>
+
+### `EST-04` Willems' Fundamental Lemma and DeePC certificate in Lean
+
+**explore** · score 0.475 · 2 wk · confidence 0.75 · payoff 4/5 · domains: controls, estimation, math  
+Builds on: `CTRL-04`, `CTRL-05`, `EST-01`.  
+Unlocks: `EST-09`, `EST-12`, `EST-10`.  
+
+- **Why now.** Dec 2025 KTH preprint shows the stochastic DeePC decision subspace is the null space of the Kalman-predictor innovation Hankel, tying data-driven control to ctrl's Kalman predictor; Jan 2026 results classify all DeePC reformulations; no proof assistant has the lemma.
+- **Prior art.** Paper proofs only: Willems et al. 2005, De Persis-Tesi 2019 (arXiv 1903.06842), van Waarde et al. controllability relaxations (arXiv 2102.02953). No Lean/Coq/Isabelle mechanization found in standard or extended search.
+- **What we would build.** Lean definitions of persistency of excitation and Hankel trajectory matrix; theorem that every length-L trajectory of a controllable LTI lies in the Hankel column span (and converse); corollary data-driven LQR/MPC predictor with recursive feasibility via MPCFeasibility.lean. Blueprint (rank 3): state-space Willems lemma via ctrl's reach_eq_reach_finrank monic Krylov relation and one downward induction; ~700 LOC, 7–10 days; main risk is shift-lemma indexing.
+- **External pull.** Data-driven control community (Dörfler/Coulson DeePC, De Persis-Tesi); citable first formalization; CDC/L4DC venue
+- **Edge.** estimation → controls (0.8): Kalman innovation null space (EST-01) is exactly the stochastic DeePC constraint subspace.
+- **Evidence.** <https://arxiv.org/abs/2512.14520v1> · <https://arxiv.org/pdf/2209.06414> · <https://arxiv.org/pdf/2102.02953> · <https://ar5iv.org/html/1903.06842> · <https://ar5iv.labs.arxiv.org/html/2303.08707> · <https://www.imperial.ac.uk/events/146099/data-driven-control-of-general-linear-systems-extensions-of-the-fundamental-lemma-for-stochastic-and-descriptor-settings>
 
 ### `EST-06` Invariant EKF on SO(3)/SE(3): log-linear autonomous error dynamics
 
@@ -606,15 +613,15 @@ Unlocks: `ROBO-04`.
 
 ## Lane MATH: Math prizes, bounties and open problems
 
-### `MATH-07` Discrete-time Kalman–Yakubovich–Popov lemma (LMI <=> frequency-domain inequality) in Lean
+### `MATH-07` Discrete KYP, easy direction (LMI ⇒ FDI) and 'H∞ Riccati certificate is a KYP certificate'
 
-**explore** · score 0.391 · 4 wk · confidence 0.70 · payoff 3/5 · domains: controls, math, lean_tooling  
+**explore** · score 0.537 · 1 wk · confidence 0.85 · payoff 3/5 · domains: controls, math, lean_tooling  
 Builds on: `CTRL-02`, `CTRL-03`, `CTRL-05`.  
 Unlocks: `MATH-08`, `NL-01`.  
 
 - **Why now.** No KYP formalization exists in Lean, Isabelle or Coq (only an unverified 2026 Lur'e-systems repo), while Formal Conjectures now routes research-grade formal proofs to Palomar and ctrl already has the Bounded Real Lemma and controllability machinery the proof needs.
 - **Prior art.** Classical proofs (Willems optimal-control route, spectral factorization); ctrl BoundedRealHInf.lean, Gramian.lean, Reachability.lean; Mathlib lacks numerical range and Lyapunov equations
-- **What we would build.** Lean statement and proof of KYP for controllable (A,B): existence of symmetric P with the LMI iff the FDI on the unit circle, plus the strict/positive-real corollaries used by Popov/circle criteria
+- **What we would build.** Blueprint: the LMI ⇒ frequency-domain direction plus the bridge from BoundedRealHInf certificates is ~350 LOC, 3–4 days. The converse (Rantzer duality) needs a spectral theorem for normal/unitary matrices that Mathlib lacks, ~20–30 days; defer it. No prior KYP formalization exists (the one Lean repo mentioning KYP assumes its key step and has six sorries).
 - **External pull.** Mathlib/Palomar credibility; absolute-stability certificates demanded by safety-critical controls (IEC 61508 style evidence)
 - **Edge.** controls → nonlinear_safety (0.7): KYP turns ctrl's linear H-infinity/ISS certificates into Lur'e absolute-stability guarantees for sector-bounded nonlinearities.
 - **Evidence.** <https://github.com/AEjonanonymous/Improving-on-Popov> · <https://en.wikipedia.org/wiki/Kalman%E2%80%93Yakubovich%E2%80%93Popov_lemma> · <https://github.com/leanprover-community/mathlib4/blob/master/Mathlib/Analysis/Matrix/Spectrum.lean>
@@ -657,19 +664,6 @@ Builds on: `CTRL-05`, `MATH-04`.
 - **Edge.** lean_tooling → codegen (0.4): Instruction-count-optimized kernel algorithms transfer to verified numeric kernels in the C99 codegen path.
 - **Evidence.** <https://github.com/SAIRcompetition/lean-kernel-challenge> · <https://github.com/SAIRcompetition> · <https://terrytao.wordpress.com/2026/09/16/sair-competition-lean-kernel-challenge/>
 
-### `MATH-05` Close the Byers–Nash n=6 symmetric-maximizer case with a kernel-checked certificate
-
-**explore** · score 0.217 · 6 wk · confidence 0.50 · payoff 4/5 · domains: math, controls, prizes  
-Builds on: `MATH-01`, `EST-02`, `CTRL-01`.  
-Unlocks: `MATH-06`.  
-
-- **Why now.** arXiv:2608.20875 (Aug 2026) reportedly refutes the symmetric-maximizer conjecture for every n >= 7 while Chen–Tian settled n <= 5, leaving n = 6 as the only open order; ctrl already holds the rank <= 4 exclusion and 10/10 rational LDL^T certificates for that case.
-- **Prior art.** Byers–Nash 1987 (flawed Thm 9); Chen–Tian 2015 proof for n<=5; 2026 counterexample preprint for n>=7; no Lean work besides ctrl lean/Research/ByersNash*.lean
-- **What we would build.** Analytic closure of the J vs {I2,F,G} off-diagonal cross-term (or an exact rational n=6 counterexample seeded by the n>=7 construction), audited to standard axioms and registered on Palomar
-- **External pull.** citable resolution of the last open case of a named SIAM conjecture; Palomar registry entry; Lyapunov-conditioning guarantee for CARE/Kalman–Bucy solvers
-- **Edge.** math → estimation (0.6): k(A) <= s(A) at n=6 certifies symmetric-cone conditioning checks for 6-state Riccati/Lyapunov solvers used in EST-02.
-- **Evidence.** <https://epubs.siam.org/doi/10.1137/140974031> · <https://arxiv.org/pdf/2608.20875> · <https://scholar.hit.edu.cn/en/publications/note-on-on-the-singular-vectors-of-the-lyapunov-operator-by-r-bye/>
-
 ### `MATH-11` Absolute-stability package: Lean-checked Kalman/Aizerman counterexamples and the n<=3 positive case
 
 **explore** · score 0.128 · 5 wk · confidence 0.40 · payoff 2/5 · domains: controls, nonlinear_safety, math  
@@ -682,6 +676,19 @@ Unlocks: `MATH-07`.
 - **External pull.** citation value in control theory; Palomar if judged research-grade
 - **Edge.** nonlinear_safety → controls (0.4): Hidden-oscillation counterexamples are the canonical warning for sector-based safety filters.
 - **Evidence.** <https://github.com/AEjonanonymous/Improving-on-Popov>
+
+### `MATH-05` Byers–Nash n=6: replace the false cross-term route with a local-lemma + rational-SDP-cover proof
+
+**explore** · score 0.067 · 12 wk · confidence 0.30 · payoff 4/5 · domains: math, controls, prizes  
+Builds on: `MATH-01`, `EST-02`, `CTRL-01`.  
+Unlocks: `MATH-06`.  
+
+- **Why now.** arXiv:2608.20875 (Aug 2026) reportedly refutes the symmetric-maximizer conjecture for every n >= 7 while Chen–Tian settled n <= 5, leaving n = 6 as the only open order; ctrl already holds the rank <= 4 exclusion and 10/10 rational LDL^T certificates for that case.
+- **Prior art.** Byers–Nash 1987 (flawed Thm 9); Chen–Tian 2015 proof for n<=5; 2026 counterexample preprint for n>=7; no Lean work besides ctrl lean/Research/ByersNash*.lean
+- **What we would build.** Wave-2 numerics (docs/research/2026-10-wave2/BYERS_NASH_N6.md) found no n=6 violation in 144 SDP-dual ascents, but showed the 'single remaining cross-term inequality' is FALSE with margin: every comparator family the Lean modules build is block-diagonal in K's Darboux frame, and exact rational certificates show k > s_BD (ratios down to 0.970). A proof must use that K is the top skew singular vector and symmetric partners outside block-diagonal ∪ rank-one families. Most viable route: the static form N(−YK) ≤ 1 (13 parameters after symmetry), a second-order local lemma at the rank-4 atoms, and a finite cover of exact rational SDP decompositions (exact.py is the verifier). The docs' '90% / one cross-term left' claim should be withdrawn.
+- **External pull.** citable resolution of the last open case of a named SIAM conjecture; Palomar registry entry; Lyapunov-conditioning guarantee for CARE/Kalman–Bucy solvers
+- **Edge.** math → estimation (0.6): k(A) <= s(A) at n=6 certifies symmetric-cone conditioning checks for 6-state Riccati/Lyapunov solvers used in EST-02.
+- **Evidence.** <https://epubs.siam.org/doi/10.1137/140974031> · <https://arxiv.org/pdf/2608.20875> · <https://scholar.hit.edu.cn/en/publications/note-on-on-the-singular-vectors-of-the-lyapunov-operator-by-r-bye/>
 
 ### `MATH-09` Formalize the few remaining unlinked solved Erdős problems with 2026 papers (1033, 348, 1133, 633)
 
@@ -723,6 +730,18 @@ Unlocks: `TOOL-03`, `TOOL-06`, `TOOL-09`, `TOOL-11`, `MATH-01`, `MATH-02`.
 - **Edge.** lean_tooling → prizes (0.8): Prize eligibility and formalizer attribution both require an earliest public commit.
 - **Evidence.** <https://raw.githubusercontent.com/RileyBetts/lean-tee/main/docs/GETTING_STARTED.md> · <https://github.com/leanprover/reservoir> · <https://github.com/leanprover/reservoir-index> · <https://github.com/TheJustinSunPrize/awards> · <https://theplatformengineering.substack.com/p/github-actions-2026-pricing-changes>
 
+### `TOOL-14` Local math retrieval index (Mathlib + ctrl + formal-conjectures + Erdős metadata) with MCP/CLI access
+
+**productionize** · score 0.388 · 2 wk · confidence 0.75 · payoff 3/5 · domains: lean_tooling, math  
+Builds on: `MATH-04`.  
+Unlocks: `MATH-06`, `EST-05`, `ROB-01`, `EST-04`, `MATH-07`.  
+
+- **Why now.** All prebuilt Mathlib indices (LeanSearch v2, Lean Finder, LeanExplore) sit on Hugging Face or R2, which are blocked; but the Qwen3-Embedding models they use are reachable from Docker Hub's ai/ namespace, and MathlibQR gives a public benchmark.
+- **Prior art.** LeanSearch v2 (nDCG@10 0.623 on MathlibQR per paper summaries), Lean Finder, LeanExplore, Loogle, lean-lsp-mcp.
+- **What we would build.** v1 in tools/mathdb: BM25/hybrid over Mathlib declarations, optional Qwen3-0.6B dense channel for small corpora, eval on MathlibQR; v2: GPU-embedded Mathlib vectors shipped as a release asset or LeanSearch v2 vectors if huggingface.co is allowlisted; expose as an MCP server.
+- **External pull.** Speeds every proof session and agent; community demand for local Lean search
+- **Evidence.** <https://github.com/frenzymath/LeanSearch-v2> · <https://github.com/justincasher/lean-explore> · <https://github.com/oOo0oOo/lean-lsp-mcp>
+
 ### `TOOL-06` Kernel certificate bundle: JSON-LD per kernel with axiom audit, toolchain SHAs, code hashes, parity results and external re-check
 
 **industrialize** · score 0.387 · 2 wk · confidence 0.60 · payoff 4/5 · domains: codegen_certification, lean_tooling  
@@ -748,6 +767,17 @@ Unlocks: `TOOL-06`, `TOOL-10`.
 - **External pull.** customer-recognized pattern (AWS Cedar/SampCert); SEooC buyers expect executable evidence
 - **Edge.** codegen → certification (0.8): Differential testing is the artifact assessors accept as the bridge from proof to shipped C.
 - **Evidence.** <https://www.amazon.science/blog/how-we-built-cedar-with-automated-reasoning-and-differential-testing> · <https://github.com/cedar-policy/cedar-spec/tree/main/cedar-lean-ffi> · <https://github.com/leanprover/SampCert/blob/main/REPRODUCING.md> · <https://github.com/leanprover/lean4/blob/master/src/Lean/Compiler/IR/EmitC.lean> · <https://lean-lang.org/doc/reference/latest/releases/v4.30.0/>
+
+### `TOOL-13` Unblock Lean in cloud sessions: allowlist cache.mathlib.org + committed setup script
+
+**productionize** · score 0.358 · 0 wk · confidence 0.85 · payoff 4/5 · domains: lean_tooling  
+Unlocks: `EST-05`, `ROB-01`, `EST-04`, `MATH-07`, `MATH-05`, `MATH-06`.  
+
+- **Why now.** Wave 2 showed the exact pinned toolchain (v4.36.0-rc1) and all Lake dependencies install in a cloud session in ~46 s from GitHub release assets; only the Mathlib .olean cache host is blocked, so no Lean proof can be checked in cloud sessions today.
+- **Prior art.** Self-hosted ARM64 CI runner with a warm .lake; scripts/ensure_cache.sh for local clones.
+- **What we would build.** User adds cache.mathlib.org under the environment's allowed domains and pastes scripts/setup-lean-cloud.sh as the setup script (cache mode). Fallback without allowlisting: publish the .lake build as split release-asset tarballs and use the script's tarball mode.
+- **External pull.** Gates every Lean candidate in this index
+- **Evidence.** <https://code.claude.com/docs/en/cloud-environments#network-access>
 
 ### `TOOL-09` ControlBench: a Croissant-tagged benchmark of ctrl theorem statements with proofs stripped
 

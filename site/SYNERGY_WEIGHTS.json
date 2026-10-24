@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0",
-  "updated_at": "2026-10-22",
+  "updated_at": "2026-10-24",
   "description": "Weighted cross-domain unlock graph for the ctrl program (and the sediment sibling repo). Consumed by `./ctrl synergy`. Domain edges say how strongly results in domain A tend to unlock work in domain B. Idea edges connect concrete idea IDs from AGENT_IDEA_INDEX.json and candidate IDs below. Weights are in [0,1] and are directed.",
   "domains": {
     "controls": {
@@ -1382,10 +1382,10 @@
         "https://rocq-prover.org/p/coq-robot"
       ],
       "prior_art": "Paper proofs only (Lee-Leok-McClamroch 2010/2013, Goodarzi-Lee-Lee PID/adaptive). coq-robot has static SO(3)/SE(3)/screws but no dynamics or Lyapunov; Isabelle AFP Lie groups are abstract; Mathlib LieGroup is abstract. No mechanized geometric tracking controller found.",
-      "missing_capability": "Lean theorems: attitude error function Psi(R,Rd)=1/2 tr(I - Rd^T R), error vector e_R, bounds 1/2|e_R|^2 <= Psi <= |e_R|^2/(2-Psi), dPsi/dt = e_R . e_Omega, and exponential convergence of the attitude/position tracking errors on the sublevel set {Psi < 2} for the rigid-body Euler equations; then the C99 kernel ctrl_geometric_so3_pd bound via @lean_theorem.",
-      "effort_weeks": 4.0,
+      "missing_capability": "Lean theorems: attitude error function Psi(R,Rd)=1/2 tr(I - Rd^T R), error vector e_R, bounds 1/2|e_R|^2 <= Psi <= |e_R|^2/(2-Psi), dPsi/dt = e_R . e_Omega, and exponential convergence of the attitude/position tracking errors on the sublevel set {Psi < 2} for the rigid-body Euler equations; then the C99 kernel ctrl_geometric_so3_pd bound via @lean_theorem. Blueprint (rank 2): eigenvector-free route via adj X = X² − tr X·X + tr(adj X)·I and adj R = Rᵀ ⇒ R² = tR − tI + Rᵀ, giving ‖e_R‖² = Ψ(2−Ψ); ~850 LOC, 8–11 days; also discharges the hequiv hypothesis of SE3Kinematics.adjoint6_mul.",
+      "effort_weeks": 2.0,
       "payoff": 4.0,
-      "confidence": 0.8,
+      "confidence": 0.75,
       "external_pull": "Drone/quadrotor industry and ASTM F3269 RTA; humanoid balance (ISO/CD 25785-1 working group led by Agility/Boston Dynamics)",
       "cross_domain_edge": {
         "from": "robotics",
@@ -1913,10 +1913,10 @@
         "https://www.imperial.ac.uk/events/146099/data-driven-control-of-general-linear-systems-extensions-of-the-fundamental-lemma-for-stochastic-and-descriptor-settings"
       ],
       "prior_art": "Paper proofs only: Willems et al. 2005, De Persis-Tesi 2019 (arXiv 1903.06842), van Waarde et al. controllability relaxations (arXiv 2102.02953). No Lean/Coq/Isabelle mechanization found in standard or extended search.",
-      "missing_capability": "Lean definitions of persistency of excitation and Hankel trajectory matrix; theorem that every length-L trajectory of a controllable LTI lies in the Hankel column span (and converse); corollary data-driven LQR/MPC predictor with recursive feasibility via MPCFeasibility.lean.",
-      "effort_weeks": 4.0,
+      "missing_capability": "Lean definitions of persistency of excitation and Hankel trajectory matrix; theorem that every length-L trajectory of a controllable LTI lies in the Hankel column span (and converse); corollary data-driven LQR/MPC predictor with recursive feasibility via MPCFeasibility.lean. Blueprint (rank 3): state-space Willems lemma via ctrl's reach_eq_reach_finrank monic Krylov relation and one downward induction; ~700 LOC, 7–10 days; main risk is shift-lemma indexing.",
+      "effort_weeks": 2.0,
       "payoff": 4.0,
-      "confidence": 0.8,
+      "confidence": 0.75,
       "external_pull": "Data-driven control community (Dörfler/Coulson DeePC, De Persis-Tesi); citable first formalization; CDC/L4DC venue",
       "cross_domain_edge": {
         "from": "estimation",
@@ -1951,10 +1951,10 @@
         "https://arxiv.org/pdf/1812.08307"
       ],
       "prior_art": "Shaked-Theodor 1992 (BRL-derived a priori/a posteriori H-inf filter gains), Park-Kailath 1997 LMI form, Zhou-Doyle Riccati form; none mechanized.",
-      "missing_capability": "Indefinite estimation Riccati with feasibility condition P^-1 + C^T C - gamma^-2 I > 0, l2-gain bound from (process,measurement) noise to estimation error, worst-case tightness, and comparison with the Joseph/Kalman gain.",
-      "effort_weeks": 3.0,
+      "missing_capability": "Indefinite estimation Riccati with feasibility condition P^-1 + C^T C - gamma^-2 I > 0, l2-gain bound from (process,measurement) noise to estimation error, worst-case tightness, and comparison with the Joseph/Kalman gain. Blueprint (docs/research/2026-10-wave2/BLUEPRINTS.md, rank 1): time-varying a posteriori H∞ filter ℓ²-gain bound by two completions of the square (no Schur/Woodbury), ~450 LOC, 5–7 days. Must be the a posteriori filter; the same storage function fails for the a priori output.",
+      "effort_weeks": 1.2,
       "payoff": 3.0,
-      "confidence": 0.75,
+      "confidence": 0.8,
       "external_pull": "Robust estimation users in aerospace/automotive where noise statistics are unknown; direct reuse in EST-14/EST-15",
       "cross_domain_edge": {
         "from": "controls",
@@ -2362,7 +2362,7 @@
     },
     {
       "id": "MATH-05",
-      "title": "Close the Byers–Nash n=6 symmetric-maximizer case with a kernel-checked certificate",
+      "title": "Byers–Nash n=6: replace the false cross-term route with a local-lemma + rational-SDP-cover proof",
       "kind": "explore",
       "domains": [
         "math",
@@ -2384,10 +2384,10 @@
         "https://scholar.hit.edu.cn/en/publications/note-on-on-the-singular-vectors-of-the-lyapunov-operator-by-r-bye/"
       ],
       "prior_art": "Byers–Nash 1987 (flawed Thm 9); Chen–Tian 2015 proof for n<=5; 2026 counterexample preprint for n>=7; no Lean work besides ctrl lean/Research/ByersNash*.lean",
-      "missing_capability": "Analytic closure of the J vs {I2,F,G} off-diagonal cross-term (or an exact rational n=6 counterexample seeded by the n>=7 construction), audited to standard axioms and registered on Palomar",
-      "effort_weeks": 6.0,
+      "missing_capability": "Wave-2 numerics (docs/research/2026-10-wave2/BYERS_NASH_N6.md) found no n=6 violation in 144 SDP-dual ascents, but showed the 'single remaining cross-term inequality' is FALSE with margin: every comparator family the Lean modules build is block-diagonal in K's Darboux frame, and exact rational certificates show k > s_BD (ratios down to 0.970). A proof must use that K is the top skew singular vector and symmetric partners outside block-diagonal ∪ rank-one families. Most viable route: the static form N(−YK) ≤ 1 (13 parameters after symmetry), a second-order local lemma at the rank-4 atoms, and a finite cover of exact rational SDP decompositions (exact.py is the verifier). The docs' '90% / one cross-term left' claim should be withdrawn.",
+      "effort_weeks": 12.0,
       "payoff": 4.0,
-      "confidence": 0.5,
+      "confidence": 0.3,
       "external_pull": "citable resolution of the last open case of a named SIAM conjecture; Palomar registry entry; Lyapunov-conditioning guarantee for CARE/Kalman–Bucy solvers",
       "cross_domain_edge": {
         "from": "math",
@@ -2437,7 +2437,7 @@
     },
     {
       "id": "MATH-07",
-      "title": "Discrete-time Kalman–Yakubovich–Popov lemma (LMI <=> frequency-domain inequality) in Lean",
+      "title": "Discrete KYP, easy direction (LMI ⇒ FDI) and 'H∞ Riccati certificate is a KYP certificate'",
       "kind": "explore",
       "domains": [
         "controls",
@@ -2460,10 +2460,10 @@
         "https://github.com/leanprover-community/mathlib4/blob/master/Mathlib/Analysis/Matrix/Spectrum.lean"
       ],
       "prior_art": "Classical proofs (Willems optimal-control route, spectral factorization); ctrl BoundedRealHInf.lean, Gramian.lean, Reachability.lean; Mathlib lacks numerical range and Lyapunov equations",
-      "missing_capability": "Lean statement and proof of KYP for controllable (A,B): existence of symmetric P with the LMI iff the FDI on the unit circle, plus the strict/positive-real corollaries used by Popov/circle criteria",
-      "effort_weeks": 4.0,
+      "missing_capability": "Blueprint: the LMI ⇒ frequency-domain direction plus the bridge from BoundedRealHInf certificates is ~350 LOC, 3–4 days. The converse (Rantzer duality) needs a spectral theorem for normal/unitary matrices that Mathlib lacks, ~20–30 days; defer it. No prior KYP formalization exists (the one Lean repo mentioning KYP assumes its key step and has six sorries).",
+      "effort_weeks": 0.8,
       "payoff": 3.0,
-      "confidence": 0.7,
+      "confidence": 0.85,
       "external_pull": "Mathlib/Palomar credibility; absolute-stability certificates demanded by safety-critical controls (IEC 61508 style evidence)",
       "cross_domain_edge": {
         "from": "controls",
@@ -3920,6 +3920,68 @@
       },
       "status": "candidate",
       "source_report": "XD.md"
+    },
+    {
+      "id": "TOOL-13",
+      "title": "Unblock Lean in cloud sessions: allowlist cache.mathlib.org + committed setup script",
+      "kind": "productionize",
+      "domains": [
+        "lean_tooling"
+      ],
+      "builds_on": [],
+      "unlocks": [
+        "EST-05",
+        "ROB-01",
+        "EST-04",
+        "MATH-07",
+        "MATH-05",
+        "MATH-06"
+      ],
+      "why_now": "Wave 2 showed the exact pinned toolchain (v4.36.0-rc1) and all Lake dependencies install in a cloud session in ~46 s from GitHub release assets; only the Mathlib .olean cache host is blocked, so no Lean proof can be checked in cloud sessions today.",
+      "evidence": [
+        "https://code.claude.com/docs/en/cloud-environments#network-access"
+      ],
+      "prior_art": "Self-hosted ARM64 CI runner with a warm .lake; scripts/ensure_cache.sh for local clones.",
+      "missing_capability": "User adds cache.mathlib.org under the environment's allowed domains and pastes scripts/setup-lean-cloud.sh as the setup script (cache mode). Fallback without allowlisting: publish the .lake build as split release-asset tarballs and use the script's tarball mode.",
+      "effort_weeks": 0.2,
+      "payoff": 4,
+      "confidence": 0.85,
+      "external_pull": "Gates every Lean candidate in this index",
+      "status": "candidate",
+      "source_report": "LEAN_IN_CLOUD.md"
+    },
+    {
+      "id": "TOOL-14",
+      "title": "Local math retrieval index (Mathlib + ctrl + formal-conjectures + Erdős metadata) with MCP/CLI access",
+      "kind": "productionize",
+      "domains": [
+        "lean_tooling",
+        "math"
+      ],
+      "builds_on": [
+        "MATH-04"
+      ],
+      "unlocks": [
+        "MATH-06",
+        "EST-05",
+        "ROB-01",
+        "EST-04",
+        "MATH-07"
+      ],
+      "why_now": "All prebuilt Mathlib indices (LeanSearch v2, Lean Finder, LeanExplore) sit on Hugging Face or R2, which are blocked; but the Qwen3-Embedding models they use are reachable from Docker Hub's ai/ namespace, and MathlibQR gives a public benchmark.",
+      "evidence": [
+        "https://github.com/frenzymath/LeanSearch-v2",
+        "https://github.com/justincasher/lean-explore",
+        "https://github.com/oOo0oOo/lean-lsp-mcp"
+      ],
+      "prior_art": "LeanSearch v2 (nDCG@10 0.623 on MathlibQR per paper summaries), Lean Finder, LeanExplore, Loogle, lean-lsp-mcp.",
+      "missing_capability": "v1 in tools/mathdb: BM25/hybrid over Mathlib declarations, optional Qwen3-0.6B dense channel for small corpora, eval on MathlibQR; v2: GPU-embedded Mathlib vectors shipped as a release asset or LeanSearch v2 vectors if huggingface.co is allowlisted; expose as an MCP server.",
+      "effort_weeks": 1.5,
+      "payoff": 3,
+      "confidence": 0.75,
+      "external_pull": "Speeds every proof session and agent; community demand for local Lean search",
+      "status": "candidate",
+      "source_report": "MATHDB_SCOUT.md"
     }
   ],
   "scoring_proposals": [
