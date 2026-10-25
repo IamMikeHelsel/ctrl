@@ -1,4 +1,5 @@
 import Challenge.Erdos834
+import ErdosLab.Erdos834.Coloring
 
 /-!
 # Erdős Problem 834 (part ii)
@@ -6,7 +7,8 @@ import Challenge.Erdos834
 There is a 3-uniform hypergraph with weak chromatic number 3, minimum degree at least 7, that
 becomes 2-colourable after deleting any edge or any vertex. We use the explicit 9-vertex,
 22-edge hypergraph of R. Li (arXiv:2512.24850, Section 4.1), relabelled `1..9 ↦ 0..8`.
-All finite facts are checked by kernel `decide`.
+Finite witnesses are checked by kernel `decide`. Non-two-colorability uses four
+structural contradiction cases, and vertex criticality follows from edge criticality.
 -/
 
 namespace Challenge.Erdos834
@@ -38,13 +40,97 @@ private theorem liH_not_colorable_one : ¬ liH.HypergraphColorable 1 := by
   obtain ⟨x, -, y, -, hxy⟩ := hc {0, 1, 2} (by unfold liH; decide +kernel)
   exact hxy (Subsingleton.elim _ _)
 
-/-- No 2-colouring of `liH` is proper: exhaust all `2 ^ 9` colourings. -/
+/-- Normalize color 0 by complementation, then propagate not-all-equal constraints.
+Only three binary branch nodes (four leaves) are needed. -/
 private theorem liH_not_colorable_two : ¬ liH.HypergraphColorable 2 := by
+  have normalized (c : Fin 9 → Fin 2) (h0 : c 0 = 0)
+      (hc : liH.IsProperHypergraphColoring c) : False := by
+    have edge (a b d : Fin 9) (he : {a, b, d} ∈ liH) :
+        ¬ (c a = c b ∧ c b = c d) :=
+      Research.HypergraphCertificates.triple_constraint hc he
+    by_cases h1 : c 1 = 0
+    · have h2 : c 2 = 1 := by
+        have := edge 0 1 2 (by unfold liH; decide +kernel)
+        omega
+      have h8 : c 8 = 1 := by
+        have := edge 0 1 8 (by unfold liH; decide +kernel)
+        omega
+      by_cases h3 : c 3 = 0
+      · have h5 : c 5 = 1 := by
+          have := edge 0 3 5 (by unfold liH; decide +kernel)
+          omega
+        have h7 : c 7 = 1 := by
+          have := edge 0 3 7 (by unfold liH; decide +kernel)
+          omega
+        have h4 : c 4 = 0 := by
+          have := edge 2 4 7 (by unfold liH; decide +kernel)
+          omega
+        have h6 : c 6 = 0 := by
+          have := edge 2 5 6 (by unfold liH; decide +kernel)
+          omega
+        exact edge 0 4 6 (by unfold liH; decide +kernel) ⟨by omega, by omega⟩
+      · have h3' : c 3 = 1 := by omega
+        have h7 : c 7 = 0 := by
+          have := edge 2 3 7 (by unfold liH; decide +kernel)
+          omega
+        have h5 : c 5 = 0 := by
+          have := edge 3 5 8 (by unfold liH; decide +kernel)
+          omega
+        have h4 : c 4 = 1 := by
+          have := edge 0 4 7 (by unfold liH; decide +kernel)
+          omega
+        have h6 : c 6 = 1 := by
+          have := edge 0 5 6 (by unfold liH; decide +kernel)
+          omega
+        exact edge 4 6 8 (by unfold liH; decide +kernel) ⟨by omega, by omega⟩
+    · have h1' : c 1 = 1 := by omega
+      by_cases h5 : c 5 = 0
+      · have h3 : c 3 = 1 := by
+          have := edge 0 3 5 (by unfold liH; decide +kernel)
+          omega
+        have h6 : c 6 = 1 := by
+          have := edge 0 5 6 (by unfold liH; decide +kernel)
+          omega
+        have h2 : c 2 = 0 := by
+          have := edge 1 2 6 (by unfold liH; decide +kernel)
+          omega
+        have h8 : c 8 = 0 := by
+          have := edge 1 3 8 (by unfold liH; decide +kernel)
+          omega
+        have h7 : c 7 = 1 := by
+          have := edge 0 2 7 (by unfold liH; decide +kernel)
+          omega
+        have h4 : c 4 = 1 := by
+          have := edge 0 4 8 (by unfold liH; decide +kernel)
+          omega
+        exact edge 4 6 7 (by unfold liH; decide +kernel) ⟨by omega, by omega⟩
+      · have h5' : c 5 = 1 := by omega
+        have h2 : c 2 = 0 := by
+          have := edge 1 2 5 (by unfold liH; decide +kernel)
+          omega
+        have h6 : c 6 = 0 := by
+          have := edge 1 5 6 (by unfold liH; decide +kernel)
+          omega
+        have h7 : c 7 = 1 := by
+          have := edge 0 2 7 (by unfold liH; decide +kernel)
+          omega
+        have h4 : c 4 = 1 := by
+          have := edge 0 4 6 (by unfold liH; decide +kernel)
+          omega
+        have h8 : c 8 = 0 := by
+          have := edge 1 4 8 (by unfold liH; decide +kernel)
+          omega
+        have h3 : c 3 = 0 := by
+          have := edge 3 5 7 (by unfold liH; decide +kernel)
+          omega
+        exact edge 0 3 8 (by unfold liH; decide +kernel) ⟨by omega, by omega⟩
   rintro ⟨c, hc⟩
-  revert c
-  simp only [Fin.forall_fin_succ_pi, Fin.forall_fin_zero_pi]
-  unfold Finset.IsProperHypergraphColoring liH
-  decide +kernel
+  by_cases h0 : c 0 = 0
+  · exact normalized c h0 hc
+  · have h0' : c 0 = 1 := by omega
+    apply normalized (fun v ↦ Fin.rev (c v))
+    · simp [h0', Fin.rev]
+    · exact Research.HypergraphCertificates.recolor hc Fin.rev Fin.rev_injective
 
 /-- Witness 2-colourings: `edgeWit i` is proper on `liH` minus its `i`-th edge. -/
 private def edgeWit : Fin 22 → Fin 9 → Fin 2 :=
@@ -57,12 +143,6 @@ private def edgeWit : Fin 22 → Fin 9 → Fin 2 :=
     ![0, 1, 0, 1, 1, 1, 0, 1, 0], ![0, 0, 1, 1, 1, 1, 0, 0, 1], ![0, 1, 0, 1, 1, 0, 1, 1, 0],
     ![0, 0, 1, 1, 1, 0, 1, 0, 1]]
 
-/-- Witness 2-colourings: `vertWit v` is proper on `liH` minus the vertex `v`. -/
-private def vertWit : Fin 9 → Fin 9 → Fin 2 :=
-  ![![0, 0, 0, 0, 0, 1, 1, 1, 1], ![0, 0, 0, 0, 0, 1, 1, 1, 1], ![0, 0, 0, 0, 0, 1, 1, 1, 1],
-    ![0, 0, 1, 0, 0, 0, 1, 1, 1], ![0, 0, 1, 0, 0, 1, 0, 1, 1], ![0, 0, 1, 0, 0, 0, 1, 1, 1],
-    ![0, 0, 1, 0, 0, 1, 0, 1, 1], ![0, 0, 1, 0, 1, 1, 0, 0, 1], ![0, 0, 1, 1, 1, 0, 1, 0, 0]]
-
 private theorem liH_edge_critical : ∀ e ∈ liH, (liH.erase e).HypergraphColorable 2 := by
   suffices h : ∀ e ∈ liH, ∃ i : Fin 22, (liH.erase e).IsProperHypergraphColoring (edgeWit i) by
     intro e he
@@ -73,10 +153,11 @@ private theorem liH_edge_critical : ∀ e ∈ liH, (liH.erase e).HypergraphColor
 
 private theorem liH_vertex_critical :
     ∀ v : Fin 9, (liH.filter (fun e ↦ v ∉ e)).HypergraphColorable 2 := by
-  suffices h : ∀ v : Fin 9, (liH.filter (fun e ↦ v ∉ e)).IsProperHypergraphColoring (vertWit v) by
-    exact fun v ↦ ⟨_, h v⟩
-  unfold Finset.IsProperHypergraphColoring liH vertWit
-  decide +kernel
+  apply Research.HypergraphCertificates.vertex_deletion_from_edge_deletion liH 2
+    liH_edge_critical
+  intro v
+  have := liH_degree v
+  omega
 
 theorem solution : statement :=
   ⟨9, liH, liH_uniform,

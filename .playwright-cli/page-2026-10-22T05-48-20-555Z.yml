@@ -1,0 +1,183 @@
+- generic [active] [ref=f1e1]:
+  - link "Skip to content" [ref=f1e2] [cursor=pointer]:
+    - /url: "#main"
+  - generic [ref=f1e3]:
+    - banner [ref=f1e4]:
+      - generic [ref=f1e5]:
+        - link "ctrl" [ref=f1e6] [cursor=pointer]:
+          - /url: ../index.html
+        - text: /
+        - link "Research" [ref=f1e7] [cursor=pointer]:
+          - /url: ../research.html
+        - text: / Delayed braking
+      - generic [ref=f1e8]: Study 01 · known algebra, proposed systems composition
+      - heading "A stopping rule needs a clock." [level=1] [ref=f1e9]
+      - paragraph [ref=f1e10]: A 0.25 m nominal stop becomes 0.6825 m when this example includes speed uncertainty, position error and reaction delay. The value of the exercise is making those assumptions inspectable.
+      - navigation "Study navigation" [ref=f1e11]:
+        - link "Model" [ref=f1e12] [cursor=pointer]:
+          - /url: "#model"
+        - link "Explore" [ref=f1e13] [cursor=pointer]:
+          - /url: "#explore"
+        - link "Results" [ref=f1e14] [cursor=pointer]:
+          - /url: "#results"
+        - link "Animation" [ref=f1e15] [cursor=pointer]:
+          - /url: "#animation"
+        - link "Reproduce" [ref=f1e16] [cursor=pointer]:
+          - /url: "#reproduce"
+    - main [ref=f1e17]:
+      - generic [ref=f1e18]:
+        - heading "The model and the question" [level=2] [ref=f1e19]
+        - paragraph [ref=f1e20]: Consider a point mass moving toward a stationary wall. An admission rule asks whether its available clearance covers a worst-case stop. It does not issue a command or recover a state that is already too close.
+        - generic [ref=f1e21]:
+          - article [ref=f1e22]:
+            - heading "Declared assumptions" [level=3] [ref=f1e23]
+            - list [ref=f1e24]:
+              - listitem [ref=f1e25]: One-dimensional forward motion; no turns or moving obstacle.
+              - listitem [ref=f1e26]: Position error is at most ε; speed is at most u = v̂ + δv at observation time.
+              - listitem [ref=f1e27]: Total delay τ includes state age, computation, transport and actuator reaction.
+              - listitem [ref=f1e28]: Forward acceleration during the delay is at most A.
+              - listitem [ref=f1e29]: After the delay, deceleration is at least b > 0 until rest; rest is then held.
+          - article [ref=f1e30]:
+            - heading "Required clearance" [level=3] [ref=f1e31]
+            - paragraph [ref=f1e32]: D = ε + uτ + ½Aτ² + (u + Aτ)² / (2b)
+            - paragraph [ref=f1e33]: The terms are position uncertainty, motion during reaction, and braking after reaction. This is familiar constant-acceleration algebra.
+            - paragraph [ref=f1e34]: A real plant needs valid bounds and a dynamics-to-envelope argument. The new Lean file proves the explicit polynomial bounds, not that a robot follows them.
+        - complementary [ref=f1e35]:
+          - strong [ref=f1e36]: The literature connection.
+          - text: Recent work studies
+          - link "computation delays in safety filters" [ref=f1e37] [cursor=pointer]:
+            - /url: https://arxiv.org/abs/2610.10797
+          - text: and
+          - link "escape maneuvers under actuator limits" [ref=f1e38] [cursor=pointer]:
+            - /url: https://arxiv.org/abs/2609.17292
+          - text: . Those papers motivate this reduced experiment. This study does not reproduce their algorithms or claim their guarantees.
+      - generic [ref=f1e39]:
+        - heading "Explore the assumed margin" [level=2] [ref=f1e40]
+        - paragraph [ref=f1e41]: Change an input to see which part of the model consumes clearance. Browser arithmetic is approximate and illustrative; the downloadable experiment uses exact fractions.
+        - generic [ref=f1e42]:
+          - generic [ref=f1e43]:
+            - generic [ref=f1e44]:
+              - text: Estimated speed
+              - status [ref=f1e45]: "1.00"
+              - text: m/s
+              - slider "Estimated speed m/s" [ref=f1e46]: "1"
+            - generic [ref=f1e47]:
+              - text: Speed error bound
+              - status [ref=f1e48]: "0.10"
+              - text: m/s
+              - slider "Speed error bound m/s" [ref=f1e49]: "0.1"
+            - generic [ref=f1e50]:
+              - text: Position error bound
+              - status [ref=f1e51]: "0.020"
+              - text: m
+              - slider "Position error bound m" [ref=f1e52]: "0.02"
+            - generic [ref=f1e53]:
+              - text: Total delay
+              - status [ref=f1e54]: "0.20"
+              - text: s
+              - slider "Total delay s" [ref=f1e55]: "0.2"
+            - generic [ref=f1e56]:
+              - text: Delay acceleration bound
+              - status [ref=f1e57]: "1.00"
+              - text: m/s²
+              - slider "Delay acceleration bound m/s²" [ref=f1e58]: "1"
+            - generic [ref=f1e59]:
+              - text: Minimum brake deceleration
+              - status [ref=f1e60]: "2.00"
+              - text: m/s²
+              - slider "Minimum brake deceleration m/s²" [ref=f1e61]: "2"
+            - generic [ref=f1e62]:
+              - text: Available clearance
+              - status [ref=f1e63]: "0.50"
+              - text: m
+              - slider "Available clearance m" [ref=f1e64]: "0.5"
+          - img "Nominal and bounded stopping thresholds Nominal threshold 0.2500 metres; bounded threshold 0.6825 metres; available clearance 0.5000 metres." [ref=f1e65]:
+            - generic [ref=f1e66]: Required clearance (m)
+            - generic [ref=f1e68]: "Nominal: 0.2500 m"
+            - generic [ref=f1e70]: "Bounded: 0.6825 m"
+            - generic [ref=f1e71]: "Available: 0.5000 m (axis rescales)"
+          - paragraph [ref=f1e72]: "Nominal: admits. Bounded: rejects. Model admission only."
+          - paragraph [ref=f1e73]: Exact equality permits touching the boundary. Near floating-point equality, this display reports a numerical boundary instead of deciding. For strictly positive clearance, add an explicit reserve. No hardware or control command is produced.
+      - generic [ref=f1e74]:
+        - heading "What was checked" [level=2] [ref=f1e75]
+        - region "Exact-grid experiment results" [ref=f1e76]:
+          - table [ref=f1e77]:
+            - caption [ref=f1e78]: 432 declared parameter combinations × 80 fixed wall clearances = 34,560 cases. Every rule uses the same worst-case trajectory.
+            - rowgroup [ref=f1e79]:
+              - row [ref=f1e80]:
+                - columnheader "Rule" [ref=f1e81]
+                - columnheader "Admitted cases" [ref=f1e82]
+                - columnheader "Admitted cases with a crossing witness" [ref=f1e83]
+            - rowgroup [ref=f1e84]:
+              - row [ref=f1e85]:
+                - rowheader "Instantaneous nominal stop" [ref=f1e86]
+                - cell "30,480" [ref=f1e87]
+                - cell "2,066" [ref=f1e88]
+              - row [ref=f1e89]:
+                - rowheader "Delay + uncertainty envelope" [ref=f1e90]
+                - cell "28,414" [ref=f1e91]
+                - cell "0 within this model/grid" [ref=f1e92]
+        - paragraph [ref=f1e93]: This is a constructed sharp worst-case model. Zero false admissions are expected from the envelope; the grid is a reproducibility check, not an empirical safety rate. It shows the cost of omitting declared terms, not a general performance improvement.
+        - generic [ref=f1e94]:
+          - article [ref=f1e95]:
+            - heading "Lean evidence" [level=3] [ref=f1e96]
+            - paragraph [ref=f1e97]:
+              - text: "Four declarations compile: a completed-square braking bound, a reaction-phase bound, their combined polynomial envelope, and the numerical counterexample. Their printed axioms are"
+              - code [ref=f1e98]: propext
+              - text: ","
+              - code [ref=f1e99]: Classical.choice
+              - text: and
+              - code [ref=f1e100]: Quot.sound
+              - text: .
+            - paragraph [ref=f1e101]: This is not an approved Challenge or a formal proof of the Python/JavaScript implementation.
+          - article [ref=f1e102]:
+            - heading "Executable evidence" [level=3] [ref=f1e103]
+            - paragraph [ref=f1e104]: Ten focused tests cover the exact witness, independent integration of four varying acceleration intervals, stronger braking, boundary contact, rest, invalid inputs and an understated-delay failure.
+            - paragraph [ref=f1e105]: A separate AI reviewer reproduced the grid counts using different counting/integration logic. Human review and physical tests remain open.
+        - group [ref=f1e106]:
+          - generic "Where the model can fail" [ref=f1e107] [cursor=pointer]
+      - generic [ref=f1e108]:
+        - heading "A 25-second explanation" [level=2] [ref=f1e109]
+        - figure "A synthetic mathematical illustration made with Manim. No hardware footage, autoplay or experimental claim." [ref=f1e110]:
+          - generic "Silent Manim animation illustrating the delayed braking counterexample" [ref=f1e111]: Download the .
+        - group [ref=f1e113]:
+          - generic "Text description of the animation" [ref=f1e114] [cursor=pointer]
+      - generic [ref=f1e115]:
+        - heading "Inspect and reproduce" [level=2] [ref=f1e116]
+        - paragraph [ref=f1e117]: Curated snapshots of this study are downloadable without repository access. The manifest identifies their original repository paths and content hashes.
+        - list [ref=f1e118]:
+          - listitem [ref=f1e119]:
+            - link "Exact Python experiment" [ref=f1e120] [cursor=pointer]:
+              - /url: ../assets/research/latency_braking.py
+            - text: ·
+            - link "tests" [ref=f1e121] [cursor=pointer]:
+              - /url: ../assets/research/test_latency_braking.py
+            - text: ·
+            - link "raw grid results" [ref=f1e122] [cursor=pointer]:
+              - /url: ../assets/research/latency-braking-results.json
+          - listitem [ref=f1e123]:
+            - link "Lean statements and proofs" [ref=f1e124] [cursor=pointer]:
+              - /url: ../assets/research/LatencyBraking.lean
+            - text: ·
+            - link "Manim source" [ref=f1e125] [cursor=pointer]:
+              - /url: ../assets/research/latency_braking_scene.py
+            - text: ·
+            - link "artifact hashes" [ref=f1e126] [cursor=pointer]:
+              - /url: ../assets/research/manifest.json
+        - paragraph [ref=f1e127]: "Within the ctrl checkout (Lean 4.33.1, pinned mathlib environment):"
+        - code [ref=f1e129]: uv run python experiments/research/latency_braking.py \ --output work/research/2026-10/latency-braking-results.json uv run pytest -q tests/test_latency_braking.py cd lean lake env lean Research/LatencyBraking.lean
+        - paragraph [ref=f1e130]:
+          - text: "For the standalone Python download:"
+          - code [ref=f1e131]: uv run --no-project latency_braking.py --output results.json
+          - text: . It uses only the standard library. Tests require the original relative paths in the manifest. The full pinned Lean dependency environment currently requires access to the private repository.
+        - paragraph [ref=f1e132]:
+          - strong [ref=f1e133]: "Next experiment:"
+          - text: connect the existing timestamped-state sink to a delay budget with explicit clock and actuator contracts. Compare freshness-only rejection with model-based margins under matched latency traces; measure false admissions, availability and unnecessary rejection. A smaller margin is useful only if its input bounds remain valid.
+      - generic [ref=f1e134]:
+        - heading "One useful sensitivity question" [level=2] [ref=f1e135]
+        - paragraph [ref=f1e136]: In the specified example, reducing total delay by 20 ms saves exactly 38.7 mm of required clearance. Reducing the speed-error bound by 0.02 m/s and the position-error bound by 10 mm together saves 26.9 mm. These are hypothetical changes with the other inputs fixed, not measured engineering improvements or a comparison of implementation cost.
+        - paragraph [ref=f1e137]: That suggests testing the timestamp-to-brake path before adding model complexity. Improving an assumed bound on paper is not evidence that the system improved.
+    - contentinfo [ref=f1e138]:
+      - generic [ref=f1e139]: AI-assisted code, proof text, review and explanation · 21 October 2026
+      - link "Back to research" [ref=f1e140] [cursor=pointer]:
+        - /url: ../research.html

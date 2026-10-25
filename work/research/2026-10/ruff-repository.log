@@ -1,0 +1,209 @@
+F841 Local variable `euler_totals` is assigned to but never used
+   --> papers/generate_all_figures.py:286:5
+    |
+284 |     smooth_labels = ["3-smooth\n{2,3}", "5-smooth\n{2,3,5}", "7-smooth\n{2,3,5,7}", "11-smooth\n{2..11}", "13-smooth\n{2..13}"]
+285 |     # Euler products prod_{p} p/(p-1) vs admissible (m>=4, m+1 prime) reciprocal sum upper bounds
+286 |     euler_totals = [3.0, 3.75, 4.375, float(Fraction(77, 32)), float(Fraction(1001, 384))]
+    |     ^^^^^^^^^^^^
+287 |     # Note: for 11-smooth and 13-smooth in CoveringEleven.lean, 77/32 = 2.40625 is the odd-prime + 1/2 scaled product;
+288 |     # full pool reciprocal sum + tail:
+    |
+help: Remove assignment to unused variable `euler_totals`
+    |
+285 |     # Euler products prod_{p} p/(p-1) vs admissible (m>=4, m+1 prime) reciprocal sum upper bounds
+    -     euler_totals = [3.0, 3.75, 4.375, float(Fraction(77, 32)), float(Fraction(1001, 384))]
+286 +     [3.0, 3.75, 4.375, float(Fraction(77, 32)), float(Fraction(1001, 384))]
+287 |     # Note: for 11-smooth and 13-smooth in CoveringEleven.lean, 77/32 = 2.40625 is the odd-prime + 1/2 scaled product;
+    |
+note: This is an unsafe fix and may change runtime behavior
+
+F841 Local variable `bars` is assigned to but never used
+   --> papers/generate_all_figures.py:291:5
+    |
+289 |     admissible_sums = [0.5833, 0.8412, 0.9684, 1.174834, 1.3125]
+290 |     x = np.arange(len(smooth_labels))
+291 |     bars = ax.bar(x, admissible_sums, width=0.52, color=["#4c78a8", "#4c78a8", "#4c78a8", "#f58518", "#e45756"],
+    |     ^^^^
+292 |                   edgecolor="black", linewidth=0.8)
+293 |     ax.axhline(1.0, color="#d62728", linestyle="--", linewidth=1.6, label="Necessary covering density threshold $= 1.0$")
+    |
+help: Remove assignment to unused variable `bars`
+    |
+290 |     x = np.arange(len(smooth_labels))
+    -     bars = ax.bar(x, admissible_sums, width=0.52, color=["#4c78a8", "#4c78a8", "#4c78a8", "#f58518", "#e45756"],
+291 +     ax.bar(x, admissible_sums, width=0.52, color=["#4c78a8", "#4c78a8", "#4c78a8", "#f58518", "#e45756"],
+292 |                   edgecolor="black", linewidth=0.8)
+    |
+note: This is an unsafe fix and may change runtime behavior
+
+F841 Local variable `N_c1` is assigned to but never used
+   --> papers/generate_all_figures.py:334:5
+    |
+332 |     u_c1 = d_c1**2 - d_c1[0] ** 2
+333 |     # Form B columns v_j such that u_i + v_j are squares
+334 |     N_c1 = np.array([0.0, 206222625.0, 677376000.0, 2019635200.0, 4786481700.0, 16670745700.0])
+    |     ^^^^
+335 |     # Display the log10 of row differences u_i - u_1 for Class 1 and Class 2
+336 |     d_c2 = np.array([2988, 4356, 5787, 11164, 17046, 23948], dtype=float)
+    |
+help: Remove assignment to unused variable `N_c1`
+    |
+333 |     # Form B columns v_j such that u_i + v_j are squares
+    -     N_c1 = np.array([0.0, 206222625.0, 677376000.0, 2019635200.0, 4786481700.0, 16670745700.0])
+334 +     np.array([0.0, 206222625.0, 677376000.0, 2019635200.0, 4786481700.0, 16670745700.0])
+335 |     # Display the log10 of row differences u_i - u_1 for Class 1 and Class 2
+    |
+note: This is an unsafe fix and may change runtime behavior
+
+I001 [*] Import block is un-sorted or un-formatted
+  --> site/sketches/braking_shield.py:10:1
+   |
+ 8 |   """
+ 9 |
+10 | / from __future__ import annotations
+11 | |
+12 | | import math
+13 | |
+14 | | from manim import (
+15 | |     BLUE_C,
+16 | |     DOWN,
+17 | |     GREEN_C,
+18 | |     GREY_B,
+19 | |     GREY_D,
+20 | |     LEFT,
+21 | |     ORANGE,
+22 | |     RED_C,
+23 | |     RIGHT,
+24 | |     UP,
+25 | |     YELLOW_C,
+26 | |     Arrow,
+27 | |     Axes,
+28 | |     DashedLine,
+29 | |     Dot,
+30 | |     FadeIn,
+31 | |     Line,
+32 | |     Rectangle,
+33 | |     Scene,
+34 | |     Text,
+35 | |     ValueTracker,
+36 | |     VGroup,
+37 | |     Write,
+38 | |     always_redraw,
+39 | |     linear,
+40 | | )
+41 | |
+42 | | from ctrl.robotics.contact_cbf import (
+43 | |     CentroidalQuadParams,
+44 | |     directional_cbf,
+45 | |     quad_contact_forces,
+46 | |     safe_decel_max,
+47 | |     lorentz_cbf_safety_filter,
+48 | | )
+   | |_^
+49 |
+50 |   PARAMS = CentroidalQuadParams(m=12.0, g=9.81, h_g=0.30, w_x=0.20, w_y=0.12, mu=0.60)
+   |
+help: Organize imports
+   |
+44 |     directional_cbf,
+45 +     lorentz_cbf_safety_filter,
+46 |     quad_contact_forces,
+47 |     safe_decel_max,
+   -     lorentz_cbf_safety_filter,
+48 | )
+   |
+
+I001 [*] Import block is un-sorted or un-formatted
+  --> tests/test_885_genus2_quotients.py:27:1
+   |
+25 |       sys.path.insert(0, str(REPO_ROOT))
+26 |
+27 | / from tools.verify_885_geometry import GRID_CLASSES  # noqa: E402
+28 | | from tools.verify_885_genus2_quotients import (  # noqa: E402
+29 | |     PRIMES_UP_TO_53,
+30 | |     analyze_all_seven_genus2_quotients,
+31 | |     compute_frobenius_data_mod_p,
+32 | |     compute_igusa_clebsch_from_projective_roots,
+33 | |     count_projective_points_fp_and_fp2,
+34 | |     evaluate_cassels_flynn_and_mumford_divisors,
+35 | |     is_good_prime_for_offsets,
+36 | |     squarefree_part,
+37 | |     verify_birational_weierstrass_model_for_c6,
+38 | | )
+   | |_^
+help: Organize imports
+   |
+26 |
+   - from tools.verify_885_geometry import GRID_CLASSES  # noqa: E402
+27 | from tools.verify_885_genus2_quotients import (  # noqa: E402
+--------------------------------------------------------------------------------
+37 | )
+38 + from tools.verify_885_geometry import GRID_CLASSES  # noqa: E402
+39 |
+   |
+
+F401 [*] `tools.certify_mf13_multiterm.sym_part_ak` imported but unused
+  --> tests/test_mf13_multiterm.py:43:5
+   |
+41 |     off_diag_blocks_6,
+42 |     run_multiterm_benchmark_suite,
+43 |     sym_part_ak,
+   |     ^^^^^^^^^^^
+44 |     verify_eight_involution_dominance_and_intertwiner,
+45 |     verify_fifteen_dim_skew_parseval_and_swap_involutions,
+   |
+help: Remove unused import: `tools.certify_mf13_multiterm.sym_part_ak`
+   |
+42 |     run_multiterm_benchmark_suite,
+   -     sym_part_ak,
+43 |     verify_eight_involution_dominance_and_intertwiner,
+   |
+
+E402 Module level import not at top of file
+  --> tests/test_mf13_multiterm.py:48:1
+   |
+46 |       verify_multiterm_involution_hierarchy,
+47 |   )
+48 | / from tools.certify_mf13_pair import (
+49 | |     analyze_byers_nash_pair,
+50 | |     certify_gram_tester_pair,
+51 | |     find_common_t_involution,
+52 | |     frobenius_inner,
+53 | |     frobenius_norm_sq,
+54 | |     lyapunov_eval,
+55 | |     make_calibration_pair,
+56 | |     make_m05_pair,
+57 | | )
+   | |_^
+58 |   from tools.sdp_rational_cert import RationalMatrix, verify_ldl_identity
+   |
+help: Move module level imports to top of file
+
+F401 [*] `tools.certify_mf13_pair.make_m05_pair` imported but unused
+  --> tests/test_mf13_multiterm.py:56:5
+   |
+54 |     lyapunov_eval,
+55 |     make_calibration_pair,
+56 |     make_m05_pair,
+   |     ^^^^^^^^^^^^^
+57 | )
+58 | from tools.sdp_rational_cert import RationalMatrix, verify_ldl_identity
+   |
+help: Remove unused import: `tools.certify_mf13_pair.make_m05_pair`
+   |
+55 |     make_calibration_pair,
+   -     make_m05_pair,
+56 | )
+   |
+
+E402 Module level import not at top of file
+  --> tests/test_mf13_multiterm.py:58:1
+   |
+56 |     make_m05_pair,
+57 | )
+58 | from tools.sdp_rational_cert import RationalMatrix, verify_ldl_identity
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+help: Move module level imports to top of file
+
+Found 9 errors.
+[*] 4 fixable with `--fix` (3 unsafe fixes available with `--fix --unsafe-fixes`).

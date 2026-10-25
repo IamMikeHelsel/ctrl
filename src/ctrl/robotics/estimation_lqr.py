@@ -7,11 +7,15 @@ Every public function is backed by a machine-checked theorem in ``ControlsLean``
 from __future__ import annotations
 
 import math
-from typing import Any
+from collections.abc import Sequence
+from fractions import Fraction
+from typing import Any, TypeVar
 
 import numpy as np
 
 from ctrl.robotics.registry import lean_theorem
+
+Scalar = TypeVar("Scalar", float, Fraction)
 
 
 @lean_theorem(
@@ -643,4 +647,177 @@ def kalman_bucy_continuous_step(
         "trace_dsigma_star": float(np.trace(dsigma_star)),
         "trace_dsigma_cand": float(np.trace(dsigma_cand)),
     }
+
+
+def _pomdp_use_fraction(*args: Any) -> bool:
+    for arg in args:
+        if isinstance(arg, Fraction):
+            return True
+        if isinstance(arg, (list, tuple)):
+            for item in arg:
+                if isinstance(item, Fraction):
+                    return True
+                if isinstance(item, (list, tuple)):
+                    for sub in item:
+                        if isinstance(sub, Fraction):
+                            return True
+    return False
+
+
+@lean_theorem(
+    "ControlsLean.Estimation.POMDPBelief",
+    (
+        "IsBelief",
+        "IsTransitionKernel",
+        "IsObsLikelihood",
+        "unnormBeliefUpdate",
+        "obsNormConst",
+        "beliefUpdate",
+        "beliefUpdate_isBelief",
+        "beliefPredict_isBelief",
+    ),
+    domain="estimation_lqr",
+    summary=(
+        "Discrete-state POMDP Bayesian belief filtering b^+(s') = O(s') sum_s T(s, s') b(s) / Z(b) "
+        "and probability simplex preservation."
+    ),
+)
+def pomdp_bayes_belief_update(
+    t_kernel: Sequence[Sequence[Scalar]],
+    obs_likelihood: Sequence[Scalar],
+    prior_belief: Sequence[Scalar],
+) -> dict[str, Any]:
+    """Compute exact or floating-point POMDP Bayesian posterior belief on the probability simplex.
+
+    Backed by ``ControlsLean.Estimation.POMDPBelief.beliefUpdate_isBelief``.
+    """
+    n = len(prior_belief)
+    if n == 0 or len(obs_likelihood) != n or len(t_kernel) != n or any(len(row) != n for row in t_kernel):
+        raise ValueError("t_kernel must be n x n and match obs_likelihood and prior_belief length n > 0.")
+
+    use_frac = _pomdp_use_fraction(t_kernel, obs_likelihood, prior_belief)
+    zero: Any = Fraction(0) if use_frac else 0.0
+    one: Any = Fraction(1) if use_frac else 1.0
+
+    t_mat = [[Fraction(x) if use_frac else float(x) for x in row] for row in t_kernel]
+    o_vec = [Fraction(x) if use_frac else float(x) for x in obs_likelihood]
+    b_vec = [Fraction(x) if use_frac else float(x) for x in prior_belief]
+
+    if any(x < 0 for x in b_vec) or any(x < 0 for x in o_vec) or any(x < 0 for row in t_mat for x in row):
+        raise ValueError("Beliefs, observation likelihoods, and transition probabilities must be non-negative.")
+
+    unnorm = [
+        o_vec[s_next] * sum((t_mat[s][s_next] * b_vec[s] for s in range(n)), zero)
+        for s_next in range(n)
+    ]
+    z_norm = sum(unnorm, zero)
+    if z_norm <= 0:
+        raise ValueError("Observation partition function Z(b) must be strictly positive.")
+
+    posterior = [u_val / z_norm for u_val in unnorm]
+    post_sum = sum(posterior, zero)
+    simplex_res = abs(post_sum - one)
+    tol = Fraction(0) if use_frac else 1e-12
+    is_valid = bool(all(p >= 0 for p in posterior) and simplex_res <= tol)
+
+    return {
+        "unnorm_belief": tuple(unnorm),
+        "obs_norm_const": z_norm,
+        "posterior_belief": tuple(posterior),
+        "posterior_sum": post_sum,
+        "simplex_residual": simplex_res,
+        "is_valid_belief": is_valid,
+    }
+
+
+@lean_theorem(
+    "ControlsLean.Estimation.POMDPBelief",
+    (
+        "pomdpValue",
+        "pomdpValue_convex",
+        "bellmanBackupAlpha",
+        "bellman_backup_alpha_eq",
+        "bellman_backup_normalized_eq",
+        "bellman_backup_pwlc_preservation",
+    ),
+    domain="estimation_lqr",
+    summary=(
+        "Smallwood-Sondik POMDP alpha-vector Bellman backup duality and Piecewise-Linear "
+        "Convex (PWLC) value function preservation."
+    ),
+)
+def pomdp_pwlc_bellman_backup(
+    reward_vec: Sequence[Scalar],
+    gamma: Scalar,
+    t_kernel: Sequence[Sequence[Scalar]],
+    obs_likelihood: Sequence[Scalar],
+    alpha_vectors: Sequence[Sequence[Scalar]],
+    prior_belief: Sequence[Scalar],
+) -> dict[str, Any]:
+    """Compute one-step backed-up alpha-vectors and verify Smallwood-Sondik PWLC preservation.
+
+    Verifies the identity proved in ``ControlsLean.Estimation.POMDPBelief.bellman_backup_pwlc_preservation``:
+    ``b . r + gamma * Z(b) * V_Gamma(b^+) == V_{Gamma_back}(b)``.
+    """
+    n = len(prior_belief)
+    k_count = len(alpha_vectors)
+    if n == 0 or k_count == 0 or len(reward_vec) != n:
+        raise ValueError("reward_vec, prior_belief, and alpha_vectors must be non-empty with matching state dimension n.")
+    if any(len(alpha) != n for alpha in alpha_vectors):
+        raise ValueError("Every alpha-vector in alpha_vectors must have length n.")
+
+    use_frac = _pomdp_use_fraction(
+        reward_vec, gamma, t_kernel, obs_likelihood, alpha_vectors, prior_belief
+    )
+    zero: Any = Fraction(0) if use_frac else 0.0
+    gam: Any = Fraction(gamma) if use_frac else float(gamma)
+    if gam < 0:
+        raise ValueError("Discount factor gamma must be non-negative.")
+
+    r_v = [Fraction(x) if use_frac else float(x) for x in reward_vec]
+    t_mat = [[Fraction(x) if use_frac else float(x) for x in row] for row in t_kernel]
+    o_v = [Fraction(x) if use_frac else float(x) for x in obs_likelihood]
+    b_v = [Fraction(x) if use_frac else float(x) for x in prior_belief]
+    gamma_set = [[Fraction(x) if use_frac else float(x) for x in alpha] for alpha in alpha_vectors]
+
+    bayes = pomdp_bayes_belief_update(t_mat, o_v, b_v)
+    b_post = bayes["posterior_belief"]
+    z_norm = bayes["obs_norm_const"]
+
+    backed_up: list[tuple[Any, ...]] = []
+    backed_dots: list[Any] = []
+    post_dots: list[Any] = []
+
+    for alpha_next in gamma_set:
+        alpha_back = tuple(
+            r_v[s]
+            + gam
+            * sum(
+                (t_mat[s][s_next] * o_v[s_next] * alpha_next[s_next] for s_next in range(n)),
+                zero,
+            )
+            for s in range(n)
+        )
+        backed_up.append(alpha_back)
+        backed_dots.append(sum((b_v[s] * alpha_back[s] for s in range(n)), zero))
+        post_dots.append(sum((b_post[s_next] * alpha_next[s_next] for s_next in range(n)), zero))
+
+    v_back = max(backed_dots)
+    active_idx = int(backed_dots.index(v_back))
+    v_post = max(post_dots)
+    expected_reward = sum((b_v[s] * r_v[s] for s in range(n)), zero)
+    v_forward_lhs = expected_reward + gam * z_norm * v_post
+    pwlc_res = abs(v_forward_lhs - v_back)
+
+    return {
+        "backed_up_alphas": tuple(backed_up),
+        "value_backed_up": v_back,
+        "value_forward_lhs": v_forward_lhs,
+        "value_posterior": v_post,
+        "active_alpha_index": active_idx,
+        "obs_norm_const": z_norm,
+        "posterior_belief": b_post,
+        "pwlc_preservation_residual": pwlc_res,
+    }
+
 

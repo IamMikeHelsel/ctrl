@@ -3,6 +3,7 @@ import Research.ByersNashDuality
 import Research.ByersNashMultiTerm
 import Research.ByersNashHaarIntertwiner
 import Research.ByersNashOffDiagComplete
+import Research.ByersNashExtremalFlip
 import Research.CentroidalDecelerationLimit
 import Research.ControlCertificates
 import Research.CoveringCapacity
@@ -24,3 +25,7 @@ import Research.SkewRankFourNormalForm
 import Research.TimingContracts
 import Research.VisualServoingInvariant
 import Research.WorldFrameTransport
+import Research.FactoryProofs
+import Research.LatencyBraking
+import Research.TransportCertificate
+import Research.VisionPerceptionHardening

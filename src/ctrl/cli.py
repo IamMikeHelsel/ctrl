@@ -491,18 +491,7 @@ def check_cmd(
     if bool(nnn) == bool(all_):
         raise usage("give one problem number or --all", fix="ctrl check --all")
     nnns = [nnn_of(nnn)] if nnn else repo.problems()
-    warnings = []
-    rows = []
-    for n in nnns:
-        if not repo.solution(n).exists():
-            if all_:
-                warnings.append(f"{n}: no lean/ErdosLab/Erdos{n}.lean, skipped")
-                continue
-            raise usage(f"lean/ErdosLab/Erdos{n}.lean does not exist", fix=f"ctrl new {n}")
-        progress(f"checking {n}{' (fast)' if fast else ''}: lean/scripts/check.sh")
-        row = check.result(repo, n, check.run_local(repo, n, fast))
-        check.record(repo, n, row, fast=fast)
-        rows.append(row)
+    rows, warnings = _check_rows(repo, nnns, fast=fast, skip_missing=all_)
     err = check.error_for(rows)
     if err:
         nxt = [err.fix]
@@ -514,6 +503,89 @@ def check_cmd(
         warnings.append("no problems under work/")
         nxt = ["ctrl status"]
     finish({"results": rows}, _render_results, next=nxt, warnings=warnings, error=err)
+
+
+def _check_rows(
+    repo: Repo, nnns: list[str], *, fast: bool, skip_missing: bool
+) -> tuple[list[dict], list[str]]:
+    warnings: list[str] = []
+    rows: list[dict] = []
+    for n in nnns:
+        if not repo.solution(n).exists():
+            if skip_missing:
+                warnings.append(f"{n}: no lean/ErdosLab/Erdos{n}.lean, skipped")
+                continue
+            raise usage(f"lean/ErdosLab/Erdos{n}.lean does not exist", fix=f"ctrl new {n}")
+        progress(f"checking {n}{' (fast)' if fast else ''}: lean/scripts/check.sh")
+        row = check.result(repo, n, check.run_local(repo, n, fast))
+        check.record(repo, n, row, fast=fast)
+        rows.append(row)
+    return rows, warnings
+
+
+# ======================================================================= promote
+
+
+@command("promote")
+def promote(
+    nnn: str = typer.Argument(..., help="Erdős problem number."),
+    job: str = typer.Argument(..., help="A fetched job (work/NNN/candidates/JOB/)."),
+) -> None:
+    """Copy candidates/JOB/final.lean over the solution, then `ctrl check NNN --fast`; undo on failure."""
+    repo = Repo.find()
+    nnn = nnn_of(nnn)
+    job = spark.check_job_id(job)
+    _require_approved(repo, nnn)
+    cand_dir = repo.workdir(nnn) / "candidates" / job
+    final = cand_dir / "final.lean"
+    if not final.is_file():
+        raise usage(f"{repo.rel(final)} does not exist", fix=f"ctrl spark fetch {job}")
+    diffs = sorted(cand_dir.glob("attempt-*/challenge.diff"))
+    dirty = [d for d in diffs if d.read_text(errors="replace").strip()]
+    if not diffs or dirty:
+        raise CtrlError(
+            "CHALLENGE_DRIFT",
+            f"job {job} " + ("changed the challenge" if dirty else "has no challenge.diff"),
+            hint=(
+                "non-empty: " + ", ".join(repo.rel(d) for d in dirty)
+                if dirty
+                else "can't confirm the job left Challenge/ untouched (no attempt-*/challenge.diff)"
+            ),
+            fix=f"ls {repo.rel(cand_dir)}",
+            exit_code=EXIT_FAILED_CHECK,
+        )
+    sol = repo.solution(nnn)
+    previous = sol.read_bytes() if sol.exists() else None
+
+    def restore() -> None:
+        if previous is None:
+            sol.unlink(missing_ok=True)
+        else:
+            sol.write_bytes(previous)
+
+    sol.write_bytes(final.read_bytes())
+    try:
+        rows, warnings = _check_rows(repo, [nnn], fast=True, skip_missing=False)
+    except BaseException:
+        restore()
+        raise
+    err = check.error_for(rows)
+    if err:
+        restore()
+        warnings.append(f"check failed; restored the previous {repo.rel(sol)}")
+    else:
+        _log(repo, nnn, f"{date.today().isoformat()} promoted `{job}` into {repo.rel(sol)}")
+    data = {
+        "nnn": nnn,
+        "job": job,
+        "candidate": repo.rel(final),
+        "solution": repo.rel(sol),
+        "promoted": err is None,
+        "restored": err is not None,
+        "results": rows,
+    }
+    nxt = [err.fix] if err else [f"ctrl check {nnn}", f"git diff {repo.rel(sol)}"]
+    finish(data, _render_results, next=nxt, warnings=warnings, error=err)
 
 
 # ======================================================================= status
@@ -551,11 +623,15 @@ def status() -> None:
 
 
 @command("sync", spark_app)
-def spark_sync() -> None:
+def spark_sync(
+    force: bool = typer.Option(
+        False, "--force", help="Sync even while a prove job runs and the manifest changed."
+    ),
+) -> None:
     """rsync the repo to ~/lean-work/ctrl; `lake exe cache get` if the manifest changed."""
     repo = Repo.find()
     progress(f"rsync → {spark.host()}:~/{spark.REMOTE_REPO}")
-    data = spark.sync(repo)
+    data = spark.sync(repo, force=force)
 
     def render(d):
         return kv(
@@ -623,10 +699,21 @@ def spark_prove(
     minutes: int = typer.Option(None, "--minutes", help="Wall-clock budget."),
     model: str = typer.Option("leanstral", "--model", help="Ollama model on the Spark."),
     attempts: int = typer.Option(None, "--attempts", help="Attempt budget."),
+    reasoning: str = typer.Option(None, "--reasoning", help="high | none (PROVE_REASONING)."),
+    max_turns: int = typer.Option(None, "--max-turns", help="Per session (PROVE_MAX_TURNS)."),
 ) -> None:
     """sync, then tools/spark/prove.sh in tmux. Returns a job id."""
     repo = Repo.find()
     nnn = nnn_of(nnn)
+    if reasoning is not None and reasoning not in ("high", "none"):
+        raise usage(f"--reasoning {reasoning!r}: use high or none", fix=f"ctrl spark prove {nnn}")
+    env = {}
+    if reasoning is not None:
+        env["PROVE_REASONING"] = reasoning
+    if max_turns is not None:
+        if max_turns < 1:
+            raise usage("--max-turns must be ≥ 1", fix=f"ctrl spark prove {nnn}")
+        env["PROVE_MAX_TURNS"] = str(max_turns)
     _require_approved(repo, nnn)
     progress(f"rsync → {spark.host()}")
     spark.sync(repo)
@@ -635,10 +722,17 @@ def spark_prove(
         args += ["--minutes", str(minutes)]
     if attempts is not None:
         args += ["--attempts", str(attempts)]
-    job = spark.start_job("prove", args)
+    job = spark.start_job("prove", args, env)
     _record_job(repo, nnn, job, "prove", phase="proving")
     finish(
-        {"job": job, "nnn": nnn, "model": model, "minutes": minutes, "attempts": attempts},
+        {
+            "job": job,
+            "nnn": nnn,
+            "model": model,
+            "minutes": minutes,
+            "attempts": attempts,
+            "env": env,
+        },
         lambda d: kv([("job", d["job"]), ("model", d["model"])]),
         next=[f"ctrl spark log {job} -f", f"ctrl spark fetch {job}"],
     )
@@ -653,6 +747,9 @@ def spark_solve(
     nnn: str = typer.Argument(..., help="Erdős problem number."),
     script: str = typer.Argument(..., help="Script under work/NNN/, e.g. search.py."),
     args: list[str] = typer.Argument(None, help="Arguments for the script (after --)."),
+    timeout_min: int = typer.Option(
+        None, "--timeout-min", help="Kill the run after N minutes (SOLVE_TIMEOUT_MIN)."
+    ),
 ) -> None:
     """Run work/NNN/SCRIPT in ~/venvs/solve with the solvers on PATH, in tmux. Returns a job id."""
     repo = Repo.find()
@@ -662,10 +759,11 @@ def spark_solve(
         raise usage(f"work/{nnn}/{script} does not exist", fix=f"ls work/{nnn}")
     progress(f"rsync → {spark.host()}")
     spark.sync(repo)
-    job = spark.start_job("solve", [nnn, script, *(args or [])])
+    env = {"SOLVE_TIMEOUT_MIN": str(timeout_min)} if timeout_min is not None else {}
+    job = spark.start_job("solve", [nnn, script, *(args or [])], env)
     _record_job(repo, nnn, job, "solve")
     finish(
-        {"job": job, "nnn": nnn, "script": script, "args": list(args or [])},
+        {"job": job, "nnn": nnn, "script": script, "args": list(args or []), "env": env},
         lambda d: kv([("job", d["job"]), ("script", d["script"])]),
         next=[f"ctrl spark log {job} -f", f"ctrl spark fetch {job}"],
     )
@@ -675,7 +773,10 @@ def spark_solve(
 def spark_jobs() -> None:
     """List jobs in ~/lean-work/jobs on the Spark."""
     rows = spark.jobs()
-    nxt = [f"ctrl spark log {rows[-1]['job']}"] if rows else []
+    running = [r for r in rows if r.get("status") in spark.RUNNING]
+    done = [r for r in rows if r.get("status") not in spark.RUNNING]
+    nxt = [f"ctrl spark log {r['job']} -f" for r in running[:1]]
+    nxt += [f"ctrl spark fetch {r['job']}" for r in done[:1]]
 
     def render(d):
         if not d["jobs"]:
@@ -686,11 +787,12 @@ def spark_jobs() -> None:
                 r.get("nnn", ""),
                 r.get("kind", ""),
                 r.get("status", ""),
-                r.get("started", r.get("created", "")),
+                r.get("started", ""),
+                r.get("elapsed_s", ""),
             ]
             for r in d["jobs"]
         ]
-        return table(["job", "#", "kind", "status", "started"], body)
+        return table(["job", "#", "kind", "status", "started", "elapsed s"], body)
 
     finish({"jobs": rows}, render, next=nxt)
 
@@ -701,7 +803,7 @@ def spark_log(
     follow: bool = typer.Option(False, "-f", "--follow", help="Keep streaming."),
     lines: int = typer.Option(200, "-n", "--lines", help="Lines from the end."),
 ) -> None:
-    """Tail a job's log.txt."""
+    """Tail a job's log.txt (tools/spark/log.sh; -f returns when the job ends)."""
     job = spark.check_job_id(job)
     if follow and ui.json:
         raise usage("-f streams raw text; drop --json", fix=f"ctrl spark log {job} -f")
@@ -731,15 +833,109 @@ def spark_fetch(job: str = typer.Argument(..., help="Job id (ctrl spark jobs).")
     progress(f"rsync {spark.host()}:~/{spark.REMOTE_JOBS}/{job}/outputs/ → {repo.rel(dest)}")
     files = spark.fetch(job, dest)
     _log(repo, nnn, f"{date.today().isoformat()} fetched job `{job}` → {repo.rel(dest)}/")
-    data = {"job": job, "nnn": nnn, "dest": repo.rel(dest), "files": files, "meta": meta}
-    finish(
-        data,
-        lambda d: kv([("job", d["job"]), ("into", d["dest"]), ("files", str(len(d["files"])))]),
-        next=[f"ls {repo.rel(dest)}", f"ctrl check {nnn} --fast"],
-        warnings=[
-            "candidates are untrusted: promote into lean/ErdosLab only after ctrl check --fast"
-        ],
-    )
+    final = dest / "final.lean"
+    candidate = repo.rel(final) if final.is_file() else None
+    data = {
+        "job": job,
+        "nnn": nnn,
+        "dest": repo.rel(dest),
+        "files": files,
+        "candidate": candidate,
+        "meta": meta,
+    }
+    rows = [("job", job), ("status", str(meta.get("status", "?"))), ("into", data["dest"])]
+    rows += [("files", str(len(files))), ("candidate", candidate or "none (no final.lean)")]
+    warnings = [
+        "candidates are untrusted: `ctrl promote` copies final.lean into lean/ErdosLab only if "
+        "the job left Challenge/ untouched, then runs ctrl check --fast and undoes a failure"
+    ]
+    nxt = [f"ctrl promote {nnn} {job}", f"ctrl check {nnn} --fast"] if candidate else []
+    if meta.get("status") in spark.RUNNING:
+        warnings.append(f"job {job} is still {meta.get('status')}; fetch again when it ends")
+        nxt = [f"ctrl spark log {job} -f"] + nxt
+    finish(data, lambda d: kv(rows), next=nxt or [f"ls {data['dest']}"], warnings=warnings)
+
+
+# ============================================================= robotics-check
+
+
+@command("robotics-check")
+def robotics_check(
+    mujoco_sim: bool = typer.Option(
+        True, "--mujoco/--no-mujoco", help="Run closed-loop MuJoCo physics benchmarks."
+    ),
+    c99_codegen: bool = typer.Option(
+        True, "--c99/--no-c99", help="Compile and verify C99 kernels via clang + ctypes."
+    ),
+) -> None:
+    """Verify @lean_theorem bindings across lean/Robotics, C99 codegen parity, and MuJoCo rollouts."""
+    from ctrl import robotics
+
+    repo = Repo.find()
+    audit = robotics.verify_lean_bindings(repo.root)
+    c99_res = robotics.compile_and_verify_c99_kernels() if c99_codegen else {"parity_verified": True}
+    mj_res = robotics.run_all_mujoco_benchmarks() if mujoco_sim else {"ok": True}
+
+    all_ok = bool(audit["ok"] and c99_res.get("parity_verified", False) and mj_res.get("ok", False))
+    err = None
+    if not all_ok:
+        err = CtrlError(
+            "BINDING_MISMATCH",
+            "one or more robotics verification checks failed",
+            hint=f"missing={audit['missing_theorems']}, forbidden={audit['forbidden_hits']}",
+            fix="pytest tests/test_ctrl_robotics_lib.py",
+            exit_code=EXIT_FAILED_CHECK,
+        )
+
+    data = {
+        "ok": all_ok,
+        "lean_audit": audit,
+        "c99_codegen": c99_res,
+        "mujoco_benchmarks": {
+            "ok": mj_res.get("ok", True),
+            "arm_joule_reduction_pct": mj_res.get("arm_6dof", {}).get("joule_dynamic_reduction_pct"),
+            "quad_safety_verified": mj_res.get("quad_zmp_cbf", {}).get("safety_verified"),
+            "se3_hbvs_monotone": mj_res.get("se3_visual_servoing", {}).get("hbvs_monotone_in_interval"),
+        }
+        if mujoco_sim
+        else {"ok": True},
+    }
+
+    def render(d):
+        la = d["lean_audit"]
+        rows = [
+            [
+                mark(la["ok"]),
+                "Lean 4 spec bindings",
+                f"{la['registered_functions']} fns → {la['total_lean_theorems_bound']} thms "
+                f"({la['robotics_lean_modules']} modules, {la['robotics_lean_lines']} LOC)",
+            ]
+        ]
+        if c99_codegen:
+            c99 = d["c99_codegen"]
+            rows.append(
+                [
+                    mark(c99["parity_verified"]),
+                    "C99 / IEC 61131-3 codegen",
+                    f"clang -O3 shared lib max error = {c99['max_c99_vs_python_error']:.2e}",
+                ]
+            )
+        if mujoco_sim:
+            mb = d["mujoco_benchmarks"]
+            rows.append(
+                [
+                    mark(mb["ok"]),
+                    "MuJoCo 3.16 physics rollouts",
+                    f"6-DOF arm ΔJoule = -{mb['arm_joule_reduction_pct']:.2f}%, "
+                    f"Quad CBF = {mb['quad_safety_verified']}, SE(3) HBVS = {mb['se3_hbvs_monotone']}",
+                ]
+            )
+        return Group(
+            header("robotics-check", "lean/Robotics + ctrl.robotics"),
+            table(["", "subsystem", "summary"], rows),
+        )
+
+    finish(data, render, next=["pytest -q"], error=err)
 
 
 # ======================================================================= main

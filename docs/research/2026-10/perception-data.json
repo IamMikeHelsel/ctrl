@@ -1,0 +1,642 @@
+{
+  "schema_version": 1,
+  "as_of": "2026-10-21",
+  "window": {
+    "from": "2026-08-21",
+    "to": "2026-10-21",
+    "inclusive": true
+  },
+  "scope": "Bounded primary-source survey for perception, data manipulation, estimation, planning and navigation. Eight in-window arXiv v1 records. Not exhaustive or a peer review.",
+  "ai_disclosure": "AI-assisted search, reading, triage and prototype proposals. No source result has been independently reproduced or machine-checked in this lane.",
+  "evidence_legend": {
+    "source_theory": "Relevant theorem and assumptions inspected in primary full text; not independently proved.",
+    "source_empirical": "Author-reported experiment, not a theorem or ctrl replication.",
+    "ctrl_proposal_only": "No implementation or measured improvement implied."
+  },
+  "confidence_definition": "Subjective confidence in the priority and source-to-prototype fit, not probability that the paper is correct or that performance improves.",
+  "papers": [
+    {
+      "id": "PD-01",
+      "title": "Following a Unique Path: A Fast Certifier Applied to Outlier-Robust Pose Registration",
+      "authors": [
+        "Connor Holmes",
+        "Abhishek Goudar",
+        "Timothy D. Barfoot"
+      ],
+      "url": "https://arxiv.org/abs/2609.03222",
+      "publication_date": "2026-09-02",
+      "version_date": "2026-09-02",
+      "date_basis": "arXiv submission history, v1; preprint date, not a journal publication date.",
+      "window_status": "in_window",
+      "source_read": {
+        "level": "theorem_and_method_passages_inspected",
+        "url": "https://arxiv.org/html/2609.03222v1",
+        "locations": [
+          "II-C2, equations (3)-(5)",
+          "III, Assumption 1 and Proposition 1",
+          "III-C stopping conditions"
+        ],
+        "limit": "Relevant full-text passages; independent proof and code reproduction not performed."
+      },
+      "mathematical_domains": [
+        "semidefinite optimization",
+        "convex duality",
+        "quadratic forms",
+        "rigid transformations"
+      ],
+      "physical_domains": [
+        "rigid-body geometry",
+        "stereo camera sensing"
+      ],
+      "application_domains": [
+        "machine vision",
+        "pose estimation",
+        "point-cloud data association"
+      ],
+      "theorem_or_claim": {
+        "kind": "conditional certificate criterion plus numerical algorithm",
+        "location": "II-C2 equations (3)-(5); III Proposition 1",
+        "summary": "Primal feasibility, dual PSD feasibility and zero complementary slackness certify a feasible QCQP candidate globally. CP-Cert searches for certificates in degenerate relaxations. Its implementation admits numerical tolerances; rank tightness is established empirically for tested problems."
+      },
+      "assumptions": [
+        "Exact certificate criterion requires feasible candidate, symmetric data, PSD dual matrix and exact complementarity.",
+        "Central-path mechanism assumes the candidate's lift is the central-path limit; rank tightness plus a nonzero constraint RHS is a sufficient condition."
+      ],
+      "failure_modes": [
+        "Floating-point PSD tolerance is not an exact proof.",
+        "Non-tight relaxations, nonoptimal candidates or ill-conditioned certificates can fail certification.",
+        "Optimality for a chosen cost does not establish correct correspondences or physical safety."
+      ],
+      "connection_to_ctrl": [
+        "tools/sdp_rational_cert.py",
+        "tools/push_sdp_cert.py",
+        "lean/ControlsLean/Vision/Homography.lean",
+        "lean/ControlsLean/Robotics/SE3Kinematics.lean"
+      ],
+      "proposed_new_question": "Can a small pose/data-association candidate export a rational dual witness with either exact optimality or a rigorous additive gap?",
+      "prototype": "First implement a tiny rational QCQP certificate replay, including PSD LDLᵀ and equality residual checks; only then attempt pose instances. Keep external search untrusted.",
+      "baseline": "Direct exact enumeration on tiny instances; floating-point solver certificate with identical objective and constraints.",
+      "metrics": [
+        "Accepted exact certificates",
+        "False acceptance on corrupted witnesses",
+        "Certified objective gap",
+        "Checker latency and witness size"
+      ],
+      "falsifier": "Any accepted witness with a better feasible enumerated candidate falsifies the checker. If rational reconstruction rarely succeeds or gap bounds are useless, defer geometric scale-up.",
+      "evidence_tier": "source_theory_with_numerical_implementation; ctrl_proposal_only",
+      "novelty_status": "Known certificate principle; ctrl integration is proposed, broader novelty unreviewed.",
+      "priority": "P1",
+      "confidence": {
+        "percent": 90,
+        "rationale": "Primary certificate equations and numerical boundary are explicit; useful prototype is small. Scaling to realistic pose data remains uncertain."
+      }
+    },
+    {
+      "id": "PD-02",
+      "title": "Fast and Scalable Multi-Agent Distribution Matching via Partitioned Optimal Transport",
+      "authors": [
+        "Kooktae Lee",
+        "Ruchika Singh"
+      ],
+      "url": "https://arxiv.org/abs/2609.38960",
+      "publication_date": "2026-09-30",
+      "version_date": "2026-09-30",
+      "date_basis": "arXiv submission history, v1; preprint date.",
+      "window_status": "in_window",
+      "source_read": {
+        "level": "theorem_and_proof_passages_inspected",
+        "url": "https://arxiv.org/html/2609.38960v1",
+        "locations": [
+          "III-B block feasibility",
+          "V Assumption 4",
+          "V-B Theorem 1",
+          "V-C Theorem 2 and Remark 3"
+        ],
+        "limit": "Relevant full-text passages; not independently reproduced."
+      },
+      "mathematical_domains": [
+        "finite optimal transport",
+        "convex optimization",
+        "barycentric decomposition",
+        "contraction inequalities"
+      ],
+      "physical_domains": [
+        "multi-agent kinematics",
+        "finite-horizon motion"
+      ],
+      "application_domains": [
+        "planning",
+        "navigation",
+        "fleet coverage",
+        "data assignment"
+      ],
+      "theorem_or_claim": {
+        "kind": "conditional mathematical guarantee",
+        "location": "V-B Theorem 1 and V-C Theorem 2",
+        "summary": "Mass-balanced block couplings are globally feasible; a barycentric contraction and persistent block membership give cycle-wise descent of a surrogate that upper-bounds squared Wasserstein distance. The paper explicitly does not claim monotonicity of the true Wasserstein optimum."
+      },
+      "assumptions": [
+        "Matching source/target block masses.",
+        "Previous coupling remains feasible after motion; block membership persists.",
+        "Terminal barycentric contraction with 0 ≤ rho < 1.",
+        "Restricted transport is reoptimized at cycle boundaries; full control horizon is executed."
+      ],
+      "failure_modes": [
+        "Changing blocks breaks the comparison coupling.",
+        "Collision avoidance or actuator limits may invalidate contraction.",
+        "A descending upper bound can conceal a rising true transport cost."
+      ],
+      "connection_to_ctrl": [
+        "lean/RoboLean/FleetThroughput.lean",
+        "lean/RoboLean/FleetDeadlock.lean",
+        "lean/ControlsLean/Controls/ISS.lean"
+      ],
+      "proposed_new_question": "Can a certificate retain a useful descent inequality when assignment changes are admitted only after an exact feasibility check?",
+      "prototype": "Rational 4–16 agent instance with explicit coupling; check marginals, barycenter identity and per-cycle descent. Add deliberate block migration as a negative case.",
+      "baseline": "Global assignment under the same dynamics and partitions held fixed; compare a greedy block allocator.",
+      "metrics": [
+        "Surrogate and true transport cost separately",
+        "Marginal residual",
+        "Certificate rejection after migration",
+        "Solve/check latency",
+        "Collision count as separate empirical metric"
+      ],
+      "falsifier": "Reject the claimed application if collision filtering routinely destroys contraction or if partition costs overwhelm any latency advantage.",
+      "evidence_tier": "source_theorem_passages; ctrl_proposal_only",
+      "novelty_status": "Source theorem reproduction first; reassignment certificate is a hypothesis, not a novelty claim.",
+      "priority": "P1",
+      "confidence": {
+        "percent": 91,
+        "rationale": "Finite sums and quadratic identities fit existing Lean algebra; system-level benefit depends on constraint interaction."
+      }
+    },
+    {
+      "id": "PD-03",
+      "title": "Do Better Imagined Rollouts Mean Better Robot Control? A Controlled Study of World-Model Evaluation Under Feedback",
+      "authors": [
+        "Dharini Raghavan",
+        "Amritpal Singh"
+      ],
+      "url": "https://arxiv.org/abs/2609.02811",
+      "publication_date": "2026-09-02",
+      "version_date": "2026-09-02",
+      "date_basis": "arXiv submission history, v1. A third-party page's later update is not used as a paper version date.",
+      "window_status": "in_window",
+      "source_read": {
+        "level": "experimental_and_limitations_passages_inspected",
+        "url": "https://arxiv.org/html/2609.02811v1",
+        "locations": [
+          "5.4 measurement-update frequency",
+          "7 Limitations",
+          "Appendices D-F"
+        ],
+        "limit": "No reproduction; not a mathematical theorem."
+      },
+      "mathematical_domains": [
+        "state estimation",
+        "feedback systems",
+        "rank statistics",
+        "experimental design"
+      ],
+      "physical_domains": [
+        "differential-drive kinematics",
+        "odometry and landmark sensing"
+      ],
+      "application_domains": [
+        "state estimation",
+        "planning evaluation",
+        "navigation"
+      ],
+      "theorem_or_claim": {
+        "kind": "empirical result",
+        "location": "Abstract; section 7; Appendix E",
+        "summary": "In one simulated navigation setup, estimator rankings from measurement-free rollouts differ more from closed-loop rankings than replay rankings. The result is conditional on estimator, controller and sensing schedule; it is not a universal metric for world models."
+      },
+      "assumptions": [
+        "Simulated three-state differential-drive robot with biased odometry and intermittent landmarks.",
+        "Primary study uses one path family and pure-pursuit control; principal recurrent models have three training seeds."
+      ],
+      "failure_modes": [
+        "Offline sensor-log replay cannot validate changed closed-loop trajectories.",
+        "Visual models, different platforms and longer model-based planning may behave differently.",
+        "Changing training outage duration alone need not improve closed-loop performance."
+      ],
+      "connection_to_ctrl": [
+        "src/ctrl/robotics/estimation_lqr.py",
+        "src/ctrl/robotics/mujoco_benchmarks.py",
+        "lean/ControlsLean/Estimation/KalmanOptimality.lean"
+      ],
+      "proposed_new_question": "Do ctrl estimator rankings remain stable when sensing cadence, controller bandwidth and disturbance correlation change?",
+      "prototype": "Deterministic seeded estimator benchmark using matched rollout/update schedules, then paired closed-loop trials on one simple dynamics model.",
+      "baseline": "Same estimators, data, dynamics and controller under measurement-free and measurement-matched evaluation.",
+      "metrics": [
+        "Estimator-selection regret",
+        "Cross-track RMSE",
+        "Rank correlation with confidence intervals",
+        "Failure/constraint counts",
+        "Latency"
+      ],
+      "falsifier": "If matched evaluation does not improve selection regret on held-out schedules, retain the negative result and avoid claiming a better benchmark.",
+      "evidence_tier": "source_empirical_only; ctrl_proposal_only",
+      "novelty_status": "Replication and evaluation extension; no new mathematical result claimed.",
+      "priority": "P1",
+      "confidence": {
+        "percent": 92,
+        "rationale": "High confidence in benchmark relevance and source scope; moderate confidence in any positive replication outcome."
+      }
+    },
+    {
+      "id": "PD-04",
+      "title": "CoSMO: Conformal Semantic Mapping for Open-World Safe Robot Navigation",
+      "authors": [
+        "Shuqi Wang",
+        "Yiwei Zheng",
+        "Pingrui Zhang",
+        "Yue Gao",
+        "Xiang Yin"
+      ],
+      "url": "https://arxiv.org/abs/2610.18321",
+      "publication_date": "2026-10-13",
+      "version_date": "2026-10-13",
+      "date_basis": "arXiv submission history, v1; record reports CoRL 2026 acceptance.",
+      "window_status": "in_window",
+      "source_read": {
+        "level": "theorem_assumptions_and_proof_passages_inspected",
+        "url": "https://arxiv.org/html/2610.18321v1",
+        "locations": [
+          "4.1 Propositions 1-2 and assumptions A1-A2",
+          "4.2 Theorem 1",
+          "Appendix C",
+          "Appendix D"
+        ],
+        "limit": "Relevant full text; source guarantee not independently formalized."
+      },
+      "mathematical_domains": [
+        "conformal prediction",
+        "martingale bounds",
+        "set containment",
+        "robust geometry"
+      ],
+      "physical_domains": [
+        "RGB-D sensing",
+        "collision clearance",
+        "sampled robot motion"
+      ],
+      "application_domains": [
+        "perception",
+        "semantic mapping",
+        "navigation",
+        "system safety"
+      ],
+      "theorem_or_claim": {
+        "kind": "conditional per-step implication and long-run coverage",
+        "location": "Theorem 1; Proposition 2; Appendix C.4",
+        "summary": "Coverage of all current neighborhood labels plus worst-case obstacle dilation implies semantic clearance. The online safety bound is long-run and includes delay/drift and conditional-bias penalties. Guarantees apply after relevant labels enter the vocabulary."
+      },
+      "assumptions": [
+        "Post-discovery vocabulary contains every safety-relevant true label.",
+        "Reliable obstacle detection, current embeddings throughout the neighborhood, sufficient sensing radius and bounded per-step motion.",
+        "Delayed expert labels; bounded score-CDF drift Delta and conditional bias epsilon.",
+        "Planner satisfies the current worst-case clearance constraints."
+      ],
+      "failure_modes": [
+        "Unknown hazards before discovery and missing detections are outside the guarantee.",
+        "Average coverage allows clustered failures.",
+        "Label-dependent clearance distances need independent physical justification."
+      ],
+      "connection_to_ctrl": [
+        "lean/ControlsLean/Estimation/POMDPBelief.lean",
+        "lean/ControlsLean/Controls/ISS.lean",
+        "src/ctrl/robotics/contact_cbf.py"
+      ],
+      "proposed_new_question": "Can ctrl expose the exact gap between semantic-set coverage, geometric feasibility, and stopping-distance safety?",
+      "prototype": "Grid-world semantic sets with an explicit unknown-label state; prove the deterministic containment implication before testing adaptive calibration.",
+      "baseline": "Geometry-only planner and fixed conservative dilation at matched feasibility rate.",
+      "metrics": [
+        "Post-discovery coverage",
+        "Pre-discovery failures separately",
+        "Clearance violations",
+        "Path cost",
+        "Infeasible plans",
+        "Delay sensitivity"
+      ],
+      "falsifier": "If coverage holds while motion violates clearance because of sensing delay or geometry mismatch, reject the composition, not merely retune the threshold.",
+      "evidence_tier": "source_conditional_theory_and_experiments; ctrl_proposal_only",
+      "novelty_status": "Reproduction of a source implication; additional stopping-distance composition is speculative.",
+      "priority": "P2",
+      "confidence": {
+        "percent": 84,
+        "rationale": "Clear theorem boundary; practical oracle and perception assumptions materially limit immediate deployment value."
+      }
+    },
+    {
+      "id": "PD-05",
+      "title": "Minimum Volume Optimal Transport for Multivariate Conformal Prediction",
+      "authors": [
+        "Chuchen Zhang",
+        "Haojie Ren",
+        "Zhaojun Wang",
+        "Yajie Bao",
+        "Changliang Zou"
+      ],
+      "url": "https://arxiv.org/abs/2610.14907",
+      "publication_date": "2026-10-10",
+      "version_date": "2026-10-10",
+      "date_basis": "arXiv submission history, v1; preprint date.",
+      "window_status": "in_window",
+      "source_read": {
+        "level": "theorem_assumptions_and_proof_passages_inspected",
+        "url": "https://arxiv.org/html/2610.14907v1",
+        "locations": [
+          "3.3 Theorem 3.1",
+          "3.4 Assumptions 3.1-3.2 and Theorems 3.2-3.3",
+          "4 Theorem 4.1; Appendix F.5"
+        ],
+        "limit": "Relevant full text; implementation and asymptotic proofs not reproduced."
+      },
+      "mathematical_domains": [
+        "optimal transport",
+        "conformal prediction",
+        "Mahalanobis geometry",
+        "empirical-process bounds"
+      ],
+      "physical_domains": [
+        "candidate link: anisotropic sensor error"
+      ],
+      "application_domains": [
+        "data manipulation",
+        "uncertainty quantification",
+        "perception",
+        "state estimation"
+      ],
+      "theorem_or_claim": {
+        "kind": "finite-sample marginal coverage; separate asymptotic results",
+        "location": "Theorem 3.1; Assumptions 3.1-3.2",
+        "summary": "Learning the transport metric independently of calibration preserves marginal coverage under exchangeability and equivariant tie handling. Volume-optimal metric and oracle-region recovery require additional consistency, separation and regularity assumptions."
+      },
+      "assumptions": [
+        "Exchangeable calibration/test observations.",
+        "Metric training independent of final calibration and test response.",
+        "Permutation-equivariant assignment tie handling.",
+        "Asymptotic optimality additionally needs regular transport/objective behavior and consistent fitting."
+      ],
+      "failure_modes": [
+        "Calibration leakage invalidates the stated rank argument.",
+        "Temporal dependence or distribution shift may break exchangeability.",
+        "Marginal coverage is not conditional or trajectory-wide coverage; minimum volume need not minimize control risk."
+      ],
+      "connection_to_ctrl": [
+        "lean/ControlsLean/Estimation/KalmanOptimality.lean",
+        "lean/ControlsLean/Estimation/InformationFilter.lean",
+        "src/ctrl/robotics/estimation_lqr.py"
+      ],
+      "proposed_new_question": "For anisotropic position error, is a task-weighted prediction region more useful for a safety margin than one minimizing Euclidean volume?",
+      "prototype": "Two-dimensional sensor residuals with a frozen train/calibration/test split; compare isotropic, covariance-whitened and learned transport sets before adding any controller.",
+      "baseline": "Split-conformal Euclidean balls and covariance ellipsoids; identical nominal coverage.",
+      "metrics": [
+        "Held-out coverage and interval",
+        "Region area",
+        "Worst directional support",
+        "Calibration latency",
+        "Downstream feasible-action fraction"
+      ],
+      "falsifier": "Defer if area shrinks but directional safety margins or held-out coverage worsen; no robot-safety claim follows from calibration alone.",
+      "evidence_tier": "source_theorem_passages; robotics_transfer_hypothesis",
+      "novelty_status": "Paper is general statistics; robotics pairing is proposed and novelty unchecked.",
+      "priority": "P2",
+      "confidence": {
+        "percent": 83,
+        "rationale": "Coverage assumptions are explicit, but robotics data usually need dependence-aware calibration and task-specific evaluation."
+      }
+    },
+    {
+      "id": "PD-06",
+      "title": "Nonlinear parameter-varying embeddings for nonlinear state estimation with application to a two-link robot manipulator",
+      "authors": [
+        "Jiaxin Ji",
+        "Shivaraj Mohite",
+        "Jan Heiland"
+      ],
+      "url": "https://arxiv.org/abs/2609.18603",
+      "publication_date": "2026-09-16",
+      "version_date": "2026-09-16",
+      "date_basis": "arXiv submission history, v1; preprint date.",
+      "window_status": "in_window",
+      "source_read": {
+        "level": "theorem_assumptions_and_derivation_inspected",
+        "url": "https://arxiv.org/html/2609.18603v1",
+        "locations": [
+          "2 Assumption 1 and equation (5)",
+          "3 equations (12)-(16), Theorem 1",
+          "5 numerical experiments"
+        ],
+        "limit": "Printed bound needs interpretation review; source theorem not accepted as a ctrl result."
+      },
+      "mathematical_domains": [
+        "Lyapunov inequalities",
+        "linear matrix inequalities",
+        "nonlinear observer design",
+        "Schur complements"
+      ],
+      "physical_domains": [
+        "two-link manipulator dynamics",
+        "bounded sensor/process disturbance"
+      ],
+      "application_domains": [
+        "robotics",
+        "state estimation",
+        "control"
+      ],
+      "theorem_or_claim": {
+        "kind": "source theorem requiring scope review",
+        "location": "Theorem 1 and equation (12)",
+        "summary": "An LMI observer design uses a quadratic dissipation inequality. The printed final unnormalized L2 bound omits the initial-energy and normalization terms visible in that inequality; this is a review item before reproduction, not an accepted ctrl guarantee."
+      },
+      "assumptions": [
+        "Known bounded scheduling variables; affine known parameter dependence.",
+        "Constant output/disturbance matrices; bounded nonlinear derivatives.",
+        "Positive definite certificate and positive decay/disturbance scalars; LMI feasible throughout the parameter set."
+      ],
+      "failure_modes": [
+        "Unmeasured scheduling state or unbounded derivative regions violate the model.",
+        "Discretization and Gaussian-noise simulations do not automatically satisfy a bounded-disturbance theorem.",
+        "Initial conditions and state-norm normalization must be explicit."
+      ],
+      "connection_to_ctrl": [
+        "lean/ControlsLean/Controls/ISS.lean",
+        "lean/ControlsLean/Estimation/KalmanBucy.lean",
+        "tools/sdp_rational_cert.py"
+      ],
+      "proposed_new_question": "Can the observer claim be reconstructed from an explicit finite-horizon energy inequality with every normalization retained?",
+      "prototype": "Start with scalar dynamics and nonzero initial error; derive and check the normalized energy bound. Only after review, attempt a small rational vertex-LMI certificate.",
+      "baseline": "EKF and fixed-gain observer under identical bounded disturbance and sampling assumptions.",
+      "metrics": [
+        "Initial-energy residual",
+        "LMI PSD margin",
+        "Finite-horizon error-energy bound",
+        "Estimation RMSE",
+        "Runtime"
+      ],
+      "falsifier": "A zero-disturbance nonzero-initial-error case falsifies any claimed zero total error-energy bound. Reject source transcriptions that omit this term.",
+      "evidence_tier": "source_theory_review_required; ctrl_proposal_only",
+      "novelty_status": "Faithfulness audit and reproduction; no novelty claim.",
+      "priority": "P2",
+      "confidence": {
+        "percent": 75,
+        "rationale": "Promising certificate structure, but notation and bound normalization need resolution before a faithful implementation."
+      }
+    },
+    {
+      "id": "PD-07",
+      "title": "CyclOT: Learning Quadratic Optimal Transport Maps via Synchronized Forward-Backward Interpolants",
+      "authors": [
+        "Shizhou Xu",
+        "Jiachen Liu",
+        "Shih-Hsin Wang",
+        "Stefan Broecker",
+        "Yuhao Huang",
+        "Bao Wang",
+        "Thomas Strohmer"
+      ],
+      "url": "https://arxiv.org/abs/2609.13892",
+      "publication_date": "2026-09-12",
+      "version_date": "2026-09-12",
+      "date_basis": "arXiv submission history, v1; preprint date.",
+      "window_status": "in_window",
+      "source_read": {
+        "level": "theorem_assumptions_and_proof_passages_inspected",
+        "url": "https://arxiv.org/html/2609.13892v1",
+        "locations": [
+          "4.1 properties G and D",
+          "4.2 Theorem 4.4"
+        ],
+        "limit": "Selected full-text passages; no model training or theorem formalization."
+      },
+      "mathematical_domains": [
+        "quadratic optimal transport",
+        "Brenier maps",
+        "Jensen-Shannon divergence",
+        "inverse consistency"
+      ],
+      "physical_domains": [
+        "candidate link: sensor-domain alignment"
+      ],
+      "application_domains": [
+        "data manipulation",
+        "perception adaptation"
+      ],
+      "theorem_or_claim": {
+        "kind": "population recovery theorem",
+        "location": "Theorem 4.4",
+        "summary": "Global minimizers approach forward/reverse quadratic Brenier maps as discriminator richness increases and action weight decreases, under explicit approximation assumptions. This is a population, global-minimizer result, not a finite-training guarantee."
+      },
+      "assumptions": [
+        "Absolutely continuous measures on a compact convex set with nonempty interior.",
+        "Generator approximation and nested dense discriminator properties.",
+        "Minimizers attained; positive source-target Wasserstein distance."
+      ],
+      "failure_modes": [
+        "Finite neural optimization need not find global minimizers.",
+        "Cycle consistency does not identify physically correct correspondence.",
+        "Discrete or singular sensor manifolds need separate treatment."
+      ],
+      "connection_to_ctrl": [
+        "lean/ControlsLean/Estimation/InformationFilter.lean",
+        "lean/ControlsLean/Vision/Homography.lean"
+      ],
+      "proposed_new_question": "Can physically meaningful invariants reject a low-cycle-error but geometrically wrong sensor-domain transport?",
+      "prototype": "Toy two-dimensional paired ground truth withheld during fitting; compare cyclic transport with direct alignment while testing distance/incidence invariants.",
+      "baseline": "Affine calibration and empirical optimal assignment with the same samples.",
+      "metrics": [
+        "Endpoint distribution error",
+        "Cycle error",
+        "Held-out correspondence error",
+        "Geometric invariant violations"
+      ],
+      "falsifier": "If low cycle loss coexists with wrong physical correspondences, reject cycle loss as a correctness certificate.",
+      "evidence_tier": "source_population_theory; speculative_robotics_transfer",
+      "novelty_status": "Exploratory transfer; broader novelty unreviewed.",
+      "priority": "P3",
+      "confidence": {
+        "percent": 65,
+        "rationale": "Useful cautionary benchmark; physics connection and tractable proof scope remain weak."
+      }
+    },
+    {
+      "id": "PD-08",
+      "title": "From plans to maps: Nonlocal regularization of optimal transport",
+      "authors": [
+        "Marcello Carioni",
+        "Leonardo Del Grande",
+        "José A. Iglesias",
+        "Hidde Schönberger"
+      ],
+      "url": "https://arxiv.org/abs/2609.05062",
+      "publication_date": "2026-09-04",
+      "version_date": "2026-09-04",
+      "date_basis": "arXiv submission history, v1; preprint date.",
+      "window_status": "in_window",
+      "source_read": {
+        "level": "proposition_assumptions_and_proof_passages_inspected",
+        "url": "https://arxiv.org/html/2609.05062v1",
+        "locations": [
+          "2 equation (12), Proposition 2.1",
+          "2 Theorem 2.9",
+          "3 Theorem 3.1"
+        ],
+        "limit": "Relevant full-text passages; no numerical reproduction or independent proof verification."
+      },
+      "mathematical_domains": [
+        "optimal transport",
+        "fractional Sobolev regularity",
+        "measure disintegration",
+        "variational analysis"
+      ],
+      "physical_domains": [
+        "candidate link: discontinuous scene geometry",
+        "continuum transport analogy"
+      ],
+      "application_domains": [
+        "data manipulation",
+        "point-cloud correspondence",
+        "machine vision"
+      ],
+      "theorem_or_claim": {
+        "kind": "conditional continuum theorem",
+        "location": "Proposition 2.1; Theorem 2.9",
+        "summary": "A sufficiently singular nonlocal kernel forces every finite-energy coupling to be induced by a map. Fractional regularization can allow jump discontinuities; existence on compact Lipschitz manifolds has explicit dimension and exponent restrictions."
+      },
+      "assumptions": [
+        "Compactly supported measures, continuous nonnegative cost, q > 1 and Borel nonnegative kernel.",
+        "Kernel integral diverges almost everywhere as specified in equation (12).",
+        "Manifold existence result requires target dimension no larger than source and 0 < alpha < 1/q."
+      ],
+      "failure_modes": [
+        "A finite truncated grid kernel does not inherit the continuum singularity theorem.",
+        "No smoothness or one-to-one physical correspondence follows automatically.",
+        "Regularization can favor a wrong correspondence under missing data."
+      ],
+      "connection_to_ctrl": [
+        "lean/ControlsLean/Vision/Triangulation.lean",
+        "lean/ControlsLean/Vision/Homography.lean"
+      ],
+      "proposed_new_question": "Can a finite correspondence penalty preserve true depth discontinuities while exposing where a continuum map guarantee stops applying?",
+      "prototype": "Tiny synthetic two-surface point sets; compare fractional-like edge penalties and smooth penalties, reporting discrete behavior only.",
+      "baseline": "Unregularized assignment and local quadratic smoothing at matched data fidelity.",
+      "metrics": [
+        "Boundary correspondence error",
+        "Mass residual",
+        "Objective value",
+        "Sensitivity to grid/kernel cutoff"
+      ],
+      "falsifier": "If apparent improvement disappears with cutoff changes or erases real boundaries, do not pursue a formalization of the continuum theorem for this application.",
+      "evidence_tier": "source_continuum_theory; speculative_discrete_transfer",
+      "novelty_status": "Exploratory numerical hypothesis; no new theorem or application novelty established.",
+      "priority": "P3",
+      "confidence": {
+        "percent": 61,
+        "rationale": "Mathematical result is clear; its discrete robotics transfer needs substantial new justification."
+      }
+    }
+  ]
+}

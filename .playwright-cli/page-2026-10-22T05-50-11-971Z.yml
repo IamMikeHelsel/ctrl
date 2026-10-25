@@ -1,0 +1,121 @@
+- generic [active] [ref=f3e1]:
+  - link "Skip to content" [ref=f3e2] [cursor=pointer]:
+    - /url: "#main"
+  - generic [ref=f3e3]:
+    - banner [ref=f3e4]:
+      - generic [ref=f3e5]:
+        - link "ctrl" [ref=f3e6] [cursor=pointer]:
+          - /url: ../index.html
+        - text: /
+        - link "Research" [ref=f3e7] [cursor=pointer]:
+          - /url: ../research.html
+        - text: / Transport certificates
+      - generic [ref=f3e8]: Study 02 · exact finite arithmetic + a formal inequality
+      - heading "An assignment can carry its own cost gap." [level=1] [ref=f3e9]
+      - paragraph [ref=f3e10]: Check conservation and dual feasibility before trusting an allocation. The prototype reports an honest interval for the optimal cost, including when the submitted assignment is poor.
+      - navigation "Study navigation" [ref=f3e11]:
+        - link "Principle" [ref=f3e12] [cursor=pointer]:
+          - /url: "#principle"
+        - link "Results" [ref=f3e13] [cursor=pointer]:
+          - /url: "#results"
+        - link "Limits" [ref=f3e14] [cursor=pointer]:
+          - /url: "#limits"
+        - link "Reproduce" [ref=f3e15] [cursor=pointer]:
+          - /url: "#reproduce"
+    - main [ref=f3e16]:
+      - generic [ref=f3e17]:
+        - heading "Separate the search from the check" [level=2] [ref=f3e18]
+        - paragraph [ref=f3e19]: A transport plan sends nonnegative mass from source bins to target bins. Row and column sums must match the specified marginals. A candidate plan supplies an upper bound on the best possible cost. Feasible dual potentials supply a lower bound.
+        - generic [ref=f3e20]:
+          - article [ref=f3e21]:
+            - heading "Primal obligations" [level=3] [ref=f3e22]
+            - code [ref=f3e24]: p[i,j] ≥ 0 Σj p[i,j] = source_mass[i] Σi p[i,j] = target_mass[j] U = Σij p[i,j] cost[i,j]
+            - paragraph [ref=f3e25]: Costs can be negative. Total mass must be positive and balanced; it need not equal one.
+          - article [ref=f3e26]:
+            - heading "Dual obligations" [level=3] [ref=f3e27]
+            - code [ref=f3e29]: u[i] + v[j] ≤ cost[i,j] for every pair L = Σi source_mass[i] u[i] + Σj target_mass[j] v[j] L ≤ optimal cost ≤ U
+            - paragraph [ref=f3e30]: Check every pair, including edges a partitioned search did not use. Otherwise a restricted problem can silently replace the intended one.
+        - complementary [ref=f3e31]:
+          - text: Motivated by
+          - link "partitioned transport for multi-agent distribution matching" [ref=f3e32] [cursor=pointer]:
+            - /url: https://arxiv.org/abs/2609.38960
+          - text: and the search/check separation in
+          - link "CP-Cert for pose registration" [ref=f3e33] [cursor=pointer]:
+            - /url: https://arxiv.org/abs/2609.03222
+          - text: . Weak duality is standard mathematics. This prototype reproduces neither paper's full method nor its performance results.
+      - generic [ref=f3e34]:
+        - heading "Small results with inspectable witnesses" [level=2] [ref=f3e35]
+        - paragraph [ref=f3e36]: Synthetic source coordinates [0, 1, 10, 11], target coordinates [1, 2, 11, 12], squared distance costs and equal masses. Coordinates are unitless. Every example has an independently enumerated optimal cost of 1.
+        - region "Transport certificate results" [ref=f3e37]:
+          - table [ref=f3e38]:
+            - caption [ref=f3e39]: An accepted interval does not mean the submitted plan is optimal. Exact zero gap is required for that label.
+            - rowgroup [ref=f3e40]:
+              - row [ref=f3e41]:
+                - columnheader "Submitted plan" [ref=f3e42]
+                - columnheader "Certified cost interval" [ref=f3e43]
+                - columnheader "Additive gap" [ref=f3e44]
+            - rowgroup [ref=f3e45]:
+              - row [ref=f3e46]:
+                - rowheader "Aligned assignment" [ref=f3e47]
+                - cell "[1, 1]" [ref=f3e48]
+                - cell "0" [ref=f3e49]
+              - row [ref=f3e50]:
+                - rowheader "Suboptimal within blocks" [ref=f3e51]
+                - cell "[1, 2]" [ref=f3e52]
+                - cell "1" [ref=f3e53]
+              - row [ref=f3e54]:
+                - rowheader "Crossed blocks" [ref=f3e55]
+                - cell "[1, 101]" [ref=f3e56]
+                - cell "100" [ref=f3e57]
+        - generic [ref=f3e58]:
+          - article [ref=f3e59]:
+            - generic [ref=f3e60]: Executable checks
+            - heading "Independent tiny-instance oracle" [level=3] [ref=f3e61]
+            - paragraph [ref=f3e62]: Across 24 seeded integer-cost instances of size 2–5, all 912 candidate intervals enclosed the enumerated optimum. The witness generator rejected 884 strictly suboptimal assignments as candidates for a tight dual.
+            - paragraph [ref=f3e63]: Six corrupted or malformed study inputs were rejected. A rectangular mass-splitting example also produced an exact [¼, ¼] interval. Eighteen focused tests pass.
+          - article [ref=f3e64]:
+            - generic [ref=f3e65]: Formal model
+            - heading "Finite rational weak duality" [level=3] [ref=f3e66]
+            - paragraph [ref=f3e67]:
+              - text: A separate Lean file proves the finite transport weak-duality inequality and a candidate-gap implication. Both compile with only
+              - code [ref=f3e68]: propext
+              - text: ","
+              - code [ref=f3e69]: Classical.choice
+              - text: and
+              - code [ref=f3e70]: Quot.sound
+              - text: .
+            - paragraph [ref=f3e71]: The second implication assumes a candidate-cost upper bound; candidate feasibility is a separate obligation. Individual Python witnesses have not been replayed in Lean.
+      - generic [ref=f3e72]:
+        - heading "Where it could be useful—and what is missing" [level=2] [ref=f3e73]
+        - paragraph [ref=f3e74]: A future allocation component could attach a checked gap to a fast partitioned result, then decide whether a global solve is worth the cost. The useful measurements would be gap quality, checker time, witness size and total computation saved under identical inputs.
+        - paragraph [ref=f3e75]: This pass has not measured a speedup. It establishes no motion dynamics, collision avoidance, deadline guarantee, sensor robustness or floating-point refinement. Tiny uniform assignment enumeration does not validate every transport problem. A low assignment cost is not a navigation safety result.
+        - paragraph [ref=f3e76]:
+          - strong [ref=f3e77]: "Next falsifier:"
+          - text: export exact witnesses from realistic costs and partitions, replay them in Lean, and compare the checking overhead with solver time saved. If the gaps are too wide or checking erases the saving, defer the integration.
+      - generic [ref=f3e78]:
+        - heading "Inspect and reproduce" [level=2] [ref=f3e79]
+        - list [ref=f3e80]:
+          - listitem [ref=f3e81]:
+            - link "Exact Python checker and experiment" [ref=f3e82] [cursor=pointer]:
+              - /url: ../assets/research/transport_certificate.py
+            - text: ·
+            - link "tests" [ref=f3e83] [cursor=pointer]:
+              - /url: ../assets/research/test_transport_certificate.py
+          - listitem [ref=f3e84]:
+            - link "Lean statements and proof" [ref=f3e85] [cursor=pointer]:
+              - /url: ../assets/research/TransportCertificate.lean
+            - text: ·
+            - link "full witnesses and raw results" [ref=f3e86] [cursor=pointer]:
+              - /url: ../assets/research/transport-results.json
+            - text: ·
+            - link "artifact hashes" [ref=f3e87] [cursor=pointer]:
+              - /url: ../assets/research/manifest.json
+        - paragraph [ref=f3e88]: "Standalone Python download, using only the standard library:"
+        - code [ref=f3e90]: uv run --no-project transport_certificate.py --output results.json
+        - paragraph [ref=f3e91]: "Within the ctrl checkout:"
+        - code [ref=f3e93]: uv run pytest -q tests/test_transport_certificate.py cd lean lake env lean Research/TransportCertificate.lean
+        - paragraph [ref=f3e94]: Tests need the original relative paths listed in the manifest. The full pinned Lean environment currently requires private-repository access. Exact Python arithmetic and kernel-checked algebra remain separate evidence; no implementation refinement is claimed.
+    - contentinfo [ref=f3e95]:
+      - generic [ref=f3e96]: AI-assisted research, code, proof text and writing · 21 October 2026
+      - link "Back to research" [ref=f3e97] [cursor=pointer]:
+        - /url: ../research.html

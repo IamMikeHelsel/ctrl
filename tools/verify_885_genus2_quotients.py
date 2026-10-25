@@ -514,6 +514,40 @@ def evaluate_cassels_flynn_and_mumford_divisors(U: list[int], V: list[int]) -> d
                 "in_cassels_flynn_kernel": True,
             })
 
+        # 3. 3-Point Cantor Divisor Reduction on the first 3 columns (v_0, v_1, v_2):
+        #    [P_0 + P_1 + P_2 - 3*inf] reduces to -D_red where a_red(X) = X^2 + r_1 X + r_0
+        #    satisfies (X - v_0)(X - v_1)(X - v_2) * a_red(X) = f_r(X) - b_3(X)^2.
+        x1, x2, x3 = Fraction(V[0]), Fraction(V[1]), Fraction(V[2])
+        w1 = Fraction(deg1_divisors[0]["b_poly"][0])
+        w2 = Fraction(deg1_divisors[1]["b_poly"][0])
+        w3 = Fraction(deg1_divisors[2]["b_poly"][0])
+        c1 = w1 / ((x1 - x2) * (x1 - x3))
+        c2 = w2 / ((x2 - x1) * (x2 - x3))
+        c3 = w3 / ((x3 - x1) * (x3 - x2))
+        q2 = c1 + c2 + c3
+        q1 = -(c1 * (x2 + x3) + c2 * (x1 + x3) + c3 * (x1 + x2))
+        q0 = c1 * x2 * x3 + c2 * x1 * x3 + c3 * x1 * x2
+
+        s4 = Fraction(sum(included_u))
+        s3 = Fraction(sum(u_a * u_b for u_a, u_b in itertools.combinations(included_u, 2)))
+        e1_x = x1 + x2 + x3
+        e2_x = x1 * x2 + x1 * x3 + x2 * x3
+        r1 = (s4 - q2 * q2) + e1_x
+        r0 = (s3 - 2 * q2 * q1) - e2_x + e1_x * r1
+
+        # Verify exact polynomial identity at all 5 branch points X = -u_m (m != r)
+        # and verify that a_red(-u_m) is an exact rational square (b_3(-u_m) / (Z_{0,m} Z_{1,m} Z_{2,m}))^2!
+        for idx_m, u_m in enumerate(included_u):
+            X_test = Fraction(-u_m)
+            b3_val = q2 * X_test * X_test + q1 * X_test + q0
+            lhs = -b3_val * b3_val  # since f_r(-u_m) == 0
+            rhs = (X_test - x1) * (X_test - x2) * (X_test - x3) * (X_test * X_test + r1 * X_test + r0)
+            assert lhs == rhs, f"Cantor reduction identity failed at -u_m = {X_test}"
+            m_orig = included_indices[idx_m]
+            z_prod = Fraction(z_table[0][m_orig] * z_table[1][m_orig] * z_table[2][m_orig])
+            a_red_val = X_test * X_test + r1 * X_test + r0
+            assert a_red_val == (b3_val / z_prod) ** 2
+
         quintic_descent_results.append({
             "label": f"C_5^({r + 1})",
             "deg1_divisors_count": len(deg1_divisors),
@@ -521,6 +555,9 @@ def evaluate_cassels_flynn_and_mumford_divisors(U: list[int], V: list[int]) -> d
             "all_deg1_in_cassels_flynn_kernel": True,
             "all_deg2_in_cassels_flynn_kernel": True,
             "all_mumford_divisibility_verified": True,
+            "cantor_3point_reduced_divisor_verified": True,
+            "cantor_reduced_r1": str(r1),
+            "cantor_reduced_r0": str(r0),
         })
 
     # Also verify 6-component (x - T) triviality on the sextic C_6
