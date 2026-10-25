@@ -1,0 +1,20 @@
+-- Root module: imports every RoboLean file
+import RoboLean.Barcode.CheckDigits
+import RoboLean.Barcode.Geometry
+import RoboLean.Barcode.ReedSolomon
+import RoboLean.Controllability
+import RoboLean.Epipolar
+import RoboLean.FleetDeadlock
+import RoboLean.FleetThroughput
+import RoboLean.KalmanFilter
+import RoboLean.Kinematics
+import RoboLean.KinematicsBridge
+import RoboLean.RealTime
+import RoboLean.Reliability
+import RoboLean.Search
+import RoboLean.Stability
+import RoboLean.CriticalInstant
+import RoboLean.EssentialConverse
+import RoboLean.Barcode.Decoder
+import RoboLean.ApproxAgreement
+import RoboLean.Barcode.Duality

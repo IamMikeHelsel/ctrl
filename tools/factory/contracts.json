@@ -1,0 +1,52 @@
+[
+  {
+    "id": "R03-clock-acceleration",
+    "idea": "R03",
+    "domain": "robotics",
+    "file": "proofs/R03.txt",
+    "imports": "import Mathlib",
+    "statement": "  ∀ (v c rate : ℝ → ℝ) (a acc V A S R t : ℝ),\n    HasDerivAt v a (c t) → HasDerivAt c (rate t) t → HasDerivAt rate acc t →\n    |v (c t)| ≤ V → |a| ≤ A → |rate t| ≤ S → |acc| ≤ R →\n    0 ≤ V → 0 ≤ A → 0 ≤ S → 0 ≤ R →\n    HasDerivAt (fun x => v (c x) * rate x)\n      (a * (rate t)^2 + v (c t) * acc) t ∧\n    |a * (rate t)^2 + v (c t) * acc| ≤ A * S^2 + V * R",
+    "purpose": "Bridge actual differentiated velocity under a phase clock to the existing acceleration budget. Conditional derivative contracts; no hardware clock guarantee.",
+    "hint": "Use HasDerivAt.comp and .mul, convert the derivative by ring, then abs_add_le and abs_mul with monotone products."
+  },
+  {
+    "id": "M02-finite-cover-budget",
+    "idea": "M02",
+    "domain": "math",
+    "file": "proofs/M02.txt",
+    "imports": "import Mathlib",
+    "statement": "  ∀ {α : Type} [DecidableEq α] (U : Finset α) (k : ℕ)\n    (C : Fin k → Finset α) (cap : Fin k → ℕ),\n    (∀ i, (U ∩ C i).card ≤ cap i) →\n    (∑ i, cap i) < U.card →\n    ¬ (∀ x ∈ U, ∃ i, x ∈ C i)",
+    "purpose": "Finite union-capacity obstruction for residue-cover certificates. Does not prove the infinite tail, admissible-modulus coverage or Erdos 273.",
+    "hint": "Show U is contained in the biUnion of U intersect C i, then use card_le_card, card_biUnion_le, and sum_le_sum. Check exact Mathlib names through compiler feedback."
+  },
+  {
+    "id": "C10-finite-horizon",
+    "idea": "C10",
+    "domain": "controls",
+    "file": "proofs/C10.txt",
+    "imports": "import Mathlib",
+    "statement": "  ∀ (x : ℕ → ℝ) (ρ ε L : ℝ), 0 ≤ ρ →\n    ε ≤ (1 - ρ) * L →\n    (∀ n, x (n + 1) ≤ ρ * x n + ε) →\n    ∀ n, x n ≤ ρ^n * (x 0 - L) + L",
+    "purpose": "Exact finite-horizon recurrence envelope retaining the initial transient. No contraction or physical model assumptions are inferred.",
+    "hint": "Induct on n; propagate the induction inequality by nonnegative rho and rewrite pow_succ."
+  },
+  {
+    "id": "S05-within-hold",
+    "idea": "S05",
+    "domain": "safety",
+    "file": "proofs/S05.txt",
+    "imports": "import Mathlib",
+    "statement": "  ∀ (q v a δ T : ℝ) (r : ℝ → ℝ),\n    (∀ t ∈ Set.Icc (0 : ℝ) T, |r t| ≤ δ / 2 * t^2) →\n    (∀ t ∈ Set.Icc (0 : ℝ) T, 0 ≤ q + v*t + (a-δ)/2*t^2) →\n    ∀ t ∈ Set.Icc (0 : ℝ) T, 0 ≤ q + v*t + a/2*t^2 + r t",
+    "purpose": "All-time within-hold safety transfer from an explicit pointwise remainder envelope. ODE-to-remainder proof remains a separate obligation.",
+    "hint": "Extract the lower bound from abs_le, specialize both universal assumptions at t, and use linear arithmetic with a ring identity."
+  },
+  {
+    "id": "V01-positive-depth-error",
+    "idea": "V01",
+    "domain": "vision",
+    "file": "proofs/V01.txt",
+    "imports": "import Mathlib",
+    "statement": "  ∀ (x z dx dz ε : ℝ), 0 ≤ ε → ε < z → |dz| ≤ ε →\n    0 < z + dz ∧\n    |(x+dx)/(z+dz) - x/z| ≤ (|dx| * z + |x| * ε) / (z * (z - ε))",
+    "purpose": "Calibrated scalar projective-chart perturbation bound with a positive-depth margin. Does not certify pose uniqueness, calibration or a full homography.",
+    "hint": "Derive 0 < z-epsilon and z-epsilon <= z+dz. Rewrite the quotient difference over z*(z+dz), bound its numerator by abs_add_le/abs_mul, and compare positive denominators."
+  }
+]

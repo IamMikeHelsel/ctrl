@@ -24,3 +24,7 @@ import Research.SkewRankFourNormalForm
 import Research.TimingContracts
 import Research.VisualServoingInvariant
 import Research.WorldFrameTransport
+import Research.FactoryProofs
+import Research.LatencyBraking
+import Research.TransportCertificate
+import Research.VisionPerceptionHardening

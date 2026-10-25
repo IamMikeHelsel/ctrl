@@ -1,0 +1,198 @@
+- generic [active] [ref=f7e1]:
+  - link "Skip to content" [ref=f7e2] [cursor=pointer]:
+    - /url: "#main"
+  - generic [ref=f7e3]:
+    - banner [ref=f7e4]:
+      - generic [ref=f7e5]: ctrl · research notebook
+      - heading "Mathematics worth testing in robotics." [level=1] [ref=f7e6]
+      - paragraph [ref=f7e7]: Small mathematical results, explicit assumptions, and reproducible experiments across control, perception, planning, and system safety. The aim is to find useful connections and learn where they stop working.
+      - navigation "Primary navigation" [ref=f7e8]:
+        - link "Research matrix" [ref=f7e9] [cursor=pointer]:
+          - /url: research.html
+        - link "Featured study" [ref=f7e10] [cursor=pointer]:
+          - /url: studies/latency-braking.html
+        - link "How to read the evidence" [ref=f7e11] [cursor=pointer]:
+          - /url: "#evidence"
+        - link "Research areas" [ref=f7e12] [cursor=pointer]:
+          - /url: "#domains"
+        - link "Plan" [ref=f7e13] [cursor=pointer]:
+          - /url: research.html#plan
+    - main [ref=f7e14]:
+      - region [ref=f7e15]:
+        - generic [ref=f7e16]:
+          - heading "Start with a question" [level=2] [ref=f7e17]
+          - generic [ref=f7e18]: Working edition · 21 October 2026
+        - generic [ref=f7e19]:
+          - article [ref=f7e20]:
+            - generic [ref=f7e21]: Featured investigation
+            - heading [level=3] [ref=f7e22]:
+              - link "How much stopping margin does stale state consume?" [ref=f7e23] [cursor=pointer]:
+                - /url: studies/latency-braking.html
+            - paragraph [ref=f7e24]: Connect timing uncertainty, state estimation, and braking distance in a deliberately small model. Compare a delay-aware admission rule with one that assumes fresh measurements.
+            - paragraph [ref=f7e25]: "A model study: bounded uncertainty and a specified braking response. Physical stopping performance remains a separate measurement."
+            - link "Read the study" [ref=f7e26] [cursor=pointer]:
+              - /url: studies/latency-braking.html
+              - text: Read the study →
+          - article [ref=f7e27]:
+            - generic [ref=f7e28]: Literature → hypotheses → tests
+            - heading [level=3] [ref=f7e29]:
+              - link "A matrix of useful connections" [ref=f7e30] [cursor=pointer]:
+                - /url: research.html
+            - paragraph [ref=f7e31]: Use recent papers as starting points. Pair the mathematical tool with its physical assumptions, a plausible application, a comparison, and a result that would disprove the idea.
+            - paragraph [ref=f7e32]: A connection is a research lead. It does not establish novelty, practical benefit, or a theorem.
+            - link "Explore the matrix" [ref=f7e33] [cursor=pointer]:
+              - /url: research.html
+              - text: Explore the matrix →
+      - region [ref=f7e34]:
+        - heading "A proof is only as useful as the statement it proves" [level=2] [ref=f7e35]
+        - paragraph [ref=f7e36]: ctrl brings together Lean source, Python reference routines, generated C99 and Structured Text, and selected simulations. These artifacts answer different questions. A theorem about real numbers does not by itself verify a floating-point controller or a physical robot.
+        - region "Evidence levels and their limits" [ref=f7e37]:
+          - table [ref=f7e38]:
+            - caption [ref=f7e39]: Evidence is attached to a specific claim, model, and revision.
+            - rowgroup [ref=f7e40]:
+              - row [ref=f7e41]:
+                - columnheader "Evidence" [ref=f7e42]
+                - columnheader "What it can establish" [ref=f7e43]
+                - columnheader "What still needs checking" [ref=f7e44]
+            - rowgroup [ref=f7e45]:
+              - row [ref=f7e46]:
+                - rowheader "Research hypothesis" [ref=f7e47]
+                - cell "A sourced reason to try a connection and a testable prediction." [ref=f7e48]
+                - cell "Whether the assumptions fit, whether it helps, and whether the contribution is new." [ref=f7e49]
+              - row [ref=f7e50]:
+                - rowheader "Formal model" [ref=f7e51]
+                - cell "A successful Lean build and axiom audit establish the stated implication under its explicit hypotheses." [ref=f7e52]
+                - cell "Faithfulness to the intended claim, physical-model validity, and the runtime implementation." [ref=f7e53]
+              - row [ref=f7e54]:
+                - rowheader "Executable checks" [ref=f7e55]
+                - cell "Exact rational examples and numerical tests can catch implementation errors on the cases checked." [ref=f7e56]
+                - cell "Universal equivalence, floating-point error bounds, exceptional inputs, and compiler behavior." [ref=f7e57]
+              - row [ref=f7e58]:
+                - rowheader "Simulation" [ref=f7e59]
+                - cell "Observed behavior for a specified model, controller, scenario, and numerical configuration." [ref=f7e60]
+                - cell "Generalization, fair baseline tuning, unmodeled dynamics, and physical measurements." [ref=f7e61]
+              - row [ref=f7e62]:
+                - rowheader "Hardware evidence" [ref=f7e63]
+                - cell "Measured behavior within a documented test envelope." [ref=f7e64]
+                - cell "Conditions outside that envelope and a system-level safety case. Hardware validation is not claimed here." [ref=f7e65]
+        - complementary [ref=f7e66]:
+          - strong [ref=f7e67]: The implementation boundary is still open.
+          - text: The Python theorem registry checks that named declarations exist and scans for selected forbidden proof tokens. It does not compile the proof, inspect all dependencies, or prove that a Python function implements the theorem. The C differential checks compare selected outputs with Python; they are not a formal refinement proof or a worst-case timing measurement.
+      - region [ref=f7e68]:
+        - 'heading "An example: contact forces under a simple stance model" [level=2] [ref=f7e69]'
+        - paragraph [ref=f7e70]: The existing contact-force work is a useful place to see the boundary. The model uses four contact points in a rectangle, a fixed center-of-mass height, positive dimensions and gravity, and a friction coefficient. It studies a particular bilinear force allocation.
+        - generic [ref=f7e71]:
+          - article [ref=f7e72]:
+            - generic [ref=f7e73]: Mathematical statement
+            - heading "Balance and cone membership" [level=3] [ref=f7e74]
+            - paragraph [ref=f7e75]:
+              - code [ref=f7e76]: Research/LorentzConeCBF.lean
+              - text: contains statements for net force, zero net torque, and individual contact-force membership in a friction cone.
+            - paragraph [ref=f7e77]: "The cone result requires both support bounds and a friction bound:"
+            - generic "Required acceleration bounds" [ref=f7e78]:
+              - code [ref=f7e79]: hG · |ax| ≤ g · Wx hG · |ay| ≤ g · Wy ax² + ay² ≤ (μ · g)²
+            - paragraph [ref=f7e80]: Those are hypotheses to establish for the commanded acceleration. The one-axis braking limit alone does not cover every two-axis command.
+          - article [ref=f7e81]:
+            - generic [ref=f7e82]: Experiment boundary
+            - heading "A rigid-body demonstration" [level=3] [ref=f7e83]
+            - paragraph [ref=f7e84]: The current MuJoCo example applies the computed net wrench directly to a free trunk. Contact sites mark the rectangle; the model does not simulate articulated legs, a ground-contact solver, or actuator dynamics.
+            - paragraph [ref=f7e85]: A useful next test would add contact and actuation limits, delayed state, and model error, then compare matched controllers using the same constraints.
+            - paragraph [ref=f7e86]: No physical quadruped safety result or measured advantage over a QP/SOCP controller is established by this example.
+      - region [ref=f7e87]:
+        - heading "Research areas and plausible uses" [level=2] [ref=f7e88]
+        - paragraph [ref=f7e89]: These are directions for investigation, not packaged capabilities. Expected improvements are expressed as quantities to measure; no general percentage gain is promised.
+        - generic [ref=f7e90]:
+          - article [ref=f7e91]:
+            - generic [ref=f7e92]: Control × mechanics
+            - heading "Trajectory shape and effort" [level=3] [ref=f7e93]
+            - paragraph [ref=f7e94]: Polynomial trajectories, passivity, and inverse dynamics may help reduce motion effort while preserving a task's timing and endpoint constraints.
+            - generic [ref=f7e95]:
+              - term [ref=f7e96]: Measure
+              - definition [ref=f7e97]: Total energy, peak torque, tracking error, and move duration.
+              - term [ref=f7e98]: Open limit
+              - definition [ref=f7e99]: Squared-torque and viscous-loss proxies are not measurements of a real motor's total energy.
+          - article [ref=f7e100]:
+            - generic [ref=f7e101]: Geometry × perception
+            - heading "State estimates that respect geometry" [level=3] [ref=f7e102]
+            - paragraph [ref=f7e103]: Projective geometry, rigid transforms, and covariance algebra offer tools for visual servoing and sensor fusion.
+            - generic [ref=f7e104]:
+              - term [ref=f7e105]: Measure
+              - definition [ref=f7e106]: Pose error, consistency, convergence, and lost-track recovery.
+              - term [ref=f7e107]: Open limit
+              - definition [ref=f7e108]: Algebraic pose or depth examples do not validate detection, correspondence, occlusion handling, or calibration.
+          - article [ref=f7e109]:
+            - generic [ref=f7e110]: Timing × system state
+            - heading "Make data age part of the model" [level=3] [ref=f7e111]
+            - paragraph [ref=f7e112]: Timestamp uncertainty, prediction bounds, and state provenance may make stale measurements easier to detect and accommodate.
+            - generic [ref=f7e113]:
+              - term [ref=f7e114]: Measure
+              - definition [ref=f7e115]: Prediction error, margin consumption, stale-data rejection, and availability.
+              - term [ref=f7e116]: Open limit
+              - definition [ref=f7e117]: Clock, acceleration, and error bounds need evidence from the actual data path and plant.
+          - article [ref=f7e118]:
+            - generic [ref=f7e119]: Optimization × planning
+            - heading "Feasibility that survives the next step" [level=3] [ref=f7e120]
+            - paragraph [ref=f7e121]: Reachability, invariant sets, and model-predictive-control arguments can guide planning under uncertainty.
+            - generic [ref=f7e122]:
+              - term [ref=f7e123]: Measure
+              - definition [ref=f7e124]: Feasibility, completion rate, clearance, and computation time.
+              - term [ref=f7e125]: Open limit
+              - definition [ref=f7e126]: A finite-horizon planning example does not settle long-horizon behavior or out-of-distribution obstacles.
+          - article [ref=f7e127]:
+            - generic [ref=f7e128]: Robust control × system safety
+            - heading "Fallbacks with explicit obligations" [level=3] [ref=f7e129]
+            - paragraph [ref=f7e130]: Barrier functions and Simplex-style switching expose the conditions a fallback must satisfy to preserve a modeled safe set.
+            - generic [ref=f7e131]:
+              - term [ref=f7e132]: Measure
+              - definition [ref=f7e133]: Interventions, violations, fallback availability, and deadline misses.
+              - term [ref=f7e134]: Open limit
+              - definition [ref=f7e135]: Fallback invariance and an accurate transition model are assumptions to discharge, not consequences of naming a theorem.
+          - article [ref=f7e136]:
+            - generic [ref=f7e137]: Linear algebra × data manipulation
+            - heading "Check transformations before composing them" [level=3] [ref=f7e138]
+            - paragraph [ref=f7e139]: Information-form updates, conditioning bounds, and exact arithmetic can help test whether data transformations preserve their intended meaning.
+            - generic [ref=f7e140]:
+              - term [ref=f7e141]: Measure
+              - definition [ref=f7e142]: Residuals, conditioning, uncertainty calibration, and throughput.
+              - term [ref=f7e143]: Open limit
+              - definition [ref=f7e144]: Shared sensor errors, frame conventions, units, and numerical precision can invalidate a correct algebraic identity's application.
+      - region [ref=f7e145]:
+        - heading "What a useful result should include" [level=2] [ref=f7e146]
+        - paragraph [ref=f7e147]: The current experiments are starting points. Earlier point estimates are not used here as expected gain ranges. A result earns a write-up when its comparison and its limitations are clear enough to reproduce.
+        - list [ref=f7e148]:
+          - listitem [ref=f7e149]:
+            - strong [ref=f7e150]: A precise question.
+            - text: State the intended behavior, mathematical hypotheses, physical model, and expected failure modes.
+          - listitem [ref=f7e151]:
+            - strong [ref=f7e152]: A fair comparison.
+            - text: Match data, tuning effort, actuation limits, compute budget, and stopping criteria. Include ablations and failure cases.
+          - listitem [ref=f7e153]:
+            - strong [ref=f7e154]: Reproducible evidence.
+            - text: Save the code revision, dependencies, configurations, seeds, raw results, and build or audit output. Separate measured outcomes from explanations still being tested.
+          - listitem [ref=f7e155]:
+            - strong [ref=f7e156]: A bounded conclusion.
+            - text: Report the observed range and uncertainty for that experiment. State what did not improve and what has not been measured.
+        - complementary [ref=f7e157]:
+          - strong [ref=f7e158]: Write-ups and animations.
+          - text: The strongest studies can receive a short exposition and a Manim animation showing the model, assumptions, and a failure case. The
+          - link "braking-margin study includes an example" [ref=f7e159] [cursor=pointer]:
+            - /url: studies/latency-braking.html
+          - text: . An animation explains an argument; it is not experimental evidence.
+        - paragraph [ref=f7e160]:
+          - link "Read the staged research and publication plan" [ref=f7e161] [cursor=pointer]:
+            - /url: research.html#plan
+            - text: Read the staged research and publication plan →
+      - region [ref=f7e162]:
+        - heading "About this notebook" [level=2] [ref=f7e163]
+        - paragraph [ref=f7e164]: ctrl is an independent research project. It uses AI assistance for literature triage, programming, formalization, experiments, and writing, including this site. AI-written material is not presented as hand-written exposition. Source checks, proof checks, and empirical validation remain separate obligations.
+        - paragraph [ref=f7e165]: The repository also contains a separate mathematics-formalization track. For approved challenges, the statement is frozen and solutions must prove that exact proposition. Robotics prototypes do not inherit those challenge approvals.
+        - paragraph [ref=f7e166]:
+          - text: The
+          - link "source repository" [ref=f7e167] [cursor=pointer]:
+            - /url: https://github.com/IamMikeHelsel/ctrl
+          - text: is currently private, so repository links may require access. This notebook is not a product release or a claim of hardware safety, certification, or research novelty. Source availability and publication will follow review.
+    - contentinfo [ref=f7e168]:
+      - generic [ref=f7e169]: ctrl · Assumptions first. Evidence beside the claim.
+      - link "Back to content" [ref=f7e170] [cursor=pointer]:
+        - /url: "#main"
+        - text: Back to content ↑
