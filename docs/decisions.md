@@ -57,11 +57,53 @@
   anything is sent; `spark solve` does not, since searches can be exploratory. Only `--model` (default
   `leanstral`) is always passed; `--minutes`/`--attempts` are passed only when given, so the script's
   defaults apply. Job ids are appended to status.json `jobs`. `spark fetch JOB` rsyncs `outputs/` into
-  `work/NNN/candidates/JOB/` (a directory, not cli.md's `candidates/JOB.lean`, since a job can produce
-  several files), with NNN from the job's `meta.json`. `spark log -f` streams raw text, so it refuses
+  `work/NNN/candidates/JOB/` (a directory, since a job produces several files; the proof candidate
+  is `final.lean`), with NNN from the job's `meta.json`. `spark log -f` streams raw text, so it refuses
   `--json`.
 - **D15. Defaults.** `ctrl doctor` checks the Spark by default (`--no-remote` skips it), as the README's
   quick start implies. `ctrl targets` defaults to `--tab open`; `--max-difficulty` filters on
   `difficulty_1to5` (open) or `formalization_effort_1to5` (formalize); `--min-fit` on `ai_lean_fit_1to5`
   (open) or `priority_1to5` (formalize). The envelope has exactly the six documented keys (no
   `exit_code`); `next` is a list of command strings.
+- **D16. Sync guard.** Before rsync, one ssh call reads `tools/spark/jobs.sh` and the remote
+  manifest's sha256. If a prove job is `running`/`starting` and the remote manifest differs from the
+  local one, sync refuses with `JOB_RUNNING`, exit 3 (`--force` on `ctrl spark sync` overrides). Syncs
+  that don't touch the manifest are allowed under a running job: prove works in its own scratch copy.
+- **D17. Promotion.** `ctrl promote NNN JOB` needs an approved, undrifted challenge, the job's
+  `final.lean`, and at least one `attempt-*/challenge.diff`, all empty (no diff file means "can't
+  tell", which is refused as `CHALLENGE_DRIFT`). It copies `final.lean` over the solution, runs the
+  `--fast` check and restores the previous file on any failure, including a crash. Only `final.lean`
+  is promoted; a `final-subdir/` is left for a human.
+- **D18. Remote knobs.** `--reasoning`/`--max-turns` (prove) and `--timeout-min` (solve) become
+  `PROVE_REASONING`, `PROVE_MAX_TURNS` and `SOLVE_TIMEOUT_MIN` env prefixes on the remote command,
+  and are passed only when given.
+- **D19. Exploratory control lemmas are not approved plant results.** `lean/Research/` contains
+  mathematical research lemmas and is included in the default checkpoint build. It uses the
+  default axiom tier and prints axiom dependencies. `ctrl check --all` remains the existing
+  challenge-bound Erdős check; compiling Research does not create or approve a physical model.
+  Control guarantees must state the dynamics, admissible inputs, disturbances, and trajectory
+  regularity explicitly. Finite sample checks alone are not continuous-time safety evidence.
+- **D20. Timed crossover research is evidence-led and file-backed.** The authorized 60-question
+  campaign lives under `work/pod/crossover-60-20261018/`. Its frozen roster separates source
+  inventory from completed research, and each initial review requires ten substantive elapsed
+  minutes plus independent critique. GO authorizes a bounded next experiment, not a discovery
+  claim. Finish breadth coverage before extensions; record actual model access, interruptions,
+  resource limits and evidence tiers. Existing challenges and other active pods remain separate.
+- **D21. Local factory proof slices remain separately evidenced.** `tools/factory/` reuses a
+  hash-recorded copy of the existing 44 controller in a fresh sealed Spark workspace. Only proof
+  bodies are generated; exact statements, kernel checks and standard-axiom audits are protected.
+  All preflight compilations use the same resource limits as acceptance. Local model attempts,
+  infrastructure failures, independent replays and Codex repairs must be attributed separately.
+  The 60-idea inventory does not complete timed campaign reviews. These exploratory helper
+  contracts neither edit nor approve `lean/Challenge/` files. Use the existing Spark transport
+  and cooperative host lock; no whole-repo sync, cloud inference fallback or daemon is introduced.
+- **D22. Public research claims are scoped to replayable evidence.** The October 2026
+  robotics survey stores source dates, inspected passages, assumptions, proposed transfers,
+  baselines and falsifiers under `docs/research/2026-10/`. Exact experiments and disclosure
+  live under `work/research/2026-10/`; this is exploratory state, not approved Challenge state.
+  Research modules are compiled and axiom-audited separately from `ctrl check --all`.
+  Python declaration-name links do not establish semantic refinement; simulation, exact
+  arithmetic, formal algebra, runtime equivalence and hardware results remain separate claims.
+  The site exports only curated artifacts and hashes. Its legacy idea JSON is explicitly
+  deprecated in favor of `research.json`; the historical docs catalog is preserved for review.
+  No research default changes repository visibility or deploys the dirty working tree.

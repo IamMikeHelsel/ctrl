@@ -354,8 +354,9 @@ def test_sync_excludes_and_fetches_cache_when_manifest_changes(repo, run, fake):
     for ex in (".lake", ".git", ".venv"):
         assert ["--exclude", ex] == cmd[cmd.index(ex) - 1 : cmd.index(ex) + 1]
     assert cmd[-2:] == [f"{repo}/", "sparky.local:lean-work/ctrl/"]
-    script = fake.of("ssh")[0][1]["input"]
-    assert '"1" = 1' in script and "lake exe cache get" in script
+    presync, cache = (k["input"] for _, k in fake.of("ssh"))
+    assert "jobs.sh" in presync and "lake-manifest.json" in presync
+    assert '"1" = 1' in cache and "lake exe cache get" in cache
 
     spark_ok(fake, itemized=">f.st...... README.md\n")
     code, env = run("spark", "sync")
@@ -418,42 +419,145 @@ def test_spark_check_records_remote_result(repo, run, fake):
     assert status(repo)["phase"] == "approved"  # only local checks move the phase
 
 
-def test_jobs_log_fetch(repo, run, fake):
-    run("new", "196")
-    meta = {"nnn": "196", "kind": "prove", "status": "done", "started": "2026-10-17T10:00"}
+def remote(*, jobs=None, meta=None, log="line1\n", manifest_sha="", prove_job=None):
+    """A fake Spark: answers the presync probe, tools/spark/*.sh, meta.json and the cache step."""
 
     def ssh(cmd, kw):
         script = kw["input"]
+        if "@@manifest@@" in script:
+            return 0, json.dumps(jobs or []) + "\n@@manifest@@\n" + manifest_sha + "\n", ""
+        if "jobs.sh" in script:
+            return 0, json.dumps(jobs or []), ""
+        if "log.sh" in script:
+            return (5, "", "job not found") if '"$f" missing' in script else (0, log, "")
         if "meta.json; [ -f" in script:
-            if "/missing/" in script:
-                return 44, "", ""
-            return 0, json.dumps(meta), ""
-        if "log.txt" in script:
-            return (44, "", "") if "/missing/" in script else (0, "line1\nline2\n", "")
-        return 0, "j1\t" + json.dumps(meta) + "\nj0\t{bad\n", ""
+            return (44, "", "") if "/missing/" in script else (0, json.dumps(meta or {}), "")
+        if "prove.sh" in script:
+            return 0, json.dumps({"job": prove_job or "j-prove"}) + "\n", ""
+        return 0, "", ""
 
-    spark_ok(fake, itemized=">f+++++++++ Erdos196.lean\n", ssh=ssh)
+    return ssh
+
+
+def test_sync_refuses_manifest_change_while_prove_runs(repo, run, fake):
+    running = [{"job": "j9", "kind": "prove", "status": "running"}]
+    local = sha(repo / "lean/lake-manifest.json")
+    spark_ok(fake, ssh=remote(jobs=running, manifest_sha="0" * 64))
+    code, env = run("spark", "sync")
+    assert code == 3 and env["error"]["code"] == "JOB_RUNNING"
+    assert "--force" in env["error"]["hint"] and not fake.of("rsync")
+    code, env = run("spark", "sync", "--force")
+    assert code == 0 and fake.of("rsync")
+    # same manifest: syncing source files under a running prove job is fine
+    spark_ok(fake, ssh=remote(jobs=running, manifest_sha=local))
+    assert run("spark", "sync")[0] == 0
+    # finished jobs never block
+    done = [{"job": "j8", "kind": "prove", "status": "success"}]
+    spark_ok(fake, ssh=remote(jobs=done, manifest_sha="0" * 64))
+    assert run("spark", "sync")[0] == 0
+
+
+def test_prove_and_solve_pass_env_knobs(repo, run, fake):
+    approved(run)
+    spark_ok(fake, ssh=remote(prove_job="j-p"))
+    code, env = run("spark", "prove", "196", "--reasoning", "none", "--max-turns", "40")
+    assert code == 0 and env["data"]["env"] == {"PROVE_REASONING": "none", "PROVE_MAX_TURNS": "40"}
+    script = [k["input"] for _, k in fake.of("ssh") if "prove.sh" in k["input"]][-1]
+    assert 'PROVE_REASONING=none PROVE_MAX_TURNS=40 bash "$f" 196 --model leanstral' in script
+    code, env = run("spark", "prove", "196", "--reasoning", "low")
+    assert code == 2 and env["error"]["code"] == "BAD_USAGE"
+
+    (repo / "work/196/search.py").write_text("")
+    spark_ok(fake, ssh=lambda cmd, kw: (0, '{"job": "j-s"}\n', ""))
+    code, env = run("spark", "solve", "196", "search.py", "--timeout-min", "15")
+    assert code == 0
+    assert 'SOLVE_TIMEOUT_MIN=15 bash "$f" 196 search.py' in fake.of("ssh")[-1][1]["input"]
+
+
+def test_jobs_log_fetch(repo, run, fake):
+    run("new", "196")
+    jobs = [
+        {"job": "j2", "nnn": "196", "kind": "prove", "status": "running", "started": "b"},
+        {"job": "j1", "nnn": "196", "kind": "prove", "status": "success", "started": "a"},
+    ]
+    meta = {"job": "j1", "nnn": "196", "kind": "prove", "status": "success"}
+    spark_ok(fake, itemized=">f+++++++++ final.lean\n", ssh=remote(jobs=jobs, meta=meta))
     code, env = run("spark", "jobs")
-    assert code == 0 and {r["job"] for r in env["data"]["jobs"]} == {"j0", "j1"}
+    assert code == 0 and [r["job"] for r in env["data"]["jobs"]] == ["j2", "j1"]
+    assert env["next"] == ["ctrl spark log j2 -f", "ctrl spark fetch j1"]
 
-    code, env = run("spark", "log", "j1")
-    assert code == 0 and env["data"]["log"] == "line1\nline2\n"
+    code, env = run("spark", "log", "j1", "-n", "50")
+    assert code == 0 and env["data"]["log"] == "line1\n"
+    assert "log.sh" in fake.of("ssh")[-1][1]["input"]
+    assert '"$f" j1 -n 50' in fake.of("ssh")[-1][1]["input"]
     code, env = run("spark", "log", "missing")
     assert code == 5 and env["error"]["code"] == "JOB_NOT_FOUND"
     code, env = run("spark", "log", "../etc")
     assert code == 2 and env["error"]["code"] == "BAD_USAGE"
+    code, env = run("spark", "log", "j1", "-f")
+    assert code == 2  # -f streams raw text, so not with --json
 
+    dest = repo / "work/196/candidates/j1"
+    dest.mkdir(parents=True)
+    (dest / "final.lean").write_text("x")  # what the fake rsync would have pulled
     code, env = run("spark", "fetch", "j1")
     assert code == 0 and env["data"]["dest"] == "work/196/candidates/j1"
-    assert env["data"]["files"] == ["Erdos196.lean"]
+    assert env["data"]["files"] == ["final.lean"]
+    assert env["data"]["candidate"] == "work/196/candidates/j1/final.lean"
+    assert env["next"] == ["ctrl promote 196 j1", "ctrl check 196 --fast"]
     cmd, _ = fake.of("rsync")[-1]
-    assert cmd[-2:] == [
-        "sparky.local:lean-work/jobs/j1/outputs/",
-        f"{repo}/work/196/candidates/j1/",
-    ]
+    assert cmd[-2:] == ["sparky.local:lean-work/jobs/j1/outputs/", f"{dest}/"]
     assert "fetched job `j1`" in (repo / "work/196/log.md").read_text()
     code, env = run("spark", "fetch", "missing")
     assert code == 5 and env["error"]["code"] == "JOB_NOT_FOUND"
+
+
+# ---------------------------------------------------------------- promote
+
+
+def candidate(repo, job="j1", *, final="theorem solution : statement := by\n  decide\n", diff=""):
+    d = repo / "work/196/candidates" / job
+    (d / "attempt-1").mkdir(parents=True)
+    (d / "attempt-1/challenge.diff").write_text(diff)
+    if final is not None:
+        (d / "final.lean").write_text(final)
+    return d
+
+
+def test_promote_copies_then_checks(repo, run, fake):
+    approved(run)
+    candidate(repo)
+    checksh(fake)
+    code, env = run("promote", "196", "j1")
+    assert code == 0 and env["data"]["promoted"] is True
+    sol = (repo / "lean/ErdosLab/Erdos196.lean").read_text()
+    assert "decide" in sol
+    assert fake.of("bash")[-1][0] == ["bash", "scripts/check.sh", "196", "--fast"]
+    assert env["next"][0] == "ctrl check 196"
+
+
+def test_promote_restores_on_failed_check(repo, run, fake):
+    approved(run)
+    sol = repo / "lean/ErdosLab/Erdos196.lean"
+    before = sol.read_text()
+    candidate(repo)
+    checksh(fake, rc=4, out=check_report(binding={"ok": False, "detail": "restated"}))
+    code, env = run("promote", "196", "j1")
+    assert code == 4 and env["error"]["code"] == "BINDING_MISMATCH"
+    assert env["data"]["restored"] is True and sol.read_text() == before
+
+
+def test_promote_refuses_challenge_edits_and_missing_files(repo, run, fake):
+    approved(run)
+    sol = repo / "lean/ErdosLab/Erdos196.lean"
+    before = sol.read_text()
+    candidate(repo, "dirty", diff="Files a/Challenge/Erdos196.lean and b/... differ\n")
+    code, env = run("promote", "196", "dirty")
+    assert code == 4 and env["error"]["code"] == "CHALLENGE_DRIFT"
+    assert sol.read_text() == before and not fake.of("bash")
+    candidate(repo, "nofinal", final=None)
+    code, env = run("promote", "196", "nofinal")
+    assert code == 2 and env["error"]["fix"] == "ctrl spark fetch nofinal"
 
 
 # ---------------------------------------------------------------- doctor
@@ -504,6 +608,14 @@ def test_doctor_local_and_remote(repo, run, fake, tmp_path, monkeypatch):
     assert code == 1 and "leanstral" in env["error"]["message"]
     script = fake.of("ssh")[-1][1]["input"]
     assert "leanprover--lean4---v4.33.1" in script and "venvs/solve" in script
+    for probe in (
+        "ollama show leanstral",
+        "tmux",
+        ".local/bin",
+        "tools/spark/env.sh",
+        "packages/mathlib",
+    ):
+        assert probe in script
     assert len(fake.of("ssh")) == 1  # all remote checks in one call
 
     fake.handlers["ssh"] = lambda cmd, kw: (255, "", "ssh: connect timed out")

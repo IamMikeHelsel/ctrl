@@ -74,6 +74,67 @@ double ctrl_backstepping_control(
     double x1, double x2
 );
 
+/* Lean: Research.TransportCertificate.four_support_interval_sound */
+int ctrl_certified_box_guard(
+    int receipt_verified,
+    int snapshot_coherent,
+    unsigned long long certified_version,
+    unsigned long long current_version,
+    double wl, double wu, double bl, double bu,
+    double alpha, double beta,
+    double base_setpoint,
+    double u_cmd,
+    double u_fallback,
+    double *out_u_min,
+    double *out_u_max,
+    double *out_setpoint
+);
+
+/* Lean: ControlsLean.Robotics.ManipulatorTracking.slotineLiControl & slotine_li_lyapunov_deriv */
+void ctrl_slotine_li_torque_2dof(
+    const double m_mat[4], const double c_mat[4], const double kd_mat[4],
+    const double lam_diag[2],
+    const double q[2], const double q_d[2],
+    const double qdot[2], const double qdot_d[2],
+    const double qddot_r[2], const double g_vec[2],
+    double out_s[2], double out_tau[2]
+);
+
+/* Lean: ControlsLean.Estimation.POMDPBelief.beliefUpdate & beliefUpdate_isBelief */
+double ctrl_pomdp_bayes_update_3state(
+    const double t_mat[9], const double obs_lik[3], const double b_prior[3],
+    double out_b_post[3]
+);
+
+/* Lean: ControlsLean.Controls.ControlOrchestration.decoupledConeBarrier */
+double ctrl_decoupled_lorentz_kamm_cbf(
+    double r_clear, double d_safe, double v_n, double v_tx, double v_ty,
+    double c_n0, double c_t, double mu, double g_acc, double tau_derate,
+    double ax_cmd, double ay_cmd,
+    double *out_c_n_eff, double *out_ax_proj, double *out_ay_proj, int *out_kamm_saturated
+);
+
+/* Lean: ControlsLean.Vision.PerceptionReconciliation.gram2_trace_sq_sub_trace_sq_eq_two_det */
+int ctrl_lamzouri_excitation_gate_2x2(
+    double g00, double g01, double g11, double rho_min,
+    double *out_trace, double *out_dispersion_2det, double *out_rho_eff, double *out_lambda_min_lb
+);
+
+/* Lean: ControlsLean.Controls.ControlOrchestration.reconciliation_lagrange_pairwise_identity */
+int ctrl_reconcile_sensors_4ch(
+    const double y_meas[4], const double sigma_sq[4], const double age_dt[4], const double eps_bound[4],
+    double sigma_accel_sq,
+    double *out_naive_x_hat, double *out_naive_pairwise_energy,
+    double *out_clean_x_hat, double *out_clean_pairwise_energy, double *out_certified_err_bound
+);
+
+/* Lean: ControlsLean.Controls.ControlOrchestration.orchestrator_box_invariance */
+int ctrl_orchestrate_3tier(
+    double u_nom, double u_safe, double u_stop, double lam_cbf, double alpha_stop,
+    double u_min, double u_max,
+    double *out_u_cbf, double *out_u_orch, int *out_box_ok
+);
+
 #ifdef __cplusplus
 }
 #endif
@@ -225,6 +286,230 @@ double ctrl_backstepping_control(
     double z2 = x2 - alpha1;
     return -x1 - f2 - (df1 + c1) * (f1 + x2) - c2 * z2;
 }
+
+/* Lean: Research.TransportCertificate.four_support_interval_sound */
+int ctrl_certified_box_guard(
+    int receipt_verified,
+    int snapshot_coherent,
+    unsigned long long certified_version,
+    unsigned long long current_version,
+    double wl, double wu, double bl, double bu,
+    double alpha, double beta,
+    double base_setpoint,
+    double u_cmd,
+    double u_fallback,
+    double *out_u_min,
+    double *out_u_max,
+    double *out_setpoint
+) {
+    double lo_w = -alpha - wl;
+    double lo_b = -beta - bl;
+    double u_min = (lo_w >= lo_b) ? lo_w : lo_b;
+
+    double hi_w = alpha - wu;
+    double hi_b = beta - bu;
+    double u_max = (hi_w <= hi_b) ? hi_w : hi_b;
+
+    *out_u_min = u_min;
+    *out_u_max = u_max;
+
+    if (receipt_verified != 0 && snapshot_coherent != 0
+        && certified_version == current_version
+        && alpha <= beta && wl <= wu && bl <= bu
+        && u_min <= u_max
+        && u_min <= u_cmd && u_cmd <= u_max) {
+        *out_setpoint = base_setpoint + u_cmd;
+        return 1;
+    }
+    *out_setpoint = base_setpoint + u_fallback;
+    return 0;
+}
+
+/* Lean: ControlsLean.Robotics.ManipulatorTracking.slotineLiControl & slotine_li_lyapunov_deriv */
+void ctrl_slotine_li_torque_2dof(
+    const double m_mat[4], const double c_mat[4], const double kd_mat[4],
+    const double lam_diag[2],
+    const double q[2], const double q_d[2],
+    const double qdot[2], const double qdot_d[2],
+    const double qddot_r[2], const double g_vec[2],
+    double out_s[2], double out_tau[2]
+) {
+    double q_tilde0 = q[0] - q_d[0];
+    double q_tilde1 = q[1] - q_d[1];
+    double qdot_r0 = qdot_d[0] - lam_diag[0] * q_tilde0;
+    double qdot_r1 = qdot_d[1] - lam_diag[1] * q_tilde1;
+    double s0 = qdot[0] - qdot_r0;
+    double s1 = qdot[1] - qdot_r1;
+    out_s[0] = s0;
+    out_s[1] = s1;
+
+    out_tau[0] = (m_mat[0] * qddot_r[0] + m_mat[1] * qddot_r[1])
+               + (c_mat[0] * qdot_r0 + c_mat[1] * qdot_r1)
+               + g_vec[0]
+               - (kd_mat[0] * s0 + kd_mat[1] * s1);
+    out_tau[1] = (m_mat[2] * qddot_r[0] + m_mat[3] * qddot_r[1])
+               + (c_mat[2] * qdot_r0 + c_mat[3] * qdot_r1)
+               + g_vec[1]
+               - (kd_mat[2] * s0 + kd_mat[3] * s1);
+}
+
+/* Lean: ControlsLean.Estimation.POMDPBelief.beliefUpdate & beliefUpdate_isBelief */
+double ctrl_pomdp_bayes_update_3state(
+    const double t_mat[9], const double obs_lik[3], const double b_prior[3],
+    double out_b_post[3]
+) {
+    double unnorm[3];
+    for (int sp = 0; sp < 3; ++sp) {
+        double pred = t_mat[0 * 3 + sp] * b_prior[0]
+                    + t_mat[1 * 3 + sp] * b_prior[1]
+                    + t_mat[2 * 3 + sp] * b_prior[2];
+        unnorm[sp] = obs_lik[sp] * pred;
+    }
+    double z_norm = unnorm[0] + unnorm[1] + unnorm[2];
+    if (z_norm > 0.0) {
+        out_b_post[0] = unnorm[0] / z_norm;
+        out_b_post[1] = unnorm[1] / z_norm;
+        out_b_post[2] = unnorm[2] / z_norm;
+    } else {
+        out_b_post[0] = b_prior[0];
+        out_b_post[1] = b_prior[1];
+        out_b_post[2] = b_prior[2];
+    }
+    return z_norm;
+}
+
+#define CTRL_LN2 0.69314718055994530942
+
+double ctrl_decoupled_lorentz_kamm_cbf(
+    double r_clear, double d_safe, double v_n, double v_tx, double v_ty,
+    double c_n0, double c_t, double mu, double g_acc, double tau_derate,
+    double ax_cmd, double ay_cmd,
+    double *out_c_n_eff, double *out_ax_proj, double *out_ay_proj, int *out_kamm_saturated
+) {
+    double c_n_eff = (1.0 - tau_derate * CTRL_LN2) * c_n0;
+    if (out_c_n_eff != (double *)0) *out_c_n_eff = c_n_eff;
+    double vn_neg = (v_n < 0.0) ? (-v_n) : 0.0;
+    double vt_sq = v_tx * v_tx + v_ty * v_ty;
+    double h_dec = (r_clear - d_safe)
+                 - (vn_neg * vn_neg) / (2.0 * c_n_eff)
+                 - (mu * vt_sq) / (2.0 * c_t);
+    double a_max = mu * g_acc;
+    double cmd_norm_sq = ax_cmd * ax_cmd + ay_cmd * ay_cmd;
+    if (cmd_norm_sq <= a_max * a_max) {
+        if (out_ax_proj != (double *)0) *out_ax_proj = ax_cmd;
+        if (out_ay_proj != (double *)0) *out_ay_proj = ay_cmd;
+        if (out_kamm_saturated != (int *)0) *out_kamm_saturated = 0;
+    } else {
+        double scale = a_max / sqrt(cmd_norm_sq);
+        if (out_ax_proj != (double *)0) *out_ax_proj = ax_cmd * scale;
+        if (out_ay_proj != (double *)0) *out_ay_proj = ay_cmd * scale;
+        if (out_kamm_saturated != (int *)0) *out_kamm_saturated = 1;
+    }
+    return h_dec;
+}
+
+int ctrl_lamzouri_excitation_gate_2x2(
+    double g00, double g01, double g11, double rho_min,
+    double *out_trace, double *out_dispersion_2det, double *out_rho_eff, double *out_lambda_min_lb
+) {
+    double tr = g00 + g11;
+    double tr_g2 = g00 * g00 + 2.0 * g01 * g01 + g11 * g11;
+    double disp = tr * tr - tr_g2;
+    if (out_trace != (double *)0) *out_trace = tr;
+    if (out_dispersion_2det != (double *)0) *out_dispersion_2det = disp;
+    if (tr <= 0.0) {
+        if (out_rho_eff != (double *)0) *out_rho_eff = 0.0;
+        if (out_lambda_min_lb != (double *)0) *out_lambda_min_lb = 0.0;
+        return 0;
+    }
+    double rho_eff = disp / (tr * tr);
+    double lam_lb = disp / (2.0 * tr);
+    if (out_rho_eff != (double *)0) *out_rho_eff = rho_eff;
+    if (out_lambda_min_lb != (double *)0) *out_lambda_min_lb = lam_lb;
+    return (rho_eff >= rho_min && lam_lb > 0.0) ? 1 : 0;
+}
+
+int ctrl_reconcile_sensors_4ch(
+    const double y_meas[4], const double sigma_sq[4], const double age_dt[4], const double eps_bound[4],
+    double sigma_accel_sq,
+    double *out_naive_x_hat, double *out_naive_pairwise_energy,
+    double *out_clean_x_hat, double *out_clean_pairwise_energy, double *out_certified_err_bound
+) {
+    double w[4];
+    double w_tot_naive = 0.0, wy_naive = 0.0;
+    int i, j;
+    for (i = 0; i < 4; ++i) {
+        double eff_var = sigma_sq[i] + sigma_accel_sq * age_dt[i] * age_dt[i];
+        w[i] = 1.0 / eff_var;
+        w_tot_naive += w[i];
+        wy_naive += w[i] * y_meas[i];
+    }
+    double x_hat_naive = wy_naive / w_tot_naive;
+    double pair_naive = 0.0;
+    for (i = 0; i < 4; ++i) {
+        for (j = i + 1; j < 4; ++j) {
+            double dy = y_meas[i] - y_meas[j];
+            pair_naive += w[i] * w[j] * dy * dy;
+        }
+    }
+    if (out_naive_x_hat != (double *)0) *out_naive_x_hat = x_hat_naive;
+    if (out_naive_pairwise_energy != (double *)0) *out_naive_pairwise_energy = pair_naive / w_tot_naive;
+    int conflict_cnt[4] = {0, 0, 0, 0};
+    for (i = 0; i < 4; ++i) {
+        for (j = i + 1; j < 4; ++j) {
+            if (fabs(y_meas[i] - y_meas[j]) > eps_bound[i] + eps_bound[j]) {
+                conflict_cnt[i] += 1;
+                conflict_cnt[j] += 1;
+            }
+        }
+    }
+    int fault_mask = 0;
+    double w_tot_clean = 0.0, wy_clean = 0.0, weps_clean = 0.0;
+    for (i = 0; i < 4; ++i) {
+        if (conflict_cnt[i] >= 2) {
+            fault_mask |= (1 << i);
+        } else {
+            w_tot_clean += w[i];
+            wy_clean += w[i] * y_meas[i];
+            weps_clean += w[i] * eps_bound[i];
+        }
+    }
+    if (w_tot_clean <= 0.0) {
+        w_tot_clean = w_tot_naive;
+        wy_clean = wy_naive;
+    }
+    double x_hat_clean = wy_clean / w_tot_clean;
+    double pair_clean = 0.0;
+    for (i = 0; i < 4; ++i) {
+        if ((fault_mask & (1 << i)) != 0) continue;
+        for (j = i + 1; j < 4; ++j) {
+            if ((fault_mask & (1 << j)) != 0) continue;
+            double dy = y_meas[i] - y_meas[j];
+            pair_clean += w[i] * w[j] * dy * dy;
+        }
+    }
+    if (out_clean_x_hat != (double *)0) *out_clean_x_hat = x_hat_clean;
+    if (out_clean_pairwise_energy != (double *)0) *out_clean_pairwise_energy = pair_clean / w_tot_clean;
+    if (out_certified_err_bound != (double *)0) *out_certified_err_bound = weps_clean / w_tot_clean;
+    return fault_mask;
+}
+
+int ctrl_orchestrate_3tier(
+    double u_nom, double u_safe, double u_stop, double lam_cbf, double alpha_stop,
+    double u_min, double u_max,
+    double *out_u_cbf, double *out_u_orch, int *out_box_ok
+) {
+    double lam = (lam_cbf < 0.0) ? 0.0 : ((lam_cbf > 1.0) ? 1.0 : lam_cbf);
+    double alpha = (alpha_stop < 0.0) ? 0.0 : ((alpha_stop > 1.0) ? 1.0 : alpha_stop);
+    double u_cbf = (1.0 - lam) * u_nom + lam * u_safe;
+    double u_orch = (1.0 - alpha) * u_cbf + alpha * u_stop;
+    if (out_u_cbf != (double *)0) *out_u_cbf = u_cbf;
+    if (out_u_orch != (double *)0) *out_u_orch = u_orch;
+    if (out_box_ok != (int *)0) *out_box_ok = (u_orch >= u_min && u_orch <= u_max) ? 1 : 0;
+    if (alpha > 0.0) return 2;
+    if (lam > 0.0) return 1;
+    return 0;
+}
 """
 
 IEC_61131_ST_SOURCE = """\
@@ -344,6 +629,65 @@ END_VAR
     Z2     := X2 - ALPHA1;
     CTRL_BACKSTEPPING_CONTROL := -X1 - F2 - (DF1 + C1) * (F1 + X2) - C2 * Z2;
 END_FUNCTION
+
+FUNCTION_BLOCK FB_CtrlCertifiedGuard
+VAR_INPUT
+    RECEIPT_VERIFIED  : BOOL;
+    SNAPSHOT_COHERENT : BOOL;
+    CERTIFIED_VERSION : ULINT;
+    CURRENT_VERSION   : ULINT;
+    WL                : LREAL;
+    WU                : LREAL;
+    BL                : LREAL;
+    BU                : LREAL;
+    ALPHA             : LREAL;
+    BETA              : LREAL;
+    BASE_SETPOINT     : LREAL;
+    U_CMD             : LREAL;
+    U_FALLBACK        : LREAL;
+END_VAR
+VAR_OUTPUT
+    ACCEPTED          : BOOL;
+    U_MIN             : LREAL;
+    U_MAX             : LREAL;
+    SETPOINT_OUT      : LREAL;
+END_VAR
+VAR
+    LO_W : LREAL;
+    LO_B : LREAL;
+    HI_W : LREAL;
+    HI_B : LREAL;
+END_VAR
+    (* Lean: Research.TransportCertificate.four_support_interval_sound *)
+    (* Idempotent absolute setpoint guard: repeated scans on the same snapshot
+       produce the identical SETPOINT_OUT without cumulative drift. *)
+    LO_W := -ALPHA - WL;
+    LO_B := -BETA - BL;
+    IF LO_W >= LO_B THEN
+        U_MIN := LO_W;
+    ELSE
+        U_MIN := LO_B;
+    END_IF;
+
+    HI_W := ALPHA - WU;
+    HI_B := BETA - BU;
+    IF HI_W <= HI_B THEN
+        U_MAX := HI_W;
+    ELSE
+        U_MAX := HI_B;
+    END_IF;
+
+    ACCEPTED := FALSE;
+    SETPOINT_OUT := BASE_SETPOINT + U_FALLBACK;
+    IF RECEIPT_VERIFIED AND SNAPSHOT_COHERENT THEN
+        IF (CERTIFIED_VERSION = CURRENT_VERSION) AND (ALPHA <= BETA) AND (WL <= WU) AND (BL <= BU) THEN
+            IF (U_MIN <= U_MAX) AND (U_MIN <= U_CMD) AND (U_CMD <= U_MAX) THEN
+                ACCEPTED := TRUE;
+                SETPOINT_OUT := BASE_SETPOINT + U_CMD;
+            END_IF;
+        END_IF;
+    END_IF;
+END_FUNCTION_BLOCK
 """
 
 
@@ -373,6 +717,7 @@ def emit_c99_and_iec61131(output_dir: Path) -> dict[str, Path]:
 )
 def compile_and_verify_c99_kernels() -> dict[str, Any]:
     """Compile C99 kernels into a shared library and run bit-accuracy checks via ctypes."""
+    from ctrl.robotics.certified_guard import certified_plc_box_guard
     from ctrl.robotics.contact_cbf import (
         CentroidalQuadParams,
         lorentz_cbf_safety_filter,
@@ -381,8 +726,13 @@ def compile_and_verify_c99_kernels() -> dict[str, Any]:
     from ctrl.robotics.estimation_lqr import (
         backstepping_and_sontag_clf,
         kalata_alpha_beta_gains,
+        pomdp_bayes_belief_update,
     )
-    from ctrl.robotics.kinematics_ik import minimal_intervention_ik
+    from ctrl.robotics.kinematics_ik import (
+        minimal_intervention_ik,
+        slotine_li_control_torque,
+        slotine_li_sliding_error,
+    )
     from ctrl.robotics.trajectories import (
         septic_a,
         septic_accel_integral,
@@ -473,6 +823,49 @@ def compile_and_verify_c99_kernels() -> dict[str, Any]:
         ]
         lib.ctrl_backstepping_control.restype = ctypes.c_double
 
+        d2 = ctypes.c_double * 2
+        d4 = ctypes.c_double * 4
+        d9 = ctypes.c_double * 9
+
+        lib.ctrl_certified_box_guard.argtypes = [
+            ctypes.c_int,
+            ctypes.c_int,
+            ctypes.c_ulonglong,
+            ctypes.c_ulonglong,
+            ctypes.c_double,
+            ctypes.c_double,
+            ctypes.c_double,
+            ctypes.c_double,
+            ctypes.c_double,
+            ctypes.c_double,
+            ctypes.c_double,
+            ctypes.c_double,
+            ctypes.c_double,
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_double),
+        ]
+        lib.ctrl_certified_box_guard.restype = ctypes.c_int
+
+        lib.ctrl_slotine_li_torque_2dof.argtypes = [
+            d4,
+            d4,
+            d4,
+            d2,
+            d2,
+            d2,
+            d2,
+            d2,
+            d2,
+            d2,
+            d2,
+            d2,
+        ]
+        lib.ctrl_slotine_li_torque_2dof.restype = None
+
+        lib.ctrl_pomdp_bayes_update_3state.argtypes = [d9, d3, d3, d3]
+        lib.ctrl_pomdp_bayes_update_3state.restype = ctypes.c_double
+
         max_err = 0.0
         for eta in (-11.0, -5.5, 0.0):
             max_err = max(max_err, abs(lib.ctrl_septic_ia(eta) - float(septic_accel_integral(eta))))
@@ -526,6 +919,200 @@ def compile_and_verify_c99_kernels() -> dict[str, Any]:
             u_bs_c = lib.ctrl_backstepping_control(2.5, 3.0, 0.4, -0.2, 0.7, 0.6, -0.3)
             max_err = max(max_err, abs(u_sontag_c - float(clf_py["u_sontag"])))
             max_err = max(max_err, abs(u_bs_c - float(clf_py["u_backstepping"])))
+
+        # Differential check for ctrl_certified_box_guard (accepted and rejected paths)
+        for u_cmd_val, ver_curr in ((-0.5, 42), (-0.9, 42), (-0.5, 99)):
+            py_guard = certified_plc_box_guard(
+                True, True, 42, ver_curr, 0.35, 0.60, 0.85, 1.10, 0.125, 0.75, 1.0, u_cmd_val, 0.0
+            )
+            c_umin = ctypes.c_double()
+            c_umax = ctypes.c_double()
+            c_setp = ctypes.c_double()
+            acc_c = lib.ctrl_certified_box_guard(
+                1,
+                1,
+                42,
+                ver_curr,
+                0.35,
+                0.60,
+                0.85,
+                1.10,
+                0.125,
+                0.75,
+                1.0,
+                u_cmd_val,
+                0.0,
+                ctypes.byref(c_umin),
+                ctypes.byref(c_umax),
+                ctypes.byref(c_setp),
+            )
+            assert bool(acc_c) == bool(py_guard["accepted"])
+            max_err = max(max_err, abs(c_umin.value - float(py_guard["u_min"])))
+            max_err = max(max_err, abs(c_umax.value - float(py_guard["u_max"])))
+            max_err = max(max_err, abs(c_setp.value - float(py_guard["setpoint_out"])))
+
+        # Differential check for ctrl_slotine_li_torque_2dof
+        m_2d = [[2.4, 0.5], [0.5, 1.1]]
+        c_2d = [[0.2, -0.3], [0.3, 0.1]]
+        kd_2d = [[8.0, 0.0], [0.0, 5.0]]
+        lam_2 = [4.0, 3.5]
+        q_2 = [0.6, -0.4]
+        qd_2 = [0.5, -0.2]
+        dq_2 = [0.3, 0.1]
+        dqd_2 = [0.2, -0.1]
+        ddqr_2 = [-0.5, 0.8]
+        g_2 = [4.2, 1.5]
+        sl_err = slotine_li_sliding_error(q_2, qd_2, dq_2, dqd_2, lam_2)
+        sl_tau = slotine_li_control_torque(
+            m_2d, c_2d, kd_2d, sl_err["qdot_r"], ddqr_2, g_2, sl_err["s"]
+        )
+        out_s2 = d2()
+        out_tau2 = d2()
+        lib.ctrl_slotine_li_torque_2dof(
+            d4(2.4, 0.5, 0.5, 1.1),
+            d4(0.2, -0.3, 0.3, 0.1),
+            d4(8.0, 0.0, 0.0, 5.0),
+            d2(*lam_2),
+            d2(*q_2),
+            d2(*qd_2),
+            d2(*dq_2),
+            d2(*dqd_2),
+            d2(*ddqr_2),
+            d2(*g_2),
+            out_s2,
+            out_tau2,
+        )
+        for k in range(2):
+            max_err = max(max_err, abs(out_s2[k] - float(sl_err["s"][k])))
+            max_err = max(max_err, abs(out_tau2[k] - float(sl_tau["tau"][k])))
+
+        # Differential check for ctrl_pomdp_bayes_update_3state
+        t_3 = [[0.7, 0.2, 0.1], [0.1, 0.8, 0.1], [0.2, 0.3, 0.5]]
+        o_3 = [0.8, 0.4, 0.1]
+        b_3 = [0.5, 0.3, 0.2]
+        py_pomdp = pomdp_bayes_belief_update(t_3, o_3, b_3)
+        out_b3 = d3()
+        z_c = lib.ctrl_pomdp_bayes_update_3state(
+            d9(0.7, 0.2, 0.1, 0.1, 0.8, 0.1, 0.2, 0.3, 0.5),
+            d3(*o_3),
+            d3(*b_3),
+            out_b3,
+        )
+        max_err = max(max_err, abs(z_c - float(py_pomdp["obs_norm_const"])))
+        for k in range(3):
+            max_err = max(max_err, abs(out_b3[k] - float(py_pomdp["posterior_belief"][k])))
+
+        # Differential check for the 4 new Math Garden C99 kernels
+        lib.ctrl_decoupled_lorentz_kamm_cbf.argtypes = [
+            ctypes.c_double,
+            ctypes.c_double,
+            ctypes.c_double,
+            ctypes.c_double,
+            ctypes.c_double,
+            ctypes.c_double,
+            ctypes.c_double,
+            ctypes.c_double,
+            ctypes.c_double,
+            ctypes.c_double,
+            ctypes.c_double,
+            ctypes.c_double,
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_int),
+        ]
+        lib.ctrl_decoupled_lorentz_kamm_cbf.restype = ctypes.c_double
+
+        c_cn_eff = ctypes.c_double()
+        c_ax_p = ctypes.c_double()
+        c_ay_p = ctypes.c_double()
+        c_sat = ctypes.c_int()
+        h_c = lib.ctrl_decoupled_lorentz_kamm_cbf(
+            2.0, 0.5, -2.0, 1.5, 2.0, 4.0, 4.0, 0.8, 10.0, 0.1, 6.8, 6.8,
+            ctypes.byref(c_cn_eff), ctypes.byref(c_ax_p), ctypes.byref(c_ay_p), ctypes.byref(c_sat),
+        )
+        assert c_sat.value == 1
+        max_err = max(max_err, abs((c_ax_p.value ** 2 + c_ay_p.value ** 2) ** 0.5 - 8.0))
+        assert h_c < 1.5
+
+        lib.ctrl_lamzouri_excitation_gate_2x2.argtypes = [
+            ctypes.c_double,
+            ctypes.c_double,
+            ctypes.c_double,
+            ctypes.c_double,
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_double),
+        ]
+        lib.ctrl_lamzouri_excitation_gate_2x2.restype = ctypes.c_int
+        c_tr = ctypes.c_double()
+        c_disp = ctypes.c_double()
+        c_rho = ctypes.c_double()
+        c_lam_lb = ctypes.c_double()
+        exc_c = lib.ctrl_lamzouri_excitation_gate_2x2(
+            5.0, 2.0, 3.0, 0.2,
+            ctypes.byref(c_tr), ctypes.byref(c_disp), ctypes.byref(c_rho), ctypes.byref(c_lam_lb),
+        )
+        assert exc_c == 1
+        max_err = max(max_err, abs(c_disp.value - 22.0))
+        max_err = max(max_err, abs(c_rho.value - 22.0 / 64.0))
+
+        lib.ctrl_reconcile_sensors_4ch.argtypes = [
+            d4,
+            d4,
+            d4,
+            d4,
+            ctypes.c_double,
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_double),
+        ]
+        lib.ctrl_reconcile_sensors_4ch.restype = ctypes.c_int
+        c_nx = ctypes.c_double()
+        c_np = ctypes.c_double()
+        c_cx = ctypes.c_double()
+        c_cp = ctypes.c_double()
+        c_eb = ctypes.c_double()
+        fmask = lib.ctrl_reconcile_sensors_4ch(
+            d4(10.02, 9.97, 12.50, 9.95),
+            d4(1.0 / 2500.0, 1.0 / 1600.0, 1.0 / 1600.0, 1.0 / 900.0),
+            d4(0.01, 0.02, 0.01, 0.10),
+            d4(0.05, 0.06, 0.06, 0.08),
+            4.0,
+            ctypes.byref(c_nx),
+            ctypes.byref(c_np),
+            ctypes.byref(c_cx),
+            ctypes.byref(c_cp),
+            ctypes.byref(c_eb),
+        )
+        assert fmask == (1 << 2)
+
+        lib.ctrl_orchestrate_3tier.argtypes = [
+            ctypes.c_double,
+            ctypes.c_double,
+            ctypes.c_double,
+            ctypes.c_double,
+            ctypes.c_double,
+            ctypes.c_double,
+            ctypes.c_double,
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_double),
+            ctypes.POINTER(ctypes.c_int),
+        ]
+        lib.ctrl_orchestrate_3tier.restype = ctypes.c_int
+        c_ucbf = ctypes.c_double()
+        c_uorch = ctypes.c_double()
+        c_boxok = ctypes.c_int()
+        tmode = lib.ctrl_orchestrate_3tier(
+            2.0, -3.0, -6.0, 0.6, 0.25, -6.0, 3.0,
+            ctypes.byref(c_ucbf), ctypes.byref(c_uorch), ctypes.byref(c_boxok),
+        )
+        assert tmode == 2
+        assert c_boxok.value == 1
+        max_err = max(max_err, abs(c_uorch.value - (-2.25)))
 
     return {
         "compiled_ok": True,

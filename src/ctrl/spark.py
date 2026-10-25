@@ -7,6 +7,7 @@ the Spark) and its quoting rules never matter.
 
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 import re
@@ -14,7 +15,7 @@ import shlex
 import subprocess
 
 from ctrl import proc
-from ctrl.errors import EXIT_REMOTE, CtrlError, usage
+from ctrl.errors import EXIT_NEEDS_HUMAN, EXIT_REMOTE, CtrlError, usage
 from ctrl.repo import Repo
 
 SSH_OPTS = ["-o", "BatchMode=yes", "-o", "ConnectTimeout=8"]
@@ -116,9 +117,27 @@ fi
 """
 
 
-def sync(repo: Repo) -> dict:
-    """rsync the repo to the Spark; fetch the Mathlib cache if the manifest changed."""
+def sync(repo: Repo, *, force: bool = False) -> dict:
+    """rsync the repo to the Spark; fetch the Mathlib cache if the manifest changed.
+
+    Running prove jobs share the repo copy's .lake/packages through a symlink, so a sync that
+    changes lean/lake-manifest.json (and so re-runs `lake exe cache get`) is refused while one runs.
+    """
     _need("rsync")
+    if not force:
+        running, remote_sha = presync()
+        local = repo.lean / "lake-manifest.json"
+        local_sha = hashlib.sha256(local.read_bytes()).hexdigest() if local.exists() else ""
+        if running and remote_sha and remote_sha != local_sha:
+            ids = ", ".join(str(r.get("job")) for r in running)
+            raise CtrlError(
+                "JOB_RUNNING",
+                f"prove job(s) running on {host()} ({ids}) and this sync would change "
+                "lean/lake-manifest.json",
+                hint="prove jobs share the repo copy's .lake/packages; wait for them, or pass --force",
+                fix="ctrl spark jobs",
+                exit_code=EXIT_NEEDS_HUMAN,
+            )
     cp = proc.run(rsync_cmd(repo))
     if cp.returncode != 0:
         raise unreachable(cp.stderr or f"rsync exited {cp.returncode}")
@@ -143,16 +162,19 @@ def sync(repo: Repo) -> dict:
 # ------------------------------------------------------------------ scripts and jobs
 
 
-def script_cmd(name: str, args: list[str]) -> str:
+def script_cmd(name: str, args: list[str], env: dict[str, str] | None = None) -> str:
     path = f"~/{REMOTE_REPO}/tools/spark/{name}.sh"
+    prefix = "".join(f"{k}={shlex.quote(str(v))} " for k, v in (env or {}).items())
     return (
         f'f={path}; [ -f "$f" ] || {{ echo "missing $f" >&2; exit 127; }}\n'
-        f'bash "$f" {" ".join(shlex.quote(a) for a in args)}\n'
+        f'{prefix}bash "$f" {" ".join(shlex.quote(a) for a in args)}\n'
     )
 
 
-def run_script(name: str, args: list[str]) -> subprocess.CompletedProcess:
-    cp = ssh(script_cmd(name, args))
+def run_script(
+    name: str, args: list[str], env: dict[str, str] | None = None, *, capture: bool = True
+) -> subprocess.CompletedProcess:
+    cp = ssh(script_cmd(name, args, env), capture=capture)
     if cp.returncode == 127:
         raise CtrlError(
             "TOOL_MISSING",
@@ -184,38 +206,54 @@ def remote_failed(name: str, cp: subprocess.CompletedProcess) -> CtrlError:
     )
 
 
-def start_job(name: str, args: list[str]) -> str:
-    cp = run_script(name, args)
+def start_job(name: str, args: list[str], env: dict[str, str] | None = None) -> str:
+    cp = run_script(name, args, env)
     obj = last_json(cp.stdout)
     if cp.returncode != 0 or not obj or not obj.get("job"):
         raise remote_failed(name, cp)
     return str(obj["job"])
 
 
-JOBS_SCRIPT = f"""\
-for d in ~/{REMOTE_JOBS}/*/; do
-  [ -f "$d/meta.json" ] || continue
-  printf '%s\\t' "$(basename "$d")"
-  tr -d '\\n' < "$d/meta.json"
-  echo
-done
-"""
+RUNNING = ("running", "starting")
+
+
+def parse_jobs(stdout: str) -> list[dict]:
+    try:
+        rows = json.loads(stdout or "[]")
+    except json.JSONDecodeError as exc:
+        raise CtrlError(
+            "REMOTE_FAILED", "tools/spark/jobs.sh did not print JSON", hint=str(exc)
+        ) from exc
+    return [r for r in rows if isinstance(r, dict)] if isinstance(rows, list) else []
 
 
 def jobs() -> list[dict]:
-    cp = ssh(JOBS_SCRIPT)
-    rows = []
-    for line in (cp.stdout or "").splitlines():
-        if "\t" not in line:
-            continue
-        job, meta_text = line.split("\t", 1)
-        try:
-            meta = json.loads(meta_text)
-        except json.JSONDecodeError:
-            meta = {"error": "unreadable meta.json"}
-        rows.append({"job": job, **(meta if isinstance(meta, dict) else {})})
-    rows.sort(key=lambda r: str(r.get("started") or r.get("created") or r["job"]))
-    return rows
+    """tools/spark/jobs.sh: every meta.json, newest first (status running|success|failed|...)."""
+    cp = run_script("jobs", [])
+    if cp.returncode != 0:
+        raise remote_failed("jobs", cp)
+    return parse_jobs(cp.stdout)
+
+
+PRESYNC_SCRIPT = f"""\
+j=~/{REMOTE_REPO}/tools/spark/jobs.sh
+if [ -f "$j" ]; then bash "$j" 2>/dev/null || echo '[]'; else echo '[]'; fi
+echo '@@manifest@@'
+sha256sum ~/{REMOTE_REPO}/lean/lake-manifest.json 2>/dev/null | cut -d' ' -f1
+"""
+
+
+def presync() -> tuple[list[dict], str]:
+    """(running prove jobs, remote lake-manifest sha256) in one ssh call."""
+    cp = ssh(PRESYNC_SCRIPT)
+    out = cp.stdout or ""
+    jobs_text, _, sha = out.partition("@@manifest@@")
+    try:
+        rows = parse_jobs(jobs_text.strip())
+    except CtrlError:
+        rows = []
+    running = [r for r in rows if r.get("kind") == "prove" and r.get("status") in RUNNING]
+    return running, sha.strip()
 
 
 def meta(job: str) -> dict:
@@ -231,13 +269,13 @@ def meta(job: str) -> dict:
 
 
 def log(job: str, lines: int, follow: bool) -> subprocess.CompletedProcess:
-    tail = f"tail -n {int(lines)}" + (" -f" if follow else "")
-    cp = ssh(
-        f'f=~/{REMOTE_JOBS}/{job}/log.txt; [ -f "$f" ] || exit {MISSING}; {tail} "$f"\n',
-        capture=not follow,
-    )
-    if cp.returncode == MISSING:
+    """tools/spark/log.sh JOB [-f] -n N: -f streams and returns when the job ends; exit 5 = missing."""
+    args = [job, "-n", str(int(lines))] + (["-f"] if follow else [])
+    cp = run_script("log", args, capture=not follow)
+    if cp.returncode == 5:
         raise job_not_found(job)
+    if cp.returncode != 0 and not follow:
+        raise remote_failed("log", cp)
     return cp
 
 

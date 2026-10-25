@@ -208,6 +208,45 @@ theorem prime_extension_capacity_strict_mono {S p : ℝ} (hS : 0 < S) (hp : 1 < 
   have h_gt_one : 1 < p / (p - 1) := (one_lt_div hp1).mpr (by linarith)
   nlinarith
 
+/-! ## Section 4: 17-Smooth and 19-Smooth Survivor Density Floors & Bridge to 23-Smooth -/
+
+/-- Seventeen-Smooth Survivor Density Floor (`seventeen_smooth_uncovered_floor`):
+Suppose after conditioning on the 17-smooth finite box `box17`, a partial congruence assignment
+leaves uncovered density `u_17 ≥ 212 / 720` (`= 53 / 180`), and all remaining admissible 17-smooth
+moduli belong to a finite subset `s` disjoint from `box17`. Then the uncovered density remaining
+after applying all moduli in `s` is bounded below by
+`(212 / 720) - (736489091029 / 110203821471744) = 158562069489367 / 551019107358720 > 0`
+(`≈ 0.287761 > 0`). -/
+theorem seventeen_smooth_uncovered_floor
+    (s : Finset Exponents17) (h : Disjoint s box17)
+    (u_17 : ℝ) (hu : (212 / 720 : ℝ) ≤ u_17) :
+    u_17 - ∑ w ∈ s, weight17 w ≥ 158562069489367 / 551019107358720 ∧
+    (0 : ℝ) < u_17 - ∑ w ∈ s, weight17 w := by
+  have h_tail := finite_tail_bound_17 s h
+  have h_num : (212 / 720 : ℝ) - (736489091029 / 110203821471744) =
+      158562069489367 / 551019107358720 := by norm_num
+  refine ⟨by linarith, by linarith⟩
+
+/-- Nineteen-Smooth Survivor Density Floor & Sub-Critical Margin Below the 23-Smooth Threshold:
+1. For any finite subset `s` of 19-smooth exponents disjoint from `box19` and any partial
+   assignment leaving uncovered density `u_19 ≥ 212 / 720`, the residual uncovered density after
+   exhausting `s` satisfies
+   `u_19 - ∑ u ∈ s, weight19 u ≥ 38054981216917703 / 132611931837665280 > 0` (`≈ 0.286965 > 0`).
+2. Furthermore, the entire 19-smooth Euler product `323323 / 110592` remains strictly below the
+   critical threshold `3` by the exact gap `8453 / 110592 ≈ 0.076434`, whereas adjoining `p_9 = 23`
+   crosses `3` with excess `137357 / 2433024 ≈ 0.056455`. -/
+theorem nineteen_smooth_uncovered_floor_and_threshold_bridge
+    (s : Finset Exponents19) (h : Disjoint s box19)
+    (u_19 : ℝ) (hu : (212 / 720 : ℝ) ≤ u_19) :
+    u_19 - ∑ u ∈ s, weight19 u ≥ 38054981216917703 / 132611931837665280 ∧
+    (0 : ℝ) < u_19 - ∑ u ∈ s, weight19 u ∧
+    (3 : ℝ) - (323323 / 110592) = 8453 / 110592 ∧
+    (7436429 / 2433024 : ℝ) - 3 = 137357 / 2433024 := by
+  have h_tail := finite_tail_bound_19 s h
+  have h_num : (212 / 720 : ℝ) - (198373075945637 / 26522386367533056) =
+      38054981216917703 / 132611931837665280 := by norm_num
+  refine ⟨by linarith, by linarith, by norm_num, by norm_num⟩
+
 #print axioms euler_product_17
 #print axioms box17_mass
 #print axioms finite_tail_bound_17
@@ -220,5 +259,7 @@ theorem prime_extension_capacity_strict_mono {S p : ℝ} (hS : 0 < S) (hp : 1 < 
 #print axioms euler_product_step_ratio
 #print axioms smooth_covering_threshold_at_23
 #print axioms prime_extension_capacity_strict_mono
+#print axioms seventeen_smooth_uncovered_floor
+#print axioms nineteen_smooth_uncovered_floor_and_threshold_bridge
 
 end Research.CoveringSeventeen

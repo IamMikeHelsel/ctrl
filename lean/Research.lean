@@ -16,6 +16,7 @@ import Research.CoveringFamily
 import Research.Erdos885QuotientGenus
 import Research.Erdos885JacobianSimplicity
 import Research.Erdos885MumfordChabauty
+import Research.Erdos885C5Chabauty
 import Research.HomographyDecomposition
 import Research.LorentzConeCBF
 import Research.RobotEnergySmoothness
@@ -24,3 +25,7 @@ import Research.SkewRankFourNormalForm
 import Research.TimingContracts
 import Research.VisualServoingInvariant
 import Research.WorldFrameTransport
+import Research.FactoryProofs
+import Research.LatencyBraking
+import Research.TransportCertificate
+import Research.VisionPerceptionHardening

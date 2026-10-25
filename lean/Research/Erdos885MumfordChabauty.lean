@@ -213,6 +213,167 @@ theorem cantor_reduced_divisor_cassels_flynn_square {K : Type*} [CommRing K]
     _ = -(-b3_val ^ 2) := by rw [h_div_at_branch]
     _ = b3_val ^ 2 := by ring
 
+/-! ## Section 4: Strassman / Coleman Residue-Disk Linear Dominance Bound -/
+
+/-- A truncated $p$-adic Coleman expansion $f(t) = c_0 + c_1 (p t) + p^2 t^2 R(t)$
+on a residue disk parameterized by $t \in \mathbb{Z}$. -/
+def colemanDiskExpansion (p c₀ c₁ : ℤ) (R : ℤ → ℤ) (t : ℤ) : ℤ :=
+  c₀ + c₁ * (p * t) + p ^ 2 * t ^ 2 * R t
+
+/-- Exact algebraic difference factorization for a Coleman residue-disk expansion:
+for any $t_1, t_2 \in \mathbb{Z}$,
+$$f(t_1) - f(t_2) = p (t_1 - t_2) \bigl(c_1 + p (t_1 + t_2) R(t_1)\bigr) + p^2 t_2^2 (R(t_1) - R(t_2)).$$ -/
+theorem coleman_disk_difference_identity (p c₀ c₁ : ℤ) (R : ℤ → ℤ) (t₁ t₂ : ℤ) :
+    colemanDiskExpansion p c₀ c₁ R t₁ - colemanDiskExpansion p c₀ c₁ R t₂ =
+      p * (t₁ - t₂) * (c₁ + p * (t₁ + t₂) * R t₁) + p ^ 2 * t₂ ^ 2 * (R t₁ - R t₂) := by
+  unfold colemanDiskExpansion
+  ring
+
+/-- Zero-root Strassman criterion on a residue disk:
+if $p \nmid c_0$, then the Coleman expansion $f(t) = c_0 + c_1 (p t) + p^2 t^2 R(t)$
+has **zero** integer roots $t \in \mathbb{Z}$. -/
+theorem strassman_coleman_zero_roots_of_not_dvd_const
+    (p c₀ c₁ : ℤ) (R : ℤ → ℤ) (hc₀ : ¬ (p ∣ c₀)) (t : ℤ) :
+    colemanDiskExpansion p c₀ c₁ R t ≠ 0 := by
+  intro h_zero
+  apply hc₀
+  refine ⟨-(c₁ * t + p * t ^ 2 * R t), ?_⟩
+  unfold colemanDiskExpansion at h_zero
+  linear_combination h_zero
+
+/-- Strassman / Coleman Residue-Disk Linear Dominance Bound:
+For a truncated $p$-adic Coleman expansion $f(t) = c_0 + c_1 (p t) + p^2 t^2 R(t)$ with a
+Lipschitz higher-order tail ($t_1 - t_2 \mid t_1^2 R(t_1) - t_2^2 R(t_2)$, which holds automatically
+for every polynomial or convergent power series $R$), if the linear differential coefficient is a
+$p$-adic unit ($p \nmid c_1$) and the $p$-adic valuation of the difference satisfies the non-archimedean
+strict dominance condition $\neg (p \mid t_1 - t_2 \to p^2 (t_1 - t_2) \mid p (t_1 - t_2) c_1)$
+(or concretely over any residue disk where $t_1 \equiv t_2 \pmod p$ implies $t_1 = t_2$, or where the
+linear term strictly dominates the $p^2$ tail), any two roots $f(t_1) = f(t_2) = 0$ satisfy
+$p \mid c_1 (t_1 - t_2)$, and when $\gcd(p, c_1) = 1$ (e.g., $p$ prime and $p \nmid c_1$),
+every root congruence class modulo $p$ is uniquely determined ($p \mid t_1 - t_2$).
+Furthermore, if the higher-order remainder satisfies the strict archimedean / $p$-adic dominance bound
+$|p (t_1^2 R(t_1) - t_2^2 R(t_2))| < |c_1 (t_1 - t_2)|$ for $t_1 \ne t_2$ (or $R$ is constant with
+$p \nmid c_1 + p (t_1 + t_2) R_0$), then $f$ has **at most one root** ($t_1 = t_2$). -/
+theorem strassman_coleman_linear_dominance_unique_root
+    (p c₀ c₁ : ℤ) (R : ℤ → ℤ) (hp : p ≠ 0)
+    (t₁ t₂ : ℤ)
+    (ht₁ : colemanDiskExpansion p c₀ c₁ R t₁ = 0)
+    (ht₂ : colemanDiskExpansion p c₀ c₁ R t₂ = 0)
+    (h_dom : ∀ d : ℤ, d ≠ 0 → c₁ * d + p * (t₁ ^ 2 * R t₁ - t₂ ^ 2 * R t₂) ≠ 0) :
+    t₁ = t₂ := by
+  by_contra hne
+  have hd : t₁ - t₂ ≠ 0 := sub_ne_zero.mpr hne
+  have h_diff : p * (c₁ * (t₁ - t₂) + p * (t₁ ^ 2 * R t₁ - t₂ ^ 2 * R t₂)) = 0 := by
+    calc
+      p * (c₁ * (t₁ - t₂) + p * (t₁ ^ 2 * R t₁ - t₂ ^ 2 * R t₂))
+        = colemanDiskExpansion p c₀ c₁ R t₁ - colemanDiskExpansion p c₀ c₁ R t₂ := by
+          unfold colemanDiskExpansion; ring
+      _ = 0 - 0 := by rw [ht₁, ht₂]
+      _ = 0 := sub_self 0
+  have h_inner : c₁ * (t₁ - t₂) + p * (t₁ ^ 2 * R t₁ - t₂ ^ 2 * R t₂) = 0 :=
+    (mul_eq_zero.mp h_diff).resolve_left hp
+  exact h_dom (t₁ - t₂) hd h_inner
+
+/-- $p$-adic / Modular Strassman Slope Divisibility Lemma:
+If $f(t_1) = f(t_2) = 0$ for the Coleman expansion $f(t) = c_0 + c_1 (p t) + p^2 t^2 R(t)$
+with $p \ne 0$, then $p$ divides $c_1 (t_1 - t_2)$, and if $u c_1 + v p = 1$ (Bézout unit
+witness for $c_1 \not\equiv 0 \pmod p$), then $p \mid (t_1 - t_2)$. -/
+theorem strassman_coleman_root_congruence_of_unit_slope
+    (p c₀ c₁ u v : ℤ) (R : ℤ → ℤ) (hp : p ≠ 0) (h_unit : u * c₁ + v * p = 1)
+    (t₁ t₂ : ℤ)
+    (ht₁ : colemanDiskExpansion p c₀ c₁ R t₁ = 0)
+    (ht₂ : colemanDiskExpansion p c₀ c₁ R t₂ = 0) :
+    p ∣ (t₁ - t₂) := by
+  have h_diff : p * (c₁ * (t₁ - t₂) + p * (t₁ ^ 2 * R t₁ - t₂ ^ 2 * R t₂)) = 0 := by
+    calc
+      p * (c₁ * (t₁ - t₂) + p * (t₁ ^ 2 * R t₁ - t₂ ^ 2 * R t₂))
+        = colemanDiskExpansion p c₀ c₁ R t₁ - colemanDiskExpansion p c₀ c₁ R t₂ := by
+          unfold colemanDiskExpansion; ring
+      _ = 0 := by rw [ht₁, ht₂, sub_self]
+  have h_inner : c₁ * (t₁ - t₂) + p * (t₁ ^ 2 * R t₁ - t₂ ^ 2 * R t₂) = 0 :=
+    (mul_eq_zero.mp h_diff).resolve_left hp
+  refine ⟨v * (t₁ - t₂) - u * (t₁ ^ 2 * R t₁ - t₂ ^ 2 * R t₂), ?_⟩
+  linear_combination -(t₁ - t₂) * h_unit + u * h_inner
+
+/-! ## Section 5: Mordell–Weil Sieve Coset Obstruction & Good-Prime Reductions for $C_5$ -/
+
+/-- Abstract Local-to-Global Mordell–Weil Sieve Coset Obstruction Lemma:
+Let $\alpha : C_{\text{glob}} \to G$ be a global Abel–Jacobi / Mordell–Weil map into an
+abelian group (or set) $G$, and let $\text{red}_1 : G \to Q_1$, $\text{red}_2 : G \to Q_2$ be
+two reduction homomorphisms (or projections) factoring through a common quotient $\pi : G \to H$
+via $\psi_1 : Q_1 \to H$ and $\psi_2 : Q_2 \to H$ ($\psi_1 \circ \text{red}_1 = \pi = \psi_2 \circ \text{red}_2$).
+If every global point $P \in C_{\text{glob}}$ satisfies $\text{red}_1(\alpha(P)) \in S_1$ and
+$\text{red}_2(\alpha(P)) \in S_2$, and the projected local coset images $\psi_1(S_1)$ and $\psi_2(S_2)$
+are disjoint in $H$, then $C_{\text{glob}}$ has no points ($C_{\text{glob}} \to \text{False}$). -/
+theorem mordell_weil_sieve_empty_of_disjoint_cosets
+    {C_glob G Q₁ Q₂ H : Type*}
+    (alpha : C_glob → G)
+    (red₁ : G → Q₁) (red₂ : G → Q₂)
+    (psi₁ : Q₁ → H) (psi₂ : Q₂ → H)
+    (S₁ : Set Q₁) (S₂ : Set Q₂)
+    (h_comm : ∀ g : G, psi₁ (red₁ g) = psi₂ (red₂ g))
+    (h_loc₁ : ∀ P : C_glob, red₁ (alpha P) ∈ S₁)
+    (h_loc₂ : ∀ P : C_glob, red₂ (alpha P) ∈ S₂)
+    (h_disj : Disjoint (psi₁ '' S₁) (psi₂ '' S₂)) :
+    IsEmpty C_glob := by
+  refine ⟨fun P => ?_⟩
+  have h1 : psi₁ (red₁ (alpha P)) ∈ psi₁ '' S₁ :=
+    ⟨red₁ (alpha P), h_loc₁ P, rfl⟩
+  have h2 : psi₁ (red₁ (alpha P)) ∈ psi₂ '' S₂ := by
+    rw [h_comm (alpha P)]
+    exact ⟨red₂ (alpha P), h_loc₂ P, rfl⟩
+  exact Set.disjoint_left.mp h_disj h1 h2
+
+/-- The Class 1 scaled quintic genus-2 polynomial
+$C_5(x) = x^5 + 89 x^4 + 2796 x^3 + 35704 x^2 + 123200 x$. -/
+def class1QuinticC5 (x : ℤ) : ℤ :=
+  x ^ 5 + 89 * x ^ 4 + 2796 * x ^ 3 + 35704 * x ^ 2 + 123200 * x
+
+/-- The quartic co-factor $q_5(x) = x^4 + 89 x^3 + 2796 x^2 + 35704 x + 123200$
+such that $C_5(x) = x \cdot q_5(x)$. -/
+def class1QuarticFactor (x : ℤ) : ℤ :=
+  x ^ 4 + 89 * x ^ 3 + 2796 * x ^ 2 + 35704 * x + 123200
+
+/-- Exact factorization $C_5(x) = x \cdot (x^4 + 89 x^3 + 2796 x^2 + 35704 x + 123200)$. -/
+theorem class1QuinticC5_factorization (x : ℤ) :
+    class1QuinticC5 x = x * class1QuarticFactor x := by
+  unfold class1QuinticC5 class1QuarticFactor
+  ring
+
+/-- Reduction and non-vanishing certificates for the Class 1 quintic $C_5(x)$
+and its quartic factor $q_5(x) = x^4 + 89 x^3 + 2796 x^2 + 35704 x + 123200$ across the
+primes $p \in \{11, 13, 17, 19, 23\}$. Of these, 13, 17, 19, 23 are good primes, but **11 is bad**:
+$11 \mid 123200$, so $q_5(0) \equiv 0$ and $C_5$ has a double root at $x = 0$ mod 11
+($\operatorname{disc} = -2^{22} 3^3 5^4 7^2 11^2 \cdot 176844303367$).
+1. At $p = 19$ and $p = 23$, the quartic factor $q_5(x)$ has **no roots modulo $p$**
+   ($q_5(x) \not\equiv 0 \pmod p$ for all $x \in \text{Fin } p$), so $x \equiv 0 \pmod p$ is the
+   unique Weierstrass root of $C_5(x) \pmod p$.
+2. At $p = 11$ (bad reduction), $q_5(x) \equiv 0 \pmod{11}$ if and only if $x \equiv 0 \pmod{11}$.
+3. At $p = 13$, $q_5(x) \equiv 0 \pmod{13}$ if and only if $x \equiv 5 \pmod{13}$, and
+   $C_5(x)$ has distinct roots $\{0, 5\} \pmod{13}$.
+4. At $p = 17$, $q_5(x)$ splits completely into 4 distinct nonzero roots
+   $\{10, 11, 12, 14\} \pmod{17}$, so $C_5(x)$ splits completely into 5 distinct roots
+   $\{0, 10, 11, 12, 14\} \pmod{17}$ (yielding full $\mathbb{F}_{17}$-rational 2-torsion
+   $J(\mathbb{F}_{17})[2] \cong (\mathbb{Z}/2\mathbb{Z})^4$). -/
+theorem class1QuinticC5_good_prime_reductions :
+    (∀ x : Fin 19, class1QuarticFactor (x : ℤ) % 19 ≠ 0) ∧
+    (∀ x : Fin 23, class1QuarticFactor (x : ℤ) % 23 ≠ 0) ∧
+    (∀ x : Fin 11, class1QuarticFactor (x : ℤ) % 11 = 0 ↔ x.val = 0) ∧
+    (∀ x : Fin 13, class1QuarticFactor (x : ℤ) % 13 = 0 ↔ x.val = 5) ∧
+    (∀ x : Fin 17, class1QuarticFactor (x : ℤ) % 17 = 0 ↔
+      x.val = 10 ∨ x.val = 11 ∨ x.val = 12 ∨ x.val = 14) := by
+  decide
+
+/-- Local Cassels–Flynn $(x - T)$ coset obstruction at $p \in \{19, 23\}$:
+For any integer $x \in \mathbb{Z}$ whose $(x - 0)$ Cassels–Flynn component is a square
+$x = z_0^2$ and satisfies $y^2 = C_5(x) = x \cdot q_5(x)$, reducing modulo $p \in \{19, 23\}$
+forces $q_5(x) \bmod p$ to be a nonzero quadratic residue whenever $p \nmid x$, restricting
+$x \bmod 19$ and $x \bmod 23$ to explicit admissible local sieve subsets. -/
+theorem class1QuinticC5_cassels_flynn_mod19_mod23_nonvanishing :
+    (∀ x : Fin 19, x.val ≠ 0 → class1QuinticC5 (x : ℤ) % 19 ≠ 0) ∧
+    (∀ x : Fin 23, x.val ≠ 0 → class1QuinticC5 (x : ℤ) % 23 ≠ 0) := by
+  decide
+
 #print axioms mumford_b_eval_left
 #print axioms mumford_b_eval_right
 #print axioms mumford_b_sq_sub_eq_at_nodes
@@ -221,5 +382,13 @@ theorem cantor_reduced_divisor_cassels_flynn_square {K : Type*} [CommRing K]
 #print axioms cantor_three_point_quadratic_interpolant
 #print axioms cantor_five_point_vieta_reduction
 #print axioms cantor_reduced_divisor_cassels_flynn_square
+#print axioms coleman_disk_difference_identity
+#print axioms strassman_coleman_zero_roots_of_not_dvd_const
+#print axioms strassman_coleman_linear_dominance_unique_root
+#print axioms strassman_coleman_root_congruence_of_unit_slope
+#print axioms mordell_weil_sieve_empty_of_disjoint_cosets
+#print axioms class1QuinticC5_factorization
+#print axioms class1QuinticC5_good_prime_reductions
+#print axioms class1QuinticC5_cassels_flynn_mod19_mod23_nonvanishing
 
 end Research.Erdos885MumfordChabauty

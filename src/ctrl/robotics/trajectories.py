@@ -170,6 +170,10 @@ def electromechanical_energy(
     eta: float | Fraction,
 ) -> float | Fraction:
     """Compute exact rest-to-rest actuator electromechanical energy E_total(eta)."""
+    if duration <= 0:
+        raise ValueError("duration T must be strictly positive (T > 0).")
+    if k_t == 0:
+        raise ValueError("torque constant k_t must be non-zero (Kt != 0).")
     ia = septic_accel_integral(eta)
     iv = septic_velocity_integral(eta)
     coeff_a = (r_elec * (m**2)) / ((k_t**2) * (duration**3))
@@ -197,9 +201,15 @@ def optimal_septic_eta(
     Since E_total(eta) = D^2 * (c_a I_a(eta) + c_v I_v(eta)) with
     I_a'(eta) = (4/77)(eta + 11) and I_v'(eta) = (6/10010)(eta + 260/9),
     the exact unconstrained minimizer is a convex combination of -11 and -260/9.
-    Clamping to [-11, -9] preserves strict monotone velocity (no reversal) while capturing
-    the full 18.33% inertial Joule reduction at eta = -11.
+    Clamping to [-11, 0] restricts eta* to the Pareto-improving interval between the
+    minimum-acceleration profile (eta = -11, within the monotone velocity range [-15, 9])
+    and the classical minimum-jerk quintic profile (eta = 0), capturing the full 18.33%
+    inertial Joule reduction at eta = -11.
     """
+    if duration <= 0:
+        raise ValueError("duration T must be strictly positive (T > 0).")
+    if k_t == 0:
+        raise ValueError("torque constant k_t must be non-zero (Kt != 0).")
     use_frac = all(isinstance(x, Fraction) for x in (m, b, r_elec, k_t, duration))
     if use_frac:
         mf, bf, rf, ktf, tf = (

@@ -146,4 +146,5 @@ def test_cassels_flynn_2descent_and_mumford_divisors_all_classes() -> None:
             assert q_cf["all_deg1_in_cassels_flynn_kernel"] is True
             assert q_cf["all_deg2_in_cassels_flynn_kernel"] is True
             assert q_cf["all_mumford_divisibility_verified"] is True
+            assert q_cf["cantor_3point_reduced_divisor_verified"] is True
         assert cf["sextic_cassels_flynn_squarefree_tuples"] == [[1, 1, 1, 1, 1, 1]] * 4

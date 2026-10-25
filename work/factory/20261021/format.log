@@ -1,0 +1,851 @@
+Uninstalled 1 package in 1ms
+Installed 1 package in 2ms
+unformatted: File would be reformatted
+   --> .agents/teamwork/challenger_m2_2/handoff.md:82:19
+   |
+81 |      cross = edge_x * to_pt_y - edge_y * to_pt_x
+   -      if cross < 0: return False, ...
+82 +      if cross < 0:
+83 +          return False, ...
+84 |      ```
+--------------------------------------------------------------------------------
+93 |      ```python
+   -      if a_b > mu_f * g_f: return False, ...
+94 +      if a_b > mu_f * g_f:
+95 +          return False, ...
+96 |      return True, ...
+   |
+
+unformatted: File would be reformatted
+   --> papers/generate_all_figures.py:95:13
+    |
+94  |     ax.plot(etas, Ia_rel, color="#1f77b4", label=r"Inertial Joule loss $\Delta I_a(\eta)$ [%]")
+    -     ax.plot(etas, Iv_rel, color="#d62728", linestyle="--", label=r"Viscous loss $\Delta I_v(\eta)$ [%]")
+95  +     ax.plot(
+96  +         etas, Iv_rel, color="#d62728", linestyle="--", label=r"Viscous loss $\Delta I_v(\eta)$ [%]"
+97  +     )
+98  |     ax.axhline(0.0, color="black", linewidth=0.9, alpha=0.6)
+    -     ax.axvspan(-11.0, 0.0, color="#2ca02c", alpha=0.14, label=r"Pareto-dominating interval $\eta \in [-11, 0)$")
+99  +     ax.axvspan(
+100 +         -11.0,
+101 +         0.0,
+102 +         color="#2ca02c",
+103 +         alpha=0.14,
+104 +         label=r"Pareto-dominating interval $\eta \in [-11, 0)$",
+105 +     )
+106 |     ax.scatter([0.0, -11.0], [0.0, -11.0 / 60.0 * 100.0], color="#1f77b4", zorder=5)
+107 |     ax.scatter([0.0, -11.0], [0.0, -421.0 / 3900.0 * 100.0], color="#d62728", zorder=5)
+    -     ax.annotate("Min-jerk\n($\\eta=0$)", xy=(0.0, 0.0), xytext=(0.6, -5.5),
+    -                 arrowprops={"arrowstyle": "->", "lw": 0.8}, fontsize=8)
+    -     ax.annotate("Min-$I_a$ ($\\eta=-11$)\n$-18.33\\%$ Joule\n$-10.79\\%$ viscous",
+    -                 xy=(-11.0, -18.333), xytext=(-14.8, -11.5),
+    -                 arrowprops={"arrowstyle": "->", "lw": 0.8}, fontsize=8)
+108 +     ax.annotate(
+109 +         "Min-jerk\n($\\eta=0$)",
+110 +         xy=(0.0, 0.0),
+111 +         xytext=(0.6, -5.5),
+112 +         arrowprops={"arrowstyle": "->", "lw": 0.8},
+113 +         fontsize=8,
+114 +     )
+115 +     ax.annotate(
+116 +         "Min-$I_a$ ($\\eta=-11$)\n$-18.33\\%$ Joule\n$-10.79\\%$ viscous",
+117 +         xy=(-11.0, -18.333),
+118 +         xytext=(-14.8, -11.5),
+119 +         arrowprops={"arrowstyle": "->", "lw": 0.8},
+120 +         fontsize=8,
+121 +     )
+122 |     ax.set_xlabel(r"Septic perturbation parameter $\eta$")
+--------------------------------------------------------------------------------
+129 |     ax.plot(s, v_septic(s, 0.0), color="#333333", label=r"Min-jerk ($\eta=0$, $I_v=10/7$)")
+    -     ax.plot(s, v_septic(s, -5.5), color="#ff7f0e", linestyle="-.", label=r"Mid-Pareto ($\eta=-5.5$)")
+    -     ax.plot(s, v_septic(s, -11.0), color="#2ca02c", label=r"Min-$I_a$ ($\eta=-11$, $-10.79\%$ viscous)")
+130 +     ax.plot(
+131 +         s, v_septic(s, -5.5), color="#ff7f0e", linestyle="-.", label=r"Mid-Pareto ($\eta=-5.5$)"
+132 +     )
+133 +     ax.plot(
+134 +         s, v_septic(s, -11.0), color="#2ca02c", label=r"Min-$I_a$ ($\eta=-11$, $-10.79\%$ viscous)"
+135 +     )
+136 |     ax.set_xlabel(r"Normalized time $s = t/T \in [0, 1]$")
+--------------------------------------------------------------------------------
+143 |     ax.plot(s, a_septic(s, 0.0), color="#333333", label=r"Min-jerk ($\eta=0$, $I_a=120/7$)")
+    -     ax.plot(s, a_septic(s, -5.5), color="#ff7f0e", linestyle="-.", label=r"Mid-Pareto ($\eta=-5.5$, $I_a=14.78$)")
+144 +     ax.plot(
+145 +         s,
+146 +         a_septic(s, -5.5),
+147 +         color="#ff7f0e",
+148 +         linestyle="-.",
+149 +         label=r"Mid-Pareto ($\eta=-5.5$, $I_a=14.78$)",
+150 +     )
+151 |     ax.plot(s, a_septic(s, -11.0), color="#2ca02c", label=r"Min-$I_a$ ($\eta=-11$, $I_a=14.0$)")
+--------------------------------------------------------------------------------
+182 |     mu = 0.40
+    -     ax.plot(mu * np.cos(theta), mu * np.sin(theta), color="#ff7f0e", linestyle="--", linewidth=1.8,
+    -             label=r"Lorentz friction limit $\|\mathbf{a}\| = \mu g$")
+    -     ax.plot([-X_half / h_G, X_half / h_G, X_half / h_G, -X_half / h_G, -X_half / h_G],
+    -             [-Y_half / h_G, -Y_half / h_G, Y_half / h_G, Y_half / h_G, -Y_half / h_G],
+    -             color="#d62728", linewidth=1.8, label="ZMP support rectangle ($f_{i,z}=0$)")
+183 +     ax.plot(
+184 +         mu * np.cos(theta),
+185 +         mu * np.sin(theta),
+186 +         color="#ff7f0e",
+187 +         linestyle="--",
+188 +         linewidth=1.8,
+189 +         label=r"Lorentz friction limit $\|\mathbf{a}\| = \mu g$",
+190 +     )
+191 +     ax.plot(
+192 +         [-X_half / h_G, X_half / h_G, X_half / h_G, -X_half / h_G, -X_half / h_G],
+193 +         [-Y_half / h_G, -Y_half / h_G, Y_half / h_G, Y_half / h_G, -Y_half / h_G],
+194 +         color="#d62728",
+195 +         linewidth=1.8,
+196 +         label="ZMP support rectangle ($f_{i,z}=0$)",
+197 +     )
+198 |     ax.set_xlabel(r"Normalized sagittal accel $a_x / g$")
+--------------------------------------------------------------------------------
+211 |     ax.plot(t, d_se3, color="#2ca02c", label=r"6-DOF $SE(3)$ HBVS depth $n_c(t)\cdot X_c(t)$")
+    -     ax.plot(t, d_ibvs_retreat, color="#d62728", linestyle="--", label=r"Classical IBVS pure-rotation retreat $z_0 e^{ct}$")
+212 +     ax.plot(
+213 +         t,
+214 +         d_ibvs_retreat,
+215 +         color="#d62728",
+216 +         linestyle="--",
+217 +         label=r"Classical IBVS pure-rotation retreat $z_0 e^{ct}$",
+218 +     )
+219 |     ax.axhline(d_star, color="#1f77b4", linestyle=":", label=r"Target depth $d^* = 0.8\,$m")
+--------------------------------------------------------------------------------
+238 |     a_eff = np.where(t_knot < 0, (alpha_minus**2) * a_k, (alpha_plus**2) * a_k)
+    -     ax.plot(t_knot, v_eff, color="#1f77b4", label=r"Slew velocity $\dot{\tilde{q}}(t)$ (jump $\Delta \dot{q} = (\alpha_+-\alpha_-)v_k$)")
+    -     ax.plot(t_knot, a_eff, color="#d62728", linestyle="--", label=r"Piecewise accel $\ddot{\tilde{q}}(t)$ ($\alpha^2 a_k$)")
+239 +     ax.plot(
+240 +         t_knot,
+241 +         v_eff,
+242 +         color="#1f77b4",
+243 +         label=r"Slew velocity $\dot{\tilde{q}}(t)$ (jump $\Delta \dot{q} = (\alpha_+-\alpha_-)v_k$)",
+244 +     )
+245 +     ax.plot(
+246 +         t_knot,
+247 +         a_eff,
+248 +         color="#d62728",
+249 +         linestyle="--",
+250 +         label=r"Piecewise accel $\ddot{\tilde{q}}(t)$ ($\alpha^2 a_k$)",
+251 +     )
+252 |     ax.axvline(0.0, color="black", linestyle=":", alpha=0.7, label="Spline knot $t=t_k$")
+--------------------------------------------------------------------------------
+301 |     ax.plot(quad["t_hist"], quad["x_hist"], color="#1f77b4", label=r"CoM position $x(t)$ [m]")
+    -     ax.plot(quad["t_hist"], quad["vx_hist"], color="#ff7f0e", linestyle="-.", label=r"Velocity $v_x(t)$ [m/s]")
+    -     ax.plot(quad["t_hist"], quad["h_cbf_hist"], color="#2ca02c", linestyle="--", label=r"Barrier $h_{\mathrm{dir}}(r,v) \geq 0$")
+    -     ax.axhline(quad["x_limit_m"], color="#d62728", linestyle=":", linewidth=1.6, label=r"Wall limit $x_{\mathrm{lim}}=1.20$ m")
+302 +     ax.plot(
+303 +         quad["t_hist"],
+304 +         quad["vx_hist"],
+305 +         color="#ff7f0e",
+306 +         linestyle="-.",
+307 +         label=r"Velocity $v_x(t)$ [m/s]",
+308 +     )
+309 +     ax.plot(
+310 +         quad["t_hist"],
+311 +         quad["h_cbf_hist"],
+312 +         color="#2ca02c",
+313 +         linestyle="--",
+314 +         label=r"Barrier $h_{\mathrm{dir}}(r,v) \geq 0$",
+315 +     )
+316 +     ax.axhline(
+317 +         quad["x_limit_m"],
+318 +         color="#d62728",
+319 +         linestyle=":",
+320 +         linewidth=1.6,
+321 +         label=r"Wall limit $x_{\mathrm{lim}}=1.20$ m",
+322 +     )
+323 |     ax.axhline(0.0, color="black", linewidth=0.8, alpha=0.6)
+--------------------------------------------------------------------------------
+330 |     ax = axes[2]
+    -     ax.plot(se3["t_hist"], se3["d_hbvs_hist"], color="#2ca02c", label=r"MuJoCo $SE(3)$ HBVS depth $d(t)$")
+    -     ax.plot(se3["t_hist"], se3["d_ibvs_hist"], color="#d62728", linestyle="--", label=r"Classical IBVS retreat ($\Delta\phi=160^\circ$)")
+    -     ax.plot(se3["t_hist"], se3["d_lower_bound_hist"], color="#1f77b4", linestyle=":", label=r"Lean theorem lower bound $B(t)$")
+331 +     ax.plot(
+332 +         se3["t_hist"],
+333 +         se3["d_hbvs_hist"],
+334 +         color="#2ca02c",
+335 +         label=r"MuJoCo $SE(3)$ HBVS depth $d(t)$",
+336 +     )
+337 +     ax.plot(
+338 +         se3["t_hist"],
+339 +         se3["d_ibvs_hist"],
+340 +         color="#d62728",
+341 +         linestyle="--",
+342 +         label=r"Classical IBVS retreat ($\Delta\phi=160^\circ$)",
+343 +     )
+344 +     ax.plot(
+345 +         se3["t_hist"],
+346 +         se3["d_lower_bound_hist"],
+347 +         color="#1f77b4",
+348 +         linestyle=":",
+349 +         label=r"Lean theorem lower bound $B(t)$",
+350 +     )
+351 |     ax.set_xlabel("Simulation time $t$ [s]")
+--------------------------------------------------------------------------------
+372 |     ax = axes[0]
+    -     smooth_labels = ["3-smooth\n{2,3}", "5-smooth\n{2,3,5}", "7-smooth\n{2,3,5,7}", "11-smooth\n{2..11}", "13-smooth\n{2..13}"]
+373 +     smooth_labels = [
+374 +         "3-smooth\n{2,3}",
+375 +         "5-smooth\n{2,3,5}",
+376 +         "7-smooth\n{2,3,5,7}",
+377 +         "11-smooth\n{2..11}",
+378 +         "13-smooth\n{2..13}",
+379 +     ]
+380 |     # Euler products prod_{p} p/(p-1) vs admissible (m>=4, m+1 prime) reciprocal sum upper bounds
+--------------------------------------------------------------------------------
+385 |     x = np.arange(len(smooth_labels))
+    -     bars = ax.bar(x, admissible_sums, width=0.52, color=["#4c78a8", "#4c78a8", "#4c78a8", "#f58518", "#e45756"],
+    -                   edgecolor="black", linewidth=0.8)
+    -     ax.axhline(1.0, color="#d62728", linestyle="--", linewidth=1.6, label="Necessary covering density threshold $= 1.0$")
+386 +     bars = ax.bar(
+387 +         x,
+388 +         admissible_sums,
+389 +         width=0.52,
+390 +         color=["#4c78a8", "#4c78a8", "#4c78a8", "#f58518", "#e45756"],
+391 +         edgecolor="black",
+392 +         linewidth=0.8,
+393 +     )
+394 +     ax.axhline(
+395 +         1.0,
+396 +         color="#d62728",
+397 +         linestyle="--",
+398 +         linewidth=1.6,
+399 +         label="Necessary covering density threshold $= 1.0$",
+400 +     )
+401 |     for idx, val in enumerate(admissible_sums):
+    -         ax.text(idx, val + 0.03, f"{val:.4f}", ha="center", va="bottom", fontsize=8.5, fontweight="bold")
+402 +         ax.text(
+403 +             idx, val + 0.03, f"{val:.4f}", ha="center", va="bottom", fontsize=8.5, fontweight="bold"
+404 +         )
+405 |     ax.set_xticks(x)
+406 |     ax.set_xticklabels(smooth_labels)
+407 |     ax.set_ylim(0.0, 1.50)
+    -     ax.set_ylabel(r"Unconditioned reciprocal sum $\sum_{m \in \mathcal{M}} \frac{1}{m} + \mathrm{tail}$")
+408 +     ax.set_ylabel(
+409 +         r"Unconditioned reciprocal sum $\sum_{m \in \mathcal{M}} \frac{1}{m} + \mathrm{tail}$"
+410 +     )
+411 |     ax.set_title(r"(a) Smooth Moduli Pool Density ($m \geq 4, m+1$ Prime)")
+--------------------------------------------------------------------------------
+420 |     orbit_nodes = [1, 1, 2, 4, 14, 56, 218, 892, 2330]  # cumulative/active nodes totaling 3,518
+    -     ax.semilogy(depths, raw_paths, marker="s", color="#d62728", linestyle="--",
+    -                 label=r"Unreduced residue assignments ($\prod m_j = 1.866 \times 10^8$)")
+    -     ax.semilogy(depths, orbit_nodes, marker="o", color="#2ca02c", linewidth=2.2,
+    -                 label="Stabilizer-orbit canonical nodes (3,518 total)")
+421 +     ax.semilogy(
+422 +         depths,
+423 +         raw_paths,
+424 +         marker="s",
+425 +         color="#d62728",
+426 +         linestyle="--",
+427 +         label=r"Unreduced residue assignments ($\prod m_j = 1.866 \times 10^8$)",
+428 +     )
+429 +     ax.semilogy(
+430 +         depths,
+431 +         orbit_nodes,
+432 +         marker="o",
+433 +         color="#2ca02c",
+434 +         linewidth=2.2,
+435 +         label="Stabilizer-orbit canonical nodes (3,518 total)",
+436 +     )
+437 |     ax.set_xticks(depths)
+--------------------------------------------------------------------------------
+462 |     width = 0.35
+    -     ax.bar(idx - width / 2, np.log10(u_c1[1:]), width=width, color="#1f77b4", edgecolor="black",
+    -            label="Class 1 (59-smooth, $g=49$)")
+    -     ax.bar(idx + width / 2, np.log10(u_c2[1:]), width=width, color="#ff7f0e", edgecolor="black",
+    -            label="Class 2 (101-smooth, $g=49$)")
+463 +     ax.bar(
+464 +         idx - width / 2,
+465 +         np.log10(u_c1[1:]),
+466 +         width=width,
+467 +         color="#1f77b4",
+468 +         edgecolor="black",
+469 +         label="Class 1 (59-smooth, $g=49$)",
+470 +     )
+471 +     ax.bar(
+472 +         idx + width / 2,
+473 +         np.log10(u_c2[1:]),
+474 +         width=width,
+475 +         color="#ff7f0e",
+476 +         edgecolor="black",
+477 +         label="Class 2 (101-smooth, $g=49$)",
+478 +     )
+479 |     ax.set_xticks(idx)
+480 |     ax.set_xticklabels([f"$u_{i}-u_1$" for i in range(2, 7)])
+481 |     ax.set_ylabel(r"Quadric shift magnitude $\log_{10}(u_i - u_1)$")
+    -     ax.set_title(r"(a) Projective Quadric Shifts $y_i^2 - y_1^2 = (u_i - u_1)z^2$ in $\mathbb{P}^6$")
+482 +     ax.set_title(
+483 +         r"(a) Projective Quadric Shifts $y_i^2 - y_1^2 = (u_i - u_1)z^2$ in $\mathbb{P}^6$"
+484 +     )
+485 |     ax.legend(loc="upper left", framealpha=0.9)
+--------------------------------------------------------------------------------
+491 |     mazur_torsion_cap = np.full(20, 2)
+    -     ax.bar(triples, observed_doubled_x, color="#2ca02c", edgecolor="black", width=0.65,
+    -            label=r"Observed distinct $x(2P_j) \in 2E_{ijk}(\mathbb{Q})$ (= 4 on all 20 curves)")
+    -     ax.plot(triples, mazur_torsion_cap, color="#d62728", linestyle="--", linewidth=2.2,
+    -             label=r"Mazur torsion bound $|x(2E(\mathbb{Q})_{\mathrm{tors}})| \leq 2$")
+492 +     ax.bar(
+493 +         triples,
+494 +         observed_doubled_x,
+495 +         color="#2ca02c",
+496 +         edgecolor="black",
+497 +         width=0.65,
+498 +         label=r"Observed distinct $x(2P_j) \in 2E_{ijk}(\mathbb{Q})$ (= 4 on all 20 curves)",
+499 +     )
+500 +     ax.plot(
+501 +         triples,
+502 +         mazur_torsion_cap,
+503 +         color="#d62728",
+504 +         linestyle="--",
+505 +         linewidth=2.2,
+506 +         label=r"Mazur torsion bound $|x(2E(\mathbb{Q})_{\mathrm{tors}})| \leq 2$",
+507 +     )
+508 |     ax.set_xticks(triples)
+--------------------------------------------------------------------------------
+569 |     ys_norm = ys / np.max(ys)
+    -     ax.scatter(xs, ys_norm, s=45, color="#d62728", zorder=5, label=r"Horton set $H_4$ ($2^4=16$ points)")
+570 +     ax.scatter(
+571 +         xs, ys_norm, s=45, color="#d62728", zorder=5, label=r"Horton set $H_4$ ($2^4=16$ points)"
+572 +     )
+573 |     # Connect upper/lower split layers to show recursive interleaving
+574 |     even_mask = (np.arange(n_pts) % 2) == 0
+575 |     odd_mask = ~even_mask
+    -     ax.plot(xs[even_mask], ys_norm[even_mask], color="#1f77b4", linestyle="--", alpha=0.75, label=r"Even subsequence $H_3^-$ (lower)")
+    -     ax.plot(xs[odd_mask], ys_norm[odd_mask], color="#2ca02c", linestyle="-.", alpha=0.75, label=r"Odd subsequence $H_3^+$ (upper)")
+576 +     ax.plot(
+577 +         xs[even_mask],
+578 +         ys_norm[even_mask],
+579 +         color="#1f77b4",
+580 +         linestyle="--",
+581 +         alpha=0.75,
+582 +         label=r"Even subsequence $H_3^-$ (lower)",
+583 +     )
+584 +     ax.plot(
+585 +         xs[odd_mask],
+586 +         ys_norm[odd_mask],
+587 +         color="#2ca02c",
+588 +         linestyle="-.",
+589 +         alpha=0.75,
+590 +         label=r"Odd subsequence $H_3^+$ (upper)",
+591 +     )
+592 |     ax.set_xlabel(r"Point index $x_i \in \{0, 1, \dots, 15\}$")
+    |
+
+unformatted: File would be reformatted
+   --> src/ctrl/cli.py:876:15
+    |
+875 |     audit = robotics.verify_lean_bindings(repo.root)
+    -     c99_res = robotics.compile_and_verify_c99_kernels() if c99_codegen else {"parity_verified": True}
+876 +     c99_res = (
+877 +         robotics.compile_and_verify_c99_kernels() if c99_codegen else {"parity_verified": True}
+878 +     )
+879 |     mj_res = robotics.run_all_mujoco_benchmarks() if mujoco_sim else {"ok": True}
+--------------------------------------------------------------------------------
+897 |             "ok": mj_res.get("ok", True),
+    -             "arm_joule_reduction_pct": mj_res.get("arm_6dof", {}).get("joule_dynamic_reduction_pct"),
+898 +             "arm_joule_reduction_pct": mj_res.get("arm_6dof", {}).get(
+899 +                 "joule_dynamic_reduction_pct"
+900 +             ),
+901 |             "quad_safety_verified": mj_res.get("quad_zmp_cbf", {}).get("safety_verified"),
+    -             "se3_hbvs_monotone": mj_res.get("se3_visual_servoing", {}).get("hbvs_monotone_in_interval"),
+902 +             "se3_hbvs_monotone": mj_res.get("se3_visual_servoing", {}).get(
+903 +                 "hbvs_monotone_in_interval"
+904 +             ),
+905 |         }
+    |
+
+unformatted: File would be reformatted
+   --> src/ctrl/robotics/codegen.py:305:6
+    |
+304 |     "Research.LorentzConeCBF",
+    -     ("quad_contact_net_force", "quad_contact_zero_angular_momentum", "lorentz_backup_controller_safe"),
+305 +     (
+306 +         "quad_contact_net_force",
+307 +         "quad_contact_zero_angular_momentum",
+308 +         "lorentz_backup_controller_safe",
+309 +     ),
+310 |     domain="codegen",
+--------------------------------------------------------------------------------
+400 |             max_err = max(max_err, abs(lib.ctrl_septic_ia(eta) - float(septic_accel_integral(eta))))
+    -             max_err = max(max_err, abs(lib.ctrl_septic_iv(eta) - float(septic_velocity_integral(eta))))
+401 +             max_err = max(
+402 +                 max_err, abs(lib.ctrl_septic_iv(eta) - float(septic_velocity_integral(eta)))
+403 +             )
+404 |             for s in (0.0, 0.25, 0.5, 0.75, 1.0):
+    |
+
+unformatted: File would be reformatted
+   --> src/ctrl/robotics/contact_cbf.py:184:21
+    |
+183 | )
+    - def directional_cbf(
+    -     r_limit: Vec3T[T], r: Vec3T[T], v: Vec3T[T], n_hat: Vec3T[T], a_brake: T
+    - ) -> T:
+184 + def directional_cbf(r_limit: Vec3T[T], r: Vec3T[T], v: Vec3T[T], n_hat: Vec3T[T], a_brake: T) -> T:
+185 |     """Evaluate h_dir(r, v) = (r_limit - r) . n_hat - (v . n_hat)^2 / (2 a_brake)."""
+    |
+
+unformatted: File would be reformatted
+   --> src/ctrl/robotics/estimation_lqr.py:131:29
+    |
+130 | )
+    - def kalata_alpha_beta_gains(sample_period: float, accel_var: float, meas_var: float) -> dict[str, float]:
+131 + def kalata_alpha_beta_gains(
+132 +     sample_period: float, accel_var: float, meas_var: float
+133 + ) -> dict[str, float]:
+134 |     """Compute exact steady-state (alpha, beta) gains and covariance (p11, p12, p22) via KalataU."""
+--------------------------------------------------------------------------------
+194 |     zero_block = np.zeros((n, n))
+    -     aug_mat = np.block([[a_mat - b_mat @ k_gain, b_mat @ k_gain], [zero_block, a_mat - l_gain @ c_mat]])
+195 +     aug_mat = np.block(
+196 +         [[a_mat - b_mat @ k_gain, b_mat @ k_gain], [zero_block, a_mat - l_gain @ c_mat]]
+197 +     )
+198 |     det_aug = float(np.linalg.det(aug_mat))
+--------------------------------------------------------------------------------
+260 |         x_shift.append(a_mat @ x_shift[-1] + b_mat @ u_shift[k])
+    -     j_shift = sum(stage_cost(x_shift[k], u_shift[k]) for k in range(horizon)) + term_cost(x_shift[-1])
+261 +     j_shift = sum(stage_cost(x_shift[k], u_shift[k]) for k in range(horizon)) + term_cost(
+262 +         x_shift[-1]
+263 +     )
+264 |
+    |
+
+unformatted: File would be reformatted
+   --> src/ctrl/robotics/kinematics_ik.py:143:30
+    |
+142 | )
+    - def two_link_fk_and_jacobian(
+    -     l1: float, l2: float, q1: float, q2: float
+    - ) -> dict[str, float | bool]:
+143 + def two_link_fk_and_jacobian(l1: float, l2: float, q1: float, q2: float) -> dict[str, float | bool]:
+144 |     """Compute 2-link planar arm end-effector (x, y), radius^2, and Jacobian determinant."""
+    |
+
+unformatted: File would be reformatted
+   --> src/ctrl/robotics/mujoco_benchmarks.py:320:47
+    |
+319 |         "max_angular_velocity_rad_s": max_ang_vel,
+    -         "safety_verified": max_x <= r_limit[0] and min_h_cbf >= -1e-6 and all_cone_ok and max_ang_vel < 1e-10,
+320 +         "safety_verified": max_x <= r_limit[0]
+321 +         and min_h_cbf >= -1e-6
+322 +         and all_cone_ok
+323 +         and max_ang_vel < 1e-10,
+324 |         "t_hist": t_hist,
+--------------------------------------------------------------------------------
+411 |         "ok": bool(
+    -             arm["pareto_verified"]
+    -             and quad["safety_verified"]
+    -             and se3["hbvs_monotone_in_interval"]
+412 +             arm["pareto_verified"] and quad["safety_verified"] and se3["hbvs_monotone_in_interval"]
+413 |         ),
+    |
+
+unformatted: File would be reformatted
+   --> src/ctrl/robotics/registry.py:168:14
+    |
+167 |         ]
+    -         ok = (
+    -             info["exists"]
+    -             and not missing_in_binding
+    -             and len(info["forbidden_tokens"]) == 0
+    -         )
+168 +         ok = info["exists"] and not missing_in_binding and len(info["forbidden_tokens"]) == 0
+169 |         if missing_in_binding:
+    |
+
+unformatted: File would be reformatted
+   --> src/ctrl/robotics/trajectories.py:104:12
+    |
+103 |     """Evaluate dimensionless jerk profile j_eta(s) = d^3q_eta/ds^3."""
+    -     return (
+    -         60
+    -         - 360 * s
+    -         + 360 * s**2
+    -         + eta * (-6 + 120 * s - 540 * s**2 + 840 * s**3 - 420 * s**4)
+    -     )
+104 +     return 60 - 360 * s + 360 * s**2 + eta * (-6 + 120 * s - 540 * s**2 + 840 * s**3 - 420 * s**4)
+105 |
+--------------------------------------------------------------------------------
+134 |     "Research.RobotEnergySmoothness",
+    -     ("Ij", "Fj", "Fj_hasDerivAt", "exact_integral_quadratic_forms", "min_jerk_uniquely_minimizes_Ij"),
+135 +     (
+136 +         "Ij",
+137 +         "Fj",
+138 +         "Fj_hasDerivAt",
+139 +         "exact_integral_quadratic_forms",
+140 +         "min_jerk_uniquely_minimizes_Ij",
+141 +     ),
+142 |     domain="trajectories",
+--------------------------------------------------------------------------------
+182 |     "Research.RobotEnergySmoothness",
+    -     ("electromechanicalEnergy", "exact_integral_quadratic_forms", "min_jerk_strictly_pareto_dominated"),
+183 +     (
+184 +         "electromechanicalEnergy",
+185 +         "exact_integral_quadratic_forms",
+186 +         "min_jerk_strictly_pareto_dominated",
+187 +     ),
+188 |     domain="trajectories",
+    |
+
+unformatted: File would be reformatted
+   --> src/ctrl/robotics/vision_se3.py:139:6
+    |
+138 |     "Research.VisualServoingInvariant",
+    -     ("chaumette_retreat_unbounded", "visual_servoing_depth_positive", "se3_depth_positive_of_feedback"),
+139 +     (
+140 +         "chaumette_retreat_unbounded",
+141 +         "visual_servoing_depth_positive",
+142 +         "se3_depth_positive_of_feedback",
+143 +     ),
+144 |     domain="vision_se3",
+--------------------------------------------------------------------------------
+174 | )
+    - def triangulate_two_view_rays(
+    -     r_x1: Vec3T[T], x2: Vec3T[T], t_vec: Vec3T[T]
+    - ) -> tuple[T, T]:
+175 + def triangulate_two_view_rays(r_x1: Vec3T[T], x2: Vec3T[T], t_vec: Vec3T[T]) -> tuple[T, T]:
+176 |     """Compute unique closed-form depths (d1, d2) solving d2 * x2 = d1 * (R x1) + t."""
+    |
+
+unformatted: File would be reformatted
+   --> tests/test_885_geometry.py:209:16
+    |
+208 |         obs = res["obstruction_summary"]
+    -         assert obs["classification"] == "Bounded search negative (q <= 10^6) + Faltings finiteness (non-effective)"
+209 +         assert (
+210 +             obs["classification"]
+211 +             == "Bounded search negative (q <= 10^6) + Faltings finiteness (non-effective)"
+212 +         )
+213 |         assert obs["faltings_finite"] is True
+    |
+
+unformatted: File would be reformatted
+  --> tests/test_covering_273.py:64:24
+   |
+63 |     """Adversarial mutation 2: Artificial inflation of tree node capacity bound."""
+   -     with pytest.raises(ValueError, match="capacity bias must be zero|density gap.*below certified minimum margin"):
+64 +     with pytest.raises(
+65 +         ValueError, match="capacity bias must be zero|density gap.*below certified minimum margin"
+66 +     ):
+67 |         CHECKER_11["check"](capacity_bias=1000)
+--------------------------------------------------------------------------------
+78 |     """Adversarial mutation 4: Mutate branch residue offset away from canonical stabilizer orbits."""
+   -     with pytest.raises(ValueError, match="branch offset must be zero|branch residue.*outside canonical orbit range"):
+79 +     with pytest.raises(
+80 +         ValueError, match="branch offset must be zero|branch residue.*outside canonical orbit range"
+81 +     ):
+82 |         CHECKER_11["check"](branch_offset=1)
+   |
+
+unformatted: File would be reformatted
+   --> tests/test_crossover_push.py:62:1
+    |
+61  |
+62  +
+63  | # ==============================================================================
+--------------------------------------------------------------------------------
+205 |         # Check analytical formula identity
+    -         expected_depth = (
+    -             math.exp(-lam * t) * depth_0 + (1.0 - math.exp(-lam * t)) * depth_star
+    -         )
+206 +         expected_depth = math.exp(-lam * t) * depth_0 + (1.0 - math.exp(-lam * t)) * depth_star
+207 |         assert math.isclose(depth_t, expected_depth, rel_tol=1e-12)
+    |
+
+unformatted: File would be reformatted
+   --> tests/test_lorentz_adversarial.py:30:26
+    |
+29  |
+    - @pytest.mark.parametrize("mu", [
+    -     Fraction(1, 10**18),
+    -     Fraction(1, 10**6),
+    -     Fraction(1, 100),
+    -     Fraction(1, 2),
+    -     Fraction(1),
+    -     Fraction(100),
+    -     Fraction(10**6),
+    -     Fraction(10**18),
+    -     Fraction(0),
+    - ])
+30  + @pytest.mark.parametrize(
+31  +     "mu",
+32  +     [
+33  +         Fraction(1, 10**18),
+34  +         Fraction(1, 10**6),
+35  +         Fraction(1, 100),
+36  +         Fraction(1, 2),
+37  +         Fraction(1),
+38  +         Fraction(100),
+39  +         Fraction(10**6),
+40  +         Fraction(10**18),
+41  +         Fraction(0),
+42  +     ],
+43  + )
+44  | def test_convexity_under_extreme_aspect_ratios(mu):
+--------------------------------------------------------------------------------
+111 |
+    - @pytest.mark.parametrize("b, a_nom, a_pi", [
+    -     (Fraction(0), Fraction(0), Fraction(10)),
+    -     (Fraction(10), Fraction(0), Fraction(10)),
+    -     (Fraction(5), Fraction(0), Fraction(10)),
+    -     (Fraction(2), Fraction(5), Fraction(10)),   # nominal safe
+    -     (-Fraction(2), -Fraction(8), -Fraction(1)), # negative regime
+    -     (Fraction(1, 10**6), Fraction(0), Fraction(1)),
+    -     (Fraction(10**6 - 1), Fraction(0), Fraction(10**6)),
+    - ])
+112 + @pytest.mark.parametrize(
+113 +     "b, a_nom, a_pi",
+114 +     [
+115 +         (Fraction(0), Fraction(0), Fraction(10)),
+116 +         (Fraction(10), Fraction(0), Fraction(10)),
+117 +         (Fraction(5), Fraction(0), Fraction(10)),
+118 +         (Fraction(2), Fraction(5), Fraction(10)),  # nominal safe
+119 +         (-Fraction(2), -Fraction(8), -Fraction(1)),  # negative regime
+120 +         (Fraction(1, 10**6), Fraction(0), Fraction(1)),
+121 +         (Fraction(10**6 - 1), Fraction(0), Fraction(10**6)),
+122 +     ],
+123 + )
+124 | def test_lambda_star_bounded_in_unit_interval(b, a_nom, a_pi):
+    |
+
+unformatted: File would be reformatted
+   --> tests/test_lorentz_cbf.py:34:1
+    |
+33  |
+    - @pytest.mark.parametrize("x1, y1, x2, y2", [
+    -     (1, 2, 3, 4),
+    -     (0, 0, 5, 7),
+    -     (-3, 4, 12, -5),
+    -     (Fraction(1, 3), Fraction(2, 5), Fraction(7, 11), Fraction(4, 9)),
+    -     (-Fraction(8, 7), Fraction(15, 7), Fraction(20, 3), -Fraction(5, 2)),
+    - ])
+34  +
+35  + @pytest.mark.parametrize(
+36  +     "x1, y1, x2, y2",
+37  +     [
+38  +         (1, 2, 3, 4),
+39  +         (0, 0, 5, 7),
+40  +         (-3, 4, 12, -5),
+41  +         (Fraction(1, 3), Fraction(2, 5), Fraction(7, 11), Fraction(4, 9)),
+42  +         (-Fraction(8, 7), Fraction(15, 7), Fraction(20, 3), -Fraction(5, 2)),
+43  +     ],
+44  + )
+45  | def test_lagrange_identity_2d_across_scalars(x1, y1, x2, y2):
+--------------------------------------------------------------------------------
+60  |
+    - @pytest.mark.parametrize("lam", [
+    -     Fraction(0),
+    -     Fraction(1, 10),
+    -     Fraction(1, 4),
+    -     Fraction(1, 2),
+    -     Fraction(3, 4),
+    -     Fraction(9, 10),
+    -     Fraction(1),
+    - ])
+61  + @pytest.mark.parametrize(
+62  +     "lam",
+63  +     [
+64  +         Fraction(0),
+65  +         Fraction(1, 10),
+66  +         Fraction(1, 4),
+67  +         Fraction(1, 2),
+68  +         Fraction(3, 4),
+69  +         Fraction(9, 10),
+70  +         Fraction(1),
+71  +     ],
+72  + )
+73  | def test_conic_margin_decomposition(lam):
+--------------------------------------------------------------------------------
+85  |     a_cbf = Vec3Q.from_values(2, -1, 0)
+    -     u_nom = Vec3Q.from_values(0, 2, 5)   # a_nom = -2
+    -     pi_b = Vec3Q.from_values(3, 0, 8)    # a_pi = 6
+    -     b = Fraction(2)                       # a_nom < b <= a_pi
+86  +     u_nom = Vec3Q.from_values(0, 2, 5)  # a_nom = -2
+87  +     pi_b = Vec3Q.from_values(3, 0, 8)  # a_pi = 6
+88  +     b = Fraction(2)  # a_nom < b <= a_pi
+89  |     assert verify_exact_barrier_equality_on_intervention(a_cbf, b, u_nom, pi_b)
+--------------------------------------------------------------------------------
+100 |     a_cbf = Vec3Q.from_values(1, 0, 0)
+    -     u_nom = Vec3Q.from_values(3, 0, 6)   # a_nom = 3
+    -     pi_b = Vec3Q.from_values(5, 0, 10)   # a_pi = 5
+    -     b = Fraction(2)                      # b <= a_nom
+101 +     u_nom = Vec3Q.from_values(3, 0, 6)  # a_nom = 3
+102 +     pi_b = Vec3Q.from_values(5, 0, 10)  # a_pi = 5
+103 +     b = Fraction(2)  # b <= a_nom
+104 |     lam = compute_lambda_star(b, a_cbf.dot(u_nom), a_cbf.dot(pi_b))
+--------------------------------------------------------------------------------
+114 |
+    - @pytest.mark.parametrize("b, a_nom, a_pi, expected_lam", [
+    -     (Fraction(1), Fraction(0), Fraction(2), Fraction(1, 2)),
+    -     (Fraction(0), Fraction(0), Fraction(5), Fraction(0)),
+    -     (Fraction(5), Fraction(0), Fraction(5), Fraction(1)),
+    -     (-Fraction(2), -Fraction(4), Fraction(4), Fraction(2, 8)),
+    -     (Fraction(3), Fraction(4), Fraction(8), Fraction(0)),  # Safe nominal
+    - ])
+115 +
+116 + @pytest.mark.parametrize(
+117 +     "b, a_nom, a_pi, expected_lam",
+118 +     [
+119 +         (Fraction(1), Fraction(0), Fraction(2), Fraction(1, 2)),
+120 +         (Fraction(0), Fraction(0), Fraction(5), Fraction(0)),
+121 +         (Fraction(5), Fraction(0), Fraction(5), Fraction(1)),
+122 +         (-Fraction(2), -Fraction(4), Fraction(4), Fraction(2, 8)),
+123 +         (Fraction(3), Fraction(4), Fraction(8), Fraction(0)),  # Safe nominal
+124 +     ],
+125 + )
+126 | def test_lambda_star_values(b, a_nom, a_pi, expected_lam):
+--------------------------------------------------------------------------------
+159 |
+160 +
+161 | def test_lorentz_cone_membership():
+--------------------------------------------------------------------------------
+193 |
+194 +
+195 | def test_backup_cbf_value():
+--------------------------------------------------------------------------------
+216 |     Lf_h, a_cbf = cbf_lie_derivatives(v, n_hat, a_brake)
+    -     assert Lf_h == - Fraction(4)
+217 +     assert Lf_h == -Fraction(4)
+218 |     assert a_cbf == Vec3Q.from_values(-1, -2, -Fraction(1, 2))
+--------------------------------------------------------------------------------
+237 |
+238 +
+239 | def test_interval_arithmetic_basic_operations():
+--------------------------------------------------------------------------------
+289 |
+290 +
+291 | def test_friction_limit_falsification():
+292 |     """check_friction_limit accurately checks ||a_brake|| <= mu * g."""
+293 |     g = Fraction(981, 100)  # 9.81
+    -     mu = Fraction(6, 10)    # 0.6 -> mu * g = 5.886
+294 +     mu = Fraction(6, 10)  # 0.6 -> mu * g = 5.886
+295 |
+    |
+
+unformatted: File would be reformatted
+   --> tests/test_mf13_multiterm.py:128:96
+    |
+127 |     assert sum_comm_sq == Fraction(2) * frobenius_norm_sq(Y_off)
+    -     assert sum_anti_sq == Fraction(2) * frobenius_norm_sq(Y) + Fraction(2) * frobenius_norm_sq(Y_diag)
+128 +     assert sum_anti_sq == Fraction(2) * frobenius_norm_sq(Y) + Fraction(2) * frobenius_norm_sq(
+129 +         Y_diag
+130 +     )
+131 |
+--------------------------------------------------------------------------------
+194 |         # Single-involution pairing on each piece: <U_r, L_A0(V_r)> = <Y_r, L_A0(K)>
+    -         assert frobenius_inner(U_r, lyapunov_eval(A0, V_r)) == frobenius_inner(Y_r, lyapunov_eval(A0, K))
+195 +         assert frobenius_inner(U_r, lyapunov_eval(A0, V_r)) == frobenius_inner(
+196 +             Y_r, lyapunov_eval(A0, K)
+197 +         )
+198 |
+--------------------------------------------------------------------------------
+317 |     assert all(r["excludes_s_below_one"] for r in results["non_common_t_grid_10"])
+    -
+    |
+
+unformatted: File would be reformatted
+   --> tests/test_robotics_extensions.py:126:16
+    |
+125 |     def i_v(eta: Fraction) -> Fraction:
+    -         return (
+    -             Fraction(3, 10010) * (eta + Fraction(260, 9)) ** 2
+    -             + Fraction(350, 297)
+    -         )
+126 +         return Fraction(3, 10010) * (eta + Fraction(260, 9)) ** 2 + Fraction(350, 297)
+127 |
+--------------------------------------------------------------------------------
+138 |     assert i_a(Fraction(-11)) == Fraction(14, 1)
+    -     assert (i_a(Fraction(0)) - i_a(Fraction(-11))) / i_a(Fraction(0)) == Fraction(
+    -         11, 60
+    -     )
+139 +     assert (i_a(Fraction(0)) - i_a(Fraction(-11))) / i_a(Fraction(0)) == Fraction(11, 60)
+140 |
+141 |     assert i_v(Fraction(-11)) == Fraction(497, 390)
+    -     assert (i_v(Fraction(0)) - i_v(Fraction(-11))) / i_v(Fraction(0)) == Fraction(
+    -         421, 3900
+    -     )
+142 +     assert (i_v(Fraction(0)) - i_v(Fraction(-11))) / i_v(Fraction(0)) == Fraction(421, 3900)
+143 |
+    |
+
+unformatted: File would be reformatted
+   --> tests/test_sdp_rational_cert.py:60:24
+    |
+59  |     # From ints, floats, Fractions, strings
+    -     A = RationalMatrix([
+    -         [1, 2.5, Fraction(3, 4)],
+    -         ["5/2", 0, -1],
+    -     ])
+60  +     A = RationalMatrix(
+61  +         [
+62  +             [1, 2.5, Fraction(3, 4)],
+63  +             ["5/2", 0, -1],
+64  +         ]
+65  +     )
+66  |     assert A.shape == (2, 3)
+--------------------------------------------------------------------------------
+142 |     # A = [[4, 2, -1], [2, 5, 2], [-1, 2, 6]]
+    -     A = RationalMatrix([
+    -         [4, 2, -1],
+    -         [2, 5, 2],
+    -         [-1, 2, 6],
+    -     ])
+143 +     A = RationalMatrix(
+144 +         [
+145 +             [4, 2, -1],
+146 +             [2, 5, 2],
+147 +             [-1, 2, 6],
+148 +         ]
+149 +     )
+150 |     L, D = rational_ldl(A)
+--------------------------------------------------------------------------------
+179 |     # K3 Laplacian is positive semidefinite with one 0 eigenvalue
+    -     L_K3 = RationalMatrix([
+    -         [2, -1, -1],
+    -         [-1, 2, -1],
+    -         [-1, -1, 2],
+    -     ])
+180 +     L_K3 = RationalMatrix(
+181 +         [
+182 +             [2, -1, -1],
+183 +             [-1, 2, -1],
+184 +             [-1, -1, 2],
+185 +         ]
+186 +     )
+187 |     with pytest.raises(ValueError, match="not strictly positive definite"):
+--------------------------------------------------------------------------------
+247 | def test_project_to_rational_certificate_preserves_psd():
+    -     C = RationalMatrix([
+    -         [Fraction(-2, 4), Fraction(1, 4), Fraction(1, 4)],
+    -         [Fraction(1, 4), Fraction(-2, 4), Fraction(1, 4)],
+    -         [Fraction(1, 4), Fraction(1, 4), Fraction(-2, 4)],
+    -     ])
+248 +     C = RationalMatrix(
+249 +         [
+250 +             [Fraction(-2, 4), Fraction(1, 4), Fraction(1, 4)],
+251 +             [Fraction(1, 4), Fraction(-2, 4), Fraction(1, 4)],
+252 +             [Fraction(1, 4), Fraction(1, 4), Fraction(-2, 4)],
+253 +         ]
+254 +     )
+255 |     # Numerical boundary dual vector
+    |
+
+unformatted: File would be reformatted
+   --> tests/test_skew_normal_form.py:76:55
+    |
+75  |         assert mat_frobenius_sq(S) == mat_frobenius_sq(K)
+    -         assert mat_frobenius_sq(K) == 2 * (Fraction(a)**2 + Fraction(b)**2)
+76  +         assert mat_frobenius_sq(K) == 2 * (Fraction(a) ** 2 + Fraction(b) ** 2)
+77  |
+--------------------------------------------------------------------------------
+123 |     # Gain difference formula: 4*a^2*(A_01^2 + A_10^2) + 4*b^2*(A_23^2 + A_32^2)
+    -     expected_gain = (
+    -         4 * (a ** 2) * (A[0][1] ** 2 + A[1][0] ** 2) +
+    -         4 * (b ** 2) * (A[2][3] ** 2 + A[3][2] ** 2)
+124 +     expected_gain = 4 * (a**2) * (A[0][1] ** 2 + A[1][0] ** 2) + 4 * (b**2) * (
+125 +         A[2][3] ** 2 + A[3][2] ** 2
+126 |     )
+    |
+
+20 files would be reformatted, 198 files already formatted
