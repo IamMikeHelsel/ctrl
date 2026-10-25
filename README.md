@@ -134,6 +134,43 @@ On the `crossover-research-2026-10-19` branch (`src/ctrl/robotics/`), 48 Python 
 | **6-DOF $SE(3)$ Visual Servoing** (`run_se3_visual_servoing_benchmark`) | Classical IBVS under large optical-axis rotation (retreats $5.76\times$ to $12.67\,\text{m}$) | Homography-Based Visual Servoing (HBVS) with log-depth $\dot{d} = -\lambda d \ln(d/d^*)$ | **Eliminates optical-axis retreat**: depth stays monotone inside $[1.015\,\text{m}, 2.200\,\text{m}]$ |
 | **C99 & IEC 61131-3 ST Codegen** (`compile_and_verify_c99_kernels`) | Python `float64` reference kernels | `clang -std=c99 -O3 -Wall -Wextra -Werror` shared library (`ctypes`) | **`8.88e-16` max discrepancy** across randomized differential tests, zero heap allocation |
 
+### 2.3 Slotine–Li Adaptive Kernel for the Planar RR Arm (on `main`)
+
+`src/ctrl/robotics/csrc/ctrl_slotine_li.c` implements `ctrl_slotine_li_torque`, a C99 kernel with no heap allocation. It computes $\tilde q = q - q_d$, $\dot q_r = \dot q_d - \Lambda\tilde q$, $s = \dot q - \dot q_r$, the regressor $Y(q,\dot q,\dot q_r,\ddot q_r)$, $\tau = Y\hat\theta - K_D s$ and $\dot{\hat\theta} = -\Gamma Y^\top s$. These are the definitions and sign conventions of `ManipulatorTracking.lean`. `ctrl.robotics.slotine_li` has the numpy reference and a `ctypes` binding, and `ctrl.robotics.planar_rr` has the arm model.
+
+What is proved and what is only tested:
+
+- **Lean** proves the instantaneous identity `slotine_li_adaptive_lyapunov_deriv`: if $M\dot s + Cs + K_D s = Y\tilde\theta$ (`hcl`), $\Gamma^{-1}\dot{\tilde\theta} = -Y^\top s$ (`hadapt`) and $\dot M - 2C$ is skew (`hskew`), then $\dot V = -s^\top K_D s$ for $V = \tfrac12 s^\top M s + \tfrac12\tilde\theta^\top\Gamma^{-1}\tilde\theta$. With $\hat\theta = \theta$ the corresponding result is `slotine_li_lyapunov_deriv`.
+- **Not in Lean**: the rigid-body model. `PlanarArm.lean` proves kinematics only. The dynamics $M, C, g$ and the 5-parameter linear parameterization are the standard Lagrangian of the same `fk` geometry.
+- **Tested** (`tests/test_slotine_li.py`, under 3 s):
+  - The C kernel matches the numpy reference to $10^{-12}$ on random inputs.
+  - $Y\theta = M\ddot q_r + C\dot q_r + g$ holds for every $\theta$.
+  - $M$, $g$ and $C\dot q$ match the kinetic and potential energy of the `fk` geometry (by finite differences and Christoffel symbols).
+  - `hskew`, `hcl` and `hadapt` hold for the closed loop.
+  - $\dot V = -s^\top K_D s \le 0$ holds at random states.
+  - A benchmark smoke run passes.
+  - The cited Lean names exist in the Lean files.
+
+**Payload-adaptation benchmark** (`uv run python -m ctrl.robotics.bench_slotine_li [--backend c]`). A 2-link arm in a vertical plane carries an unmodelled 2 kg tip payload and tracks a sum-of-sines reference for 40 s. The simulation is pure-numpy RK4 with dt = 1 ms. The initial joint offset is (0.3, −0.2) rad. Every controller starts from the payload-free parameters. Gains are $\Lambda = 4I$, $K_D = \mathrm{diag}(30, 15)$ and $\Gamma = 4I$.
+
+| Controller | RMS $\|q - q_d\|$ (rad), whole run | RMS, last third | $\|\tilde\theta\|$ at 0 s → 40 s | Payload estimate |
+| :--- | ---: | ---: | :---: | ---: |
+| Slotine–Li adaptive | 0.0230 | 0.0021 | 4.64 → 0.28 | 1.91 kg |
+| Slotine–Li with fixed $\hat\theta$ ($\Gamma = 0$, same gains) | 0.263 | 0.256 | 4.64 (fixed) | — |
+| Computed torque with nominal parameters, $K_p = \lambda^2$, $K_v = 2\lambda$, $\lambda = 4$ | 1.28 | 1.32 | 4.64 (fixed) | — |
+| Computed torque with nominal parameters, $\lambda = 10$ | 0.538 | 0.535 | 4.64 (fixed) | — |
+
+The computed-torque rows are not gain-matched: their feedback stiffness $\hat M\lambda^2$ differs from Slotine–Li's $K_D\Lambda$. The fixed-$\hat\theta$ Slotine–Li row uses the same gains as the adaptive row.
+
+**Lyapunov audit** of the adaptive run:
+- $V$ never increases between steps, and it falls from 6.44 to 0.010.
+- The pointwise residual $\dot V + s^\top K_D s$, computed from the simulated state, is at most $3\times10^{-14}$.
+- The integrated balance $V(t) - V(0) + \int_0^t s^\top K_D s$ stays below $1.5\times10^{-4}$, which is RK4 and quadrature error.
+
+A residual above round-off would mean that the kernel does not satisfy the theorem's hypotheses.
+
+These are simulation results for one model, one reference trajectory and one gain set. They are not a hardware result.
+
 ---
 
 ## 3. Active Mathematical Frontiers & Community Formalizations
@@ -160,6 +197,10 @@ bash scripts/check.sh ControlsLean/Controls/BoundedRealHInf.lean
 # Sub-second bounty competition screening
 ./ctrl triage -s solved -v
 ./ctrl status
+
+# Slotine–Li C99 kernel: differential + Lyapunov tests, then the payload benchmark
+uv run pytest tests/test_slotine_li.py
+uv run python -m ctrl.robotics.bench_slotine_li --backend c
 ```
 
 ---
