@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Assignments with a checkable cost gap · ctrl</title>
+<meta name="description" content="An exact finite-transport certificate prototype: check conservation, dual feasibility and the cost gap, separate from search.">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="../style.css"><link rel="stylesheet" href="../research.css"></head>
+<body><a class="skip-link" href="#main">Skip to content</a><div class="page"><header>
+<div class="breadcrumbs"><a href="../index.html">ctrl</a> / <a href="../research.html">Research</a> / Transport certificates</div>
+<div class="eyebrow">Study 02 · exact finite arithmetic + a formal inequality</div>
+<h1>An assignment can carry its own cost gap.</h1>
+<p class="subtitle">Check conservation and dual feasibility before trusting an allocation. The prototype reports an honest interval for the optimal cost, including when the submitted assignment is poor.</p>
+<nav class="nav-links" aria-label="Study navigation"><a href="#principle">Principle</a><a href="#results">Results</a><a href="#limits">Limits</a><a href="#reproduce">Reproduce</a></nav>
+</header><main id="main"><section id="principle"><h2>Separate the search from the check</h2>
+<p class="measure">A transport plan sends nonnegative mass from source bins to target bins. Row and column sums must match the specified marginals. A candidate plan supplies an upper bound on the best possible cost. Feasible dual potentials supply a lower bound.</p>
+<div class="grid"><article class="panel"><h3>Primal obligations</h3><pre><code>p[i,j] ≥ 0
+Σj p[i,j] = source_mass[i]
+Σi p[i,j] = target_mass[j]
+U = Σij p[i,j] cost[i,j]</code></pre><p>Costs can be negative. Total mass must be positive and balanced; it need not equal one.</p></article>
+<article class="panel"><h3>Dual obligations</h3><pre><code>u[i] + v[j] ≤ cost[i,j]   for every pair
+L = Σi source_mass[i] u[i]
+  + Σj target_mass[j] v[j]
+L ≤ optimal cost ≤ U</code></pre><p>Check every pair, including edges a partitioned search did not use. Otherwise a restricted problem can silently replace the intended one.</p></article></div>
+<aside class="note">Motivated by <a href="https://arxiv.org/abs/2609.38960">partitioned transport for multi-agent distribution matching</a> and the search/check separation in <a href="https://arxiv.org/abs/2609.03222">CP-Cert for pose registration</a>. Weak duality is standard mathematics. This prototype reproduces neither paper's full method nor its performance results.</aside></section>
+<section id="results"><h2>Small results with inspectable witnesses</h2><p class="measure">Synthetic source coordinates [0, 1, 10, 11], target coordinates [1, 2, 11, 12], squared distance costs and equal masses. Coordinates are unitless. Every example has an independently enumerated optimal cost of 1.</p>
+<div class="table-wrap" role="region" aria-label="Transport certificate results" tabindex="0"><table><caption>An accepted interval does not mean the submitted plan is optimal. Exact zero gap is required for that label.</caption>
+<thead><tr><th scope="col">Submitted plan</th><th scope="col">Certified cost interval</th><th scope="col">Additive gap</th></tr></thead><tbody>
+<tr><th scope="row">Aligned assignment</th><td>[1, 1]</td><td>0</td></tr><tr><th scope="row">Suboptimal within blocks</th><td>[1, 2]</td><td>1</td></tr><tr><th scope="row">Crossed blocks</th><td>[1, 101]</td><td>100</td></tr></tbody></table></div>
+<div class="grid"><article class="panel"><span class="label">Executable checks</span><h3>Independent tiny-instance oracle</h3><p>Across 24 seeded integer-cost instances of size 2–5, all 912 candidate intervals enclosed the enumerated optimum. The witness generator rejected 884 strictly suboptimal assignments as candidates for a tight dual.</p><p>Six corrupted or malformed study inputs were rejected. A rectangular mass-splitting example also produced an exact [¼, ¼] interval. Eighteen focused tests pass.</p></article>
+<article class="panel"><span class="label">Formal model</span><h3>Finite rational weak duality</h3><p>A separate Lean file proves the finite transport weak-duality inequality and a candidate-gap implication. Both compile with only <code>propext</code>, <code>Classical.choice</code> and <code>Quot.sound</code>.</p><p>The second implication assumes a candidate-cost upper bound; candidate feasibility is a separate obligation. Individual Python witnesses have not been replayed in Lean.</p></article></div></section>
+<section id="limits"><h2>Where it could be useful—and what is missing</h2><p class="measure">A future allocation component could attach a checked gap to a fast partitioned result, then decide whether a global solve is worth the cost. The useful measurements would be gap quality, checker time, witness size and total computation saved under identical inputs.</p>
+<p class="measure">This pass has not measured a speedup. It establishes no motion dynamics, collision avoidance, deadline guarantee, sensor robustness or floating-point refinement. Tiny uniform assignment enumeration does not validate every transport problem. A low assignment cost is not a navigation safety result.</p>
+<p class="measure"><strong>Next falsifier:</strong> export exact witnesses from realistic costs and partitions, replay them in Lean, and compare the checking overhead with solver time saved. If the gaps are too wide or checking erases the saving, defer the integration.</p></section>
+<section id="reproduce"><h2>Inspect and reproduce</h2><ul>
+<li><a href="../assets/research/transport_certificate.py">Exact Python checker and experiment</a> · <a href="../assets/research/test_transport_certificate.py">tests</a></li>
+<li><a href="../assets/research/TransportCertificate.lean">Lean statements and proof</a> · <a href="../assets/research/transport-results.json">full witnesses and raw results</a> · <a href="../assets/research/manifest.json">artifact hashes</a></li></ul>
+<p>Standalone Python download, using only the standard library:</p><pre><code>uv run --no-project transport_certificate.py --output results.json</code></pre>
+<p>Within the ctrl checkout:</p><pre><code>uv run pytest -q tests/test_transport_certificate.py
+cd lean
+lake env lean Research/TransportCertificate.lean</code></pre>
+<p class="small muted">Tests need the original relative paths listed in the manifest. The full pinned Lean environment currently requires private-repository access. Exact Python arithmetic and kernel-checked algebra remain separate evidence; no implementation refinement is claimed.</p></section>
+</main><footer><span>AI-assisted research, code, proof text and writing · 21 October 2026</span><a href="../research.html">Back to research</a></footer></div></body></html>

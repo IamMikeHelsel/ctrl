@@ -267,6 +267,11 @@
     }
     .filter-group { display: flex; flex-wrap: wrap; gap: 0.35rem; align-items: center; }
     .filter-label { font-family: var(--mono); font-size: 0.75rem; color: var(--muted); margin-right: 0.25rem; }
+    .search-input {
+      font-family: var(--mono); font-size: 0.78rem; padding: 0.35rem 0.65rem; border-radius: 5px;
+      border: 1px solid var(--border); background: var(--surface-alt); color: var(--text);
+      min-width: 0; width: 100%; max-width: 320px;
+    }
     button.chip {
       font-family: var(--mono); font-size: 0.75rem; background: var(--surface-alt); color: var(--text);
       border: 1px solid var(--border); border-radius: 4px; padding: 0.28rem 0.6rem; cursor: pointer;
@@ -313,6 +318,11 @@
       <a href="#verification-boundary">Proved vs tested</a>
       <a href="#catalog">Catalog</a>
       <a href="#community">In work</a>
+      <a href="adopt.html">Adoption guide</a>
+      <a href="consumers.html">Library map</a>
+      <a href="pipeline.html">Pipeline</a>
+      <a href="novelty.html">What's new</a>
+      <a href="synergy.html">Synergy Lens</a>
       <a href="https://github.com/IamMikeHelsel/ctrl">GitHub</a>
     </div>
   </nav>
@@ -370,7 +380,7 @@
     <!-- SEE IT WORK -->
     <section id="pillars">
       <h2>See it work</h2>
-      <p class="lede">Each animation is a closed-loop simulation using the same functions the recipes below call. Nothing is keyframed. Scripts to regenerate them are in <a href="https://github.com/IamMikeHelsel/ctrl/tree/claude/arm-benchmark-fix/tools/site_animations"><code>tools/site_animations/</code></a>.</p>
+      <p class="lede">Each animation is a closed-loop simulation using the same functions the recipes below call. Nothing is keyframed. Scripts to regenerate them are in <a href="https://github.com/IamMikeHelsel/ctrl/tree/crossover-research-2026-10-19/tools/site_animations"><code>tools/site_animations/</code></a>.</p>
       <div class="show-grid">
         <figure class="show">
           <img src="assets/septic_arm.gif" width="800" height="450" loading="lazy"
@@ -449,7 +459,7 @@
       <p class="lede">Python 3.11+, a C compiler, and about five minutes. These commands were run from a clean clone; the output blocks are what you should see.</p>
 
       <div class="callout">
-        <p><strong>Where the code lives today.</strong> The Python runtime, code generator and MuJoCo benchmarks are on the <a href="https://github.com/IamMikeHelsel/ctrl/tree/crossover-research-2026-10-19/src/ctrl/robotics"><code>crossover-research-2026-10-19</code></a> branch, not <code>main</code>. The general Lean library (<a href="https://github.com/IamMikeHelsel/ctrl/tree/main/ControlsLean"><code>ControlsLean/</code></a>) is on <code>main</code>. The robotics-specific Lean modules (<code>LorentzConeCBF</code>, <code>RobotEnergySmoothness</code>, <code>VisualServoingInvariant</code>, <code>RoboLean/*</code>) are in <a href="https://github.com/IamMikeHelsel/ctrl/tree/ca83c44aa954977db918052d4a9273da27c0c6ca/lean/Research">this snapshot</a> until they land on a branch.</p>
+        <p><strong>Where the code lives today.</strong> The Python runtime, code generator and MuJoCo benchmarks are on the <a href="https://github.com/IamMikeHelsel/ctrl/tree/crossover-research-2026-10-19/src/ctrl/robotics"><code>crossover-research-2026-10-19</code></a> branch, not <code>main</code>. The general Lean library (<a href="https://github.com/IamMikeHelsel/ctrl/tree/main/ControlsLean"><code>ControlsLean/</code></a>) is on <code>main</code>. The robotics-specific Lean modules (<code>LorentzConeCBF</code>, <code>RobotEnergySmoothness</code>, <code>VisualServoingInvariant</code>, <code>RoboLean/*</code>) are in <a href="https://github.com/IamMikeHelsel/ctrl/tree/ca83c44aa954977db918052d4a9273da27c0c6ca/lean">this snapshot</a> until they land on a branch.</p>
       </div>
 
       <ol class="steps">
@@ -978,6 +988,10 @@ True 0.0014</code></pre>
           <button class="chip" data-domain="Robotics" aria-pressed="false">Robotics &amp; vision</button>
           <button class="chip" data-domain="Math" aria-pressed="false">Applied math</button>
         </div>
+        <div class="filter-group">
+          <label for="catalog-search" class="filter-label">Search:</label>
+          <input id="catalog-search" class="search-input" type="search" placeholder="Filter by theorem, module, topic..." aria-label="Search the module catalog" />
+        </div>
       </div>
       <div class="idea-grid" id="idea-grid"></div>
       <p class="note">Machine-readable: <a href="AGENT_IDEA_INDEX.json">AGENT_IDEA_INDEX.json</a>.</p>
@@ -1028,8 +1042,13 @@ True 0.0014</code></pre>
     </section>
 
     <footer>
-      <div><strong>ctrl</strong> · Lean 4 control, estimation and robotics library · MIT</div>
+      <div><strong>ctrl</strong> · Applied math for controls, robotics, simulation, perception · MIT</div>
       <div>
+        <a href="adopt.html">Adoption guide</a> ·
+        <a href="consumers.html">Library map</a> ·
+        <a href="pipeline.html">Research pipeline</a> ·
+        <a href="novelty.html">What's new</a> ·
+        <a href="https://github.com/IamMikeHelsel/ctrl/blob/main/CONTRIBUTING.md">Contribute</a> ·
         <a href="https://github.com/IamMikeHelsel/ctrl">GitHub</a> ·
         <a href="https://github.com/IamMikeHelsel/ctrl/tree/crossover-research-2026-10-19/src/ctrl/robotics">Runtime source</a> ·
         <a href="synergy.html">Synergy Lens</a> ·
@@ -1042,7 +1061,7 @@ True 0.0014</code></pre>
     const IDEAS = [
       {
         id: "CTRL-01",
-        title: "Detectable DARE, Infinite-Horizon LQR & Return-Difference Margins",
+        title: "Design a Stable LQR Controller Under Detectability",
         domain: "Linear & Optimal Control",
         domainGroup: "Control",
         status: "ready_to_use",
@@ -1055,21 +1074,21 @@ True 0.0014</code></pre>
       },
       {
         id: "CTRL-02",
-        title: "Output-Feedback LQG Separation & Discrete H-infinity Bounded Real Lemma",
+        title: "Bound Disturbance Gain in Output Feedback",
         domain: "Robust Control",
         domainGroup: "Control",
         status: "ready_to_use",
         novelty: "N2",
         applicability: "A3",
         approach: "Saddle-point completion of squares with disturbance Hessian M_gamma(P) = gamma^2 I - D^T D - B^T P B certifying finite- and infinite-horizon l2-gain attenuation <= gamma.",
-        impact: "Combined with Sontag CLF in MuJoCo: reduces peak & RMS tracking error by ~39.5% compared to a well-tuned high-gain Computed-Torque Controller under torque impulses.",
+        impact: "Reported MuJoCo torque-impulse comparison: peak error fell 39.4% and RMS error 39.6% against the documented matched-pole CTC baseline. New plants require a new comparison.",
         modules: ["Controls/BoundedRealHInf.lean", "Controls/LQG.lean", "Controls/Observer.lean"],
         theorems: ["lqg_closed_loop_stable_of_stabilizable_detectable", "hinf_stage_completion_of_squares", "hinf_l2_gain_bound"],
         combines: ["CTRL-03", "NL-01", "ROBO-01", "NL-03"]
       },
       {
         id: "CTRL-03",
-        title: "Matrix Peter–Paul Input-to-State Stability (ISS) Envelopes",
+        title: "Compute an Error Envelope for Bounded Disturbances",
         domain: "Robust Control",
         domainGroup: "Control",
         status: "ready_to_use",
@@ -1082,7 +1101,7 @@ True 0.0014</code></pre>
       },
       {
         id: "CTRL-04",
-        title: "Constrained Receding-Horizon MPC Feasibility & Iterative Learning Control",
+        title: "Verify Warm-Start MPC Feasibility and Repetitive Learning",
         domain: "Optimal & Repetitive Control",
         domainGroup: "Control",
         status: "ready_to_use",
@@ -1095,35 +1114,35 @@ True 0.0014</code></pre>
       },
       {
         id: "NL-01",
-        title: "Strict-Feedback Integrator Backstepping & Sontag's Universal CLF",
+        title: "Stabilize Cascaded Nonlinear Systems (Backstepping & Sontag CLF)",
         domain: "Nonlinear Control",
         domainGroup: "Control",
         status: "ready_to_use",
         novelty: "N2",
         applicability: "A3",
         approach: "Recursive virtual-control error coordinates z_i = x_i - alpha_{i-1} with tridiagonal skew cancellation, paired with Sontag's analytic formula guaranteeing dV/dt <= -sqrt(a^2 + b^4).",
-        impact: "Emitted to zero-heap C99 (ctrl_sontag_clf, ctrl_backstepping_control) & IEC 61131-3 ST with 8.88e-16 float64 parity.",
+        impact: "Research C99 and Structured Text implementations exist outside this public branch; reported float64 differential checks had max discrepancy 8.88e-16 on tested inputs.",
         modules: ["Controls/BacksteppingCLF.lean"],
         theorems: ["hasDerivAt_backstepping_closedLoop", "backstepping_chain_telescoping", "sontag_clf_strict_decrease"],
         combines: ["CTRL-02", "CTRL-03", "NL-03"]
       },
       {
         id: "NL-02",
-        title: "3D 4-Contact Bilinear ZMP Allocator & Closed-Form Lorentz-Cone CBF",
+        title: "Check 4-Contact Braking and Force-Allocation Limits",
         domain: "Legged & Mobile Safety Control",
         domainGroup: "Control",
         status: "ready_to_use",
         novelty: "N3",
         applicability: "A3",
         approach: "Proves the exact biconditional deceleration limit min(mu, W/h_G)*g, a 4-foot bilinear ZMP + proportional shear allocator with zero 3D Euler torque (dL/dt = 0), and a closed-form stopping-distance CBF.",
-        impact: "Matches exact SOCP stopping safety in MuJoCo (stops at 1.192 m < 1.20 m wall, f_z,min = 22.14 N) while running in <100 ns in C99 with zero solver failure modes.",
+        impact: "Reported MuJoCo four-contact braking run stopped at 1.192 m < 1.20 m wall with f_z,min = 22.14 N. Model-specific result; physical contact and target timing require separate validation.",
         modules: ["Research/LorentzConeCBF.lean", "Research/CentroidalDecelerationLimit.lean", "Controls/BarrierPassivity.lean"],
         theorems: ["deceleration_safe_iff", "quad_contact_zero_angular_momentum", "centroidal_cbf_forward_invariant"],
         combines: ["ROBO-03", "ROBO-04", "CTRL-04"]
       },
       {
         id: "NL-03",
-        title: "Slotine–Li Passivity & Adaptive Manipulator Trajectory Tracking",
+        title: "Track Manipulator Trajectories Without Inverting the Mass Matrix",
         domain: "Nonlinear Robotics Control",
         domainGroup: "Robotics",
         status: "in_work",
@@ -1136,7 +1155,7 @@ True 0.0014</code></pre>
       },
       {
         id: "EST-01",
-        title: "Multivariate Bucy–Joseph Kalman Filter, Information Filter & Recursive LS",
+        title: "Keep Kalman and Information Updates Well-Conditioned",
         domain: "State Estimation",
         domainGroup: "Estimation",
         status: "ready_to_use",
@@ -1149,7 +1168,7 @@ True 0.0014</code></pre>
       },
       {
         id: "EST-02",
-        title: "Continuous-Time CARE, HJB Calculus & Dual Kalman–Bucy Differential Filter",
+        title: "Analyze Continuous-Time Riccati and Kalman–Bucy Equations",
         domain: "Continuous Estimation & Control",
         domainGroup: "Estimation",
         status: "ready_to_use",
@@ -1162,7 +1181,7 @@ True 0.0014</code></pre>
       },
       {
         id: "EST-03",
-        title: "POMDP Bayesian Belief Simplex & Smallwood–Sondik PWLC Bellman Backup",
+        title: "Preserve POMDP Belief and Value-Function Structure",
         domain: "Planning Under Uncertainty",
         domainGroup: "Estimation",
         status: "in_work",
@@ -1175,35 +1194,35 @@ True 0.0014</code></pre>
       },
       {
         id: "ROBO-01",
-        title: "7th-Order Septic Rest-to-Rest Electromechanical Trajectory Shaping",
+        title: "Compare Rest-to-Rest Motion Profiles by Modeled Losses",
         domain: "Robotics Motion Planning",
         domainGroup: "Robotics",
         status: "ready_to_use",
         novelty: "N3",
         applicability: "A3",
         approach: "Uses cross-power orthogonality int_0^T a(t)j(t) dt = 0 on rest-to-rest trajectories to express motor winding + viscous losses as exact rational quadratic forms in eta.",
-        impact: "Modest, practical energy reduction over 5th-order minimum-jerk: 4.1% total I^2 R (gravity-dominated), 10.8% viscous loss, and 18.3%–22.5% dynamic motion Joule heat.",
+        impact: "Reported 6-DOF MuJoCo comparison: 3.3% less total modeled I^2 R loss, 10.8% less modeled viscous loss, and 22.2% less dynamic modeled Joule loss; 1D inertial model gives 18.33%.",
         modules: ["Research/RobotEnergySmoothness.lean"],
         theorems: ["rest_to_rest_cross_power_zero", "exact_integral_quadratic_forms", "inertial_joule_minimized_at_minus_eleven"],
         combines: ["NL-03", "CTRL-02", "NL-01"]
       },
       {
         id: "ROBO-02",
-        title: "6-DOF SE(3) Log-Depth Homography-Based Visual Servoing (HBVS)",
+        title: "Control Planar-Target Camera Depth During Large Roll",
         domain: "Visual Servoing & Multi-View Geometry",
         domainGroup: "Robotics",
         status: "ready_to_use",
         novelty: "N2",
         applicability: "A3",
         approach: "Combines 4-point projective homography rigidity and Faugeras chirality filtering with decoupled log-depth feedback dd/dt = -lambda d ln(d/d*) to avoid IBVS optical-axis roll retreat.",
-        impact: "Maintains monotone depth inside [1.015 m, 2.200 m] under 160-deg camera roll in MuJoCo.",
+        impact: "Reported MuJoCo camera-roll simulation kept depth inside [1.015 m, 2.200 m] vs. 12.67 m for its IBVS baseline.",
         modules: ["Research/VisualServoingInvariant.lean", "Research/HomographyDecomposition.lean", "Vision/HomographyUniqueness.lean"],
         theorems: ["closed_loop_depth_formula", "depth_convexity_lower_bound", "homography_unique_four_points"],
         combines: ["EST-01", "ROBO-03"]
       },
       {
         id: "ROBO-03",
-        title: "SO(3)/SE(3) Rodrigues, Unit Quaternions, Non-Inertial Transport & Real-Time RTA",
+        title: "Reason About Rigid-Body Kinematics, IK, and Task Response Time",
         domain: "Kinematics & Real-Time Execution",
         domainGroup: "Robotics",
         status: "ready_to_use",
@@ -1216,14 +1235,14 @@ True 0.0014</code></pre>
       },
       {
         id: "MATH-01",
-        title: "Symmetric vs. Skew Lyapunov Conditioning & Byers–Nash n=6 (MF-13)",
+        title: "Compare Symmetric and Skew Lyapunov Operator Conditioning (Byers–Nash n=6)",
         domain: "Applied Matrix Analysis",
         domainGroup: "Math",
         status: "in_work",
         novelty: "N3",
         applicability: "A2",
         approach: "Proves that L_A(X) = A^T X + X A decouples orthogonally on S_n (+) K_n, rules out rank <= 4 counterexamples, proves a 15D Parseval decomposition of K_6 via Klein & plane-swap involutions, and certifies 10/10 non-Common-T grid pairs over Q.",
-        impact: "Directly governs whether symmetric Lyapunov/Riccati SDP solvers can miss a near-singular skew mode; 1 off-diagonal cross-term inequality remains in work.",
+        impact: "Studies matrix-operator conditioning of A^T X + X A on symmetric vs. skew subspaces; one off-diagonal cross-term inequality remains open for n=6.",
         modules: ["Research/ByersNashOffDiagComplete.lean", "Research/ByersNashHaarIntertwiner.lean", "Research/ByersNashMultiTerm.lean"],
         theorems: ["lyap_symm_skew_orthogonal_decomp", "lyapunov_singular_value_robustness_bound", "skew6_fifteen_dim_parseval"],
         combines: ["EST-02", "CTRL-01"]
@@ -1232,6 +1251,7 @@ True 0.0014</code></pre>
 
     let activeStatus = "all";
     let activeDomain = "all";
+    let searchQuery = "";
 
     function countLabel(btn, n) {
       if (!btn.dataset.base) btn.dataset.base = btn.textContent;
@@ -1241,9 +1261,12 @@ True 0.0014</code></pre>
     function renderIdeas() {
       const grid = document.getElementById("idea-grid");
       grid.innerHTML = "";
+      const q = searchQuery.trim().toLowerCase();
       IDEAS.filter(item =>
         (activeStatus === "all" || item.status === activeStatus) &&
-        (activeDomain === "all" || item.domainGroup === activeDomain)
+        (activeDomain === "all" || item.domainGroup === activeDomain) &&
+        (!q || [item.id, item.title, item.domain, item.approach, item.impact || "",
+          ...item.modules, ...item.theorems].join(" ").toLowerCase().includes(q))
       ).forEach(item => {
         const ready = item.status === "ready_to_use";
         const cell = document.createElement("div");
@@ -1287,6 +1310,13 @@ True 0.0014</code></pre>
     }
     wireFilter("status-filters", "data-status", v => { activeStatus = v; });
     wireFilter("domain-filters", "data-domain", v => { activeDomain = v; });
+    const searchInput = document.getElementById("catalog-search");
+    if (searchInput) {
+      searchInput.addEventListener("input", e => {
+        searchQuery = e.target.value || "";
+        renderIdeas();
+      });
+    }
     renderIdeas();
 
     /* Tabs */
