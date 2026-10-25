@@ -340,13 +340,15 @@ theorem class1QuinticC5_factorization (x : ℤ) :
   unfold class1QuinticC5 class1QuarticFactor
   ring
 
-/-- Good-prime reduction and non-vanishing certificates for the Class 1 quintic $C_5(x)$
+/-- Reduction and non-vanishing certificates for the Class 1 quintic $C_5(x)$
 and its quartic factor $q_5(x) = x^4 + 89 x^3 + 2796 x^2 + 35704 x + 123200$ across the
-primes $p \in \{11, 13, 17, 19, 23\}$:
+primes $p \in \{11, 13, 17, 19, 23\}$. Of these, 13, 17, 19, 23 are good primes, but **11 is bad**:
+$11 \mid 123200$, so $q_5(0) \equiv 0$ and $C_5$ has a double root at $x = 0$ mod 11
+($\operatorname{disc} = -2^{22} 3^3 5^4 7^2 11^2 \cdot 176844303367$).
 1. At $p = 19$ and $p = 23$, the quartic factor $q_5(x)$ has **no roots modulo $p$**
    ($q_5(x) \not\equiv 0 \pmod p$ for all $x \in \text{Fin } p$), so $x \equiv 0 \pmod p$ is the
    unique Weierstrass root of $C_5(x) \pmod p$.
-2. At $p = 11$, $q_5(x) \equiv 0 \pmod{11}$ if and only if $x \equiv 0 \pmod{11}$.
+2. At $p = 11$ (bad reduction), $q_5(x) \equiv 0 \pmod{11}$ if and only if $x \equiv 0 \pmod{11}$.
 3. At $p = 13$, $q_5(x) \equiv 0 \pmod{13}$ if and only if $x \equiv 5 \pmod{13}$, and
    $C_5(x)$ has distinct roots $\{0, 5\} \pmod{13}$.
 4. At $p = 17$, $q_5(x)$ splits completely into 4 distinct nonzero roots

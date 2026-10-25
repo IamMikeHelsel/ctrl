@@ -246,3 +246,48 @@ def test_strassman_coleman_residue_disk_dominance_and_c5_good_primes() -> None:
     assert all(c5(x) % 19 != 0 for x in range(1, 19))
     assert all(c5(x) % 23 != 0 for x in range(1, 23))
 
+
+def test_c5_chabauty_certificate_finite_data() -> None:
+    """Cross-check the finite data in lean/Research/Erdos885C5Chabauty.lean with exact integers."""
+
+    def f(x: int) -> int:
+        return x**5 + 89 * x**4 + 2796 * x**3 + 35704 * x**2 + 123200 * x
+
+    # Mumford divisor D = (x^2 + 8x + 32, 136x + 272) over Q
+    for x in range(-30, 31):
+        lhs = f(x) - (136 * x + 272) ** 2
+        assert lhs == (x * x + 8 * x + 32) * (x**3 + 81 * x**2 + 2116 * x - 2312)
+
+    def count1(p: int) -> int:
+        return 1 + sum(1 for x in range(p) for y in range(p) if (y * y - f(x)) % p == 0)
+
+    def count2(p: int, d: int) -> int:
+        def mul(u: tuple[int, int], v: tuple[int, int]) -> tuple[int, int]:
+            return ((u[0] * v[0] + d * u[1] * v[1]) % p, (u[0] * v[1] + u[1] * v[0]) % p)
+
+        total = 1
+        for a in range(p):
+            for b in range(p):
+                z = (a, b)
+                acc = (0, 0)
+                for c in (1, 89, 2796, 35704, 123200, 0):
+                    acc = mul(acc, z)
+                    acc = ((acc[0] + c) % p, acc[1])
+                if acc == (0, 0):
+                    total += 1
+                elif pow((acc[0] ** 2 - d * acc[1] ** 2) % p, (p - 1) // 2, p) == 1:
+                    total += 2
+        return total
+
+    def jac(p: int, d: int) -> int:
+        return (count1(p) ** 2 + count2(p, d)) // 2 - p
+
+    assert count1(17) == 22 and count2(17, 3) == 350 and jac(17, 3) == 400
+    assert (jac(13, 2), jac(29, 2), jac(41, 3)) == (148, 1042, 2000)
+    assert math.gcd(148, 1042) == 2
+    # f splits mod 17 with roots {0, 10, 11, 12, 14}; D mod 17 is (x - 12)(x - 14), b = 0
+    assert [x for x in range(17) if f(x) % 17 == 0] == [0, 10, 11, 12, 14]
+    assert all((x * x + 8 * x + 32 - (x - 12) * (x - 14)) % 17 == 0 for x in range(17))
+    assert 136 % 17 == 0 and 272 % 17 == 0
+    # 11 is a bad prime: q5 = f/x has a root at 0 mod 11, so f has a double root there
+    assert 123200 % 11 == 0
