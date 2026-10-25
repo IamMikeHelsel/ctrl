@@ -3,6 +3,7 @@ import Research.ByersNashDuality
 import Research.ByersNashMultiTerm
 import Research.ByersNashHaarIntertwiner
 import Research.ByersNashOffDiagComplete
+import Research.ByersNashExtremalFlip
 import Research.CentroidalDecelerationLimit
 import Research.ControlCertificates
 import Research.CoveringCapacity
