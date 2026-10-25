@@ -31,7 +31,7 @@
 2. **Closed-Form Conic Duality Replacing Online QP Solvers at 1–10 kHz**:
    - In `LorentzConeCBF.lean` and `codegen.py`, the 3D Lorentz-cone safety filter (`ctrl_lorentz_cbf_filter_3d`) and 4-foot bilinear ZMP + proportional shear allocator (`ctrl_quad_contact_allocator`) execute in $<100\,\text{ns}$ in C99 with zero heap allocation and zero pitch/roll angular momentum drift ($\dot{L} = 0$).
 3. **Analytic Electromechanical Trajectory Optimization (`RobotEnergySmoothness.lean`)**:
-   - Proving cross-power orthogonality $\int_0^T a(t) j(t)\,dt = 0$ on rest-to-rest trajectories reduced the 7th-order septic energy functional to an exact rational quadratic form in $\eta$, yielding `-22.47%` dynamic Joule loss and `-10.85%` viscous dissipation in 6-DOF MuJoCo benchmarks over classical minimum-jerk.
+   - Proving cross-power orthogonality $\int_0^T a(t) j(t)\,dt = 0$ on rest-to-rest trajectories reduced the 7th-order septic energy functional to an exact rational quadratic form in $\eta$, yielding `-22.16%` dynamic Joule loss and `-10.79%` viscous dissipation in 6-DOF MuJoCo benchmarks over classical minimum-jerk.
 4. **Composite $H_\infty$ + ISS + Sontag CLF Disturbance Rejection**:
    - In `run_arm6dof_disturbance_iss_hinf_benchmark`, combining the $H_\infty$ Riccati minimax bound, Peter–Paul ISS sublevel certificate, and Sontag's universal CLF (`ctrl_sontag_clf`) achieved a **`99.59%` reduction in peak joint error** and **`135.3x` $\ell_2$-gain attenuation** under continuous multi-frequency torque disturbances and impulse impacts.
 

@@ -527,7 +527,7 @@
               <strong>Domain problem:</strong> Industrial robot arms executing repetitive pick-and-place cycles are often thermally limited by motor winding Joule heating (&int; <em>I</em><sup>2</sup><em>R dt</em>) and joint viscous dissipation (&int; <em>B q&#775;</em><sup>2</sup> <em>dt</em>). Classical 5th-order minimum-jerk trajectories minimize &int; <em>j</em>(<em>t</em>)<sup>2</sup> <em>dt</em>, which leaves a free degree of freedom unused when boundary jerk is unconstrained.
             </p>
             <p>
-              <strong>Our approach &amp; realistic improvement range:</strong> By parameterizing a 7th-order septic family with free parameter &eta; and proving in Lean 4 that the cross-power integral &int;<sub>0</sub><sup><em>T</em></sup> <em>a</em>(<em>t</em>)<em>j</em>(<em>t</em>) <em>dt</em> vanishes identically on rest-to-rest motions (<code>rest_to_rest_cross_power_zero</code>), the electromechanical energy reduces to an exact rational quadratic form minimized at <code>&eta; = &minus;11</code>. In a 6-DOF MuJoCo manipulator rollout, this yields a modest, practical <strong><code>4.1%</code> reduction in total motor <em>I</em><sup>2</sup><em>R</em></strong> (when static gravity holding dominates), <strong><code>10.8%</code> reduction in viscous loss</strong> (matching the 1D theoretical <code>10.79%</code>), and <strong><code>18.3%&ndash;22.5%</code> reduction in dynamic motion Joule heat</strong> (where the 6-DOF arm slightly exceeds the <code>18.33%</code> 1D linear inertia prediction because lower mid-stroke velocity also reduces quadratic Coriolis/centripetal cross-torques).
+              <strong>Our approach &amp; realistic improvement range:</strong> By parameterizing a 7th-order septic family with free parameter &eta; and proving in Lean 4 that the cross-power integral &int;<sub>0</sub><sup><em>T</em></sup> <em>a</em>(<em>t</em>)<em>j</em>(<em>t</em>) <em>dt</em> vanishes identically on rest-to-rest motions (<code>rest_to_rest_cross_power_zero</code>), the electromechanical energy reduces to an exact rational quadratic form minimized at <code>&eta; = &minus;11</code>. In a 6-DOF MuJoCo manipulator rollout, this yields a modest, practical <strong><code>3.3%</code> reduction in total motor <em>I</em><sup>2</sup><em>R</em></strong> (when static gravity holding dominates), <strong><code>10.8%</code> reduction in viscous loss</strong> (matching the 1D theoretical <code>10.79%</code>), and <strong><code>18.3%&ndash;22.2%</code> reduction in dynamic motion Joule heat</strong> (where the 6-DOF arm slightly exceeds the <code>18.33%</code> 1D linear inertia prediction because lower mid-stroke velocity also reduces quadratic Coriolis/centripetal cross-torques).
             </p>
           </div>
           <figure class="pillar-figure">
@@ -537,7 +537,7 @@
                  loading="lazy"
                  width="800" height="360" />
             <figcaption class="pillar-caption">
-              MuJoCo 3.16.0 6-DOF RNE rollout (<code>run_arm6dof_septic_energy_benchmark</code>): Septic (<code>&eta; = &minus;11</code>) trims peak dynamic power and cuts dynamic motion winding heat from <code>773.2 J</code> to <code>599.5 J</code>.
+              MuJoCo 3.16.0 6-DOF RNE rollout (<code>run_arm6dof_septic_energy_benchmark</code>): Septic (<code>&eta; = &minus;11</code>) trims peak dynamic power and cuts dynamic motion winding heat from <code>904.4 J</code> to <code>703.9 J</code>.
             </figcaption>
           </figure>
         </article>
@@ -949,7 +949,7 @@ theorem quad_contact_in_lorentz_cone (p : QuadParams) (ax ay : &#8477;)
         novelty: "N3",
         applicability: "A3",
         approach: "Uses cross-power orthogonality int_0^T a(t)j(t) dt = 0 on rest-to-rest trajectories to express motor winding + viscous losses as exact rational quadratic forms in eta.",
-        impact: "Modest, practical energy reduction over 5th-order minimum-jerk: 4.1% total I^2 R (gravity-dominated), 10.8% viscous loss, and 18.3%–22.5% dynamic motion Joule heat.",
+        impact: "Modest, practical energy reduction over 5th-order minimum-jerk: 3.3% total I^2 R (gravity-dominated), 10.8% viscous loss, and 18.3%–22.2% dynamic motion Joule heat.",
         modules: ["Research/RobotEnergySmoothness.lean"],
         theorems: ["rest_to_rest_cross_power_zero", "exact_integral_quadratic_forms", "inertial_joule_minimized_at_minus_eleven"],
         combines: ["NL-03", "CTRL-02", "NL-01"]

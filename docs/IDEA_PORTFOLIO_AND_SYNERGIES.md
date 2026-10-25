@@ -123,7 +123,7 @@ flowchart LR
     end
 
     subgraph Deployment["Closed-Loop Deployment (C99 / PLC / MuJoCo)"]
-        D1["Composite 6-DOF Arm Controller\n(-22.5% Joule Loss, -99.6% Disturbance Error)"]
+        D1["Composite 6-DOF Arm Controller\n(-22.2% Joule Loss, -99.6% Disturbance Error)"]
         D2["3D Quadruped Reflex Shield\n(Zero Tip-Over, <100ns C99 Filter)"]
         D3["Eye-in-Hand 6-DOF Visual Servo\n(Zero Camera Retreat)"]
     end
@@ -141,7 +141,7 @@ flowchart LR
 
 ### Top 5 Proven & Next-Step Combinations
 1. **`ROBO-01` (Septic Trajectory) + `CTRL-02` ($H_\infty$) + `CTRL-03` (Peter–Paul ISS) + `NL-01` (Backstepping & Sontag CLF) + `NL-03` (Slotine–Li Passivity)**:
-   - *Why they combine*: `ROBO-01` generates the $C^3$-smooth rest-to-rest reference $(q_d, \dot{q}_d, \ddot{q}_d)$ that minimizes motor winding heat (`-22.47%` in MuJoCo), while `NL-03` cancels nonlinear Coriolis/centripetal coupling via $\dot{M}-2C \in \mathbb{K}_n$, and `CTRL-02` + `CTRL-03` + `NL-01` provide the outer-loop $\ell_2$ disturbance attenuation (`135.3x` in MuJoCo) and certified ISS sublevel invariance.
+   - *Why they combine*: `ROBO-01` generates the $C^3$-smooth rest-to-rest reference $(q_d, \dot{q}_d, \ddot{q}_d)$ that minimizes motor winding heat (`-22.16%` in MuJoCo), while `NL-03` cancels nonlinear Coriolis/centripetal coupling via $\dot{M}-2C \in \mathbb{K}_n$, and `CTRL-02` + `CTRL-03` + `NL-01` provide the outer-loop $\ell_2$ disturbance attenuation (`135.3x` in MuJoCo) and certified ISS sublevel invariance.
 2. **`ROBO-03` ($SO(3)/SE(3)$ Kinematics) + `NL-02` (3D Lorentz-Cone CBF & 4-Foot ZMP Allocator) + `ROBO-04` (Simplex & Real-Time RTA)**:
    - *Why they combine*: `ROBO-04` guarantees that the 1 kHz control loop meets its hard deadline (`response_time_analysis`) and switches to the verified backup controller (`simplex_safe`), while `NL-02` enforces the exact ZMP + friction-cone deceleration bound $a_{\max} = \min(\mu, W/h_G)g$ in closed form with zero angular-momentum drift.
 3. **`VIS-01` (Homography Rigidity & Faugeras Chirality) + `ROBO-02` ($SE(3)$ Log-Depth Visual Servoing) + `EST-01` (Joseph Kalman / Information Filter)**:

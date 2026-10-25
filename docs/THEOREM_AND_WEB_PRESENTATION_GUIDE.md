@@ -66,14 +66,14 @@ External reviewers, control engineers, and hiring/research leads evaluate interd
 * Never headline a `100x+` improvement against a naive strawman (such as an untuned low-gain PD controller under a massive impulse). Any competent control engineer knows that tuned high-gain Computed-Torque Control (CTC), $H_\infty$, or MPC will also beat plain PD.
 * Always include a **strong tuned engineering baseline** in the benchmark suite and headline the improvement against *that* baseline:
   * **Disturbance Rejection**: Report the **`39.4%` peak tracking error reduction** ($27.1\,\text{mrad} \to 16.4\,\text{mrad}$) and **`39.6%` RMS error reduction** of Sontag CLF + $H_\infty$/ISS against **tuned high-gain CTC with sliding-mode damping** ($K_p = 416, K_d = 42$), while noting the naive PD number only as secondary context.
-  * **Trajectory Energy**: Report both the **`4.1%` total actuator torque-squared reduction** ($\int \|\tau\|^2 dt$, where static gravity holding torque dominates) and the **`18.33%` theoretical / `22.47%` dynamic-only torque-squared reduction** ($\int \|\tau - g(q)\|^2 dt$).
+  * **Trajectory Energy**: Report both the **`3.3%` total actuator torque-squared reduction** ($\int \|\tau\|^2 dt$, where static gravity holding torque dominates) and the **`18.33%` theoretical / `22.16%` dynamic-only torque-squared reduction** ($\int \|\tau - g(q)\|^2 dt$).
   * **Safety Filter Latency**: Report **`28 ns`–`85 ns` deterministic execution** with **`0` solver timeouts** as a complementary last-resort guardrail alongside high-level MPC.
 
 ### Rule 3: Always Explain When Simulation Differs from Idealized Theory
 If a simulated measurement beats or trails the idealized theoretical bound, **explain the physical mechanism immediately**:
-* *Example (Septic $\eta = -11$ Trajectory)*: Theory predicts an exact $\frac{11}{60} = 18.33\%$ reduction in $\int_0^T \ddot{q}(t)^2\,dt$ for a linear double integrator. In our 6-DOF MuJoCo manipulator rollout, total actuator $\int \|\tau\|^2 dt$ drops by **`4.10%`** while dynamic-only $\int \|\tau - g(q)\|^2 dt$ drops by **`22.47%`**. Why both numbers?
+* *Example (Septic $\eta = -11$ Trajectory)*: Theory predicts an exact $\frac{11}{60} = 18.33\%$ reduction in $\int_0^T \ddot{q}(t)^2\,dt$ for a linear double integrator. In our 6-DOF MuJoCo manipulator rollout, total actuator $\int \|\tau\|^2 dt$ drops by **`3.31%`** while dynamic-only $\int \|\tau - g(q)\|^2 dt$ drops by **`22.16%`**. Why both numbers?
   1. Gravity compensation $g(q)$ accounts for roughly $80\%$ of total holding effort during a slow rest-to-rest move, diluting the total actuator savings to $4.10\%$.
-  2. Within the dynamic torque $\tau_{\text{dyn}} = M(q)\ddot{q} + C(q,\dot{q})\dot{q}$, the septic profile also lowers peak velocity slightly ($1.875$ vs. $2.055$), which reduces the quadratic Coriolis/centripetal term $C(q,\dot{q})\dot{q}$ on top of the $18.33\%$ inertial $M(q)\ddot{q}$ reduction, yielding $22.47\%$ dynamic savings.
+  2. Within the dynamic torque $\tau_{\text{dyn}} = M(q)\ddot{q} + C(q,\dot{q})\dot{q}$, the septic profile also lowers peak velocity slightly ($1.875$ vs. $2.055$), which reduces the quadratic Coriolis/centripetal term $C(q,\dot{q})\dot{q}$ on top of the $18.33\%$ inertial $M(q)\ddot{q}$ reduction, yielding $22.16\%$ dynamic savings.
 
 ### Rule 4: Be Transparent About the Verification Gap ("Proved vs. Tested")
 Always include an explicit table or callout clarifying:
@@ -123,7 +123,7 @@ When building or maintaining the web interface (either on GitHub Pages or an int
 ### 4.1 Page Information Architecture (7 Sections)
 1. **Header & Hero**:
    * Concise subtitle explaining the 4-tier pipeline (`Lean 4 -> Dual-Mode Python -> C99/PLC -> MuJoCo`).
-   * 4 headline metric cards with honest qualifiers (e.g., `53 Core / 98 Total` zero-`sorry` modules, `28–85 ns` C99 filter latency, `-4.1% Total / -22.5% Dynamic` torque-squared energy, `-39.4% vs. Tuned CTC` disturbance peak error).
+   * 4 headline metric cards with honest qualifiers (e.g., `53 Core / 98 Total` zero-`sorry` modules, `28–85 ns` C99 filter latency, `-3.3% Total / -22.2% Dynamic` torque-squared energy, `-39.4% vs. Tuned CTC` disturbance peak error).
 2. **Section 1 — Four Core Application Pillars**:
    * Full-width horizontal cards on desktop (`grid-template-columns: 1.05fr 0.95fr`), pairing the two-paragraph domain narrative + metrics + traceability links on the left with the 16:9 scientific MuJoCo animation on the right.
 3. **Section 2 — End-to-End Example (Theorem $\to$ C99 $\to$ Equivalence)**:

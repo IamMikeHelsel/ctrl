@@ -142,8 +142,8 @@ def make_pillar2_septic_energy(out_dir: Path) -> Path:
     _style_ax(ax2, "Cumulative Dynamic Joule Heat Integral (J)", "Time t (s)", "Cumulative Dynamic Energy (J)")
     ax2.set_xlim(0, t[-1])
     ax2.set_ylim(0, max(e0) * 1.12)
-    (line_e0,) = ax2.plot([], [], color=ROSE, linestyle="--", linewidth=1.9, label="Min-Jerk: 773.2 J")
-    (line_e11,) = ax2.plot([], [], color=TEAL, linewidth=2.3, label="Septic Opt: 599.5 J (-22.5% dyn / -4.1% tot)")
+    (line_e0,) = ax2.plot([], [], color=ROSE, linestyle="--", linewidth=1.9, label="Min-Jerk: 904.4 J")
+    (line_e11,) = ax2.plot([], [], color=TEAL, linewidth=2.3, label="Septic Opt: 703.9 J (-22.2% dyn / -3.3% tot)")
     (pt_e11,) = ax2.plot([], [], "o", color=TEAL, markersize=6)
     ax2.legend(loc="upper left", facecolor=PANEL_BG, edgecolor="#263244", labelcolor=TEXT_COL, fontsize=7.2)
 
