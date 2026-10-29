@@ -190,6 +190,8 @@ Humble, clear, technical. The reader is a capable engineer who has not seen this
   lazy loading, and the accessible shared player. Keep assumptions in both the page and captions.
 - A ratio rounded for display is not an exact extremum. Non-normality alone does not imply
   transient norm growth; check the operator norm against 1 as well as the spectral radius.
+- Clear captions before changing the model or its assumptions. Fade the old caption out
+  before fading a new one in; simultaneous fades briefly overlay unrelated claims.
 
 - `‖x‖` on `n → ℝ` in Mathlib is the **sup norm**, not Euclidean. Constants the proof
   produces (rates, bounds) differ from the textbook Euclidean ones. Say which norm, and do

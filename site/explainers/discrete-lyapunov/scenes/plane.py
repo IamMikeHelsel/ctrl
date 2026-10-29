@@ -122,7 +122,7 @@ class PlaneLyapunov(ExplainerScene):
             lambda k: RHO**k * VS[0], x_range=[0, kmax], color=MUTED, stroke_width=1.5
         )
         env = DashedVMobject(envelope, num_dashes=40)
-        env_lab = eq(rf"\rho^k V(x_0),\ \rho = {RHO:.3f}", size=22, color=MUTED).next_to(
+        env_lab = eq(rf"\rho^k V(x_0),\ \rho \approx {RHO:.3f}", size=22, color=MUTED).next_to(
             ax_v.c2p(kmax * 0.62, RHO ** (kmax * 0.62) * VS[0]), UP + RIGHT, buff=0.05
         )
         self.play(FadeIn(VGroup(ax_n, ax_v, lab_n, lab_v, one, one_lab, k_lab)))

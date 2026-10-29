@@ -35,7 +35,10 @@ braking-sketch source needed formatting to satisfy the repository's blocking for
 
 Browser evidence is Chromium on macOS, including desktop light and mobile dark screenshots.
 Safari, Firefox, physical mobile devices and actual Google Workspace embedding were not
-tested. The two original pilot videos were retained; three new sectioned videos were rendered.
+tested. The two original pilot videos were rerendered after review found a stale caption
+when switching the scalar example from stable to unstable. Captions now fade sequentially,
+and the planar video's rounded contraction label uses an approximation sign. Three new
+sectioned videos were rendered as well.
 New experiments do not add Lean theorems, replay OpenAI's proofs or establish controller,
 RTOS, actuator or physical safety properties. Finite case counts are not statistical trials.
 

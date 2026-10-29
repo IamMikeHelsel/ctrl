@@ -139,7 +139,8 @@ class ExplainerScene(Scene):
         if self._caption is None:
             self.play(FadeIn(new), run_time=0.5)
         else:
-            self.play(FadeOut(self._caption), FadeIn(new), run_time=0.5)
+            self.play(FadeOut(self._caption), run_time=0.25)
+            self.play(FadeIn(new), run_time=0.25)
         self._caption = new
         if hold:
             self.wait(hold)

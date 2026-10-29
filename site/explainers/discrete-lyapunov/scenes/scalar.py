@@ -74,6 +74,7 @@ class ScalarLyapunov(ExplainerScene):
         self.play(FadeOut(summary), FadeOut(badge))
 
     def run_case(self, a: float, color: str, good: bool):
+        self.clear_caption()
         margin = 1 - a * a
         head = eq(
             rf"a = {a:g}:\quad P - a^2 P = 1 - {a * a:.2f} = {margin:.2f}",
