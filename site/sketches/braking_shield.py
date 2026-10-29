@@ -11,6 +11,13 @@ from __future__ import annotations
 
 import math
 
+from ctrl.robotics.contact_cbf import (
+    CentroidalQuadParams,
+    directional_cbf,
+    lorentz_cbf_safety_filter,
+    quad_contact_forces,
+    safe_decel_max,
+)
 from manim import (
     BLUE_C,
     DOWN,
@@ -37,14 +44,6 @@ from manim import (
     Write,
     always_redraw,
     linear,
-)
-
-from ctrl.robotics.contact_cbf import (
-    CentroidalQuadParams,
-    directional_cbf,
-    quad_contact_forces,
-    safe_decel_max,
-    lorentz_cbf_safety_filter,
 )
 
 PARAMS = CentroidalQuadParams(m=12.0, g=9.81, h_g=0.30, w_x=0.20, w_y=0.12, mu=0.60)
