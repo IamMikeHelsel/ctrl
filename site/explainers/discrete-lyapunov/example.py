@@ -3,6 +3,7 @@
 2D example: A has spectral radius 0.9 but operator norm about 1.17, so the Euclidean norm
 of the state can grow on a step. P solves the Stein equation A^T P A - P = -I, so
 V(x) = x^T P x drops on every step by at least a fixed factor.
+The exact SymPy artifact supplies A and P; NumPy values below are for plotting.
 """
 
 from __future__ import annotations
@@ -22,17 +23,8 @@ A_SCALAR_BAD = 1.1
 
 # Planar example.
 A = np.array([[float(Fraction(t)) for t in row] for row in EXACT["A"]])
-Q = np.eye(2)
 X0 = np.array([1.0, 0.0])
 STEPS = 14
-
-
-def solve_stein(A: np.ndarray, Q: np.ndarray) -> np.ndarray:
-    """P with A^T P A - P = -Q (vectorized; fine for tiny n)."""
-    n = A.shape[0]
-    K = np.kron(A.T, A.T) - np.eye(n * n)
-    P = np.linalg.solve(K, -Q.reshape(-1)).reshape(n, n)
-    return (P + P.T) / 2
 
 
 P = np.array([[float(Fraction(t)) for t in row] for row in EXACT["P"]])
