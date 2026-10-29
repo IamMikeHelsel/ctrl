@@ -1,0 +1,126 @@
+{
+  "id": "schedule-bound",
+  "title": "A lower bound is not a schedule",
+  "category": "Scheduling / OpenAI math inspiration",
+  "seed": 146,
+  "source_derivation": {
+    "id": "math-explainers-144",
+    "sha256": "dc0c3cef9521c142febc0e61013a3d6ba8fa8f303f03562e86be09485ba1fdde"
+  },
+  "summary": "The elementary bound is loose on 2 of 1,024 five-job DAGs. The layered eight-job fixture has lower bound 3 and optimum 4.",
+  "items": [
+    {
+      "id": "first",
+      "type": "box",
+      "label": "Four source jobs",
+      "x": 100,
+      "y": 190,
+      "w": 340,
+      "h": 90,
+      "color": "ink"
+    },
+    {
+      "id": "second",
+      "type": "box",
+      "label": "Four dependent jobs",
+      "x": 680,
+      "y": 190,
+      "w": 340,
+      "h": 90,
+      "color": "ink"
+    },
+    {
+      "id": "precedence",
+      "type": "arrow",
+      "points": [
+        [
+          452,
+          235
+        ],
+        [
+          668,
+          235
+        ]
+      ],
+      "label": "every source first",
+      "color": "ink"
+    },
+    {
+      "id": "work",
+      "type": "label",
+      "label": "8 jobs / 3 machines → at least 3 slots",
+      "x": 560,
+      "y": 355,
+      "color": "blue",
+      "fontSize": 27
+    },
+    {
+      "id": "layer",
+      "type": "label",
+      "label": "Each four-job layer needs at least 2 slots",
+      "x": 560,
+      "y": 420,
+      "color": "green",
+      "fontSize": 27
+    },
+    {
+      "id": "sum",
+      "type": "note",
+      "label": "2 + 2 = 4 slots. The layers cannot overlap.",
+      "x": 230,
+      "y": 500,
+      "w": 660,
+      "h": 75,
+      "fontSize": 25
+    }
+  ],
+  "steps": [
+    {
+      "title": "Freeze the scheduling model",
+      "caption": "Unit-duration jobs, three identical machines, no release times or transport costs.",
+      "show": [
+        "first",
+        "second"
+      ],
+      "focus": [],
+      "durationMs": 5500
+    },
+    {
+      "title": "Add precedence",
+      "caption": "Every source job must finish before any dependent job starts.",
+      "show": [
+        "first",
+        "second",
+        "precedence"
+      ],
+      "focus": [],
+      "durationMs": 5500
+    },
+    {
+      "title": "Try the elementary bound",
+      "caption": "The workload bound gives 3 slots; the critical-path bound gives 2. Their maximum is still only a lower bound.",
+      "show": [
+        "first",
+        "second",
+        "precedence",
+        "work"
+      ],
+      "focus": [],
+      "durationMs": 5500
+    },
+    {
+      "title": "Find the missing obstruction",
+      "caption": "The two layers require at least 4 slots in total, and a feasible four-slot schedule attains it. This tiny oracle is not OpenAI’s scheduling algorithm.",
+      "show": [
+        "first",
+        "second",
+        "precedence",
+        "work",
+        "layer",
+        "sum"
+      ],
+      "focus": [],
+      "durationMs": 5500
+    }
+  ]
+}

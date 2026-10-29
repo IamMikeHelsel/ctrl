@@ -1,0 +1,4216 @@
+{
+  "schema_version": 1,
+  "campaign": "Math explainers 144",
+  "as_of": "2026-10-28",
+  "engine": {
+    "sympy": "1.14.0"
+  },
+  "source_sha256": "a78cd5eca4b23d99ddb7e17b55a94cd9ec399851695ca09791d7c6cd87bda5ba",
+  "scope": "Eight completed finite/CAS experiments, not new theorems, upstream proof replay, performance benchmarks or physical safety validation.",
+  "sources": [
+    {
+      "id": "tao-equations",
+      "title": "Terence Tao: The equational theories project, a brief tour",
+      "url": "https://terrytao.wordpress.com/2024/10/12/the-equational-theories-project-a-brief-tour/",
+      "date": "2024-10-12",
+      "use": "Method inspiration: search finite countermodels before trusting an algebraic rewrite."
+    },
+    {
+      "id": "tao-sumsets",
+      "title": "Green, Manners and Tao: Sumsets and entropy revisited",
+      "url": "https://terrytao.wordpress.com/2023/06/27/sumsets-and-entropy-revisited/",
+      "date": "2023-06-27",
+      "use": "Method inspiration: inspect additive support growth and distinguish support from entropy. No application of PFR is claimed."
+    },
+    {
+      "id": "tao-blueprint",
+      "title": "Terence Tao: Formalizing PFR in Lean4 using Blueprint",
+      "url": "https://terrytao.wordpress.com/2023/11/18/formalizing-the-proof-of-pfr-in-lean4-using-blueprint-a-short-tour/",
+      "date": "2023-11-18",
+      "use": "Presentation inspiration: expose dependencies and missing obligations."
+    },
+    {
+      "id": "oai-tropical",
+      "title": "OpenAI/math: TruffetModel and TruffetCounterexample",
+      "url": "https://github.com/openai/math/blob/7ef5c0cc5ca4b0e072b7a050fca09ab24bc6fa3a/lean/OAI/Optimization/Tropical/TruffetCounterexample.lean",
+      "model_url": "https://github.com/openai/math/blob/7ef5c0cc5ca4b0e072b7a050fca09ab24bc6fa3a/lean/OAI/Optimization/Tropical/TruffetModel.lean",
+      "commit": "7ef5c0cc5ca4b0e072b7a050fca09ab24bc6fa3a",
+      "date": "2026-10-26",
+      "use": "Recompute the displayed feasible-point cost gap. The substitution algorithm and upstream Lean proof are not replayed by this suite."
+    },
+    {
+      "id": "oai-scheduling",
+      "title": "OpenAI/math: ThreeMachine problem specification",
+      "url": "https://github.com/openai/math/blob/7ef5c0cc5ca4b0e072b7a050fca09ab24bc6fa3a/lean/ComparatorChallenges/ThreeMachine.lean",
+      "commit": "7ef5c0cc5ca4b0e072b7a050fca09ab24bc6fa3a",
+      "date": "2026-10-26",
+      "use": "Adopt the finite unit-job, precedence and three-machine model. Our tiny BFS is not the upstream algorithm or a replay of its complexity theorem."
+    },
+    {
+      "id": "ctrl-lyapunov",
+      "title": "ctrl: DiscreteLyapunov",
+      "url": "https://github.com/IamMikeHelsel/ctrl/blob/124e2f7787e31cf24f39e1a7b3bf37bf79a93df2/ControlsLean/Controls/DiscreteLyapunov.lean",
+      "use": "Existing theorem context; new example arithmetic is checked separately."
+    },
+    {
+      "id": "ctrl-kalman",
+      "title": "ctrl: ScalarKalman",
+      "url": "https://github.com/IamMikeHelsel/ctrl/blob/124e2f7787e31cf24f39e1a7b3bf37bf79a93df2/ControlsLean/Estimation/ScalarKalman.lean",
+      "use": "Existing theorem context; this experiment isolates the scalar quadratic objective."
+    },
+    {
+      "id": "ctrl-braking",
+      "title": "ctrl: delayed braking study",
+      "url": "https://iammikehelsel.github.io/ctrl/studies/latency-braking.html",
+      "use": "Known constant-acceleration envelope; new sensitivity and boundary sweep."
+    }
+  ],
+  "experiments": [
+    {
+      "id": "lyapunov",
+      "title": "Length can grow while energy falls",
+      "source_ids": [
+        "ctrl-lyapunov"
+      ],
+      "question": "Can an exact certificate explain the transient that a norm plot hides?",
+      "scope": "Exact rational example and CAS identities; no new kernel-checked theorem, rounding or plant model.",
+      "next_test": "Check rational certificates for a family of sampled closed-loop matrices with interval perturbations.",
+      "kill_criterion": "Reject a candidate if P or P minus A-transpose P A loses positive definiteness.",
+      "status": "completed",
+      "evidence": "CAS identity + exact rational replay",
+      "cases": 49,
+      "conclusion": "The first step increases squared length from 1 to 449/400 while energy drops by exactly 1.",
+      "checks": [
+        {
+          "residual": "0",
+          "status": "passed"
+        },
+        {
+          "residual": "0",
+          "status": "passed"
+        },
+        {
+          "residual": "0",
+          "status": "passed"
+        },
+        {
+          "residual": "0",
+          "status": "passed"
+        },
+        {
+          "residual": "0",
+          "status": "passed"
+        }
+      ],
+      "scalar_domain": "Interval.open(-1, 1)",
+      "scalar": [
+        {
+          "a": "-6/5",
+          "loss": "-11/25",
+          "certificate": false
+        },
+        {
+          "a": "-23/20",
+          "loss": "-129/400",
+          "certificate": false
+        },
+        {
+          "a": "-11/10",
+          "loss": "-21/100",
+          "certificate": false
+        },
+        {
+          "a": "-21/20",
+          "loss": "-41/400",
+          "certificate": false
+        },
+        {
+          "a": "-1",
+          "loss": "0",
+          "certificate": false
+        },
+        {
+          "a": "-19/20",
+          "loss": "39/400",
+          "certificate": true
+        },
+        {
+          "a": "-9/10",
+          "loss": "19/100",
+          "certificate": true
+        },
+        {
+          "a": "-17/20",
+          "loss": "111/400",
+          "certificate": true
+        },
+        {
+          "a": "-4/5",
+          "loss": "9/25",
+          "certificate": true
+        },
+        {
+          "a": "-3/4",
+          "loss": "7/16",
+          "certificate": true
+        },
+        {
+          "a": "-7/10",
+          "loss": "51/100",
+          "certificate": true
+        },
+        {
+          "a": "-13/20",
+          "loss": "231/400",
+          "certificate": true
+        },
+        {
+          "a": "-3/5",
+          "loss": "16/25",
+          "certificate": true
+        },
+        {
+          "a": "-11/20",
+          "loss": "279/400",
+          "certificate": true
+        },
+        {
+          "a": "-1/2",
+          "loss": "3/4",
+          "certificate": true
+        },
+        {
+          "a": "-9/20",
+          "loss": "319/400",
+          "certificate": true
+        },
+        {
+          "a": "-2/5",
+          "loss": "21/25",
+          "certificate": true
+        },
+        {
+          "a": "-7/20",
+          "loss": "351/400",
+          "certificate": true
+        },
+        {
+          "a": "-3/10",
+          "loss": "91/100",
+          "certificate": true
+        },
+        {
+          "a": "-1/4",
+          "loss": "15/16",
+          "certificate": true
+        },
+        {
+          "a": "-1/5",
+          "loss": "24/25",
+          "certificate": true
+        },
+        {
+          "a": "-3/20",
+          "loss": "391/400",
+          "certificate": true
+        },
+        {
+          "a": "-1/10",
+          "loss": "99/100",
+          "certificate": true
+        },
+        {
+          "a": "-1/20",
+          "loss": "399/400",
+          "certificate": true
+        },
+        {
+          "a": "0",
+          "loss": "1",
+          "certificate": true
+        },
+        {
+          "a": "1/20",
+          "loss": "399/400",
+          "certificate": true
+        },
+        {
+          "a": "1/10",
+          "loss": "99/100",
+          "certificate": true
+        },
+        {
+          "a": "3/20",
+          "loss": "391/400",
+          "certificate": true
+        },
+        {
+          "a": "1/5",
+          "loss": "24/25",
+          "certificate": true
+        },
+        {
+          "a": "1/4",
+          "loss": "15/16",
+          "certificate": true
+        },
+        {
+          "a": "3/10",
+          "loss": "91/100",
+          "certificate": true
+        },
+        {
+          "a": "7/20",
+          "loss": "351/400",
+          "certificate": true
+        },
+        {
+          "a": "2/5",
+          "loss": "21/25",
+          "certificate": true
+        },
+        {
+          "a": "9/20",
+          "loss": "319/400",
+          "certificate": true
+        },
+        {
+          "a": "1/2",
+          "loss": "3/4",
+          "certificate": true
+        },
+        {
+          "a": "11/20",
+          "loss": "279/400",
+          "certificate": true
+        },
+        {
+          "a": "3/5",
+          "loss": "16/25",
+          "certificate": true
+        },
+        {
+          "a": "13/20",
+          "loss": "231/400",
+          "certificate": true
+        },
+        {
+          "a": "7/10",
+          "loss": "51/100",
+          "certificate": true
+        },
+        {
+          "a": "3/4",
+          "loss": "7/16",
+          "certificate": true
+        },
+        {
+          "a": "4/5",
+          "loss": "9/25",
+          "certificate": true
+        },
+        {
+          "a": "17/20",
+          "loss": "111/400",
+          "certificate": true
+        },
+        {
+          "a": "9/10",
+          "loss": "19/100",
+          "certificate": true
+        },
+        {
+          "a": "19/20",
+          "loss": "39/400",
+          "certificate": true
+        },
+        {
+          "a": "1",
+          "loss": "0",
+          "certificate": false
+        },
+        {
+          "a": "21/20",
+          "loss": "-41/400",
+          "certificate": false
+        },
+        {
+          "a": "11/10",
+          "loss": "-21/100",
+          "certificate": false
+        },
+        {
+          "a": "23/20",
+          "loss": "-129/400",
+          "certificate": false
+        },
+        {
+          "a": "6/5",
+          "loss": "-11/25",
+          "certificate": false
+        }
+      ],
+      "A": [
+        [
+          "1",
+          "3/5"
+        ],
+        [
+          "-7/20",
+          "3/5"
+        ]
+      ],
+      "P": [
+        [
+          "40175/7161",
+          "6700/2387"
+        ],
+        [
+          "6700/2387",
+          "18800/2387"
+        ]
+      ],
+      "determinant": "260000/7161",
+      "samples": [
+        {
+          "k": 0,
+          "x": [
+            "1",
+            "0"
+          ],
+          "energy": "40175/7161",
+          "norm_squared": "1",
+          "display_energy": 5.610249965088674,
+          "display_norm": 1.0
+        },
+        {
+          "k": 1,
+          "x": [
+            "1",
+            "-7/20"
+          ],
+          "energy": "33014/7161",
+          "norm_squared": "449/400",
+          "display_energy": 4.610249965088674,
+          "display_norm": 1.0594810050208545
+        },
+        {
+          "k": 2,
+          "x": [
+            "79/100",
+            "-14/25"
+          ],
+          "energy": "9990311/2864400",
+          "norm_squared": "9377/10000",
+          "display_energy": 3.4877499650886747,
+          "display_norm": 0.9683491106000975
+        },
+        {
+          "k": 3,
+          "x": [
+            "227/500",
+            "-49/80"
+          ],
+          "energy": "91304539/35805000",
+          "norm_squared": "2325089/4000000",
+          "display_energy": 2.5500499650886748,
+          "display_norm": 0.7624121260840492
+        },
+        {
+          "k": 4,
+          "x": [
+            "173/2000",
+            "-329/625"
+          ],
+          "energy": "56393668871/28644000000",
+          "norm_squared": "28457921/100000000",
+          "display_energy": 1.9687777150886747,
+          "display_norm": 0.5334596610803858
+        },
+        {
+          "k": 5,
+          "x": [
+            "-11467/50000",
+            "-69223/200000"
+          ],
+          "energy": "603027274747/358050000000",
+          "norm_squared": "6895697153/40000000000",
+          "display_energy": 1.6841985050886747,
+          "display_norm": 0.415201672473751
+        },
+        {
+          "k": 6,
+          "x": [
+            "-437009/1000000",
+            "-637/5000"
+          ],
+          "energy": "433041732484967/286440000000000",
+          "norm_squared": "207207626081/1000000000000",
+          "display_energy": 1.5118060762636747,
+          "display_norm": 0.4552006437616274
+        },
+        {
+          "k": 7,
+          "x": [
+            "-513449/1000000",
+            "1530263/20000000"
+          ],
+          "energy": "4671114750879067/3580500000000000",
+          "norm_squared": "107793655089569/400000000000000",
+          "display_energy": 1.3045984501826748,
+          "display_norm": 0.519118616237101
+        },
+        {
+          "k": 8,
+          "x": [
+            "-46754111/100000000",
+            "705047/3125000"
+          ],
+          "energy": "2964981436606849991/2864400000000000000",
+          "norm_squared": "2694968358142337/10000000000000000",
+          "display_energy": 1.0351143124587523,
+          "display_norm": 0.5191308465254533
+        },
+        {
+          "k": 9,
+          "x": [
+            "-166086043/500000000",
+            "23920673/80000000"
+          ],
+          "energy": "27412933751256987259/35805000000000000000",
+          "norm_squared": "798977301853446209/4000000000000000000",
+          "display_energy": 0.7656174766445185,
+          "display_norm": 0.4469276512628879
+        },
+        {
+          "k": 10,
+          "x": [
+            "-305534077/2000000000",
+            "369581597/1250000000"
+          ],
+          "energy": "16208870542433061504551/28644000000000000000000",
+          "norm_squared": "11075572443034554401/100000000000000000000",
+          "display_energy": 0.565873151181157,
+          "display_norm": 0.33279982636766137
+        },
+        {
+          "k": 11,
+          "x": [
+            "1231606403/50000000000",
+            "46173526007/200000000000"
+          ],
+          "energy": "162954794648128046774107/358050000000000000000000",
+          "norm_squared": "2156264173229674938593/40000000000000000000000",
+          "display_energy": 0.45511742675081146,
+          "display_norm": 0.23217795832236504
+        },
+        {
+          "k": 12,
+          "x": [
+            "163152706081/1000000000000",
+            "324748333/2500000000"
+          ],
+          "energy": "114922827974004735184021127/286440000000000000000000000",
+          "norm_squared": "43492642267357796618561/1000000000000000000000000",
+          "display_energy": 0.4012108224200696,
+          "display_norm": 0.20854889658628692
+        },
+        {
+          "k": 13,
+          "x": [
+            "241092306001/1000000000000",
+            "416723055833/20000000000000"
+          ],
+          "energy": "1280809944036784599007506427/3580500000000000000000000000",
+          "norm_squared": "23423858110414721880124289/400000000000000000000000000",
+          "display_energy": 0.3577181801527118,
+          "display_norm": 0.24199100246917613
+        },
+        {
+          "k": 14,
+          "x": [
+            "25359399767599/100000000000000",
+            "-898507692817/12500000000000"
+          ],
+          "energy": "856909707300747855822435108071/2864400000000000000000000000000",
+          "norm_squared": "694767385312185234947536097/10000000000000000000000000000",
+          "display_energy": 0.299158534876675,
+          "display_norm": 0.2635844049469136
+        }
+      ],
+      "negative_control": {
+        "a": "11/10",
+        "loss": "-21/100",
+        "certificate": false
+      }
+    },
+    {
+      "id": "braking",
+      "title": "Delay consumes a calculable distance",
+      "source_ids": [
+        "ctrl-braking"
+      ],
+      "question": "How much clearance does a smaller delay buy under fixed bounds?",
+      "scope": "A sharp 1D constant-acceleration model. Equality allows boundary contact. Rejection is not a stopping action.",
+      "next_test": "Replay measured timestamp-to-actuation traces with independently justified acceleration and braking bounds.",
+      "kill_criterion": "Stop if any trace exceeds an assumed delay or braking bound; do not narrow bounds to improve admission rates.",
+      "status": "completed",
+      "evidence": "CAS derivative + independent exact integration",
+      "cases": 972,
+      "nominal_admits": 942,
+      "nominal_false_admits": 294,
+      "bounded_admits": 648,
+      "bounded_false_admits": 0,
+      "conclusion": "The bounded rule has no false admissions in 972 constructed cases; the nominal rule has 294.",
+      "formula": "A*t**2/2 + e + t*u + (A*t + u)**2/(2*b)",
+      "latex": "\\frac{A t^{2}}{2} + e + t u + \\frac{\\left(A t + u\\right)^{2}}{2 b}",
+      "sensitivity": "(A + b)*(A*t + u)/b",
+      "example": {
+        "u": "11/10",
+        "delay": "1/5",
+        "accel": "1",
+        "brake": "2",
+        "error": "1/50",
+        "distance": "273/400",
+        "display_distance": 0.6825,
+        "delay_distance": "6/25",
+        "brake_distance": "169/400",
+        "saved_by_20ms": "387/10000"
+      },
+      "negative_control": {
+        "wall": "1/2",
+        "understated_delay": "0",
+        "reported_distance": "129/400",
+        "actual_distance": "273/400",
+        "actual_crossing": true
+      }
+    },
+    {
+      "id": "kalman",
+      "title": "The gain balances two errors",
+      "source_ids": [
+        "ctrl-kalman"
+      ],
+      "question": "Can completion of squares expose the optimal gain and its assumptions?",
+      "scope": "Scalar error variance with positive variances and zero cross-covariance; no stochastic calibration or multivariate claim.",
+      "next_test": "Estimate cross-covariance on held-out sensor traces before using the independent-error gain.",
+      "kill_criterion": "Reject the independent-error model if residual correlation invalidates its objective.",
+      "status": "completed",
+      "evidence": "CAS identity + exact rational sweep",
+      "cases": 325,
+      "checks": [
+        {
+          "residual": "0",
+          "status": "passed"
+        }
+      ],
+      "conclusion": "Every tested gain has exactly the predicted nonnegative excess variance; a correlated fixture changes the optimum.",
+      "formula": "k**2*p + k**2*r - 2*k*p + p",
+      "optimal_gain": "p/(p + r)",
+      "latex": "\\frac{p}{p + r}",
+      "example": {
+        "p": "1",
+        "r": "4",
+        "gain": "1/5",
+        "variance": "4/5",
+        "wrong_gain": "1/2",
+        "wrong_variance": "5/4"
+      },
+      "negative_control": {
+        "cross_covariance": "1/2",
+        "independent_gain": "1/5",
+        "correlated_gain": "1/8",
+        "variance_independent_gain": "24/25",
+        "variance_correlated_gain": "15/16"
+      }
+    },
+    {
+      "id": "saturation",
+      "title": "Saturation breaks an innocent rewrite",
+      "source_ids": [
+        "tao-equations"
+      ],
+      "question": "May a command-combining pipeline regroup saturated additions?",
+      "scope": "Exhaustive finite integer tables for four clipping bounds; not a classification of real-valued controllers or a new algebraic theorem.",
+      "next_test": "Check actual command-combining operators and compiler rewrites against frozen finite countermodels.",
+      "kill_criterion": "Reject any reassociation rule when one input triple changes the applied command.",
+      "status": "completed",
+      "evidence": "Finite exhaustive countermodels",
+      "cases": 1224,
+      "rows": [
+        {
+          "bound": 1,
+          "triples": 27,
+          "nonassociative": 4
+        },
+        {
+          "bound": 2,
+          "triples": 125,
+          "nonassociative": 24
+        },
+        {
+          "bound": 3,
+          "triples": 343,
+          "nonassociative": 72
+        },
+        {
+          "bound": 4,
+          "triples": 729,
+          "nonassociative": 160
+        }
+      ],
+      "witness": {
+        "bound": 1,
+        "a": -1,
+        "b": -1,
+        "c": 1,
+        "left": 0,
+        "right": -1
+      },
+      "conclusion": "Clipping is idempotent on the tested inputs, but saturated addition is not associative."
+    },
+    {
+      "id": "sumsets",
+      "title": "A reachable interval can hide holes",
+      "source_ids": [
+        "tao-sumsets"
+      ],
+      "question": "When does a compact reachable-set description erase useful structure?",
+      "scope": "All 127 nonempty subsets of seven integers, three independent additive steps. No PFR theorem transfer or general compression benefit.",
+      "next_test": "Compare exact unions and interval hulls on quantized actuator models with measured checking cost.",
+      "kill_criterion": "Abandon compression if it excludes any reachable state or its membership cost exceeds the exact representation.",
+      "status": "completed",
+      "evidence": "Finite exhaustive set arithmetic",
+      "cases": 127,
+      "rows": [
+        {
+          "A": [
+            -3
+          ],
+          "doubling": "1",
+          "reachable_three": [
+            -9
+          ],
+          "hull_points": 1,
+          "unreachable_hull_points": 0
+        },
+        {
+          "A": [
+            -2
+          ],
+          "doubling": "1",
+          "reachable_three": [
+            -6
+          ],
+          "hull_points": 1,
+          "unreachable_hull_points": 0
+        },
+        {
+          "A": [
+            -3,
+            -2
+          ],
+          "doubling": "3/2",
+          "reachable_three": [
+            -9,
+            -8,
+            -7,
+            -6
+          ],
+          "hull_points": 4,
+          "unreachable_hull_points": 0
+        },
+        {
+          "A": [
+            -1
+          ],
+          "doubling": "1",
+          "reachable_three": [
+            -3
+          ],
+          "hull_points": 1,
+          "unreachable_hull_points": 0
+        },
+        {
+          "A": [
+            -3,
+            -1
+          ],
+          "doubling": "3/2",
+          "reachable_three": [
+            -9,
+            -7,
+            -5,
+            -3
+          ],
+          "hull_points": 7,
+          "unreachable_hull_points": 3
+        },
+        {
+          "A": [
+            -2,
+            -1
+          ],
+          "doubling": "3/2",
+          "reachable_three": [
+            -6,
+            -5,
+            -4,
+            -3
+          ],
+          "hull_points": 4,
+          "unreachable_hull_points": 0
+        },
+        {
+          "A": [
+            -3,
+            -2,
+            -1
+          ],
+          "doubling": "5/3",
+          "reachable_three": [
+            -9,
+            -8,
+            -7,
+            -6,
+            -5,
+            -4,
+            -3
+          ],
+          "hull_points": 7,
+          "unreachable_hull_points": 0
+        },
+        {
+          "A": [
+            0
+          ],
+          "doubling": "1",
+          "reachable_three": [
+            0
+          ],
+          "hull_points": 1,
+          "unreachable_hull_points": 0
+        },
+        {
+          "A": [
+            -3,
+            0
+          ],
+          "doubling": "3/2",
+          "reachable_three": [
+            -9,
+            -6,
+            -3,
+            0
+          ],
+          "hull_points": 10,
+          "unreachable_hull_points": 6
+        },
+        {
+          "A": [
+            -2,
+            0
+          ],
+          "doubling": "3/2",
+          "reachable_three": [
+            -6,
+            -4,
+            -2,
+            0
+          ],
+          "hull_points": 7,
+          "unreachable_hull_points": 3
+        },
+        {
+          "A": [
+            -3,
+            -2,
+            0
+          ],
+          "doubling": "2",
+          "reachable_three": [
+            -9,
+            -8,
+            -7,
+            -6,
+            -5,
+            -4,
+            -3,
+            -2,
+            0
+          ],
+          "hull_points": 10,
+          "unreachable_hull_points": 1
+        },
+        {
+          "A": [
+            -1,
+            0
+          ],
+          "doubling": "3/2",
+          "reachable_three": [
+            -3,
+            -2,
+            -1,
+            0
+          ],
+          "hull_points": 4,
+          "unreachable_hull_points": 0
+        },
+        {
+          "A": [
+            -3,
+            -1,
+            0
+          ],
+          "doubling": "2",
+          "reachable_three": [
+            -9,
+            -7,
+            -6,
+            -5,
+            -4,
+            -3,
+            -2,
+            -1,
+            0
+          ],
+          "hull_points": 10,
+          "unreachable_hull_points": 1
+        },
+        {
+          "A": [
+            -2,
+            -1,
+            0
+          ],
+          "doubling": "5/3",
+          "reachable_three": [
+            -6,
+            -5,
+            -4,
+            -3,
+            -2,
+            -1,
+            0
+          ],
+          "hull_points": 7,
+          "unreachable_hull_points": 0
+        },
+        {
+          "A": [
+            -3,
+            -2,
+            -1,
+            0
+          ],
+          "doubling": "7/4",
+          "reachable_three": [
+            -9,
+            -8,
+            -7,
+            -6,
+            -5,
+            -4,
+            -3,
+            -2,
+            -1,
+            0
+          ],
+          "hull_points": 10,
+          "unreachable_hull_points": 0
+        },
+        {
+          "A": [
+            1
+          ],
+          "doubling": "1",
+          "reachable_three": [
+            3
+          ],
+          "hull_points": 1,
+          "unreachable_hull_points": 0
+        },
+        {
+          "A": [
+            -3,
+            1
+          ],
+          "doubling": "3/2",
+          "reachable_three": [
+            -9,
+            -5,
+            -1,
+            3
+          ],
+          "hull_points": 13,
+          "unreachable_hull_points": 9
+        },
+        {
+          "A": [
+            -2,
+            1
+          ],
+          "doubling": "3/2",
+          "reachable_three": [
+            -6,
+            -3,
+            0,
+            3
+          ],
+          "hull_points": 10,
+          "unreachable_hull_points": 6
+        },
+        {
+          "A": [
+            -3,
+            -2,
+            1
+          ],
+          "doubling": "2",
+          "reachable_three": [
+            -9,
+            -8,
+            -7,
+            -6,
+            -5,
+            -4,
+            -3,
+            -1,
+            0,
+            3
+          ],
+          "hull_points": 13,
+          "unreachable_hull_points": 3
+        },
+        {
+          "A": [
+            -1,
+            1
+          ],
+          "doubling": "3/2",
+          "reachable_three": [
+            -3,
+            -1,
+            1,
+            3
+          ],
+          "hull_points": 7,
+          "unreachable_hull_points": 3
+        },
+        {
+          "A": [
+            -3,
+            -1,
+            1
+          ],
+          "doubling": "5/3",
+          "reachable_three": [
+            -9,
+            -7,
+            -5,
+            -3,
+            -1,
+            1,
+            3
+          ],
+          "hull_points": 13,
+          "unreachable_hull_points": 6
+        },
+        {
+          "A": [
+            -2,
+            -1,
+            1
+          ],
+          "doubling": "2",
+          "reachable_three": [
+            -6,
+            -5,
+            -4,
+            -3,
+            -2,
+            -1,
+            0,
+            1,
+            3
+          ],
+          "hull_points": 10,
+          "unreachable_hull_points": 1
+        },
+        {
+          "A": [
+            -3,
+            -2,
+            -1,
+            1
+          ],
+          "doubling": "2",
+          "reachable_three": [
+            -9,
+            -8,
+            -7,
+            -6,
+            -5,
+            -4,
+            -3,
+            -2,
+            -1,
+            0,
+            1,
+            3
+          ],
+          "hull_points": 13,
+          "unreachable_hull_points": 1
+        },
+        {
+          "A": [
+            0,
+            1
+          ],
+          "doubling": "3/2",
+          "reachable_three": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "hull_points": 4,
+          "unreachable_hull_points": 0
+        },
+        {
+          "A": [
+            -3,
+            0,
+            1
+          ],
+          "doubling": "2",
+          "reachable_three": [
+            -9,
+            -6,
+            -5,
+            -3,
+            -2,
+            -1,
+            0,
+            1,
+            2,
+            3
+          ],
+          "hull_points": 13,
+          "unreachable_hull_points": 3
+        },
+        {
+          "A": [
+            -2,
+            0,
+            1
+          ],
+          "doubling": "2",
+          "reachable_three": [
+            -6,
+            -4,
+            -3,
+            -2,
+            -1,
+            0,
+            1,
+            2,
+            3
+          ],
+          "hull_points": 10,
+          "unreachable_hull_points": 1
+        },
+        {
+          "A": [
+            -3,
+            -2,
+            0,
+            1
+          ],
+          "doubling": "9/4",
+          "reachable_three": [
+            -9,
+            -8,
+            -7,
+            -6,
+            -5,
+            -4,
+            -3,
+            -2,
+            -1,
+            0,
+            1,
+            2,
+            3
+          ],
+          "hull_points": 13,
+          "unreachable_hull_points": 0
+        },
+        {
+          "A": [
+            -1,
+            0,
+            1
+          ],
+          "doubling": "5/3",
+          "reachable_three": [
+            -3,
+            -2,
+            -1,
+            0,
+            1,
+            2,
+            3
+          ],
+          "hull_points": 7,
+          "unreachable_hull_points": 0
+        },
+        {
+          "A": [
+            -3,
+            -1,
+            0,
+            1
+          ],
+          "doubling": "2",
+          "reachable_three": [
+            -9,
+            -7,
+            -6,
+            -5,
+            -4,
+            -3,
+            -2,
+            -1,
+            0,
+            1,
+            2,
+            3
+          ],
+          "hull_points": 13,
+          "unreachable_hull_points": 1
+        },
+        {
+          "A": [
+            -2,
+            -1,
+            0,
+            1
+          ],
+          "doubling": "7/4",
+          "reachable_three": [
+            -6,
+            -5,
+            -4,
+            -3,
+            -2,
+            -1,
+            0,
+            1,
+            2,
+            3
+          ],
+          "hull_points": 10,
+          "unreachable_hull_points": 0
+        },
+        {
+          "A": [
+            -3,
+            -2,
+            -1,
+            0,
+            1
+          ],
+          "doubling": "9/5",
+          "reachable_three": [
+            -9,
+            -8,
+            -7,
+            -6,
+            -5,
+            -4,
+            -3,
+            -2,
+            -1,
+            0,
+            1,
+            2,
+            3
+          ],
+          "hull_points": 13,
+          "unreachable_hull_points": 0
+        },
+        {
+          "A": [
+            2
+          ],
+          "doubling": "1",
+          "reachable_three": [
+            6
+          ],
+          "hull_points": 1,
+          "unreachable_hull_points": 0
+        },
+        {
+          "A": [
+            -3,
+            2
+          ],
+          "doubling": "3/2",
+          "reachable_three": [
+            -9,
+            -4,
+            1,
+            6
+          ],
+          "hull_points": 16,
+          "unreachable_hull_points": 12
+        },
+        {
+          "A": [
+            -2,
+            2
+          ],
+          "doubling": "3/2",
+          "reachable_three": [
+            -6,
+            -2,
+            2,
+            6
+          ],
+          "hull_points": 13,
+          "unreachable_hull_points": 9
+        },
+        {
+          "A": [
+            -3,
+            -2,
+            2
+          ],
+          "doubling": "2",
+          "reachable_three": [
+            -9,
+            -8,
+            -7,
+            -6,
+            -4,
+            -3,
+            -2,
+            1,
+            2,
+            6
+          ],
+          "hull_points": 16,
+          "unreachable_hull_points": 6
+        },
+        {
+          "A": [
+            -1,
+            2
+          ],
+          "doubling": "3/2",
+          "reachable_three": [
+            -3,
+            0,
+            3,
+            6
+          ],
+          "hull_points": 10,
+          "unreachable_hull_points": 6
+        },
+        {
+          "A": [
+            -3,
+            -1,
+            2
+          ],
+          "doubling": "2",
+          "reachable_three": [
+            -9,
+            -7,
+            -5,
+            -4,
+            -3,
+            -2,
+            0,
+            1,
+            3,
+            6
+          ],
+          "hull_points": 16,
+          "unreachable_hull_points": 6
+        },
+        {
+          "A": [
+            -2,
+            -1,
+            2
+          ],
+          "doubling": "2",
+          "reachable_three": [
+            -6,
+            -5,
+            -4,
+            -3,
+            -2,
+            -1,
+            0,
+            2,
+            3,
+            6
+          ],
+          "hull_points": 13,
+          "unreachable_hull_points": 3
+        },
+        {
+          "A": [
+            -3,
+            -2,
+            -1,
+            2
+          ],
+          "doubling": "9/4",
+          "reachable_three": [
+            -9,
+            -8,
+            -7,
+            -6,
+            -5,
+            -4,
+            -3,
+            -2,
+            -1,
+            0,
+            1,
+            2,
+            3,
+            6
+          ],
+          "hull_points": 16,
+          "unreachable_hull_points": 2
+        },
+        {
+          "A": [
+            0,
+            2
+          ],
+          "doubling": "3/2",
+          "reachable_three": [
+            0,
+            2,
+            4,
+            6
+          ],
+          "hull_points": 7,
+          "unreachable_hull_points": 3
+        },
+        {
+          "A": [
+            -3,
+            0,
+            2
+          ],
+          "doubling": "2",
+          "reachable_three": [
+            -9,
+            -6,
+            -4,
+            -3,
+            -1,
+            0,
+            1,
+            2,
+            4,
+            6
+          ],
+          "hull_points": 16,
+          "unreachable_hull_points": 6
+        },
+        {
+          "A": [
+            -2,
+            0,
+            2
+          ],
+          "doubling": "5/3",
+          "reachable_three": [
+            -6,
+            -4,
+            -2,
+            0,
+            2,
+            4,
+            6
+          ],
+          "hull_points": 13,
+          "unreachable_hull_points": 6
+        },
+        {
+          "A": [
+            -3,
+            -2,
+            0,
+            2
+          ],
+          "doubling": "9/4",
+          "reachable_three": [
+            -9,
+            -8,
+            -7,
+            -6,
+            -5,
+            -4,
+            -3,
+            -2,
+            -1,
+            0,
+            1,
+            2,
+            4,
+            6
+          ],
+          "hull_points": 16,
+          "unreachable_hull_points": 2
+        },
+        {
+          "A": [
+            -1,
+            0,
+            2
+          ],
+          "doubling": "2",
+          "reachable_three": [
+            -3,
+            -2,
+            -1,
+            0,
+            1,
+            2,
+            3,
+            4,
+            6
+          ],
+          "hull_points": 10,
+          "unreachable_hull_points": 1
+        },
+        {
+          "A": [
+            -3,
+            -1,
+            0,
+            2
+          ],
+          "doubling": "9/4",
+          "reachable_three": [
+            -9,
+            -7,
+            -6,
+            -5,
+            -4,
+            -3,
+            -2,
+            -1,
+            0,
+            1,
+            2,
+            3,
+            4,
+            6
+          ],
+          "hull_points": 16,
+          "unreachable_hull_points": 2
+        },
+        {
+          "A": [
+            -2,
+            -1,
+            0,
+            2
+          ],
+          "doubling": "2",
+          "reachable_three": [
+            -6,
+            -5,
+            -4,
+            -3,
+            -2,
+            -1,
+            0,
+            1,
+            2,
+            3,
+            4,
+            6
+          ],
+          "hull_points": 13,
+          "unreachable_hull_points": 1
+        },
+        {
+          "A": [
+            -3,
+            -2,
+            -1,
+            0,
+            2
+          ],
+          "doubling": "2",
+          "reachable_three": [
+            -9,
+            -8,
+            -7,
+            -6,
+            -5,
+            -4,
+            -3,
+            -2,
+            -1,
+            0,
+            1,
+            2,
+            3,
+            4,
+            6
+          ],
+          "hull_points": 16,
+          "unreachable_hull_points": 1
+        },
+        {
+          "A": [
+            1,
+            2
+          ],
+          "doubling": "3/2",
+          "reachable_three": [
+            3,
+            4,
+            5,
+            6
+          ],
+          "hull_points": 4,
+          "unreachable_hull_points": 0
+        },
+        {
+          "A": [
+            -3,
+            1,
+            2
+          ],
+          "doubling": "2",
+          "reachable_three": [
+            -9,
+            -5,
+            -4,
+            -1,
+            0,
+            1,
+            3,
+            4,
+            5,
+            6
+          ],
+          "hull_points": 16,
+          "unreachable_hull_points": 6
+        },
+        {
+          "A": [
+            -2,
+            1,
+            2
+          ],
+          "doubling": "2",
+          "reachable_three": [
+            -6,
+            -3,
+            -2,
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "hull_points": 13,
+          "unreachable_hull_points": 3
+        },
+        {
+          "A": [
+            -3,
+            -2,
+            1,
+            2
+          ],
+          "doubling": "9/4",
+          "reachable_three": [
+            -9,
+            -8,
+            -7,
+            -6,
+            -5,
+            -4,
+            -3,
+            -2,
+            -1,
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "hull_points": 16,
+          "unreachable_hull_points": 0
+        },
+        {
+          "A": [
+            -1,
+            1,
+            2
+          ],
+          "doubling": "2",
+          "reachable_three": [
+            -3,
+            -1,
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "hull_points": 10,
+          "unreachable_hull_points": 1
+        },
+        {
+          "A": [
+            -3,
+            -1,
+            1,
+            2
+          ],
+          "doubling": "9/4",
+          "reachable_three": [
+            -9,
+            -7,
+            -5,
+            -4,
+            -3,
+            -2,
+            -1,
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "hull_points": 16,
+          "unreachable_hull_points": 2
+        },
+        {
+          "A": [
+            -2,
+            -1,
+            1,
+            2
+          ],
+          "doubling": "9/4",
+          "reachable_three": [
+            -6,
+            -5,
+            -4,
+            -3,
+            -2,
+            -1,
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "hull_points": 13,
+          "unreachable_hull_points": 0
+        },
+        {
+          "A": [
+            -3,
+            -2,
+            -1,
+            1,
+            2
+          ],
+          "doubling": "11/5",
+          "reachable_three": [
+            -9,
+            -8,
+            -7,
+            -6,
+            -5,
+            -4,
+            -3,
+            -2,
+            -1,
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "hull_points": 16,
+          "unreachable_hull_points": 0
+        },
+        {
+          "A": [
+            0,
+            1,
+            2
+          ],
+          "doubling": "5/3",
+          "reachable_three": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "hull_points": 7,
+          "unreachable_hull_points": 0
+        },
+        {
+          "A": [
+            -3,
+            0,
+            1,
+            2
+          ],
+          "doubling": "9/4",
+          "reachable_three": [
+            -9,
+            -6,
+            -5,
+            -4,
+            -3,
+            -2,
+            -1,
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "hull_points": 16,
+          "unreachable_hull_points": 2
+        },
+        {
+          "A": [
+            -2,
+            0,
+            1,
+            2
+          ],
+          "doubling": "2",
+          "reachable_three": [
+            -6,
+            -4,
+            -3,
+            -2,
+            -1,
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "hull_points": 13,
+          "unreachable_hull_points": 1
+        },
+        {
+          "A": [
+            -3,
+            -2,
+            0,
+            1,
+            2
+          ],
+          "doubling": "11/5",
+          "reachable_three": [
+            -9,
+            -8,
+            -7,
+            -6,
+            -5,
+            -4,
+            -3,
+            -2,
+            -1,
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "hull_points": 16,
+          "unreachable_hull_points": 0
+        },
+        {
+          "A": [
+            -1,
+            0,
+            1,
+            2
+          ],
+          "doubling": "7/4",
+          "reachable_three": [
+            -3,
+            -2,
+            -1,
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "hull_points": 10,
+          "unreachable_hull_points": 0
+        },
+        {
+          "A": [
+            -3,
+            -1,
+            0,
+            1,
+            2
+          ],
+          "doubling": "2",
+          "reachable_three": [
+            -9,
+            -7,
+            -6,
+            -5,
+            -4,
+            -3,
+            -2,
+            -1,
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "hull_points": 16,
+          "unreachable_hull_points": 1
+        },
+        {
+          "A": [
+            -2,
+            -1,
+            0,
+            1,
+            2
+          ],
+          "doubling": "9/5",
+          "reachable_three": [
+            -6,
+            -5,
+            -4,
+            -3,
+            -2,
+            -1,
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "hull_points": 13,
+          "unreachable_hull_points": 0
+        },
+        {
+          "A": [
+            -3,
+            -2,
+            -1,
+            0,
+            1,
+            2
+          ],
+          "doubling": "11/6",
+          "reachable_three": [
+            -9,
+            -8,
+            -7,
+            -6,
+            -5,
+            -4,
+            -3,
+            -2,
+            -1,
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ],
+          "hull_points": 16,
+          "unreachable_hull_points": 0
+        },
+        {
+          "A": [
+            3
+          ],
+          "doubling": "1",
+          "reachable_three": [
+            9
+          ],
+          "hull_points": 1,
+          "unreachable_hull_points": 0
+        },
+        {
+          "A": [
+            -3,
+            3
+          ],
+          "doubling": "3/2",
+          "reachable_three": [
+            -9,
+            -3,
+            3,
+            9
+          ],
+          "hull_points": 19,
+          "unreachable_hull_points": 15
+        },
+        {
+          "A": [
+            -2,
+            3
+          ],
+          "doubling": "3/2",
+          "reachable_three": [
+            -6,
+            -1,
+            4,
+            9
+          ],
+          "hull_points": 16,
+          "unreachable_hull_points": 12
+        },
+        {
+          "A": [
+            -3,
+            -2,
+            3
+          ],
+          "doubling": "2",
+          "reachable_three": [
+            -9,
+            -8,
+            -7,
+            -6,
+            -3,
+            -2,
+            -1,
+            3,
+            4,
+            9
+          ],
+          "hull_points": 19,
+          "unreachable_hull_points": 9
+        },
+        {
+          "A": [
+            -1,
+            3
+          ],
+          "doubling": "3/2",
+          "reachable_three": [
+            -3,
+            1,
+            5,
+            9
+          ],
+          "hull_points": 13,
+          "unreachable_hull_points": 9
+        },
+        {
+          "A": [
+            -3,
+            -1,
+            3
+          ],
+          "doubling": "2",
+          "reachable_three": [
+            -9,
+            -7,
+            -5,
+            -3,
+            -1,
+            1,
+            3,
+            5,
+            9
+          ],
+          "hull_points": 19,
+          "unreachable_hull_points": 10
+        },
+        {
+          "A": [
+            -2,
+            -1,
+            3
+          ],
+          "doubling": "2",
+          "reachable_three": [
+            -6,
+            -5,
+            -4,
+            -3,
+            -1,
+            0,
+            1,
+            4,
+            5,
+            9
+          ],
+          "hull_points": 16,
+          "unreachable_hull_points": 6
+        },
+        {
+          "A": [
+            -3,
+            -2,
+            -1,
+            3
+          ],
+          "doubling": "9/4",
+          "reachable_three": [
+            -9,
+            -8,
+            -7,
+            -6,
+            -5,
+            -4,
+            -3,
+            -2,
+            -1,
+            0,
+            1,
+            3,
+            4,
+            5,
+            9
+          ],
+          "hull_points": 19,
+          "unreachable_hull_points": 4
+        },
+        {
+          "A": [
+            0,
+            3
+          ],
+          "doubling": "3/2",
+          "reachable_three": [
+            0,
+            3,
+            6,
+            9
+          ],
+          "hull_points": 10,
+          "unreachable_hull_points": 6
+        },
+        {
+          "A": [
+            -3,
+            0,
+            3
+          ],
+          "doubling": "5/3",
+          "reachable_three": [
+            -9,
+            -6,
+            -3,
+            0,
+            3,
+            6,
+            9
+          ],
+          "hull_points": 19,
+          "unreachable_hull_points": 12
+        },
+        {
+          "A": [
+            -2,
+            0,
+            3
+          ],
+          "doubling": "2",
+          "reachable_three": [
+            -6,
+            -4,
+            -2,
+            -1,
+            0,
+            1,
+            3,
+            4,
+            6,
+            9
+          ],
+          "hull_points": 16,
+          "unreachable_hull_points": 6
+        },
+        {
+          "A": [
+            -3,
+            -2,
+            0,
+            3
+          ],
+          "doubling": "9/4",
+          "reachable_three": [
+            -9,
+            -8,
+            -7,
+            -6,
+            -5,
+            -4,
+            -3,
+            -2,
+            -1,
+            0,
+            1,
+            3,
+            4,
+            6,
+            9
+          ],
+          "hull_points": 19,
+          "unreachable_hull_points": 4
+        },
+        {
+          "A": [
+            -1,
+            0,
+            3
+          ],
+          "doubling": "2",
+          "reachable_three": [
+            -3,
+            -2,
+            -1,
+            0,
+            1,
+            2,
+            3,
+            5,
+            6,
+            9
+          ],
+          "hull_points": 13,
+          "unreachable_hull_points": 3
+        },
+        {
+          "A": [
+            -3,
+            -1,
+            0,
+            3
+          ],
+          "doubling": "9/4",
+          "reachable_three": [
+            -9,
+            -7,
+            -6,
+            -5,
+            -4,
+            -3,
+            -2,
+            -1,
+            0,
+            1,
+            2,
+            3,
+            5,
+            6,
+            9
+          ],
+          "hull_points": 19,
+          "unreachable_hull_points": 4
+        },
+        {
+          "A": [
+            -2,
+            -1,
+            0,
+            3
+          ],
+          "doubling": "9/4",
+          "reachable_three": [
+            -6,
+            -5,
+            -4,
+            -3,
+            -2,
+            -1,
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            9
+          ],
+          "hull_points": 16,
+          "unreachable_hull_points": 2
+        },
+        {
+          "A": [
+            -3,
+            -2,
+            -1,
+            0,
+            3
+          ],
+          "doubling": "11/5",
+          "reachable_three": [
+            -9,
+            -8,
+            -7,
+            -6,
+            -5,
+            -4,
+            -3,
+            -2,
+            -1,
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            9
+          ],
+          "hull_points": 19,
+          "unreachable_hull_points": 2
+        },
+        {
+          "A": [
+            1,
+            3
+          ],
+          "doubling": "3/2",
+          "reachable_three": [
+            3,
+            5,
+            7,
+            9
+          ],
+          "hull_points": 7,
+          "unreachable_hull_points": 3
+        },
+        {
+          "A": [
+            -3,
+            1,
+            3
+          ],
+          "doubling": "2",
+          "reachable_three": [
+            -9,
+            -5,
+            -3,
+            -1,
+            1,
+            3,
+            5,
+            7,
+            9
+          ],
+          "hull_points": 19,
+          "unreachable_hull_points": 10
+        },
+        {
+          "A": [
+            -2,
+            1,
+            3
+          ],
+          "doubling": "2",
+          "reachable_three": [
+            -6,
+            -3,
+            -1,
+            0,
+            2,
+            3,
+            4,
+            5,
+            7,
+            9
+          ],
+          "hull_points": 16,
+          "unreachable_hull_points": 6
+        },
+        {
+          "A": [
+            -3,
+            -2,
+            1,
+            3
+          ],
+          "doubling": "5/2",
+          "reachable_three": [
+            -9,
+            -8,
+            -7,
+            -6,
+            -5,
+            -4,
+            -3,
+            -2,
+            -1,
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            7,
+            9
+          ],
+          "hull_points": 19,
+          "unreachable_hull_points": 2
+        },
+        {
+          "A": [
+            -1,
+            1,
+            3
+          ],
+          "doubling": "5/3",
+          "reachable_three": [
+            -3,
+            -1,
+            1,
+            3,
+            5,
+            7,
+            9
+          ],
+          "hull_points": 13,
+          "unreachable_hull_points": 6
+        },
+        {
+          "A": [
+            -3,
+            -1,
+            1,
+            3
+          ],
+          "doubling": "7/4",
+          "reachable_three": [
+            -9,
+            -7,
+            -5,
+            -3,
+            -1,
+            1,
+            3,
+            5,
+            7,
+            9
+          ],
+          "hull_points": 19,
+          "unreachable_hull_points": 9
+        },
+        {
+          "A": [
+            -2,
+            -1,
+            1,
+            3
+          ],
+          "doubling": "9/4",
+          "reachable_three": [
+            -6,
+            -5,
+            -4,
+            -3,
+            -2,
+            -1,
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            7,
+            9
+          ],
+          "hull_points": 16,
+          "unreachable_hull_points": 2
+        },
+        {
+          "A": [
+            -3,
+            -2,
+            -1,
+            1,
+            3
+          ],
+          "doubling": "11/5",
+          "reachable_three": [
+            -9,
+            -8,
+            -7,
+            -6,
+            -5,
+            -4,
+            -3,
+            -2,
+            -1,
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            7,
+            9
+          ],
+          "hull_points": 19,
+          "unreachable_hull_points": 2
+        },
+        {
+          "A": [
+            0,
+            1,
+            3
+          ],
+          "doubling": "2",
+          "reachable_three": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            9
+          ],
+          "hull_points": 10,
+          "unreachable_hull_points": 1
+        },
+        {
+          "A": [
+            -3,
+            0,
+            1,
+            3
+          ],
+          "doubling": "9/4",
+          "reachable_three": [
+            -9,
+            -6,
+            -5,
+            -3,
+            -2,
+            -1,
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            9
+          ],
+          "hull_points": 19,
+          "unreachable_hull_points": 4
+        },
+        {
+          "A": [
+            -2,
+            0,
+            1,
+            3
+          ],
+          "doubling": "9/4",
+          "reachable_three": [
+            -6,
+            -4,
+            -3,
+            -2,
+            -1,
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            9
+          ],
+          "hull_points": 16,
+          "unreachable_hull_points": 2
+        },
+        {
+          "A": [
+            -3,
+            -2,
+            0,
+            1,
+            3
+          ],
+          "doubling": "12/5",
+          "reachable_three": [
+            -9,
+            -8,
+            -7,
+            -6,
+            -5,
+            -4,
+            -3,
+            -2,
+            -1,
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            9
+          ],
+          "hull_points": 19,
+          "unreachable_hull_points": 1
+        },
+        {
+          "A": [
+            -1,
+            0,
+            1,
+            3
+          ],
+          "doubling": "2",
+          "reachable_three": [
+            -3,
+            -2,
+            -1,
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            9
+          ],
+          "hull_points": 13,
+          "unreachable_hull_points": 1
+        },
+        {
+          "A": [
+            -3,
+            -1,
+            0,
+            1,
+            3
+          ],
+          "doubling": "11/5",
+          "reachable_three": [
+            -9,
+            -7,
+            -6,
+            -5,
+            -4,
+            -3,
+            -2,
+            -1,
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            9
+          ],
+          "hull_points": 19,
+          "unreachable_hull_points": 2
+        },
+        {
+          "A": [
+            -2,
+            -1,
+            0,
+            1,
+            3
+          ],
+          "doubling": "2",
+          "reachable_three": [
+            -6,
+            -5,
+            -4,
+            -3,
+            -2,
+            -1,
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            9
+          ],
+          "hull_points": 16,
+          "unreachable_hull_points": 1
+        },
+        {
+          "A": [
+            -3,
+            -2,
+            -1,
+            0,
+            1,
+            3
+          ],
+          "doubling": "2",
+          "reachable_three": [
+            -9,
+            -8,
+            -7,
+            -6,
+            -5,
+            -4,
+            -3,
+            -2,
+            -1,
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            9
+          ],
+          "hull_points": 19,
+          "unreachable_hull_points": 1
+        },
+        {
+          "A": [
+            2,
+            3
+          ],
+          "doubling": "3/2",
+          "reachable_three": [
+            6,
+            7,
+            8,
+            9
+          ],
+          "hull_points": 4,
+          "unreachable_hull_points": 0
+        },
+        {
+          "A": [
+            -3,
+            2,
+            3
+          ],
+          "doubling": "2",
+          "reachable_three": [
+            -9,
+            -4,
+            -3,
+            1,
+            2,
+            3,
+            6,
+            7,
+            8,
+            9
+          ],
+          "hull_points": 19,
+          "unreachable_hull_points": 9
+        },
+        {
+          "A": [
+            -2,
+            2,
+            3
+          ],
+          "doubling": "2",
+          "reachable_three": [
+            -6,
+            -2,
+            -1,
+            2,
+            3,
+            4,
+            6,
+            7,
+            8,
+            9
+          ],
+          "hull_points": 16,
+          "unreachable_hull_points": 6
+        },
+        {
+          "A": [
+            -3,
+            -2,
+            2,
+            3
+          ],
+          "doubling": "9/4",
+          "reachable_three": [
+            -9,
+            -8,
+            -7,
+            -6,
+            -4,
+            -3,
+            -2,
+            -1,
+            1,
+            2,
+            3,
+            4,
+            6,
+            7,
+            8,
+            9
+          ],
+          "hull_points": 19,
+          "unreachable_hull_points": 3
+        },
+        {
+          "A": [
+            -1,
+            2,
+            3
+          ],
+          "doubling": "2",
+          "reachable_three": [
+            -3,
+            0,
+            1,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9
+          ],
+          "hull_points": 13,
+          "unreachable_hull_points": 3
+        },
+        {
+          "A": [
+            -3,
+            -1,
+            2,
+            3
+          ],
+          "doubling": "5/2",
+          "reachable_three": [
+            -9,
+            -7,
+            -5,
+            -4,
+            -3,
+            -2,
+            -1,
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9
+          ],
+          "hull_points": 19,
+          "unreachable_hull_points": 2
+        },
+        {
+          "A": [
+            -2,
+            -1,
+            2,
+            3
+          ],
+          "doubling": "9/4",
+          "reachable_three": [
+            -6,
+            -5,
+            -4,
+            -3,
+            -2,
+            -1,
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9
+          ],
+          "hull_points": 16,
+          "unreachable_hull_points": 0
+        },
+        {
+          "A": [
+            -3,
+            -2,
+            -1,
+            2,
+            3
+          ],
+          "doubling": "12/5",
+          "reachable_three": [
+            -9,
+            -8,
+            -7,
+            -6,
+            -5,
+            -4,
+            -3,
+            -2,
+            -1,
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9
+          ],
+          "hull_points": 19,
+          "unreachable_hull_points": 0
+        },
+        {
+          "A": [
+            0,
+            2,
+            3
+          ],
+          "doubling": "2",
+          "reachable_three": [
+            0,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9
+          ],
+          "hull_points": 10,
+          "unreachable_hull_points": 1
+        },
+        {
+          "A": [
+            -3,
+            0,
+            2,
+            3
+          ],
+          "doubling": "9/4",
+          "reachable_three": [
+            -9,
+            -6,
+            -4,
+            -3,
+            -1,
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9
+          ],
+          "hull_points": 19,
+          "unreachable_hull_points": 4
+        },
+        {
+          "A": [
+            -2,
+            0,
+            2,
+            3
+          ],
+          "doubling": "9/4",
+          "reachable_three": [
+            -6,
+            -4,
+            -2,
+            -1,
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9
+          ],
+          "hull_points": 16,
+          "unreachable_hull_points": 2
+        },
+        {
+          "A": [
+            -3,
+            -2,
+            0,
+            2,
+            3
+          ],
+          "doubling": "13/5",
+          "reachable_three": [
+            -9,
+            -8,
+            -7,
+            -6,
+            -5,
+            -4,
+            -3,
+            -2,
+            -1,
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9
+          ],
+          "hull_points": 19,
+          "unreachable_hull_points": 0
+        },
+        {
+          "A": [
+            -1,
+            0,
+            2,
+            3
+          ],
+          "doubling": "9/4",
+          "reachable_three": [
+            -3,
+            -2,
+            -1,
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9
+          ],
+          "hull_points": 13,
+          "unreachable_hull_points": 0
+        },
+        {
+          "A": [
+            -3,
+            -1,
+            0,
+            2,
+            3
+          ],
+          "doubling": "12/5",
+          "reachable_three": [
+            -9,
+            -7,
+            -6,
+            -5,
+            -4,
+            -3,
+            -2,
+            -1,
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9
+          ],
+          "hull_points": 19,
+          "unreachable_hull_points": 1
+        },
+        {
+          "A": [
+            -2,
+            -1,
+            0,
+            2,
+            3
+          ],
+          "doubling": "11/5",
+          "reachable_three": [
+            -6,
+            -5,
+            -4,
+            -3,
+            -2,
+            -1,
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9
+          ],
+          "hull_points": 16,
+          "unreachable_hull_points": 0
+        },
+        {
+          "A": [
+            -3,
+            -2,
+            -1,
+            0,
+            2,
+            3
+          ],
+          "doubling": "13/6",
+          "reachable_three": [
+            -9,
+            -8,
+            -7,
+            -6,
+            -5,
+            -4,
+            -3,
+            -2,
+            -1,
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9
+          ],
+          "hull_points": 19,
+          "unreachable_hull_points": 0
+        },
+        {
+          "A": [
+            1,
+            2,
+            3
+          ],
+          "doubling": "5/3",
+          "reachable_three": [
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9
+          ],
+          "hull_points": 7,
+          "unreachable_hull_points": 0
+        },
+        {
+          "A": [
+            -3,
+            1,
+            2,
+            3
+          ],
+          "doubling": "9/4",
+          "reachable_three": [
+            -9,
+            -5,
+            -4,
+            -3,
+            -1,
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9
+          ],
+          "hull_points": 19,
+          "unreachable_hull_points": 4
+        },
+        {
+          "A": [
+            -2,
+            1,
+            2,
+            3
+          ],
+          "doubling": "9/4",
+          "reachable_three": [
+            -6,
+            -3,
+            -2,
+            -1,
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9
+          ],
+          "hull_points": 16,
+          "unreachable_hull_points": 2
+        },
+        {
+          "A": [
+            -3,
+            -2,
+            1,
+            2,
+            3
+          ],
+          "doubling": "12/5",
+          "reachable_three": [
+            -9,
+            -8,
+            -7,
+            -6,
+            -5,
+            -4,
+            -3,
+            -2,
+            -1,
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9
+          ],
+          "hull_points": 19,
+          "unreachable_hull_points": 0
+        },
+        {
+          "A": [
+            -1,
+            1,
+            2,
+            3
+          ],
+          "doubling": "2",
+          "reachable_three": [
+            -3,
+            -1,
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9
+          ],
+          "hull_points": 13,
+          "unreachable_hull_points": 1
+        },
+        {
+          "A": [
+            -3,
+            -1,
+            1,
+            2,
+            3
+          ],
+          "doubling": "11/5",
+          "reachable_three": [
+            -9,
+            -7,
+            -5,
+            -4,
+            -3,
+            -2,
+            -1,
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9
+          ],
+          "hull_points": 19,
+          "unreachable_hull_points": 2
+        },
+        {
+          "A": [
+            -2,
+            -1,
+            1,
+            2,
+            3
+          ],
+          "doubling": "11/5",
+          "reachable_three": [
+            -6,
+            -5,
+            -4,
+            -3,
+            -2,
+            -1,
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9
+          ],
+          "hull_points": 16,
+          "unreachable_hull_points": 0
+        },
+        {
+          "A": [
+            -3,
+            -2,
+            -1,
+            1,
+            2,
+            3
+          ],
+          "doubling": "13/6",
+          "reachable_three": [
+            -9,
+            -8,
+            -7,
+            -6,
+            -5,
+            -4,
+            -3,
+            -2,
+            -1,
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9
+          ],
+          "hull_points": 19,
+          "unreachable_hull_points": 0
+        },
+        {
+          "A": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "doubling": "7/4",
+          "reachable_three": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9
+          ],
+          "hull_points": 10,
+          "unreachable_hull_points": 0
+        },
+        {
+          "A": [
+            -3,
+            0,
+            1,
+            2,
+            3
+          ],
+          "doubling": "11/5",
+          "reachable_three": [
+            -9,
+            -6,
+            -5,
+            -4,
+            -3,
+            -2,
+            -1,
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9
+          ],
+          "hull_points": 19,
+          "unreachable_hull_points": 2
+        },
+        {
+          "A": [
+            -2,
+            0,
+            1,
+            2,
+            3
+          ],
+          "doubling": "2",
+          "reachable_three": [
+            -6,
+            -4,
+            -3,
+            -2,
+            -1,
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9
+          ],
+          "hull_points": 16,
+          "unreachable_hull_points": 1
+        },
+        {
+          "A": [
+            -3,
+            -2,
+            0,
+            1,
+            2,
+            3
+          ],
+          "doubling": "13/6",
+          "reachable_three": [
+            -9,
+            -8,
+            -7,
+            -6,
+            -5,
+            -4,
+            -3,
+            -2,
+            -1,
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9
+          ],
+          "hull_points": 19,
+          "unreachable_hull_points": 0
+        },
+        {
+          "A": [
+            -1,
+            0,
+            1,
+            2,
+            3
+          ],
+          "doubling": "9/5",
+          "reachable_three": [
+            -3,
+            -2,
+            -1,
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9
+          ],
+          "hull_points": 13,
+          "unreachable_hull_points": 0
+        },
+        {
+          "A": [
+            -3,
+            -1,
+            0,
+            1,
+            2,
+            3
+          ],
+          "doubling": "2",
+          "reachable_three": [
+            -9,
+            -7,
+            -6,
+            -5,
+            -4,
+            -3,
+            -2,
+            -1,
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9
+          ],
+          "hull_points": 19,
+          "unreachable_hull_points": 1
+        },
+        {
+          "A": [
+            -2,
+            -1,
+            0,
+            1,
+            2,
+            3
+          ],
+          "doubling": "11/6",
+          "reachable_three": [
+            -6,
+            -5,
+            -4,
+            -3,
+            -2,
+            -1,
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9
+          ],
+          "hull_points": 16,
+          "unreachable_hull_points": 0
+        },
+        {
+          "A": [
+            -3,
+            -2,
+            -1,
+            0,
+            1,
+            2,
+            3
+          ],
+          "doubling": "13/7",
+          "reachable_three": [
+            -9,
+            -8,
+            -7,
+            -6,
+            -5,
+            -4,
+            -3,
+            -2,
+            -1,
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9
+          ],
+          "hull_points": 19,
+          "unreachable_hull_points": 0
+        }
+      ],
+      "witness": {
+        "A": [
+          -3,
+          3
+        ],
+        "doubling": "3/2",
+        "reachable_three": [
+          -9,
+          -3,
+          3,
+          9
+        ],
+        "hull_points": 19,
+        "unreachable_hull_points": 15
+      },
+      "conclusion": "With increments {-3, 3}, three steps reach four points; the integer interval hull contains nineteen."
+    },
+    {
+      "id": "entropy",
+      "title": "Low entropy does not remove a rare failure",
+      "source_ids": [
+        "tao-sumsets"
+      ],
+      "question": "Can uncertainty or average error replace a hard support bound?",
+      "scope": "Constructed two-point distributions. Probabilities and moments are exact; displayed logarithms use floating point. This is our falsifier, not a result attributed to Tao.",
+      "next_test": "Compare mean, quantile and support contracts on the same held-out perception errors.",
+      "kill_criterion": "Reject any hard-safety implication based only on decreasing entropy or mean-square error.",
+      "status": "completed",
+      "evidence": "Exact discrete distribution + approximate entropy",
+      "cases": 16,
+      "rows": [
+        {
+          "k": 1,
+          "tail_probability": "1/2",
+          "mean_square": "50",
+          "entropy_bits_approx": 1.0,
+          "max_error": 10
+        },
+        {
+          "k": 2,
+          "tail_probability": "1/4",
+          "mean_square": "25",
+          "entropy_bits_approx": 0.8112781244591328,
+          "max_error": 10
+        },
+        {
+          "k": 3,
+          "tail_probability": "1/8",
+          "mean_square": "25/2",
+          "entropy_bits_approx": 0.5435644431995964,
+          "max_error": 10
+        },
+        {
+          "k": 4,
+          "tail_probability": "1/16",
+          "mean_square": "25/4",
+          "entropy_bits_approx": 0.3372900666170139,
+          "max_error": 10
+        },
+        {
+          "k": 5,
+          "tail_probability": "1/32",
+          "mean_square": "25/8",
+          "entropy_bits_approx": 0.20062232431271465,
+          "max_error": 10
+        },
+        {
+          "k": 6,
+          "tail_probability": "1/64",
+          "mean_square": "25/16",
+          "entropy_bits_approx": 0.11611507530476972,
+          "max_error": 10
+        },
+        {
+          "k": 7,
+          "tail_probability": "1/128",
+          "mean_square": "25/32",
+          "entropy_bits_approx": 0.06591441234324169,
+          "max_error": 10
+        },
+        {
+          "k": 8,
+          "tail_probability": "1/256",
+          "mean_square": "25/64",
+          "entropy_bits_approx": 0.03687450625387198,
+          "max_error": 10
+        },
+        {
+          "k": 9,
+          "tail_probability": "1/512",
+          "mean_square": "25/128",
+          "entropy_bits_approx": 0.020393135236084953,
+          "max_error": 10
+        },
+        {
+          "k": 10,
+          "tail_probability": "1/1024",
+          "mean_square": "25/256",
+          "entropy_bits_approx": 0.011173818721219527,
+          "max_error": 10
+        },
+        {
+          "k": 11,
+          "tail_probability": "1/2048",
+          "mean_square": "25/512",
+          "entropy_bits_approx": 0.006075362677284398,
+          "max_error": 10
+        },
+        {
+          "k": 12,
+          "tail_probability": "1/4096",
+          "mean_square": "25/1024",
+          "entropy_bits_approx": 0.0032818649698048933,
+          "max_error": 10
+        },
+        {
+          "k": 13,
+          "tail_probability": "1/8192",
+          "mean_square": "25/2048",
+          "entropy_bits_approx": 0.001763013547630436,
+          "max_error": 10
+        },
+        {
+          "k": 14,
+          "tail_probability": "1/16384",
+          "mean_square": "25/4096",
+          "entropy_bits_approx": 0.0009425446174581648,
+          "max_error": 10
+        },
+        {
+          "k": 15,
+          "tail_probability": "1/32768",
+          "mean_square": "25/8192",
+          "entropy_bits_approx": 0.000501790558681815,
+          "max_error": 10
+        },
+        {
+          "k": 16,
+          "tail_probability": "1/65536",
+          "mean_square": "25/16384",
+          "entropy_bits_approx": 0.00026615423635777775,
+          "max_error": 10
+        }
+      ],
+      "conclusion": "Entropy and mean-square error decrease while the worst possible error stays at 10."
+    },
+    {
+      "id": "tropical",
+      "title": "Feasible does not mean optimal",
+      "source_ids": [
+        "oai-tropical"
+      ],
+      "question": "Can a checker keep feasibility separate from objective quality?",
+      "scope": "Exact arithmetic on the upstream displayed witness and 17 common translations. No execution replay of the elimination algorithm; grid optimality is finite only.",
+      "next_test": "Require separate feasibility and bound certificates from one real allocation consumer.",
+      "kill_criterion": "Reject an optimality claim when a feasible point with smaller cost is supplied, even if the solver terminated.",
+      "status": "completed",
+      "evidence": "Pinned-source witness recomputation",
+      "cases": 186,
+      "rows": [
+        {
+          "anchor": 0,
+          "output": [
+            1,
+            0,
+            0
+          ],
+          "better": [
+            0,
+            -1,
+            0
+          ],
+          "cost_gap": 1
+        },
+        {
+          "anchor": 1,
+          "output": [
+            2,
+            1,
+            1
+          ],
+          "better": [
+            1,
+            0,
+            1
+          ],
+          "cost_gap": 1
+        },
+        {
+          "anchor": 2,
+          "output": [
+            3,
+            2,
+            2
+          ],
+          "better": [
+            2,
+            1,
+            2
+          ],
+          "cost_gap": 1
+        },
+        {
+          "anchor": 3,
+          "output": [
+            4,
+            3,
+            3
+          ],
+          "better": [
+            3,
+            2,
+            3
+          ],
+          "cost_gap": 1
+        },
+        {
+          "anchor": 4,
+          "output": [
+            5,
+            4,
+            4
+          ],
+          "better": [
+            4,
+            3,
+            4
+          ],
+          "cost_gap": 1
+        },
+        {
+          "anchor": 5,
+          "output": [
+            6,
+            5,
+            5
+          ],
+          "better": [
+            5,
+            4,
+            5
+          ],
+          "cost_gap": 1
+        },
+        {
+          "anchor": 6,
+          "output": [
+            7,
+            6,
+            6
+          ],
+          "better": [
+            6,
+            5,
+            6
+          ],
+          "cost_gap": 1
+        },
+        {
+          "anchor": 7,
+          "output": [
+            8,
+            7,
+            7
+          ],
+          "better": [
+            7,
+            6,
+            7
+          ],
+          "cost_gap": 1
+        },
+        {
+          "anchor": 8,
+          "output": [
+            9,
+            8,
+            8
+          ],
+          "better": [
+            8,
+            7,
+            8
+          ],
+          "cost_gap": 1
+        },
+        {
+          "anchor": 9,
+          "output": [
+            10,
+            9,
+            9
+          ],
+          "better": [
+            9,
+            8,
+            9
+          ],
+          "cost_gap": 1
+        },
+        {
+          "anchor": 10,
+          "output": [
+            11,
+            10,
+            10
+          ],
+          "better": [
+            10,
+            9,
+            10
+          ],
+          "cost_gap": 1
+        },
+        {
+          "anchor": 11,
+          "output": [
+            12,
+            11,
+            11
+          ],
+          "better": [
+            11,
+            10,
+            11
+          ],
+          "cost_gap": 1
+        },
+        {
+          "anchor": 12,
+          "output": [
+            13,
+            12,
+            12
+          ],
+          "better": [
+            12,
+            11,
+            12
+          ],
+          "cost_gap": 1
+        },
+        {
+          "anchor": 13,
+          "output": [
+            14,
+            13,
+            13
+          ],
+          "better": [
+            13,
+            12,
+            13
+          ],
+          "cost_gap": 1
+        },
+        {
+          "anchor": 14,
+          "output": [
+            15,
+            14,
+            14
+          ],
+          "better": [
+            14,
+            13,
+            14
+          ],
+          "cost_gap": 1
+        },
+        {
+          "anchor": 15,
+          "output": [
+            16,
+            15,
+            15
+          ],
+          "better": [
+            15,
+            14,
+            15
+          ],
+          "cost_gap": 1
+        },
+        {
+          "anchor": 16,
+          "output": [
+            17,
+            16,
+            16
+          ],
+          "better": [
+            16,
+            15,
+            16
+          ],
+          "cost_gap": 1
+        }
+      ],
+      "conclusion": "Both displayed points are feasible, but their costs are 1 and 0. The strict gap survives every tested common translation.",
+      "constraints": [
+        "max(x, y) >= z",
+        "x >= max(y + 1, z - 2)"
+      ],
+      "objective": "minimize x",
+      "finite_grid_minimum": 0,
+      "negative_control": {
+        "point": [
+          -1,
+          -1,
+          0
+        ],
+        "feasible": false
+      }
+    },
+    {
+      "id": "scheduling",
+      "title": "A lower bound is not a schedule",
+      "source_ids": [
+        "oai-scheduling",
+        "oai-tropical"
+      ],
+      "question": "When do workload and critical-path bounds miss the optimum?",
+      "scope": "All 1,024 forward-edge DAGs on five labeled unit jobs, plus one eight-job fixture, on three identical machines. Offline, no release times, WCET, transport, or RTOS model.",
+      "next_test": "Add release times and bounded transport costs, then compare independently checked schedules against the exact small-instance oracle.",
+      "kill_criterion": "Reject a quality claim unless feasibility is checked and its attained makespan matches a sound bound.",
+      "status": "completed",
+      "evidence": "Exhaustive finite search + separate feasibility checker",
+      "cases": 1025,
+      "conclusion": "The elementary bound is loose on 2 of 1,024 five-job DAGs. The layered eight-job fixture has lower bound 3 and optimum 4.",
+      "loose_bound_cases": 2,
+      "examples": [
+        {
+          "edges": [
+            [
+              0,
+              1
+            ],
+            [
+              0,
+              2
+            ],
+            [
+              0,
+              3
+            ],
+            [
+              0,
+              4
+            ]
+          ],
+          "lower_bound": 2,
+          "optimum": 3,
+          "slots": [
+            0,
+            1,
+            2,
+            2,
+            2
+          ]
+        },
+        {
+          "edges": [
+            [
+              0,
+              4
+            ],
+            [
+              1,
+              4
+            ],
+            [
+              2,
+              4
+            ],
+            [
+              3,
+              4
+            ]
+          ],
+          "lower_bound": 2,
+          "optimum": 3,
+          "slots": [
+            0,
+            1,
+            1,
+            1,
+            2
+          ]
+        }
+      ],
+      "witness": {
+        "n": 8,
+        "edges": [
+          [
+            0,
+            4
+          ],
+          [
+            0,
+            5
+          ],
+          [
+            0,
+            6
+          ],
+          [
+            0,
+            7
+          ],
+          [
+            1,
+            4
+          ],
+          [
+            1,
+            5
+          ],
+          [
+            1,
+            6
+          ],
+          [
+            1,
+            7
+          ],
+          [
+            2,
+            4
+          ],
+          [
+            2,
+            5
+          ],
+          [
+            2,
+            6
+          ],
+          [
+            2,
+            7
+          ],
+          [
+            3,
+            4
+          ],
+          [
+            3,
+            5
+          ],
+          [
+            3,
+            6
+          ],
+          [
+            3,
+            7
+          ]
+        ],
+        "slots": [
+          0,
+          1,
+          1,
+          1,
+          2,
+          3,
+          3,
+          3
+        ],
+        "lower_bound": 3,
+        "optimum": 4,
+        "stronger_bound": "Four jobs in each of two nonoverlapping layers require at least two slots per layer."
+      }
+    }
+  ],
+  "sha256": "dc0c3cef9521c142febc0e61013a3d6ba8fa8f303f03562e86be09485ba1fdde"
+}

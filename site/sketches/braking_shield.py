@@ -11,6 +11,13 @@ from __future__ import annotations
 
 import math
 
+from ctrl.robotics.contact_cbf import (
+    CentroidalQuadParams,
+    directional_cbf,
+    lorentz_cbf_safety_filter,
+    quad_contact_forces,
+    safe_decel_max,
+)
 from manim import (
     BLUE_C,
     DOWN,
@@ -37,14 +44,6 @@ from manim import (
     Write,
     always_redraw,
     linear,
-)
-
-from ctrl.robotics.contact_cbf import (
-    CentroidalQuadParams,
-    directional_cbf,
-    quad_contact_forces,
-    safe_decel_max,
-    lorentz_cbf_safety_filter,
 )
 
 PARAMS = CentroidalQuadParams(m=12.0, g=9.81, h_g=0.30, w_x=0.20, w_y=0.12, mu=0.60)
@@ -134,7 +133,11 @@ class BrakingShield(Scene):
             torso.move_to([cx, GROUND_Y + hip_h, 0])
             legs = VGroup(
                 *[
-                    Line([cx + s * body_w / 2, GROUND_Y + hip_h, 0], [cx + s * body_w / 2, GROUND_Y, 0], color=color)
+                    Line(
+                        [cx + s * body_w / 2, GROUND_Y + hip_h, 0],
+                        [cx + s * body_w / 2, GROUND_Y, 0],
+                        color=color,
+                    )
                     for s in (-1, 1)
                 ]
             )
@@ -162,7 +165,11 @@ class BrakingShield(Scene):
             for foot_x, (fx, fz) in ((cx - body_w / 2, rear), (cx + body_w / 2, front)):
                 base = [foot_x, GROUND_Y, 0]
                 for sgn in (-1, 1):
-                    tip = [foot_x + sgn * cone_len * math.sin(half), GROUND_Y + cone_len * math.cos(half), 0]
+                    tip = [
+                        foot_x + sgn * cone_len * math.sin(half),
+                        GROUND_Y + cone_len * math.cos(half),
+                        0,
+                    ]
                     g.add(DashedLine(base, tip, color=GREEN_C, stroke_width=2, dash_length=0.06))
                 k = 0.011
                 g.add(
@@ -201,11 +208,17 @@ class BrakingShield(Scene):
 
         def live_readout() -> VGroup:
             row = at(t.get_value())
-            return VGroup(
-                Text(f"t = {row['t']:.2f} s", font_size=18),
-                Text(f"x = {row['x']:.3f} m    v = {row['v']:.2f} m/s", font_size=18),
-                Text(f"h = {row['h']:.3f}    λ* = {row['lam']:.2f}", font_size=18, color=YELLOW_C),
-            ).arrange(DOWN, aligned_edge=LEFT, buff=0.08).next_to(panel, DOWN, aligned_edge=LEFT, buff=0.3)
+            return (
+                VGroup(
+                    Text(f"t = {row['t']:.2f} s", font_size=18),
+                    Text(f"x = {row['x']:.3f} m    v = {row['v']:.2f} m/s", font_size=18),
+                    Text(
+                        f"h = {row['h']:.3f}    λ* = {row['lam']:.2f}", font_size=18, color=YELLOW_C
+                    ),
+                )
+                .arrange(DOWN, aligned_edge=LEFT, buff=0.08)
+                .next_to(panel, DOWN, aligned_edge=LEFT, buff=0.3)
+            )
 
         readout = always_redraw(live_readout)
 
@@ -232,7 +245,9 @@ class BrakingShield(Scene):
         def trace(axes: Axes, key: str, color):
             def f():
                 tv = max(t.get_value(), 2 * DT)
-                return axes.plot(lambda s: at(s)[key], x_range=[0, tv, 0.01], color=color, stroke_width=3)
+                return axes.plot(
+                    lambda s: at(s)[key], x_range=[0, tv, 0.01], color=color, stroke_width=3
+                )
 
             return always_redraw(f)
 

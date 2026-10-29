@@ -1,0 +1,202 @@
+{
+  "id": "proof-dependencies",
+  "title": "What connects a proof to a robot?",
+  "category": "Dependencies / Tao Blueprint inspiration",
+  "seed": 144,
+  "source_derivation": {
+    "id": "math-explainers-144",
+    "sha256": "dc0c3cef9521c142febc0e61013a3d6ba8fa8f303f03562e86be09485ba1fdde"
+  },
+  "summary": "Make the checked layers and the missing bridges visible.",
+  "items": [
+    {
+      "id": "model",
+      "type": "box",
+      "label": "Stated model",
+      "x": 65,
+      "y": 170,
+      "w": 250,
+      "h": 90,
+      "color": "ink"
+    },
+    {
+      "id": "math",
+      "type": "box",
+      "label": "Mathematical proof",
+      "x": 430,
+      "y": 170,
+      "w": 250,
+      "h": 90,
+      "color": "ink"
+    },
+    {
+      "id": "code",
+      "type": "box",
+      "label": "Executable behavior",
+      "x": 795,
+      "y": 170,
+      "w": 250,
+      "h": 90,
+      "color": "ink"
+    },
+    {
+      "id": "a",
+      "type": "arrow",
+      "points": [
+        [
+          325,
+          215
+        ],
+        [
+          418,
+          215
+        ]
+      ],
+      "label": "",
+      "color": "ink"
+    },
+    {
+      "id": "b",
+      "type": "arrow",
+      "points": [
+        [
+          690,
+          215
+        ],
+        [
+          783,
+          215
+        ]
+      ],
+      "label": "refinement",
+      "color": "orange"
+    },
+    {
+      "id": "timing",
+      "type": "box",
+      "label": "Timing + actuation",
+      "x": 795,
+      "y": 385,
+      "w": 250,
+      "h": 90,
+      "color": "orange"
+    },
+    {
+      "id": "c",
+      "type": "arrow",
+      "points": [
+        [
+          920,
+          272
+        ],
+        [
+          920,
+          373
+        ]
+      ],
+      "label": "",
+      "color": "orange"
+    },
+    {
+      "id": "plant",
+      "type": "box",
+      "label": "Physical bounds",
+      "x": 430,
+      "y": 385,
+      "w": 250,
+      "h": 90,
+      "color": "orange"
+    },
+    {
+      "id": "d",
+      "type": "arrow",
+      "points": [
+        [
+          783,
+          430
+        ],
+        [
+          692,
+          430
+        ]
+      ],
+      "label": "",
+      "color": "orange"
+    },
+    {
+      "id": "scope",
+      "type": "note",
+      "label": "A checked claim has a boundary.",
+      "x": 65,
+      "y": 390,
+      "w": 310,
+      "h": 90,
+      "fontSize": 25
+    },
+    {
+      "id": "legend",
+      "type": "label",
+      "label": "Green: checked statement   ·   Orange: separate obligation",
+      "x": 560,
+      "y": 550,
+      "color": "muted",
+      "fontSize": 25
+    }
+  ],
+  "steps": [
+    {
+      "title": "Start with a statement",
+      "caption": "A theorem has explicit hypotheses and a precise conclusion.",
+      "show": [
+        "model"
+      ],
+      "focus": [],
+      "durationMs": 5500
+    },
+    {
+      "title": "Check the mathematical implication",
+      "caption": "Lean checks a proof of that statement. SymPy and finite tests provide other kinds of evidence.",
+      "show": [
+        "model",
+        "math",
+        "a"
+      ],
+      "focus": [],
+      "durationMs": 5500
+    },
+    {
+      "title": "Connect the executable",
+      "caption": "A declaration-name link alone does not prove the implementation refines the model.",
+      "show": [
+        "model",
+        "math",
+        "a",
+        "code",
+        "b"
+      ],
+      "focus": [
+        "code",
+        "b"
+      ],
+      "durationMs": 5500
+    },
+    {
+      "title": "Expose the remaining dependencies",
+      "caption": "Timing, command application and physical bounds need their own evidence. This drawing is a dependency map inspired by Tao’s Blueprint presentation, not a claim that those bridges are proved.",
+      "show": [
+        "model",
+        "math",
+        "a",
+        "code",
+        "b",
+        "timing",
+        "c",
+        "plant",
+        "d",
+        "scope"
+      ],
+      "focus": [],
+      "durationMs": 5500
+    }
+  ]
+}
