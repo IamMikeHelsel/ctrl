@@ -1,0 +1,88 @@
+/* Theorem explainer pages. Builds on ../style.css tokens; sans-serif throughout. */
+:root { --warn-line: #a8651d; }
+@media (prefers-color-scheme: dark) { :root { --warn-line: #e0a35e; } }
+.ex-page { max-width: 880px; }
+.ex-walkthrough { display:block; width:100%; height:840px; border:1px solid var(--border); border-radius:8px; margin:1.3rem 0; background:#fffef9; }
+@media(max-width:600px){.ex-walkthrough{height:980px}}
+.ex-body > section, .ex-body > h2 { scroll-margin-top: 1rem; }
+.ex-body h2 { margin-top: 3rem; padding-top: 1.25rem; border-top: 1px solid var(--border); }
+.ex-body h2:first-child { margin-top: 0; border-top: 0; padding-top: 0; }
+.ex-body p, .ex-body li { max-width: 68ch; }
+.ex-body ol, .ex-body ul { padding-left: 1.3rem; }
+.ex-body li { margin-bottom: 0.5rem; }
+.ex-body table { min-width:0; }
+.ex-body .table-wrap { max-width:100%; overflow-x:auto; }
+
+/* Math: native MathML, rendered at build time. Sans to match the animations. */
+math { font-family: "Inter", var(--sans), "STIX Two Math", math; font-size: 1.05em; }
+/* Browsers map single-letter <mi> to Unicode math-italic codepoints, which sans text fonts
+   lack, so they fall back to a serif math font. Keep the letter and italicize it instead. */
+math mi { text-transform: none; font-style: italic; }
+math mi[mathvariant="normal"] { font-style: normal; }
+/* Stretchy brackets need a font with an OpenType MATH table; text fonts have none. */
+math mo[fence="true"], math mo[stretchy="true"] {
+  font-family: "DejaVu Math TeX Gyre", "STIX Two Math", "Cambria Math", "Latin Modern Math", math;
+}
+.math-display { margin: 1.1rem 0 1.3rem; padding: 0.9rem 1rem; overflow-x: auto;
+  background: var(--surface); border: 1px solid var(--border); border-radius: 6px; }
+.math-display math { font-size: 1.18em; }
+.katex { white-space: nowrap; }
+
+/* The precise statement. */
+.theorem-box { margin: 1.25rem 0; padding: 1.1rem 1.25rem; background: var(--surface);
+  border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 6px; }
+.theorem-box .label { margin-bottom: 0.35rem; }
+.theorem-box .math-display { background: transparent; border: 0; padding: 0.25rem 0; margin: 0.5rem 0; }
+.theorem-box p:last-child { margin-bottom: 0; }
+
+.ex-proof-strip { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.3rem 0.8rem;
+  font-size: 0.88rem; color: var(--muted); margin: 0 0 1.25rem; }
+.ex-proof-strip .label { margin: 0; }
+.ex-proof-strip ul { display: contents; list-style: none; }
+.ex-proof-strip li { margin: 0; }
+
+/* Proof steps: numbered, each with a one-line claim then detail. */
+.steps { counter-reset: step; list-style: none; padding-left: 0 !important; }
+.steps > li { counter-increment: step; position: relative; padding-left: 2.4rem; margin-bottom: 1.1rem; }
+.steps > li::before { content: counter(step); position: absolute; left: 0; top: 0.05rem;
+  width: 1.6rem; height: 1.6rem; border-radius: 50%; background: var(--accent-soft);
+  color: var(--accent); font: 600 0.82rem/1.6rem var(--mono); text-align: center; }
+
+/* Figures. */
+.ex-figure { margin: 1.5rem 0 2rem; }
+.ex-figure video, .ex-figure img, .ex-figure svg { display: block; width: 100%; height: auto;
+  border-radius: 8px; border: 1px solid var(--border); background: #0d1513; }
+.ex-figure video { aspect-ratio: 16 / 9; }
+.ex-figure figcaption { font-size: 0.88rem; color: var(--muted); margin-top: 0.65rem; max-width: 68ch; }
+
+/* Inline SVG diagrams follow the theme. */
+.diagram { background: var(--surface) !important; }
+.diagram text { font-family: var(--sans); fill: var(--text); }
+.diagram .muted-text { fill: var(--muted); }
+.diagram .axis { stroke: var(--border); stroke-width: 1; }
+.diagram .level { fill: none; stroke: var(--accent); stroke-width: 1.4; opacity: 0.75; }
+.diagram .level.strong { stroke-width: 2.2; opacity: 1; }
+.diagram .euclid { fill: none; stroke: var(--warn-line); stroke-width: 1.4; stroke-dasharray: 5 4; }
+.diagram .path { fill: none; stroke: var(--text); stroke-width: 1.3; opacity: 0.55; }
+.diagram .pt { fill: var(--text); }
+.diagram .pt.start { fill: var(--accent); }
+.diagram .warn { fill: var(--warn-line); }
+
+/* Applications: compact two-column cards. */
+.applies { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr));
+  gap: 0.9rem; margin: 1rem 0; }
+.applies > div { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1rem 1.1rem; }
+.applies h3 { font-size: 1rem; margin-bottom: 0.4rem; }
+.applies p { font-size: 0.93rem; margin: 0; }
+
+.limits li::marker { color: var(--muted); }
+
+/* Index cards. */
+.ex-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 1rem; }
+.ex-card { display: block; text-decoration: none; color: inherit; background: var(--surface);
+  border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+.ex-card:hover { border-color: var(--accent); }
+.ex-card img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; }
+.ex-card .label, .ex-card h3, .ex-card p { margin-left: 1.1rem; margin-right: 1.1rem; }
+.ex-card .label { margin-top: 1rem; }
+.ex-card p { color: var(--muted); font-size: 0.92rem; margin-bottom: 1.1rem; }

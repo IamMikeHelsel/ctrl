@@ -1,0 +1,144 @@
+{
+  "id": "saturation-order",
+  "title": "Can these operations be regrouped?",
+  "category": "Algebra / finite countermodel",
+  "seed": 145,
+  "source_derivation": {
+    "id": "math-explainers-144",
+    "sha256": "dc0c3cef9521c142febc0e61013a3d6ba8fa8f303f03562e86be09485ba1fdde"
+  },
+  "summary": "Clipping is idempotent on the tested inputs, but saturated addition is not associative.",
+  "items": [
+    {
+      "id": "rule",
+      "type": "label",
+      "label": "clip to [−1, 1] after each addition",
+      "x": 560,
+      "y": 145,
+      "color": "ink",
+      "fontSize": 27
+    },
+    {
+      "id": "inputs",
+      "type": "box",
+      "label": "a=-1, b=-1, c=1",
+      "x": 360,
+      "y": 190,
+      "w": 400,
+      "h": 90,
+      "color": "ink"
+    },
+    {
+      "id": "l",
+      "type": "arrow",
+      "points": [
+        [
+          470,
+          290
+        ],
+        [
+          280,
+          345
+        ]
+      ],
+      "label": "",
+      "color": "ink"
+    },
+    {
+      "id": "r",
+      "type": "arrow",
+      "points": [
+        [
+          650,
+          290
+        ],
+        [
+          840,
+          345
+        ]
+      ],
+      "label": "",
+      "color": "ink"
+    },
+    {
+      "id": "left",
+      "type": "box",
+      "label": "clip(clip(a+b)+c) = 0",
+      "x": 80,
+      "y": 365,
+      "w": 430,
+      "h": 90,
+      "color": "ink"
+    },
+    {
+      "id": "right",
+      "type": "box",
+      "label": "clip(a+clip(b+c)) = -1",
+      "x": 610,
+      "y": 365,
+      "w": 430,
+      "h": 90,
+      "color": "ink"
+    },
+    {
+      "id": "lesson",
+      "type": "note",
+      "label": "Same inputs. Different applied command.",
+      "x": 280,
+      "y": 505,
+      "w": 560,
+      "h": 75,
+      "fontSize": 25
+    }
+  ],
+  "steps": [
+    {
+      "title": "State the operator",
+      "caption": "This operator adds two numbers and clips the result.",
+      "show": [
+        "rule"
+      ],
+      "focus": [],
+      "durationMs": 5500
+    },
+    {
+      "title": "Freeze one input triple",
+      "caption": "A finite counterexample is enough to reject a universal reassociation rule.",
+      "show": [
+        "rule",
+        "inputs"
+      ],
+      "focus": [],
+      "durationMs": 5500
+    },
+    {
+      "title": "Evaluate both groupings",
+      "caption": "Each branch clips after its first addition. The result depends on grouping.",
+      "show": [
+        "rule",
+        "inputs",
+        "l",
+        "r",
+        "left",
+        "right"
+      ],
+      "focus": [],
+      "durationMs": 5500
+    },
+    {
+      "title": "Keep the operation order",
+      "caption": "The search method is inspired by Tao’s equational-theories project. This is our small control-operator experiment.",
+      "show": [
+        "rule",
+        "inputs",
+        "l",
+        "r",
+        "left",
+        "right",
+        "lesson"
+      ],
+      "focus": [],
+      "durationMs": 5500
+    }
+  ]
+}

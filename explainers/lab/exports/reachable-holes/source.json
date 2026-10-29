@@ -1,0 +1,114 @@
+{
+  "id": "reachable-holes",
+  "title": "An interval can hide unreachable states",
+  "category": "Reachability / sumset experiment",
+  "seed": 147,
+  "source_derivation": {
+    "id": "math-explainers-144",
+    "sha256": "dc0c3cef9521c142febc0e61013a3d6ba8fa8f303f03562e86be09485ba1fdde"
+  },
+  "summary": "With increments {-3, 3}, three steps reach four points; the integer interval hull contains nineteen.",
+  "items": [
+    {
+      "id": "increments",
+      "type": "box",
+      "label": "Each increment: −3 or +3",
+      "x": 310,
+      "y": 145,
+      "w": 500,
+      "h": 90,
+      "color": "ink"
+    },
+    {
+      "id": "time",
+      "type": "arrow",
+      "points": [
+        [
+          560,
+          245
+        ],
+        [
+          560,
+          305
+        ]
+      ],
+      "label": "three additive steps",
+      "color": "ink"
+    },
+    {
+      "id": "states",
+      "type": "label",
+      "label": "Reachable: {−9, −3, 3, 9}",
+      "x": 560,
+      "y": 355,
+      "color": "green",
+      "fontSize": 33
+    },
+    {
+      "id": "hull",
+      "type": "box",
+      "label": "Integer interval hull: −9 through 9",
+      "x": 155,
+      "y": 415,
+      "w": 810,
+      "h": 90,
+      "color": "ink"
+    },
+    {
+      "id": "holes",
+      "type": "note",
+      "label": "4 reachable points · 19 points in the hull",
+      "x": 240,
+      "y": 530,
+      "w": 640,
+      "h": 65,
+      "fontSize": 25
+    }
+  ],
+  "steps": [
+    {
+      "title": "Keep the discrete support",
+      "caption": "Each of three independent increments belongs to the two-point set {−3, 3}.",
+      "show": [
+        "increments"
+      ],
+      "focus": [],
+      "durationMs": 5500
+    },
+    {
+      "title": "Compose with set addition",
+      "caption": "Enumerate sums, or compute the iterated sumset.",
+      "show": [
+        "increments",
+        "time"
+      ],
+      "focus": [],
+      "durationMs": 5500
+    },
+    {
+      "title": "Compare to an interval",
+      "caption": "The interval is a sound outer approximation, but includes points this exact model cannot reach.",
+      "show": [
+        "increments",
+        "time",
+        "states",
+        "hull"
+      ],
+      "focus": [],
+      "durationMs": 5500
+    },
+    {
+      "title": "Measure the tradeoff",
+      "caption": "The sumset viewpoint is inspired by Green, Manners and Tao. A real compression scheme still needs inclusion and cost checks.",
+      "show": [
+        "increments",
+        "time",
+        "states",
+        "hull",
+        "holes"
+      ],
+      "focus": [],
+      "durationMs": 5500
+    }
+  ]
+}

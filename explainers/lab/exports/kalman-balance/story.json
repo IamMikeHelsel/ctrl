@@ -1,0 +1,41 @@
+{
+  "id": "kalman-balance",
+  "title": "The gain balances two errors",
+  "summary": "Complete the square, find the gain, test an assumption.",
+  "category": "Estimation / scalar variance",
+  "kind": "video",
+  "steps": [
+    {
+      "title": "Mix two uncertain estimates",
+      "caption": "The scalar model has prior error variance p = 1 and measurement error variance r = 4, with zero cross-covariance. Gain k weights the measurement.",
+      "video": "exports/kalman-balance/step-01.mp4",
+      "poster": "exports/kalman-balance/step-01.png",
+      "durationMs": 4866
+    },
+    {
+      "title": "Compare the resulting variance",
+      "caption": "Variance is (1-k)\u00b2p + k\u00b2r. For these inputs, a half-and-half blend has variance 1.25; k = 0.2 gives 0.8. All plotted gains share one scale.",
+      "video": "exports/kalman-balance/step-02.mp4",
+      "poster": "exports/kalman-balance/step-02.png",
+      "durationMs": 6366
+    },
+    {
+      "title": "Complete the square",
+      "caption": "SymPy verifies variance = pr/(p+r) + (p+r)(k-p/(p+r))\u00b2. Since p+r is positive, the square exposes the unique optimal gain for this objective.",
+      "video": "exports/kalman-balance/step-03.mp4",
+      "poster": "exports/kalman-balance/step-03.png",
+      "durationMs": 5866
+    },
+    {
+      "title": "Test the missing cross term",
+      "caption": "If the cross-covariance is 1/2, an extra 2k(1-k)c term changes the optimum to 1/8. The independent-error formula cannot certify the correlated model.",
+      "video": "exports/kalman-balance/step-04.mp4",
+      "poster": "exports/kalman-balance/step-04.png",
+      "durationMs": 6866
+    }
+  ],
+  "source_derivation": {
+    "id": "math-explainers-144",
+    "sha256": "dc0c3cef9521c142febc0e61013a3d6ba8fa8f303f03562e86be09485ba1fdde"
+  }
+}
