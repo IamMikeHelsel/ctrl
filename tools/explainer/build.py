@@ -22,6 +22,7 @@ import subprocess
 import sys
 from dataclasses import dataclass, field
 from pathlib import Path
+from urllib.parse import unquote, urlsplit
 
 import yaml
 from markdown_it import MarkdownIt
@@ -169,7 +170,7 @@ def check_source(meta: dict, body: str, folder: Path, rep: Report) -> None:
         ref = m.group(1)
         if ref.startswith(("http", "/", "mailto")):
             continue
-        if not (folder / ref).exists():
+        if not (folder / unquote(urlsplit(ref).path)).exists():
             rep.err(f"referenced file missing: {ref}")
     for m in INCLUDE_RE.finditer(body):
         if not (folder / m.group(1)).exists():
@@ -217,6 +218,12 @@ def build_one(folder: Path, check_only: bool) -> Report:
     rendered = [tidy_mathml(h) for h in rendered]
     md = MarkdownIt("commonmark", {"html": True, "typographer": False}).enable("table")
     out = md.render(body)
+    out = re.sub(
+        r"(<table>.*?</table>)",
+        r'<div class="table-wrap" role="region" aria-label="Mathematical table, horizontally scrollable" tabindex="0">\1</div>',
+        out,
+        flags=re.S,
+    )
     for i, h in enumerate(rendered):
         # A display formula sits alone in its own paragraph.
         out = out.replace(f"<p>MATHPH{i}X</p>", f'<div class="math-display">{h}</div>')

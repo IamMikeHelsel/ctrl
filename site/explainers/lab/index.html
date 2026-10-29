@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Math experiment lab · ctrl</title><meta name="description" content="Eight reproducible math experiments and seven step-by-step explanations using SymPy, Manim and Rough.js.">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="../../style.css"><link rel="stylesheet" href="lab.css"></head>
+<body><a class="skip-link" href="#main">Skip to content</a><div class="page lab-page"><header>
+<div class="breadcrumbs"><a href="../../index.html">ctrl</a> / <a href="../index.html">Explainers</a> / Experiment lab</div>
+<div class="eyebrow">Derive · explain · challenge</div><h1>Make the mechanism visible.<br>Give the idea a test.</h1>
+<p class="subtitle">SymPy checks the algebra. Manim animates the mechanism. Rough.js sketches the relationships. Each walkthrough advances by input or timing, and each experiment keeps its assumptions beside its result.</p>
+<nav class="nav-links" aria-label="Lab navigation"><a href="#walkthroughs">Walkthroughs</a><a href="#experiments">Eight experiments</a><a href="#sources">Sources</a><a href="#reproduce">Run and embed</a></nav></header>
+<main id="main"><section class="scope-note"><strong>Completed: 8 bounded experiments, 3,924 declared cases.</strong> These are finite checks and symbolic calculations. Existing Lean theorems remain a separate evidence layer. This batch makes no claim of new mathematics, upstream proof replay, or physical safety.</section>
+<section id="walkthroughs"><h2>Choose how to see it</h2><p>Open a walkthrough for Next, Back, Play, speed, keyboard navigation, and PNG/SVG/MP4 exports.</p><div class="lab-grid"><a class="lab-card" href="proof-dependencies.html"><img src="exports/proof-dependencies/step-04.png" width="1120" height="620" alt="What connects a proof to a robot?" loading="lazy"><span class="label">Rough.js · 4 steps</span><h3>What connects a proof to a robot?</h3><p>Make the checked layers and the missing bridges visible.</p></a><a class="lab-card" href="saturation-order.html"><img src="exports/saturation-order/step-04.png" width="1120" height="620" alt="Can these operations be regrouped?" loading="lazy"><span class="label">Rough.js · 4 steps</span><h3>Can these operations be regrouped?</h3><p>Clipping is idempotent on the tested inputs, but saturated addition is not associative.</p></a><a class="lab-card" href="schedule-bound.html"><img src="exports/schedule-bound/step-04.png" width="1120" height="620" alt="A lower bound is not a schedule" loading="lazy"><span class="label">Rough.js · 4 steps</span><h3>A lower bound is not a schedule</h3><p>The elementary bound is loose on 2 of 1,024 five-job DAGs. The layered eight-job fixture has lower bound 3 and optimum 4.</p></a><a class="lab-card" href="reachable-holes.html"><img src="exports/reachable-holes/step-04.png" width="1120" height="620" alt="An interval can hide unreachable states" loading="lazy"><span class="label">Rough.js · 4 steps</span><h3>An interval can hide unreachable states</h3><p>With increments {-3, 3}, three steps reach four points; the integer interval hull contains nineteen.</p></a><a class="lab-card" href="braking-budget.html"><img src="exports/braking-budget/step-04.png" width="1120" height="620" alt="Delay consumes a calculable distance" loading="lazy"><span class="label">Manim · 4 steps</span><h3>Delay consumes a calculable distance</h3><p>Build the stopping envelope, then change one assumption.</p></a><a class="lab-card" href="kalman-balance.html"><img src="exports/kalman-balance/step-04.png" width="1120" height="620" alt="The gain balances two errors" loading="lazy"><span class="label">Manim · 4 steps</span><h3>The gain balances two errors</h3><p>Complete the square, find the gain, test an assumption.</p></a><a class="lab-card" href="lyapunov-energy.html"><img src="exports/lyapunov-energy/step-04.png" width="1120" height="620" alt="Length can grow while energy falls" loading="lazy"><span class="label">Manim · 4 steps</span><h3>Length can grow while energy falls</h3><p>A scalar warmup, then an exact rational 2D certificate.</p></a></div></section>
+<section id="experiments"><h2>Eight questions, with results</h2><nav class="experiment-nav" aria-label="Experiment index"><a href="#lyapunov">1. Length can grow while energy falls</a><a href="#braking">2. Delay consumes a calculable distance</a><a href="#kalman">3. The gain balances two errors</a><a href="#saturation">4. Saturation breaks an innocent rewrite</a><a href="#sumsets">5. A reachable interval can hide holes</a><a href="#entropy">6. Low entropy does not remove a rare failure</a><a href="#tropical">7. Feasible does not mean optimal</a><a href="#scheduling">8. A lower bound is not a schedule</a></nav><article class="experiment" id="lyapunov"><span class="label">01 / CAS identity + exact rational replay</span><h2>Length can grow while energy falls</h2><p class="question">Can an exact certificate explain the transient that a norm plot hides?</p><p class="finding">The first step increases squared length from 1 to 449/400 while energy drops by exactly 1.</p><p class="small">49 declared cases. <a href="results.json">Raw results and exact inputs</a></p><p><a class="launch" href="lyapunov-energy.html">Walk through this result →</a></p><details><summary>Inspect the worked values</summary><pre>{
+  &quot;a&quot;: &quot;11/10&quot;,
+  &quot;loss&quot;: &quot;-21/100&quot;,
+  &quot;certificate&quot;: false
+}</pre></details><dl><dt>What this establishes</dt><dd>Exact rational example and CAS identities; no new kernel-checked theorem, rounding or plant model.</dd><dt>Next discriminating experiment</dt><dd>Check rational certificates for a family of sampled closed-loop matrices with interval perturbations.</dd><dt>Reject the route if</dt><dd>Reject a candidate if P or P minus A-transpose P A loses positive definiteness.</dd></dl><p class="sources">Source connections: <a href="https://github.com/IamMikeHelsel/ctrl/blob/124e2f7787e31cf24f39e1a7b3bf37bf79a93df2/ControlsLean/Controls/DiscreteLyapunov.lean">ctrl: DiscreteLyapunov</a></p></article><article class="experiment" id="braking"><span class="label">02 / CAS derivative + independent exact integration</span><h2>Delay consumes a calculable distance</h2><p class="question">How much clearance does a smaller delay buy under fixed bounds?</p><p class="finding">The bounded rule has no false admissions in 972 constructed cases; the nominal rule has 294.</p><p class="small">972 declared cases. <a href="results.json">Raw results and exact inputs</a></p><p><a class="launch" href="braking-budget.html">Walk through this result →</a></p><details><summary>Inspect the worked values</summary><pre>{
+  &quot;u&quot;: &quot;11/10&quot;,
+  &quot;delay&quot;: &quot;1/5&quot;,
+  &quot;accel&quot;: &quot;1&quot;,
+  &quot;brake&quot;: &quot;2&quot;,
+  &quot;error&quot;: &quot;1/50&quot;,
+  &quot;distance&quot;: &quot;273/400&quot;,
+  &quot;display_distance&quot;: 0.6825,
+  &quot;delay_distance&quot;: &quot;6/25&quot;,
+  &quot;brake_distance&quot;: &quot;169/400&quot;,
+  &quot;saved_by_20ms&quot;: &quot;387/10000&quot;
+}</pre></details><dl><dt>What this establishes</dt><dd>A sharp 1D constant-acceleration model. Equality allows boundary contact. Rejection is not a stopping action.</dd><dt>Next discriminating experiment</dt><dd>Replay measured timestamp-to-actuation traces with independently justified acceleration and braking bounds.</dd><dt>Reject the route if</dt><dd>Stop if any trace exceeds an assumed delay or braking bound; do not narrow bounds to improve admission rates.</dd></dl><p class="sources">Source connections: <a href="https://iammikehelsel.github.io/ctrl/studies/latency-braking.html">ctrl: delayed braking study</a></p></article><article class="experiment" id="kalman"><span class="label">03 / CAS identity + exact rational sweep</span><h2>The gain balances two errors</h2><p class="question">Can completion of squares expose the optimal gain and its assumptions?</p><p class="finding">Every tested gain has exactly the predicted nonnegative excess variance; a correlated fixture changes the optimum.</p><p class="small">325 declared cases. <a href="results.json">Raw results and exact inputs</a></p><p><a class="launch" href="kalman-balance.html">Walk through this result →</a></p><details><summary>Inspect the worked values</summary><pre>{
+  &quot;p&quot;: &quot;1&quot;,
+  &quot;r&quot;: &quot;4&quot;,
+  &quot;gain&quot;: &quot;1/5&quot;,
+  &quot;variance&quot;: &quot;4/5&quot;,
+  &quot;wrong_gain&quot;: &quot;1/2&quot;,
+  &quot;wrong_variance&quot;: &quot;5/4&quot;
+}</pre></details><dl><dt>What this establishes</dt><dd>Scalar error variance with positive variances and zero cross-covariance; no stochastic calibration or multivariate claim.</dd><dt>Next discriminating experiment</dt><dd>Estimate cross-covariance on held-out sensor traces before using the independent-error gain.</dd><dt>Reject the route if</dt><dd>Reject the independent-error model if residual correlation invalidates its objective.</dd></dl><p class="sources">Source connections: <a href="https://github.com/IamMikeHelsel/ctrl/blob/124e2f7787e31cf24f39e1a7b3bf37bf79a93df2/ControlsLean/Estimation/ScalarKalman.lean">ctrl: ScalarKalman</a></p></article><article class="experiment" id="saturation"><span class="label">04 / Finite exhaustive countermodels</span><h2>Saturation breaks an innocent rewrite</h2><p class="question">May a command-combining pipeline regroup saturated additions?</p><p class="finding">Clipping is idempotent on the tested inputs, but saturated addition is not associative.</p><p class="small">1,224 declared cases. <a href="results.json">Raw results and exact inputs</a></p><p><a class="launch" href="saturation-order.html">Walk through this result →</a></p><details><summary>Inspect the witness</summary><pre>{
+  &quot;bound&quot;: 1,
+  &quot;a&quot;: -1,
+  &quot;b&quot;: -1,
+  &quot;c&quot;: 1,
+  &quot;left&quot;: 0,
+  &quot;right&quot;: -1
+}</pre></details><dl><dt>What this establishes</dt><dd>Exhaustive finite integer tables for four clipping bounds; not a classification of real-valued controllers or a new algebraic theorem.</dd><dt>Next discriminating experiment</dt><dd>Check actual command-combining operators and compiler rewrites against frozen finite countermodels.</dd><dt>Reject the route if</dt><dd>Reject any reassociation rule when one input triple changes the applied command.</dd></dl><p class="sources">Source connections: <a href="https://terrytao.wordpress.com/2024/10/12/the-equational-theories-project-a-brief-tour/">Terence Tao: The equational theories project, a brief tour</a></p></article><article class="experiment" id="sumsets"><span class="label">05 / Finite exhaustive set arithmetic</span><h2>A reachable interval can hide holes</h2><p class="question">When does a compact reachable-set description erase useful structure?</p><p class="finding">With increments {-3, 3}, three steps reach four points; the integer interval hull contains nineteen.</p><p class="small">127 declared cases. <a href="results.json">Raw results and exact inputs</a></p><p><a class="launch" href="reachable-holes.html">Walk through this result →</a></p><details><summary>Inspect the witness</summary><pre>{
+  &quot;A&quot;: [
+    -3,
+    3
+  ],
+  &quot;doubling&quot;: &quot;3/2&quot;,
+  &quot;reachable_three&quot;: [
+    -9,
+    -3,
+    3,
+    9
+  ],
+  &quot;hull_points&quot;: 19,
+  &quot;unreachable_hull_points&quot;: 15
+}</pre></details><dl><dt>What this establishes</dt><dd>All 127 nonempty subsets of seven integers, three independent additive steps. No PFR theorem transfer or general compression benefit.</dd><dt>Next discriminating experiment</dt><dd>Compare exact unions and interval hulls on quantized actuator models with measured checking cost.</dd><dt>Reject the route if</dt><dd>Abandon compression if it excludes any reachable state or its membership cost exceeds the exact representation.</dd></dl><p class="sources">Source connections: <a href="https://terrytao.wordpress.com/2023/06/27/sumsets-and-entropy-revisited/">Green, Manners and Tao: Sumsets and entropy revisited</a></p></article><article class="experiment" id="entropy"><span class="label">06 / Exact discrete distribution + approximate entropy</span><h2>Low entropy does not remove a rare failure</h2><p class="question">Can uncertainty or average error replace a hard support bound?</p><p class="finding">Entropy and mean-square error decrease while the worst possible error stays at 10.</p><p class="small">16 declared cases. <a href="results.json">Raw results and exact inputs</a></p><details><summary>Inspect the worked values</summary><pre>{
+  &quot;first&quot;: {
+    &quot;k&quot;: 1,
+    &quot;tail_probability&quot;: &quot;1/2&quot;,
+    &quot;mean_square&quot;: &quot;50&quot;,
+    &quot;entropy_bits_approx&quot;: 1,
+    &quot;max_error&quot;: 10
+  },
+  &quot;last&quot;: {
+    &quot;k&quot;: 16,
+    &quot;tail_probability&quot;: &quot;1/65536&quot;,
+    &quot;mean_square&quot;: &quot;25/16384&quot;,
+    &quot;entropy_bits_approx&quot;: 0.00026615423635777775,
+    &quot;max_error&quot;: 10
+  }
+}</pre></details><dl><dt>What this establishes</dt><dd>Constructed two-point distributions. Probabilities and moments are exact; displayed logarithms use floating point. This is our falsifier, not a result attributed to Tao.</dd><dt>Next discriminating experiment</dt><dd>Compare mean, quantile and support contracts on the same held-out perception errors.</dd><dt>Reject the route if</dt><dd>Reject any hard-safety implication based only on decreasing entropy or mean-square error.</dd></dl><p class="sources">Source connections: <a href="https://terrytao.wordpress.com/2023/06/27/sumsets-and-entropy-revisited/">Green, Manners and Tao: Sumsets and entropy revisited</a></p></article><article class="experiment" id="tropical"><span class="label">07 / Pinned-source witness recomputation</span><h2>Feasible does not mean optimal</h2><p class="question">Can a checker keep feasibility separate from objective quality?</p><p class="finding">Both displayed points are feasible, but their costs are 1 and 0. The strict gap survives every tested common translation.</p><p class="small">186 declared cases. <a href="results.json">Raw results and exact inputs</a></p><details><summary>Inspect the worked values</summary><pre>{
+  &quot;point&quot;: [
+    -1,
+    -1,
+    0
+  ],
+  &quot;feasible&quot;: false
+}</pre></details><dl><dt>What this establishes</dt><dd>Exact arithmetic on the upstream displayed witness and 17 common translations. No execution replay of the elimination algorithm; grid optimality is finite only.</dd><dt>Next discriminating experiment</dt><dd>Require separate feasibility and bound certificates from one real allocation consumer.</dd><dt>Reject the route if</dt><dd>Reject an optimality claim when a feasible point with smaller cost is supplied, even if the solver terminated.</dd></dl><p class="sources">Source connections: <a href="https://github.com/openai/math/blob/7ef5c0cc5ca4b0e072b7a050fca09ab24bc6fa3a/lean/OAI/Optimization/Tropical/TruffetCounterexample.lean">OpenAI/math: TruffetModel and TruffetCounterexample</a></p></article><article class="experiment" id="scheduling"><span class="label">08 / Exhaustive finite search + separate feasibility checker</span><h2>A lower bound is not a schedule</h2><p class="question">When do workload and critical-path bounds miss the optimum?</p><p class="finding">The elementary bound is loose on 2 of 1,024 five-job DAGs. The layered eight-job fixture has lower bound 3 and optimum 4.</p><p class="small">1,025 declared cases. <a href="results.json">Raw results and exact inputs</a></p><p><a class="launch" href="schedule-bound.html">Walk through this result →</a></p><details><summary>Inspect the witness</summary><pre>{
+  &quot;n&quot;: 8,
+  &quot;edges&quot;: [
+    [
+      0,
+      4
+    ],
+    [
+      0,
+      5
+    ],
+    [
+      0,
+      6
+    ],
+    [
+      0,
+      7
+    ],
+    [
+      1,
+      4
+    ],
+    [
+      1,
+      5
+    ],
+    [
+      1,
+      6
+    ],
+    [
+      1,
+      7
+    ],
+    [
+      2,
+      4
+    ],
+    [
+      2,
+      5
+    ],
+    [
+      2,
+      6
+    ],
+    [
+      2,
+      7
+    ],
+    [
+      3,
+      4
+    ],
+    [
+      3,
+      5
+    ],
+    [
+      3,
+      6
+    ],
+    [
+      3,
+      7
+    ]
+  ],
+  &quot;slots&quot;: [
+    0,
+    1,
+    1,
+    1,
+    2,
+    3,
+    3,
+    3
+  ],
+  &quot;lower_bound&quot;: 3,
+  &quot;optimum&quot;: 4,
+  &quot;stronger_bound&quot;: &quot;Four jobs in each of two nonoverlapping layers require at least two slots per layer.&quot;
+}</pre></details><dl><dt>What this establishes</dt><dd>All 1,024 forward-edge DAGs on five labeled unit jobs, plus one eight-job fixture, on three identical machines. Offline, no release times, WCET, transport, or RTOS model.</dd><dt>Next discriminating experiment</dt><dd>Add release times and bounded transport costs, then compare independently checked schedules against the exact small-instance oracle.</dd><dt>Reject the route if</dt><dd>Reject a quality claim unless feasibility is checked and its attained makespan matches a sound bound.</dd></dl><p class="sources">Source connections: <a href="https://github.com/openai/math/blob/7ef5c0cc5ca4b0e072b7a050fca09ab24bc6fa3a/lean/ComparatorChallenges/ThreeMachine.lean">OpenAI/math: ThreeMachine problem specification</a> · <a href="https://github.com/openai/math/blob/7ef5c0cc5ca4b0e072b7a050fca09ab24bc6fa3a/lean/OAI/Optimization/Tropical/TruffetCounterexample.lean">OpenAI/math: TruffetModel and TruffetCounterexample</a></p></article></section>
+<section id="sources"><h2>Where the ideas come from</h2><p>Tao’s work informs the methods: finite countermodels, additive structure, and visible proof dependencies. OpenAI’s math repository supplies two precisely scoped starting points: a tropical counterexample and a unit-job scheduling specification. The control applications and small experiments here are our adaptations.</p>
+<div class="source-list"><article><h3><a href="https://terrytao.wordpress.com/2024/10/12/the-equational-theories-project-a-brief-tour/">Terence Tao: The equational theories project, a brief tour</a></h3><p>Method inspiration: search finite countermodels before trusting an algebraic rewrite.</p></article><article><h3><a href="https://terrytao.wordpress.com/2023/06/27/sumsets-and-entropy-revisited/">Green, Manners and Tao: Sumsets and entropy revisited</a></h3><p>Method inspiration: inspect additive support growth and distinguish support from entropy. No application of PFR is claimed.</p></article><article><h3><a href="https://terrytao.wordpress.com/2023/11/18/formalizing-the-proof-of-pfr-in-lean4-using-blueprint-a-short-tour/">Terence Tao: Formalizing PFR in Lean4 using Blueprint</a></h3><p>Presentation inspiration: expose dependencies and missing obligations.</p></article><article><h3><a href="https://github.com/openai/math/blob/7ef5c0cc5ca4b0e072b7a050fca09ab24bc6fa3a/lean/OAI/Optimization/Tropical/TruffetCounterexample.lean">OpenAI/math: TruffetModel and TruffetCounterexample</a></h3><p>Recompute the displayed feasible-point cost gap. The substitution algorithm and upstream Lean proof are not replayed by this suite.</p><p class="small">Pinned revision: <code>7ef5c0cc5ca4b0e072b7a050fca09ab24bc6fa3a</code></p><a href="https://github.com/openai/math/blob/7ef5c0cc5ca4b0e072b7a050fca09ab24bc6fa3a/lean/OAI/Optimization/Tropical/TruffetModel.lean">Exact model definitions</a></article><article><h3><a href="https://github.com/openai/math/blob/7ef5c0cc5ca4b0e072b7a050fca09ab24bc6fa3a/lean/ComparatorChallenges/ThreeMachine.lean">OpenAI/math: ThreeMachine problem specification</a></h3><p>Adopt the finite unit-job, precedence and three-machine model. Our tiny BFS is not the upstream algorithm or a replay of its complexity theorem.</p><p class="small">Pinned revision: <code>7ef5c0cc5ca4b0e072b7a050fca09ab24bc6fa3a</code></p></article><article><h3><a href="https://github.com/IamMikeHelsel/ctrl/blob/124e2f7787e31cf24f39e1a7b3bf37bf79a93df2/ControlsLean/Controls/DiscreteLyapunov.lean">ctrl: DiscreteLyapunov</a></h3><p>Existing theorem context; new example arithmetic is checked separately.</p></article><article><h3><a href="https://github.com/IamMikeHelsel/ctrl/blob/124e2f7787e31cf24f39e1a7b3bf37bf79a93df2/ControlsLean/Estimation/ScalarKalman.lean">ctrl: ScalarKalman</a></h3><p>Existing theorem context; this experiment isolates the scalar quadratic objective.</p></article><article><h3><a href="https://iammikehelsel.github.io/ctrl/studies/latency-braking.html">ctrl: delayed braking study</a></h3><p>Known constant-acceleration envelope; new sensitivity and boundary sweep.</p></article></div><p class="small">Sources inspected 28 October 2026. OpenAI source revision matches the repository head checked on that date. Downloaded source, CAS checks, finite tests and kernel-checked proofs have different meanings.</p></section>
+<section id="reproduce"><h2>Run it, change it, embed it</h2>
+<p>The source lives in <a href="https://github.com/IamMikeHelsel/ctrl/tree/main/tools/math_explainers">tools/math_explainers</a> and <a href="https://github.com/IamMikeHelsel/ctrl/tree/main/experiments/math_explainers">experiments/math_explainers</a>. The <a href="results.json">result artifact</a> records exact values, source links, checks, and a content hash.</p>
+<pre>uv run experiments/math_explainers/run.py
+uv run python -m pytest -q tests/test_math_explainers.py
+uv run python tools/math_explainers/render.py
+npm ci --prefix tools/math_explainers
+npm run build --prefix tools/math_explainers</pre>
+<p>Each player is a standalone HTML download with media and fonts included. For a website or Google Sites, embed its hosted URL with <code>?embed=1</code>. Google Slides can use the exported PNGs or an MP4 uploaded to Drive; Docs can use PNGs and a link to the interactive page. Interactive scripts do not run inside a Docs or Slides page.</p>
+<pre>&lt;iframe title="Lyapunov walkthrough"
+  src="https://iammikehelsel.github.io/ctrl/explainers/lab/lyapunov-energy.html?embed=1"
+  width="100%" height="850" loading="lazy"&gt;&lt;/iframe&gt;</pre>
+<p class="small">Manual playback is the default. Reduced-motion preferences show still frames. The public API <code>window.diagramPlayer</code> supports same-origin orchestration; cross-origin hosts use the embedded controls. No CDN, account or runtime API is required.</p></section>
+</main><footer><span>AI-assisted code, experiments and explanations · 28 October 2026</span><a href="../index.html">Back to explainers</a></footer></div></body></html>

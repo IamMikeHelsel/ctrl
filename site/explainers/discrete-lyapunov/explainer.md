@@ -9,14 +9,17 @@ theorems:
   - tendsto_pow_mulVec_zero
   - exists_lyapunov_contraction
   - PosDef.tendsto_pow_mulVec_zero
-updated: 2026-10-24
+updated: 2026-10-28
 ---
 
 ## The idea in one picture {#idea}
 
-A linear system $x_{k+1} = A x_k$ is stable when every starting state eventually returns to $0$. A finite simulation cannot settle that, because it only ever shows finitely many steps. Lyapunov's idea is to find one quadratic energy $V(x) = x^\top P x$ that is positive away from the origin and drops on every step. If such a $V$ exists, every trajectory has to slide down to $0$.
+A linear system $x_{k+1} = A x_k$ is asymptotically stable when every starting state converges to $0$. A finite simulation cannot settle that, because it only ever shows finitely many steps. Lyapunov's idea is to find one quadratic energy $V(x) = x^\top P x$ that is positive away from the origin and drops on every step. If such a $V$ exists, every trajectory has to slide down to $0$.
 
 The picture shows the point of choosing $P$ with care. The plain length $\lVert x \rVert$ can go up on a step even when the system is stable. A well-chosen $V$ goes down on every step.
+
+<p><a href="../lab/lyapunov-energy.html">Open the step-by-step walkthrough</a> or use the player below. Next and Back advance manually; Play runs the explanation on timing. SymPy supplies the exact rational certificate and sample values. The algebra checks are separate from the Lean theorem.</p>
+<iframe class="ex-walkthrough" title="Discrete Lyapunov: four-step Manim walkthrough" src="../lab/lyapunov-energy.html?embed=1" loading="lazy" width="100%" height="840"></iframe>
 
 <figure class="ex-figure">
 <!-- include: diagram.svg -->
@@ -98,6 +101,8 @@ Its eigenvalues are $0.8 \pm 0.412\,i$, both with modulus $0.9$, so it is stable
 
 A good $P$ comes from solving the linear Stein equation $A^\top P A - P = -I$, which is three unknowns here:
 
+The shared <a href="../lab/results.json">experiment artifact</a> now solves that equation in exact rational arithmetic and checks the residual is the zero matrix. It also checks the two leading principal minors of this symmetric 2 by 2 matrix are positive. The table and drawings below display rounded values from those exact inputs.
+
 $$P \approx \begin{bmatrix} 5.61 & 2.81 \\ 2.81 & 7.88 \end{bmatrix}, \qquad P - A^\top P A = I.$$
 
 The eigenvalues of $P$ are about 3.72 and 9.77, so $x^\top P x > 0$. And $x^\top (P - A^\top P A) x = \lVert x \rVert^2 > 0$. Both conditions hold, so the theorem applies.
@@ -110,7 +115,7 @@ The eigenvalues of $P$ are about 3.72 and 9.77, so $x^\top P x > 0$. And $x^\top
 | 3 | (0.454, −0.612) | 0.762 | 2.550 |
 | 4 | (0.087, −0.526) | 0.533 | 1.969 |
 
-Over 14 steps the length goes up on steps 1, 6, 7, 13 and 14 (and by about $10^{-5}$ on step 8). $V$ goes down on every step and stays under $0.898^k\, V(x_0)$. The 0.898 is the true worst-case ratio $\max_x V(Ax)/V(x)$. With $Q = I$ it equals $1 - 1/\lambda_{\max}(P)$, which is the proof's $1 - c_Q/C_P$ computed with Euclidean constants. The Lean proof uses the sup norm, where $C_P \approx 19.1$, so its $\rho$ is looser, about 0.948. Both are below 1, which is all the theorem needs.
+Over 14 steps the length goes up on steps 1, 6, 7, 13 and 14 (and by about $10^{-5}$ on step 8). $V$ goes down on every step and stays under $0.898^k\, V(x_0)$. The true worst-case ratio $\max_{x \ne 0} V(Ax)/V(x)$ is approximately 0.8976. The displayed 0.898 is a rounded-up illustrative bound. With $Q = I$, the true ratio equals $1 - 1/\lambda_{\max}(P)$, which is the proof's $1 - c_Q/C_P$ computed with Euclidean constants. The Lean proof uses the sup norm, where $C_P \approx 19.1$, so its $\rho$ is looser, about 0.948. Both are below 1, which is all the theorem needs.
 
 <figure class="ex-figure">
 <video controls preload="metadata" playsinline width="1280" height="720" poster="media/PlaneLyapunov.png" aria-label="Animation of the 2D example: the state's length wobbles while V decreases on every step under a geometric envelope"><source src="media/PlaneLyapunov.mp4" type="video/mp4"></video>
@@ -124,7 +129,7 @@ The theorem is a check, not a search. Some other step produces a candidate $P$, 
 <div class="applies">
 <div><h3>Digital feedback loops</h3><p>A sampled controller $u_k = -K x_k$ gives the closed loop $x_{k+1} = (A - BK)\,x_k$. A $P$ from a Lyapunov or LMI solver, checked against both conditions, certifies the loop. In this repo, <code>dare_closedLoop_tendsto_zero</code> in <code>LQR.lean</code> uses this theorem to show the LQR closed loop is stable, given $P > 0$ solving the Joseph-form DARE and $Q + K^\top R K > 0$.</p></div>
 <div><h3>Observers and filters</h3><p>A Luenberger observer's error follows $e_{k+1} = (A - LC)\,e_k$ (<code>observer_error_step</code> in <code>Observer.lean</code>). A certificate for $A - LC$ shows the estimate converges to the true state in the noise-free model.</p></div>
-<div><h3>Linear iterative methods</h3><p>Jacobi, Gauss-Seidel and heavy-ball momentum on a quadratic all have error dynamics $e_{k+1} = M e_k$ for a fixed matrix $M$. When $M$ is non-normal ($\lVert M \rVert_2 > \rho(M)$), the plain error can grow for a few steps. If the spectral radius $\rho(M) < 1$, a certificate exists and proves convergence. Jacobi does not always meet that condition.</p></div>
+<div><h3>Linear iterative methods</h3><p>Jacobi, Gauss-Seidel and heavy-ball momentum on a quadratic all have error dynamics $e_{k+1} = M e_k$ for a fixed matrix $M$. For an iteration with $\lVert M \rVert_2 > 1$ and spectral radius $\rho(M) < 1$, some states grow in Euclidean length on the first step even though a Lyapunov certificate exists and proves convergence. Non-normality alone does not imply such growth. Jacobi does not always meet that condition.</p></div>
 <div><h3>Going the other way</h3><p>If $A^k x \to 0$ for every $x$, a certificate always exists. That converse is <code>converse_lyapunov_of_schur</code>: applied with $Q = I$ it gives a symmetric $S \succeq I$ with $S - A^\top S A = I$. It is in <code>SchurLyapunov.lean</code>, built on the Lyapunov sums in <code>ConverseLyapunov.lean</code>.</p></div>
 </div>
 
@@ -150,6 +155,10 @@ lake env lean scripts/Audit.lean | grep tendsto_pow_mulVec_zero
 Print the numbers used on this page, then rebuild the diagram, the animations and the page:
 
 ```sh
+uv run experiments/math_explainers/run.py
+uv run python tools/math_explainers/render.py
+npm ci --prefix tools/math_explainers
+npm run build --prefix tools/math_explainers
 cd site/explainers/discrete-lyapunov
 uv run --no-project --with numpy example.py
 uv run --no-project --with numpy diagram.py

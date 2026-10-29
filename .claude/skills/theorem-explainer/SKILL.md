@@ -181,6 +181,16 @@ Humble, clear, technical. The reader is a capable engineer who has not seen this
 
 ## Lessons from the pilot
 
+- For exact examples and interactive walkthroughs, use `tools/math_explainers/README.md`.
+  SymPy derives/checks the calculation; Manim animates the mechanism; Rough.js shows
+  dependencies. `results.json` supplies exact values and binds rendered media to a hash.
+  CAS status `unknown` is not a passed check. Keep CAS, finite tests and Lean evidence distinct.
+- Manual/timed walkthroughs may be embedded as an optional iframe. The theorem body still
+  renders statically with build-time MathML. Use `?embed=1`, a descriptive iframe title,
+  lazy loading, and the accessible shared player. Keep assumptions in both the page and captions.
+- A ratio rounded for display is not an exact extremum. Non-normality alone does not imply
+  transient norm growth; check the operator norm against 1 as well as the spectral radius.
+
 - `‖x‖` on `n → ℝ` in Mathlib is the **sup norm**, not Euclidean. Constants the proof
   produces (rates, bounds) differ from the textbook Euclidean ones. Say which norm, and do
   not quote a Euclidean constant as "the proof's".

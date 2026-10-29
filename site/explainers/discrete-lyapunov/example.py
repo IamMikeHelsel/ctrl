@@ -7,14 +7,21 @@ V(x) = x^T P x drops on every step by at least a fixed factor.
 
 from __future__ import annotations
 
+import json
+from fractions import Fraction
+from pathlib import Path
+
 import numpy as np
+
+ARTIFACT = json.loads((Path(__file__).resolve().parents[1] / "lab/results.json").read_text())
+EXACT = next(row for row in ARTIFACT["experiments"] if row["id"] == "lyapunov")
 
 # Scalar example.
 A_SCALAR = 0.8
 A_SCALAR_BAD = 1.1
 
 # Planar example.
-A = np.array([[1.0, 0.6], [-0.35, 0.6]])
+A = np.array([[float(Fraction(t)) for t in row] for row in EXACT["A"]])
 Q = np.eye(2)
 X0 = np.array([1.0, 0.0])
 STEPS = 14
@@ -28,7 +35,7 @@ def solve_stein(A: np.ndarray, Q: np.ndarray) -> np.ndarray:
     return (P + P.T) / 2
 
 
-P = solve_stein(A, Q)
+P = np.array([[float(Fraction(t)) for t in row] for row in EXACT["P"]])
 
 
 def V(x: np.ndarray) -> float:
@@ -73,6 +80,8 @@ OP_NORM = float(np.linalg.norm(A, 2))
 
 if __name__ == "__main__":
     np.set_printoptions(precision=4, suppress=True)
+    print("Exact rational P:", EXACT["P"])
+    print("Exact Stein residual checks:", [c["status"] for c in EXACT["checks"]])
     print("P =\n", P)
     print("P - A^T P A =\n", P - A.T @ P @ A)
     print(f"spectral radius {SPECTRAL_RADIUS:.4f}, ||A||_2 {OP_NORM:.4f}, rho {RHO:.4f}")
