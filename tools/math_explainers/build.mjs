@@ -51,7 +51,7 @@ for(const source of stories) {
   await writeFile(path.join(out,source.id+'.html'),player(compiled));
   catalog.push({...source,kind:'svg',thumbnail:`exports/${source.id}/step-${String(source.steps.length).padStart(2,'0')}.png`});
 }
-for(const folder of await readdir(path.join(out,'exports'))) {
+for(const folder of (await readdir(path.join(out,'exports'))).sort()) {
   let source;try{source=JSON.parse(await readFile(path.join(out,'exports',folder,'story.json'),'utf8'));}catch(e){if(e.code==='ENOENT')continue;throw e;}
   const compiled={...source,steps:[],fullVideo:await dataURI(`exports/${source.id}/complete.mp4`,'video/mp4')};
   for(const step of source.steps)compiled.steps.push({...step,video:await dataURI(step.video,'video/mp4'),poster:await dataURI(step.poster,'image/png')});
