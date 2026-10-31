@@ -21,8 +21,18 @@
 | :--- | :--- | :--- | :--- |
 | **1. Symbolic Theorems (Lean 4 over $\mathbb{R}/\mathbb{Q}$)** | `ControlsLean/` on `main` (**55 modules**, **445 audited headline theorems**) | Closed-form control, estimation, kinematics, and projective vision proofs (`0 sorry`, standard axioms only via `scripts/check.sh`). | Proves mathematical implications under stated model hypotheses; does not model IEEE-754 rounding or compiler behavior. |
 | **2. Dual-Mode Python Reference** | `src/ctrl/robotics/` on `crossover-research-2026-10-19` (**48 `@lean_theorem` functions**: 42 domain + 4 benchmarks + 2 codegen helpers) | Reference implementations running on both IEEE-754 `float` and exact `fractions.Fraction` for zero-rounding rational regression tests. | Hand-written Python linked to Lean declarations by name and tested on rational/float grids (not formally extracted from Lean). |
-| **3. Fixed-Loop C99 & IEC 61131-3 ST Codegen** | `src/ctrl/robotics/codegen.py` (**12 C99 functions**, **4 ST POUs**) | Zero-heap, solver-free C99 and PLC Structured Text kernels differential-tested against Python (`8.88e-16` max error on tested inputs). | Empirical differential parity on randomized inputs; target timing and PLC compiler behavior require target-specific validation. |
+| **3. Fixed-Loop C99 & IEC 61131-3 ST Codegen** | `src/ctrl/robotics/codegen.py` (**12 C99 functions**, **4 ST POUs**) | Zero-heap C99 and PLC Structured Text kernels; selected C examples are compared with Python. | Empirical checks do not prove refinement; target timing, rounding and PLC compiler behavior require target-specific validation. |
 | **4. Multi-Body Physics Rollouts** | `src/ctrl/robotics/mujoco_benchmarks.py` + saved animations in `site/assets/` | 4 closed-loop MuJoCo 3.16.0 RK4 benchmarks comparing candidate laws against matched high-gain baselines (`-39.4%` impulse peak error vs. tuned CTC; `-22.5%` dynamic / `-4.1%` total modeled $I^2R$ loss). | Task- and model-specific simulation results; physical deployment requires plant identification and hardware testing. |
+
+The barrier filter checks whether the nominal-to-backup segment satisfies the supplied
+barrier in the supplied arithmetic. If the nominal control fails the barrier and the
+backup also fails, Python raises `ValueError`, generated C returns `NaN` and writes `NaN`
+outputs, and generated Structured Text sets `BARRIER_FEASIBLE` to `FALSE`. Callers must
+handle those failures and independently validate cone membership; the filter does not
+receive a friction coefficient. PLC callers must also validate finite, representable input
+and intermediate values on their target. Compile C without flags such as `-ffast-math` that
+discard NaN/infinity semantics. These checks do not certify floating-point or physical-system
+safety.
 
 ---
 
@@ -132,7 +142,7 @@ On the `crossover-research-2026-10-19` branch (`src/ctrl/robotics/`), 48 Python 
 | **6-DOF Arm Electromechanical Energy** (`run_arm6dof_septic_energy_benchmark`) | Classical 5th-order Minimum-Jerk ($\eta = 0$): $E_{\text{dyn}} = 773.18\,\text{J}$ | 7th-order septic profile ($\eta = -11$; inertial-term optimum): $E_{\text{dyn}} = 599.45\,\text{J}$ | **`-4.10%` total $\int\|\tau\|^2 dt$** (gravity-dominated) / **`-22.47%` dynamic Joule loss** (1D theory `-18.33%`) |
 | **3D 4-Contact Quadruped Emergency Braking** (`run_quadruped_zmp_cbf_benchmark`) | Unshielded forward lunge toward wall at $x_{\lim} = 1.20\,\text{m}$ (tips over / slips) | 3D Lorentz-Cone CBF + Bilinear ZMP Allocator ($a_{\max} = \min(\mu, W/h_G) g$) | **Stops at $1.1920\,\text{m} < 1.20\,\text{m}$**, $100\%$ inside Lorentz cone ($f_{z,\min} = 22.14\,\text{N}$), **zero pitch/roll** ($\|\omega\|_{\max} = 1.64 \times 10^{-15}\,\text{rad/s}$) |
 | **6-DOF $SE(3)$ Visual Servoing** (`run_se3_visual_servoing_benchmark`) | Classical IBVS under large optical-axis rotation (retreats $5.76\times$ to $12.67\,\text{m}$) | Homography-Based Visual Servoing (HBVS) with log-depth $\dot{d} = -\lambda d \ln(d/d^*)$ | **Eliminates optical-axis retreat**: depth stays monotone inside $[1.015\,\text{m}, 2.200\,\text{m}]$ |
-| **C99 & IEC 61131-3 ST Codegen** (`compile_and_verify_c99_kernels`) | Python `float64` reference kernels | `clang -std=c99 -O3 -Wall -Wextra -Werror` shared library (`ctypes`) | **`8.88e-16` max discrepancy** across randomized differential tests, zero heap allocation |
+| **C99 & IEC 61131-3 ST Codegen** (`compile_and_verify_c99_kernels`) | Python `float64` reference kernels | `clang -std=c99 -O3 -Wall -Wextra -Werror` shared library (`ctypes`) | Differential comparison on selected examples; target timing and rounding need separate validation |
 
 ---
 

@@ -22,15 +22,15 @@ Our technical approach rests on five methodological pillars that avoid the tradi
 
 ### Pillar 2: Closed-Form Conic Duality Replacing Online Iterative Solvers
 - **The Problem**: Safety-critical legged and mobile robots typically run online QP/SOCP solvers at 1 kHz to enforce Control Barrier Functions (CBFs) and friction-cone constraints, introducing solver non-convergence risk and WCET jitter.
-- **Our Approach**: Derive **exact analytical conic-duality solutions** and prove their forward invariance in Lean 4 (`LorentzConeCBF.lean`, `CentroidalDecelerationLimit.lean`, `BacksteppingCLF.lean`). The resulting C99/PLC kernels (`ctrl_lorentz_cbf_filter_3d`, `ctrl_quad_contact_allocator`, `ctrl_sontag_clf`) execute in $<100\,\text{ns}$ with zero heap allocation.
+- **Our Approach**: Derive **exact analytical conic-duality solutions** and prove their forward invariance in Lean 4 (`LorentzConeCBF.lean`, `CentroidalDecelerationLimit.lean`, `BacksteppingCLF.lean`). Associated C99/PLC kernels use no heap allocation; their timing and floating-point behavior require validation on the target.
 
 ### Pillar 3: Invariant Group Averaging & Parseval Projections for Non-Convex Matrix Inequalities
 - **The Problem**: Open matrix inequalities such as the Byers–Nash $n=6$ skew-Hamiltonian conjecture ($k(A) \le s(A)$ for $\mathcal{L}_A(X) = A^\top X + XA$) live on 42-dimensional non-convex varieties where single-comparator bounds fail.
 - **Our Approach**: Exploit **finite involution groups** (the 4-element diagonal sign group $\mathcal{G}_4$, the 8-element $(F,G)$-Klein group $\mathcal{G}_8$, and the 3 plane-swap involutions $W_{12}, W_{13}, W_{23}$) to decompose the 15-dimensional skew space $\mathbb{K}_6$ into orthogonal Parseval character subspaces (`ByersNashMultiTerm.lean`, `ByersNashHaarIntertwiner.lean`, `ByersNashOffDiagComplete.lean`).
 
 ### Pillar 4: Dual-Mode Exact-$\mathbb{Q}$ + IEEE-754 Runtime & `@lean_theorem` Auditing
-- Every Python function in `src/ctrl/robotics/` is decorated with `@lean_theorem(...)` and verified by `verify_lean_bindings()`, which parses the target `.lean` file, strips comments, verifies that every bound theorem exists, and enforces `0 sorry`, `0 admit`, and `0 native_decide`.
-- Every kernel supports both fast NumPy `float64` execution and exact rational `fractions.Fraction` certification, and compiles to C99 (`clang -std=c99 -O3 -Werror`) with **$8.88 \times 10^{-16}$** max discrepancy.
+- The `@lean_theorem(...)` registry links Python functions to Lean declarations by name. `verify_lean_bindings()` checks available declaration names and selected forbidden tokens; it does not prove that a Python function implements a theorem.
+- Some reference functions support `float` and exact `fractions.Fraction` inputs. C99 and Python are compared on selected examples; rounding, code refinement and target behavior remain separate obligations.
 
 ---
 
