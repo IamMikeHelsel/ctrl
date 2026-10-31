@@ -43,10 +43,11 @@ the continuous Joseph / Bucy generator
 
 5. **Loewner / Trace Optimality**:
    Whenever `R ⪰ 0`, the excess `(K - K*) R (K - K*)ᵀ` is positive semidefinite, so `K*`
-   uniquely minimizes both the quadratic form `xᵀ ℒ(K) x` and the trace `tr(ℒ(K))` among all
-   linear gains. In particular, along any differentiable covariance trajectory with
-   `Ṗ(t) = ℒ(K(t))`, the Kalman–Bucy gain produces the pointwise-minimal instantaneous
-   covariance growth rate.
+   minimizes both the quadratic form `xᵀ ℒ(K) x` and the trace `tr(ℒ(K))` among all linear
+   gains. These inequalities do not establish uniqueness; if `R = 0`, for example, multiple
+   gains may attain the same minimum. In particular, along any differentiable covariance
+   trajectory with `Ṗ(t) = ℒ(K(t))`, the Kalman–Bucy gain produces the pointwise-minimal
+   instantaneous covariance growth rate.
 
 Existence/uniqueness of DRE solutions, geometric convergence to a CARE fixed point, and
 continuous-time observer Lyapunov stability are deferred.
