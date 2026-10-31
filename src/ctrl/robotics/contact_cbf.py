@@ -1,14 +1,15 @@
 """3D 4-contact quadruped bilinear ZMP wrench allocation and Lorentz-cone backup CBF.
 
-Every public function is backed by a machine-checked theorem in
-``Research.LorentzConeCBF`` or ``Research.CentroidalDecelerationLimit`` and supports both
-``float`` and exact ``fractions.Fraction`` (Q) arithmetic.
+The hand-written functions are linked by name to mathematical Lean declarations; the
+bindings do not prove Python or floating-point behavior. Both ``float`` and exact
+``fractions.Fraction`` (Q) arithmetic are supported.
 """
 
 from __future__ import annotations
 
 from dataclasses import dataclass
 from fractions import Fraction
+from math import isfinite, nextafter
 from typing import Generic, TypeVar
 
 from ctrl.robotics.registry import lean_theorem
@@ -181,9 +182,7 @@ def verify_quad_wrench_balance(
     domain="contact_cbf",
     summary="3D directional stopping-distance Control Barrier Function h_dir(r, v).",
 )
-def directional_cbf(
-    r_limit: Vec3T[T], r: Vec3T[T], v: Vec3T[T], n_hat: Vec3T[T], a_brake: T
-) -> T:
+def directional_cbf(r_limit: Vec3T[T], r: Vec3T[T], v: Vec3T[T], n_hat: Vec3T[T], a_brake: T) -> T:
     """Evaluate h_dir(r, v) = (r_limit - r) . n_hat - (v . n_hat)^2 / (2 a_brake)."""
     two: T = Fraction(2, 1) if isinstance(a_brake, Fraction) else 2.0  # type: ignore[assignment]
     vn = dot3(v, n_hat)
@@ -201,24 +200,61 @@ def directional_cbf(
         "lorentz_backup_controller_safe",
     ),
     domain="contact_cbf",
-    summary="Closed-form Lorentz-cone-preserving CBF interpolation u*(x) = (1-lambda*) u_nom + lambda* pi_b.",
+    summary="Barrier interpolation with explicit infeasibility; cone membership is caller-validated.",
 )
 def lorentz_cbf_safety_filter(
     a_cbf: Vec3T[T], b_barrier: T, u_nom: Vec3T[T], pi_b: Vec3T[T]
 ) -> tuple[T, Vec3T[T]]:
-    """Return (lambda*, u_safe) satisfying both u_safe in K(mu) and a_cbf . u_safe >= b_barrier."""
+    """Blend toward a backup only when the segment can satisfy the barrier.
+
+    The caller must check that the controls used are in the desired friction cone;
+    this function has no ``mu`` argument and cannot check cone membership. If the
+    nominal control meets the barrier, it is returned even if the backup does not.
+    Otherwise a backup that meets the barrier is required. ``ValueError`` signals
+    non-finite inputs/intermediate dot products or an infeasible segment; no control
+    is returned in that case.
+
+    The barrier check uses the supplied arithmetic. Float comparisons and the
+    returned control are not a verified real-arithmetic or physical safety guarantee.
+    """
+
+    def finite(value: T) -> bool:
+        return isinstance(value, (Fraction, int)) or isfinite(value)
+
+    if not all(finite(value) for value in (b_barrier, *a_cbf, *u_nom, *pi_b)):
+        raise ValueError("barrier inputs must be finite")
+
     is_frac = isinstance(b_barrier, Fraction)
     zero: T = Fraction(0, 1) if is_frac else 0.0  # type: ignore[assignment]
     one: T = Fraction(1, 1) if is_frac else 1.0  # type: ignore[assignment]
 
     a_nom = dot3(a_cbf, u_nom)
     a_pi = dot3(a_cbf, pi_b)
+    if not finite(a_nom) or not finite(a_pi):
+        raise ValueError("barrier dot products must be finite")
     if a_nom >= b_barrier:
-        lam = zero
-    elif a_pi <= a_nom:
-        lam = one
-    else:
-        ratio = (b_barrier - a_nom) / (a_pi - a_nom)
-        lam = zero if ratio < zero else (one if ratio > one else ratio)
-    u_safe = add3(smul3(one - lam, u_nom), smul3(lam, pi_b))
-    return lam, u_safe
+        return zero, u_nom
+    if a_pi < b_barrier:
+        raise ValueError("no control on the nominal-to-backup segment satisfies the barrier")
+
+    numerator = b_barrier - a_nom
+    denominator = a_pi - a_nom
+    if not finite(numerator) or not finite(denominator):
+        return one, pi_b
+    ratio = numerator / denominator
+    lam = zero if ratio < zero else (one if ratio > one else ratio)
+    for _ in range(5):
+        u_safe = add3(smul3(one - lam, u_nom), smul3(lam, pi_b))
+        achieved = dot3(a_cbf, u_safe)
+        if not all(finite(value) for value in (*u_safe, achieved)):
+            break
+        if achieved >= b_barrier:
+            return lam, u_safe
+        if not isinstance(lam, float):
+            break
+        # Try a few adjacent floats before falling back to the feasible backup.
+        next_lam = nextafter(lam, 1.0)
+        if next_lam <= lam:
+            break
+        lam = next_lam  # type: ignore[assignment]
+    return one, pi_b

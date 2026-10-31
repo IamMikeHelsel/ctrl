@@ -1,9 +1,8 @@
-"""ctrl.robotics: Machine-checked Lean 4 robotics, control, estimation, and vision library.
+"""Hand-written robotics, control, estimation, and vision research implementations.
 
-Provides dual-mode (NumPy float64 + exact-Q Fraction) implementations of every theorem
-proved in the 53-module ``lean/Robotics`` Lake library (``Research``, ``ControlsLean``,
-and ``RoboLean``), together with deterministic C99 / IEC 61131-3 codegen, closed-loop
-MuJoCo physics benchmarks, and automated ``@lean_theorem`` spec-manifest auditing.
+Name-based ``@lean_theorem`` bindings link functions to mathematical declarations;
+they do not prove Python or generated code correct. The package also includes C99 /
+IEC 61131-3 code generation, MuJoCo simulations, and binding-manifest checks.
 """
 
 from __future__ import annotations

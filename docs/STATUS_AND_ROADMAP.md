@@ -29,7 +29,7 @@
 1. **Eliminating Spectral Theory from Riccati, LQG, and ISS Proofs**:
    - Proving detectable DARE stability (`DAREDetectable.lean`) via forced-observer zero-step escape, discrete ISS (`ISS.lean`) via the square-root-free matrix Peter–Paul identity, and $H_\infty$ attenuation (`BoundedRealHInf.lean`) via indefinite minimax completion of squares allowed complete, general-$n$ matrix formalizations in Lean 4 without complex Jordan blocks or matrix square roots.
 2. **Closed-Form Conic Duality Replacing Online QP Solvers at 1–10 kHz**:
-   - In `LorentzConeCBF.lean` and `codegen.py`, the 3D Lorentz-cone safety filter (`ctrl_lorentz_cbf_filter_3d`) and 4-foot bilinear ZMP + proportional shear allocator (`ctrl_quad_contact_allocator`) execute in $<100\,\text{ns}$ in C99 with zero heap allocation and zero pitch/roll angular momentum drift ($\dot{L} = 0$).
+   - The C99 safety filter and 4-foot bilinear ZMP + proportional shear allocator use no heap allocation. The associated torque identity is mathematical; timing and floating-point behavior need validation on the target.
 3. **Analytic Electromechanical Trajectory Optimization (`RobotEnergySmoothness.lean`)**:
    - Proving cross-power orthogonality $\int_0^T a(t) j(t)\,dt = 0$ on rest-to-rest trajectories reduced the 7th-order septic energy functional to an exact rational quadratic form in $\eta$, yielding `-22.47%` dynamic Joule loss and `-10.85%` viscous dissipation in 6-DOF MuJoCo benchmarks over classical minimum-jerk.
 4. **Composite $H_\infty$ + ISS + Sontag CLF Disturbance Rejection**:
